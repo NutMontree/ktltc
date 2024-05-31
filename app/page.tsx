@@ -1,56 +1,176 @@
-import { Link } from "@nextui-org/link";
-import { Snippet } from "@nextui-org/snippet";
-import { Code } from "@nextui-org/code";
-import { button as buttonStyles } from "@nextui-org/theme";
+// import Image from "next/image";
+/* <Avatar src="/images/logo.png" size="md" alt="My Logo" /> */
 
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
+// import Swiper from "../components/test/swiper";
+// import ModalPage from "@/components/test/modal";
 
-export default function Home() {
+// import TestPage from "@/components/test/Text";
+import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
+import Link from "next/link";
+export default function page() {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-lg text-center justify-center">
-        <h1 className={title()}>Make&nbsp;</h1>
-        <h1 className={title({ color: "violet" })}>beautiful&nbsp;</h1>
-        <br />
-        <h1 className={title()}>
-          websites regardless of your design experience.
+    <>
+      <div>
+        <h1 className="flex justify-center text-xl">หน้าหลัก</h1>
+        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          คลังข้อมูลวิทยาลัยเทคนิคกันทรลักษ์
         </h1>
-        <h2 className={subtitle({ class: "mt-4" })}>
-          Beautiful, fast and modern React UI library.
-        </h2>
       </div>
 
-      <div className="flex gap-3">
-        <Link
-          isExternal
-          className={buttonStyles({
-            color: "primary",
-            radius: "full",
-            variant: "shadow",
-          })}
-          href={siteConfig.links.docs}
-        >
-          Documentation
-        </Link>
-        <Link
-          isExternal
-          className={buttonStyles({ variant: "bordered", radius: "full" })}
-          href={siteConfig.links.github}
-        >
-          <GithubIcon size={20} />
-          GitHub
-        </Link>
-      </div>
+      <div className="flex justify-center pt-16">
+        <div className="max-w-[1000px] gap-2 grid grid-cols-12 grid-rows-2 px-8 ">
+          <Card
+            isFooterBlurred
+            className="w-full h-[300px] col-span-12 sm:col-span-7"
+          >
+            <CardHeader className="absolute z-10 top-1 flex-col items-start">
+              <p className="text-tiny uppercase font-bold">ข่าวประชาสัมพันธ์</p>
+              <h4 className=" font-medium text-xl">Press Release</h4>
+            </CardHeader>
+            <Image
+              removeWrapper
+              alt="Relaxing app background"
+              className="z-0 w-full h-full object-cover"
+              src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/67/41.webp"
+            />
+            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+              <div className="flex flex-grow gap-2 items-center">
+                <Image
+                  alt="Breathing app icon"
+                  className="rounded-full w-8  h-8 bg-black"
+                  src="/images/logo.png"
+                />
+                <div className="flex flex-col">
+                  <div className="text-tiny ">
+                    ข่าวประชาสัมพันธ์กิจกรรมต่าง
+                    <div className="text-tiny ">
+                      ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Button radius="full" size="md">
+                <Link href="/pressrelease">ข้อมูลทั้งหมด</Link>
+              </Button>
+            </CardFooter>
+          </Card>
 
-      <div className="mt-8">
-        <Snippet hideCopyButton hideSymbol variant="flat">
-          <span>
-            Get started by editing <Code color="primary">app/page.tsx</Code>
-          </span>
-        </Snippet>
+          <Card
+            isFooterBlurred
+            className="w-full h-[300px] col-span-12 sm:col-span-5"
+          >
+            <CardHeader className="absolute z-10 top-1 flex-col items-start">
+              <p className="text-tiny  uppercase font-bold">จดหมายข่าว</p>
+              <h4 className="font-medium text-2xl">Newsletter</h4>
+            </CardHeader>
+            <Image
+              removeWrapper
+              alt="Card example background"
+              className="z-0 w-full h-full scale-125 -translate-y-6 object-cover"
+              src="/images/จดหมายข่าว/21.webp"
+            />
+            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+              <div className="flex flex-grow gap-2 items-center">
+                <div className="flex flex-col">
+                  <div className="text-tiny ">
+                    จดหมายข่าวต่าง
+                    <div className="text-tiny ">
+                      ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Button radius="full" size="md">
+                <Link href="/newsletter">ข้อมูลทั้งหมด</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card className="col-span-12 sm:col-span-4 h-[300px]">
+            <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+              <p className="text-tiny  uppercase font-bold">ข่าวประกาศ</p>
+              <h4 className=" font-medium text-large">Announcement New</h4>
+            </CardHeader>
+            <Image
+              removeWrapper
+              alt="Card background"
+              className="z-0 w-full h-full object-cover"
+              src="/images/ข่าวประกาศ/na7.webp"
+            />
+            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+              <div className="flex flex-grow gap-2 items-center">
+                <div className="flex flex-col">
+                  <div className="text-tiny ">
+                    ข่าวประกาศ
+                    <div className="text-tiny ">ในวิทยาลัยเทคนิคกันทรลักษ์</div>
+                  </div>
+                </div>
+              </div>
+              <Button radius="full" size="md">
+                <Link href="/announcement">เพิ่มเติม</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card className="col-span-12 sm:col-span-4 h-[300px]">
+            <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+              <p className="text-tiny  uppercase font-bold">ข่าวประกวดราคา</p>
+              <h4 className=" font-medium text-large">Bidding</h4>
+            </CardHeader>
+            <Image
+              removeWrapper
+              alt="Card background"
+              className="z-0 w-full h-full object-cover"
+              src="/images/ข่าวประกวดราคา/na2.webp"
+            />
+            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+              <div className="flex flex-grow gap-2 items-center">
+                <div className="flex flex-col">
+                  <div className="text-tiny ">
+                    ข่าวประกวดราคา
+                    <div className="text-tiny ">ในวิทยาลัยเทคนิคกันทรลักษ์</div>
+                  </div>
+                </div>
+              </div>
+              <Button radius="full" size="md">
+                <Link href="/bidding">เพิ่มเติม</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card className="col-span-12 sm:col-span-4 h-[300px]">
+            <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+              <p className="text-tiny  uppercase font-bold">คำสั่งวิทยาลัย</p>
+              <h4 className=" font-medium text-large">
+                Technical college order
+              </h4>
+            </CardHeader>
+            <Image
+              removeWrapper
+              alt="Card background"
+              className="z-0 w-full h-full object-cover"
+              src="/images/คำสั่งวิทยาลัย/na1.webp"
+            />
+            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+              <div className="flex flex-grow gap-2 items-center">
+                <div className="flex flex-col">
+                  <div className="text-tiny ">
+                    คำสั่งวิทยาลัย
+                    <div className="text-tiny ">ในวิทยาลัยเทคนิคกันทรลักษ์</div>
+                  </div>
+                </div>
+              </div>
+              <Button radius="full" size="md">
+                <Link href="/technicalcollegeorders">เพิ่มเติม</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
-    </section>
+      {/* <TestPage /> */}
+
+      {/* <ModalPage />
+      <Swiper /> */}
+    </>
   );
 }

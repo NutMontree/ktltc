@@ -1,0 +1,48 @@
+export type DataAnnouncement = typeof dataAnnouncement;
+
+export const dataAnnouncement = {
+  navItems: [
+    {
+      name: `รายชื่อผู้ผ่านการเลือกสรรและสรรหาเพื่อจัดจ้างเป็นพนักงานราชการทั่วไป`,
+      description: ` 21 ธันวาคม 2566 `,
+      backgroundImage: "/images/ข่าวประกาศ/na7.webp",
+      href: `/announcement7`,
+    },
+    {
+      name: `รายชื่อผู้ที่ผ่านการประเมินสมรรถนะครั้งที่`,
+      description: ` ๑ (สอบข้อเขียน) และมีสิทธิเข้ารับการประเมินสมรรถนะครั้งที่ ๒ (สัมภาษณ์) 15 ธันวาคม 2566 `,
+      backgroundImage: "/images/ข่าวประกาศ/na6.webp",
+      href: `/announcement6`,
+    },
+    {
+      name: `รายงานผลิตผลของสถานศึกษา `,
+      description: `( สผ.5 ) ประจำปีงบประมาณ 2566 `,
+      backgroundImage: "/images/ข่าวประกาศ/na5.webp",
+      href: `/announcement5`,
+    },
+    {
+      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์ `,
+      description: `เรื่อง รับสมัครบุคคลเพื่อสรรหาและเลือกสรรเป็นพนักงานราชการทั่วไป`,
+      backgroundImage: "/images/ข่าวประกาศ/na1.webp",
+      href: `/announcement4`,
+    },
+    {
+      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      description: `เรื่อง การรับสมัครบุคคลเข้าศึกษาต่อระดับประกาศนียบัตรวิชาชีพ (ปวช.) และระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.) ประจำปีการศึกษา 2567`,
+      backgroundImage: "/images/ข่าวประกาศ/na2.webp",
+      href: `/announcement3`,
+    },
+    {
+      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      description: `เรื่อง รับสมัครบุคคลเพื่อสรรหาและเลือกสรรเป็นพนักงานราชการทั่วไป`,
+      backgroundImage: "/images/ข่าวประกาศ/na3.webp",
+      href: `/announcement2`,
+    },
+    {
+      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      description: `เรื่อง ประกาศรับสมัครครูพิเศษสอน (แผนกวิชาช่างก่อสร้าง)`,
+      backgroundImage: "/images/ข่าวประกาศ/na4.webp",
+      href: `/announcement1`,
+    },
+  ],
+};

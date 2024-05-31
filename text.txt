@@ -1,0 +1,4 @@
+Swiper https://swiperjs.com/demos
+Nextui https://nextui.org/
+
+https://dev.to/afewminutesofcode/how-to-convert-an-array-into-an-object-in-javascript-25a4
