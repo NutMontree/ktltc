@@ -1,10 +1,4 @@
-// import Image from "next/image";
-/* <Avatar src="/images/logo.png" size="md" alt="My Logo" /> */
 
-// import Swiper from "../components/test/swiper";
-// import ModalPage from "@/components/test/modal";
-
-// import TestPage from "@/components/test/Text";
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
 export default function page() {
