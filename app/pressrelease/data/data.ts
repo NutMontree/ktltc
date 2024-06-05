@@ -605,7 +605,7 @@ export const DataPressrelease6611 = {
         name: `วิทยาลัยเทคนิคกันทรลักษ์`,
         backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/พฤศจิกายน/01/04.webp ",
         description: `เข้าร่วมประชุมการแข่งขันทักษะวิชาชีพ. 7 พฤศจิกายน 2566`,
-        href: " ",
+        href: "/pressrelease1",
       },
   ],
 };
