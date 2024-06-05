@@ -6,7 +6,7 @@ export default function PressReleasePage() {
     <>
       <div>
         <h1 className="flex justify-center text-xl ">ข่าวประชาสัมพันธ์</h1>
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
           Press Release Page
         </h1>
 
