@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable jsx-a11y/alt-text */
 "use client"; // top to the file
 import React from "react";
 import {
@@ -11,8 +9,9 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
-import { DatatPressrelease2 } from "./data";
+import { DatatPressrelease23 } from "./data";
 import { Image } from "@nextui-org/react";
+import Link from "next/link";
 
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -32,14 +31,14 @@ export default function Pressrelease() {
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   <div>
-                    {DatatPressrelease2.Item.map((item) => (
+                    {DatatPressrelease23.Item.map((item) => (
                       <div key={item.title}>{item.title}</div>
                     ))}
                   </div>
                 </ModalHeader>
                 <ModalBody>
                   <p>
-                    {DatatPressrelease2.Item.map((item) => (
+                    {DatatPressrelease23.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
                         <div className="text-xs text-slate-500">
@@ -48,10 +47,16 @@ export default function Pressrelease() {
                       </div>
                     ))}
                   </p>
-                  <div></div>
-
+                  <div>
+                    <Link
+                      className="text-lg"
+                      href="https://drive.google.com/drive/folders/1IYCy5Z5eIIs7UI1xmB6KClv9az7zZzWn?fbclid=IwAR0AQSzlA5ND1nWHik6HFzLZVKm6wCFShcSrZ7giBv6L1QwGEfPr8Ta8Y2Q"
+                    >
+                      รูปภาพเพิ่มเติม
+                    </Link>
+                  </div>
                   <div className="justify-center flex-col">
-                    {DatatPressrelease2.Item.map((item) => (
+                    {DatatPressrelease23.Item.map((item) => (
                       <div
                         className="mb-4 group relative shadow-lg rounded-xl px-[144px] py-[144px]"
                         key={item.img1}
@@ -81,11 +86,33 @@ export default function Pressrelease() {
                           <Image src={item.img22} alt={""}></Image>
                           <Image src={item.img23} alt={""}></Image>
                           <Image src={item.img24} alt={""}></Image>
+                          <Image src={item.img25} alt={""}></Image>
+                          <Image src={item.img26} alt={""}></Image>
+                          <Image src={item.img27} alt={""}></Image>
+                          <Image src={item.img28} alt={""}></Image>
+                          <Image src={item.img29} alt={""}></Image>
+                          <Image src={item.img30} alt={""}></Image>
+                          <Image src={item.img31} alt={""}></Image>
+                          <Image src={item.img32} alt={""}></Image>
+                          <Image src={item.img33} alt={""}></Image>
+                          <Image src={item.img34} alt={""}></Image>
+                          <Image src={item.img35} alt={""}></Image>
+                          <Image src={item.img36} alt={""}></Image>
+                          <Image src={item.img37} alt={""}></Image>
+                          <Image src={item.img38} alt={""}></Image>
+                          <Image src={item.img39} alt={""}></Image>
+                          <Image src={item.img40} alt={""}></Image>
+                          <Image src={item.img41} alt={""}></Image>
+                          <Image src={item.img42} alt={""}></Image>
+                          <Image src={item.img43} alt={""}></Image>
+                          <Image src={item.img44} alt={""}></Image>
+                          <Image src={item.img45} alt={""}></Image>
                         </div>
                       </div>
                     ))}
                   </div>
                 </ModalBody>
+
                 <ModalFooter>
                   <Button color="primary" onPress={onClose}>
                     Close
