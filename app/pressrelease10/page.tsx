@@ -52,7 +52,7 @@ export default function Pressrelease() {
                   <div>
                     <Link
                       className="text-lg"
-                      to="https://drive.google.com/drive/folders/1P2p88Nc3wuFCpev_ALRM3DRZq1t7iJDz"
+                      href="https://drive.google.com/drive/folders/1P2p88Nc3wuFCpev_ALRM3DRZq1t7iJDz"
                     >
                       รูปภาพเพิ่มเติม
                     </Link>
