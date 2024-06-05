@@ -1,9 +1,5 @@
-/* eslint-disable react/no-unescaped-entities */
-// PressRelease
-import React from "react";
-import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
-import Link from "next/link";
-import Pressrelease2566 from "./Pressrelease2566";
+import Pressrelease2566 from "./Pressrelease2566/Pressrelease2566";
+import Pressrelease2567 from "./Pressrelease2567/Pressrelease2567";
 
 export default function PressReleasePage() {
   return (
@@ -14,6 +10,7 @@ export default function PressReleasePage() {
           Press Release Page
         </h1>
 
+        <Pressrelease2567 />
         <Pressrelease2566 />
       </div>
     </>

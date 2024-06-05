@@ -1,6 +1,5 @@
-export type DataPressrelease = typeof dataPressrelease;
 
-export const dataPressrelease = {
+export const DataPressrelease6701 = {
   navItems: [
     {
       name: `ได้รับเกียตริจาก นางสาวทักษิณา`,
@@ -309,6 +308,13 @@ export const dataPressrelease = {
       description: `ในวารดิถีขึ้นปีใหม่ ขออำนาจสิ่งศักดิ์สิทธิ์ดลบัลดาลให้ท่านได้...`,
       href: " ",
     },
+
+
+  ],
+};
+
+export const DataPressrelease6612 = {
+  navItems: [
     {
       name: ` ประกาศรายชื่อผู้ที่มีสิทธิ์เข้าศึกษาต่อ (โควตารอบ1)`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/มกราคม/33/3.webp ",
@@ -466,6 +472,12 @@ export const dataPressrelease = {
       description: `โดย กองลูกเสือวิสามัญ วิทยาลัยกันทรลักษ์ #เทคนิคกันทร์ เเละผู้กำกับ `,
       href: " ",
     },
+  ],
+};
+
+
+export const DataPressrelease6611 = {
+  navItems: [
     {
       name: `โครงการพัฒนาศักยภาพสู่ความสำเร็จ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/พฤศจิกายน/20/1.webp ",
@@ -504,7 +516,7 @@ export const dataPressrelease = {
             ณ โดมอเนกประสงค์วิทยาลัยเทคนิคกันทรลักษ์`,
       href: " ",
     },
-    {
+  {
       name: `กิจกรรมรอบกองไฟ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/พฤศจิกายน/15/1.webp ",
       description: `กิจกรรมสำคัญของการเข้าค่ายลูกเสือที่ขาดไม่ได้ คือ กิจกรรมรอบกองไฟ🔥#เทคนิคกันทร์
@@ -589,11 +601,11 @@ export const dataPressrelease = {
       description: `ห้ามพลาด สาขางานการตลาด ขอเชิญชวน นักเรียน-นักศึกษา บุลลากร ไปเที่ยวชม ชิม อุดหนุน ช็อป ได้ที่ตลาดมินิ  `,
       href: " ",
     },
-    {
-      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
-      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/พฤศจิกายน/01/04.webp ",
-      description: `เข้าร่วมประชุมการแข่งขันทักษะวิชาชีพ. 7 พฤศจิกายน 2566`,
-      href: " ",
-    },
+      {
+        name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+        backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/พฤศจิกายน/01/04.webp ",
+        description: `เข้าร่วมประชุมการแข่งขันทักษะวิชาชีพ. 7 พฤศจิกายน 2566`,
+        href: " ",
+      },
   ],
 };
