@@ -397,7 +397,7 @@ export const DataPressrelease6612 = {
       name: `ขอแสดวความยินดีกับ แผนกวิชาคอมพิวเตอร์ธุรกิจ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/ธันวาคม/ถุงมือ/1.webp ",
       description: `การประกวดสิ่งประดิษฐ์ของคนรุ่นใหม่ `,
-      href: " ",
+      href: "/pressrelease32",
     },
     {
       name: `การประกวดสิ่งประดิษฐ์ของคนรุ่นใหม่`,
