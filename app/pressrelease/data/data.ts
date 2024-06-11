@@ -307,46 +307,47 @@ export const DataPressrelease6701 = {
       description: `ในวารดิถีขึ้นปีใหม่ ขออำนาจสิ่งศักดิ์สิทธิ์ดลบัลดาลให้ท่านได้...`,
       href: " ",
     },
-  ],
-};
-
-export const DataPressrelease6612 = {
-  navItems: [
     {
       name: ` ประกาศรายชื่อผู้ที่มีสิทธิ์เข้าศึกษาต่อ (โควตารอบ1)`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/มกราคม/33/3.webp ",
       description: `ละดับ ปวช. เเละ ปวส. ปีการศึกษา 2567 วิทยาลัยเทคนิคกันทรลักษ์...`,
       href: " ",
     },
+  ],
+};
+
+export const DataPressrelease6612 = {
+  navItems: [
+
     {
       name: `( Set 3) เทศกาลเเห่งความสุขกลับมาอีกครั้ง `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/ธันวาคม/32/13.webp ",
       description: `เมื่อวันที่ 27 ธันวาคม 2566  วิทยาลัยเทคนิคกันทรลักษ์ได้จัด...`,
-      href: " ",
+      href: "/pressrelease44",
     },
     {
       name: `( Set 2) เทศกาลเเห่งความสุขกลับมาอีกครั้ง `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/ธันวาคม/31/07.webp ",
       description: `เมื่อวันที่ 27 ธันวาคม 2566  วิทยาลัยเทคนิคกันทรลักษ์ได้จัด...`,
-      href: " ",
+      href: "pressrelease43",
     },
     {
       name: `( Set 1) เทศกาลเเห่งความสุขกลับมาอีกครั้ง `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/ธันวาคม/30/02.webp ",
       description: `เมื่อวันที่ 27 ธันวาคม 2566  วิทยาลัยเทคนิคกันทรลักษ์ได้จัด...`,
-      href: " ",
+      href: "/pressrelease42",
     },
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/ธันวาคม/29/01.webp ",
       description: `ขอยินดีตอนรับ นายสุริยา สามเเก้ว ครูวิทยาลัยเทคนิคเดชอุดม ที่...`,
-      href: " ",
+      href: "/pressrelease41",
     },
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2566/ธันวาคม/28/1.webp ",
       description: `ขอเเสดงความยินดีกับผู้ที่รับได้รางวัลการประกวด/ประเมินสิ่งประดิษฐ์ของคนรุ่นใหม่ ระดับอาชีวศึกษาจังหวัดศรีสะเกษ ...`,
-      href: " ",
+      href: "/pressrelease40",
     },
     {
       name: `  `,
@@ -354,7 +355,7 @@ export const DataPressrelease6612 = {
         "/images/ข่าวประชาสัมพันธ์/2566/ธันวาคม/Christmas/1.webp",
       description: `Sending the warmest Christmas wishes to you and your family. 
             May God shower his choicest blessings on you and your family this Christmas🎄🎉🎁`,
-      href: " ",
+      href: "/pressrelease39",
     },
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์ `,

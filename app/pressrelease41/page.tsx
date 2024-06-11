@@ -9,7 +9,7 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
-import {  DataPressrelease38 } from "./data";
+import {  DataPressrelease41 } from "./data";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
 
@@ -31,16 +31,19 @@ export default function Pressrelease() {
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   <div>
-                    {DataPressrelease38.Item.map((item) => (
+                    {DataPressrelease41.Item.map((item) => (
                       <div key={item.title}>{item.title}</div>
                     ))}
                   </div>
                 </ModalHeader>
                 <ModalBody>
                   <p>
-                    {DataPressrelease38.Item.map((item) => (
-                      <div key={item.description}>
-                        <div>{item.description}</div>
+                    {DataPressrelease41.Item.map((item) => (
+                      <div key={item.description1}>
+                        <div>{item.description1}</div>
+                        <div>{item.description2}</div>
+                        <div>{item.description3}</div>
+ 
                         <div className="text-xs text-slate-500">
                           {item.date}
                         </div>
@@ -49,7 +52,7 @@ export default function Pressrelease() {
                   </p>
                   <div></div>
                   <div className="justify-center flex-col">
-                    {DataPressrelease38.Item.map((item) => (
+                    {DataPressrelease41.Item.map((item) => (
                       <div
                         className="mb-4 group relative shadow-lg rounded-xl px-[144px] py-[144px]"
                         key={item.img1}
@@ -80,8 +83,8 @@ export default function Pressrelease() {
                           <Image src={item.img23} alt={""}></Image>
                           <Image src={item.img24} alt={""}></Image>
                           <Image src={item.img25} alt={""}></Image>
+                          <Image src={item.img26} alt={""}></Image>
                           <Image src={item.img27} alt={""}></Image>
-                          <Image src={item.img28} alt={""}></Image>
                           <Image src={item.img29} alt={""}></Image>
                           <Image src={item.img30} alt={""}></Image>
                           <Image src={item.img31} alt={""}></Image>
@@ -89,12 +92,30 @@ export default function Pressrelease() {
                           <Image src={item.img33} alt={""}></Image>
                           <Image src={item.img34} alt={""}></Image>
                           <Image src={item.img35} alt={""}></Image>
-                          </div>
+                          <Image src={item.img36} alt={""}></Image>
+                          <Image src={item.img37} alt={""}></Image>
+                          <Image src={item.img38} alt={""}></Image>
+                          <Image src={item.img39} alt={""}></Image>
+                          <Image src={item.img40} alt={""}></Image>
+                          <Image src={item.img41} alt={""}></Image>
+                          <Image src={item.img42} alt={""}></Image>
+                          <Image src={item.img43} alt={""}></Image>
+                          <Image src={item.img44} alt={""}></Image>
+                          <Image src={item.img45} alt={""}></Image>
+                          <Image src={item.img46} alt={""}></Image>
+                          <Image src={item.img47} alt={""}></Image>
+                          <Image src={item.img48} alt={""}></Image>
+                          <Image src={item.img49} alt={""}></Image>
+                          <Image src={item.img50} alt={""}></Image>
+                          <Image src={item.img51} alt={""}></Image>
+                          <Image src={item.img52} alt={""}></Image>
+                          <Image src={item.img53} alt={""}></Image>
+                          <Image src={item.img54} alt={""}></Image> 
+                           </div>
                       </div>
                     ))}
                   </div>
                 </ModalBody>
-
                 <ModalFooter>
                   <Button color="primary" onPress={onClose}>
                     Close

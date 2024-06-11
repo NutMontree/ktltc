@@ -9,7 +9,7 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
-import {  DataPressrelease38 } from "./data";
+import {  DataPressrelease40 } from "./data";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
 
@@ -31,16 +31,20 @@ export default function Pressrelease() {
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   <div>
-                    {DataPressrelease38.Item.map((item) => (
+                    {DataPressrelease40.Item.map((item) => (
                       <div key={item.title}>{item.title}</div>
                     ))}
                   </div>
                 </ModalHeader>
                 <ModalBody>
                   <p>
-                    {DataPressrelease38.Item.map((item) => (
-                      <div key={item.description}>
-                        <div>{item.description}</div>
+                    {DataPressrelease40.Item.map((item) => (
+                      <div key={item.description1}>
+                        <div>{item.description1}</div>
+                        <div>{item.description2}</div>
+                        <div>{item.description3}</div>
+                        <div>{item.description4}</div>
+                        <div>{item.description5}</div>
                         <div className="text-xs text-slate-500">
                           {item.date}
                         </div>
@@ -49,7 +53,7 @@ export default function Pressrelease() {
                   </p>
                   <div></div>
                   <div className="justify-center flex-col">
-                    {DataPressrelease38.Item.map((item) => (
+                    {DataPressrelease40.Item.map((item) => (
                       <div
                         className="mb-4 group relative shadow-lg rounded-xl px-[144px] py-[144px]"
                         key={item.img1}
@@ -65,36 +69,11 @@ export default function Pressrelease() {
                           <Image src={item.img8} alt={""}></Image>
                           <Image src={item.img9} alt={""}></Image>
                           <Image src={item.img10} alt={""}></Image>
-                          <Image src={item.img11} alt={""}></Image>
-                          <Image src={item.img12} alt={""}></Image>
-                          <Image src={item.img13} alt={""}></Image>
-                          <Image src={item.img14} alt={""}></Image>
-                          <Image src={item.img15} alt={""}></Image>
-                          <Image src={item.img16} alt={""}></Image>
-                          <Image src={item.img17} alt={""}></Image>
-                          <Image src={item.img18} alt={""}></Image>
-                          <Image src={item.img19} alt={""}></Image>
-                          <Image src={item.img20} alt={""}></Image>
-                          <Image src={item.img21} alt={""}></Image>
-                          <Image src={item.img22} alt={""}></Image>
-                          <Image src={item.img23} alt={""}></Image>
-                          <Image src={item.img24} alt={""}></Image>
-                          <Image src={item.img25} alt={""}></Image>
-                          <Image src={item.img27} alt={""}></Image>
-                          <Image src={item.img28} alt={""}></Image>
-                          <Image src={item.img29} alt={""}></Image>
-                          <Image src={item.img30} alt={""}></Image>
-                          <Image src={item.img31} alt={""}></Image>
-                          <Image src={item.img32} alt={""}></Image>
-                          <Image src={item.img33} alt={""}></Image>
-                          <Image src={item.img34} alt={""}></Image>
-                          <Image src={item.img35} alt={""}></Image>
-                          </div>
+                           </div>
                       </div>
                     ))}
                   </div>
                 </ModalBody>
-
                 <ModalFooter>
                   <Button color="primary" onPress={onClose}>
                     Close
