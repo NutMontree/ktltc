@@ -1,4 +1,4 @@
-export const DatatPressrelease2 = {
+export const DataPressrelease2 = {
   Item: [
     {
       title: "ตลาดมินิ วิทยาลัยเทคนิคกันทรลักษ์",

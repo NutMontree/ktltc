@@ -1,4 +1,4 @@
-export const DatatPressrelease18 = {
+export const DataPressrelease18 = {
   Item: [
     {
       title: `🔸สุขสันต์วันลอยกระทง🔸`,

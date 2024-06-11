@@ -1,4 +1,4 @@
-export const DatatPressrelease32 = {
+export const DataPressrelease32 = {
   Item: [
     {
       title: `

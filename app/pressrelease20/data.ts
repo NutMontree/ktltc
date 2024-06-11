@@ -1,4 +1,4 @@
-export const DatatPressrelease20 = {
+export const DataPressrelease20 = {
   Item: [
     {
       title: `ขอเเสดงความยินดี เเละชื่นชม`,

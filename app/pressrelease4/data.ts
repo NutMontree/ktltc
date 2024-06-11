@@ -1,4 +1,4 @@
-export const DatatPressrelease4 = {
+export const DataPressrelease4 = {
   Item: [
     {
       title: "คณะผู้บริหาร วิทยาลัยเทคนิคกันทรลักษ์",

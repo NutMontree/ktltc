@@ -1,4 +1,4 @@
-export const DatatPressrelease11 = {
+export const DataPressrelease11 = {
   Item: [
     {
       title: `นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์

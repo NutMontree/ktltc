@@ -1,4 +1,4 @@
-export const DatatPressrelease7 = {
+export const DataPressrelease7 = {
   Item: [
     {
       title: "พบกับการเดินทางไกลของ🐯🐯กลุ่มลูกเสือ",

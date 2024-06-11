@@ -1,4 +1,4 @@
-export const DatatPressrelease16 = {
+export const DataPressrelease16 = {
   Item: [
     {
       title: `  กิจกรรมทำบุญตักบาตร วันครบรอบ ๑๑ ปี`,

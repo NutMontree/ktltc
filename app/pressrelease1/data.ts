@@ -1,4 +1,4 @@
-export const DatatPressrelease1 = {
+export const DataPressrelease1 = {
   Item: [
     {
       title: 'วิทยาลัยเทคนิคกันทรลักษ์',

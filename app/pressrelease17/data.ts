@@ -1,4 +1,4 @@
-export const DatatPressrelease17 = {
+export const DataPressrelease17 = {
   Item: [
     {
       title: `กิจกรรมการประกวดสิ่งประดิษฐ์ของคนรุ่นใหม่ ระดับสถานศึกษา`,

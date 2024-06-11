@@ -1,4 +1,4 @@
-export const DatatPressrelease25 = {
+export const DataPressrelease25 = {
   Item: [
     {
       title: `   ขอเเสดงความยินดีเป็นอย่างยิ่งกับนักเรียนนักศึกษา 

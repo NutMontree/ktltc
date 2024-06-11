@@ -1,4 +1,4 @@
-export const DatatPressrelease15 = {
+export const DataPressrelease15 = {
   Item: [
     {
       title: `กิจกรรมรอบกองไฟ🔥`,

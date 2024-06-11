@@ -1,4 +1,4 @@
-export const DatatPressrelease12 = {
+export const DataPressrelease12 = {
   Item: [
     {
       title: `พิธีถวายราชสดุดีพระบรมราชานุสรณ์ รัชการที่ ๖`,

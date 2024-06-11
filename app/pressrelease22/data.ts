@@ -1,4 +1,4 @@
-export const DatatPressrelease22 = {
+export const DataPressrelease22 = {
   Item: [
     {
       title: `ลูกเสือจิตอาสา`,

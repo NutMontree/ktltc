@@ -1,4 +1,4 @@
-export const DatatPressrelease10 = {
+export const DataPressrelease10 = {
   Item: [
     {
       title: `ค่ำคืนเเห่งความศักดิ์สิทธ์ครั้งนี้ กับกิจกรรม "ประดับแถบ 3 สี"

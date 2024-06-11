@@ -1,4 +1,4 @@
-export const DatatPressrelease14 = {
+export const DataPressrelease14 = {
   Item: [
     {
       title: `กิจกรรมเข้าฐานวิชาการ เเละฐานทดสอบกำลังใจ`,

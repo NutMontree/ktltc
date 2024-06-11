@@ -1,4 +1,4 @@
-export const DatatPressrelease23 = {
+export const DataPressrelease23 = {
   Item: [
     {
       title: `รูปถ่ายรับปริญญา`,

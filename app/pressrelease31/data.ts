@@ -1,4 +1,4 @@
-export const DatatPressrelease31 = {
+export const DataPressrelease31 = {
   Item: [
     {
       title: `

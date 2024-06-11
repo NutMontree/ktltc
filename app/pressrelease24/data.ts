@@ -1,4 +1,4 @@
-export const DatatPressrelease24 = {
+export const DataPressrelease24 = {
   Item: [
     {
       title: `๑ ธันวาคม ๒๕๖๖ เป็นวันคล้ายวันสิ้นพระชนม์

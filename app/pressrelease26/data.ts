@@ -1,4 +1,4 @@
-export const DatatPressrelease26 = {
+export const DataPressrelease26 = {
   Item: [
     {
       title: `วันคล้ายวันพระบรมราชสมภพ พระบาทสมเด็จพระบรมชนกาธิเบศร

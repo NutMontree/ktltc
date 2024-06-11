@@ -1,4 +1,4 @@
-export const DatatPressrelease21 = {
+export const DataPressrelease21 = {
   Item: [
     {
       title: ` โครงการพัฒนาศักยภาพสู่ความสำเร็จ`,

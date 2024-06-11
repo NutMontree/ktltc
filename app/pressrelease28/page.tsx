@@ -9,7 +9,7 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
-import { DatatPressrelease28 } from "./data";
+import { DataPressrelease28 } from "./data";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
 
@@ -31,14 +31,14 @@ export default function Pressrelease() {
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   <div>
-                    {DatatPressrelease28.Item.map((item) => (
+                    {DataPressrelease28.Item.map((item) => (
                       <div key={item.title}>{item.title}</div>
                     ))}
                   </div>
                 </ModalHeader>
                 <ModalBody>
                   <p>
-                    {DatatPressrelease28.Item.map((item) => (
+                    {DataPressrelease28.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
                         <div className="text-xs text-slate-500">
@@ -49,7 +49,7 @@ export default function Pressrelease() {
                   </p>
                   <div></div>
                   <div className="justify-center flex-col">
-                    {DatatPressrelease28.Item.map((item) => (
+                    {DataPressrelease28.Item.map((item) => (
                       <div
                         className="mb-4 group relative shadow-lg rounded-xl px-[144px] py-[144px]"
                         key={item.img1}
