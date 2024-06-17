@@ -49,7 +49,7 @@ export default function Pressrelease6611() {
           >
             {/* ดึงข้อมูลจากหน้า  DataPressRelease มาแสดงผลที่หน้า SwipperPressRelease*/}
             {DataPressrelease6611.navItems.map((item) => (
-              <SwiperSlide key={item.name[0]}>
+              <SwiperSlide key={item.name[1]}>
                 <NextLink key={item.href} href={item.href}>
                   <div className="mb-4 group relative shadow-lg text-white rounded-xl px-6 py-8  h-[150px] lg:h-[200px] lg:w-[full] overflow-hidden cursor-pointer lg:max-h-[180px]  h-24 min-h-0 hover:min-h-ful">
                     <div

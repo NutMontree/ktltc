@@ -1,5 +1,7 @@
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
+import NextLink from "next/link";
+
 export default function page() {
   return (
     <>
@@ -16,67 +18,73 @@ export default function page() {
             isFooterBlurred
             className="w-full h-[300px] col-span-12 sm:col-span-7"
           >
-            <CardHeader className="absolute z-10 top-1 flex-col items-start">
-              <p className="text-tiny uppercase font-bold">ข่าวประชาสัมพันธ์</p>
-              <h4 className=" font-medium text-xl">Press Release</h4>
-            </CardHeader>
-            <Image
-              removeWrapper
-              alt="Relaxing app background"
-              className="z-0 w-full h-full object-cover"
-              src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/67/41.webp"
-            />
-            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-              <div className="flex flex-grow gap-2 items-center">
-                <Image
-                  alt="Breathing app icon"
-                  className="rounded-full w-8  h-8 bg-black"
-                  src="/images/logo.png"
-                />
-                <div className="flex flex-col">
-                  <div className="text-tiny ">
-                    ข่าวประชาสัมพันธ์กิจกรรมต่าง
+            <NextLink href={"/pressrelease"}>
+              <CardHeader className="absolute z-10 top-1 flex-col items-start">
+                <p className="text-tiny uppercase font-bold">
+                  ข่าวประชาสัมพันธ์
+                </p>
+                <h4 className=" font-medium text-xl">Press Release</h4>
+              </CardHeader>
+              <Image
+                removeWrapper
+                alt="Relaxing app background"
+                className="z-0 w-full h-full object-cover"
+                src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/67/41.webp"
+              />
+              <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+                <div className="flex flex-grow gap-2 items-center">
+                  <Image
+                    alt="Breathing app icon"
+                    className="rounded-full w-8  h-8 bg-black"
+                    src="/images/logo.png"
+                  />
+                  <div className="flex flex-col">
                     <div className="text-tiny ">
-                      ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
+                      ข่าวประชาสัมพันธ์กิจกรรมต่าง
+                      <div className="text-tiny ">
+                        ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <Button radius="full" size="md">
-                <Link href="/pressrelease">ข้อมูลทั้งหมด</Link>
-              </Button>
-            </CardFooter>
+                <Button radius="full" size="md">
+                  <Link href="/pressrelease">ข้อมูลทั้งหมด</Link>
+                </Button>
+              </CardFooter>
+            </NextLink>
           </Card>
 
           <Card
             isFooterBlurred
             className="w-full h-[300px] col-span-12 sm:col-span-5"
           >
-            <CardHeader className="absolute z-10 top-1 flex-col items-start">
-              <p className="text-tiny  uppercase font-bold">จดหมายข่าว</p>
-              <h4 className="font-medium text-2xl">Newsletter</h4>
-            </CardHeader>
-            <Image
-              removeWrapper
-              alt="Card example background"
-              className="z-0 w-full h-full scale-125 -translate-y-6 object-cover"
-              src="/images/จดหมายข่าว/21.webp"
-            />
-            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-              <div className="flex flex-grow gap-2 items-center">
-                <div className="flex flex-col">
-                  <div className="text-tiny ">
-                    จดหมายข่าวต่าง
+            <NextLink href={"/newsletter"}>
+              <CardHeader className="absolute z-10 top-1 flex-col items-start">
+                <p className="text-tiny  uppercase font-bold">จดหมายข่าว</p>
+                <h4 className="font-medium text-2xl">Newsletter</h4>
+              </CardHeader>
+              <Image
+                removeWrapper
+                alt="Card example background"
+                className="z-0 w-full h-full scale-125 -translate-y-6 object-cover"
+                src="/images/จดหมายข่าว/21.webp"
+              />
+              <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+                <div className="flex flex-grow gap-2 items-center">
+                  <div className="flex flex-col">
                     <div className="text-tiny ">
-                      ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
+                      จดหมายข่าวต่าง
+                      <div className="text-tiny ">
+                        ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <Button radius="full" size="md">
-                <Link href="/newsletter">ข้อมูลทั้งหมด</Link>
-              </Button>
-            </CardFooter>
+                <Button radius="full" size="md">
+                  <Link href="/newsletter">ข้อมูลทั้งหมด</Link>
+                </Button>
+              </CardFooter>
+            </NextLink>
           </Card>
 
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
