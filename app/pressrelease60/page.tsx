@@ -50,12 +50,12 @@ export default function Pressrelease() {
                     ))}
                   </p>
                   <div>
-                    {/* <iframe
+                    <iframe
                       className="w-full aspect-video ..."
-                      src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/39/6.mp4"
-                    ></iframe> */}
+                      src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/41/1.mp4"
+                    ></iframe>
                   </div>
-                  <div className="justify-center flex-col">
+                  {/* <div className="justify-center flex-col">
                     {ImageItem.map((item) => (
                       <div
                         className="mb-4 group relative shadow-lg rounded-xl px-[144px] py-[144px]"
@@ -66,7 +66,7 @@ export default function Pressrelease() {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </div> */}
                 </ModalBody>
                 <ModalFooter>
                   <Button color="primary" onPress={onClose}>

@@ -15,5 +15,5 @@ export const DataPressrelease = {
 };
 
 export const ImageItem = [
-  { img: "/images/ข่าวประชาสัมพันธ์/2567/มกราคม/41/1.gif" },
+  { img: "/images/ข่าวประชาสัมพันธ์/2567/มกราคม/41/1.mp4" },
 ];
