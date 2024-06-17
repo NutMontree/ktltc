@@ -25,7 +25,7 @@ export default function Pressrelease() {
           isOpen={isOpen}
           onOpenChange={onOpenChange}
           scrollBehavior={"inside"}
-        >
+        >c
           <ModalContent>
             {(onClose) => (
               <>
