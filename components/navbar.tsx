@@ -53,7 +53,7 @@ export const Navbar = () => {
               href="http://ktltc.ac.th/"
             >
               <Logo />
-              <p className="font-bold text-inherit">KTLTC</p>
+              <div className="font-bold text-inherit">KTLTC</div>
             </NextLink>
 
             <ul className="hidden md:flex gap-6 justify-start ml-6">

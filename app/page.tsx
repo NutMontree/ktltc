@@ -20,9 +20,9 @@ export default function page() {
           >
             <NextLink href={"/pressrelease"}>
               <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                <p className="text-tiny uppercase font-bold">
+                <div className="text-tiny uppercase font-bold">
                   ข่าวประชาสัมพันธ์
-                </p>
+                </div>
                 <h4 className=" font-medium text-xl">Press Release</h4>
               </CardHeader>
               <Image
@@ -60,7 +60,7 @@ export default function page() {
           >
             <NextLink href={"/newsletter"}>
               <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                <p className="text-tiny  uppercase font-bold">จดหมายข่าว</p>
+                <div className="text-tiny  uppercase font-bold">จดหมายข่าว</div>
                 <h4 className="font-medium text-2xl">Newsletter</h4>
               </CardHeader>
               <Image
@@ -89,7 +89,7 @@ export default function page() {
 
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
             <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <p className="text-tiny  uppercase font-bold">ข่าวประกาศ</p>
+              <div className="text-tiny  uppercase font-bold">ข่าวประกาศ</div>
               <h4 className=" font-medium text-large">Announcement New</h4>
             </CardHeader>
             <Image
@@ -115,7 +115,9 @@ export default function page() {
 
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
             <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <p className="text-tiny  uppercase font-bold">ข่าวประกวดราคา</p>
+              <div className="text-tiny  uppercase font-bold">
+                ข่าวประกวดราคา
+              </div>
               <h4 className=" font-medium text-large">Bidding</h4>
             </CardHeader>
             <Image
@@ -141,7 +143,9 @@ export default function page() {
 
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
             <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <p className="text-tiny  uppercase font-bold">คำสั่งวิทยาลัย</p>
+              <div className="text-tiny  uppercase font-bold">
+                คำสั่งวิทยาลัย
+              </div>
               <h4 className=" font-medium text-large">
                 Technical college order
               </h4>
