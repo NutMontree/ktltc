@@ -38,13 +38,13 @@ export default function Pressrelease() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {Description.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
                       </div>
                     ))}
-                  </p>
+                  </div>
                   {DataDate.map((item) => (
                     <div key={item.date}>
                       <div className="text-xs text-slate-500">{item.date}</div>

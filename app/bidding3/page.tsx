@@ -39,11 +39,11 @@ export default function bidding3() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {dataBidding3.Image.map((item) => (
                       <div key={item.description}>{item.description}</div>
                     ))}
-                  </p>
+                  </div>
                   <div>
                     <Link
                       className="text-lg text-red-500"

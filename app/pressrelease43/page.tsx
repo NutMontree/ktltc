@@ -9,7 +9,7 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
-import {   DataPressrelease43 } from "./data";
+import { DataPressrelease43 } from "./data";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
 
@@ -37,18 +37,17 @@ export default function Pressrelease() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {DataPressrelease43.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
- 
- 
+
                         <div className="text-xs text-slate-500">
                           {item.date}
                         </div>
                       </div>
                     ))}
-                  </p>
+                  </div>
                   <div></div>
                   <div className="justify-center flex-col">
                     {DataPressrelease43.Item.map((item) => (
@@ -109,14 +108,14 @@ export default function Pressrelease() {
                           <Image src={item.img51} alt={""}></Image>
                           <Image src={item.img52} alt={""}></Image>
                           <Image src={item.img53} alt={""}></Image>
-                          <Image src={item.img54} alt={""}></Image> 
-                          <Image src={item.img55} alt={""}></Image> 
-                          <Image src={item.img56} alt={""}></Image> 
-                          <Image src={item.img57} alt={""}></Image> 
-                          <Image src={item.img58} alt={""}></Image> 
-                          <Image src={item.img59} alt={""}></Image> 
-                          <Image src={item.img60} alt={""}></Image> 
-                           </div>
+                          <Image src={item.img54} alt={""}></Image>
+                          <Image src={item.img55} alt={""}></Image>
+                          <Image src={item.img56} alt={""}></Image>
+                          <Image src={item.img57} alt={""}></Image>
+                          <Image src={item.img58} alt={""}></Image>
+                          <Image src={item.img59} alt={""}></Image>
+                          <Image src={item.img60} alt={""}></Image>
+                        </div>
                       </div>
                     ))}
                   </div>

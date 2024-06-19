@@ -59,7 +59,7 @@ export default function Announcement2566() {
                     <h1 className="text-lg lg:text-1xl text-sky-600  ">
                       {item.name}
                     </h1>
-                    <p className="text-sm  ">{item.description}</p>
+                    <div className="text-sm  ">{item.description}</div>{" "}
                   </div>
                 </NextLink>
               </SwiperSlide>

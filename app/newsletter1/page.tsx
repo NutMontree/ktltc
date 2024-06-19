@@ -38,7 +38,7 @@ export default function Newsletter1() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {dataNewsletter1.Image.map((item) => (
                       <div key={item.description1}>
                         {item.description1}
@@ -53,7 +53,7 @@ export default function Newsletter1() {
                         <br />
                       </div>
                     ))}
-                  </p>
+                  </div>
                   <div></div>
 
                   {dataNewsletter1.Image.map((item) => (

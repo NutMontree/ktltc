@@ -37,7 +37,7 @@ export default function Pressrelease() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {DataPressrelease37.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
@@ -132,7 +132,7 @@ export default function Pressrelease() {
                 15. นายเอกภักดิ์ รัตนะ นักศึกษา <br />
                 วิทยาลัยเทคนิคกันทรลักษ์ ขอให้นักเรียน -
                 นักศึกษาทุกคนประสบผลสำเร็จ{" "}
-              </p>
+              </div>
 
  
                         <div className="text-xs text-slate-500">
@@ -140,7 +140,7 @@ export default function Pressrelease() {
                         </div>
                       </div>
                     ))}
-                  </p>
+                  </div>
                   <div></div>
                   <div className="justify-center flex-col">
                     {DataPressrelease37.Item.map((item) => (

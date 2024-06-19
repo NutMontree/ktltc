@@ -38,11 +38,11 @@ export default function Newsletter18() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {dataNewsletter18.Image.map((item) => (
                       <div key={item.description}>{item.description}</div>
                     ))}
-                  </p>
+                  </div>
                   <div></div>
 
                   {dataNewsletter18.Image.map((item) => (

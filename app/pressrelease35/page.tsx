@@ -37,7 +37,7 @@ export default function Pressrelease() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {DataPressrelease35.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
@@ -46,7 +46,7 @@ export default function Pressrelease() {
                         </div>
                       </div>
                     ))}
-                  </p>
+                  </div>
                   <div></div>
                   <div className="justify-center flex-col">
                     {DataPressrelease35.Item.map((item) => (
@@ -84,7 +84,7 @@ export default function Pressrelease() {
                           <Image src={item.img27} alt={""}></Image>
                           <Image src={item.img28} alt={""}></Image>
                           <Image src={item.img29} alt={""}></Image>
-                         </div>
+                        </div>
                       </div>
                     ))}
                   </div>

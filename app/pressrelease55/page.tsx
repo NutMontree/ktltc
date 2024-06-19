@@ -25,7 +25,8 @@ export default function Pressrelease() {
           isOpen={isOpen}
           onOpenChange={onOpenChange}
           scrollBehavior={"inside"}
-        >c
+        >
+          c
           <ModalContent>
             {(onClose) => (
               <>
@@ -37,7 +38,7 @@ export default function Pressrelease() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {DataPressrelease.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
@@ -47,7 +48,7 @@ export default function Pressrelease() {
                         </div>
                       </div>
                     ))}
-                  </p>
+                  </div>
                   <div>
                     <iframe
                       className="w-full aspect-video ..."

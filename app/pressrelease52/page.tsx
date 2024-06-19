@@ -37,7 +37,7 @@ export default function Pressrelease() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {DataPressrelease51.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
@@ -47,7 +47,7 @@ export default function Pressrelease() {
                         </div>
                       </div>
                     ))}
-                  </p>
+                  </div>
                   <div>
                     <Link
                       className="text-lg text-sky-500"

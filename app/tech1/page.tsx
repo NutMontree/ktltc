@@ -38,11 +38,11 @@ export default function Tech1() {
                   </div>
                 </ModalHeader>
                 <ModalBody>
-                  <p>
+                  <div>
                     {dataTech1.Image.map((item) => (
                       <div key={item.description}>{item.description}</div>
                     ))}
-                  </p>
+                  </div>
                   <div>
                     <Link
                       className="text-lg text-red-500"
