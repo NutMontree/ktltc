@@ -14,7 +14,7 @@ import "swiper/css/pagination";
 import { FreeMode, Pagination } from "swiper/modules";
 
 // technicalcollegeorders
-import { DataPressrelease6701 } from "../data/data";
+import { DataPressrelease6701 } from "./data";
 
 import NextLink from "next/link";
 

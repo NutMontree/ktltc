@@ -1,6 +1,5 @@
-// Pressrelease2566
-import Pressrelease6611 from "./Pressrelease6611";
-import Pressrelease6612 from "./Pressrelease6612";
+import Pressrelease6611 from "../pressrelease6611/page";
+import Pressrelease6612 from "../pressrelease6612/page";
 
 export default function Pressrelease2566() {
   return (

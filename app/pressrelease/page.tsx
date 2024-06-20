@@ -1,6 +1,5 @@
-import Pressrelease2566 from "./Pressrelease2566/Pressrelease2566";
-import Pressrelease2567 from "./Pressrelease2567/Pressrelease2567";
-
+import Pressrelease2566 from "../Pressrelease2566/page";
+import Pressrelease2567 from "../Pressrelease2567/page";
 export default function PressReleasePage() {
   return (
     <>
@@ -10,8 +9,13 @@ export default function PressReleasePage() {
           Press Release Page
         </h1>
 
-        <Pressrelease2567 />
-        <Pressrelease2566 />
+        <div>
+          <Pressrelease2567 />
+        </div>
+
+        <div>
+          <Pressrelease2566 />
+        </div>
       </div>
     </>
   );
