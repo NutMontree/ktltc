@@ -51,9 +51,9 @@ export default function RootLayout({
             </main>
             <footer className="w-full py-3">
               <div className="flex justify-center">
-                <span className="text-default-600 text-xs">
+                <div className="text-default-600 text-xs">
                   copyright ©2023.
-                </span>
+                </div>
                 <div> </div>
                 <div className="text-xs text-cyan-700">
                   KTLTC / งานศูนย์ข้อมูลและสารสนเทศ

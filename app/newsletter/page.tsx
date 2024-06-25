@@ -1,7 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
 import React from "react";
-import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
-import Link from "next/link";
 import Newsletter2566 from "./Newsletter2566";
 
 export default function NewsletterPage() {
