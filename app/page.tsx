@@ -29,7 +29,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover"
-                src="/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/111/1.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/113/112.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
