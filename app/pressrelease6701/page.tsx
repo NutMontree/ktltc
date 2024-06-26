@@ -23,7 +23,7 @@ export default function Pressrelease6701() {
     <>
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
-          เดือน มกราคม
+          เดือน มกราคม 2567
         </h1>
 
         <div className="swiper-2556">

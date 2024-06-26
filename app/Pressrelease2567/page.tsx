@@ -1,5 +1,5 @@
-import Pressrelease6701 from "../pressrelease6701/page";
-import Pressrelease6702 from "../pressrelease6702/page";
+import Link from "next/link";
+import Pressrelease6703 from "../pressrelease6703/page";
 
 export default function Pressrelease2567() {
   return (
@@ -7,9 +7,21 @@ export default function Pressrelease2567() {
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">2567</h1>
       </div>
+      <Pressrelease6703 />
 
-      <Pressrelease6702 />
-      <Pressrelease6701 />
+      <Link
+        className="flex justify-center text-xl text-[#DAA520]"
+        href="/pressrelease6702"
+      >
+        เดือน กุมภาพันธ์ 2567
+      </Link>
+
+      <Link
+        className="flex justify-center text-xl text-[#DAA520]"
+        href="/pressrelease6701"
+      >
+        เดือน มกราคม 2567
+      </Link>
     </>
   );
 }

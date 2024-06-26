@@ -1,5 +1,4 @@
-import Pressrelease6611 from "../pressrelease6611/page";
-import Pressrelease6612 from "../pressrelease6612/page";
+import Link from "next/link";
 
 export default function Pressrelease2566() {
   return (
@@ -7,9 +6,19 @@ export default function Pressrelease2566() {
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">2566</h1>
       </div>
+      <Link
+        className="flex justify-center text-xl text-[#DAA520]"
+        href="/pressrelease6612"
+      >
+        เดือน ธันวาคม 2566
+      </Link>
 
-      <Pressrelease6612 />
-      <Pressrelease6611 />
+      <Link
+        className="flex justify-center text-xl text-[#DAA520]"
+        href="/pressrelease6611"
+      >
+        เดือน พฤศจิกายน 2566
+      </Link>
     </>
   );
 }
