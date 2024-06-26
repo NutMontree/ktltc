@@ -10,7 +10,8 @@
     "plugin:prettier/recommended",
     "plugin:react-hooks/recommended",
     "plugin:jsx-a11y/recommended",
-    "@j0hnm4r5/eslint-config"
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
   "plugins": [
     "react",
