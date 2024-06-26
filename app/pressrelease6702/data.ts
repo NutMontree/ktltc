@@ -2,7 +2,7 @@ export const DataPressrelease6702 = {
   navItems: [
     {
       name: `วันศุกร์ที่ 23 กุมภาพันธ์ 2567`,
-      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/101/1.gif",
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/101/2.jpg",
       description: `วิทยาลัยเทคนิคกันทรลักษ์ นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
       ...`,
       href: "/pressrelease128",
