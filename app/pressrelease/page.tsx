@@ -1,5 +1,9 @@
+"use client"; // top to the file
+
 import Pressrelease2566 from "../Pressrelease2566/page";
 import Pressrelease2567 from "../Pressrelease2567/page";
+
+import { Accordion, AccordionItem } from "@nextui-org/react";
 export default function PressReleasePage() {
   return (
     <>
@@ -8,14 +12,17 @@ export default function PressReleasePage() {
         <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
           Press Release Page
         </h1>
+      </div>
 
-        <div>
-          <Pressrelease2567 />
-        </div>
-
-        <div>
-          <Pressrelease2566 />
-        </div>
+      <div>
+        <Accordion isCompact>
+          <AccordionItem key="1" aria-label="Accordion 1" title="2567">
+            <Pressrelease2567 />
+          </AccordionItem>
+          <AccordionItem key="2" aria-label="Accordion 2" title="2566">
+            <Pressrelease2566 />
+          </AccordionItem>
+        </Accordion>
       </div>
     </>
   );

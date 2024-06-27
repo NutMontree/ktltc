@@ -1,5 +1,6 @@
 "use client"; // top to the file
 
+import PressReleasePage from "../pressrelease/page";
 // technicalcollegeorders
 import { DataPressrelease6702 } from "./data";
 
@@ -8,6 +9,8 @@ import NextLink from "next/link";
 export default function Pressrelease6702() {
   return (
     <>
+      <PressReleasePage />
+
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
           เดือน กุมภาพันธ์ 2567

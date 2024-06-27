@@ -36,6 +36,7 @@ module.exports = {
       base: ["16px", "24px"],
       lg: ["20px", "28px"],
       xl: ["24px", "32px"],
+      xxl: ["28px", "36px"],
     },
   },
   darkMode: "class",
