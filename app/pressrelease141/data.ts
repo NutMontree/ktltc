@@ -23,7 +23,7 @@ export const Description = [
   },
 ];
 
-export const DataDate = [{ date: `4 มีนาคม 2567` }];
+export const DataDate = [{ date: `5 มีนาคม 2567` }];
 
 export const ImageItem = [
   { img: "/images/ข่าวประชาสัมพันธ์/2567/มีนาคม/114/1.webp" },
