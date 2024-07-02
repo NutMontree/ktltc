@@ -41,25 +41,24 @@ export default function Tech2556() {
             }}
             freeMode={true}
             modules={[FreeMode, Pagination]}
-            className="max-w-[90%] lg:max-w-[80%] mySwiper" // min-w-[90%]
+            className="max-w-[90%] lg:max-w-[80%] mySwiper"
           >
-            {/* ดึงข้อมูลจากหน้า  DataPressRelease มาแสดงผลที่หน้า SwipperPressRelease*/}
             {dataTechnicalcollegeorders.navItems.map((item) => (
               <SwiperSlide key={item.name[0]}>
                 <NextLink key={item.href} href={item.href}>
                   <div className="mb-4 group relative shadow-lg text-white rounded-xl px-6 py-8  h-[150px] lg:h-[200px] lg:w-[full] overflow-hidden cursor-pointer lg:max-h-[180px]  h-24 min-h-0 hover:min-h-ful">
                     <div
-                      className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover" //    lg:max-h-[180px] sm:max-h-[110px] rounded-lg
+                      className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover"
                       style={{
                         backgroundImage: `url(${item.backgroundImage})`,
                       }}
                     />
                   </div>
                   <div className=" ">
-                    <h1 className="text-lg lg:text-1xl text-sky-600  ">
+                    <h1 className="text-lg lg:text-1xl text-sky-600">
                       {item.name}
                     </h1>
-                    <div className="text-sm  ">{item.description}</div>{" "}
+                    <div className="text-sm">{item.description}</div>
                   </div>
                 </NextLink>
               </SwiperSlide>

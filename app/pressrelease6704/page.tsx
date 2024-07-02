@@ -24,17 +24,17 @@ export default function Pressrelease6704() {
               <NextLink key={item.href} href={item.href}>
                 <div className="mb-2 group relative rounded-xlcursor-pointer min-h-52 hover:min-h-ful">
                   <div
-                    className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover scale-90  rounded-xl" //    lg:max-h-[180px] sm:max-h-[110px] rounded-lg
+                    className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover scale-90  rounded-xl" 
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
                   />
                 </div>
-                <div className=" ">
+                <div>
                   <h1 className="text-lg lg:text-1xl text-sky-600  ">
                     {item.name}
                   </h1>
-                  <div className="text-sm  ">{item.description}</div>
+                  <div className="text-sm">{item.description}</div>
                 </div>
               </NextLink>
             ))}

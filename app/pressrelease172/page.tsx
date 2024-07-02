@@ -1,9 +1,7 @@
 "use client"; // top to the file
-import React from "react";
 
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function Pressrelease() {
   return (
@@ -45,11 +43,11 @@ export default function Pressrelease() {
           ></iframe>
         </div> */}
 
-        <div className="flex justify-center ">
+        <div className="flex justify-center">
           <div className="w-fit mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
-                <div className=" scale-90  hover:scale-110 transition duration-500 rounded-full ">
+                <div className=" scale-90 hover:scale-110 transition duration-500 rounded-full ">
                   <Image src={item.img} alt={""}></Image>
                 </div>
               </div>

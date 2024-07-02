@@ -1,7 +1,6 @@
 "use client"; // top to the file
 
 import PressReleasePage from "../pressrelease/page";
-// technicalcollegeorders
 import { DataPressrelease6703 } from "./data";
 
 import NextLink from "next/link";

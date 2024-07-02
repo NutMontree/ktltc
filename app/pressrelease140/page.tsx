@@ -1,5 +1,4 @@
 "use client"; // top to the file
-import React from "react";
 
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
@@ -46,12 +45,6 @@ export default function Pressrelease() {
             </div>
           ))}
         </div>
-        {/* <div className="iframe">
-          <iframe
-            className="w-full aspect-video ..."
-            src="/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/110/2.mp4"
-          ></iframe>
-        </div> */}
 
         <div className="flex justify-center ">
           <div className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center ">

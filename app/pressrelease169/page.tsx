@@ -1,9 +1,7 @@
 "use client"; // top to the file
-import React from "react";
 
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function Pressrelease() {
   return (

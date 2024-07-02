@@ -1,19 +1,5 @@
-// Pressrelease6612
 "use client"; // top to the file
-// หน้าหลัก ข่าวประชาสัมพันธ์
 
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/pagination";
-
-// import required modules
-import { FreeMode, Pagination } from "swiper/modules";
-
-// technicalcollegeorders
 import { DataPressrelease6612 } from "./data";
 
 import NextLink from "next/link";

@@ -37,19 +37,18 @@ export default function RootLayout({
       <head />
       <body className={clsx(" ", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className=" ">
+          <div>
             <Navbar />
             <Danger />
-            <main className=" ">
+            <main>
               {children}
               <SpeedInsights />
             </main>
-            <footer className="w-full py-3">
+            <div className="w-full py-3">
               <div className="flex justify-center">
                 <div className="text-default-600 text-xs">
                   copyright ©2023.
                 </div>
-                <div> </div>
                 <div className="text-xs text-cyan-700">
                   KTLTC / งานศูนย์ข้อมูลและสารสนเทศ
                 </div>
@@ -62,7 +61,7 @@ export default function RootLayout({
               >
                 <div className="text-xs">Designed By All M Min</div>
               </Link>
-            </footer>
+            </div>
           </div>
         </Providers>
       </body>

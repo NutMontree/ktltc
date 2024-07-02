@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/alt-text */
 "use client"; // top to the file
 import React from "react";
 import {

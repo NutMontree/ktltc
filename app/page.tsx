@@ -172,10 +172,6 @@ export default function page() {
           </Card>
         </div>
       </div>
-      {/* <TestPage /> */}
-
-      {/* <ModalPage />
-      <Swiper /> */}
     </>
   );
 }
