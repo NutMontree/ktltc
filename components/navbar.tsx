@@ -29,11 +29,7 @@ export const Navbar = () => {
         inputWrapper: "bg-default-100",
         input: "text-sm",
       }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
+      endContent={<Kbd keys={["command"]}>K</Kbd>}
       labelPlacement="outside"
       placeholder="Search..."
       startContent={
@@ -47,7 +43,7 @@ export const Navbar = () => {
     <>
       <NextUINavbar maxWidth="xl" position="sticky">
         <NavbarContent className="basis-1/5 " justify="start">
-          <NavbarBrand as="li" className=" ">
+          <NavbarBrand>
             <NextLink
               className="flex justify-start items-center gap-1"
               href="http://ktltc.ac.th/"
@@ -75,7 +71,7 @@ export const Navbar = () => {
           </NavbarBrand>
         </NavbarContent>
 
-        <NavbarContent className="" justify="end">
+        <NavbarContent justify="end">
           <ThemeSwitch />
           <Button
             isExternal
@@ -90,9 +86,9 @@ export const Navbar = () => {
           <NavbarMenuToggle />
         </NavbarContent>
 
-        <NavbarMenu>
+        <NavbarMenu >
           {searchInput}
-          <div className="mx-4 mt-2 flex flex-col gap-2">
+          <div className="mx-25 mt-2 flex flex-col gap-2 ">
             {siteConfig.navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
                 <NextLink
@@ -100,8 +96,8 @@ export const Navbar = () => {
                     index === 0
                       ? "primary"
                       : index === siteConfig.navMenuItems.length - 5
-                      ? "danger"
-                      : "foreground"
+                        ? "danger"
+                        : "foreground"
                   }
                   href={item.href}
                 >

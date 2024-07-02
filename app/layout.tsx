@@ -35,17 +35,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body
-        className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
+      <body className={clsx(" ", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col h-screen">
+          <div className=" ">
             <Navbar />
             <Danger />
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+            <main className=" ">
               {children}
               <SpeedInsights />
             </main>
