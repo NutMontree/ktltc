@@ -19,12 +19,12 @@ export default function Pressrelease6703() {
 
       <div className="2557">
         <div className="flex justify-center pt-4">
-          <div className="grid grid-rows-2 gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3  justify-items-center justify-center ">
+          <div className="grid grid-rows-4 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
             {DataPressrelease6703.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
                 <div className="mb-2 group relative rounded-xlcursor-pointer min-h-52 hover:min-h-ful">
                   <div
-                    className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover scale-90  rounded-xl" //    lg:max-h-[180px] sm:max-h-[110px] rounded-lg
+                    className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover scale-90  rounded-xl"
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
