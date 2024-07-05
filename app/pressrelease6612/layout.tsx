@@ -3,5 +3,9 @@ export default function PressReleaseLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <section>{children}</section>;
+  return (
+    <section>
+      <div className="px-8 py-8">{children}</div>
+    </section>
+  );
 }
