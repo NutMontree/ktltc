@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
+
 
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -50,20 +50,6 @@ export default function Pressrelease() {
                       <div className="text-xs text-slate-500">{item.date}</div>
                     </div>
                   ))}
-                  <div>
-                    {/* <Link
-                      className="text-lg text-sky-500"
-                      href="https://forms.gle/oBfcSbV3so6Ks5w59"
-                    >
-                      รูปภาพเพิ่มเติม
-                    </Link> */}
-                  </div>
-                  <div>
-                    {/* <iframe
-                      className="w-full aspect-video ..."
-                      src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/57/4.mp4"
-                    ></iframe> */}
-                  </div>
                   <div className="justify-center flex-col">
                     {ImageItem.map((item) => (
                       <div

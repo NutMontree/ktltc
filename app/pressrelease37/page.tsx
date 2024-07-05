@@ -11,7 +11,6 @@ import {
 } from "@nextui-org/react";
 import { DataPressrelease37 } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -41,7 +40,7 @@ export default function Pressrelease() {
                     {DataPressrelease37.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
-                        <p className="text-xs">
+                        <div className="text-xs">
                           🥈รางวัลรองชนะเลิศอันดับ 1 จำนวน ดังนี้ <br />
                           ประเภทที่ 1
                           สิ่งประดิษฐ์ด้านนวัตกรรมและเทคโนโลยีการเกษตร
@@ -134,8 +133,8 @@ export default function Pressrelease() {
                           14. นางสาวกิตตินันท์ คำภาชีพ นักศึกษา <br />
                           15. นายเอกภักดิ์ รัตนะ นักศึกษา <br />
                           วิทยาลัยเทคนิคกันทรลักษ์ ขอให้นักเรียน -
-                          นักศึกษาทุกคนประสบผลสำเร็จ{" "}
-                        </p>
+                          นักศึกษาทุกคนประสบผลสำเร็จ
+                        </div>
 
                         <div className="text-xs text-slate-500">
                           {item.date}
@@ -143,7 +142,7 @@ export default function Pressrelease() {
                       </div>
                     ))}
                   </div>
-                  <div></div>
+
                   <div className="justify-center flex-col">
                     {DataPressrelease37.Item.map((item) => (
                       <div

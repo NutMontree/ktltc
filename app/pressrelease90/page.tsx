@@ -59,12 +59,6 @@ export default function Pressrelease() {
                       ลิ้งค์สมัคร
                     </Link>
                   </div>
-                  <div>
-                    {/* <iframe
-                      className="w-full aspect-video ..."
-                      src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/57/4.mp4"
-                    ></iframe> */}
-                  </div>
                   <div className="justify-center flex-col">
                     {ImageItem.map((item) => (
                       <div

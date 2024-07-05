@@ -11,7 +11,6 @@ import {
 } from "@nextui-org/react";
 import { DataPressrelease, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -26,7 +25,7 @@ export default function Pressrelease() {
           onOpenChange={onOpenChange}
           scrollBehavior={"inside"}
         >
-          c
+          
           <ModalContent>
             {(onClose) => (
               <>
@@ -48,12 +47,6 @@ export default function Pressrelease() {
                         </div>
                       </div>
                     ))}
-                  </div>
-                  <div>
-                    {/* <iframe
-                      className="w-full aspect-video ..."
-                      src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/41/3.mp4"
-                    ></iframe> */}
                   </div>
                   <div className="justify-center flex-col">
                     {ImageItem.map((item) => (

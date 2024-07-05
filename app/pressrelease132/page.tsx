@@ -47,12 +47,6 @@ export default function Pressrelease() {
             สามารถกดเข้าไปในลิ้งค์ได้ที่นี่
           </Link>
         </div>
-        {/* <div className="iframe">
-          <iframe
-            className="w-full aspect-video ..."
-            src="/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/101/1.mp4"
-          ></iframe>
-        </div> */}
         <div className="date">
           {DataDate.map((item) => (
             <div key={item.date}>

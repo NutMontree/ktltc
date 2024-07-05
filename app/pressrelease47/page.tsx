@@ -41,14 +41,12 @@ export default function Pressrelease() {
                     {DataPressrelease47.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
-
                         <div className="text-xs text-slate-500">
                           {item.date}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div></div>
                   <div className="justify-center flex-col">
                     {DataPressrelease47.Item.map((item) => (
                       <div

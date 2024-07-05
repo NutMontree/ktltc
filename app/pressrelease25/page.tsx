@@ -11,7 +11,6 @@ import {
 } from "@nextui-org/react";
 import { DataPressrelease25 } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -41,13 +40,10 @@ export default function Pressrelease() {
                     {DataPressrelease25.Item.map((item) => (
                       <div key={item.description}>
                         <div>{item.description}</div>
-                        <div className="text-xs text-slate-500">
-                          {/* {item.date} */}
-                        </div>
                       </div>
                     ))}
                   </div>
-                  <div></div>
+                  
                   <div className="justify-center flex-col">
                     {DataPressrelease25.Item.map((item) => (
                       <div

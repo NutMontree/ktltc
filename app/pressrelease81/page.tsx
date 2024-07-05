@@ -10,8 +10,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
-import { Image } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -51,31 +49,11 @@ export default function Pressrelease() {
                     </div>
                   ))}
                   <div>
-                    {/* <Link
-                      className="text-lg text-sky-500"
-                      href="https://drive.google.com/drive/folders/1DOCOly_wqOFXMdkHZpv5C2YR4GDZIMop?fbclid=IwAR0TLCxbV00zfjT1Kv3wAjQOHGRnLLYP9MYI8eknJh80n6xdPf8_OfLeMwI"
-                    >
-                      รูปภาพเพิ่มเติม
-                    </Link> */}
-                  </div>
-                  <div>
                     <iframe
                       className="w-full aspect-video ..."
                       src="/images/ข่าวประชาสัมพันธ์/2567/มกราคม/57/1.mp4"
-                    ></iframe>
+                    />
                   </div>
-                  {/* <div className="justify-center flex-col">
-                    {ImageItem.map((item) => (
-                      <div
-                        className="mb-4 group relative shadow-lg rounded-xl px-[144px] py-[144px]"
-                        key={item.img}
-                      >
-                        <div className="absolute inset-0 bg-cover bg-center rounded-xl hover:scale-110 transition duration-500 cursor-pointer object-cover">
-                          <Image src={item.img} alt={""}></Image>
-                        </div>
-                      </div>
-                    ))}
-                  </div> */}
                 </ModalBody>
                 <ModalFooter>
                   <Button color="primary" onPress={onClose}>

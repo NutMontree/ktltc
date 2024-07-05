@@ -3,7 +3,6 @@ import React from "react";
 
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
 
 export default function Pressrelease() {
   return (
@@ -21,26 +20,6 @@ export default function Pressrelease() {
             </div>
           ))}
         </div>
-
-        {/* <div className="link">
-          👉ทั้งนี้ ศิษย์เก่า ศิษย์ปัจจุบัน ผู้ที่สนใจเสื้อ
-          เเละของที่ระลึกครบรอบ 30 ปี แห่งการสถาปนาสถาบัน
-          วิทยาลัยเทคนิคกันทรลักษ์
-          <br />
-          <Link
-            className="text-lg text-sky-500"
-            href="https://l.facebook.com/l.php?u=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdYKPN5JE0DBs7FEfkCLMXkWd3SFfpyFvAlr0zxFoSIDQl2pw%2Fviewform%3Ffbclid%3DIwZXh0bgNhZW0CMTAAAR0Za4t3iCS0NW3Y4yWwod7QNtQOYm54HY_GnZSinjzYrVD97BjucaElLNg_aem_oLumPUPYyDs0meDaC5cT_Q&h=AT3N0UMG9sfbEi75YQ_NV89-SBegkE9qQyZc9xxA9HOUDucM5gdRXJnjvLl_m4HgDAGddd3DsBqd6cUcB1kl4VQaxeWYgSmuvjlDe830QJfXS7uRCMRG1H82zKZ_It1f_li_&__tn__=-UK-R&c[0]=AT2uQ0jTHhxjxXNatHfNaFfJTS0dzTCdXTZ_Wik30Oe7Zas0UnsGQO2uhB_zi9BGVm7ceiUlUiCdAAJ5DG3Arq0SgawVhgCof38nFXwKY_9ZT1W7ZtqTQ9CSulQMgdp9MiZKaoDgV8WefwPkVm_asa9_KLlTcn-4t1Nex1wAkI-CeqxjBDLd"
-          >
-            สามารถสั่งซื้อได้ที่นี่
-          </Link>
-        </div> */}
-
-        {/* <div className="iframe">
-          <iframe
-            className="w-full aspect-video ..."
-            src="/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/101/1.mp4"
-          ></iframe>
-        </div> */}
         <div className="date">
           {DataDate.map((item) => (
             <div key={item.date}>

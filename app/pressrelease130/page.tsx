@@ -35,10 +35,6 @@ export default function Pressrelease() {
           </Link>
         </div>
         <div>
-          {/* <iframe
-            className="w-full aspect-video ..."
-            src="/images/ข่าวประชาสัมพันธ์/2567/กุมภาพันธ์/101/1.mp4"
-          ></iframe> */}
         </div>
         <div className="flex justify-center ">
           <div className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center ">

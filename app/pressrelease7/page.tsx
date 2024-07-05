@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable jsx-a11y/alt-text */
+
 "use client"; // top to the file
 import React from "react";
 import {
@@ -50,7 +49,6 @@ export default function Pressrelease() {
                     ))}
                   </div>
                   <div>
-                    {" "}
                     <Link
                       className="text-lg"
                       href="https://drive.google.com/drive/folders/1P2p88Nc3wuFCpev_ALRM3DRZq1t7iJDz"

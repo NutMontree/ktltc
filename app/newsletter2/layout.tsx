@@ -1,4 +1,4 @@
-// announcement
+
 export default function Newsletter2Layout({
   children,
 }: {

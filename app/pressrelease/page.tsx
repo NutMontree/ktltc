@@ -17,10 +17,18 @@ export default function PressReleasePage() {
       </div>
       <div>
         <Accordion isCompact>
-          <AccordionItem key="1" aria-label="Accordion 1" title="2567">
+          <AccordionItem
+            key="1"
+            aria-label="Accordion 1"
+            title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2567"
+          >
             <Pressrelease2567 />
           </AccordionItem>
-          <AccordionItem key="2" aria-label="Accordion 2" title="2566">
+          <AccordionItem
+            key="2"
+            aria-label="Accordion 2"
+            title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2566"
+          >
             <Pressrelease2566 />
           </AccordionItem>
         </Accordion>

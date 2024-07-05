@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable jsx-a11y/alt-text */
+
 "use client"; // top to the file
 import React from "react";
 import {
@@ -48,7 +47,6 @@ export default function Pressrelease() {
                       </div>
                     ))}
                   </div>
-                  <div></div>
 
                   <div className="justify-center flex-col">
                     {DataPressrelease5.Item.map((item) => (

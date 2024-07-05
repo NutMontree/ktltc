@@ -47,7 +47,7 @@ export default function Pressrelease() {
                       </div>
                     ))}
                   </div>
-                  <div></div>
+                 
                   <div className="justify-center flex-col">
                     {DataPressrelease22.Item.map((item) => (
                       <div

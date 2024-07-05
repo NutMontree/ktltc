@@ -11,8 +11,6 @@ import {
 } from "@nextui-org/react";
 import { DataPressrelease39 } from "./data";
 import { Image } from "@nextui-org/react";
-import Link from "next/link";
-
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [scrollBehavior, setScrollBehavior] = React.useState("inside");
@@ -47,7 +45,7 @@ export default function Pressrelease() {
                       </div>
                     ))}
                   </div>
-                  <div></div>
+
                   <div className="justify-center flex-col">
                     {DataPressrelease39.Item.map((item) => (
                       <div

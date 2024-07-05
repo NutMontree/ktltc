@@ -1,8 +1,7 @@
-// announcement
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <section className=" ">
-      <div className=" ">{children}</div>
+    <section>
+      <div className="px-8 py-8">{children}</div>
     </section>
   );
 }

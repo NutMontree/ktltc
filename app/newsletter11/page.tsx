@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable jsx-a11y/alt-text */
 "use client"; // top to the file
 import React from "react";
 import {
@@ -41,11 +39,12 @@ export default function Newsletter11() {
                   <div>
                     {dataNewsletter11.Image.map((item) => (
                       <div key={item.description1}>
-                        {item.description1} <br /> {item.descriptiom2}
+                        {item.description1}
+                        <br />
+                        {item.descriptiom2}
                       </div>
                     ))}
                   </div>
-                  <div></div>
 
                   {dataNewsletter11.Image.map((item) => (
                     <div key={item.backgroundImage}>

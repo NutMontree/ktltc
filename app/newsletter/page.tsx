@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
+
 import React from "react";
 import Newsletter2566 from "./Newsletter2566";
 

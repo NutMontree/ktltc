@@ -48,7 +48,6 @@ export default function Pressrelease() {
                       </div>
                     ))}
                   </div>
-                  <div></div>
                   <div className="justify-center flex-col">
                     {DataPressrelease48.Item.map((item) => (
                       <div
