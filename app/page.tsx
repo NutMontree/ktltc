@@ -1,7 +1,8 @@
+"use client";
+
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
 import NextLink from "next/link";
-
 export default function page() {
   return (
     <>
