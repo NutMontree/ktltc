@@ -7,6 +7,13 @@ export default function Pressrelease2567() {
       <div className="gap-2 grid">
         <div>
           <Button color="primary" variant="ghost">
+            <Link className="text-lg" href="/pressrelease6705">
+              เดือน พฤษภาคม 2567
+            </Link>
+          </Button>
+        </div>
+        <div>
+          <Button color="primary" variant="ghost">
             <Link className="text-lg" href="/pressrelease6704">
               เดือน เมษายน 2567
             </Link>
