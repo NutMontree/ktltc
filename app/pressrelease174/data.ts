@@ -15,13 +15,13 @@ export const Description = [
   `,
   },
   {
-    description: ` 
+    description: ` 😄ยิ้ม ไหว้ เเต่งกายดี รู้จักสวัสดี ขอบคุณ เเละขอโทษ 😄
   `,
   },
 ];
 
-export const DataDate = [{ date: `5 เมษายน 2567` }];
+export const DataDate = [{ date: `9 เมษายน 2567` }];
 
 export const ImageItem = [
-  { img: "/images/ข่าวประชาสัมพันธ์/2567/เมษายน/146/1.webp" },
+  { img: "/images/ข่าวประชาสัมพันธ์/2567/เมษายน/147/1.webp" },
 ];
