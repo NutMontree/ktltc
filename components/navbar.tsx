@@ -86,12 +86,12 @@ export const Navbar = () => {
           <NavbarMenuToggle />
         </NavbarContent>
 
-        <NavbarMenu >
+        <NavbarMenu>
           {searchInput}
           <div className="mx-25 mt-2 flex flex-col gap-2 ">
             {siteConfig.navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
-                <NextLink
+                <Link
                   color={
                     index === 0
                       ? "primary"
@@ -102,7 +102,7 @@ export const Navbar = () => {
                   href={item.href}
                 >
                   {item.label}
-                </NextLink>
+                </Link>
               </NavbarMenuItem>
             ))}
           </div>
