@@ -4,7 +4,7 @@ export default function BiddingPage() {
   return (
     <>
       <div>
-        <h1 className="flex justify-center text-xl ">ข่าวประกวดราคา</h1>
+        <h1 className="flex justify-center text-xl pt-8">ข่าวประกวดราคา</h1>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
           Bidding Page
         </h1>

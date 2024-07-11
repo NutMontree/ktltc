@@ -6,7 +6,7 @@ import NextLink from "next/link";
 export default function page() {
   return (
     <>
-      <div>
+      <div className="pt-8">
         <h1 className="flex justify-center text-xl">หน้าหลัก</h1>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
           คลังข้อมูลวิทยาลัยเทคนิคกันทรลักษ์
@@ -30,7 +30,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover absolute "
-                src="/images/ข่าวประชาสัมพันธ์/2567/พฤษภาคม/183/03.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/พฤษภาคม/196/1.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
