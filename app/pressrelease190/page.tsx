@@ -21,14 +21,14 @@ export default function Pressrelease() {
         </div>
         <div className="text-xs">
           <p>👉 ช่องทางการติดต่อ</p>
-          <p>FACEBOOK : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
+          <p>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
           <p>
-            เพจFACEBOOK : วิทยาลัยเทคนิคกันทรลักษ์ เเละ วิทยาลัยเทคนิคกันทรลักษ์
-            Today
+            เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ
+            วิทยาลัยเทคนิคกันทรลักษ์ Today
           </p>
-          <p>YOUTUBE : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
-          <p>WEBSITE : www.ktltc.ac.th</p>
-          <p>GMAIL : ktl11022021@gmail.com</p>
+          <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
+          <p>Website : www.ktltc.ac.th</p>
+          <p>Gmail : ktl11022021@gmail.com</p>
           <p>สอบถามข้อมูลเพิ่มเติม</p>
           <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๗๕๓ </p>
           <p>โทร : 061-4122765 หรือ 045-811753</p>
