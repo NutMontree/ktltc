@@ -5,7 +5,7 @@ import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import clsx from "clsx";
-import Danger from "@/components/danger";
+// import Danger from "@/components/danger";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./Footer/page";
 
@@ -39,7 +39,7 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div>
             <Navbar />
-            <Danger />
+            {/* <Danger /> */}
             <main>
               {children}
               <SpeedInsights />

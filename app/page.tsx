@@ -3,6 +3,8 @@
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
 import NextLink from "next/link";
+import { DataPressrelease6707 } from "./pressrelease6707/data";
+
 export default function page() {
   return (
     <>
@@ -30,7 +32,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover absolute "
-                src="/images/ข่าวประชาสัมพันธ์/2567/มิถุนายน/48/01.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/13/25.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
