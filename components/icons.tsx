@@ -7,7 +7,7 @@ export const Logo: React.FC<IconSvgProps> = ({
   width,
   height,
   ...props
-}) => <Avatar src="/images/logo.png" size="md" alt="My Logo" />;
+}) => <Avatar src="/images/logo.webp" size="md" alt="My Logo" />;
 
 export const DiscordIcon: React.FC<IconSvgProps> = ({
   size = 24,

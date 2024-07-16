@@ -3,7 +3,6 @@
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
 import NextLink from "next/link";
-import { DataPressrelease6707 } from "./pressrelease6707/data";
 
 export default function page() {
   return (
@@ -39,7 +38,7 @@ export default function page() {
                   <Image
                     alt="Breathing app icon"
                     className="rounded-full w-8  h-8 bg-black"
-                    src="/images/logo.png"
+                    src="/images/logo.webp"
                   />
                   <div className="flex flex-col">
                     <div className="text-tiny ">

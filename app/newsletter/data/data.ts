@@ -28,7 +28,7 @@ export const dataNewsletter = {
     },
     {
       name: `เมื่อ วันที่ 25 ธันวาคม 2566 `,
-      backgroundImage: "/images/จดหมายข่าว/16.webp",
+      backgroundImage: "/images/จดหมายข่าว/21/16.webp",
       description: `นำโดย นางสาวทักษิณา ชม...`,
       href: "newsletter16",
     },
