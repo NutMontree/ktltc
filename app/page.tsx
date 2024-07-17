@@ -63,13 +63,12 @@ export default function page() {
             <NextLink href={"/newsletter"}>
               <CardHeader className="absolute z-10 top-1 flex-col items-start">
                 <div className="text-tiny  uppercase font-bold">จดหมายข่าว</div>
-                <h4 className="font-medium text-2xl">Newsletter</h4>
+                <h4 className="font-medium text-xl">Newsletter</h4>
               </CardHeader>
               <Image
                 removeWrapper
                 alt="Card example background"
-                className="z-0 w-full h-full scale-125 -translate-y-6  "
-                src="/images/จดหมายข่าว/21.webp"
+                src="/images/จดหมายข่าว/2567/มกราคม/2/1.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
@@ -90,87 +89,100 @@ export default function page() {
           </Card>
 
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
-            <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <div className="text-tiny  uppercase font-bold">ข่าวประกาศ</div>
-              <h4 className=" font-medium text-large">Announcement New</h4>
-            </CardHeader>
-            <Image
-              removeWrapper
-              alt="Card background"
-              className="z-0 w-full h-full object-cover"
-              src="/images/ข่าวประกาศ/na7.webp"
-            />
-            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-              <div className="flex flex-grow gap-2 items-center">
-                <div className="flex flex-col">
-                  <div className="text-tiny ">
-                    ข่าวประกาศ
-                    <div className="text-tiny ">ในวิทยาลัยเทคนิคกันทรลักษ์</div>
+            <NextLink href={"/announcement"}>
+              <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+                <div className="text-tiny  uppercase font-bold">ข่าวประกาศ</div>
+                <h4 className=" font-medium text-large">Announcement New</h4>
+              </CardHeader>
+              <Image
+                removeWrapper
+                alt="Card background"
+                className="z-0 w-full h-full object-cover absolute"
+                src="/images/ข่าวประกาศ/na7.webp"
+              />
+              <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+                <div className="flex flex-grow gap-2 items-center">
+                  <div className="flex flex-col">
+                    <div className="text-tiny ">
+                      ข่าวประกาศ
+                      <div className="text-tiny ">
+                        ในวิทยาลัยเทคนิคกันทรลักษ์
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <Button radius="full" size="md">
-                <Link href="/announcement">เพิ่มเติม</Link>
-              </Button>
-            </CardFooter>
+                <Button radius="full" size="md">
+                  <Link href="/announcement">เพิ่มเติม</Link>
+                </Button>
+              </CardFooter>
+            </NextLink>
           </Card>
 
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
-            <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <div className="text-tiny  uppercase font-bold">
-                ข่าวประกวดราคา
-              </div>
-              <h4 className=" font-medium text-large">Bidding</h4>
-            </CardHeader>
-            <Image
-              removeWrapper
-              alt="Card background"
-              className="z-0 w-full h-full object-cover"
-              src="/images/ข่าวประกวดราคา/na2.webp"
-            />
-            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-              <div className="flex flex-grow gap-2 items-center">
-                <div className="flex flex-col">
-                  <div className="text-tiny ">
-                    ข่าวประกวดราคา
-                    <div className="text-tiny ">ในวิทยาลัยเทคนิคกันทรลักษ์</div>
+            <NextLink href={"/bidding"}>
+              <CardHeader className="absolute z-10 top-1 flex-col items-start">
+                <div className="text-tiny uppercase font-bold">
+                  ข่าวประกวดราคา
+                </div>
+                <h4 className=" font-medium text-large">Bidding</h4>
+              </CardHeader>
+
+              <Image
+                removeWrapper
+                alt="Relaxing app background"
+                className="z-0 w-full h-full object-cover absolute"
+                src="/images/ข่าวประกวดราคา/na2.webp"
+              />
+              <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+                <div className="flex flex-grow gap-2 items-center">
+                  <div className="flex flex-col">
+                    <div className="text-tiny ">
+                      ข่าวประกวดราคา
+                      <div className="text-tiny ">
+                        ในวิทยาลัยเทคนิคกันทรลักษ์
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <Button radius="full" size="md">
-                <Link href="/bidding">เพิ่มเติม</Link>
-              </Button>
-            </CardFooter>
+                <Button radius="full" size="md">
+                  <Link href="/bidding">เพิ่มเติม</Link>
+                </Button>
+              </CardFooter>
+            </NextLink>
           </Card>
 
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
-            <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <div className="text-tiny  uppercase font-bold">
-                คำสั่งวิทยาลัย
-              </div>
-              <h4 className=" font-medium text-large">
-                Technical college order
-              </h4>
-            </CardHeader>
-            <Image
-              removeWrapper
-              alt="Card background"
-              className="z-0 w-full h-full object-cover"
-              src="/images/คำสั่งวิทยาลัย/na1.webp"
-            />
-            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-              <div className="flex flex-grow gap-2 items-center">
-                <div className="flex flex-col">
-                  <div className="text-tiny ">
-                    คำสั่งวิทยาลัย
-                    <div className="text-tiny ">ในวิทยาลัยเทคนิคกันทรลักษ์</div>
+            <NextLink href={"/technicalcollegeorders"}>
+              <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+                <div className="text-tiny  uppercase font-bold">
+                  คำสั่งวิทยาลัย
+                </div>
+                <h4 className=" font-medium text-large">
+                  Technical college order
+                </h4>
+              </CardHeader>
+              <Image
+                removeWrapper
+                alt="Card background"
+                className="z-0 w-full h-full object-cover absolute"
+                src="/images/คำสั่งวิทยาลัย/na1.webp"
+              />
+              <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+                <div className="flex flex-grow gap-2 items-center">
+                  <div className="flex flex-col">
+                    <div className="text-tiny ">
+                      คำสั่งวิทยาลัย
+                      <div className="text-tiny ">
+                        ในวิทยาลัยเทคนิคกันทรลักษ์
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <Button radius="full" size="md">
-                <Link href="/technicalcollegeorders">เพิ่มเติม</Link>
-              </Button>
-            </CardFooter>
+                <Button radius="full" size="md">
+                  <Link href="/technicalcollegeorders">เพิ่มเติม</Link>
+                </Button>
+              </CardFooter>
+            </NextLink>
           </Card>
         </div>
       </div>

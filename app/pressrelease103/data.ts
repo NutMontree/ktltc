@@ -2,7 +2,7 @@ export const DataPressrelease = {
   Item: [
     {
       title: `
-นที่ 31 มกราคม 2567      `,
+วันที่ 31 มกราคม 2567      `,
     },
   ],
 };

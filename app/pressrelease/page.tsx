@@ -1,10 +1,9 @@
 "use client"; // top to the file
 
+import { Accordion, AccordionItem } from "@nextui-org/react";
+
 import Pressrelease2566 from "../Pressrelease2566/page";
 import Pressrelease2567 from "../Pressrelease2567/page";
-
-import { Accordion, AccordionItem } from "@nextui-org/react";
-import Pressrelease6703 from "../pressrelease6703/page";
 
 export default function PressReleasePage() {
   return (
@@ -15,9 +14,10 @@ export default function PressReleasePage() {
           Press Release Page
         </h1>
       </div>
+
       <div>
         <Accordion isCompact>
-          <AccordionItem
+          <AccordionItem 
             key="1"
             aria-label="Accordion 1"
             title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2567"

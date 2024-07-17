@@ -16,7 +16,7 @@ export default function Pressrelease6701() {
         </h1>
       </div>
 
-      <div className="2556">
+      <div className="2567">
         <div className="flex justify-center pt-4">
           <div className="grid grid-rows-4 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center justify-center ">
             {DataPressrelease6701.navItems.map((item) => (

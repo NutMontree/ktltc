@@ -1,64 +1,41 @@
 "use client"; // top to the file
 import React from "react";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-} from "@nextui-org/react";
-import { dataNewsletter20 } from "./data";
+
+import { DataDate, dataNewsletter, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
 
-export default function Newsletter20() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [scrollBehavior, setScrollBehavior] = React.useState("inside");
+export default function Pressrelease() {
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <Button onPress={onOpen}>เปิด เพื่อดู</Button>
-
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          scrollBehavior={"inside"}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  <div>
-                    {dataNewsletter20.Image.map((item) => (
-                      <div key={item.title}>{item.title}</div>
-                    ))}
-                  </div>
-                </ModalHeader>
-                <ModalBody>
-                  <div>
-                    {dataNewsletter20.Image.map((item) => (
-                      <div key={item.description}>{item.description}</div>
-                    ))}
-                  </div>
-
-                  {dataNewsletter20.Image.map((item) => (
-                    <div key={item.backgroundImage}>
-                      <div>
-                        <Image src={item.backgroundImage} alt={""}></Image>
-                      </div>
-                    </div>
-                  ))}
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="primary" onPress={onClose}>
-                    Close
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
+      <div>
+        <div className="text-center text-xl">
+          {dataNewsletter.Item.map((item) => (
+            <div key={item.title}>{item.title}</div>
+          ))}
+        </div>
+        <div>
+          {Description.map((item) => (
+            <div key={item.description}>
+              <div>{item.description}</div>
+            </div>
+          ))}
+        </div>
+        {DataDate.map((item) => (
+          <div key={item.date}>
+            <div className="text-xs text-slate-500">{item.date}</div>
+          </div>
+        ))}
+        <div className="flex justify-center">
+          <div className="w-fit mx-auto grid justify-items-center justify-center">
+            {ImageItem.map((item) => (
+              <div className="" key={item.img}>
+                <div className="scale-90 hover:scale-100 transition duration-500 rounded-full">
+                  <Image src={item.img} alt={""}></Image>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </>
   );
