@@ -31,7 +31,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover absolute "
-                src="/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/13/25.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/36/1.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
@@ -68,7 +68,7 @@ export default function page() {
               <Image
                 removeWrapper
                 alt="Card example background"
-                src="/images/จดหมายข่าว/2567/มกราคม/2/1.webp"
+                src="/images/จดหมายข่าว/2567/กรกฎาคม/5/1.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
