@@ -1,5 +1,6 @@
 "use client";
 
+// import MapID from "@/components/test/MapID";
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
 import NextLink from "next/link";
@@ -7,15 +8,17 @@ import NextLink from "next/link";
 export default function page() {
   return (
     <>
+      {/* <div className="px-4 py-4">
+        <MapID />
+      </div> */}
       <div className="pt-8">
         <h1 className="flex justify-center text-xl">หน้าหลัก</h1>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
           คลังข้อมูลวิทยาลัยเทคนิคกันทรลักษ์
         </h1>
       </div>
-
-      <div className="flex justify-center pt-16">
-        <div className="max-w-[1000px] gap-2 grid grid-cols-12 grid-rows-2 px-8 ">
+      <div className="flex justify-center px-8 py-8">
+        <div className="max-w-[1000px] gap-2 grid grid-cols-12 grid-rows-2  ">
           <Card
             isFooterBlurred
             className="w-full h-[300px] col-span-12 sm:col-span-7"
@@ -31,7 +34,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover absolute "
-                src="/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/36/1.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/38/05.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">

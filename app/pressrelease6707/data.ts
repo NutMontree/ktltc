@@ -1,7 +1,25 @@
 export const DataPressrelease6707 = {
   navItems: [
     {
-      id: 34,
+      id: 37,
+      name: `วันที่ ๓๑ กรกฎาคม ๒๕๖๗`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/38/05.webp",
+      description: `
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร '
+ ...`,
+      href: "/pressrelease309",
+    },
+    {
+      id: 37,
+      name: `นางสาวทักษิณา ชมจันทร์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/37/11.webp",
+      description: `
+ผู้อำนวยการวิทยาลัยเทคนิค กันทรลักษ์ มอบหมายให้ คณะครูแผนกวิชาช่างยนต์ และแผนกวิชาการโรงแรม 
+ ...`,
+      href: "/pressrelease308",
+    },
+    {
+      id: 36,
       name: `นางสาวทักษิณา ชมจันทร์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/36/1.webp",
       description: `
@@ -10,7 +28,7 @@ export const DataPressrelease6707 = {
       href: "/pressrelease307",
     },
     {
-      id: 34,
+      id: 35,
       name: `นางสาวทักษิณา ชมจันทร์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กรกฏาคม/35/03.webp",
       description: `
