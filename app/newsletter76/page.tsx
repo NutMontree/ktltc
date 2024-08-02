@@ -19,12 +19,35 @@ export default function Pressrelease() {
               <div>{item.description}</div>
             </div>
           ))}
-        </div>
-        {DataDate.map((item) => (
-          <div key={item.date}>
-            <div className="text-xs text-slate-500">{item.date}</div>
+          {DataDate.map((item) => (
+            <div key={item.date}>
+              <div className="text-xs text-slate-500">{item.date}</div>
+            </div>
+          ))}
+          <div className="text-xs pt-6">
+            <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
+            <p>" วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "</p>
+            <p>
+              ผลิตและพัฒนากำลังคน โดยขับเคลื่อนการจัดการความรู้ด้วยเทคโนโลยี
+              เป็นประชาคมแห่งการเรียนรู้ เน้นการทำงานเป็นทีม
+              มีความร่วมมือกับสถานประกอบการและชุมชน
+            </p>
+            <br />
+            <p>👉 ช่องทางการติดต่อ</p>
+            <p>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
+            <p>
+              เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ
+              วิทยาลัยเทคนิคกันทรลักษ์ Today
+            </p>
+            <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
+            <p>Website : www.ktltc.ac.th</p>
+            <p>Gmail : ktl11022021@gmail.com</p>
+            <p>สอบถามข้อมูลเพิ่มเติม</p>
+            <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๗๕๓ </p>
+            <p>โทร : 061-4122765 หรือ 045-811753</p>
           </div>
-        ))}
+        </div>
+
         <div className="flex justify-center">
           <div className="w-fit mx-auto grid justify-items-center justify-center">
             {ImageItem.map((item) => (

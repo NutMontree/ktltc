@@ -8,6 +8,13 @@ export default function Newsletter() {
         <div className="gap-2 grid">
           <div>
             <Button color="primary" variant="ghost">
+              <Link className="text-lg" href="/newsletter6708">
+                เดือน สิงหาคม 2567
+              </Link>
+            </Button>
+          </div>
+          <div>
+            <Button color="primary" variant="ghost">
               <Link className="text-lg" href="/newsletter6707">
                 เดือน กรกฎาคม 2567
               </Link>
