@@ -1,4 +1,9 @@
-import Announcement2566 from "./Announcement2566";
+"use client"; // top to the file
+
+import { Accordion, AccordionItem } from "@nextui-org/react";
+
+import Announcement2566 from "../announcement2566/page";
+import Announcement2567 from "../announcement2567/page";
 
 // announcement
 export default function AnnouncementPage() {
@@ -9,8 +14,25 @@ export default function AnnouncementPage() {
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
           Announcement New Page
         </h1>
+      </div>
 
-        <Announcement2566 />
+      <div>
+        <Accordion isCompact>
+          <AccordionItem
+            key="1"
+            aria-label="Accordion 1"
+            title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2567"
+          >
+            <Announcement2567 />
+          </AccordionItem>
+          <AccordionItem
+            key="2"
+            aria-label="Accordion 2"
+            title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2566"
+          >
+            <Announcement2566 />
+          </AccordionItem>
+        </Accordion>
       </div>
     </>
   );
