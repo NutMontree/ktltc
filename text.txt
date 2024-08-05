@@ -4,5 +4,6 @@ Nextui https://nextui.org/
 https://dev.to/afewminutesofcode/how-to-convert-an-array-into-an-object-in-javascript-25a4
 
 
-npm instll 
+หลังจาก clone ktltc จาก githup desktop ให้ใช้ คำสั่ง
+npm install 
 npm install @types/react

@@ -11,7 +11,7 @@ export const dataNewsletter = {
 export const Description = [
   {
     description: ` 
-นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์      `,
+นางสาวทักษิณา ชมจันทร์  ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์      `,
   },
   {
     description: ` 
