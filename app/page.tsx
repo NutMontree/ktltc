@@ -1,6 +1,5 @@
 "use client";
 
-// import MapID from "@/components/test/MapID";
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
 import NextLink from "next/link";
@@ -8,9 +7,6 @@ import NextLink from "next/link";
 export default function page() {
   return (
     <>
-      {/* <div className="px-4 py-4">
-        <MapID />
-      </div> */}
       <div className="pt-8">
         <h1 className="flex justify-center text-xl">หน้าหลัก</h1>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
@@ -34,7 +30,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover absolute "
-                src="/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/2/10.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/5/54.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
@@ -71,7 +67,7 @@ export default function page() {
               <Image
                 removeWrapper
                 alt="Card example background"
-                src="/images/จดหมายข่าว/2567/สิงหาคม/1/0.webp"
+                src="/images/จดหมายข่าว/2567/สิงหาคม/4/0.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
@@ -101,7 +97,7 @@ export default function page() {
                 removeWrapper
                 alt="Card background"
                 className="z-0 w-full h-full object-cover absolute"
-                src="/images/ข่าวประกาศ/na7.webp"
+                src="/images/ข่าวประกาศ/2567/กรกฎาคม/4/1.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">

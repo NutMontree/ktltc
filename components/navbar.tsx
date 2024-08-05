@@ -96,8 +96,8 @@ export const Navbar = () => {
                     index === 0
                       ? "primary"
                       : index === siteConfig.navMenuItems.length - 5
-                        ? "danger"
-                        : "foreground"
+                      ? "danger"
+                      : "foreground"
                   }
                   href={item.href}
                 >
