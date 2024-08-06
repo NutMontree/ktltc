@@ -13,6 +13,7 @@ export default function page() {
           คลังข้อมูลวิทยาลัยเทคนิคกันทรลักษ์
         </h1>
       </div>
+
       <div className="flex justify-center px-8 py-8">
         <div className="max-w-[1000px] gap-2 grid grid-cols-12 grid-rows-2  ">
           <Card
@@ -164,7 +165,7 @@ export default function page() {
                 removeWrapper
                 alt="Card background"
                 className="z-0 w-full h-full object-cover absolute"
-                src="/images/คำสั่งวิทยาลัย/na1.webp"
+                src="/images/คำสั่งวิทยาลัย/2567/เมษายน/2/1.webp"
               />
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">

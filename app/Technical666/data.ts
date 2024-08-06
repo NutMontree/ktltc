@@ -1,6 +1,4 @@
-export type DataTechnicalcollegeorders = typeof dataTechnicalcollegeorders;
-
-export const dataTechnicalcollegeorders = {
+export const DataNewsletter66 = {
   navItems: [
     {
       name: `คำสั่งแต่งตั้งคณะกรรมการ`,
