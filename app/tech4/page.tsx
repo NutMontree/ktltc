@@ -73,8 +73,7 @@ export default function Pressrelease() {
       <div className="pt-8">
         <div>
           <div className="text-lg text-sky-500">
-            เรื่อง แต่ตั้งคณะกรรมการดำเนินงานโครงการปฐมนิเทศ
-            นักเรียนนักศึกษาใหม่ และผู้ปกครอง ประจำ 2567
+ 
           </div>
           <iframe
             className="w-full aspect-video ... "

@@ -72,12 +72,10 @@ export default function Pressrelease() {
 
       <div className="pt-8">
         <div>
-          <div className="text-lg text-sky-500">
- 
-          </div>
+          <div className="text-lg text-sky-500"></div>
           <iframe
             className="w-full aspect-video ... "
-            src="/images/คำสั่งวิทยาลัย/2567/เมษายน/2/1.pdf"
+            src="/images/คำสั่งวิทยาลัย/2567/สิงหาคม/1/1.pdf"
           ></iframe>
         </div>
       </div>

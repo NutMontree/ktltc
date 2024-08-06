@@ -77,7 +77,7 @@ export default function Pressrelease() {
           </div>
           <iframe
             className="w-full aspect-video ... "
-            src="/images/คำสั่งวิทยาลัย/2567/เมษายน/2/1.pdf"
+            src="/images/คำสั่งวิทยาลัย/2567/พฤษภาคม/2/1.pdf"
           ></iframe>
         </div>
       </div>
