@@ -75,7 +75,7 @@ export default function Sponsor() {
 
                         <div className="flex justify-center">
                           <iframe
-                            className=" h-64 w-36 "
+                            className=" h-[250px] w-[142px] "
                             src="/images/5.gif"
                           ></iframe>
                         </div>
