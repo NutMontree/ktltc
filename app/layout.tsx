@@ -38,7 +38,6 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div>
             <Navbar />
-
             <main>
               {children}
               <SpeedInsights />

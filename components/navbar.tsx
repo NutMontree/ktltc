@@ -11,15 +11,13 @@ import { Kbd } from "@nextui-org/kbd";
 import { Input } from "@nextui-org/input";
 import { link as linkStyles } from "@nextui-org/theme";
 import { siteConfig } from "@/config/site";
-import NextLink from "next/link";
-import clsx from "clsx";
-
 import { ThemeSwitch } from "@/components/theme-switch";
 import { HeartFilledIcon, SearchIcon } from "@/components/icons";
-
 import { Logo } from "@/components/icons";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
+import NextLink from "next/link";
+import clsx from "clsx";
 
 export const Navbar = () => {
   const searchInput = (
@@ -29,7 +27,7 @@ export const Navbar = () => {
         inputWrapper: "bg-default-100",
         input: "text-sm",
       }}
-      endContent={<Kbd keys={["command"]}>K</Kbd>}
+      endContent={<Kbd keys={["option", "command"]}>K</Kbd>}
       labelPlacement="outside"
       placeholder="Search..."
       startContent={
@@ -41,8 +39,8 @@ export const Navbar = () => {
 
   return (
     <>
-      <NextUINavbar position="sticky">
-        <NavbarContent className=" " justify="start">
+      <NextUINavbar>
+        <NavbarContent>
           <NavbarBrand>
             <NextLink
               className="flex justify-start items-center gap-1"
@@ -89,7 +87,7 @@ export const Navbar = () => {
 
         <NavbarMenu>
           {searchInput}
-          <div className="mx-25 mt-2 flex flex-col gap-2 ">
+          <div className="max-25 mt-2 flex flex-col gap-2 ">
             {siteConfig.navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link
