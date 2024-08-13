@@ -15,9 +15,11 @@ export default function Error({
   }, [error]);
 
   return (
-    <div>
+    <div className="text-center py-40">
       <h2>Something went wrong!</h2>
-      <h2>รหัสลิงค์หน้าเว็ปยังลืมได้ แล้วทำไมแอดถึงยังลืมเขาไม่ได้ T.T</h2>
+      <h2 className="text-red-500">
+        ขนาด Code ยังลืมได้ แล้วทำไม @ ถึงยังลืมเขาไม่ได้ T.T
+      </h2>
       <button
         onClick={
           // Attempt to recover by trying to re-render the segment
