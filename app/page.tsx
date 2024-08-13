@@ -8,9 +8,11 @@ export default function page() {
   return (
     <>
       <div className="pt-8">
-        <h1 className="flex justify-center text-xl">หน้าหลัก</h1>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
-          คลังข้อมูลวิทยาลัยเทคนิคกันทรลักษ์
+          คลังข้อมูล
+        </h1>
+        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          วิทยาลัยเทคนิคกันทรลักษ์
         </h1>
       </div>
 

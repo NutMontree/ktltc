@@ -41,8 +41,8 @@ export const Navbar = () => {
 
   return (
     <>
-      <NextUINavbar maxWidth="xl" position="sticky">
-        <NavbarContent className="basis-1/5 " justify="start">
+      <NextUINavbar position="sticky">
+        <NavbarContent className=" " justify="start">
           <NavbarBrand>
             <NextLink
               className="flex justify-start items-center gap-1"
@@ -52,7 +52,7 @@ export const Navbar = () => {
               <div className="font-bold text-inherit">KTLTC</div>
             </NextLink>
 
-            <ul className="hidden md:flex gap-6 justify-start ml-6">
+            <ul className="hidden lg:flex gap-6 justify-start ml-6">
               {siteConfig.navItems.map((item) => (
                 <NavbarItem key={item.href}>
                   <NextLink
