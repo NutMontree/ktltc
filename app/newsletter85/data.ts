@@ -26,6 +26,6 @@ export const Description = [
   },
 ];
 
-export const DataDate = [{ date: `2 สิงหาคม ๒๕๖๗` }];
+export const DataDate = [{ date: ` ๒ สิงหาคม ๒๕๖๗` }];
 
 export const ImageItem = [{ img: "/images/จดหมายข่าว/2567/สิงหาคม/4/0.webp" }];

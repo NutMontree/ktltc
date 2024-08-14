@@ -74,7 +74,7 @@ export default function page() {
               <Image
                 removeWrapper
                 alt="Card example background"
-                src="/images/จดหมายข่าว/2567/สิงหาคม/5/0.webp"
+                src="/images/จดหมายข่าว/2567/สิงหาคม/12.webp"
               />
               {/********************************************* Image *********************************************/}
 
