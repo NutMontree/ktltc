@@ -34,7 +34,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover absolute "
-                src="/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/7/02.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/13/04.webp"
               />
               {/********************************************* Image *********************************************/}
 
