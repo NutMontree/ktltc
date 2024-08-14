@@ -20,7 +20,7 @@ export default function page() {
         <div className="max-w-[1000px] gap-2 grid grid-cols-12 grid-rows-2  ">
           <Card
             isFooterBlurred
-            className="w-full h-[300px] col-span-12 sm:col-span-7"
+            className="w-full h-[400px] col-span-12 sm:col-span-7"
           >
             <NextLink href={"/pressrelease"}>
               <CardHeader className="absolute z-10 top-1 flex-col items-start">
@@ -34,7 +34,7 @@ export default function page() {
                 removeWrapper
                 alt="Relaxing app background"
                 className="z-0 w-full h-full object-cover absolute "
-                src="/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/13/04.webp"
+                src="/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/14/05.webp"
               />
               {/********************************************* Image *********************************************/}
 
@@ -63,7 +63,7 @@ export default function page() {
 
           <Card
             isFooterBlurred
-            className="w-full h-[300px] col-span-12 sm:col-span-5"
+            className="w-full h-[400px] col-span-12 sm:col-span-5"
           >
             <NextLink href={"/newsletter"}>
               <CardHeader className="absolute z-10 top-1 flex-col items-start">

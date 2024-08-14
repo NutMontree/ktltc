@@ -18,7 +18,7 @@ export default function Error({
     <div className="text-center py-40">
       <h2>Something went wrong!</h2>
       <h2 className="text-red-500">
-        ขนาด Code ยังลืมได้ แล้วทำไม @ ถึงยังลืมเขาไม่ได้ T.T
+        ขนาด Code ยังลืมได้ แล้วทำไม ถึงยังลืมเขาไม่ได้ T.T
       </h2>
       <button
         onClick={

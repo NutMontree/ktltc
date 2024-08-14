@@ -17,7 +17,7 @@ export default function PressReleasePage() {
 
       <div>
         <Accordion isCompact>
-          <AccordionItem 
+          <AccordionItem
             key="1"
             aria-label="Accordion 1"
             title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2567"
