@@ -119,7 +119,7 @@ export const SunFilledIcon = ({
 );
 
 export const HeartFilledIcon = ({
-  size = 24,
+  size = 16,
   width,
   height,
   ...props

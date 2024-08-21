@@ -10,9 +10,8 @@ import { Kbd } from "@nextui-org/kbd";
 import { Input } from "@nextui-org/input";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { HeartFilledIcon, SearchIcon } from "@/components/icons";
+import { SearchIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
-import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
 import DropdownPage from "./dropdownPage";
@@ -56,7 +55,7 @@ export const Navbar = () => {
 
         <NavbarContent justify="end">
           <ThemeSwitch />
-          <Button
+          {/* <Button
             isExternal
             as={Link}
             className="text-sm font-normal text-default-600 bg-default-100"
@@ -64,9 +63,7 @@ export const Navbar = () => {
             href="/Sponsor"
             startContent={<HeartFilledIcon className="text-danger" />}
             variant="flat"
-          >
-            Sponsor
-          </Button>
+          ></Button> */}
           <NavbarMenuToggle />
         </NavbarContent>
 

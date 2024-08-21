@@ -57,7 +57,7 @@ export default function Sponsor() {
                             href="https://www.facebook.com/messages/t/61553558543619?locale=hi_IN"
                           >
                             <Avatar
-                              src="https://scontent-bkk1-1.xx.fbcdn.net/v/t39.30808-6/400060258_122094369026118618_50407952104233603_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=bjoe4Bvjkl8Q7kNvgEg3vRs&_nc_ht=scontent-bkk1-1.xx&oh=00_AYA9Hjd2d_kILPnvEW5OnD6rDlRalOSs8d6UCOx6ZqWHkQ&oe=66C0C3AC"
+                              src="https://scontent.fbkk10-1.fna.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=5vJ2NuR9MFgQ7kNvgEqxw86&_nc_ht=scontent.fbkk10-1.fna&oh=00_AYD1Nw_rYEWIAevJKVrIjr9egqxaWV0suaZkx90GDzyJtw&oe=66CB6341"
                               className="w-20 h-20 text-large"
                             />
                           </Link>

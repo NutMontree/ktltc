@@ -2,12 +2,7 @@ import { Navbar as NextUINavbar, NavbarContent } from "@nextui-org/navbar";
 
 import Phone from "./phone";
 import Mail from "./mail";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  Button,
-} from "@nextui-org/react";
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 
 export default function Header() {
   const placements = ["bottom"];
@@ -140,8 +135,6 @@ export default function Header() {
                 </div>
               </div>
             </ul>
-            {/* </NavbarContent>
-        </NextUINavbar> */}
           </div>
         </div>
       </div>
