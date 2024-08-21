@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./Footer/page";
 import Header from "@/components/header";
+import Scrollimage from "@/components/Scrollimage";
 // import DropdownPage from "@/components/dropdownPage";
 
 export const metadata: Metadata = {
@@ -40,8 +41,8 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div>
             <Header />
-            {/* <DropdownPage /> */}
             <Navbar />
+            <Scrollimage />
             <main>
               {children}
               <SpeedInsights />

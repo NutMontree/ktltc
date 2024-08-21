@@ -4,12 +4,10 @@ import {
   NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
-  NavbarItem,
   NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Kbd } from "@nextui-org/kbd";
 import { Input } from "@nextui-org/input";
-import { link as linkStyles } from "@nextui-org/theme";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { HeartFilledIcon, SearchIcon } from "@/components/icons";
@@ -17,7 +15,6 @@ import { Logo } from "@/components/icons";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
-import clsx from "clsx";
 import DropdownPage from "./dropdownPage";
 
 export const Navbar = () => {
@@ -44,28 +41,14 @@ export const Navbar = () => {
         <NavbarContent>
           <NavbarBrand>
             <NextLink
-              className="flex justify-start items-center gap-1"
-              href="http://ktltc.ac.th/"
+              className="flex justify-start items-center gap-2"
+              href="/"
             >
               <Logo />
-              <div className="font-bold text-inherit pt-1">KTLTC</div>
+              <div className="font-bold text-inherit pt-2">KTLTC</div>
             </NextLink>
 
             <ul className="hidden md:flex gap-6 justify-start ml-6">
-              {/* {siteConfig.navItems.map((item) => (
-                <NavbarItem key={item.href}>
-                  <NextLink
-                    className={clsx(
-                      linkStyles({ color: "foreground" }),
-                      "data-[active=true]:text-primary data-[active=true]:font-medium"
-                    )}
-                    color="foreground"
-                    href={item.href}
-                  >
-                    {item.label}
-                  </NextLink>
-                </NavbarItem>
-              ))} */}
               <DropdownPage />
             </ul>
           </NavbarBrand>
@@ -81,11 +64,13 @@ export const Navbar = () => {
             href="/Sponsor"
             startContent={<HeartFilledIcon className="text-danger" />}
             variant="flat"
-          ></Button>
+          >
+            Sponsor
+          </Button>
           <NavbarMenuToggle />
         </NavbarContent>
 
-        <NavbarMenu className="pt-10">
+        <NavbarMenu className=" ">
           {searchInput}
           <div className="max-25 mt-2 flex flex-col gap-2 ">
             {siteConfig.navMenuItems.map((item, index) => (
