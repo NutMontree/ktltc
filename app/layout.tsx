@@ -7,6 +7,8 @@ import { Navbar } from "@/components/navbar";
 import clsx from "clsx";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./Footer/page";
+import Header from "@/components/header";
+// import DropdownPage from "@/components/dropdownPage";
 
 export const metadata: Metadata = {
   title: {
@@ -35,14 +37,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={clsx(" ", fontSans.variable)}>
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div>
+            <Header />
+            {/* <DropdownPage /> */}
             <Navbar />
             <main>
               {children}
               <SpeedInsights />
             </main>
-
             <div className=" content-end ">
               <Footer />
             </div>

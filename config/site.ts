@@ -9,23 +9,23 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "ข่าวประชาสัมพันธ์",
+      label: "เกี่ยวกับสถานศึกษา",
       href: "/pressrelease",
     },
     {
-      label: "จดหมายข่าว",
+      label: "หน่วยงานภายใน",
       href: "/newsletter",
     },
     {
-      label: "ข่าวประกาศ",
+      label: "ข้อมูลบุคลากร",
       href: "/announcement",
     },
     {
-      label: "ข่าวประกวดราคา",
+      label: "เมนูลัด",
       href: "/bidding",
     },
     {
-      label: "คำสั่งวิทยาลัย",
+      label: "ดาวโหลด",
       href: "/technicalcollegeorders",
     },
   ],

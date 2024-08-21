@@ -18,6 +18,7 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
 import clsx from "clsx";
+import DropdownPage from "./dropdownPage";
 
 export const Navbar = () => {
   const searchInput = (
@@ -47,11 +48,11 @@ export const Navbar = () => {
               href="http://ktltc.ac.th/"
             >
               <Logo />
-              <div className="font-bold text-inherit">KTLTC</div>
+              <div className="font-bold text-inherit pt-1">KTLTC</div>
             </NextLink>
 
-            <ul className="hidden lg:flex gap-6 justify-start ml-6">
-              {siteConfig.navItems.map((item) => (
+            <ul className="hidden md:flex gap-6 justify-start ml-6">
+              {/* {siteConfig.navItems.map((item) => (
                 <NavbarItem key={item.href}>
                   <NextLink
                     className={clsx(
@@ -64,7 +65,8 @@ export const Navbar = () => {
                     {item.label}
                   </NextLink>
                 </NavbarItem>
-              ))}
+              ))} */}
+              <DropdownPage />
             </ul>
           </NavbarBrand>
         </NavbarContent>
@@ -79,13 +81,11 @@ export const Navbar = () => {
             href="/Sponsor"
             startContent={<HeartFilledIcon className="text-danger" />}
             variant="flat"
-          >
-            Sponsor
-          </Button>
+          ></Button>
           <NavbarMenuToggle />
         </NavbarContent>
 
-        <NavbarMenu>
+        <NavbarMenu className="pt-10">
           {searchInput}
           <div className="max-25 mt-2 flex flex-col gap-2 ">
             {siteConfig.navMenuItems.map((item, index) => (
