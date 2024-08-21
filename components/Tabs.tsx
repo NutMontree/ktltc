@@ -5,13 +5,12 @@ export default function TabsPage() {
   return (
     <div className="flex w-full flex-col px-6 py-6">
       <Tabs aria-label="Options">
-        <Tab key="photos" title="Photos">
+        <Tab key="วิสัยทัศน์ " title="วิสัยทัศน์ ">
           <Card>
             <CardBody>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              ผลิตและพัฒนากำลังคน โดยขับเคลื่อนการจัดการความรู้ด้วยเทคโนโลยี
+              เป็นประชาคมแห่งการเรียนรู้ เน้นการทำงานเป็นทีม
+              มีความร่วมมือกับสถานประกอบการและชุมชน
             </CardBody>
           </Card>
         </Tab>
