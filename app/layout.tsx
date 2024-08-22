@@ -9,6 +9,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./Footer/page";
 import Header from "@/components/header";
 // import DropdownPage from "@/components/dropdownPage";
+import { CommentOutlined, CustomerServiceOutlined } from "@ant-design/icons";
+import { FloatButton } from "antd";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: {
@@ -47,6 +50,21 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
+          <FloatButton
+            icon={<CommentOutlined />}
+            tooltip={
+              <div>
+                <div>
+                  <Link
+                    className="  text-sky-500"
+                    href="https://www.facebook.com/messages/t/100004276455648"
+                  >
+                    Mesesnger
+                  </Link>
+                </div>
+              </div>
+            }
+          />
         </Providers>
       </body>
     </html>

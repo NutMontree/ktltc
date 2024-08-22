@@ -63,7 +63,7 @@ export const Navbar = () => {
           <NavbarMenuToggle />
         </NavbarContent>
 
-        <NavbarMenu className=" ">
+        <NavbarMenu className="pt-5">
           {searchInput}
           <div className="max-25 mt-2 flex flex-col gap-2 ">
             {siteConfig.navMenuItems.map((item, index) => (
