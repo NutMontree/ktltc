@@ -48,7 +48,7 @@ export default function ShowTechnicalcollegeorders() {
               type="primary"
               size="large"
               icon={<AntDesignOutlined />}
-              href="/technical6708"
+              href="/technicalcollegeorders"
             >
               เนื้อหาเพิ่มเติม
             </Button>
