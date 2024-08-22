@@ -6,13 +6,11 @@ import Scrollimage from "@/components/Scrollimage";
 export default function page() {
   return (
     <>
-      <div className="  px-6 py-6 ">
-        <div>
-          <Scrollimage />
-          <Wellcome />
-          <DataWarehouse />
-        </div>
-      </div>
+      <main>
+        <Scrollimage />
+        <Wellcome />
+        <DataWarehouse />
+      </main>
     </>
   );
 }

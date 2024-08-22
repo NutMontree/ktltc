@@ -36,7 +36,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <NextUINavbar>
+      <NextUINavbar maxWidth={"full"} className="py-2">
         <NavbarContent>
           <NavbarBrand>
             <NextLink
@@ -44,10 +44,15 @@ export const Navbar = () => {
               href="/"
             >
               <Logo />
-              <div className="font-bold text-inherit pt-2">KTLTC</div>
+              <div className=" ">
+                <div className="hidden sm:flex text-xs ">
+                  วิทยาลัยเทคนิคกันทรลักษ์
+                </div>
+                <div className="font-bold text-inherit">KTLTC</div>
+              </div>
             </NextLink>
 
-            <ul className="hidden md:flex gap-6 justify-start ml-6">
+            <ul className="hidden lg:flex gap-6 justify-start ml-6">
               <DropdownPage />
             </ul>
           </NavbarBrand>
@@ -55,15 +60,6 @@ export const Navbar = () => {
 
         <NavbarContent justify="end">
           <ThemeSwitch />
-          {/* <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            // href={siteConfig.links.sponsor}
-            href="/Sponsor"
-            startContent={<HeartFilledIcon className="text-danger" />}
-            variant="flat"
-          ></Button> */}
           <NavbarMenuToggle />
         </NavbarContent>
 

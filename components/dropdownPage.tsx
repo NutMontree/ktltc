@@ -6,7 +6,6 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Button,
 } from "@nextui-org/react";
 import Link from "next/link";
 
@@ -19,9 +18,9 @@ export default function DropdownPage() {
             <div className="flex gap-4">
               <Dropdown>
                 <DropdownTrigger>
-                  <div className="text-xs flex pt-2 ">
+                  <div className="text-sm flex pt-2 ">
                     ประวัติสถานศึกษา
-                    <div>
+                    <div className="pt-1 pl-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -41,32 +40,32 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ประวัติสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ทำเนียบผู้บริหาร
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       โครงสร้างการบริหารงานสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       คณะกรรมการบริหารสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       คณะกรรมการสถานศึกษา
                     </Link>
                   </DropdownItem>
@@ -83,9 +82,9 @@ export default function DropdownPage() {
 
               <Dropdown>
                 <DropdownTrigger>
-                  <div className="text-xs flex pt-2 ">
+                  <div className="text-sm flex pt-2 ">
                     ข้อมูลพื้นฐาน 9 ประการ
-                    <div>
+                    <div className="pt-1 pl-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -105,47 +104,47 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลบุคลากร
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลนักเรียน นักศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลหลักสูตร
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลครุภัณฑ์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลงบประมาณ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลอาคารสถานที่
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลตลาดแรงงาน
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข้อมูลของจังหวัด
                     </Link>
                   </DropdownItem>
@@ -162,9 +161,9 @@ export default function DropdownPage() {
 
               <Dropdown>
                 <DropdownTrigger>
-                  <div className="flex text-xs pt-2 ">
+                  <div className="flex text-sm pt-2 ">
                     หน่วยงานภายใน
-                    <div>
+                    <div className="pt-1 pl-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -184,22 +183,22 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ฝ่ายบริหารทรัพยากร
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ฝ่ายแผนงานและความร่วมมือ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ฝ่ายวิชาการ
                     </Link>
                   </DropdownItem>
@@ -216,9 +215,9 @@ export default function DropdownPage() {
 
               <Dropdown>
                 <DropdownTrigger>
-                  <div className="flex text-xs pt-2 ">
+                  <div className="flex text-sm pt-2 ">
                     ข้อมูลบุคลากร
-                    <div>
+                    <div className="pt-1 pl-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -238,67 +237,67 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ผู้บริหารสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาช่างยนต์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาช่างกลโรงงาน
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาช่างเชื่อมโลหะ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาช่างไฟฟ้ากำลัง
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาช่างอิเล็กทรอนิกส์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาเทคนิคพื้นฐาน
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาช่างก่อสร้าง
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาบัญชี
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาการตลาด
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       คอมพิวเตอร์ดิจิทัล
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาการโรงแรม
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แผนกวิชาสามัญสัมพันธ์
                     </Link>
                   </DropdownItem>
@@ -315,9 +314,9 @@ export default function DropdownPage() {
 
               <Dropdown>
                 <DropdownTrigger>
-                  <div className="flex text-xs pt-2 ">
+                  <div className="flex text-sm pt-2 ">
                     เมนูลัด
-                    <div>
+                    <div className="pt-1 pl-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -337,57 +336,57 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ระบบ ศธ. ออนไลน์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ตรวจสอบผลการเรียน
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       รับงานอิเล็กทรอนิกส์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       สมัครเรียนออนไลน์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       บทเรียนออนไลน์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ศูนย์กำลังคนอาชีวศึกษา (V-COP)
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       รายงานประจำแีของสถานศึกษา (SAR)
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ID Plan
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แบบประเมินความำึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ภาพรวมกิจกรรมในสถานศึกษา
                     </Link>
                   </DropdownItem>
@@ -404,8 +403,8 @@ export default function DropdownPage() {
 
               <Dropdown>
                 <DropdownTrigger>
-                  <div className="flex text-xs pt-2 ">
-                    <div className="">
+                  <div className="flex text-sm pt-2 ">
+                    <div className="pt-1 pl-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -424,73 +423,73 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ฟอร์มส่งแบบประเมินผลการเรียนตามสภาพจริง ประจำปีการศึกษา
                       1/2567
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ตัวอย่างไฟล์ SAR 67
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แบบฟอร์มหนังสือภายนอก-ภายใน
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ระบบงานเอกสารอิเล็กทรอนิกส์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       รวมภาพกิจกรรม ในสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข่าวงานประชาสัมพันธ์
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       อัลบั้มภาพ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ฝ่ายพัฒนากิจการฯ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       เผยแพร่ผลงานวิจัย
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       รางวัลที่ได้รับ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       คำสั่งวิทยาลัย
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       จดหมายขช่าว
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       ข่าวาจัดซื้อ จัดจ้าง
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-xs">
+                    <Link href="/" className="text-sm">
                       แบบฟอร์มจัดซื้อจัดจ้าง
                     </Link>
                   </DropdownItem>

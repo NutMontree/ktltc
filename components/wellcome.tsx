@@ -5,18 +5,12 @@ import TabsPage from "./Tabs";
 export default function Wellcome() {
   return (
     <>
-      <div className="flex justify-center px-6 py-6">
+      <div className="flex justify-center px-6 pt-6 pb-3">
         <div className="max-w-[1000px] gap-2 grid grid-cols-12 ">
-          <Card isFooterBlurred className="h-[350px] col-span-12 sm:col-span-6">
-            {/* <Image
-              removeWrapper
-              alt="Relaxing app background"
-              className="z-0 w-full h-full object-cover absolute "
-              src="/images/3.webp"
-            /> */}
+          <Card isFooterBlurred className="h-[300px] col-span-12 sm:col-span-6">
             <div className="flex justify-center">
               <div className="w-fit mx-auto   grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
-                <div className=" scale-90 hover:scale-110 transition duration-500 rounded-full ">
+                <div className=" scale-40 hover:scale-110 transition duration-500 rounded-full ">
                   <Image src="/images/3.webp" alt={""}></Image>
                 </div>
               </div>
@@ -26,11 +20,11 @@ export default function Wellcome() {
               <div className="flex flex-grow gap-2 items-center">
                 <Image
                   alt="Breathing app icon"
-                  className="rounded-full w-8  h-8 bg-black"
+                  className="rounded-full w-12  h-12 bg-black"
                   src="/images/logo.webp"
                 />
                 <div className="flex flex-col">
-                  <div className="text-md ">
+                  <div className="text-md text-white">
                     นางสาวทักษิณา ชมจันทร์
                     <div className="text-md ">
                       อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
@@ -41,7 +35,10 @@ export default function Wellcome() {
             </CardFooter>
           </Card>
 
-          <Card isFooterBlurred className="h-[350px] col-span-12 sm:col-span-6">
+          <Card
+            isFooterBlurred
+            className="h-[300px] col-span-12 sm:col-span-6 "
+          >
             <TabsPage />
           </Card>
         </div>

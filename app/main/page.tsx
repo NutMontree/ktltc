@@ -42,13 +42,13 @@ export default function DataWarehouse() {
                 <div className="flex flex-grow gap-2 items-center">
                   <Image
                     alt="Breathing app icon"
-                    className="rounded-full w-8  h-8 bg-black"
+                    className="rounded-full w-12  h-12 bg-black"
                     src="/images/logo.webp"
                   />
                   <div className="flex flex-col">
-                    <div className="text-tiny ">
+                    <div className="text-tiny text-white">
                       ข่าวประชาสัมพันธ์กิจกรรมต่าง
-                      <div className="text-tiny ">
+                      <div className="text-tiny text-white">
                         ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
                       </div>
                     </div>
@@ -67,7 +67,9 @@ export default function DataWarehouse() {
           >
             <NextLink href={"/newsletter"}>
               <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                <div className="text-tiny  uppercase font-bold">จดหมายข่าว</div>
+                <div className="text-tiny text-white uppercase font-bold">
+                  จดหมายข่าว
+                </div>
                 <h4 className="font-medium text-xl">Newsletter</h4>
               </CardHeader>
               {/********************************************* Image *********************************************/}
@@ -81,9 +83,9 @@ export default function DataWarehouse() {
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
                   <div className="flex flex-col">
-                    <div className="text-tiny ">
+                    <div className="text-tiny text-white">
                       จดหมายข่าวต่าง
-                      <div className="text-tiny ">
+                      <div className="text-tiny text-white">
                         ทั้งในและนอกวิทยาลัยเทคนิคกันทรลักษ์
                       </div>
                     </div>
@@ -99,7 +101,9 @@ export default function DataWarehouse() {
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
             <NextLink href={"/announcement"}>
               <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-                <div className="text-tiny  uppercase font-bold">ข่าวประกาศ</div>
+                <div className="text-tiny text-white uppercase font-bold">
+                  ข่าวประกาศ
+                </div>
                 <h4 className=" font-medium text-large">Announcement New</h4>
               </CardHeader>
               {/********************************************* Image *********************************************/}
@@ -113,9 +117,9 @@ export default function DataWarehouse() {
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
                   <div className="flex flex-col">
-                    <div className="text-tiny ">
+                    <div className="text-tiny text-white">
                       ข่าวประกาศ
-                      <div className="text-tiny ">
+                      <div className="text-tiny text-white">
                         ในวิทยาลัยเทคนิคกันทรลักษ์
                       </div>
                     </div>
@@ -131,7 +135,7 @@ export default function DataWarehouse() {
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
             <NextLink href={"/bidding"}>
               <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                <div className="text-tiny uppercase font-bold">
+                <div className="text-tiny text-white uppercase font-bold">
                   ข่าวประกวดราคา
                 </div>
                 <h4 className=" font-medium text-large">Bidding</h4>
@@ -147,9 +151,9 @@ export default function DataWarehouse() {
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
                   <div className="flex flex-col">
-                    <div className="text-tiny ">
+                    <div className="text-tiny text-white">
                       ข่าวประกวดราคา
-                      <div className="text-tiny ">
+                      <div className="text-tiny text-white">
                         ในวิทยาลัยเทคนิคกันทรลักษ์
                       </div>
                     </div>
@@ -165,7 +169,7 @@ export default function DataWarehouse() {
           <Card className="col-span-12 sm:col-span-4 h-[300px]">
             <NextLink href={"/technicalcollegeorders"}>
               <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-                <div className="text-tiny  uppercase font-bold">
+                <div className="text-tiny text-white uppercase font-bold">
                   คำสั่งวิทยาลัย
                 </div>
                 <h4 className=" font-medium text-large">
@@ -183,9 +187,9 @@ export default function DataWarehouse() {
               <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                 <div className="flex flex-grow gap-2 items-center">
                   <div className="flex flex-col">
-                    <div className="text-tiny ">
+                    <div className="text-tiny text-white">
                       คำสั่งวิทยาลัย
-                      <div className="text-tiny ">
+                      <div className="text-tiny text-white">
                         ในวิทยาลัยเทคนิคกันทรลักษ์
                       </div>
                     </div>
