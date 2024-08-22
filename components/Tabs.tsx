@@ -16,29 +16,29 @@ export default function TabsPage() {
         </Tab>
         <Tab key="เอกลักษ์" title="เอกลักษ์">
           <Card>
-            <CardBody>
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.
-            </CardBody>
+            <CardBody>ผู้นำบริการสู่ชุมชน</CardBody>
           </Card>
         </Tab>
         <Tab key="อัตลักษณ์" title="อัตลักษณ์">
           <Card>
-            <CardBody>
-              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-              officia deserunt mollit anim id est laborum.
-            </CardBody>
+            <CardBody>ฝีมือดี มีคุณธรรม</CardBody>
           </Card>
         </Tab>
         <Tab key="ปรัชญา" title="ปรัชญา">
           <Card>
+            <CardBody>ฝีมือดี มีวินัย ใฝ่คุณธรรม นำสังคม</CardBody>
+          </Card>
+        </Tab>
+        <Tab key="ค่านิยม" title="ค่านิยม">
+          <Card>
+            <CardBody>ยิ้มไหว้ แต่งกายดี รู้จักสวัสดี ขอบคุณ และขอโทษ</CardBody>
+          </Card>
+        </Tab>
+        <Tab key="คำขวัญ" title="คำขวัญ">
+          <Card>
+            <CardBody>เรียนรู้ปฏิบัติสู่นวัตกรรม ผู้นำด้านเทคโนโลยี่ </CardBody>
             <CardBody>
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.{" "}
+              สู่วิถีเศรฐกิจสร้างสรรค์ มุ่นมั่นพัฒนากำลังคนด้านวิชาชีพ
             </CardBody>
           </Card>
         </Tab>
