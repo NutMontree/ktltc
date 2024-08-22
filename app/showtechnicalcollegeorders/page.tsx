@@ -1,3 +1,5 @@
+// ShowTechnicalcollegeorders
+
 "use client"; // top to the file
 
 // Import Swiper React components
@@ -18,24 +20,25 @@ import "swiper/css/scrollbar";
 
 // import required modules
 import NextLink from "next/link";
-import { DataPressrelease6708 } from "../pressrelease6708/data";
 
 import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
+import { DataAnnouncement } from "../announcement6707/data";
+import { Data } from "../technical6708/data";
 
-export default function ShowPressRelease() {
+export default function ShowTechnicalcollegeorders() {
   return (
     <>
       <div>
         <h1 className="flex justify-center text-xxl pt-3 font-bold">
-          ข่าวประชาสัมพันธ์
+          คำสั่งวิทยาลัยเทคนิค
         </h1>
       </div>
 
       <div className="flex justify-center">
         <h1 className="flex justify-center text-xxl text-[#DAA520] ">
-          Press Release Page
+          Technical College Page
         </h1>
       </div>
       <div className="flex justify-end px-6 pt-3">
@@ -45,7 +48,7 @@ export default function ShowPressRelease() {
               type="primary"
               size="large"
               icon={<AntDesignOutlined />}
-              href="/pressrelease"
+              href="/technical6708"
             >
               เนื้อหาเพิ่มเติม
             </Button>
@@ -74,7 +77,7 @@ export default function ShowPressRelease() {
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
         >
-          {DataPressrelease6708.navItems.map((item) => (
+          {Data.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
                 <div className="mb-6 relative shadow-lg rounded-xl  h-[150px] sm:h-[200px] lg:h-[250px]  overflow-hidden ">

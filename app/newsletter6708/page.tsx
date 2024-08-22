@@ -20,9 +20,9 @@ export default function Newsletter() {
           <div className=" grid grid-rows-4 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
             {DataNewsletter.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-4 group relative shadow-lg text-white rounded-xl px-6 py-8 h-[250px] lg:h-[500px] lg:w-[full] overflow-hidden cursor-pointer ">
+                <div className="mb-6 relative shadow-lg rounded-xl  h-[250px] lg:h-[500px] lg:w-[full] overflow-hidden ">
                   <div
-                    className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover"
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}

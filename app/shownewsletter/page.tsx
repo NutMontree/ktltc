@@ -18,24 +18,24 @@ import "swiper/css/scrollbar";
 
 // import required modules
 import NextLink from "next/link";
-import { DataPressrelease6708 } from "../pressrelease6708/data";
 
 import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
+import { DataNewsletter } from "../newsletter6708/data";
 
-export default function ShowPressRelease() {
+export default function ShowNewsletter() {
   return (
     <>
       <div>
         <h1 className="flex justify-center text-xxl pt-3 font-bold">
-          ข่าวประชาสัมพันธ์
+          จดหมายข่าว
         </h1>
       </div>
 
       <div className="flex justify-center">
         <h1 className="flex justify-center text-xxl text-[#DAA520] ">
-          Press Release Page
+          Newsletter
         </h1>
       </div>
       <div className="flex justify-end px-6 pt-3">
@@ -45,7 +45,7 @@ export default function ShowPressRelease() {
               type="primary"
               size="large"
               icon={<AntDesignOutlined />}
-              href="/pressrelease"
+              href="/newsletter"
             >
               เนื้อหาเพิ่มเติม
             </Button>
@@ -74,10 +74,10 @@ export default function ShowPressRelease() {
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
         >
-          {DataPressrelease6708.navItems.map((item) => (
+          {DataNewsletter.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl  h-[150px] sm:h-[200px] lg:h-[250px]  overflow-hidden ">
+                <div className="mb-6 relative shadow-lg rounded-xl  h-[250px] lg:h-[500px] lg:w-[full] overflow-hidden ">
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
                     style={{
