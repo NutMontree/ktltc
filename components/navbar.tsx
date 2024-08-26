@@ -15,6 +15,8 @@ import { Logo } from "@/components/icons";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
 import DropdownPage from "./dropdownPage";
+import DropdownPage2 from "./navmanu/Dropdown";
+import DropdownPage1 from "./navmanu/Dropdown";
 
 export const Navbar = () => {
   const searchInput = (
@@ -65,7 +67,7 @@ export const Navbar = () => {
 
         <NavbarMenu className="pt-5">
           {searchInput}
-          <div className="max-25 mt-2 flex flex-col gap-2 ">
+          {/* <div className="max-25 mt-2 flex flex-col gap-2 ">
             {siteConfig.navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link
@@ -82,6 +84,10 @@ export const Navbar = () => {
                 </Link>
               </NavbarMenuItem>
             ))}
+          </div> */}
+
+          <div>
+            <DropdownPage1 />
           </div>
         </NavbarMenu>
       </NextUINavbar>

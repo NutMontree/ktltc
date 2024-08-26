@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      id: 18,
+      name: `วันที่ ๒๑ สิงหาคม ๒๕๖๗  `,
+      backgroundImage: "/images/จดหมายข่าว/2567/สิงหาคม/18.webp",
+      description: `วิทยาลัยเทคนิคกันทรลักษ์ จัดโครงการสัปดาห์วันวิทยาศาสตร์ ปีการศึกษา ๒๕๖๗     
+       ...`,
+      href: "/newsletter99",
+    },
+    {
       id: 17,
       name: `วันที่ ๒๑ สิงหาคม ๒๕๖๗  `,
       backgroundImage: "/images/จดหมายข่าว/2567/สิงหาคม/17.webp",
