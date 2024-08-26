@@ -2,6 +2,15 @@ export const DataPressrelease6708 = {
   navItems: [
     {
       id: 25,
+      name: `เมื่อวันที่ ๒๔ สิงหาคม ๒๕๖๗ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/26/10.webp",
+      description: `
+วิทยาลัยเทคนิคกันทรลักษ์ นำโดย👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
+      ...`,
+      href: "/pressrelease336",
+    },
+    {
+      id: 25,
       name: `วันที่ ๒๑ สิงหาคม ๒๕๖๗ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/25/56.webp",
       description: `

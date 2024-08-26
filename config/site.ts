@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "KTLTC",
+  name: "วิทยาลัยเทคนิคกันทรลักษ์",
   description: "คลังเก็บข้อมูลวิทยาลัยเทคนิคกันทรลักษ์",
   navItems: [
     {
