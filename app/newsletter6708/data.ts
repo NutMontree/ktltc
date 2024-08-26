@@ -1,6 +1,16 @@
 export const DataNewsletter = {
   navItems: [
     {
+      id: 19,
+      name: `เมื่อวันที่ ๒๔ สิงหาคม ๒๕๖๗  `,
+      backgroundImage: "/images/จดหมายข่าว/2567/สิงหาคม/19.webp",
+      description: `
+
+ วิทยาลัยเทคนิคกันทรลักษ์ นำโดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์      \
+  ...`,
+      href: "/newsletter100",
+    },
+    {
       id: 18,
       name: `วันที่ ๒๑ สิงหาคม ๒๕๖๗  `,
       backgroundImage: "/images/จดหมายข่าว/2567/สิงหาคม/18.webp",
