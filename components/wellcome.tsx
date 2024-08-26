@@ -27,7 +27,7 @@ export default function Wellcome() {
                   <div className="text-md text-white">
                     นางสาวทักษิณา ชมจันทร์
                     <div className="text-md ">
-                      อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
+                      ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
                     </div>
                   </div>
                 </div>
