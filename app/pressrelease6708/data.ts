@@ -1,7 +1,16 @@
 export const DataPressrelease6708 = {
   navItems: [
     {
-      id: 27,
+      id: 30,
+      name: `เเจ้ง ‼️  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/29/1.webp",
+      description: `
+กำหนดการลงทะเบียนการเรียนการสอน เรียนที่ ๑ ปีการศึกษา ๒๕๖๗ (ภาคฤดูฝน)  หลักสูตรประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
+      ...`,
+      href: "/pressrelease338",
+    },
+    {
+      id: 29,
       name: `ประชาสัมพันธ์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/28/1.webp",
       description: `
@@ -10,7 +19,7 @@ export const DataPressrelease6708 = {
       href: "/pressrelease337",
     },
     {
-      id: 27,
+      id: 28,
       name: `🧡💙ขอเเสดงความยินดีกับ 💙🧡 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/27/2.webp",
       description: `
