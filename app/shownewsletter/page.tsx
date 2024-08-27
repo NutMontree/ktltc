@@ -77,7 +77,7 @@ export default function ShowNewsletter() {
           {DataNewsletter.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl h-[250px] lg:h-[600px] lg:w-[full] overflow-hidden ">
+                <div className="mb-6 relative shadow-lg rounded-xl h-[200px] lg:h-[600px] lg:w-[full] overflow-hidden ">
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500"
                     style={{

@@ -56,7 +56,7 @@ export default function Pressrelease() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
-                <div className=" scale-90 hover:scale-110 transition duration-500 rounded-full">
+                <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
                   <Image src={item.img} alt={""}></Image>
                 </div>
               </div>
