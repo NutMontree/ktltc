@@ -2,6 +2,15 @@ export const DataPressrelease6708 = {
   navItems: [
     {
       id: 27,
+      name: `ประชาสัมพันธ์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/28/1.webp",
+      description: `
+การเปิดการเรียนการสอนภาคเรียนที่ ๑ ปีการศึกษา ๒๕๖๗ (ภาคฤดูฝน) หลักสูตรประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
+      ...`,
+      href: "/pressrelease337",
+    },
+    {
+      id: 27,
       name: `🧡💙ขอเเสดงความยินดีกับ 💙🧡 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/27/2.webp",
       description: `

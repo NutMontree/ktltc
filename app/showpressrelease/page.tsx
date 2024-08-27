@@ -52,7 +52,7 @@ export default function ShowPressRelease() {
           </Space>
         </ConfigProvider>
       </div>
-
+  
       <div className="px-6 py-3">
         <Swiper
           breakpoints={{
@@ -77,9 +77,9 @@ export default function ShowPressRelease() {
           {DataPressrelease6708.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl  h-[150px] sm:h-[200px] lg:h-[250px]  overflow-hidden ">
+                <div className="mb-6 relative shadow-lg rounded-xl h-[150px] sm:h-[200px] lg:h-[250px] overflow-hidden">
                   <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500"
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
