@@ -5,6 +5,12 @@ import { Link } from "@nextui-org/link";
 export default function Footer() {
   return (
     <>
+      <div>
+        <div></div>
+        <div>KTLTC</div>
+        <div>วิทยาลัยเทคนิคกันทรลักษ์</div>
+      </div>
+
       <div className="w-full py-3 ">
         <div className="flex gap-2 justify-center">
           <div className="text-default-600 text-xs">Copyright © 2023.</div>
