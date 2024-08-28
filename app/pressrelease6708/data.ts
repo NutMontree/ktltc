@@ -1,7 +1,16 @@
 export const DataPressrelease6708 = {
   navItems: [
     {
-      id: 33,
+      id: 35,
+      name: ` วิทยาลัยเทคนิคกันทรลักษ์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/34/3.webp",
+      description: `
+ดำเนินงานเฝ้าระวังพฤติกรรมที่สัมพันธ์กับการติดเชื่อเอชไววี (BSS) ในกลุ่มนักศึกษา ระดับ ปวส. ๒ ประจำปี ๒๕๖๗
+      ...`,
+      href: "/pressrelease343",
+    },
+    {
+      id: 34,
       name: `นางสาวทักษิณา ชมจันทร์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/33/10.webp",
       description: `
