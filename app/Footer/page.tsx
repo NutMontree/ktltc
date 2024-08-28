@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <>
       <div className="">
-        <footer className="bottom-0 left-0 z-20 w-full border-t border-y  shadow md:flex   md:justify-between md:p-18 px-16 py-12">
+        <footer className="bottom-0 left-0 z-20 w-full border-t border-y md:flex md:justify-between px-8 py-8">
           <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
             {/* © 2023
             <a href="https://flowbite.com/" className="hover:underline">
@@ -69,115 +69,103 @@ export default function Footer() {
             </div>
           </span>
 
-          <div className=" py-2 mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+          <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <div className="py-2">
-                <Link
-                  href="/pressrelease"
-                  className="hover:underline me-4 md:me-6"
-                >
-                  ข่าวประชาสัมพันธ์
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link
-                  href="/newsletter"
-                  className="hover:underline me-4 md:me-6"
-                >
-                  จดหมายข่าว
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link
-                  href="/announcement"
-                  className="hover:underline me-4 md:me-6"
-                >
-                  ข่าวประกาศ
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/bidding" className="hover:underline">
-                  ข่าวประกวดราคา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link
-                  href="/technicalcollegeorders"
-                  className="hover:underline"
-                >
-                  คำสั่งวิทยาลัยเทคนิค
-                </Link>
-              </div>
+              <Link
+                href="/pressrelease"
+                className="hover:underline me-4 md:me-6"
+              >
+                ข่าวประชาสัมพันธ์
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/newsletter" className="hover:underline me-4 md:me-6">
+                จดหมายข่าว
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link
+                href="/announcement"
+                className="hover:underline me-4 md:me-6"
+              >
+                ข่าวประกาศ
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/bidding" className="hover:underline">
+                ข่าวประกวดราคา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/technicalcollegeorders" className="hover:underline">
+                คำสั่งวิทยาลัยเทคนิค
+              </Link>
             </div>
           </div>
 
-          <div className=" py-2  mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+          <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <div className="py-2">
-                <Link href="/ " className="hover:underline me-4 md:me-6">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline me-4 md:me-6">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline me-4 md:me-6">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
+              <Link href="/ " className="hover:underline me-4 md:me-6">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline me-4 md:me-6">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline me-4 md:me-6">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline">
+                ไม่พบเนิ่อหา
+              </Link>
             </div>
           </div>
 
-          <div className=" py-2    mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+          <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <div className="py-2">
-                <Link href="/ " className="hover:underline me-4 md:me-6">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline me-4 md:me-6">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline me-4 md:me-6">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/ " className="hover:underline">
-                  เพิ่มเนิ่อหา
-                </Link>
-              </div>
+              <Link href="/ " className="hover:underline me-4 md:me-6">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline me-4 md:me-6">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline me-4 md:me-6">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline">
+                ไม่พบเนิ่อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline">
+                ไม่พบเนิ่อหา
+              </Link>
             </div>
           </div>
         </footer>
