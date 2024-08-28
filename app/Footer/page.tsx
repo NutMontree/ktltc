@@ -9,17 +9,12 @@ export default function Footer() {
       <div className="">
         <footer className="bottom-0 left-0 z-20 w-full border-t border-y md:flex md:justify-between px-8 py-8">
           <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            {/* © 2023
-            <a href="https://flowbite.com/" className="hover:underline">
-              Flowbite™
-            </a>
-            . All Rights Reserved. */}
             <div>
               <Image
                 removeWrapper
                 alt="Relaxing app background"
                 className="w-60 py-2"
-                src="/images/ktl.png"
+                src="/images/ktltc.png"
               />
             </div>
             <div className="flex gap-2 py-2">
