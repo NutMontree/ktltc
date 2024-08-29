@@ -171,32 +171,32 @@ export default function Footer() {
           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
               <Link href="/ " className="hover:underline me-4 md:me-6">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline me-4 md:me-6">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline me-4 md:me-6">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
           </div>
@@ -204,32 +204,32 @@ export default function Footer() {
           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
               <Link href="/ " className="hover:underline me-4 md:me-6">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline me-4 md:me-6">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline me-4 md:me-6">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
               <Link href="/ " className="hover:underline">
-                ไม่พบเนิ่อหา
+                ไม่พบเนื้อหา
               </Link>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function Footer() {
       <div>
         <div className="flex items-center justify-center px-16 py-16 w-full">
           <FloatingDock
-            mobileClassName="translate-y-20" // only for demo, remove for production
+            mobileClassName=" " // only for demo, remove for production
             items={links}
           />
         </div>
