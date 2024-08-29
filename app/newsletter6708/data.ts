@@ -1,6 +1,15 @@
 export const DataNewsletter = {
   navItems: [
     {
+      id: 24,
+      name: ` แผนกวิชาช่างยนต์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/35/0.webp",
+      description: `
+ เข้าร่วมกิจกรรมอารมศูนย์ฝึกขับขี่ปลอดภัยฮอนด้า Honda Safety Riding Canter ดำเนินการโดย บริษัท บุรีรัมย์ยนตรการ จำกัด
+       ...`,
+      href: "/pressrelease344",
+    },
+    {
       id: 23,
       name: `นางสาวทักษิณา ชมจันทร์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/สิงหาคม/33/0.webp",
