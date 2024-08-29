@@ -15,7 +15,7 @@ export default function page() {
   return (
     <>
       <main>
-        <Link href="/test">TestPage</Link>
+        {/* <Link href="/test">TestPage</Link> */}
         <Scrollimage />
         <div className="px-6 py-6">
           <Wellcome />
