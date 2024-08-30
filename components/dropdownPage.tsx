@@ -18,7 +18,7 @@ export default function DropdownPage() {
             <div className="flex gap-4">
               <Dropdown>
                 <DropdownTrigger>
-                  <div className="text-sm flex pt-2 ">
+                  <div className="text-sm flex pt-2 text-whigh text-red">
                     ประวัติสถานศึกษา
                     <div className="pt-1 pl-1">
                       <svg

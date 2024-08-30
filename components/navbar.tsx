@@ -67,25 +67,6 @@ export const Navbar = () => {
 
         <NavbarMenu className="pt-5">
           {searchInput}
-          {/* <div className="max-25 mt-2 flex flex-col gap-2 ">
-            {siteConfig.navMenuItems.map((item, index) => (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link
-                  color={
-                    index === 0
-                      ? "primary"
-                      : index === siteConfig.navMenuItems.length - 5
-                      ? "danger"
-                      : "foreground"
-                  }
-                  href={item.href}
-                >
-                  {item.label}
-                </Link>
-              </NavbarMenuItem>
-            ))}
-          </div> */}
-
           <div>
             <DropdownPage1 />
           </div>
