@@ -59,6 +59,10 @@ export default function Pressrelease() {
           ))}
         </div>
         <br />
+        <Image
+          src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/1/1.webp"}
+          alt={""}
+        ></Image>
 
         <div className="flex justify-center">
           <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">

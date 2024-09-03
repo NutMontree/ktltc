@@ -19,10 +19,9 @@ import "swiper/css/scrollbar";
 // import required modules
 import NextLink from "next/link";
 
-import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { DataNewsletter } from "../newsletter6708/data";
+import { DataNewsletter } from "../newsletter6709/data";
 
 export default function ShowNewsletter() {
   return (

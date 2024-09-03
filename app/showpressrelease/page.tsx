@@ -18,11 +18,10 @@ import "swiper/css/scrollbar";
 
 // import required modules
 import NextLink from "next/link";
-import { DataPressrelease6708 } from "../pressrelease6708/data";
 
-import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
+import { DataPressrelease } from "../pressrelease6709/data";
 
 export default function ShowPressRelease() {
   return (
@@ -74,7 +73,7 @@ export default function ShowPressRelease() {
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
         >
-          {DataPressrelease6708.navItems.map((item) => (
+          {DataPressrelease.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
                 <div className="mb-6 relative shadow-lg rounded-xl h-[150px] sm:h-[250px] lg:h-[350px] overflow-hidden">
