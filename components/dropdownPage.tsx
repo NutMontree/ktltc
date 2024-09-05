@@ -40,12 +40,12 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/historyeducational" className="text-sm">
                       ประวัติสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/philosophy" className="text-sm">
                       ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
                     </Link>
                   </DropdownItem>
