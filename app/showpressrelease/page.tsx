@@ -56,11 +56,19 @@ export default function ShowPressRelease() {
         <Swiper
           breakpoints={{
             340: {
+              slidesPerView: 1,
+              spaceBetween: 15,
+            },
+            600: {
               slidesPerView: 2,
               spaceBetween: 15,
             },
-            700: {
+            1000: {
               slidesPerView: 3,
+              spaceBetween: 15,
+            },
+            1500: {
+              slidesPerView: 4,
               spaceBetween: 15,
             },
           }}
@@ -76,7 +84,7 @@ export default function ShowPressRelease() {
           {DataPressrelease.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl h-[150px] sm:h-[250px] lg:h-[350px] overflow-hidden">
+                <div className="mb-6 relative shadow-lg rounded-xl h-[250px] sm:h-[250px] lg:h-[350px] overflow-hidden">
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500"
                     style={{

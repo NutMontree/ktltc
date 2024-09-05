@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วันที่ ๕ กันยายน ๒๕๖๗ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/6/3.webp",
+      description: `
+นักเรียน นักศึกษา แผนกวิชาธุรกิจดิจิทัล เข้าร่วมกิจกรรมบริหารธุรกิจการจัดการ และประกวด Digital Content , อบรมแข่งขันตัดต่อ VDO
+ ...`,
+      href: "/pressrelease355",
+    },
+    {
       name: `นางสาวทักษิณา ชมจันทร์  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/5/03.webp",
       description: `
