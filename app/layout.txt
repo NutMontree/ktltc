@@ -1,0 +1,73 @@
+import "@/styles/globals.css";
+import { Metadata, Viewport } from "next";
+import { siteConfig } from "@/config/site";
+import { fontSans } from "@/config/fonts";
+import { Providers } from "./providers";
+import { Navbar } from "@/components/navbar";
+import clsx from "clsx";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import Footer from "./Footer/page";
+import Header from "@/components/header";
+// import DropdownPage from "@/components/dropdownPage";
+import { CommentOutlined, CustomerServiceOutlined } from "@ant-design/icons";
+import { FloatButton } from "antd";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  icons: {
+    icon: "/images/logo.webp",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body className={clsx(" ", fontSans.variable)}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+          <div>
+            <Header />
+            <Navbar />
+            <main>
+              {children}
+              <SpeedInsights />
+            </main>
+            <Footer />
+          </div>
+          <FloatButton
+            icon={<CommentOutlined />}
+            tooltip={
+              <div>
+                <div>
+                  <Link
+                    className="  text-sky-500"
+                    href="https://www.facebook.com/messages/t/100004276455648"
+                  >
+                    Mesesnger
+                  </Link>
+                </div>
+              </div>
+            }
+          />
+        </Providers>
+      </body>
+    </html>
+  );
+}
+
