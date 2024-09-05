@@ -1,6 +1,22 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `นางสาวทักษิณา ชมจันทร์  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/5/03.webp",
+      description: `
+ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ เข้ารับการประเมินผลการพัฒนางานตามข้อตกลง (PA) ปีงบประมาณ พ.ศ. ๒๕๖๗
+      ...`,
+      href: "/pressrelease354",
+    },
+    {
+      name: `ขอแสดงความยินดีกับ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/4/1.webp",
+      description: `
+คณะกรรมการองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย ระดับสถานศึกษา ทั้ง 7 ตำแหน่ง
+      ...`,
+      href: "/pressrelease353",
+    },
+    {
       name: `นางสาวทักษิณา ชมจันทร์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/3/2.webp",
       description: `
