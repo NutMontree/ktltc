@@ -13,7 +13,6 @@ import {
   IconNewSection,
   IconTerminal2,
 } from "@tabler/icons-react";
-// import Image from "next/image";
 
 export default function Footer() {
   const links = [

@@ -9,9 +9,10 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./Footer/page";
 import Header from "@/components/header";
 // import DropdownPage from "@/components/dropdownPage";
-import { CommentOutlined, CustomerServiceOutlined } from "@ant-design/icons";
+import { CommentOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
 import Link from "next/link";
+import { FloatingNavDemo } from "@/components/FloatingNavDemo";
 
 export const metadata: Metadata = {
   title: {
@@ -44,6 +45,8 @@ export default function RootLayout({
           <div>
             <Header />
             <Navbar />
+            <FloatingNavDemo />
+
             <main>
               {children}
               <SpeedInsights />

@@ -7,7 +7,7 @@ export default function Header() {
     <>
       <div className="px-24 min-w-24 pt-3 flex justify-end ">
         <ul>
-          <div className=" flex gap-4 text-xs ">
+          <div className="flex gap-4 text-xs">
             <div>ติดต่อสอบถาม</div>
 
             <div className="flex">
@@ -117,7 +117,9 @@ export default function Header() {
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="px-1 py-2">
-                    <div className="text-tiny">ktl11022021@gmail.com</div>
+                    <div className="text-tiny">
+                      ktl11022021@gmail.com 555555555
+                    </div>
                   </div>
                 </PopoverContent>
               </Popover>
