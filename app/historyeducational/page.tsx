@@ -96,6 +96,11 @@ export default function HistoryEducational() {
             />
           </div>
         </div>
+        <br />
+        <br />
+        <div className="text-xl font-semibold mx-auto font-normal text-neutral-600 dark:text-neutral-400">
+          ภาพอาคารสถานที่ (ไปหามาใส่เพิ่ม)
+        </div>
       </div>
     </>
   );
