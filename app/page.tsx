@@ -17,22 +17,22 @@ export default function page() {
       <main>
         {/* <Link href="/test">TestPage</Link> */}
         <Scrollimage />
-        <div className="px-6 py-6">
+        <div className="py-6">
           <Wellcome />
         </div>
-        <div className="border-t px-6 py-6">
+        <div className="border-t py-6">
           <ShowPressRelease />
         </div>
-        <div className="border-t px-6 py-6">
+        <div className="border-t py-6">
           <ShowNewsletter />
         </div>
-        <div className="border-t px-6 py-6">
+        <div className="border-t py-6">
           <ShowAnnouncement />
         </div>
-        <div className="border-t px-6 py-6">
+        <div className="border-t py-6">
           <ShowBidding />
         </div>
-        <div className="border-t px-6 py-6">
+        <div className="border-t py-6">
           <ShowTechnicalcollegeorders />
         </div>
 
