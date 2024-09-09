@@ -55,19 +55,19 @@ export default function ShowNewsletter() {
       <div className="px-6 py-3">
         <Swiper
           breakpoints={{
-            340: {
-              slidesPerView: 1,
-              spaceBetween: 15,
-            },
-            600: {
+            0: {
               slidesPerView: 2,
               spaceBetween: 15,
             },
-            1000: {
+            340: {
+              slidesPerView: 2,
+              spaceBetween: 15,
+            },
+            600: {
               slidesPerView: 3,
               spaceBetween: 15,
             },
-            1500: {
+            1000: {
               slidesPerView: 4,
               spaceBetween: 15,
             },
