@@ -67,7 +67,7 @@ export default function ShowNewsletter() {
               slidesPerView: 3,
               spaceBetween: 15,
             },
-            1000: {
+            800: {
               slidesPerView: 4,
               spaceBetween: 15,
             },
@@ -84,7 +84,7 @@ export default function ShowNewsletter() {
           {DataNewsletter.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl  h-[400px] lg:h-[600px] lg:w-[full] overflow-hidden ">
+                <div className="mb-6 relative shadow-lg rounded-xl h-[220px] lg:h-[330px] lg:w-[full] overflow-hidden ">
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
                     style={{
