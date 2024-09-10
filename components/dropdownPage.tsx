@@ -74,9 +74,7 @@ export default function DropdownPage() {
                     key="delete"
                     className="text-danger"
                     color="danger"
-                  >
-                    Delete file
-                  </DropdownItem>
+                  ></DropdownItem>
                 </DropdownMenu>
               </Dropdown>
 
@@ -153,9 +151,7 @@ export default function DropdownPage() {
                     key="delete"
                     className="text-danger"
                     color="danger"
-                  >
-                    Delete file
-                  </DropdownItem>
+                  ></DropdownItem>
                 </DropdownMenu>
               </Dropdown>
 
@@ -207,9 +203,7 @@ export default function DropdownPage() {
                     key="delete"
                     className="text-danger"
                     color="danger"
-                  >
-                    Delete file
-                  </DropdownItem>
+                  ></DropdownItem>
                 </DropdownMenu>
               </Dropdown>
 
@@ -306,9 +300,7 @@ export default function DropdownPage() {
                     key="delete"
                     className="text-danger"
                     color="danger"
-                  >
-                    Delete file
-                  </DropdownItem>
+                  ></DropdownItem>
                 </DropdownMenu>
               </Dropdown>
 
@@ -395,9 +387,7 @@ export default function DropdownPage() {
                     key="delete"
                     className="text-danger"
                     color="danger"
-                  >
-                    Delete file
-                  </DropdownItem>
+                  ></DropdownItem>
                 </DropdownMenu>
               </Dropdown>
 
@@ -498,9 +488,7 @@ export default function DropdownPage() {
                     key="delete"
                     className="text-danger"
                     color="danger"
-                  >
-                    Delete file
-                  </DropdownItem>
+                  ></DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>

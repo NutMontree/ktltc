@@ -10,8 +10,8 @@ export default function AnnouncementPage() {
   return (
     <>
       <div>
-        <h1 className="flex justify-center text-xl">ข่าวประกาศ</h1>
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl ">ข่าวประกาศ</h1>
+        <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
           Announcement New Page
         </h1>
       </div>
