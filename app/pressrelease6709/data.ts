@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/19/1.webp",
+      description: `
+เปิดรับสมัครครูพิเศษสอน เเผนกวิชาโลจิสติกส์ 👉 เปิดรับสมัครตั้งเเต่ วันที่ ๑๑ - ๑๖ กันยายน ๒๕๖๗ (ตามวันเวลาราชการ)
+      ...`,
+      href: "/pressrelease371",
+    },
+    {
       name: `นายสมศักดิ์ จันทานิตย์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/18/02.webp",
       description: `
