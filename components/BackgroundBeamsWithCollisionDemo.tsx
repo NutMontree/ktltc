@@ -10,7 +10,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         <BackgroundBeamsWithCollision>
           <div className="scale-95 hover:scale-110 duration-500 justify-center">
             <Image
-              className="h-[200px] sm:h-[400px] lg:h-[600px]"
+              className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px]"
               src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/19/1.webp"}
               alt={""}
             />
