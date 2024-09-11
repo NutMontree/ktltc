@@ -9,6 +9,7 @@ import ShowBidding from "./showbidding/page";
 import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 
 import Link from "next/link";
+import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 // import { ThreeDCardDemo } from "@/components/test/ThreeDCardDemo";
 
 export default function page() {
@@ -19,6 +20,9 @@ export default function page() {
         <Scrollimage />
         <div className="py-6">
           <Wellcome />
+        </div>
+        <div className="border-t">
+          <BackgroundBeamsWithCollisionDemo />
         </div>
         <div className="border-t py-6">
           <ShowPressRelease />

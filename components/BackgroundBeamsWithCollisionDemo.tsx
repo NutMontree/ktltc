@@ -1,0 +1,22 @@
+import React from "react";
+import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
+import { Image } from "@nextui-org/react";
+import Link from "next/link";
+
+export function BackgroundBeamsWithCollisionDemo() {
+  return (
+    <>
+      <Link href="pressrelease371">
+        <BackgroundBeamsWithCollision>
+          <div className="scale-95 hover:scale-110 duration-500 justify-center">
+            <Image
+              className="h-[200px] sm:h-[400px] lg:h-[600px]"
+              src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/19/1.webp"}
+              alt={""}
+            />
+          </div>
+        </BackgroundBeamsWithCollision>
+      </Link>
+    </>
+  );
+}
