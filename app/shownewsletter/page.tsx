@@ -85,7 +85,18 @@ export default function ShowNewsletter() {
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
                 {/* <div className="mb-6 relative shadow-lg rounded-xl xs-h-44  lg:w-[full] overflow-hidden "> */}
-                <div className="relative mb-42 shadow-lg rounded-xl h-[192px] lg:h-[320px] xl:h-[382px] lg:w-[full] overflow-hidden ">
+                {/* <div className="relative mb-42 shadow-lg rounded-xl h-[192px] lg:h-[320px] xl:h-[382px] lg:w-[full] overflow-hidden "> */}
+                <div
+                  className="relative mb-42 shadow-lg rounded-xl 
+                h-[210px] 
+                sm:h-[310px]
+                lg:h-[410px]
+                xl:h-[510px]
+                
+                
+                z
+                lg:w-[full] overflow-hidden "
+                >
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
                     style={{
