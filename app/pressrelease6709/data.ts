@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วันที่ ๙ - ๑๒ กันยายน ๒๕๖๗ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/23/24.webp",
+      description: `
+นายอาทร ศรีมะณี รองผู้อำนวยการฝ่ายวิชาการ พร้อมด้วยคณะครู เดินทางไปนิเทศติดตาม นักเรียน นักศึกษา ฝึกงานในสถานประกอบการ 
+      ...`,
+      href: "/pressrelease375",
+    },
+    {
       name: `วันที่  ๑๒  กันยายน ๒๕๖๗`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/22/10.webp",
       description: `
