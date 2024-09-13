@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: `นายอาทร ศรีมะณี`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/25/0.webp",
+      description: `
+รองผู้อำนวยการฝ่ายวิชาการ และ 👉 นางสาวทราทิตย์ ชิดชม หัวหน้างานแนะแนวอาชีพและการจัดหางาน เข้าร่วมโครงการประชุมเชิงปฏิบัติการเพื่อ
+      ...`,
+      href: "/pressrelease377",
+    },
+    {
       name: `วันที่ ๙ - ๑๒ กันยายน ๒๕๖๗ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/23/0.webp",
       description: `

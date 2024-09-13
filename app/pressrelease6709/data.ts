@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `นายอาทร ศรีมะณี`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/25/2.webp",
+      description: `
+รองผู้อำนวยการฝ่ายวิชาการ และ 👉 นางสาวทราทิตย์ ชิดชม หัวหน้างานแนะแนวอาชีพและการจัดหางาน เข้าร่วมโครงการประชุมเชิงปฏิบัติการเพื่อ
+      ...`,
+      href: "/pressrelease377",
+    },
+    {
       name: `นางสาวทักษิณา ชมจันทร์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/24/2.webp",
       description: `
