@@ -7,6 +7,7 @@ import ShowNewsletter from "./shownewsletter/page";
 import ShowAnnouncement from "./showannouncement/page";
 import ShowBidding from "./showbidding/page";
 import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
+import ScrollVelocity from "@/components/Scrollvelocity";
 
 import Link from "next/link";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
@@ -20,6 +21,9 @@ export default function page() {
         <Scrollimage />
         <div className="py-6">
           <Wellcome />
+        </div>
+        <div className="border-t py-6">
+          <ScrollVelocity />
         </div>
         <div className="border-t">
           <BackgroundBeamsWithCollisionDemo />
