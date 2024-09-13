@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/26/2.webp",
+      description: `
+ ขอขอบพระคุณ บริษัท ทีโอเอ เพอฟอร์มมานซ์ โค๊ทติ้ง คอร์ปอเรชั่น จำกัด พร้อมด้วย ชมรมวิชาชีพเทคโนโลยี ตัวถังเเละสีรถยนต์  ในการสนับสนุนวัสดุ
+       ...`,
+      href: "/pressrelease378",
+    },
+    {
       name: `นายอาทร ศรีมะณี`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/25/2.webp",
       description: `
