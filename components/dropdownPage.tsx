@@ -364,7 +364,7 @@ export default function DropdownPage() {
                   </DropdownItem>
                   <DropdownItem>
                     <Link href="/" className="text-sm">
-                      รายงานประจำแีของสถานศึกษา (SAR)
+                      รายงานประจำของสถานศึกษา (SAR)
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
@@ -374,7 +374,7 @@ export default function DropdownPage() {
                   </DropdownItem>
                   <DropdownItem>
                     <Link href="/" className="text-sm">
-                      แบบประเมินความำึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
+                      แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
@@ -470,12 +470,12 @@ export default function DropdownPage() {
                   </DropdownItem>
                   <DropdownItem>
                     <Link href="/" className="text-sm">
-                      จดหมายขช่าว
+                      จดหมายข่าว
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
                     <Link href="/" className="text-sm">
-                      ข่าวาจัดซื้อ จัดจ้าง
+                      ข่าวจัดซื้อ จัดจ้าง
                     </Link>
                   </DropdownItem>
                   <DropdownItem>

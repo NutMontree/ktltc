@@ -11,6 +11,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 
 import Link from "next/link";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
+import { HeroScrollDemo } from "@/components/HeroScrollDemo";
 // import { ThreeDCardDemo } from "@/components/test/ThreeDCardDemo";
 
 export default function page() {
@@ -27,6 +28,9 @@ export default function page() {
         </div>
         <div className="border-t">
           <BackgroundBeamsWithCollisionDemo />
+        </div>
+        <div className="border-t">
+          <HeroScrollDemo />
         </div>
         <div className="border-t py-6">
           <ShowPressRelease />
