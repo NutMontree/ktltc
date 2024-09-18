@@ -29,6 +29,8 @@
     "@nextui-org/theme": "^2.2.9",
     "@react-aria/ssr": "^3.9.2",
     "@react-aria/visually-hidden": "^3.8.10",
+    "@react-three/drei": "^9.112.0",
+    "@react-three/fiber": "^8.17.7",
     "@tabler/icons-react": "^3.13.0",
     "@types/node": "20.5.7",
     "@types/react": "^18.3.3",
@@ -53,6 +55,8 @@
     "tailwind-merge": "^2.5.2",
     "tailwind-variants": "^0.1.20",
     "tailwindcss": "3.4.3",
+    "three": "^0.168.0",
+    "three-globe": "^2.31.1",
     "typescript": "5.0.4"
   }
 }

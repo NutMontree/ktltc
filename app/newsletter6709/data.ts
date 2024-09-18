@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: ` การเข้ารับการประเมิน`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/34/01.webp",
+      description: `
+ศูนย์บ่มเพาะผู้ประกอบการอาชีวศึกษา “ระดับชาติ” ธุรกิจไอศกรีมทุเรียนภูเขาไฟ LAVA MILK ประจำปีงบประมาณ พ.ศ. ๒๕๖๗
+      ...`,
+      href: "/pressrelease386",
+    },
+    {
       name: `นางสาวทักษิณา ชมจันทร์  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/29/0.webp",
       description: `

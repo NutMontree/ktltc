@@ -23,6 +23,14 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/test/MapID.tsx", "app/showbidding"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "components/test/MapID.tsx",
+    "components/ui/data/globe.tsx",
+    "app/showbidding"
+  ],
   "exclude": ["node_modules"]
 }

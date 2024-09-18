@@ -1,6 +1,7 @@
 "use client"; // top to the file
 import { FlipWords } from "@/components/ui/flip-words";
 import { Image } from "@nextui-org/react";
+import { ImageItem } from "./data";
 
 export default function HistoryEducational() {
   const words = ["ประวัติความเป็นมา", "ข้อมูลด้านอาคารสถานที่"];
@@ -100,6 +101,18 @@ export default function HistoryEducational() {
         <br />
         <div className="text-xl font-semibold mx-auto font-normal text-neutral-600 dark:text-neutral-400">
           ภาพอาคารสถานที่
+        </div>
+
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 justify-items-center justify-center ">
+            {ImageItem.map((item) => (
+              <div className="" key={item.img}>
+                <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
+                  <Image src={item.img} alt={""}></Image>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </>
