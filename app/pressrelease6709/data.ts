@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `  กำหนดการเปิดเเละปิดภาคเรียน   `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/32/1.webp",
+      description: `
+👉 ปิดภาคเรียนที่ ๑/๒๕๖๗ วันที่ ๒๘ กันยายน ๒๕๖๗ 
+👉 เปิดภาคเรียนที่ ๒/๒๕๖๗ วันที่ ๒๑ ตุลาคม ๒๕๖๗ 
+      ...`,
+      href: "/pressrelease383",
+    },
+    {
       name: ` กำหนดการลงทะเบียนเรียน  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/31/1.webp",
       description: `
