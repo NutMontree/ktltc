@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` นางสาวทักษิณา ชมจันทร์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/35/30.webp",
+      description: `
+ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย 👉นางสาวภวิกา โพธิ์ขาว รองผู้อำนวยการฝ่ายบริหารทรัพยากร ร่วมพิธีเปิดงานกีฬาสีภายใน 
+      ...`,
+      href: "/pressrelease388",
+    },
+    {
       name: ` ศูนย์รับบริจาค`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/30/5.webp",
       description: `
