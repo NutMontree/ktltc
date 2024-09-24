@@ -6,6 +6,7 @@ import Link from "next/link";
 import React from "react";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import {
+  IconBrandFacebook,
   IconBrandGithub,
   IconBrandX,
   IconExchange,
@@ -31,46 +32,53 @@ export default function Footer() {
       ),
       href: "#",
     },
-    {
-      title: "Components",
-      icon: (
-        <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
-    },
-    {
-      title: "Aceternity UI",
-      icon: (
-        <Image
-          src="https://assets.aceternity.com/logo-dark.png"
-          width={20}
-          height={20}
-          alt="Aceternity Logo"
-        />
-      ),
-      href: "#",
-    },
-    {
-      title: "Changelog",
-      icon: (
-        <IconExchange className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
-    },
+    // {
+    //   title: "Components",
+    //   icon: (
+    //     <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+    //   ),
+    //   href: "#",
+    // },
+    // {
+    //   title: "Aceternity UI",
+    //   icon: (
+    //     <Image
+    //       src="https://assets.aceternity.com/logo-dark.png"
+    //       width={20}
+    //       height={20}
+    //       alt="Aceternity Logo"
+    //     />
+    //   ),
+    //   href: "#",
+    // },
+    // {
+    //   title: "Changelog",
+    //   icon: (
+    //     <IconExchange className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+    //   ),
+    //   href: "#",
+    // },
 
+    // {
+    //   title: "Twitter",
+    //   icon: (
+    //     <IconBrandX className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+    //   ),
+    //   href: "#",
+    // },
+    // {
+    //   title: "GitHub",
+    //   icon: (
+    //     <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+    //   ),
+    //   href: "#",
+    // },
     {
-      title: "Twitter",
+      title: "Facebook",
       icon: (
-        <IconBrandX className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconBrandFacebook className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
-    },
-    {
-      title: "GitHub",
-      icon: (
-        <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
+      href: "https://www.facebook.com/profile.php?id=100004276455648",
     },
   ];
   return (
@@ -134,6 +142,11 @@ export default function Footer() {
           </span>
 
           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+            <div className="py-2">
+              <Link href="/" className="hover:underline me-4 md:me-6">
+                หน้าหลัก
+              </Link>
+            </div>
             <div className="py-2">
               <Link
                 href="/pressrelease"
@@ -256,7 +269,8 @@ export default function Footer() {
           <div className="text-default-600 text-xs"> Designed </div>
           <Link
             className="flex justify-center gap-1 text-current "
-            href="https://www.facebook.com/profile.php?id=61553558543619"
+            // href="https://www.facebook.com/profile.php?id=61553558543619"
+            href="/Sponsor"
             title="All M Min"
           >
             <div className="text-xs font-medium">By All M Min</div>

@@ -31,6 +31,6 @@
     "components/test/MapID.tsx",
     "components/ui/data/globe.tsx",
     "app/showbidding"
-  ],
+, "components/settings.tsx", "components/Shapes.tsx", "components/use-smooth-transform.js"  ],
   "exclude": ["node_modules"]
 }

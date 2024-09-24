@@ -1,22 +1,22 @@
+"use client";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
-  NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Kbd } from "@nextui-org/kbd";
 import { Input } from "@nextui-org/input";
-import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
-import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
 import DropdownPage from "./dropdownPage";
-import DropdownPage2 from "./navmanu/Dropdown";
 import DropdownPage1 from "./navmanu/Dropdown";
+import { FloatingDock } from "@/components/ui/floating-dock";
+import { IconBrandFacebook } from "@tabler/icons-react";
+import Link from "next/link";
 
 export const Navbar = () => {
   const searchInput = (
@@ -35,6 +35,16 @@ export const Navbar = () => {
       type="search"
     />
   );
+
+  const links = [
+    {
+      title: "Facebook",
+      icon: (
+        <IconBrandFacebook className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "https://www.facebook.com/profile.php?id=100004276455648",
+    },
+  ];
 
   return (
     <>
@@ -61,6 +71,14 @@ export const Navbar = () => {
         </NavbarContent>
 
         <NavbarContent justify="end">
+          <div className=" ">
+            <Link
+              title="Facebook"
+              href="https://www.facebook.com/profile.php?id=100004276455648"
+            >
+              <IconBrandFacebook className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+            </Link>
+          </div>
           <ThemeSwitch />
           <NavbarMenuToggle />
         </NavbarContent>

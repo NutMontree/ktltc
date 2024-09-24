@@ -46,11 +46,15 @@ export default function RootLayout({
             <Header />
             <Navbar />
             <FloatingNavDemo />
-
             <main>
               {children}
               <SpeedInsights />
             </main>
+
+            {/* <div className="flex justify-center">
+              <InputGame />
+            </div> */}
+
             <Footer />
           </div>
           <FloatButton

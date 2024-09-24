@@ -54,10 +54,10 @@ export default function Sponsor() {
                         <div className=" justify-center flex">
                           <Link
                             className="text-sky-500"
-                            href="https://www.facebook.com/messages/t/61553558543619?locale=hi_IN"
+                            href="https://www.facebook.com/profile.php?id=61553558543619&locale=hi_IN"
                           >
                             <Avatar
-                              src="https://scontent.fbkk10-1.fna.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=5vJ2NuR9MFgQ7kNvgEqxw86&_nc_ht=scontent.fbkk10-1.fna&oh=00_AYD1Nw_rYEWIAevJKVrIjr9egqxaWV0suaZkx90GDzyJtw&oe=66CB6341"
+                              src="https://scontent.fubp1-1.fna.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=vFH1T-_stfUQ7kNvgFrY2cq&_nc_ht=scontent.fubp1-1.fna&_nc_gid=ALpLJGph5mGR92vm55FPUPO&oh=00_AYC22U52jTE-pK5LED1B0EwBrf75zO60mldMQBw_rI60uw&oe=66F83641"
                               className="w-20 h-20 text-large"
                             />
                           </Link>
@@ -66,7 +66,7 @@ export default function Sponsor() {
                         <div className="flex gap-2 flex justify-center">
                           <div>All M Min </div>
                           <Link
-                            className="text-sky-500"
+                            className="hover:text-sky-700 text-sky-500 "
                             href="https://www.facebook.com/messages/t/61553558543619?locale=hi_IN"
                           >
                             Messages
