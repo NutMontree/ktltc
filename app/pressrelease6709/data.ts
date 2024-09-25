@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วันที่ ๒๕ กันยายน ๒๕๖๗  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/48/3.webp",
+      description: `
+วิทยาลัยเทคนิคกันทรลักษ์ สอบประเมินผลปลายภาคของนักเรียน นักศึกษา  ภาคเรียนที่ ๑ ปีการศึกษา ๒๕๖๗
+      ...`,
+      href: "/pressrelease401",
+    },
+    {
       name: ` นางสาวทักษิณา ชมจันทร์  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/47/23.webp",
       description: `

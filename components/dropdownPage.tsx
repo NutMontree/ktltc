@@ -424,7 +424,7 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/externalinternal" className="text-sm">
                       แบบฟอร์มหนังสือภายนอก-ภายใน
                     </Link>
                   </DropdownItem>
