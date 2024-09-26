@@ -95,7 +95,7 @@ export default function Pressrelease() {
         <div className="Foot-Image">
           <div className="flex scale-90 hover:scale-110 transition duration-500 rounded-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
             <Image
-              src={"images/ข่าวประชาสัมพันธ์/2567/กันยายน/33/1.webp"}
+              src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/52/1.webp"}
               alt={""}
             />
           </div>
