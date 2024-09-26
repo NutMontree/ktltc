@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: `ศูนย์รับบริจาค`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/49/0.webp",
+      description: `
+ชมรมจิตอาสากู้ภัยเทคนิคกันท์ นำโดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร 
+      ...`,
+      href: "/pressrelease402",
+    },
+    {
       name: `วันที่ ๒๕ กันยายน ๒๕๖๗  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/48/0.webp",
       description: `
