@@ -6,12 +6,12 @@ import Link from "next/link";
 export function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
-      <Link href="pressrelease385">
+      <Link href="pressrelease405">
         <BackgroundBeamsWithCollision>
           <div className="scale-95 hover:scale-110 duration-500 justify-center">
             <Image
               className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px]"
-              src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/33/1.webp"}
+              src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/52/1.webp"}
               alt={""}
             />
           </div>
