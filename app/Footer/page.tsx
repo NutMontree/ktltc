@@ -182,8 +182,11 @@ export default function Footer() {
 
           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <Link href="/ " className="hover:underline me-4 md:me-6">
-                ไม่พบเนื้อหา
+              <Link
+                href="/externalinternal"
+                className="hover:underline me-4 md:me-6"
+              >
+                แบบฟอร์มหนังสือภายนอก-ภายใน
               </Link>
             </div>
             <div className="py-2">

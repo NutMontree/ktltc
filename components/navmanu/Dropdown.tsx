@@ -269,7 +269,7 @@ const items: CollapseProps["items"] = [
         <Link className="pl-8" href={"/"}>
           {item45}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8" href={"/externalinternal"}>
           {item46}
         </Link>
         <Link className="pl-8" href={"/"}>

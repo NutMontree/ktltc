@@ -84,7 +84,13 @@ export default function ShowPressRelease() {
           {DataPressrelease.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl h-[150px] sm:h-[300px]   overflow-hidden">
+                <div
+                  className="
+                  mb-6 relative shadow-lg rounded-xl 
+                  h-[150px]
+                  sm:h-[300px]
+                  overflow-hidden"
+                >
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500"
                     style={{

@@ -37,7 +37,7 @@ export default function ShowBidding() {
 
       <div className="flex justify-center">
         <h1 className="flex justify-center text-xxl text-[#DAA520] ">
-          Bidding  
+          Bidding
         </h1>
       </div>
       <div className="flex justify-end px-6 pt-3">
@@ -58,12 +58,20 @@ export default function ShowBidding() {
       <div className="px-6 py-3">
         <Swiper
           breakpoints={{
+            0: {
+              slidesPerView: 2,
+              spaceBetween: 15,
+            },
             340: {
               slidesPerView: 2,
               spaceBetween: 15,
             },
-            700: {
+            600: {
               slidesPerView: 3,
+              spaceBetween: 15,
+            },
+            800: {
+              slidesPerView: 4,
               spaceBetween: 15,
             },
           }}
@@ -79,7 +87,13 @@ export default function ShowBidding() {
           {dataBidding.navitems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl  h-[150px] sm:h-[200px] lg:h-[250px]  overflow-hidden ">
+                <div
+                  className="
+                  mb-6 relative shadow-lg rounded-xl 
+                  h-[150px]
+                  sm:h-[300px]
+                  overflow-hidden"
+                >
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
                     style={{

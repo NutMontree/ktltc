@@ -22,7 +22,7 @@ import NextLink from "next/link";
 import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { DataAnnouncement } from "../announcement6707/data";
+import { DataAnnouncement } from "../announcement6709/data";
 
 export default function ShowAnnouncement() {
   return (
@@ -56,12 +56,20 @@ export default function ShowAnnouncement() {
       <div className="px-6 py-3">
         <Swiper
           breakpoints={{
+            0: {
+              slidesPerView: 2,
+              spaceBetween: 15,
+            },
             340: {
               slidesPerView: 2,
               spaceBetween: 15,
             },
-            700: {
+            600: {
               slidesPerView: 3,
+              spaceBetween: 15,
+            },
+            800: {
+              slidesPerView: 4,
               spaceBetween: 15,
             },
           }}
@@ -77,7 +85,13 @@ export default function ShowAnnouncement() {
           {DataAnnouncement.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-6 relative shadow-lg rounded-xl  h-[150px] sm:h-[200px] lg:h-[250px]  overflow-hidden ">
+                <div
+                  className="
+                  mb-6 relative shadow-lg rounded-xl 
+                  h-[150px]
+                  sm:h-[300px]
+                  overflow-hidden"
+                >
                   <div
                     className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
                     style={{

@@ -7,6 +7,20 @@ export default function Announcement2567() {
       <div className="gap-2 grid">
         <div>
           <Button color="primary" variant="ghost">
+            <Link className="text-lg" href="/announcement6709">
+              เดือน กันยายน 2567
+            </Link>
+          </Button>
+        </div>
+        <div>
+          <Button color="primary" variant="ghost">
+            <Link className="text-lg" href="#">
+              เดือน สิงหาคม 2567 (ไม่มีข้อมูล)
+            </Link>
+          </Button>
+        </div>
+        <div>
+          <Button color="primary" variant="ghost">
             <Link className="text-lg" href="/announcement6707">
               เดือน กรกฎาคม 2567
             </Link>
