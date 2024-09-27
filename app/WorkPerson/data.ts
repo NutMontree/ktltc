@@ -1,12 +1,18 @@
-export const DataAnnouncement = {
+export const Data = {
   navItems: [
     {
-      name: `ประกาศ `,
-      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/52/1.webp",
+      name: `บันทึกข้อความ รายงานไปรายการ วิทยาลัยเทคนิคกันทรลักษ์ `,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานบุคลากร/1/1.webp",
       description: `
-รายชื่อผลการสอบคัดเลือก ลูกจ้างชั่วคราว ตำเเหน่งครูพิเศษสอน สาขาวิชาการจัดการโลจิสติกส์ 
       ...`,
-      href: "/pressrelease405",
+      href: "/person1",
+    },
+    {
+      name: `บันทึกข้อความ รายงานไปรายการ การอบรม / ประชุมและสัมนา   `,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานบุคลากร/2/1.webp",
+      description: `
+      ...`,
+      href: "/person2",
     },
   ],
 };

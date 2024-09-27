@@ -7,7 +7,7 @@ export default function DocumentsAcademic() {
       <div className="gap-2 grid">
         <div>
           <Button color="primary" variant="ghost">
-            <Link className="text-lg" href="/">
+            <Link className="text-lg" href="/WorkCourse">
               งานพัฒนาหลักสูตรฯ
             </Link>
           </Button>

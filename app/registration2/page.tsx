@@ -4,7 +4,7 @@ import React from "react";
 
 import Link from "next/link";
 
-export default function Pressrelease() {
+export default function registration() {
   return (
     <>
       <div>

@@ -1,12 +1,46 @@
-export const DataAnnouncement = {
+export const Data = {
   navItems: [
     {
-      name: `ประกาศ `,
-      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/กันยายน/52/1.webp",
+      name: `ขออนุญาตผู้ปกครองนร นศ วิทยาลัยเทคนิคกันททรลักษ์`,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานสารบรรณ/1/1.webp",
       description: `
-รายชื่อผลการสอบคัดเลือก ลูกจ้างชั่วคราว ตำเเหน่งครูพิเศษสอน สาขาวิชาการจัดการโลจิสติกส์ 
       ...`,
-      href: "/pressrelease405",
+      href: "/clerical1",
+    },
+    {
+      name: `ขออนุมัติเงินฌาปนกิจศพ จากสมาคมผปค.`,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานสารบรรณ/2/1.webp",
+      description: `
+      ...`,
+      href: "/clerical2",
+    },
+    {
+      name: `บันทึกข้อความ ภายในปป 1 วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานสารบรรณ/3/1.webp",
+      description: `
+      ...`,
+      href: "/clerical3",
+    },
+    {
+      name: `บันทึกข้อความ ภายในปป 4 วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานสารบรรณ/4/1.webp",
+      description: `
+      ...`,
+      href: "/clerical4",
+    },
+    {
+      name: `หนังสือคำสั่งปป วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานสารบรรณ/6/1.webp",
+      description: `
+      ...`,
+      href: "/clerical5",
+    },
+    {
+      name: `หนังสือส่งปป 1 วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/pdf/ฝ่ายบริหารทรัพยากร/งานสารบรรณ/6/1.webp",
+      description: `
+      ...`,
+      href: "/clerical6",
     },
   ],
 };

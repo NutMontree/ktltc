@@ -2,7 +2,7 @@
 
 import NextLink from "next/link";
 
-import { DataAnnouncement } from "./data";
+import { Data } from "./data";
 import ExternalInternal from "../externalinternal/page";
 
 export default function WorkRegistration() {
@@ -28,7 +28,7 @@ export default function WorkRegistration() {
           lg:grid-cols-4
           justify-items-center justify-center "
           >
-            {DataAnnouncement.navItems.map((item) => (
+            {Data.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
                 <div className="mb-2 group relative rounded-xl cursor-pointer min-h-48 ">
                   <div
