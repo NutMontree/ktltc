@@ -16,7 +16,7 @@ export const Description = [
   },
 ];
 
-export const DataDate = [{ date: `18 กันยายน 2567` }];
+export const DataDate = [{ date: `26 กันยายน 2567` }];
 
 export const ImageItem = [
   { img: " " },

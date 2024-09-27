@@ -10,7 +10,7 @@ export default function Pressrelease() {
       <div>
         <div className="py-6 flex justify-center">
           <Link
-            href="/pdf/ฝ่ายบริหารทรัพยากร/งานทะเบียน/1/1.doc"
+            href="/pdf/ฝ่ายบริหารทรัพยากร/งานทะเบียน/2/1.doc"
             className="flex gap-2"
           >
             <p className="hover:text-sky-500">ดาวน์โหลด ไฟล์เอกสาร </p>
@@ -19,7 +19,7 @@ export default function Pressrelease() {
         </div>
         <iframe
           className="w-full h-full aspect-video ..."
-          src="/pdf/ฝ่ายบริหารทรัพยากร/งานทะเบียน/1/1.pdf"
+          src="/pdf/ฝ่ายบริหารทรัพยากร/งานทะเบียน/2/1.pdf"
         ></iframe>
       </div>
     </>

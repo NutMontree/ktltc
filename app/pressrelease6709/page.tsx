@@ -20,7 +20,10 @@ export default function Pressrelease6709() {
         <div className="flex justify-center pt-4">
           <div
             className=" grid grid-rows-4 gap-1 
-                        grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
+                        grid-cols-2 
+                        md:grid-cols-4 
+                        lg:grid-cols-6 
+                        xl:grid-cols-8"
           >
             {DataPressrelease.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
