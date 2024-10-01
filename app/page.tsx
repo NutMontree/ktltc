@@ -12,7 +12,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 import Link from "next/link";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import { HeroScrollDemo } from "@/components/HeroScrollDemo";
-// import { ThreeDCardDemo } from "@/components/test/ThreeDCardDemo";
+
 
 export default function page() {
   return (
