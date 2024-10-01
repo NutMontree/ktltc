@@ -1,0 +1,12 @@
+export const DataPressrelease = {
+  navItems: [
+    {
+      name: `โครงการปรับพฤติกรรม `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/1/45.webp",
+      description: `
+ของนักเรียน นักศึกษา ด้านคุณธรรม จริยธรรม และคุณลักษณะที่พึงประสงค์ภาคเรียนที่ ๑ ปีการศึกษา ๒๕๖๗ 
+      ...`,
+      href: "/pressrelease410",
+    },
+  ],
+};

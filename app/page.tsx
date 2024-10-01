@@ -13,7 +13,6 @@ import Link from "next/link";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import { HeroScrollDemo } from "@/components/HeroScrollDemo";
 
-
 export default function page() {
   return (
     <>

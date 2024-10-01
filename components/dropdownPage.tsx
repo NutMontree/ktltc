@@ -50,7 +50,7 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/executive" className="text-sm">
                       ทำเนียบผู้บริหาร
                     </Link>
                   </DropdownItem>

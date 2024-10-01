@@ -85,7 +85,7 @@ const items: CollapseProps["items"] = [
         <Link className="pl-8" href={"/philosophy"}>
           {item2}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8" href={"/executive"}>
           {item3}
         </Link>
         <Link className="pl-8" href={"/"}>
