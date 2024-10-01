@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
 import React, { useState } from "react";
 import {
   motion,
