@@ -21,6 +21,7 @@ export default function Pressrelease() {
           ))}
         </div>
         <div className="text-xs pt-6">
+          <h1 className="text-base">KTL -TC ONE TEAM </h1>
           <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
           <p>" วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "</p>
           <p>
@@ -57,7 +58,7 @@ export default function Pressrelease() {
               <div className="text-xs text-slate-500">{item.date}</div>
             </div>
           ))}
-        </div> 
+        </div>
         <br />
         {/* <div className="iframe">
           <iframe
