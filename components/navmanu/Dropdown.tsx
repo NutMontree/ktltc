@@ -105,10 +105,10 @@ const items: CollapseProps["items"] = [
     label: " ข้อมูลพื้นฐาน 9 ประการ",
     children: (
       <div className="grid gap-4">
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8" href={"/historyeducational"}>
           {item7}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8" href={"/personnel"}>
           {item8}
         </Link>
         <Link className="pl-8" href={"/"}>
