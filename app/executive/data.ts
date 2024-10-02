@@ -10,7 +10,7 @@ export const DataFocusImg = [
   {
     title: `นางสาววิภาวรรณ สีแดด`,
     secondary: `รองผู้อำนวยการ`,
-    description: `ฝ่ายพัฒนากิจกรรมนักเรียนนักศึกษา`,
+    description: `ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา`,
     img: `/images/ผู้บริหาร/2.webp`,
   },
   {
@@ -22,7 +22,7 @@ export const DataFocusImg = [
   {
     title: `นายอาทร ศรีมะณี`,
     secondary: `รองผู้อำนวยการ`,
-    description: `ฝ่ายวชาการ`,
+    description: `ฝ่ายวิชาการ`,
     img: `/images/ผู้บริหาร/4.webp`,
   },
   {
