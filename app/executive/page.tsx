@@ -3,7 +3,7 @@
 import { Image } from "@nextui-org/react";
 import React from "react";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
-import { DataFocusImg } from "./data";
+import { Data } from "./data";
 
 export default function Executive() {
   return (
@@ -35,7 +35,7 @@ export default function Executive() {
         </div>
         <div className=" flex justify-center   ">
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
-            {DataFocusImg.map((item) => (
+            {Data.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-100">
                   <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">

@@ -1,11 +1,4 @@
-export const DataFocusTitle = {
-  Item: [
-    {
-      title: "Hello Mother Fucker",
-    },
-  ],
-};
-export const DataFocusImg = [
+export const Data = [
   //   { title: `1`, description: `1`, img: `/images/ผู้บริหาร/1.webp` },
   {
     title: `นางสาววิภาวรรณ สีแดด`,

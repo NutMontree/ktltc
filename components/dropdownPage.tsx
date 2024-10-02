@@ -102,12 +102,12 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/historyeducational" className="text-sm">
                       ข้อมูลสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/personnel" className="text-sm">
                       ข้อมูลบุคลากร
                     </Link>
                   </DropdownItem>
@@ -231,12 +231,12 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/executive" className="text-sm">
                       ผู้บริหารสถานศึกษา
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/mechanic" className="text-sm">
                       แผนกวิชาช่างยนต์
                     </Link>
                   </DropdownItem>
