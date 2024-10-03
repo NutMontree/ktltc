@@ -4,12 +4,6 @@ import type { CollapseProps } from "antd";
 import { Collapse } from "antd";
 import Link from "next/link";
 
-const text = `
-  A dog is a type of domesticated animal.
-  Known for its loyalty and faithfulness,
-  it can be found as a welcome guest in many households across the world.
-`;
-
 const item1 = "ประวัติสถานศึกษา";
 const item2 = "ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์";
 const item3 = "ทำเนียบผู้บริหาร";
@@ -46,16 +40,16 @@ const item30 = "คอมพิวเตอร์ดิจิทัล";
 const item31 = "แผนกวิชาการโรงแรม";
 const item32 = "แผนกวิชาสามัญสัมพันธ์";
 
-const item33 = "ระบบ ศธ. ออนไลน์";
+const item33 = "ระบบ ศธ.ออนไลน์";
 const item34 = "ตรวจสอบผลการเรียน";
 const item35 = "รับงานอิเล็กทรอนิกส์";
 const item36 = "สมัครเรียนออนไลน์";
 const item37 = "บทเรียนออนไลน์";
 const item38 = "ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ";
 const item39 = "ศูนย์กำลังคนอาชีวศึกษา (V-COP)";
-const item40 = "รายงานประจำแีของสถานศึกษา (SAR)";
+const item40 = "รายงานประจำปีของสถานศึกษา (SAR)";
 const item41 = "ID Plan";
-const item42 = "แบบประเมินความำึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ";
+const item42 = "แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ";
 const item43 = "ภาพรวมกิจกรรมในสถานศึกษา";
 
 const item44 = "ฟอร์มส่งแบบประเมินผลการเรียนตามสภาพจริง ประจำปีการศึกษา 1/2567";
@@ -70,7 +64,7 @@ const item52 = "เผยแพร่ผลงานวิจัย";
 const item53 = "รางวัลที่ได้รับ";
 const item54 = "คำสั่งวิทยาลัย";
 const item55 = "จดหมายขช่าว";
-const item56 = "ข่าวาจัดซื้อ จัดจ้าง";
+const item56 = "ข่าวจัดซื้อ จัดจ้าง";
 const item57 = "แบบฟอร์มจัดซื้อจัดจ้าง";
 
 const items: CollapseProps["items"] = [
@@ -78,23 +72,23 @@ const items: CollapseProps["items"] = [
     key: "1",
     label: "ประวัติสถานศึกษา",
     children: (
-      <div className="grid gap-4 ">
-        <Link className="pl-8" href={"/historyeducational"}>
+      <div className="grid divide-y divide-dashed">
+        <Link className="pl-8 pb-2" href={"/historyeducational"}>
           {item1}
         </Link>
-        <Link className="pl-8" href={"/philosophy"}>
+        <Link className="pl-8 py-2" href={"/philosophy"}>
           {item2}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item3}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item4}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item5}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item6}
         </Link>
       </div>
@@ -104,29 +98,29 @@ const items: CollapseProps["items"] = [
     key: "2",
     label: " ข้อมูลพื้นฐาน 9 ประการ",
     children: (
-      <div className="grid gap-4 ">
-        <Link className="pl-8" href={"/"}>
+      <div className="grid divide-y divide-dashed">
+        <Link className="pl-8 pb-2" href={"/"}>
           {item7}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item8}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item9}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item10}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item11}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item12}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item13}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item14}
         </Link>
       </div>
@@ -136,17 +130,17 @@ const items: CollapseProps["items"] = [
     key: "3",
     label: "หน่วยงานภายใน",
     children: (
-      <div className="grid gap-4 p-2 ">
-        <Link className="pl-8" href={"/"}>
+      <div className="grid divide-y divide-dashed">
+        <Link className="pl-8 pb-2" href={"/"}>
           {item16}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item17}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item18}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item19}
         </Link>
       </div>
@@ -156,44 +150,44 @@ const items: CollapseProps["items"] = [
     key: "4",
     label: "ข้อมูลบุคลากร",
     children: (
-      <div className="grid gap-4 p-2 ">
-        <Link className="pl-8" href={"/"}>
+      <div className="grid divide-y divide-dashed">
+        <Link className="pl-8 pb-2" href={"/"}>
           {item20}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item21}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item22}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item23}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item24}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item25}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item26}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item27}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item28}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item29}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item30}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item31}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item32}
         </Link>
       </div>
@@ -203,38 +197,38 @@ const items: CollapseProps["items"] = [
     key: "5",
     label: "เมนูลัด",
     children: (
-      <div className="grid gap-4 p-2 ">
-        <Link className="pl-8" href={"/"}>
+      <div className="grid divide-y divide-dashed">
+        <Link className="pl-8 pb-2" href={"/"}>
           {item33}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item34}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item35}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item36}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item37}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item38}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item39}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item40}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item41}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item42}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item43}
         </Link>
       </div>
@@ -243,7 +237,7 @@ const items: CollapseProps["items"] = [
   {
     key: "6",
     label: (
-      <div className="flex text-sm pt-2 ">
+      <div className="flex text-sm flex">
         <div className="pt-1 pl-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -262,47 +256,47 @@ const items: CollapseProps["items"] = [
       </div>
     ),
     children: (
-      <div className="grid gap-4 p-2 ">
-        <Link className="pl-8" href={"/"}>
+      <div className="grid divide-y divide-dashed">
+        <Link className="pl-8 pb-2" href={"/"}>
           {item44}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item45}
         </Link>
-        <Link className="pl-8" href={"/externalinternal"}>
+        <Link className="pl-8 py-2" href={"/externalinternal"}>
           {item46}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item47}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item48}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item49}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item50}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item51}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item52}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item53}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item54}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item55}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item56}
         </Link>
-        <Link className="pl-8" href={"/"}>
+        <Link className="pl-8 py-2" href={"/"}>
           {item57}
         </Link>
       </div>
@@ -312,7 +306,7 @@ const items: CollapseProps["items"] = [
 
 const DropdownPage1: React.FC = () => (
   <>
-    <div className="pb-12 px-2 py-2 ">
+    <div className=" ">
       <div className=" ">
         <div className="pb-4">
           <Link href={"/ "}>หน้าหลัก</Link>
