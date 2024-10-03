@@ -99,10 +99,10 @@ const items: CollapseProps["items"] = [
     label: " ข้อมูลพื้นฐาน 9 ประการ",
     children: (
       <div className="grid divide-y divide-dashed">
-        <Link className="pl-8 pb-2" href={"/"}>
+        <Link className="pl-8 pb-2" href={"/historyeducational"}>
           {item7}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/personnel"}>
           {item8}
         </Link>
         <Link className="pl-8 py-2" href={"/"}>
@@ -151,13 +151,13 @@ const items: CollapseProps["items"] = [
     label: "ข้อมูลบุคลากร",
     children: (
       <div className="grid divide-y divide-dashed">
-        <Link className="pl-8 pb-2" href={"/"}>
+        <Link className="pl-8 pb-2" href={"/executive"}>
           {item20}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/mechanic"}>
           {item21}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/machine"}>
           {item22}
         </Link>
         <Link className="pl-8 py-2" href={"/"}>

@@ -6,7 +6,7 @@ import React from "react";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { Data } from "./data";
 
-export default function machine() {
+export default function Machine() {
   return (
     <>
       <div className="pb-10">

@@ -4,6 +4,7 @@
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import Executive from "../executive/page";
 import Mechanic from "../mechanic/page";
+import Machine from "../machine/page";
 
 export default function Personnel() {
   return (
@@ -36,7 +37,7 @@ export default function Personnel() {
             aria-label="Accordion 3"
             title="แผนกวิชาช่างกลโรงงาน"
           >
-            <Mechanic />
+            <Machine />
           </AccordionItem>
         </Accordion>
       </div>

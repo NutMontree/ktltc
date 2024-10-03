@@ -241,7 +241,7 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/machine" className="text-sm">
                       แผนกวิชาช่างกลโรงงาน
                     </Link>
                   </DropdownItem>
