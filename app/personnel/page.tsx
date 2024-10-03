@@ -31,6 +31,13 @@ export default function Personnel() {
           >
             <Mechanic />
           </AccordionItem>
+          <AccordionItem
+            key="3"
+            aria-label="Accordion 3"
+            title="แผนกวิชาช่างกลโรงงาน"
+          >
+            <Mechanic />
+          </AccordionItem>
         </Accordion>
       </div>
     </>

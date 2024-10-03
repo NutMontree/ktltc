@@ -25,3 +25,5 @@ export const Data = [
     img: `/images/ผู้บริหาร/5.webp`,
   },
 ];
+// Machine Tool Technology
+// machine

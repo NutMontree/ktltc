@@ -78,14 +78,14 @@ const items: CollapseProps["items"] = [
     key: "1",
     label: "ประวัติสถานศึกษา",
     children: (
-      <div className="grid gap-4">
+      <div className="grid gap-4 ">
         <Link className="pl-8" href={"/historyeducational"}>
           {item1}
         </Link>
         <Link className="pl-8" href={"/philosophy"}>
           {item2}
         </Link>
-        <Link className="pl-8" href={"/executive"}>
+        <Link className="pl-8" href={"/"}>
           {item3}
         </Link>
         <Link className="pl-8" href={"/"}>
@@ -104,11 +104,11 @@ const items: CollapseProps["items"] = [
     key: "2",
     label: " ข้อมูลพื้นฐาน 9 ประการ",
     children: (
-      <div className="grid gap-4">
-        <Link className="pl-8" href={"/historyeducational"}>
+      <div className="grid gap-4 ">
+        <Link className="pl-8" href={"/"}>
           {item7}
         </Link>
-        <Link className="pl-8" href={"/personnel"}>
+        <Link className="pl-8" href={"/"}>
           {item8}
         </Link>
         <Link className="pl-8" href={"/"}>
@@ -136,7 +136,7 @@ const items: CollapseProps["items"] = [
     key: "3",
     label: "หน่วยงานภายใน",
     children: (
-      <div className="grid gap-4 p-2">
+      <div className="grid gap-4 p-2 ">
         <Link className="pl-8" href={"/"}>
           {item16}
         </Link>
@@ -156,7 +156,7 @@ const items: CollapseProps["items"] = [
     key: "4",
     label: "ข้อมูลบุคลากร",
     children: (
-      <div className="grid gap-4 p-2">
+      <div className="grid gap-4 p-2 ">
         <Link className="pl-8" href={"/"}>
           {item20}
         </Link>
@@ -203,7 +203,7 @@ const items: CollapseProps["items"] = [
     key: "5",
     label: "เมนูลัด",
     children: (
-      <div className="grid gap-4 p-2">
+      <div className="grid gap-4 p-2 ">
         <Link className="pl-8" href={"/"}>
           {item33}
         </Link>
@@ -262,7 +262,7 @@ const items: CollapseProps["items"] = [
       </div>
     ),
     children: (
-      <div className="grid gap-4 p-2">
+      <div className="grid gap-4 p-2 ">
         <Link className="pl-8" href={"/"}>
           {item44}
         </Link>
@@ -312,15 +312,27 @@ const items: CollapseProps["items"] = [
 
 const DropdownPage1: React.FC = () => (
   <>
-    <div className="pb-12">
-      <Link href={"/ "}>หน้าหลัก</Link>
-      <Collapse defaultActiveKey={[""]} ghost items={items} />
-      <div className="grid gap-4">
-        <Link href={"/pressrelease"}>ข่าวประชาสัมพันธ์</Link>
-        <Link href={"/newsletter"}>จดหมายข่าว</Link>
-        <Link href={"/announcement"}>ข่าวประกาศ</Link>
-        <Link href={"/bidding"}>ข่าวประกวดราคา</Link>
-        <Link href={"/technicalcollegeorders"}>คำสั่งวิทยาลัยเทคนิค</Link>
+    <div className="pb-12 px-2 py-2 ">
+      <div className=" ">
+        <div className="pb-4">
+          <Link href={"/ "}>หน้าหลัก</Link>
+        </div>
+        <div>
+          <Collapse
+            ghost
+            className="bg-white divide-y divide-dashed px-2 "
+            items={items}
+          />
+        </div>
+        <div className="pt-6">
+          <div className="grid gap-4">
+            <Link href={"/pressrelease"}>ข่าวประชาสัมพันธ์</Link>
+            <Link href={"/newsletter"}>จดหมายข่าว</Link>
+            <Link href={"/announcement"}>ข่าวประกาศ</Link>
+            <Link href={"/bidding"}>ข่าวประกวดราคา</Link>
+            <Link href={"/technicalcollegeorders"}>คำสั่งวิทยาลัยเทคนิค</Link>
+          </div>
+        </div>
       </div>
     </div>
   </>

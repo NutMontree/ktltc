@@ -14,7 +14,6 @@ import { Logo } from "@/components/icons";
 import NextLink from "next/link";
 import DropdownPage from "./dropdownPage";
 import DropdownPage1 from "./navmanu/Dropdown";
-import { FloatingDock } from "@/components/ui/floating-dock";
 import { IconBrandFacebook } from "@tabler/icons-react";
 import Link from "next/link";
 
