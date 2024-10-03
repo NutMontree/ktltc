@@ -246,17 +246,17 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/welder" className="text-sm">
                       แผนกวิชาช่างเชื่อมโลหะ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/electricity" className="text-sm">
                       แผนกวิชาช่างไฟฟ้ากำลัง
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/electronics" className="text-sm">
                       แผนกวิชาช่างอิเล็กทรอนิกส์
                     </Link>
                   </DropdownItem>

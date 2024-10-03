@@ -5,6 +5,9 @@ import { Accordion, AccordionItem } from "@nextui-org/react";
 import Executive from "../executive/page";
 import Mechanic from "../mechanic/page";
 import Machine from "../machine/page";
+import Welder from "../welder/page";
+import Electricity from "../electricity/page";
+import Electronics from "../electronics/page";
 
 export default function Personnel() {
   return (
@@ -38,6 +41,27 @@ export default function Personnel() {
             title="แผนกวิชาช่างกลโรงงาน"
           >
             <Machine />
+          </AccordionItem>
+          <AccordionItem
+            key="4"
+            aria-label="Accordion 4"
+            title="แผนกวิชาช่างเชื่อมโลหะ"
+          >
+            <Welder />
+          </AccordionItem>
+          <AccordionItem
+            key="5"
+            aria-label="Accordion 5"
+            title="แผนกวิชาช่างไฟฟ้ากำลัง"
+          >
+            <Electricity />
+          </AccordionItem>
+          <AccordionItem
+            key="6"
+            aria-label="Accordion 6"
+            title="แผนกวิชาช่างอิเล็กทรอนิกส์"
+          >
+            <Electronics />
           </AccordionItem>
         </Accordion>
       </div>

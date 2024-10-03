@@ -160,13 +160,13 @@ const items: CollapseProps["items"] = [
         <Link className="pl-8 py-2" href={"/machine"}>
           {item22}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/welder"}>
           {item23}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/electricity"}>
           {item24}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/electronics"}>
           {item25}
         </Link>
         <Link className="pl-8 py-2" href={"/"}>
