@@ -34,7 +34,7 @@ export default function Electricity() {
                     <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
                       <span>แผนก</span>
                       <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
-                        ช่างยนต์
+                        ช่างไฟฟ้ากำลัง
                       </span>
                     </button>
                   </div>
