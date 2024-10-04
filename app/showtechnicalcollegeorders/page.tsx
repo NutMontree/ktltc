@@ -21,11 +21,9 @@ import "swiper/css/scrollbar";
 // import required modules
 import NextLink from "next/link";
 
-import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { DataAnnouncement } from "../announcement6707/data";
-import { Data } from "../technical6709/data";
+import { Data } from "../technical6710/data";
 
 export default function ShowTechnicalcollegeorders() {
   return (

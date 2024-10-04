@@ -22,7 +22,7 @@ import NextLink from "next/link";
 import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { DataAnnouncement } from "../announcement6709/data";
+import { DataAnnouncement } from "../announcement6710/data";
 
 export default function ShowAnnouncement() {
   return (

@@ -5,7 +5,7 @@ import NextLink from "next/link";
 import AnnouncementPage from "../announcement/page";
 import { DataAnnouncement } from "./data";
 
-export default function Announcement6704() {
+export default function Announcement() {
   return (
     <>
       <AnnouncementPage />

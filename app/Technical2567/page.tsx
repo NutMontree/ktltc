@@ -7,6 +7,13 @@ export default function Technical2567() {
       <div className="gap-2 grid">
         <div>
           <Button color="primary" variant="ghost">
+            <Link className="text-lg" href="/technical6710">
+              เดือน ตุลาคม 2567
+            </Link>
+          </Button>
+        </div>
+        <div>
+          <Button color="primary" variant="ghost">
             <Link className="text-lg" href="/technical6709">
               เดือน กันยายน 2567
             </Link>

@@ -22,7 +22,7 @@ export default function Electricity() {
                 <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
                   <Image className="" src={item.img} alt={""}></Image>
                   <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
-                    {item.name}
+                    <div className="hover:text-sky-500">{item.name}</div>{" "}
                   </div>
                   <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
                     <div>{item.position}</div>

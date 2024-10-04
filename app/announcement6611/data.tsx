@@ -1,4 +1,4 @@
-export const DataPressrelease6611 = {
+export const Data = {
   navItems: [
     {
       name: `รูปถ่ายรับปริญญา `,
