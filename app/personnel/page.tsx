@@ -8,6 +8,13 @@ import Machine from "../machine/page";
 import Welder from "../welder/page";
 import Electricity from "../electricity/page";
 import Electronics from "../electronics/page";
+import Technique from "../technique/page";
+import Construct from "../construct/page";
+import Accounting from "../accounting/page";
+import Marketing from "../marketing/page";
+import Technology from "../technology/page";
+import Hotel from "../hotel/page";
+import Ordinary from "../ordinary/page";
 
 export default function Personnel() {
   return (
@@ -62,6 +69,55 @@ export default function Personnel() {
             title="แผนกวิชาช่างอิเล็กทรอนิกส์"
           >
             <Electronics />
+          </AccordionItem>
+          <AccordionItem
+            key="7"
+            aria-label="Accordion 7"
+            title="แผนกวิชาช่างเทคนิคพื้นฐาน"
+          >
+            <Technique />
+          </AccordionItem>
+          <AccordionItem
+            key="8"
+            aria-label="Accordion 8"
+            title="แผนกวิชาช่างก่อสร้าง"
+          >
+            <Construct />
+          </AccordionItem>
+          <AccordionItem
+            key="9"
+            aria-label="Accordion 9"
+            title="แผนกวิชาการบัญชี"
+          >
+            <Accounting />
+          </AccordionItem>
+          <AccordionItem
+            key="10"
+            aria-label="Accordion 10"
+            title="แผนกวิชาการตลาด"
+          >
+            <Marketing />
+          </AccordionItem>
+          <AccordionItem
+            key="11"
+            aria-label="Accordion 11"
+            title="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล"
+          >
+            <Technology />
+          </AccordionItem>
+          <AccordionItem
+            key="12"
+            aria-label="Accordion 12"
+            title="แผนกวิชาการโรงแรม"
+          >
+            <Hotel />
+          </AccordionItem>
+          <AccordionItem
+            key="13"
+            aria-label="Accordion 13"
+            title="แผนกวิชาสามัญสัมพันธ์"
+          >
+            <Ordinary />
           </AccordionItem>
         </Accordion>
       </div>

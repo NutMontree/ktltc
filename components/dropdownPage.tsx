@@ -261,37 +261,37 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/technique" className="text-sm">
                       แผนกวิชาเทคนิคพื้นฐาน
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/construct" className="text-sm">
                       แผนกวิชาช่างก่อสร้าง
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/accounting" className="text-sm">
                       แผนกวิชาบัญชี
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/marketing" className="text-sm">
                       แผนกวิชาการตลาด
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
-                      คอมพิวเตอร์ดิจิทัล
+                    <Link href="/technology" className="text-sm">
+                      แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/hotel" className="text-sm">
                       แผนกวิชาการโรงแรม
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/ordinary" className="text-sm">
                       แผนกวิชาสามัญสัมพันธ์
                     </Link>
                   </DropdownItem>

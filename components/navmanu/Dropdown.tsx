@@ -36,7 +36,7 @@ const item26 = "แผนกวิชาเทคนิคพื้นฐาน"
 const item27 = "แผนกวิชาช่างก่อสร้าง";
 const item28 = "แผนกวิชาบัญชี";
 const item29 = "แผนกวิชาการตลาด";
-const item30 = "คอมพิวเตอร์ดิจิทัล";
+const item30 = "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล";
 const item31 = "แผนกวิชาการโรงแรม";
 const item32 = "แผนกวิชาสามัญสัมพันธ์";
 
@@ -169,25 +169,25 @@ const items: CollapseProps["items"] = [
         <Link className="pl-8 py-2" href={"/electronics"}>
           {item25}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/technique"}>
           {item26}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/construct"}>
           {item27}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/accounting"}>
           {item28}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/marketing"}>
           {item29}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/technology"}>
           {item30}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/hotel"}>
           {item31}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/ordinary"}>
           {item32}
         </Link>
       </div>
