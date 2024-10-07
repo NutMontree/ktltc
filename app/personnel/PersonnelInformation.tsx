@@ -36,8 +36,8 @@ export const Personnel1 = () => {
       <section className="app-section">
         <div className="app-container">
           <AppSearch value={searchText} onValueChange={setSearchText} />
-          <div className="pt-[48px]">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 py-4">
+          <div className="pt-[48px] ">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-4 py-4 ">
               {imgItems}
             </div>
           </div>
