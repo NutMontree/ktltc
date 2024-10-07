@@ -31,7 +31,7 @@ export default function Announcement() {
           </Link>
         </div> */}
         <div className="text-xs pt-6">
-          <h1 className="text-base">KTL -TC ONE TEAM </h1>
+          <h1 className="text-base">KTL-TC ONE TEAM </h1>
           <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
           <p>" วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "</p>
           <p>

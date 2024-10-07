@@ -40,7 +40,7 @@ export default function Pressrelease() {
         </div>
 
         <div className="text-xs pt-6">
-          <h1 className="text-base">KTL -TC ONE TEAM </h1>
+          <h1 className="text-base">KTL-TC ONE TEAM </h1>
           <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
           <p>" วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "</p>
           <p>
@@ -82,7 +82,7 @@ export default function Pressrelease() {
         </div> */}
 
         <div className="flex justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 justify-items-center justify-center ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">

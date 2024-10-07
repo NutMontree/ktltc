@@ -40,7 +40,7 @@ export default function Pressrelease() {
         </div>
 
         <div className="text-xs pt-6">
-          <h1 className="text-base">KTL -TC ONE TEAM </h1>
+          <h1 className="text-base">KTL-TC ONE TEAM </h1>
           <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
           <p>" วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "</p>
           <p>
@@ -75,18 +75,18 @@ export default function Pressrelease() {
           src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/1/1.webp"}
           alt={""}
         ></Image> */}
-
-        <div className="flex justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
-            {ImageItem.map((item) => (
-              <div className="" key={item.img}>
-                <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
-                  <Image src={item.img} alt={""}></Image>
-                </div>
-              </div>
-            ))}
+        
+        {/* ************ Foot-Image ************ */}
+        <div className="Foot-Image">
+          <div className="scale-90 hover:scale-110 transition duration-500 rounded-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center flex justify-center ">
+            <Image
+              src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/19/1.webp"}
+              alt={""}
+            />
           </div>
         </div>
+
+        {/* ************ Foot-Image ************ */}
         {/* <div className="scale-90 hover:scale-110 transition duration-500 rounded-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
           <Image
             src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/12/4.webp"}
