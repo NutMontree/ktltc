@@ -328,7 +328,10 @@ export default function DropdownPage() {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link
+                      href="https://std2018.vec.go.th/web/"
+                      className="text-sm"
+                    >
                       ระบบ ศธ. ออนไลน์
                     </Link>
                   </DropdownItem>
@@ -353,12 +356,12 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/pressrelease" className="text-sm">
                       ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="https://v-cop.go.th/" className="text-sm">
                       ศูนย์กำลังคนอาชีวศึกษา (V-COP)
                     </Link>
                   </DropdownItem>
@@ -439,13 +442,8 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/pressrelease" className="text-sm">
                       ข่าวงานประชาสัมพันธ์
-                    </Link>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <Link href="/" className="text-sm">
-                      อัลบั้มภาพ
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
@@ -464,12 +462,12 @@ export default function DropdownPage() {
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/technicalcollegeorders" className="text-sm">
                       คำสั่งวิทยาลัย
                     </Link>
                   </DropdownItem>
                   <DropdownItem>
-                    <Link href="/" className="text-sm">
+                    <Link href="/newsletter" className="text-sm">
                       จดหมายข่าว
                     </Link>
                   </DropdownItem>

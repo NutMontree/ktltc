@@ -58,14 +58,13 @@ const item46 = "แบบฟอร์มหนังสือภายนอก-
 const item47 = "ระบบงานเอกสารอิเล็กทรอนิกส์";
 const item48 = "รวมภาพกิจกรรม ในสถานศึกษา";
 const item49 = "ข่าวงานประชาสัมพันธ์";
-const item50 = "อัลบั้มภาพ";
-const item51 = "ฝ่ายพัฒนากิจการฯ";
-const item52 = "เผยแพร่ผลงานวิจัย";
-const item53 = "รางวัลที่ได้รับ";
-const item54 = "คำสั่งวิทยาลัย";
-const item55 = "จดหมายขช่าว";
-const item56 = "ข่าวจัดซื้อ จัดจ้าง";
-const item57 = "แบบฟอร์มจัดซื้อจัดจ้าง";
+const item50 = "ฝ่ายพัฒนากิจการฯ";
+const item51 = "เผยแพร่ผลงานวิจัย";
+const item52 = "รางวัลที่ได้รับ";
+const item53 = "คำสั่งวิทยาลัย";
+const item54 = "จดหมายขช่าว";
+const item55 = "ข่าวจัดซื้อ จัดจ้าง";
+const item56 = "แบบฟอร์มจัดซื้อจัดจ้าง";
 
 const items: CollapseProps["items"] = [
   {
@@ -198,7 +197,7 @@ const items: CollapseProps["items"] = [
     label: "เมนูลัด",
     children: (
       <div className="grid divide-y divide-dashed">
-        <Link className="pl-8 pb-2" href={"/"}>
+        <Link className="pl-8 pb-2" href="https://std2018.vec.go.th/web/">
           {item33}
         </Link>
         <Link className="pl-8 py-2" href={"/"}>
@@ -213,10 +212,10 @@ const items: CollapseProps["items"] = [
         <Link className="pl-8 py-2" href={"/"}>
           {item37}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/pressrelease"}>
           {item38}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href="https://v-cop.go.th/">
           {item39}
         </Link>
         <Link className="pl-8 py-2" href={"/"}>
@@ -272,7 +271,7 @@ const items: CollapseProps["items"] = [
         <Link className="pl-8 py-2" href={"/"}>
           {item48}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/pressrelease"}>
           {item49}
         </Link>
         <Link className="pl-8 py-2" href={"/"}>
@@ -284,20 +283,14 @@ const items: CollapseProps["items"] = [
         <Link className="pl-8 py-2" href={"/"}>
           {item52}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/technicalcollegeorders"}>
           {item53}
         </Link>
-        <Link className="pl-8 py-2" href={"/"}>
+        <Link className="pl-8 py-2" href={"/newsletter"}>
           {item54}
         </Link>
         <Link className="pl-8 py-2" href={"/"}>
           {item55}
-        </Link>
-        <Link className="pl-8 py-2" href={"/"}>
-          {item56}
-        </Link>
-        <Link className="pl-8 py-2" href={"/"}>
-          {item57}
         </Link>
       </div>
     ),
