@@ -1,5 +1,4 @@
 "use client";
-// Personnel;
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import Executive from "../executive/page";
@@ -15,6 +14,7 @@ import Marketing from "../marketing/page";
 import Technology from "../technology/page";
 import Hotel from "../hotel/page";
 import Ordinary from "../ordinary/page";
+import PersonnelInformation from "./PersonnelInformation";
 
 export default function Personnel() {
   return (
@@ -121,6 +121,8 @@ export default function Personnel() {
           </AccordionItem>
         </Accordion>
       </div>
+
+      <PersonnelInformation />
     </>
   );
 }

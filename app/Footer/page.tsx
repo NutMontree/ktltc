@@ -123,7 +123,10 @@ export default function Footer() {
                 />
               </svg>
 
-              <Link href="https://www.google.co.th/maps/place/7P66QM35%2BJ68/@14.7540375,104.6555032,17z/data=!3m1!4b1!4m4!3m3!8m2!3d14.7540375!4d104.6580781?hl=th&entry=ttu&g_ep=EgoyMDI0MDgyMy4wIKXMDSoASAFQAw%3D%3D">
+              <Link
+                className="hover:underline hover:text-sky-500"
+                href="https://www.google.co.th/maps/place/7P66QM35%2BJ68/@14.7540375,104.6555032,17z/data=!3m1!4b1!4m4!3m3!8m2!3d14.7540375!4d104.6580781?hl=th&entry=ttu&g_ep=EgoyMDI0MDgyMy4wIKXMDSoASAFQAw%3D%3D"
+              >
                 QM35+J68 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
               </Link>
             </div>
@@ -143,38 +146,50 @@ export default function Footer() {
 
           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <Link href="/" className="hover:underline me-4 md:me-6">
+              <Link
+                href="/"
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+              >
                 หน้าหลัก
               </Link>
             </div>
             <div className="py-2">
               <Link
                 href="/pressrelease"
-                className="hover:underline me-4 md:me-6"
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
               >
                 ข่าวประชาสัมพันธ์
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/newsletter" className="hover:underline me-4 md:me-6">
+              <Link
+                href="/newsletter"
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+              >
                 จดหมายข่าว
               </Link>
             </div>
             <div className="py-2">
               <Link
                 href="/announcement"
-                className="hover:underline me-4 md:me-6"
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
               >
                 ข่าวประกาศ
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/bidding" className="hover:underline">
+              <Link
+                href="/bidding"
+                className="hover:underline  hover:text-sky-500"
+              >
                 ข่าวประกวดราคา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/technicalcollegeorders" className="hover:underline">
+              <Link
+                href="/technicalcollegeorders"
+                className="hover:underline  hover:text-sky-500"
+              >
                 คำสั่งวิทยาลัยเทคนิค
               </Link>
             </div>
@@ -184,70 +199,94 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/externalinternal"
-                className="hover:underline me-4 md:me-6"
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
               >
                 แบบฟอร์มหนังสือภายนอก-ภายใน
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline me-4 md:me-6">
+              <Link
+                href="/personnel "
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+              >
+                ข้อมูลบุคลากร
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link
+                href="/ "
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+              >
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline me-4 md:me-6">
+              <Link href="/ " className="hover:underline  hover:text-sky-500">
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline">
+              <Link href="/ " className="hover:underline  hover:text-sky-500">
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline">
-                ไม่พบเนื้อหา
-              </Link>
-            </div>
-            <div className="py-2">
-              <Link href="/ " className="hover:underline">
+              <Link href="/ " className="hover:underline  hover:text-sky-500">
                 ไม่พบเนื้อหา
               </Link>
             </div>
           </div>
 
-          <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+          {/* <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <Link href="/ " className="hover:underline me-4 md:me-6">
+              <Link
+                href="/ "
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+              >
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline me-4 md:me-6">
+              <Link
+                href="/ "
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+              >
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline me-4 md:me-6">
+              <Link
+                href="/ "
+                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+              >
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline">
+              <Link
+                href="/ "
+                className="hover:underline  hover:text-sky-500"
+              >
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline">
+              <Link
+                href="/ "
+                className="hover:underline  hover:text-sky-500"
+              >
                 ไม่พบเนื้อหา
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline">
+              <Link
+                href="/ "
+                className="hover:underline  hover:text-sky-500"
+              >
                 ไม่พบเนื้อหา
               </Link>
             </div>
-          </div>
+          </div> */}
         </footer>
       </div>
 

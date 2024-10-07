@@ -6,10 +6,7 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
 } from "@nextui-org/navbar";
-import { Kbd } from "@nextui-org/kbd";
-import { Input } from "@nextui-org/input";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { SearchIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
 import NextLink from "next/link";
 import DropdownPage from "./dropdownPage";
@@ -18,22 +15,22 @@ import { IconBrandFacebook } from "@tabler/icons-react";
 import Link from "next/link";
 
 export const Navbar = () => {
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={<Kbd keys={["option", "command"]}>K</Kbd>}
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
+  // const searchInput = (
+  //   <Input
+  //     aria-label="Search"
+  //     classNames={{
+  //       inputWrapper: "bg-default-100",
+  //       input: "text-sm",
+  //     }}
+  //     endContent={<Kbd keys={["option", "command"]}>K</Kbd>}
+  //     labelPlacement="outside"
+  //     placeholder="Search..."
+  //     startContent={
+  //       <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+  //     }
+  //     type="search"
+  //   />
+  // );
 
   const links = [
     {
@@ -83,7 +80,10 @@ export const Navbar = () => {
         </NavbarContent>
 
         <NavbarMenu className="pt-5">
-          {searchInput}
+          <div className="pt-[24px] text-center text-red-600 text-xl">
+             กด X เพื่อออก 
+          </div>
+          {/* {searchInput} */}
           <div>
             <DropdownPage1 />
           </div>
