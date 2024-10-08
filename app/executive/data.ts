@@ -1,29 +1,38 @@
 export const Data = [
-  //   { title: `1`, description: `1`, img: `/images/ผู้บริหาร/1.webp` },
   {
-    title: `นางสาววิภาวรรณ สีแดด`,
-    secondary: `รองผู้อำนวยการ`,
-    description: `ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา`,
-    img: `/images/ผู้บริหาร/2.webp`,
+    title: `นายไพฑูรย์ ธนสีลังกูร`,
+    secondary: `ทำหน้าที่ประสานงานการจัดตั้ง`,
+    description: `พ.ศ. 2535-2541`,
+    img: `/images/ผู้บริหาร/`,
   },
   {
-    title: `นายสมศักดิ์ จันทานิตย์`,
-    secondary: `รองผู้อำนวยการ`,
-    description: `ฝ่ายแผนงานและความร่วมมือ`,
-    img: `/images/ผู้บริหาร/3.webp`,
+    title: `นายอักษรศิลป์ แก้วมหาวงศ์`,
+    secondary: `ผู้อำนวยการ`,
+    description: `พ.ศ. 2541-2549`,
+    img: `/images/ผู้บริหาร`,
   },
   {
-    title: `นายอาทร ศรีมะณี`,
-    secondary: `รองผู้อำนวยการ`,
-    description: `ฝ่ายวิชาการ`,
-    img: `/images/ผู้บริหาร/4.webp`,
+    title: `นายยงยุทธ จันทวารา`,
+    secondary: `ผู้อำนวยการ`,
+    description: `พ.ศ. 2550-2553`,
+    img: `/images/ผู้บริหาร`,
   },
   {
-    title: `นางสาวภวิกา โพธิ์ขาว`,
-    secondary: `รองผู้อำนวยการ`,
-    description: `ฝ่ายบริหารทรัพยากร`,
-    img: `/images/ผู้บริหาร/5.webp`,
+    title: `นายวาสิทธิ์ พวงสวัสดิ์`,
+    secondary: `ผู้อำนวยการ`,
+    description: `พ.ศ. 25553-2556`,
+    img: `/images/ผู้บริหาร`,
+  },
+  {
+    title: `นายโสภา มะเครือสี`,
+    secondary: `ผู้อำนวยการ`,
+    description: `พ.ศ. 2556-2563`,
+    img: `/images/ผู้บริหาร/ผอโสภา.webp`,
+  },
+  {
+    title: `นายวิโรจน์ ธิมา`,
+    secondary: `ผู้อำนวยการ`,
+    description: `พ.ศ. 2563-2566`,
+    img: `/images/ผู้บริหาร/ผอวิโรจน์.webp`,
   },
 ];
-// Machine Tool Technology
-// machine

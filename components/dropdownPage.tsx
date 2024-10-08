@@ -541,11 +541,8 @@ function Navbar({ className }: { className?: string }) {
             >
               โครงสร้างการบริหารงานสถานศึกษา
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/">
+            <HoveredLink className="hover:text-sky-500" href="/executiveboard">
               คณะกรรมการบริหารสถานศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/">
-              คณะกรรมการสถานศึกษา
             </HoveredLink>
           </div>
         </MenuItem>

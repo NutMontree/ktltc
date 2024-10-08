@@ -1,7 +1,6 @@
 "use client";
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
-import Executive from "../executive/page";
 import Mechanic from "../mechanic/page";
 import Machine from "../machine/page";
 import Welder from "../welder/page";
@@ -15,6 +14,7 @@ import Technology from "../technology/page";
 import Hotel from "../hotel/page";
 import Ordinary from "../ordinary/page";
 import PersonnelInformation from "./PersonnelInformation";
+import ExecutiveBoard from "../executiveboard/page";
 
 export default function Personnel() {
   return (
@@ -33,7 +33,7 @@ export default function Personnel() {
             aria-label="Accordion 1"
             title="ผู้บริหารสถานศึกษา"
           >
-            <Executive />
+            <ExecutiveBoard />
           </AccordionItem>
           <AccordionItem
             key="2"
