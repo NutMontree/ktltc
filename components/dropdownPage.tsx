@@ -535,7 +535,10 @@ function Navbar({ className }: { className?: string }) {
             <HoveredLink className="hover:text-sky-500" href="/executive">
               ทำเนียบผู้บริหาร
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/">
+            <HoveredLink
+              className="hover:text-sky-500"
+              href="/administrativestructure"
+            >
               โครงสร้างการบริหารงานสถานศึกษา
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/">
