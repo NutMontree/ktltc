@@ -522,28 +522,35 @@ function Navbar({ className }: { className?: string }) {
     <div className={cn(" ", className)}>
       <Menu setActive={setActive}>
         <MenuItem setActive={setActive} active={active} item="ประวัติสถานศึกษา">
-          <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink
-              className="hover:tyext-sky-500"
-              href="/historyeducational"
-            >
-              ประวัติสถานศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/philosophy">
-              ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/executive">
-              ทำเนียบผู้บริหาร
-            </HoveredLink>
-            <HoveredLink
-              className="hover:text-sky-500"
-              href="/administrativestructure"
-            >
-              โครงสร้างการบริหารงานสถานศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/executiveboard">
-              คณะกรรมการบริหารสถานศึกษา
-            </HoveredLink>
+          <div className="flex flex-col space-y-1 text-sm ">
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink
+                className="hover:text-red-500 "
+                href="/historyeducational"
+              >
+                ประวัติสถานศึกษา
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/philosophy">
+                ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/executive">
+                ทำเนียบผู้บริหาร
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/administrativestructure">
+                โครงสร้างการบริหารงานสถานศึกษา
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/executiveboard">
+                คณะกรรมการบริหารสถานศึกษา
+              </HoveredLink>
+            </div>
           </div>
         </MenuItem>
 
@@ -552,143 +559,213 @@ function Navbar({ className }: { className?: string }) {
           active={active}
           item="ข้อมูลพื้นฐาน 9 ประการ"
         >
-          <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink
-              className="hover:tyext-sky-500"
-              href="/historyeducational"
-            >
-              ข้อมูลสถานศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/personnel">
-              ข้อมูลบุคลากร
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ข้อมูลนักเรียน นักศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ข้อมูลหลักสูตร
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ข้อมูลครุภัณฑ์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ข้อมูลงบประมาณ
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ข้อมูลอาคารสถานที่
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ข้อมูลตลาดแรงงาน
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ข้อมูลของจังหวัด
-            </HoveredLink>
+          <div className="flex flex-col space-y-1 text-sm">
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink
+                className="hover:tyext-sky-500"
+                href="/historyeducational"
+              >
+                ข้อมูลสถานศึกษา
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/personnel">
+                ข้อมูลบุคลากร
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ข้อมูลนักเรียน นักศึกษา
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ข้อมูลหลักสูตร
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ข้อมูลครุภัณฑ์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ข้อมูลงบประมาณ
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ข้อมูลอาคารสถานที่
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ข้อมูลตลาดแรงงาน
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ข้อมูลของจังหวัด
+              </HoveredLink>
+            </div>
           </div>
         </MenuItem>
 
         <MenuItem setActive={setActive} active={active} item="หน่วยงานภายใน">
-          <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ฝ่ายบริหารทรัพยากร
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ฝ่ายแผนงานและความร่วมมือ
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ฝ่ายวิชาการ
-            </HoveredLink>
+          <div className="flex flex-col space-y-1 text-sm">
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ฝ่ายบริหารทรัพยากร
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ฝ่ายแผนงานและความร่วมมือ
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ฝ่ายวิชาการ
+              </HoveredLink>
+            </div>
           </div>
         </MenuItem>
 
         <MenuItem setActive={setActive} active={active} item="ข้อมูลบุคลากร">
-          <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink className="hover:text-sky-500" href="/executive ">
-              ผู้บริหารสถานศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/mechanic ">
-              แผนกวิชาช่างยนต์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/machine ">
-              แผนกวิชาช่างกลโรงงาน
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/welder ">
-              แผนกวิชาช่างเชื่อมโลหะ
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/electricity ">
-              แผนกวิชาช่างไฟฟ้ากำลัง
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/electronics ">
-              แผนกวิชาช่างอิเล็กทรอนิกส์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/technique ">
-              แผนกวิชาเทคนิคพื้นฐาน
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/construct ">
-              แผนกวิชาช่างก่อสร้าง
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/accounting ">
-              แผนกวิชาบัญชี
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/marketing ">
-              แผนกวิชาการตลาด
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/technology ">
-              แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/hotel ">
-              แผนกวิชาการโรงแรม
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ordinary ">
-              แผนกวิชาสามัญสัมพันธ์
-            </HoveredLink>
+          <div className="flex flex-col space-y-1 text-sm">
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/executive ">
+                ผู้บริหารสถานศึกษา
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/mechanic ">
+                แผนกวิชาช่างยนต์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/machine ">
+                แผนกวิชาช่างกลโรงงาน
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/welder ">
+                แผนกวิชาช่างเชื่อมโลหะ
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/electricity ">
+                แผนกวิชาช่างไฟฟ้ากำลัง
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/electronics ">
+                แผนกวิชาช่างอิเล็กทรอนิกส์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/technique ">
+                แผนกวิชาเทคนิคพื้นฐาน
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/construct ">
+                แผนกวิชาช่างก่อสร้าง
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/accounting ">
+                แผนกวิชาบัญชี
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/marketing ">
+                แผนกวิชาการตลาด
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/technology ">
+                แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/hotel ">
+                แผนกวิชาการโรงแรม
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ordinary ">
+                แผนกวิชาสามัญสัมพันธ์
+              </HoveredLink>
+            </div>
           </div>
         </MenuItem>
 
         <MenuItem setActive={setActive} active={active} item="เมนูลัด">
-          <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink
-              className="hover:text-sky-500"
-              href="/https://std2018.vec.go.th/web/ "
-            >
-              ระบบ ศธ. ออนไลน์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ตรวจสอบผลการเรียน
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              รับงานอิเล็กทรอนิกส์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              สมัครเรียนออนไลน์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              บทเรียนออนไลน์
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/pressrelease ">
-              ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
-            </HoveredLink>
-            <HoveredLink
-              className="hover:tyext-sky-500"
-              href="/https://v-cop.go.th/ "
-            >
-              ศูนย์กำลังคนอาชีวศึกษา (V-COP)
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              รายงานประจำของสถานศึกษา (SAR)
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ID Plan
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
-              ภาพรวมกิจกรรมในสถานศึกษา
-            </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ "></HoveredLink>
+          <div className="flex flex-col space-y-1 text-sm">
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/https://std2018.vec.go.th/web/ ">
+                ระบบ ศธ. ออนไลน์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ตรวจสอบผลการเรียน
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                รับงานอิเล็กทรอนิกส์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                สมัครเรียนออนไลน์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                บทเรียนออนไลน์
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/pressrelease ">
+                ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink
+                className="hover:tyext-sky-500"
+                href="/https://v-cop.go.th/ "
+              >
+                ศูนย์กำลังคนอาชีวศึกษา (V-COP)
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                รายงานประจำของสถานศึกษา (SAR)
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ID Plan
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
+              </HoveredLink>
+            </div>
+            <div className="hover:bg-slate-100 rounded-lg ">
+              <HoveredLink className="" href="/ ">
+                ภาพรวมกิจกรรมในสถานศึกษา
+              </HoveredLink>
+            </div>
           </div>
         </MenuItem>
 

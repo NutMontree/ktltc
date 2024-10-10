@@ -46,7 +46,7 @@ export const MenuItem = ({
               >
                 <motion.div
                   layout // layout ensures smooth animation
-                  className="w-max h-full p-4"
+                  className="w-max h-full p-2"
                 >
                   {children}
                 </motion.div>
@@ -69,7 +69,7 @@ export const Menu = ({
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="flex justify-center space-x-4 px-8 py-6 "
+      className="flex justify-center space-x-4 px-8 py-6"
     >
       {children}
     </nav>
@@ -94,7 +94,7 @@ export const ProductItem = ({
         width={140}
         height={70}
         alt={title}
-        className="flex-shrink-0 rounded-md shadow-2xl"
+        className="flex-shrink-0 shadow-2xl"
       />
       <div>
         <h4 className="text-xl font-bold mb-1 text-black dark:text-white">
@@ -112,9 +112,13 @@ export const HoveredLink = ({ children, ...rest }: any) => {
   return (
     <Link
       {...rest}
-      className="text-neutral-700 dark:text-neutral-200 hover:text-sky-500 "
+      className=" text-neutral-700 
+                  dark:text-neutral-200 
+                  hover:text-sky-600 
+                  dark:hover:text-sky-700
+                "
     >
-      {children}
+      <div className="px-2 py-2">{children}</div>
     </Link>
   );
 };

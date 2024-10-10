@@ -34,7 +34,7 @@ export const Navbar = () => {
               </div>
             </NextLink>
 
-            <ul className="hidden lg:flex gap-6 justify-start ml-6">
+            <ul className="hidden lg:flex gap-6 justify-start">
               <DropdownPage />
             </ul>
           </NavbarBrand>
@@ -54,7 +54,7 @@ export const Navbar = () => {
         </NavbarContent>
 
         <NavbarMenu className="pt-5">
-          <div className="pt-[24px] text-center text-red-600 text-xl">
+          <div className="pt-[30px] text-center text-red-600 text-xl">
             กด X เพื่อออก
           </div>
           {/* {searchInput} */}

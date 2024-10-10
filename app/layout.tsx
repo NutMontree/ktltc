@@ -43,7 +43,10 @@ export default function RootLayout({
       <body className={clsx(" ", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div>
-            <Header />
+            {/* <div className="bg-gradient-to-r from-[#F9E658] to-[#F7B269] to-[#F78B6E] to-[#F7596E] to-[#F72B6F]"> */}
+            <div className=" ">
+              <Header />
+            </div>
             <Navbar />
             <FloatingNavDemo />
             <main>

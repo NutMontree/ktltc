@@ -21,7 +21,13 @@ export default function Executive() {
                 <div className="scale-100">
                   <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
                     <div className="flex justify-center">
-                      <Image className="" src={item.img} alt={""}></Image>
+                      <Image
+                        className="w-72 h-96"
+                        src={item.img}
+                        alt={"Lazy loaded image"}
+                        data-src="image.webp"
+                        loading="lazy"
+                      ></Image>
                     </div>
                     <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
                       {item.title}
