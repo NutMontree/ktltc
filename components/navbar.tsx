@@ -8,23 +8,32 @@ import {
 } from "@nextui-org/navbar";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
-import NextLink from "next/link";
-
 import { IconBrandFacebook } from "@tabler/icons-react";
 import Link from "next/link";
 import { DropdownPage } from "./dropdownPage";
 import { DropdownPage1 } from "./navmanu/Dropdown";
+import React from "react";
 
-export const Navbar = () => {
+import {
+  DropdownItem,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  Avatar,
+} from "@nextui-org/react";
+
+export const NavbarPage = () => {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   return (
     <>
-      <NextUINavbar maxWidth={"full"} className="py-2">
+      <NextUINavbar
+        maxWidth={"full"}
+        className="py-2"
+        onMenuOpenChange={setIsMenuOpen}
+      >
         <NavbarContent>
           <NavbarBrand>
-            <NextLink
-              className="flex justify-start items-center gap-2"
-              href="/"
-            >
+            <Link className="flex justify-start items-center gap-2" href="/">
               <Logo />
               <div className=" ">
                 <div className="hidden sm:flex text-xs ">
@@ -32,7 +41,7 @@ export const Navbar = () => {
                 </div>
                 <div className="font-bold text-inherit">KTLTC</div>
               </div>
-            </NextLink>
+            </Link>
 
             <ul className="hidden lg:flex gap-6 justify-start">
               <DropdownPage />
@@ -50,7 +59,40 @@ export const Navbar = () => {
             </Link>
           </div>
           <ThemeSwitch />
-          <NavbarMenuToggle />
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="sm:hidden"
+          />
+          {/* *************************************************** */}
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Avatar
+                isBordered
+                as="button"
+                className="transition-transform"
+                color="secondary"
+                name="Jason Hughes"
+                size="sm"
+                src="/images/logo.webp"
+              />
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Profile Actions" variant="flat">
+              <DropdownItem href="/" key="home">
+                Home
+              </DropdownItem>
+              <DropdownItem href="/about" key="about">
+                About
+              </DropdownItem>
+              <DropdownItem href="/contact" key="contact">
+                Contact
+              </DropdownItem>
+
+              <DropdownItem key="/logout" color="danger">
+                Log Out
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          {/* *************************************************** */}
         </NavbarContent>
 
         <NavbarMenu className="pt-5">

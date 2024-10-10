@@ -3,7 +3,7 @@ import { Metadata, Viewport } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
-import { Navbar } from "@/components/navbar";
+import { NavbarPage } from "@/components/navbar";
 import clsx from "clsx";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./Footer/page";
@@ -47,7 +47,7 @@ export default function RootLayout({
             <div className=" ">
               <Header />
             </div>
-            <Navbar />
+            <NavbarPage />
             <FloatingNavDemo />
             <main>
               {children}
