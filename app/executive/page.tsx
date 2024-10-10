@@ -47,7 +47,12 @@ export default function Executive() {
       </div>
       <div className="flex justify-center py-[48px]">
         <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
-          <Image src={"/images/ผู้บริหาร/1.webp"} alt={""} />
+          <Image
+            src={"/images/ผู้บริหาร/1.webp"}
+            alt={"Lazy loaded image"}
+            data-src="image.webp"
+            loading="lazy"
+          />
           <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
             นางสาวทักษิณา ชมจันทร์
           </div>
