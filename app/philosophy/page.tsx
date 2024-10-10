@@ -17,15 +17,21 @@ export default function philosophy() {
         <div className="text-xl mx-auto font-normal text-neutral-600 dark:text-neutral-400">
           ข้อมูลพื้นฐานของสถานศึกษา
           <br />
-          <FlipWords words={words} className="text-sky-700 " /> <br />
+          <FlipWords
+            words={words}
+            className=" text-sky-700                   
+                        dark:text-sky-700 
+                        hover:text-sky-600 "
+          />
+          <br />
           วิทยาลัยเทคนิคกันทรลักษ์
         </div>
       </div>
       <div className="">
-        <p className="font-semibold ">ปรัชญา ( philosophy)</p>
-        <p className="pl-6 pb-4">ฝีมือดี มีวินัย ใฝ่คุณธรรม นำสังคม</p>
-        <p className="font-semibold ">วิสัยทัศน์ (vision)</p>
-        <p className="pl-6 pb-4">
+        <div className="font-semibold ">ปรัชญา ( philosophy)</div>
+        <div className="pl-6 pb-4">ฝีมือดี มีวินัย ใฝ่คุณธรรม นำสังคม</div>
+        <div className="font-semibold ">วิสัยทัศน์ (vision)</div>
+        <div className="pl-6 pb-4">
           <p>
             ผลิตและพัฒนาก าลังคน โดยขับเคลื่อนการจัดการความรู้ด้วยเทคโนโลยี
             เป็นประชาคม แห่งการเรียนรู้ เน้นการท างานเป็นทีม
@@ -36,9 +42,9 @@ export default function philosophy() {
             work to knowledge management by Technology & Teamwork, Collaboration
             & Community as Learning Society
           </p>
-        </p>
-        <p className="font-semibold ">พันธกิจ (Mission)</p>
-        <p className="pl-6 pb-4">
+        </div>
+        <div className="font-semibold ">พันธกิจ (Mission)</div>
+        <div className="pl-6 pb-4">
           <p>1. การจัดการความรู้แก่ผู้เรียน</p>
           <p>2. พัฒนาความรู้ ทักษะ และการประยุกต์ใช้</p>
           <p>3. ส่งเสริมคุณธรรม จริยธรรม และคุณลักษณะที่พึงประสงค์</p>
@@ -48,10 +54,10 @@ export default function philosophy() {
           <p>7. การนำนโยบายสู่การปฏิบัติ</p>
           <p>8. สร้างความร่วมมือในการสร้างสังคมแห่งการเรียนรู้</p>
           <p>9. พัฒนานวัตกรรม สิ่งประดิษฐ์ งานสร้างสรรค์ และงานวิจัย</p>
-        </p>
+        </div>
 
-        <p className="font-semibold ">เป้าประสงค์ (Goal)</p>
-        <p className="pl-6 pb-4">
+        <div className="font-semibold ">เป้าประสงค์ (Goal)</div>
+        <div className="pl-6 pb-4">
           <p>1. ผู้เรียนมีคุณภาพและได้มาตรฐานอาชีวศึกษา</p>
           <p>
             2. ผู้เรียนมีความรู้ ทักษะ และเจตคติตรงตามความต้องการของตลาดแรงงาน
@@ -64,27 +70,27 @@ export default function philosophy() {
             4. นักเรียน นักศึกษา
             มีการแลกเปลี่ยนเรียนรู้กับสถาบันและองค์กรระหว่างประเทศ
           </p>
-        </p>
+        </div>
 
-        <p className="font-semibold ">เอกลักษณ์ (Unity)</p>
-        <p className="pl-6 pb-4">
+        <div className="font-semibold ">เอกลักษณ์ (Unity)</div>
+        <div className="pl-6 pb-4">
           <p>1.ผู้นำบริการวิชาชีพสู่ชุมชน</p>
-        </p>
-        <p className="font-semibold ">อัตลักษณ์ (Identity)</p>
-        <p className="pl-6 pb-4">
+        </div>
+        <div className="font-semibold ">อัตลักษณ์ (Identity)</div>
+        <div className="pl-6 pb-4">
           <p>ฝีมือดี มีคุณธรรม</p>
-        </p>
-        <p className="font-semibold ">ค่านิยม (Values)</p>
-        <p className="pl-6 pb-4">
+        </div>
+        <div className="font-semibold ">ค่านิยม (Values)</div>
+        <div className="pl-6 pb-4">
           <p>ยิ้ม ไหว้ แต่งกายดี รู้จักสวัสดี ขอบคุณ และขอโทษ</p>
-        </p>
-        <p className="font-semibold ">คำขวัญ (Motto)</p>
-        <p className="pl-6 pb-4">
+        </div>
+        <div className="font-semibold ">คำขวัญ (Motto)</div>
+        <div className="pl-6 pb-4">
           <p>
             เรียนรู้ปฏิบัติสู่นวัตกรรม ผู้นำด้านเทคโนโลยี
             สู่วิถีเศรษฐกิจสร้างสรรค์ มุ่งมั่นพัฒนากำลังคนด้านวิชาชีพ
           </p>
-        </p>
+        </div>
       </div>
     </>
   );

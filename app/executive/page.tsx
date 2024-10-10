@@ -27,7 +27,7 @@ export default function Executive() {
                         alt={"Lazy loaded image"}
                         data-src="image.webp"
                         loading="lazy"
-                      ></Image>
+                      />
                     </div>
                     <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
                       {item.title}

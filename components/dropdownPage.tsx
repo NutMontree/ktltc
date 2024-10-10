@@ -709,7 +709,7 @@ function Navbar({ className }: { className?: string }) {
         <MenuItem setActive={setActive} active={active} item="เมนูลัด">
           <div className="flex flex-col space-y-1 text-sm">
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/https://std2018.vec.go.th/web/ ">
+              <HoveredLink className="" href="https://std2018.vec.go.th/web/ ">
                 ระบบ ศธ. ออนไลน์
               </HoveredLink>
             </div>
@@ -741,7 +741,7 @@ function Navbar({ className }: { className?: string }) {
             <div className="hover:bg-slate-100 rounded-lg ">
               <HoveredLink
                 className="hover:tyext-sky-500"
-                href="/https://v-cop.go.th/ "
+                href="https://v-cop.go.th/ "
               >
                 ศูนย์กำลังคนอาชีวศึกษา (V-COP)
               </HoveredLink>

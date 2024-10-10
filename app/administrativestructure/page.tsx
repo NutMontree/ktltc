@@ -18,7 +18,7 @@ export default function AdministrativeStructure() {
         <div className="flex justify-center pb-4">
           <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
             <Image src={"/images/ผู้บริหาร/1.webp"} alt={""} />
-            <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
               นางสาวทักษิณา ชมจันทร์
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -41,7 +41,7 @@ export default function AdministrativeStructure() {
                 <div className="scale-100">
                   <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -74,7 +74,7 @@ export default function AdministrativeStructure() {
         <div className="flex justify-center pb-4">
           <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
             <Image src={"/images/ผู้บริหาร/2.webp"} alt={""} />
-            <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
               นางสาววิภาวรรณ สีแดด
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -97,7 +97,7 @@ export default function AdministrativeStructure() {
                 <div className="scale-100">
                   <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -123,7 +123,7 @@ export default function AdministrativeStructure() {
         <div className="flex justify-center pb-4">
           <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
             <Image src={"/images/ผู้บริหาร/3.webp"} alt={""} />
-            <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
               นายสมศักดิ์ จันทานิตย์
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -146,7 +146,7 @@ export default function AdministrativeStructure() {
                 <div className="scale-100">
                   <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -172,7 +172,7 @@ export default function AdministrativeStructure() {
         <div className="flex justify-center pb-4">
           <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
             <Image src={"/images/ผู้บริหาร/5.webp"} alt={""} />
-            <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
               นางสาวภวิกา โพธิ์ขาว
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -195,7 +195,7 @@ export default function AdministrativeStructure() {
                 <div className="scale-100">
                   <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -221,7 +221,7 @@ export default function AdministrativeStructure() {
         <div className="flex justify-center pb-4">
           <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
             <Image src={"/images/ผู้บริหาร/4.webp"} alt={""} />
-            <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
               นายอาทร ศรีมะณี
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -244,7 +244,7 @@ export default function AdministrativeStructure() {
                 <div className="scale-100">
                   <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
