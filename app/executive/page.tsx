@@ -52,10 +52,10 @@ export default function Executive() {
             นางสาวทักษิณา ชมจันทร์
           </div>
           <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
-            ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
+            ตำแหน่งผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
           </div>
           <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
-            พ.ศ. 2566-ปัจุุบัน
+            เริ่มปฏิบัติงาน พ.ศ. 2566 จนถึง ปัจุบัน
           </div>
           <div className="flex justify-end">
             <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
