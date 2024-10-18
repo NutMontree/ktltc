@@ -1,141 +1,129 @@
+"use client";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
-  NavbarItem,
-  NavbarMenuItem,
 } from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
-import { Kbd } from "@nextui-org/kbd";
-import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
-import { link as linkStyles } from "@nextui-org/theme";
-import NextLink from "next/link";
-import clsx from "clsx";
-
-import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { Logo } from "@/components/icons";
+import { IconBrandFacebook } from "@tabler/icons-react";
+import Link from "next/link";
+import { DropdownPage } from "./dropdownPage";
+import { DropdownPage1 } from "./navmanu/Dropdown";
+import React from "react";
+
 import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
-  SearchIcon,
-  Logo,
-} from "@/components/icons";
+  DropdownItem,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  Avatar,
+} from "@nextui-org/react";
 
-export const Navbar = () => {
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
-
+export const NavbarPage = () => {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   return (
-    <NextUINavbar maxWidth="xl" position="sticky">
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-inherit">ACME</p>
-          </NextLink>
-        </NavbarBrand>
-        <ul className="hidden lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
-                )}
-                color="foreground"
-                href={item.href}
-              >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
-        </ul>
-      </NavbarContent>
-
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
+    <>
+      <NextUINavbar
+        maxWidth={"full"}
+        className="py-2"
+        onMenuOpenChange={setIsMenuOpen}
       >
-        <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
-            <TwitterIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
-            <DiscordIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-            <GithubIcon className="text-default-500" />
-          </Link>
+        <NavbarContent>
+          <NavbarBrand>
+            <Link className="flex justify-start items-center gap-2" href="/">
+              <Logo />
+              <div className=" ">
+                <div className="hidden sm:flex text-xs ">
+                  วิทยาลัยเทคนิคกันทรลักษ์
+                </div>
+                <div className="font-bold text-inherit">KTLTC</div>
+              </div>
+            </Link>
+
+            <ul className="hidden lg:flex gap-6 justify-start">
+              <DropdownPage />
+            </ul>
+          </NavbarBrand>
+        </NavbarContent>
+
+        <NavbarContent justify="end">
+          <div className=" ">
+            <Link
+              title="Facebook"
+              href="https://www.facebook.com/profile.php?id=100004276455648"
+            >
+              <IconBrandFacebook className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+            </Link>
+          </div>
           <ThemeSwitch />
-        </NavbarItem>
-        <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
-        <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            href={siteConfig.links.sponsor}
-            startContent={<HeartFilledIcon className="text-danger" />}
-            variant="flat"
-          >
-            Sponsor
-          </Button>
-        </NavbarItem>
-      </NavbarContent>
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="sm:hidden"
+          />
+          {/* *************************************************** */}
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Avatar
+                isBordered
+                as="button"
+                className="transition-transform"
+                color="secondary"
+                name="Jason Hughes"
+                size="sm"
+                src="/images/logo.webp"
+              />
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Profile Actions" variant="flat">
+              <DropdownItem href="/profile" key="profile">
+                Profile
+              </DropdownItem>
+              <DropdownItem href="/" key="home">
+                Home
+              </DropdownItem>
+              <DropdownItem href="/about" key="about">
+                About
+              </DropdownItem>
+              <DropdownItem href="/contact" key="contact">
+                Contact
+              </DropdownItem>
 
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
-        <NavbarMenuToggle />
-      </NavbarContent>
+              <DropdownItem href="/login" color="danger">
+                <div className="flex gap-2">
+                  <div> Login</div>
+                  <div className="text-red-500">(ไม่พร้อมใช้งาน)</div>
+                </div>
+              </DropdownItem>
 
-      <NavbarMenu>
-        {searchInput}
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
-                size="lg"
-              >
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
-        </div>
-      </NavbarMenu>
-    </NextUINavbar>
+              <DropdownItem href="/register" color="danger">
+                <div className="flex gap-2">
+                  <div> Register</div>
+                  <div className="text-red-500">(ไม่พร้อมใช้งาน)</div>
+                </div>
+              </DropdownItem>
+              <DropdownItem href="/logout" color="danger">
+                <div className="flex gap-2">
+                  <div> Log Out</div>
+                  <div className="text-red-500">(ไม่พร้อมใช้งาน)</div>
+                </div>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          {/* *************************************************** */}
+        </NavbarContent>
+
+        <NavbarMenu className="pt-5">
+          <div className="pt-[30px] text-center text-red-600 text-xl">
+            กด X เพื่อออก
+          </div>
+          {/* {searchInput} */}
+          <div>
+            <DropdownPage1 />
+          </div>
+        </NavbarMenu>
+      </NextUINavbar>
+    </>
   );
 };

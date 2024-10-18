@@ -1,69 +1,136 @@
+// export type SiteConfig = typeof siteConfig;
+
+import { NavbarMenu } from "@nextui-org/navbar";
+
+// export const siteConfig = {
+//   name: "วิทยาลัยเทคนิคกันทรลักษ์",
+//   description: "คลังเก็บข้อมูลวิทยาลัยเทคนิคกันทรลักษ์",
+//   navItems: [
+//     {
+//       label: "หน้าหลัก",
+//       href: "/",
+//     },
+//     {
+//       label: "เกี่ยวกับสถานศึกษา",
+//       href: "/pressrelease",
+//     },
+//     {
+//       label: "หน่วยงานภายใน",
+//       href: "/newsletter",
+//     },
+//     {
+//       label: "ข้อมูลบุคลากร",
+//       href: "/announcement",
+//     },
+//     {
+//       label: "เมนูลัด",
+//       href: "/bidding",
+//     },
+//     {
+//       label: "ดาวโหลด",
+//       href: "/technicalcollegeorders",
+//     },
+//   ],
+
+//   navMenuItems: [
+//     {
+//       label: "Home",
+//       href: "/",
+//     },
+//     {
+//       label: "ข่าวประชาสัมพันธ์",
+//       href: "/pressrelease",
+//     },
+//     {
+//       label: "จดหมายข่าว",
+//       href: "/newsletter",
+//     },
+//     {
+//       label: "ข่าวประกาศ",
+//       href: "/announcement",
+//     },
+//     {
+//       label: "ข่าวประกวดราคา",
+//       href: "/bidding",
+//     },
+//     {
+//       label: "คำสั่งวิทยาลัย",
+//       href: "/technicalcollegeorders",
+//     },
+//   ],
+//   links: {
+//     // github: "https://github.com/nextui-org/nextui",
+//     // twitter: "https://twitter.com/getnextui",
+//     // docs: "https://nextui.org",
+//     // discord: "https://discord.gg/9b6yyZKmH4",
+//     sponsor: "https://www.facebook.com/profile.php?id=61553558543619",
+//   },
+// };
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + NextUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "วิทยาลัยเทคนิคกันทรลักษ์",
+  description: "คลังเก็บข้อมูลวิทยาลัยเทคนิคกันทรลักษ์",
   navItems: [
     {
-      label: "Home",
+      label: "หน้าหลัก",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "เกี่ยวกับสถานศึกษา",
+      href: "/pressrelease",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: "หน่วยงานภายใน",
+      href: "/newsletter",
     },
     {
-      label: "Blog",
-      href: "/blog",
+      label: "ข้อมูลบุคลากร",
+      href: "/announcement",
     },
     {
-      label: "About",
-      href: "/about",
+      label: "เมนูลัด",
+      href: "/bidding",
+    },
+    {
+      label: "ดาวโหลด",
+      href: "/technicalcollegeorders",
     },
   ],
+
   navMenuItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      label: "KTLTC",
+      href: "/",
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      label: "ข่าวประชาสัมพันธ์",
+      href: "/pressrelease",
     },
     {
-      label: "Projects",
-      href: "/projects",
+      label: "จดหมายข่าว",
+      href: "/newsletter",
     },
     {
-      label: "Team",
-      href: "/team",
+      label: "ข่าวประกาศ",
+      href: "/announcement",
     },
     {
-      label: "Calendar",
-      href: "/calendar",
+      label: "ข่าวประกวดราคา",
+      href: "/bidding",
     },
     {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
+      label: "คำสั่งวิทยาลัย",
+      href: "/technicalcollegeorders",
     },
   ],
+
   links: {
-    github: "https://github.com/nextui-org/nextui",
-    twitter: "https://twitter.com/getnextui",
-    docs: "https://nextui.org",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
+    // github: "https://github.com/nextui-org/nextui",
+    // twitter: "https://twitter.com/getnextui",
+    // docs: "https://nextui.org",
+    // discord: "https://discord.gg/9b6yyZKmH4",
+    sponsor: "https://www.facebook.com/profile.php?id=61553558543619",
   },
 };

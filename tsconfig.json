@@ -23,6 +23,19 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "components/test/MapID.tsx",
+    "components/ui/data/globe.tsx",
+    "app/showbidding",
+    "components/settings.tsx",
+    "components/Shapes.tsx",
+    "components/use-smooth-transform.js",
+    "app/profile/page.jsx"
+  ],
   "exclude": ["node_modules"]
 }
+
