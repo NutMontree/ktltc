@@ -13,7 +13,8 @@ import { HeroScrollDemo } from "@/components/HeroScrollDemo";
 import axios from "axios";
 import { UserContextProvider } from "./providers";
 
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL =
+  "https://server-ktltc.vercel.app/?vercelToolbarCode=UzzbiJG7QxK-3Zf";
 axios.defaults.withCredentials = true;
 
 export default function page() {

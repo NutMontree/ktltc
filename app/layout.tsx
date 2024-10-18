@@ -16,7 +16,8 @@ import Link from "next/link";
 import clsx from "clsx";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL =
+  "https://server-ktltc.vercel.app/?vercelToolbarCode=UzzbiJG7QxK-3Zf";
 axios.defaults.withCredentials = true;
 
 export const metadata: Metadata = {
