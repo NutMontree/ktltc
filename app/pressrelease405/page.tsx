@@ -1,0 +1,111 @@
+"use client"; // top to the file
+
+import React from "react";
+import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
+import { Image } from "@nextui-org/react";
+import Link from "next/link";
+
+export default function Pressrelease() {
+  return (
+    <>
+      <div>
+        {/* ***************************** Map Title ***************************** */}
+
+        <div className="text-center text-xl">
+          {DataPressrelease.Item.map((item) => (
+            <div key={item.title}>{item.title}</div>
+          ))}
+        </div>
+        <div>
+          {Description.map((item) => (
+            <div key={item.description}>
+              <div>{item.description}</div>
+            </div>
+          ))}
+        </div>
+        {/* ***************************** Map Title ***************************** */}
+
+        {/* ***************************** LInk And PDF ***************************** */}
+        <div>
+          <br />
+          <p>ข้อมูลเพิ่มเติม </p>
+          <Link
+            href="https://cdn.me-qr.com/pdf/44fbcf65-d09d-40a1-9f93-8ce0a221dbea.pdf?fbclid=IwY2xjawFiAatleHRuA2FlbQIxMAABHWfCeWRtQTqEXX2XK466aUDDCFICw2y6xslVLmhXcw009ZLpXHzOLz2BDg_aem_91UHhM0JNJam_Txp_zgqQA"
+            className="hover:text-sky-500"
+          >
+            https://cdn.me-qr.com/pdf/340f87a2...
+          </Link>
+          <br /> <br />
+          <iframe
+            className="w-full aspect-video ..."
+            src="/images/ข่าวประชาสัมพันธ์/2567/กันยายน/52/1.pdf"
+          ></iframe>
+        </div>
+        {/* ***************************** LInk And PDF ***************************** */}
+
+        {/* ***************************** Foot Title ***************************** */}
+        <div className="text-xs pt-6">
+          <h1 className="text-base">KTL-TC ONE TEAM </h1>
+          <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
+          <p>" วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "</p>
+          <p>
+            ผลิตและพัฒนากำลังคน โดยขับเคลื่อนการจัดการความรู้ด้วยเทคโนโลยี
+            เป็นประชาคมแห่งการเรียนรู้ เน้นการทำงานเป็นทีม
+            มีความร่วมมือกับสถานประกอบการและชุมชน
+          </p>
+          <br />
+          <p>👉 ช่องทางการติดต่อ</p>
+          <p>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
+          <p>
+            เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ
+            วิทยาลัยเทคนิคกันทรลักษ์ Today
+          </p>
+          <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
+          <p>Website : www.ktltc.ac.th</p>
+          <p>Gmail : ktl11022021@gmail.com</p>
+          <p>สอบถามข้อมูลเพิ่มเติม</p>
+          <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๗๕๓ </p>
+          <p>โทร : 061-4122765 หรือ 045-811753</p>
+        </div>
+        {/* ***************************** Foot Title ***************************** */}
+
+        {/* ***************************** Map Image ***************************** */}
+
+        <div className="date">
+          {DataDate.map((item) => (
+            <div key={item.date}>
+              <div className="text-xs text-slate-500">{item.date}</div>
+            </div>
+          ))}
+        </div>
+        <br />
+
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
+            {ImageItem.map((item) => (
+              <div className="" key={item.img}>
+                <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
+                  <Image src={item.img} alt={""}></Image>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ************ Foot-Image ************ */}
+        <div className="Foot-Image">
+          <div className="flex scale-90 hover:scale-110 transition duration-500 rounded-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
+            <Image
+              src={"/images/ข่าวประชาสัมพันธ์/2567/กันยายน/52/1.webp"}
+              alt={""}
+            />
+          </div>
+        </div>
+
+        {/* ************ Foot-Image ************ */}
+
+        {/* ***************************** Map Image ***************************** */}
+      </div>
+    </>
+  );
+}

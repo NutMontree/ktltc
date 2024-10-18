@@ -1,0 +1,45 @@
+"use client"; // top to the file
+
+import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
+import { Image } from "@nextui-org/react";
+
+export default function Pressrelease() {
+  return (
+    <>
+      <div>
+        <div className="text-center text-xl">
+          {DataPressrelease.Item.map((item) => (
+            <div key={item.title}>{item.title}</div>
+          ))}
+        </div>
+        <div>
+          {Description.map((item) => (
+            <div key={item.description}>
+              <div>{item.description}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="date">
+          {DataDate.map((item) => (
+            <div key={item.date}>
+              <div className="text-xs text-slate-500">{item.date}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-center ">
+          <div className=" ">
+            {ImageItem.map((item) => (
+              <div className="" key={item.img}>
+                <div className="  ">
+                  <Image src={item.img} alt={""}></Image>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

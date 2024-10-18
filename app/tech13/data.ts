@@ -1,0 +1,28 @@
+export const DataTechnicalCollege = {
+  Item: [
+    {
+      title: `
+คำสั่งวิทยาลัยเทคนิคกันทรลักษ์
+`,
+    },
+  ],
+};
+
+export const Description = [
+  {
+    description: ` 
+คำสั่ง แต่งตั้งนายตรวจเวรยามฯ ประจำเดือน กันยายน
+`,
+  },
+
+  {
+    description: ` 
+  `,
+  },
+];
+
+export const DataDate = [{ date: ` ` }];
+
+export const ImageItem = [
+  // { img: "/images/คำสั่งวิทยาลัย/2567/สิงหาคม/2/1.webp" },
+];

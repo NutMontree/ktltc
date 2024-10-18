@@ -1,13 +1,23 @@
 import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
-import clsx from "clsx";
-
-import { Providers } from "./providers";
-
-import { siteConfig } from "@/config/site";
+import { Toaster } from "react-hot-toast";
 import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
+// import { createContext } from "./providers";
+import { UserContextProvider } from "./providers";
+import { siteConfig } from "@/config/site";
+import { NavbarPage } from "@/components/navbar";
+import { FloatButton } from "antd";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { CommentOutlined } from "@ant-design/icons";
+import { FloatingNavDemo } from "@/components/FloatingNavDemo";
+import { Metadata, Viewport } from "next";
+import Header from "@/components/header";
+import Footer from "./Footer/page";
+import Link from "next/link";
+import clsx from "clsx";
+import axios from "axios";
+
+axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.withCredentials = true;
 
 export const metadata: Metadata = {
   title: {
@@ -16,7 +26,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: "/favicon.ico",
+    icon: "/images/logo.webp",
   },
 };
 
@@ -33,33 +43,52 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head />
-      <body
-        className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
-      >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col h-screen">
-            <Navbar />
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+      <body className={clsx(" ", fontSans.variable)}>
+        {/* <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}> */}
+        <UserContextProvider
+          themeProps={{ attribute: "class", defaultTheme: "light" }}
+        >
+          <div>
+            {/* <div className="bg-gradient-to-r from-[#F9E658] to-[#F7B269] to-[#F78B6E] to-[#F7596E] to-[#F72B6F]"> */}
+            <div className=" ">
+              <Header />
+            </div>
+            <NavbarPage />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{ duration: 2000 }}
+            />
+            <FloatingNavDemo />
+            <main>
               {children}
+              <SpeedInsights />
             </main>
-            <footer className="w-full flex items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
-                title="nextui.org homepage"
-              >
-                <span className="text-default-600">Powered by</span>
-                <p className="text-primary">NextUI</p>
-              </Link>
-            </footer>
+
+            {/* <div className="flex justify-center">
+              <InputGame />
+            </div> */}
+
+            <Footer />
           </div>
-        </Providers>
+          <FloatButton
+            icon={<CommentOutlined />}
+            tooltip={
+              <div>
+                <div>
+                  <Link
+                    className="  text-sky-500"
+                    href="https://www.facebook.com/messages/t/100004276455648"
+                  >
+                    Mesesnger
+                  </Link>
+                </div>
+              </div>
+            }
+          />
+        </UserContextProvider>
+        {/* </Providers> */}
       </body>
     </html>
   );
