@@ -17,6 +17,17 @@ export function BackgroundBeamsWithCollisionDemo() {
           </div>
         </BackgroundBeamsWithCollision>
       </Link>
+      <Link href="pressrelease438">
+        <BackgroundBeamsWithCollision>
+          <div className="scale-95 hover:scale-110 duration-500 justify-center">
+            <Image
+              className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px]"
+              src={"/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/29/1.webp"}
+              alt={""}
+            />
+          </div>
+        </BackgroundBeamsWithCollision>
+      </Link>
     </>
   );
 }
