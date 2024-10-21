@@ -30,11 +30,8 @@ export default function page() {
           <div className="border-t py-[48px]">
             <ScrollVelocity />
           </div>
-          <div className="border-t">
+          <div className="border-t py-[48px]">
             <BackgroundBeamsWithCollisionDemo />
-          </div>
-          <div className="border-t">
-            <HeroScrollDemo />
           </div>
           <div className="border-t py-[48px]">
             <ShowPressRelease />

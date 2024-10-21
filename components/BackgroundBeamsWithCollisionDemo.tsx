@@ -17,17 +17,35 @@ export function BackgroundBeamsWithCollisionDemo() {
           </div>
         </BackgroundBeamsWithCollision>
       </Link>
-      <Link href="pressrelease438">
-        <BackgroundBeamsWithCollision>
-          <div className="scale-95 hover:scale-110 duration-500 justify-center">
-            <Image
-              className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px]"
-              src={"/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/29/1.webp"}
-              alt={""}
-            />
+
+      <div className="flex justify-center pb-[200px] pt-[52px]">
+        <div>
+          <iframe
+            className="w-full h-full"
+            src={
+              "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/33/1.mp4?playlist=1.mp4&loop=1"
+            }
+          ></iframe>
+          <br />
+          <div>
+            <p className="flex justify-center text-base">
+              " Welcome Back to School! "
+            </p>
+            <p className="flex justify-center text-base">
+              วิทยาลัยเทคนิคกันทรลักษ์ ยินดีต้อนรับ นักเรียน นักศึกษา
+              เนื่องในโอกาสเปิดภาคเรียนที่ 2 ประจำปีการศึกษา 2567
+            </p>
+            <p className="flex justify-center text-base">
+              👉เวลา 07.40 น.
+              เริ่มทำกิจกรรมเข้าเเถวเคารพธงชาติโดยพร้อมเพียงกัน🇹🇭 **
+            </p>
+            <p className="flex justify-center text-base">
+              อให้นักเรียน นักศึกษา #เทคนิคกันท์ ทุกคน พร้อมที่จะเรียนรู้
+              เก็บประสบการณ์ เเละพัฒนาตนเอง เพื่อสิ่งที่ตั้งว้ในอนาคต
+            </p>
           </div>
-        </BackgroundBeamsWithCollision>
-      </Link>
+        </div>
+      </div>
     </>
   );
 }
