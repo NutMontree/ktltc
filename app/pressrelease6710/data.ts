@@ -1,6 +1,22 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `อีกไม่นานเเน่นอน `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/31/04.webp",
+      description: `
+ ต่อไปเราจะมีโรงจอดรถที่ใหญ่ขึ้น 👉พบกับ "โครงการต่อเติมโรงจอดรถนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์" ขณะนี้กำลังดำเนินการก่อสร้าง 
+       ...`,
+      href: "/pressrelease440",
+    },
+    {
+      name: `💥💥เเจ้ง 👉ตารางเรียน `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/30/1.webp",
+      description: `
+ ระดับ ปวช. เเละ ปวส. ภาคเรียนที่ 2 ปีการศึกษา 2567
+       ...`,
+      href: "/pressrelease439",
+    },
+    {
       name: `ประชาสัมพันธ์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/29/1.webp",
       description: `
