@@ -90,41 +90,39 @@ const Sid: React.FC = () => {
           Student information
         </h1>
       </div>
-      <Flex vertical gap="small" className="pb-8 rounded-full">
-        <div className="bg-red-500 text-center">
-          <Table<FixedDataType>
-            className="bg-red-500"
-            columns={fixedColumns}
-            dataSource={fixedDataSource}
-            pagination={false}
-            scroll={{ x: 600, y: 300 }}
-            bordered
-            summary={() => (
-              <Table.Summary fixed>
-                <Table.Summary.Row>
-                  <Table.Summary.Cell className="flex justify-end" index={0}>
-                    รวมทั้งหมด
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell className="text-sky-700" index={1}>
-                    <div className="flex justify-end">1,494</div>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell className="text-sky-700" index={1}>
-                    <div className="flex justify-end">1,008</div>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell className="text-sky-700" index={1}>
-                    <div className="flex justify-end">0</div>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell className="text-sky-700" index={1}>
-                    <div className="flex justify-end">0</div>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell className="text-sky-700" index={1}>
-                    <div className="flex justify-end">2,502</div>
-                  </Table.Summary.Cell>
-                </Table.Summary.Row>
-              </Table.Summary>
-            )}
-          />
-        </div>
+
+      <Flex vertical gap="small">
+        <Table<FixedDataType>
+          columns={fixedColumns}
+          dataSource={fixedDataSource}
+          pagination={false}
+          scroll={{ x: 600, y: 300 }}
+          bordered
+          summary={() => (
+            <Table.Summary fixed>
+              <Table.Summary.Row>
+                <Table.Summary.Cell className="flex justify-end" index={0}>
+                  รวมทั้งหมด
+                </Table.Summary.Cell>
+                <Table.Summary.Cell className="text-sky-700" index={1}>
+                  <div className="flex justify-end">1,494</div>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell className="text-sky-700" index={1}>
+                  <div className="flex justify-end">1,008</div>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell className="text-sky-700" index={1}>
+                  <div className="flex justify-end">0</div>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell className="text-sky-700" index={1}>
+                  <div className="flex justify-end">0</div>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell className="text-sky-700" index={1}>
+                  <div className="flex justify-end">2,502</div>
+                </Table.Summary.Cell>
+              </Table.Summary.Row>
+            </Table.Summary>
+          )}
+        />
       </Flex>
     </>
   );
