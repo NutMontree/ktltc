@@ -1,85 +1,6 @@
 "use client"; // top to the file
 
-// import React from "react";
-// import { Flex, Table } from "antd";
-// import type { TableColumnsType } from "antd";
-
-// interface FixedDataType {
-//   key: string;
-//   name: string;
-//   borrow: number;
-//   repayment: number;
-//   man: string;
-//   female: string;
-//   end: string;
-//   out: string;
-//   sum: string;
-// }
-
-// const fixedColumns: TableColumnsType<FixedDataType> = [
-//   {
-//     title: "ระดับการศึกษา",
-//     dataIndex: "name",
-//   },
-//   {
-//     title: "ชาย",
-//     dataIndex: "man",
-//   },
-//   {
-//     title: "หญิง",
-//     dataIndex: "female",
-//   },
-//   {
-//     title: "จบ",
-//     dataIndex: "end",
-//   },
-//   {
-//     title: "พ้นสภาพ",
-//     dataIndex: "out",
-//   },
-//   {
-//     title: "รวม",
-//     dataIndex: "sum",
-//   },
-// ];
-
-// const fixedDataSource = [
-//   {
-//     key: "1",
-//     name: "ระดับ ปวช",
-//     borrow: 10,
-//     repayment: 33,
-//     man: "998",
-//     female: "650",
-//     end: "0",
-//     out: "0",
-//     sum: "1,648",
-//   },
-//   {
-//     key: "2",
-//     name: "ระดับ ปสว",
-//     borrow: 100,
-//     repayment: 0,
-//     man: "496",
-//     female: "358",
-//     end: "0",
-//     out: "0",
-//     sum: "854",
-//   },
-//   {
-//     key: "3",
-//     name: "ระดับ ทล.บ",
-//     borrow: 10,
-//     repayment: 10,
-//     man: "0",
-//     female: "0",
-//     end: "0",
-//     out: "0",
-//     sum: "0",
-//   },
-// ];
-
-const Sid: React.FC = () => {
+export default function Sid() {
   return (
     <>
       <div>
@@ -90,40 +11,6 @@ const Sid: React.FC = () => {
           Student information
         </h1>
       </div>
-
-      {/* <Flex vertical gap="small">
-        <Table<FixedDataType>
-          columns={fixedColumns}
-          dataSource={fixedDataSource}
-          pagination={false}
-          scroll={{ x: 600, y: 300 }}
-          bordered
-          summary={() => (
-            <Table.Summary fixed>
-              <Table.Summary.Row>
-                <Table.Summary.Cell className="flex justify-end" index={0}>
-                  รวมทั้งหมด
-                </Table.Summary.Cell>
-                <Table.Summary.Cell className="text-sky-700" index={1}>
-                  <div className="flex justify-end">1,494</div>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell className="text-sky-700" index={2}>
-                  <div className="flex justify-end">1,008</div>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell className="text-sky-700" index={3}>
-                  <div className="flex justify-end">0</div>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell className="text-sky-700" index={4}>
-                  <div className="flex justify-end">0</div>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell className="text-sky-700" index={5}>
-                  <div className="flex justify-end">2,502</div>
-                </Table.Summary.Cell>
-              </Table.Summary.Row>
-            </Table.Summary>
-          )}
-        />
-      </Flex> */}
 
       <div className="pt-6 rounded-lg">
         <div className="grid grid-cols-6 bg-zinc-100 rounded-tl-lg rounded-tr-lg border-slate-100 dark:bg-slate-800">
@@ -227,8 +114,275 @@ const Sid: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <div>
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-24">
+          สรุปข้อมูลสถิตินักเรียนนักศึกษาจำแนกประเภทวิชา
+        </h1>
+      </div>
+
+      <div className="pt-24">
+        <div>
+          {/* /////////////////////////////เริ่มต้น/////////////////////////// */}
+          {/* ////////////////////////////บันทัด ที่ 1//////////////////////////// */}
+          <div className="grid grid-cols-3 gap-4 bg-zinc-100 rounded-tl-lg rounded-tr-lg border-slate-100 dark:bg-slate-800">
+            <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium text-center px-3 py-3 border-slate-200 border-t-1 border-l-1 rounded-tl-lg">
+              แผนกวิชา
+            </div>
+            <div className="col-span-2">
+              <div className="grid grid-cols-6">
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium text-center px-3 py-3 border-slate-200 border-t-1 border-l-1">
+                  ปวช 1
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium text-center px-3 py-3 border-slate-200 border-t-1 border-l-1">
+                  ปวช 2
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium text-center px-3 py-3 border-slate-200 border-t-1 border-l-1">
+                  ปวช 3
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium text-center px-3 py-3 border-slate-200 border-t-1 border-l-1">
+                  ปวส 1
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium text-center px-3 py-3 border-slate-200 border-t-1 border-l-1">
+                  ปวส 2
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium text-center px-3 py-3 border-slate-200 border-t-1 border-l-1 border-r-1 rounded-tr-lg">
+                  รวมทั้งหมด
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* ////////////////////////////บันทัด ที่ 2//////////////////////////// */}
+          <div className="grid grid-cols-3 gap-4 bg-zinc-100 border-slate-100 dark:bg-slate-800 border-l-1">
+            <div className="border-l-1"></div>
+            <div className="col-span-2">
+              <div className="grid grid-cols-12">
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  ชาย
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  หญิง
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  ชาย
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  หญิง
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  ชาย
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  หญิง
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  ชาย
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  หญิง
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  ชาย
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  หญิง
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1">
+                  ชาย
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 font-medium text-center border-slate-200 border-t-1 border-l-1 border-r-1">
+                  หญิง
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* ////////////////////////////บันทัด ที่ 3//////////////////////////// */}
+          <div className="grid grid-cols-3 gap-4 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800 border-l-1 border-b-1 pl-1">
+            <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium px-3 py-3">
+              1. อุตสาหกรรม
+            </div>
+            <div className="col-span-2">
+              <div className="grid grid-cols-12">
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  299
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  58
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  246
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  47
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  326
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  59
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  252
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  38
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  188
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  35
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  1,311
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-t-1 border-l-1">
+                  237
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* ////////////////////////////บันทัด ที่ 4//////////////////////////// */}
+          <div className="grid grid-cols-3 gap-4 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800 border-l-1 border-b-1 pl-1">
+            <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium  px-3 py-3">
+              2. พาณิชยกรรม/บริหารธุรกิจ
+            </div>
+            <div className="col-span-2">
+              <div className="grid grid-cols-12">
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  10{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  96{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  29{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  152{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  50{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  125{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  6{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  100{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  22{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  115{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  117{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  588{" "}
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* ////////////////////////////บันทัด ที่ 4//////////////////////////// */}
+          <div className="grid grid-cols-3 gap-4 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800 border-l-1 border-b-1 pl-1">
+            <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium px-3 py-3">
+              3. อุตสาหกรรมท่องเที่ยว
+            </div>
+            <div className="col-span-2">
+              <div className="grid grid-cols-12">
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  7{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  16{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  4{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  14{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  6{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  11{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  3{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  9{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  2{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  12{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  22{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  62{" "}
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* ////////////////////////////บันทัด ที่ 4//////////////////////////// */}
+          <div className="grid grid-cols-3 gap-4 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800 border-l-1 border-b-1 pl-1">
+            <div className="text-[8px] sm:text-sm md:text-base lg:text-base font-medium px-3 py-3">
+              4. อุตสาหกรรมดิจิทัลและเทคโนโลยีสานสนเทศ
+            </div>
+            <div className="col-span-2">
+              <div className="grid grid-cols-12">
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  21{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  72{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  0{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  0{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  0{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  0{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  23{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  49{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  0{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  0{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  44{" "}
+                </div>
+                <div className="text-[8px] sm:text-sm md:text-base lg:text-base px-3 py-3 text-end  border-slate-100 border-l-1">
+                  121{" "}
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* ////////////////////////////สิ้นสุด//////////////////////////// */}
+        </div>
+      </div>
     </>
   );
-};
-
-export default Sid;
+}
