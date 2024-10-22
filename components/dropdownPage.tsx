@@ -75,7 +75,7 @@ function Navbar({ className }: { className?: string }) {
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink className="" href="/sid ">
                 ข้อมูลนักเรียน นักศึกษา
               </HoveredLink>
             </div>

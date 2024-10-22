@@ -61,7 +61,7 @@ function Navbar({ className }: { className?: string }) {
             <HoveredLink className="hover:text-sky-500" href="/personnel">
               ข้อมูลบุคลากร
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
+            <HoveredLink className="hover:text-sky-500" href="/sid ">
               ข้อมูลนักเรียน นักศึกษา
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/ ">
