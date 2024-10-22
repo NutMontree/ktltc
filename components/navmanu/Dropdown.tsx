@@ -131,7 +131,11 @@ function Navbar({}: { className?: string }) {
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="https://www.sisaket.go.th/"
+                          target="_blank"
+                        >
                           ข้อมูลของจังหวัด
                         </HoveredLink1>
                       </div>
@@ -293,6 +297,7 @@ function Navbar({}: { className?: string }) {
                         <HoveredLink1
                           className="hover:text-sky-500"
                           href="https://std2018.vec.go.th/web/ "
+                          target="_blank"
                         >
                           ระบบ ศธ. ออนไลน์
                         </HoveredLink1>
@@ -329,6 +334,7 @@ function Navbar({}: { className?: string }) {
                         <HoveredLink1
                           className="hover:tyext-sky-500"
                           href="https://v-cop.go.th/ "
+                          target="_blank"
                         >
                           ศูนย์กำลังคนอาชีวศึกษา (V-COP)
                         </HoveredLink1>
