@@ -18,7 +18,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         </BackgroundBeamsWithCollision>
       </Link>
 
-      <div className="flex justify-center pb-[200px] pt-[52px]">
+      <div className="flex justify-center pb-[200px] pt-[52px] px-8">
         <div>
           <iframe
             className="w-full h-full"
@@ -40,8 +40,8 @@ export function BackgroundBeamsWithCollisionDemo() {
               เริ่มทำกิจกรรมเข้าเเถวเคารพธงชาติโดยพร้อมเพียงกัน🇹🇭 **
             </p>
             <p className="flex justify-center text-base">
-              อให้นักเรียน นักศึกษา #เทคนิคกันท์ ทุกคน พร้อมที่จะเรียนรู้
-              เก็บประสบการณ์ เเละพัฒนาตนเอง เพื่อสิ่งที่ตั้งว้ในอนาคต
+              ขอให้นักเรียน นักศึกษา ทุกคน พร้อมที่จะเรียนรู้ เก็บประสบการณ์
+              เเละพัฒนาตนเอง เพื่อสิ่งที่ตั้งว้ในอนาคต
             </p>
           </div>
         </div>
