@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: `คณะผู้บริหาร`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/38/0.webp",
+      description: `
+ร่วมประชุมสัญจรผู้บริหารอาชีวศึกษาจังหวัดศรีสะเกษ (สอจ.ศก.) ครั้งที่ 1 ณ ห้องประชุมอาคารเฉลิมพระเกียรติวิทยาลัยเทคนิคกันทรลักษ์
+       ...`,
+      href: "/pressrelease445",
+    },
+    {
       name: `นายอุทัย  จรรยากรณ์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/36/0.webp",
       description: `
