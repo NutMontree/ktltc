@@ -12,6 +12,7 @@
     "@ant-design/icons": "^5.4.0",
     "@emotion/css": "^11.13.0",
     "@motionone/utils": "^10.18.0",
+    "@next/third-parties": "^15.0.1",
     "@nextui-org/accordion": "^2.0.35",
     "@nextui-org/button": "^2.0.31",
     "@nextui-org/calendar": "^2.0.11",

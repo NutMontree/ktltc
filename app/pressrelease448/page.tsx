@@ -4,6 +4,7 @@ import React from "react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
+import { Accordion, AccordionItem } from "@nextui-org/react";
 
 export default function Pressrelease() {
   return (
@@ -89,17 +90,39 @@ export default function Pressrelease() {
         </div>
         <br />
 
-        <div className="flex justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
-            {ImageItem.map((item) => (
-              <div className="" key={item.img}>
-                <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
-                  <Image src={item.img} alt={""}></Image>
-                </div>
+        <Accordion isCompact>
+          <AccordionItem key="1" aria-label="Accordion 1" title="วีดีโอ">
+            {/* <iframe
+              className="w-full aspect-video ..."
+              src="https://youtu.be/BYBHe2Iy6_M"
+            ></iframe> */}
+            <iframe
+              width="420"
+              height="315"
+              src="https://youtu.be/BYBHe2Iy6_M"
+            ></iframe>
+            <iframe
+              className="w-full aspect-video self-stretch md:min-h-96"
+              src="https://www.youtube.com/watch?v=BYBHe2Iy6_M"
+              frameBorder="0"
+              title="Product Overview Video"
+              aria-hidden="true"
+            />
+          </AccordionItem>
+          <AccordionItem key="2" aria-label="Accordion 2" title="รูปภาพ ">
+            <div className="flex justify-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
+                {ImageItem.map((item) => (
+                  <div className="" key={item.img}>
+                    <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
+                      <Image src={item.img} alt={""}></Image>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </AccordionItem>
+        </Accordion>
 
         {/* ************ Foot-Image ************ */}
         {/* <div className="Foot-Image">
