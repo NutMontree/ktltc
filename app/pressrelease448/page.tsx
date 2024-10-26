@@ -88,27 +88,22 @@ export default function Pressrelease() {
             </div>
           ))}
         </div>
-        <br />
 
+        {/* <video
+          controls
+          autoPlay
+          src="https://www.youtube.com/watch?v=Hy_BVgkKMRg"
+        /> */}
+        <iframe
+          className="w-[auto]"
+          src="https://www.youtube.com/embed/TOaUl6O1CTY"
+          title="เข้าค่ายลูกเสือ ปี 2567 part 1"
+          // frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          // referrerpolicy="strict-origin-when-cross-origin"
+          // allowfullscreen
+        ></iframe>
         <Accordion isCompact>
-          <AccordionItem key="1" aria-label="Accordion 1" title="วีดีโอ">
-            {/* <iframe
-              className="w-full aspect-video ..."
-              src="https://youtu.be/BYBHe2Iy6_M"
-            ></iframe> */}
-            <iframe
-              width="420"
-              height="315"
-              src="https://youtu.be/BYBHe2Iy6_M"
-            ></iframe>
-            <iframe
-              className="w-full aspect-video self-stretch md:min-h-96"
-              src="https://www.youtube.com/watch?v=BYBHe2Iy6_M"
-              frameBorder="0"
-              title="Product Overview Video"
-              aria-hidden="true"
-            />
-          </AccordionItem>
           <AccordionItem key="2" aria-label="Accordion 2" title="รูปภาพ ">
             <div className="flex justify-center">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
