@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `จัดกิจกรรม`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/45/01.webp",
+      description: `
+โครงการเดินทางไกลเข้าค่ายพักเเรม เเละประดับเเถบ 3 สี ลูกเสือวิสามัญวิทยาลัยเทคนิคกันทรลักษ์ ประจำปีการศึกษา 2567 ระหว่างวันที่ 23 - 25 ตุลาคม 2567
+ ...`,
+      href: "/pressrelease451",
+    },
+    {
       name: `ประกาศรายชื่อ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/44/1.webp",
       description: `
