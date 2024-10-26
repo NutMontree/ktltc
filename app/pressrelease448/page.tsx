@@ -33,7 +33,7 @@ export default function Pressrelease() {
             href="https://drive.google.com/drive/folders/1T3RSnuR2XNiz3o3uaOr4FC9F1k-q4lm-?fbclid=IwY2xjawGJW1VleHRuA2FlbQIxMAABHQl9VrTgad3VWuTR196IN9bhSSDpNy3HAmvq2ZhmdFf7l6vmNgMc7SRKfw_aem_NiXfLdpaAp06z3SvaI3jNw"
             className="hover:text-sky-500"
           >
-            https://drive.google.com/.../1T3RSnuR2XNiz3o3uaOr4FC9F1k.....
+            https://drive.google.com/...
           </Link>
           {/* <br /> <br />
           <iframe
