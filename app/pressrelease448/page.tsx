@@ -94,15 +94,28 @@ export default function Pressrelease() {
           autoPlay
           src="https://www.youtube.com/watch?v=Hy_BVgkKMRg"
         /> */}
-        <iframe
-          className="w-[auto]"
-          src="https://www.youtube.com/embed/TOaUl6O1CTY"
-          title="เข้าค่ายลูกเสือ ปี 2567 part 1"
-          // frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          // referrerpolicy="strict-origin-when-cross-origin"
-          // allowfullscreen
-        ></iframe>
+        <div className="flex justify-center">
+          <div className="px-2 py-2  gap-4">
+            <iframe
+              className="w-[auto]"
+              src="https://www.youtube.com/embed/TOaUl6O1CTY"
+              title="เข้าค่ายลูกเสือ ปี 2567 part 1"
+              // frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              // referrerpolicy="strict-origin-when-cross-origin"
+              // allowfullscreen
+            />
+            <br />
+            <iframe
+              src="https://www.youtube.com/embed/mNuLKUUotoM"
+              title="26 ตุลาคม ค.ศ. 2024"
+              // frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              // referrerpolicy="strict-origin-when-cross-origin"
+              // allowfullscreen
+            ></iframe>
+          </div>
+        </div>
         <Accordion isCompact>
           <AccordionItem key="2" aria-label="Accordion 2" title="รูปภาพ ">
             <div className="flex justify-center">
