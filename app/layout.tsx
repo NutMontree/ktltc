@@ -14,11 +14,10 @@ import Header from "@/components/header";
 import Footer from "./Footer/page";
 import Link from "next/link";
 import clsx from "clsx";
-import axios from "axios";
+// import axios from "axios";
 
-axios.defaults.baseURL =
-  "https://server-ktltc.vercel.app/?vercelToolbarCode=UzzbiJG7QxK-3Zf";
-axios.defaults.withCredentials = true;
+// axios.defaults.baseURL = "http://localhost:8000";
+// axios.defaults.withCredentials = true;
 
 export const metadata: Metadata = {
   title: {

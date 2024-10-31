@@ -9,13 +9,13 @@ import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import ScrollVelocity from "@/components/Scrollvelocity";
 
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
-import { HeroScrollDemo } from "@/components/HeroScrollDemo";
-import axios from "axios";
 import { UserContextProvider } from "./providers";
+// import axios from "axios";
 
-axios.defaults.baseURL =
-  "https://server-ktltc.vercel.app/?vercelToolbarCode=UzzbiJG7QxK-3Zf";
-axios.defaults.withCredentials = true;
+// axios.defaults.baseURL =
+//   "https://server-ktltc.vercel.app/?vercelToolbarCode=UzzbiJG7QxK-3Zf";
+// axios.defaults.baseURL = "http://localhost:8000";
+// axios.defaults.withCredentials = true;
 
 export default function page() {
   return (
