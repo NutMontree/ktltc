@@ -57,7 +57,8 @@ export default function Sponsor() {
                             href="https://www.facebook.com/profile.php?id=61553558543619&locale=hi_IN"
                           >
                             <Avatar
-                              src="https://scontent.fubp1-1.fna.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=vFH1T-_stfUQ7kNvgFrY2cq&_nc_ht=scontent.fubp1-1.fna&_nc_gid=ALpLJGph5mGR92vm55FPUPO&oh=00_AYC22U52jTE-pK5LED1B0EwBrf75zO60mldMQBw_rI60uw&oe=66F83641"
+                              src="
+https://scontent-bkk1-2.xx.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeEg80Ccw8CC428AQ9BSp2jDVfZDudojToNV9kO52iNOg0amTHGYLCRIreANO3VDjgnd6IMu5BOq_-6tVRcgYEZU&_nc_ohc=_1afWpdYpukQ7kNvgGGY4w9&_nc_zt=23&_nc_ht=scontent-bkk1-2.xx&_nc_gid=ADjSpXRkFHVlx_hQtBmIPCL&oh=00_AYCTzeYXsK55Hq6D6D2MRdSM61K7PNvujPb4Ifo0HI6IRw&oe=6728C581                              "
                               className="w-20 h-20 text-large"
                             />
                           </Link>
