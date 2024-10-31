@@ -17,13 +17,13 @@ export function BackgroundBeamsWithCollisionDemo() {
           </div>
         </BackgroundBeamsWithCollision>
       </Link> */}
-      <Link href="pressrelease450">
+      <Link href="pressrelease460">
         <div className="flex justify-center px-8">
           <div>
             <div className="flex justify-center">
               <Image
                 className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
-                src={"images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/44/1.webp"}
+                src={"/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/54/1.webp"}
               />
             </div>
 
@@ -32,9 +32,8 @@ export function BackgroundBeamsWithCollisionDemo() {
             <div>
               <p className="flex justify-center text-base">" ประกาศรายชื่อ "</p>
               <p className="flex justify-center text-base">
-                ผู้มีสิทธิเข้ารับการประเมินสมรรถนะ ตำเเหน่ง ครูพิเศษสอน
-                สาขาวิชาช่างไฟฟ้ากำลัง เข้ารับการประเมินสมรรถนะ ในวันที่ 29
-                ตุลาคม 2567 ตามวันเวลาที่กำหนด
+                ผลการสอบคัดเลือก ตำเเหน่ง ครูพิเศษสอน สาขาวิชาช่างไฟฟ้ากำลัง
+                ผู้ที่มีรายชื่อลำดับที่ 1 ให้มารายงานตัวตามวันเวลาที่กำหนด
               </p>
             </div>
           </div>
