@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ขอเชิญชวน `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/56/1.webp",
+      description: `
+คณะผู้บริหาร ครู เเละบุคลากรทางการศึกษา เข้าร่วมโครงการ เดิน วิ่ง ปั่น ป้องกันอัมพาต เฉลิมพระเกียรติพระบาทสมเด็จพระเจ้าอยู่หัว ครั้งที่ 10
+      ...`,
+      href: "/pressrelease462",
+    },
+    {
       name: `ประชาสัมพันธ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/55/1.webp",
       description: `
