@@ -58,7 +58,6 @@
     "npx": "^10.2.2",
     "popmotion": "^11.0.5",
     "postcss": "8.4.38",
-    "prisma": "^5.21.1",
     "qss": "^3.0.0",
     "react": "18.2.0",
     "react-countup": "^6.5.3",
