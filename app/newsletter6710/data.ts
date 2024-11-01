@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: `1 พฤศจิกายน 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/2/0.webp",
+      description: `
+ วิทยาลัยเทคนิคกันทรลักษ์ จัดโครงการอบรมเขียนเเผนปฏิบัติงานองค์การนักวิชาชีพในอนาคตเเห่งประเทศไทย (อวท.) วิทยาลัยเทคนิคกันทรลักษ์
+       ...`,
+      href: "/pressrelease466",
+    },
+    {
       name: `นางสาวทักษิณา ชมจันทร์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/59/0.webp",
       description: `
