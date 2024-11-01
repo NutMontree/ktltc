@@ -8,8 +8,8 @@ import { createContext, useState, useEffect } from "react";
 
 // axios.defaults.baseURL =
 //   "https://server-ktltc.vercel.app/?vercelToolbarCode=UzzbiJG7QxK-3Zf";
-axios.defaults.baseURL = "https://server-ktltc.vercel.app/";
-axios.defaults.withCredentials = true;
+// axios.defaults.baseURL = "http://localhost:8000";
+// axios.defaults.withCredentials = true;
 
 export interface ProvidersProps {
   children: React.ReactNode;
