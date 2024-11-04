@@ -42,6 +42,38 @@ export function BackgroundBeamsWithCollisionDemo() {
           </div>
         </div>
       </Link>
+      <br />
+      <br />
+      <Link href="pressrelease471">
+        <div className="flex justify-center px-8">
+          <div>
+            <div className="flex justify-center">
+              <Image
+                // className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
+                className="h-[250px] sm:h-[500px] lg:h-[600px] xl:h-[600px] "
+                src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/8/1.webp"}
+              />
+            </div>
+
+            <br />
+
+            <div>
+              <p className="flex justify-center text-base">
+                " Dek 68 พร้อมกันรึยัง "
+              </p>
+              <p className="flex justify-center text-base">
+                ประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัคร
+              </p>
+              <p className="flex justify-center text-base">
+                นักเรียนนักศึกษาใหม่ รอบโควตา ปีการศึกษา 2568
+              </p>
+              <p className="flex justify-center text-base">
+                💥💥เปิดรับสมัครตั้งเเต่วันนี้ ถึง 21 พฤศจิกายน 2567
+              </p>
+            </div>
+          </div>
+        </div>
+      </Link>
     </>
   );
 }
