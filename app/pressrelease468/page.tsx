@@ -102,6 +102,23 @@ export default function Pressrelease() {
             ))}
           </div>
         </div> */}
+        <div className="flex justify-center">
+          <div className="px-2 py-2  gap-4">
+            <iframe
+              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+                         w-[200px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
+              src="https://www.youtube.com/embed/1qwOVzMyCQU?si=JlO30KsNt-hv68Ls"
+              title="เข้าค่ายลูกเสือ ปี 2567 part 1"
+              // frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              // referrerpolicy="strict-origin-when-cross-origin"
+              // allowfullscreen
+            />
+            <br />
+          </div>
+        </div>
+
+        <p>จำนวนภาพ 736 ภาพ</p>
 
         <div className="flex justify-center">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">

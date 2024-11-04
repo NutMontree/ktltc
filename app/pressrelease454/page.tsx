@@ -103,7 +103,8 @@ export default function Pressrelease() {
         <div className="flex justify-center">
           <div className="px-2 py-2  gap-4">
             <iframe
-              className="w-[auto]"
+              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+                         w-[200px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
               src="https://www.youtube.com/embed/TOaUl6O1CTY"
               title="เข้าค่ายลูกเสือ ปี 2567 part 1"
               // frameborder="0"
@@ -113,6 +114,8 @@ export default function Pressrelease() {
             />
             <br />
             <iframe
+              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+                         w-[200px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
               src="https://www.youtube.com/embed/mNuLKUUotoM"
               title="26 ตุลาคม ค.ศ. 2024"
               // frameborder="0"
