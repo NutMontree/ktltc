@@ -105,8 +105,8 @@ export default function Pressrelease() {
         <div className="flex justify-center">
           <div className="px-2 py-2  gap-4">
             <iframe
-              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
-                         w-[200px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
+              className="h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+                         w-[300px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
               src="https://www.youtube.com/embed/1qwOVzMyCQU?si=JlO30KsNt-hv68Ls"
               title="เข้าค่ายลูกเสือ ปี 2567 part 1"
               // frameborder="0"
