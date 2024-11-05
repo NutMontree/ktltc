@@ -31,7 +31,7 @@ function Navbar({ className }: { className?: string }) {
             <HoveredLink className="hover:text-sky-500" href="/philosophy">
               ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/executive">
+            <HoveredLink className="hover:text-sky-500" href="/eduadmin">
               ทำเนียบผู้บริหาร
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/">
@@ -73,7 +73,7 @@ function Navbar({ className }: { className?: string }) {
             <HoveredLink className="hover:text-sky-500" href="/ ">
               ข้อมูลงบประมาณ
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
+            <HoveredLink className="hover:text-sky-500" href="/buildings ">
               ข้อมูลอาคารสถานที่
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/ ">

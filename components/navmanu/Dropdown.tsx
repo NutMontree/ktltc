@@ -53,7 +53,7 @@ function Navbar({}: { className?: string }) {
                       <div className="hover:bg-slate-100 rounded-lg">
                         <HoveredLink1
                           className="hover:text-sky-500"
-                          href="/executive"
+                          href="/eduadmin"
                         >
                           ทำเนียบผู้บริหาร
                         </HoveredLink1>
@@ -124,7 +124,10 @@ function Navbar({}: { className?: string }) {
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="/buildings "
+                        >
                           ข้อมูลอาคารสถานที่
                         </HoveredLink1>
                       </div>

@@ -38,7 +38,7 @@ function Navbar({ className }: { className?: string }) {
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/executive">
+              <HoveredLink className="" href="/eduadmin">
                 ทำเนียบผู้บริหาร
               </HoveredLink>
             </div>
@@ -95,7 +95,7 @@ function Navbar({ className }: { className?: string }) {
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink className="" href="/buildings ">
                 ข้อมูลอาคารสถานที่
               </HoveredLink>
             </div>
