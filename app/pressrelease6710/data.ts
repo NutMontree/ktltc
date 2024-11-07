@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `สวัสดี Dek68 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/10/1.webp",
+      description: `
+ทุกคน วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัครนักเรียน นักศึกษา ปีการศึกษา 2568
+   ...`,
+      href: "/pressrelease473",
+    },
+    {
       name: `คณะกองลูกเสือวิสามัญ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/9/6.webp",
       description: `
