@@ -58,12 +58,12 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1">หลัง</div>
           </div>
         </div>
-        <div className="py-1 flex justify-center text-[6px] md:text-[8px] pr-1 sm:text-sm md:text-base lg:text-baseborder-slate-100 border-t-1 border-l-1 border-r-1">
+        <div className="py-1 flex justify-center text-[6px] md:text-[8px] pr-1 sm:text-sm md:text-base lg:text-baseborder-slate-100 border-slate-100 border-t-1 border-l-1 border-r-1">
           24
         </div>
       </div>
@@ -84,7 +84,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1">หลัง</div>
           </div>
@@ -110,7 +110,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -136,7 +136,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1">หลัง</div>
           </div>
@@ -162,7 +162,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -188,7 +188,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -214,7 +214,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -240,7 +240,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -254,7 +254,7 @@ export default function Buildings() {
       {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
       <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
         <div className="py-1  pl-1 text-[6px] md:text-[8px] sm:text-sm md:text-base lg:text-base border-slate-100 border-t-1 border-l-1">
-          13 มี.ค 25449
+          13 มี.ค 2549
         </div>
         <div className="py-1 col-span-2 pl-1 text-[6px] md:text-[8px] sm:text-sm md:text-base lg:text-base border-slate-100 border-t-1 border-l-1">
           1000-001-0020
@@ -266,7 +266,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -292,7 +292,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -318,7 +318,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -344,7 +344,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -370,7 +370,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">2</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -396,7 +396,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -422,7 +422,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">3</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -448,7 +448,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -474,7 +474,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">2</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -500,7 +500,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">3</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -526,7 +526,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -552,7 +552,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">2</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -578,7 +578,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">2</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -604,7 +604,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -630,7 +630,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -656,7 +656,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1 ">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
@@ -682,7 +682,7 @@ export default function Buildings() {
           <div className="grid grid-cols-3">
             <div className="py-1">1</div>
             <div className="grid grid-cols-3">
-              <div className="border-r-1"></div>
+              <div className="border-slate-100 border-r-1"></div>
             </div>
             <div className="text-start py-1 ">หลัง</div>
           </div>
