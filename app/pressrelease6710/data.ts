@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วันศุกร์ที่ 8 พฤศจิกายน 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/12/08.webp",
+      description: `
+นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการ วิทยาลัยเทคนิคกันทรลักษ์ เข้าร่วม โครงการความร่วมมือด้านอาชีวศึกษา ไทย-จีน
+         ...`,
+      href: "/pressrelease475",
+    },
+    {
       name: `ขอแสดงความยินดีกับ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/11/1.webp",
       description: `
