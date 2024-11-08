@@ -17,33 +17,7 @@ export function BackgroundBeamsWithCollisionDemo() {
           </div>
         </BackgroundBeamsWithCollision>
       </Link> */}
-      <Link href="pressrelease460">
-        <div className="flex justify-center px-8">
-          <div>
-            <div className="flex justify-center">
-              <Image
-                // className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
-                className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[500px] "
-                src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/5/1.webp"}
-              />
-            </div>
 
-            <br />
-
-            <div>
-              <p className="flex justify-center text-base">
-                " วิทยาลัยเทคนิคกันทรลักษ์ "
-              </p>
-              <p className="flex justify-center text-base">
-                งานพัฒนาหลักสูตรการเรียนการสอน ประชาสัมพันธ์ เรื่อง
-                การปรับเวลาเรียนเเละเวลาร่วมกิจกรรมหน้าเสาธง ภาคเรียนที่ 2/2567
-              </p>
-            </div>
-          </div>
-        </div>
-      </Link>
-      <br />
-      <br />
       <Link href="pressrelease471">
         <div className="flex justify-center px-8">
           <div>

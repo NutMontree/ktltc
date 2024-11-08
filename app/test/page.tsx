@@ -7,7 +7,7 @@ export default function Test() {
           <p>Border</p>
           <p className="con2">
             <p>Padding</p>
-            <p className="con3">Conttent</p>
+            <p className="con3">Content</p>
           </p>
         </p>
       </div>
