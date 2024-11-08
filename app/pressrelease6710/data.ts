@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ขอแสดงความยินดีกับ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/11/1.webp",
+      description: `
+นางสาวณัฐธิดา วรพุฒ ครูเเผนกวิชาช่างไฟฟ้ากำลัง เนื่องในโอกาสบรรจุเเต่งตั้งเป็นข้าราชการครู ตำเเหน่ง ครูผู้ช่วย โรงเรียนบุ่งค้าวิทยาคม 
+   ...`,
+      href: "/pressrelease474",
+    },
+    {
       name: `สวัสดี Dek68 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/10/1.webp",
       description: `
