@@ -31,7 +31,7 @@ export const Description = [
   },
 ];
 
-export const DataDate = [{ date: `8 ตุลาคม 2567` }];
+export const DataDate = [{ date: `8 พฤศจิกายน 2567` }];
 
 export const ImageItem = [
 
