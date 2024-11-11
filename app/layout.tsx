@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 import { fontSans } from "@/config/fonts";
-// import { createContext } from "./providers";
 import { UserContextProvider } from "./providers";
 import { siteConfig } from "@/config/site";
 import { NavbarPage } from "@/components/navbar";
@@ -14,10 +13,6 @@ import Header from "@/components/header";
 import Footer from "./Footer/page";
 import Link from "next/link";
 import clsx from "clsx";
-// import axios from "axios";
-
-// axios.defaults.baseURL = "http://localhost:8000";
-// axios.defaults.withCredentials = true;
 
 export const metadata: Metadata = {
   title: {
@@ -66,10 +61,6 @@ export default function RootLayout({
               <SpeedInsights />
             </main>
 
-            {/* <div className="flex justify-center">
-              <InputGame />
-            </div> */}
-
             <Footer />
           </div>
           <FloatButton
@@ -88,7 +79,6 @@ export default function RootLayout({
             }
           />
         </UserContextProvider>
-        {/* </Providers> */}
       </body>
     </html>
   );

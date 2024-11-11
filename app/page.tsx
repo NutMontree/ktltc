@@ -10,19 +10,12 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import { UserContextProvider } from "./providers";
-// import axios from "axios";
-
-// axios.defaults.baseURL =
-//   "https://server-ktltc.vercel.app/?vercelToolbarCode=UzzbiJG7QxK-3Zf";
-// axios.defaults.baseURL = "http://localhost:8000";
-// axios.defaults.withCredentials = true;
 
 export default function page() {
   return (
     <>
       <UserContextProvider>
         <main>
-          {/* <Link href="/test">TestPage</Link> */}
           <Scrollimage />
           <div className="py-[48px]">
             <Wellcome />

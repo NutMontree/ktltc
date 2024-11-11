@@ -231,8 +231,11 @@ export default function Footer() {
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline  hover:text-sky-500">
-                ไม่พบเนื้อหา
+              <Link
+                href="/minigame "
+                className="hover:underline  hover:text-sky-500"
+              >
+                Mini Game
               </Link>
             </div>
           </div>
