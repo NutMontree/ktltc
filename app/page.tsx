@@ -11,7 +11,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import { UserContextProvider } from "./providers";
 
-export default function page() {
+export default function Page() {
   return (
     <>
       <UserContextProvider>

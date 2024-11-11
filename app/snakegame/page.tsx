@@ -102,7 +102,7 @@ const SnakeGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center  ">
       <div className="relative bg-gray-800 w-[401px] h-[401px] border border-gray-700">
         {snake.map((segment, index) => (
           <div
