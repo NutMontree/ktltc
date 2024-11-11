@@ -23,7 +23,6 @@ import NextLink from "next/link";
 import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { DataAnnouncement } from "../announcement6707/data";
 import { dataBidding } from "../bidding/data/data";
 
 export default function ShowBidding() {
