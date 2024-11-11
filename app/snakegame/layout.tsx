@@ -1,7 +1,7 @@
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section>
-      <div className="static">{children}</div>
+      <div className="py-32">{children}</div>
     </section>
   );
 }

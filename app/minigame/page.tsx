@@ -6,16 +6,19 @@ import React from "react";
 export default function MiniGame() {
   return (
     <>
-      <div className="py-24">
-        <div className="pt-8 pb-8">
+      <div className="">
+        <div className="">
           <h1 className="flex justify-center text-xl text-[#DAA520] ">
             Mini Game
           </h1>
         </div>
 
-        <div className="flex justify-center">
-          <Link href="/snakegame" className="hover:text-sky-500">
-            Snake Game
+        <div className="flex justify-center pt-8">
+          <Link href="/snakegame" className="">
+            <p className="hover:text-sky-500 flex justify-center">เกมงู</p>
+            <p className="flex justify-center text-xs">
+              (สำหรับเครื่อง เครื่องคอมพิวเตอร์ และ โน๊ตบุ๊ค เท่านั้น)
+            </p>
           </Link>
         </div>
       </div>
