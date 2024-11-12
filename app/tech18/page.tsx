@@ -58,11 +58,11 @@ export default function TechnicalCollege() {
           <br />
           <div className="flex justify-center">
             <a
-              className="text-lg text-sky-500  "
+              className="text-lg text-red-500 hover:text-sky-500  "
               href="\images\คำสั่งวิทยาลัย\2567\พฤศจิกายน\1\1.pdf"
               download="แต่งตั้งนายตรวจเวรรักษาความปลอดภัยประจำวัน เดือน พฤศจิกายน 2567.pdf"
             >
-              Download Link
+              Download File PDF
             </a>
           </div>
         </div>

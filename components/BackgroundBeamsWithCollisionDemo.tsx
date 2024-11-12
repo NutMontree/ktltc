@@ -79,6 +79,38 @@ export function BackgroundBeamsWithCollisionDemo() {
           </div>
         </div>
       </Link>
+      <br />
+      <br />
+      <Link href="pressrelease479">
+        <div className="flex justify-center px-8">
+          <div>
+            <div className="flex justify-center">
+              <Image
+                // className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
+                className="h-[250px] sm:h-[500px] lg:h-[600px] xl:h-[600px] "
+                src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/16/1.webp"}
+              />
+            </div>
+
+            <br />
+
+            <div>
+              <p className="flex justify-center text-base">
+                เเจ้ง 💥💥 ถึงนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์
+              </p>
+              <p className="flex justify-center text-base">
+                เจ้าหน้าที่งานปกครองจะเริ่มออกตรวจบริเวณรอบนอกวิทยาลัยฯ ในเวลา
+                12.00 น.
+              </p>
+              <p className="flex justify-center text-base">
+                ให้นักเรียน นักศึกษาทุกคนทำตามกฎระเบียบ
+                เเละอยู่บริเวณภายในวิทยาลัยฯ หากมีพฤติกรรมดังนี้
+                ให้รีบปรับปรุงตนเองด้วยนะคะ/ครับ
+              </p>
+            </div>
+          </div>
+        </div>
+      </Link>
     </>
   );
 }
