@@ -104,9 +104,57 @@ export function BackgroundBeamsWithCollisionDemo() {
               </p>
               <p className="flex justify-center text-base">
                 ให้นักเรียน นักศึกษาทุกคนทำตามกฎระเบียบ
-                เเละอยู่บริเวณภายในวิทยาลัยฯ หากมีพฤติกรรมดังนี้
-                ให้รีบปรับปรุงตนเองด้วยนะคะ/ครับ
+                เเละอยู่บริเวณภายในวิทยาลัยฯ
               </p>
+              <p className="flex justify-center text-base">
+                หากมีพฤติกรรมดังนี้ ให้รีบปรับปรุงตนเองด้วยนะคะ/ครับ
+              </p>
+            </div>
+          </div>
+        </div>
+      </Link>
+      <br />
+      <br />
+      <Link href="pressrelease479">
+        <div className="flex justify-center px-8">
+          <div>
+            <div className="flex justify-center">
+              <Image
+                // className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
+                className="h-[250px] sm:h-[500px] lg:h-[600px] xl:h-[600px] "
+                src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/19/1.webp"}
+              />
+            </div>
+
+            <br />
+
+            <div>
+              <p className="flex justify-center text-base">
+                วันอังคารที่ 12 พฤศจิกายน 2567 วิทยาลัยเทคนิคกันทรลักษ์
+              </p>
+              {/* ***************************** ลบออก ***************************** */}
+              <div className="">
+                <p>
+                  แจ้ง ‼️ผลการเรียน ของนักเรียน นักศึกษา ภาคเรียนที่ 1
+                  ปีการศึกษา 2567
+                </p>
+                <p className="text-sky-800 text-lg text-center ">
+                  สามารถดูได้ผ่านระบบลิ้งค์
+                </p>
+                <div className=" flex justify-center ">
+                  <Link
+                    href="
+                    https://std2018.vec.go.th/web/
+                    "
+                  >
+                    <p className="hover:text-sky-500 text-center ">
+                      https://std2018.vec.go.th/web/
+                    </p>
+                  </Link>
+                </div>
+                <p className="flex justify-center">หรือสแกน qr code </p>
+              </div>
+              {/* ***************************** ลบออก ***************************** */}
             </div>
           </div>
         </div>
