@@ -104,7 +104,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSeQJJhhMigByXhluAXU1YX-Vu546FAXseeZHiav
         {/* ***************************** Youtube ***************************** */}
 
         <div className="flex justify-center">
-          <div className="  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
