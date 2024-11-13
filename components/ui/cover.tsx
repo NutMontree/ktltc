@@ -46,7 +46,7 @@ export const Cover = ({
                 duration: 0.2,
               },
             }}
-            className="h-full w-full overflow-hidden absolute inset-0"
+            className="  overflow-hidden absolute inset-0"
           >
             <motion.div
               animate={{

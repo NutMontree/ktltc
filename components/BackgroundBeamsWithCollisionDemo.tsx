@@ -50,7 +50,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         </Link>
       </Cover>
 
-      <div className="pt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 justify-items-center">
+      <div className="px-2 py-2 pt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 justify-items-center">
         <Cover>
           <Link href="pressrelease471">
             <div>
@@ -91,21 +91,15 @@ export function BackgroundBeamsWithCollisionDemo() {
 
                 <br />
 
-                <div>
-                  <p className="flex justify-center text-base text-center text-[10px] md:text-[12px] pr-1 sm:text-sm md:text-base lg:text-base ">
-                    เเจ้ง 💥💥 ถึงนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์
-                  </p>
-                  <p className="flex justify-center text-base text-center text-[10px] md:text-[12px] pr-1 sm:text-sm md:text-base lg:text-base ">
-                    เจ้าหน้าที่งานปกครองจะเริ่มออกตรวจบริเวณรอบนอกวิทยาลัยฯ
-                    ในเวลา 12.00 น.
-                  </p>
-                  <p className="flex justify-center text-base text-center text-[10px] md:text-[12px] pr-1 sm:text-sm md:text-base lg:text-base ">
-                    ให้นักเรียน นักศึกษาทุกคนทำตามกฎระเบียบ
-                    เเละอยู่บริเวณภายในวิทยาลัยฯ
-                  </p>
-                  <p className="flex justify-center text-base text-center text-[10px] md:text-[12px] pr-1 sm:text-sm md:text-base lg:text-base ">
-                    หากมีพฤติกรรมดังนี้ ให้รีบปรับปรุงตนเองด้วยนะคะ/ครับ
-                  </p>
+                <div className="flex justify-center text-base text-center text-[10px] md:text-[12px] pr-1 sm:text-sm md:text-base lg:text-base ">
+                  เเจ้ง 💥💥 ถึงนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์
+                  <br /> เจ้าหน้าที่งานปกครองจะเริ่มออกตรวจบริเวณรอบนอกวิทยาลัยฯ
+                  ในเวลา 12.00 น.
+                  <br />
+                  ให้นักเรียน นักศึกษาทุกคนทำตามกฎระเบียบ
+                  <br />
+                  เเละอยู่บริเวณภายในวิทยาลัยฯ <br />
+                  หากมีพฤติกรรมดังนี้ ให้รีบปรับปรุงตนเองด้วยนะคะ/ครับ
                 </div>
               </div>
             </div>
