@@ -129,7 +129,7 @@ const SnakeGame = () => {
 
       {gameOver && (
         <div className="mt-4 text-white">
-          <p>Game Over</p>
+          <div>Game Over</div>
           <button
             onClick={restartGame}
             className="px-4 py-2 mt-2 bg-blue-500 text-white rounded"

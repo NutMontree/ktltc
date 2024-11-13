@@ -22,35 +22,35 @@ export default function Announcement() {
         </div>
         <div className="text-xs pt-6">
           <h1 className="text-base">KTL-TC ONE TEAM </h1>
-          <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
-          <p className="border-t pt-[12px] ">
+          <div className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </div>
+          <div className="border-t pt-[12px] ">
             " วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "
-          </p>
-          <p>
+          </div>
+          <div>
             ผลิตและพัฒนากำลังคน โดยขับเคลื่อนการจัดการความรู้ด้วยเทคโนโลยี
             เป็นประชาคมแห่งการเรียนรู้ เน้นการทำงานเป็นทีม
             มีความร่วมมือกับสถานประกอบการและชุมชน
-          </p>
+          </div>
           <br />
-          <p className="border-t pt-[12px]">
+          <div className="border-t pt-[12px]">
             "ค่านิยม วิทยาลัยเทคนิคกันทรลักษ์ "
-          </p>
+          </div>
           <p className="">
             "ยิ้ม ไหว้ เเต่งกายดี รู้จักสวัสดี ขอบคุณ เเละขอโทษ
           </p>
           <br />
           <p className="border-t pt-[12px]">👉 ช่องทางการติดต่อ</p>
-          <p>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
-          <p>
+          <div>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</div>
+          <div>
             เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ
             วิทยาลัยเทคนิคกันทรลักษ์ Today
-          </p>
-          <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
-          <p>Website : www.ktltc.ac.th</p>
-          <p>Gmail : ktl11022021@gmail.com</p>
-          <p>สอบถามข้อมูลเพิ่มเติม</p>
-          <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๗๕๓ </p>
-          <p>โทร : 061-4122765 หรือ 045-811753</p>
+          </div>
+          <div>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </div>
+          <div>Website : www.ktltc.ac.th</div>
+          <div>Gmail : ktl11022021@gmail.com</div>
+          <div>สอบถามข้อมูลเพิ่มเติม</div>
+          <div>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๗๕๓ </div>
+          <div>โทร : 061-4122765 หรือ 045-811753</div>
         </div>
 
         {/* <div className="link">

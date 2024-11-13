@@ -2,6 +2,7 @@ import React from "react";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
 import { Cover } from "@/components/ui/cover";
+import { IconMathPiDivide2 } from "@tabler/icons-react";
 
 export function BackgroundBeamsWithCollisionDemo() {
   return (
@@ -31,24 +32,24 @@ export function BackgroundBeamsWithCollisionDemo() {
               </div>
               <br />
               <div className="text-base text-[10px] md:text-[12px] sm:text-sm ">
-                <p className="text-center">💥สวัสดี Dek68 ทุกคน</p>
+                <div className="text-center">💥สวัสดี Dek68 ทุกคน</div>
                 วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัครนักเรียน นักศึกษา
                 ปีการศึกษา 2568 📌📍รู้หรือไม่? ว่า วิทยาลัยเทคนิคกันทรลักษ์
                 ทำการเปิดสาขาวิชาเพิ่ม ได้แก่
-                <p>
+                <div>
                   👉ระดับ ปวช. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ สาขาวิชาโยธา
                   สาขาวิชาตัวถังเเละสีรถยนต์
-                </p>
-                <p>
+                </div>
+                <div>
                   👉ระดับ ปวส. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ สาขาวิชาโยธา
                   สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถังเเละสีรถยนต์
                   สาขาวิชาการจัดการโลจิสติกส์เเละซัพพลายเชน
-                </p>
-                <p>📣📣นอกจากนี้ยังมีสาขาวิชาอีกมากมาย</p>
-                <p>
+                </div>
+                <div>📣📣นอกจากนี้ยังมีสาขาวิชาอีกมากมาย</div>
+                <div>
                   อย่าลืมมาเจอกันนะค้าบ พวกเราหัวใจ แสด – น้ำเงิน
                   ยินดีต้อนรับนักเรียน - นักศึกษา เด็ก 68 ทุกคนค้าบ
-                </p>
+                </div>
               </div>
             </div>
           </div>
@@ -126,32 +127,32 @@ export function BackgroundBeamsWithCollisionDemo() {
                 <br />
 
                 <div>
-                  <p className="flex justify-center text-base text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                  <div className="flex justify-center text-base text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                     วันอังคารที่ 12 พฤศจิกายน 2567 วิทยาลัยเทคนิคกันทรลักษ์
-                  </p>
+                  </div>
                   {/* ***************************** ลบออก ***************************** */}
                   <div className="">
-                    <p className=" text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                    <div className=" text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                       แจ้ง‼️ผลการเรียน ของนักเรียน นักศึกษา ภาคเรียนที่ 1
                       ปีการศึกษา 2567
-                    </p>
-                    <p className="text-sky-800 text-lg text-center  text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                    </div>
+                    <div className="text-sky-800 text-lg text-center  text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                       สามารถดูได้ผ่านระบบลิ้งค์
-                    </p>
+                    </div>
                     <div className=" flex justify-center ">
                       <Link
                         href="
                     https://std2018.vec.go.th/web/
                     "
                       >
-                        <p className="hover:text-sky-500 text-center text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                        <div className="hover:text-sky-500 text-center text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                           https://std2018.vec.go.th/web/
-                        </p>
+                        </div>
                       </Link>
                     </div>
-                    <p className="flex justify-center text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                    <div className="flex justify-center text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                       หรือสแกน qr code
-                    </p>
+                    </div>
                   </div>
                   {/* ***************************** ลบออก ***************************** */}
                 </div>

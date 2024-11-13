@@ -23,8 +23,8 @@ export default function Error({
       <div className="text-xl text-center pt-4">
         <div>กรุณาตรวจสอบ Code ของมึง</div>
         <div className="flex justify-center">
-          <p>ก่อนทำการ Refresh อีกครั้ง</p>
-          <p className="text-red-500 pl-2 text-xxl">! SUD</p>
+          <div>ก่อนทำการ Refresh อีกครั้ง</div>
+          <div className="text-red-500 pl-2 text-xxl">! SUD</div>
         </div>
       </div>
       <button
