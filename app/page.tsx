@@ -41,10 +41,6 @@ export default function Page() {
           <div className="border-t py-[48px]">
             <ShowTechnicalcollegeorders />
           </div>
-
-          {/* <div>
-          <DataWarehouse />
-        </div> */}
         </main>
       </UserContextProvider>
     </>
