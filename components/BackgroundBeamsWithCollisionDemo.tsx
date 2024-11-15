@@ -6,7 +6,7 @@ import { Cover } from "@/components/ui/cover";
 export function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 ">
         <Cover className="flex justify-center">
           <Link href="pressrelease471">
             <div className="flex justify-center">
@@ -23,22 +23,20 @@ export function BackgroundBeamsWithCollisionDemo() {
                   วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัครนักเรียน นักศึกษา
                   <br />
                   ปีการศึกษา 2568 📌📍รู้หรือไม่? ว่า <br />
-                  วิทยาลัยเทคนิคกันทรลักษ์ ทำการเปิดสาขาวิชาเพิ่ม ได้แก่ 👉
-                  ระดับ ปวช.
-                  <br /> สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ สาขาวิชาโยธา
-                  สาขาวิชาตัวถังเเละสีรถยนต์
+                  วิทยาลัยเทคนิคกันทรลักษ์ ทำการเปิดสาขาวิชาเพิ่ม ได้แก่
+                  <br /> 👉 ระดับ ปวช.
+                  <br /> สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์
+                  <br /> สาขาวิชาโยธา
+                  <br /> สาขาวิชาตัวถังเเละสีรถยนต์
                   <br /> 👉 ระดับ ปวส.
-                  <br />
-                  สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ สาขาวิชาโยธา
-                  <br />
-                  สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถังเเละสีรถยนต์
-                  <br />
-                  สาขาวิชาการจัดการโลจิสติกส์เเละซัพพลายเชน
-                  <br />
-                  📣📣 น.อกจากนี้ยังมีสาขาวิชาอีกมากมาย อย่าลืมมาเจอกันนะค้าบ
-                  พวกเราหัวใจ แสด – น้ำเงิน
-                  <br />
-                  ยินดีต้อนรับนักเรียน - นักศึกษา เด็ก 68 ทุกคนค้าบ
+                  <br /> สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์
+                  <br /> สาขาวิชาโยธา
+                  <br /> สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถังเเละสีรถยนต์
+                  <br /> สาขาวิชาการจัดการโลจิสติกส์เเละซัพพลายเชน
+                  <br /> 📣📣 น.อกจากนี้ยังมีสาขาวิชาอีกมากมาย
+                  <br /> อย่าลืมมาเจอกันนะค้าบ
+                  <br /> พวกเราหัวใจ แสด – น้ำเงิน
+                  <br /> ยินดีต้อนรับนักเรียน - นักศึกษา เด็ก 68 ทุกคนค้าบ
                 </div>
               </div>
             </div>
@@ -46,8 +44,8 @@ export function BackgroundBeamsWithCollisionDemo() {
         </Cover>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 pt-6 px-4">
-        <Cover>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 pt-6 px-4 ">
+        <Cover className="flex justify-center">
           <Link href="pressrelease471">
             <div className="flex justify-center">
               <div>
@@ -71,7 +69,7 @@ export function BackgroundBeamsWithCollisionDemo() {
           </Link>
         </Cover>
 
-        <Cover>
+        <Cover className="flex justify-center">
           <Link href="pressrelease479">
             <div className="flex justify-center">
               <div>
@@ -96,7 +94,7 @@ export function BackgroundBeamsWithCollisionDemo() {
           </Link>
         </Cover>
 
-        <Cover>
+        <Cover className="flex justify-center ">
           <Link href="pressrelease479">
             <div className="flex justify-center">
               <div>

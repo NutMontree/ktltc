@@ -19,21 +19,20 @@ export default function Pressrelease() {
         </div>
         {/* ***************************** ลบออก ***************************** */}
         <div className="">
-          <p>
+          <div>
             แจ้ง ‼️ผลการเรียน ของนักเรียน นักศึกษา ภาคเรียนที่ 1 ปีการศึกษา 2567
-          </p>
-          <p className="text-sky-800 text-lg">สามารถดูได้ผ่านระบบลิ้งค์ </p>
-          <div className="flex gap-2">
+          </div>
+          <div className="text-sky-800 text-lg">สามารถดูได้ผ่านระบบลิ้งค์ </div>
+          <div className="gap-2">
             <Link
               href="
               https://std2018.vec.go.th/web/
               "
-              className="flex gap-2"
+              className="hover:text-sky-500"
             >
-              <p className="hover:text-sky-500">
-                https://std2018.vec.go.th/web/
-              </p>
+              https://std2018.vec.go.th/web/
             </Link>
+
             <p className=" ">หรือสแกน qr code </p>
           </div>
         </div>
