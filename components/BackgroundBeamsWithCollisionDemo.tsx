@@ -19,7 +19,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                 </div>
 
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
-                  <div className="text-center">💥สวัสดี Dek68 ทุกคน</div>
+                  <div className="text-center pt-6">💥สวัสดี Dek68 ทุกคน</div>
                   วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัครนักเรียน นักศึกษา
                   <br />
                   ปีการศึกษา 2568 📌📍รู้หรือไม่? ว่า <br />

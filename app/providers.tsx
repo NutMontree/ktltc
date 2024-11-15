@@ -6,8 +6,8 @@ import { ThemeProviderProps } from "next-themes/dist/types";
 import axios from "axios";
 import { createContext, useState, useEffect } from "react";
 
-// axios.defaults.baseURL = "http://localhost:8000";
-axios.defaults.baseURL = "https://server-ktltc.vercel.app/";
+axios.defaults.baseURL = "http://localhost:8000";
+// axios.defaults.baseURL = "https://server-ktltc.vercel.app/";
 axios.defaults.withCredentials = true;
 
 export interface ProvidersProps {
