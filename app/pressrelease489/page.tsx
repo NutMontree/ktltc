@@ -71,7 +71,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSeQJJhhMigByXhluAXU1YX-Vu546FAXseeZHiav
               className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
                          w-[200px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
               src="/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/26/1.webm"
-              title="เข้าค่ายลูกเสือ ปี 2567 part 1"
+              title=" "
               // frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               // referrerpolicy="strict-origin-when-cross-origin"
