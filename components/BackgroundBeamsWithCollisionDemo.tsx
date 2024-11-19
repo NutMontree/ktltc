@@ -95,7 +95,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         </Cover>
 
         <Cover className="flex justify-center ">
-          <Link href="pressrelease479">
+          <Link href="pressrelease482">
             <div className="flex justify-center">
               <div>
                 <div className="flex justify-center">

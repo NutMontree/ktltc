@@ -223,7 +223,11 @@ function Navbar({ className }: { className?: string }) {
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink
+                className=""
+                href="https://std2018.vec.go.th/web/ "
+                target="_blank"
+              >
                 ตรวจสอบผลการเรียน
               </HoveredLink>
             </div>

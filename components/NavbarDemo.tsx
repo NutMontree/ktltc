@@ -159,7 +159,11 @@ function Navbar({ className }: { className?: string }) {
             >
               ระบบ ศธ. ออนไลน์
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
+            <HoveredLink
+              className="hover:text-sky-500"
+              href="https://std2018.vec.go.th/web/ "
+              target="_blank"
+            >
               ตรวจสอบผลการเรียน
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/ ">

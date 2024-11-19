@@ -309,7 +309,11 @@ function Navbar({}: { className?: string }) {
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="https://std2018.vec.go.th/web/ "
+                          target="_blank"
+                        >
                           ตรวจสอบผลการเรียน
                         </HoveredLink1>
                       </div>
