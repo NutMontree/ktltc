@@ -119,22 +119,22 @@ function Navbar({ className }: { className?: string }) {
         <MenuItem setActive={setActive} active={active} item="หน่วยงานภายใน">
           <div className="flex flex-col space-y-1 text-sm">
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink className="" href="/resource ">
                 ฝ่ายบริหารทรัพยากร
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink className="" href="/plan ">
                 ฝ่ายแผนงานและความร่วมมือ
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink className="" href="/develop ">
                 ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink className="" href="/academic ">
                 ฝ่ายวิชาการ
               </HoveredLink>
             </div>

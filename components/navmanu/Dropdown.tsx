@@ -156,22 +156,34 @@ function Navbar({}: { className?: string }) {
                   >
                     <div className="flex flex-col space-y-1 text-sm py-2">
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="/resource "
+                        >
                           ฝ่ายบริหารทรัพยากร
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="/plan "
+                        >
                           ฝ่ายแผนงานและความร่วมมือ
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="/develop "
+                        >
                           ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="/academic "
+                        >
                           ฝ่ายวิชาการ
                         </HoveredLink1>
                       </div>
