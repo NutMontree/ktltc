@@ -2,8 +2,8 @@
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
 
-import Newsletter2567 from "../newsletter2567/page";
-import Newsletter2566 from "../newsletter2566/page";
+import Newsletter2567 from "./newsletter2567/page";
+import Newsletter2566 from "./newsletter2566/page";
 
 export default function NewsletterPage() {
   return (

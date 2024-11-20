@@ -2,8 +2,8 @@
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
 
-import Announcement2566 from "../announcement2566/page";
-import Announcement2567 from "../announcement2567/page";
+import Announcement2567 from "./announcement2567/page";
+import Announcement2566 from "./announcement2566/page";
 
 // announcement
 export default function AnnouncementPage() {

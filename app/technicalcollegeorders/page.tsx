@@ -1,8 +1,9 @@
 "use client"; // top to the file
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
-import Technical2566 from "../technical2566/page";
-import Technical2567 from "../Technical2567/page";
+
+import Technical2567 from "./Technical2567/page";
+import Technical2566 from "./technical2566/page";
 
 export default function TechnicalcollegeordersPage() {
   return (

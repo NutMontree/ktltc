@@ -1,16 +1,7 @@
-export default function Test() {
+export default function SubTest() {
   return (
     <>
-      <div className="container">
-        <div>Margin</div>
-        <div className="con1">
-          <div>Border</div>
-          <div className="con2">
-            <div>Padding</div>
-            <div className="con3">Content</div>
-          </div>
-        </div>
-      </div>
+      <div>Sub Test Page</div>
     </>
   );
 }

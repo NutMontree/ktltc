@@ -23,7 +23,7 @@ import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { Data } from "../technical6711/data";
+import { Data } from "../technicalcollegeorders/Technical2567/technical6711/data";
 
 export default function ShowTechnicalcollegeorders() {
   return (
