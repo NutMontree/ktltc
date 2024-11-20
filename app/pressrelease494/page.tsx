@@ -72,10 +72,10 @@ https://drive.google.com/drive/folders/1gTVieOg1hUVoCriLiva9LJeDEsRHspGF?fbclid=
         <div className="flex justify-center">
           <div className="px-2 py-2  gap-4">
             <iframe
-              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
-                         w-[200px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
+              className="h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+                         w-[300px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
               // src="/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/30/1.webm"
-              src="https://www.youtube.com/embed/8ZuEUIaiJi0?si=ksaulFAy7aKO4jjP"
+              src="https://www.youtube.com/embed/_2Gnilun9X8?si=9ghGi3tGySI8-zVZ"
               title=" "
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
