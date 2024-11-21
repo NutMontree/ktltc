@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: ` วันพุธที่ 20 พฤศจิกายน 2567  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/42/0.webp",
+      description: ` 
+วิทยาลัยเทคนิคกันทรลักษ์ นำโดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ คณะครู นำนักเรียน นักศึกษา เข้าร่วมการแข่งขันทักษะขับขี่ปลอดภัย 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease504",
+    },
+    {
       name: `คณะผู้บริหาร `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/39/0.webp",
       description: ` 

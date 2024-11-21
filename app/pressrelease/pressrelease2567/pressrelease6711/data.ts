@@ -1,6 +1,22 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` วันพุธที่ 20 พฤศจิกายน 2567  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/42/05.webp",
+      description: ` 
+วิทยาลัยเทคนิคกันทรลักษ์ นำโดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ คณะครู นำนักเรียน นักศึกษา เข้าร่วมการแข่งขันทักษะขับขี่ปลอดภัย 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease504",
+    },
+    {
+      name: `ประชาสัมพันธ์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/41/3.webp",
+      description: ` 
+การสอบธรรมสนามหลวง ธรรมศึกษาชั้นตรี - โท - เอก ประจำปีการศึกษา 2567 ในวันศุกร์ที่ 22 พฤศจิกายน 2567 สนามสอบ ณ ตึกเเผนกวิชาสามัญสัมพันธ์ 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease503",
+    },
+    {
       name: `ขอเเสดงความยินดีกับ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/40/2.gif",
       description: ` 
