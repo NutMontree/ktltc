@@ -3,7 +3,7 @@ import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 
 export default function TabsPage() {
   return (
-    <div className="flex w-full flex-col px-6 py-6">
+    <div className="flex w-full flex-col px-4 py-4">
       <Tabs aria-label="Options">
         <Tab key="วิสัยทัศน์ " title="วิสัยทัศน์ ">
           <Card>

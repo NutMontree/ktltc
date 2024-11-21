@@ -84,7 +84,7 @@ export default function Footer() {
   return (
     <>
       <div className="">
-        <footer className="bottom-0 left-0 z-20 w-full border-t border-y md:flex md:justify-between px-8 py-8">
+        <footer className="bottom-0 left-0 z-20 w-full border-t border-y md:flex md:justify-between px-4 py-4">
           <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
             <div>
               <Image
