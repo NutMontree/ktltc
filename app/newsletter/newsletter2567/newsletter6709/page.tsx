@@ -1,7 +1,7 @@
 "use client"; // top to the file
 
 import NextLink from "next/link";
-import NewsletterPage from "../newsletter/page";
+import NewsletterPage from "../../page";
 import { DataNewsletter } from "./data";
 
 export default function Newsletter() {

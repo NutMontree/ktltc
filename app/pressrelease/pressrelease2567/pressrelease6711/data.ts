@@ -1,6 +1,22 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ขอเเสดงความยินดีกับ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/40/2.gif",
+      description: ` 
+นายณรงค์ชัย เจริญรุจิทรัพย์ ผู้ช่วยปลัดกระทรวงศึกษาธิการ เนื่องในโอกาสมีพระบรมราชโองการโปรดเกล้าโปรดกระหม่อม เเต่งตั้งให้ดำรงตำเเหน่งประเภทบริหารระดับสูง 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease502",
+    },
+    {
+      name: `ขอเเสดงความยินดีกับ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/40/1.gif",
+      description: ` 
+นายสง่า แต่เชื้อสาย ผู้ช่วยเลขาธิการคณะกรรมการการอาชีวศึกษา เนื่องในโอกาสมีพระบรมราชโองการโปรดเกล้าโปรดกระหม่อม เเต่งตั้งให้ดำรงตำเเหน่งประเภทบริหารระดับสูง
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease502",
+    },
+    {
       name: `คณะผู้บริหาร `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/39/1.webp",
       description: ` 
