@@ -15,7 +15,7 @@ export const DataAnnouncement = {
       description: `
 กำหนดการลงทะเบียนเรียน เเละค่าลงทะเบียนเรียน ภาคเรียนที่ ๒/๒๕๖๗ 
       ...`,
-      href: "/pressrelease409",
+      href: "/pressrelease/pressrelease2567/pressrelease6709/pressrelease409",
     },
     {
       name: `ประกาศ `,
@@ -23,7 +23,7 @@ export const DataAnnouncement = {
       description: `
 รายชื่อผลการสอบคัดเลือก ลูกจ้างชั่วคราว ตำเเหน่งครูพิเศษสอน สาขาวิชาการจัดการโลจิสติกส์ 
       ...`,
-      href: "/pressrelease405",
+      href: "/pressrelease/pressrelease2567/pressrelease6709/pressrelease405",
     },
   ],
 };

@@ -29,42 +29,60 @@ export default function Newsletter() {
           </div>
           <div>
             <Button color="primary" variant="ghost">
-              <Link className="text-lg" href="/newsletter6708">
+              <Link
+                className="text-lg"
+                href="/newsletter/newsletter2567/newsletter6708"
+              >
                 เดือน สิงหาคม 2567
               </Link>
             </Button>
           </div>
           <div>
             <Button color="primary" variant="ghost">
-              <Link className="text-lg" href="/newsletter6707">
+              <Link
+                className="text-lg"
+                href="/newsletter/newsletter2567/newsletter6707"
+              >
                 เดือน กรกฎาคม 2567
               </Link>
             </Button>
           </div>
           <div>
             <Button color="primary" variant="ghost">
-              <Link className="text-lg" href="/newsletter6706">
+              <Link
+                className="text-lg"
+                href="/newsletter/newsletter2567/newsletter6706"
+              >
                 เดือน มิถุนายน 2567
               </Link>
             </Button>
           </div>
           <div>
             <Button color="primary" variant="ghost">
-              <Link className="text-lg" href="/newsletter6705">
+              <Link
+                className="text-lg"
+                href="/newsletter/newsletter2567/newsletter6705"
+              >
                 เดือน พฤษภาคม 2567
               </Link>
             </Button>
           </div>
           <div>
             <Button color="primary" variant="ghost">
-              <Link className="text-lg" href="/newsletter6704">
+              <Link
+                className="text-lg"
+                href="/newsletter/newsletter2567/newsletter6704"
+              >
                 เดือน เมษายน 2567
               </Link>
             </Button>
           </div>
           <div>
             <Button color="primary" variant="ghost">
-              <Link className="text-lg" href="/newsletter6703">
+              <Link
+                className="text-lg"
+                href="/newsletter/newsletter2567/newsletter6703"
+              >
                 เดือน มีนาคม 2567
               </Link>
             </Button>

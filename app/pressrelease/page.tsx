@@ -2,8 +2,8 @@
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
 
-import Pressrelease2566 from "../Pressrelease2566/page";
-import Pressrelease2567 from "../Pressrelease2567/page";
+import Pressrelease2566 from "./pressrelease2566/page";
+import Pressrelease2567 from "./pressrelease2567/page";
 
 export default function PressReleasePage() {
   return (

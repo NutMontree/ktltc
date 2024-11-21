@@ -21,7 +21,7 @@ import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { DataPressrelease } from "../pressrelease6711/data";
+import { DataPressrelease } from "../pressrelease/pressrelease2567/pressrelease6711/data";
 
 export default function ShowPressRelease() {
   return (

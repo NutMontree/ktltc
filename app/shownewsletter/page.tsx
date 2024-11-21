@@ -21,7 +21,7 @@ import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { DataNewsletter } from "../newsletter6711/data";
+import { DataNewsletter } from "../newsletter/newsletter2567/newsletter6711/data";
 
 export default function ShowNewsletter() {
   return (
