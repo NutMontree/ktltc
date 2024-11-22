@@ -1,6 +1,22 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: `   วันศุกร์ที่ 22 พฤศจิกายน 2567   `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/46/0.webp",
+      description: ` 
+วิทยาลัยเทคนิคกันทรลักษ์ โดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ 👉 จัดการสอบธรรมสนามหลวง ประจำปีการศึกษา 2567 
+      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease508",
+    },
+    {
+      name: `  วันอังคารที่ 19 พฤศจิกายน 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/43/0.webp",
+      description: ` 
+👉นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ 👉 เข้าร่วมประชุมหารือ แลกเปลี่ยนยุทธศาสตร์การพัฒนาอาชีวศึกษาจีนกับต่างประเทศ
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease505",
+    },
+    {
       name: ` วันพุธที่ 20 พฤศจิกายน 2567  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/42/0.webp",
       description: ` 
