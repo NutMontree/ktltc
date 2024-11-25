@@ -7,3 +7,6 @@ https://dev.to/afewminutesofcode/how-to-convert-an-array-into-an-object-in-javas
 หลังจาก clone ktltc จาก githup desktop ให้ใช้ คำสั่ง
 npm install 
 npm install @types/react
+
+npm install --legacy-peer-deps
+npm config set legacy-peer-deps true
