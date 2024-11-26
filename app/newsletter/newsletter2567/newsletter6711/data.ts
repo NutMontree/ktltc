@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: ` วันจันทร์ที่ 25 พฤศจิกายน 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/50/0.webp",
+      description: ` 
+วิทยาลัยเทคนิคกันทรลักษ์ จัดกิจกรรมพิธีถวายราชสดุดี และวางพวงมาลา วันสมเด็จพระมหาธีรราชเจ้า โดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease512",
+    },
+    {
       name: `  วันจันทร์ที่ 25 พฤศจิกายน 2567`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/48/0.webp",
       description: ` 
