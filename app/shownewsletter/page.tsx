@@ -21,9 +21,38 @@ import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
+import { createStyles } from 'antd-style';
+
 import { DataNewsletter } from "../newsletter/newsletter2567/newsletter6711/data";
 
+const useStyle = createStyles(({ prefixCls, css }) => ({
+  linearGradientButton: css`
+    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+      border-width: 0;
+
+      > span {
+        position: relative;
+      }
+
+      &::before {
+        content: '';
+        background: linear-gradient(135deg, #6253e1, #04befe);
+        position: absolute;
+        inset: 0;
+        opacity: 1;
+        transition: all 0.3s;
+        border-radius: inherit;
+      }
+
+      &:hover::before {
+        opacity: 0;
+      }
+    }
+  `,
+}));
+
 export default function ShowNewsletter() {
+  const { styles } = useStyle();
   return (
     <>
       <div>
@@ -37,20 +66,25 @@ export default function ShowNewsletter() {
           Newsletter
         </h1>
       </div>
+
       <div className="flex justify-end px-6 pt-3">
-        <ConfigProvider>
+        <ConfigProvider
+          button={{
+            className: styles.linearGradientButton,
+          }}
+        >
           <Space>
             <Button
               type="primary"
               size="large"
               icon={<AntDesignOutlined />}
-              href="/newsletter"
-            >
+              href="/newsletter">
               เนื้อหาเพิ่มเติม
             </Button>
           </Space>
         </ConfigProvider>
       </div>
+
 
       <div className="px-6 py-3">
         <Swiper

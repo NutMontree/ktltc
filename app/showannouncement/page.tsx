@@ -19,12 +19,40 @@ import "swiper/css/scrollbar";
 // import required modules
 import NextLink from "next/link";
 
-import React, { useContext } from "react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
+import { dataBidding } from "../bidding/data/data";
+import { createStyles } from 'antd-style';
 import { DataAnnouncement } from "../announcement/announcement2567/announcement6710/data";
 
+const useStyle = createStyles(({ prefixCls, css }) => ({
+  linearGradientButton: css`
+    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+      border-width: 0;
+
+      > span {
+        position: relative;
+      }
+
+      &::before {
+        content: '';
+        background: linear-gradient(135deg, #6253e1, #04befe);
+        position: absolute;
+        inset: 0;
+        opacity: 1;
+        transition: all 0.3s;
+        border-radius: inherit;
+      }
+
+      &:hover::before {
+        opacity: 0;
+      }
+    }
+  `,
+}));
+
 export default function ShowAnnouncement() {
+  const { styles } = useStyle();
   return (
     <>
       <div>
@@ -38,15 +66,19 @@ export default function ShowAnnouncement() {
           Announcement New
         </h1>
       </div>
+
       <div className="flex justify-end px-6 pt-3">
-        <ConfigProvider>
+        <ConfigProvider
+          button={{
+            className: styles.linearGradientButton,
+          }}
+        >
           <Space>
             <Button
               type="primary"
               size="large"
               icon={<AntDesignOutlined />}
-              href="/announcement"
-            >
+              href="/announcement">
               เนื้อหาเพิ่มเติม
             </Button>
           </Space>
