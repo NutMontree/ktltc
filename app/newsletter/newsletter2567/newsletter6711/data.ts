@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: `วันพุธที่ 27 พฤศจิกายน 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/52/0.webp",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย รองผู้อำนวยการทั้ง 4 ฝ่าย  ร่วมประชุมปรึกษาหารือ เพื่อยกระดับและพัฒนาการจัดการเรียนการสอน
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease514",
+    },
+    {
       name: ` วันจันทร์ที่ 25 พฤศจิกายน 2567`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/50/0.webp",
       description: ` 
