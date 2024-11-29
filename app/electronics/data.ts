@@ -13,7 +13,7 @@ export const Data = [
     department: `ช่างอิเล็กทรอนิกส์ `, //แผนก
     faction: `รองหัวหน้างานทะเบียน  `, //ฝ่าย
     description: `ตำแหน่ง ครูผู้ช่วย`, //คำอธิบาย
-    img: `/images/error.webp`, //รูปภาพ
+    img: `/images/บุคลากร/อิเล็ก/2.webp`, //รูปภาพ
   },
   {
     name: `นายณรงค์  นิตนอก `, //ชื่อ

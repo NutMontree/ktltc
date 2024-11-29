@@ -54,6 +54,14 @@ export const imgs = [
     img: `/images/บุคลากร/ช่างยนต์/3.webp`,
   },
   {
+    title: `นายพัฒนกฤษณ์  นามคำมี`,
+    position: ` `,
+    department: `ช่างยนต์ `,
+    faction: ` `,
+    description: `ตำแหน่ง ครูผู้ช่วย `,
+    img: `/images/บุคลากร/ช่างยนต์/4.webp`,
+  },
+  {
     title: `นายสุขสันต์  สิทธิมวล`,
     position: ` `,
     department: `ช่างยนต์ `,
@@ -61,14 +69,7 @@ export const imgs = [
     description: `ตำแหน่ง พนักงานราชการ ครู`,
     img: `/images/บุคลากร/ช่างยนต์/5.webp`,
   },
-  {
-    title: `นายพัฒนกฤษณ์  นามคำมี`,
-    position: ` `,
-    department: `ช่างยนต์ `,
-    faction: ` `,
-    description: `ตำแหน่ง ครูผู้ช่วย `,
-    img: `/images/error.webp`,
-  },
+
   {
     title: `จ่าสิบเอกชาติชาย  ฝอยทอง`,
     position: ` `,

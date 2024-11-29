@@ -4,7 +4,7 @@ export const Data = [
     position: `หัวหน้าแผนกวิชา`,
     department: `แผนกวิชายานยนต์ ไฟฟ้า`,
     faction: `หัวหน้างานการเงิน`,
-    description: `ตำแหน่ง ครู`,
+    description: ` ครู`,
     img: `/images/บุคลากร/ช่างยนต์/1.webp`,
   },
   {
@@ -12,7 +12,7 @@ export const Data = [
     position: `รองหัวหน้าแผนกวิชา`,
     department: `แผนกวิชายานยนต์ ไฟฟ้า`,
     faction: `หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน`,
-    description: `ตำแหน่ง พนักงานราชการ ครู`,
+    description: ` พนักงานราชการ ครู`,
     img: `/images/บุคลากร/ช่างยนต์/2.webp`,
   },
 
@@ -21,32 +21,31 @@ export const Data = [
     position: ` `,
     department: `ช่างยนต์ `,
     faction: `หัวหน้างานโครงการพิเศษและบริการชุมชน `,
-    description: `ตำแหน่ง พนักงานราชการ ครู`,
+    description: ` พนักงานราชการ ครู`,
     img: `/images/บุคลากร/ช่างยนต์/3.webp`,
-  },
-
-  {
-    name: `นายสุขสันต์  สิทธิมวล`,
-    position: ` `,
-    department: `ช่างยนต์ `,
-    faction: `หัวหน้างานอาคารสถานที่`,
-    description: `ตำแหน่ง พนักงานราชการ ครู`,
-    img: `/images/บุคลากร/ช่างยนต์/5.webp`,
   },
   {
     name: `นายพัฒนกฤษณ์  นามคำมี`,
     position: ` `,
     department: `ช่างยนต์ `,
     faction: ` `,
-    description: `ตำแหน่ง ครูผู้ช่วย `,
-    img: `/images/error.webp`,
+    description: ` ครูผู้ช่วย `,
+    img: `/images/บุคลากร/ช่างยนต์/4.webp`,
+  },
+  {
+    name: `นายสุขสันต์  สิทธิมวล`,
+    position: ` `,
+    department: `ช่างยนต์ `,
+    faction: `หัวหน้างานอาคารสถานที่`,
+    description: ` พนักงานราชการ ครู`,
+    img: `/images/บุคลากร/ช่างยนต์/5.webp`,
   },
   {
     name: `จ่าสิบเอกชาติชาย  ฝอยทอง`,
     position: ` `,
     department: `ช่างยนต์ `,
     faction: ` `,
-    description: `ตำแหน่ง ครูวิชาชีพผู้ทรงคุณค่า`,
+    description: ` ครูวิชาชีพผู้ทรงคุณค่า`,
     img: `/images/บุคลากร/ช่างยนต์/6.webp`,
   },
 
@@ -55,7 +54,7 @@ export const Data = [
     position: ` `,
     department: `ช่างยนต์ `,
     faction: ` `,
-    description: `ตำแหน่ง ครูพิเศษสอน`,
+    description: ` ครูพิเศษสอน`,
     img: `/images/บุคลากร/ช่างยนต์/7.webp`,
   },
   {
@@ -63,15 +62,23 @@ export const Data = [
     position: ` `,
     department: `ช่างยนต์ `,
     faction: ` `,
-    description: `ตำแหน่ง ครูพิเศษสอน`,
+    description: ` ครูพิเศษสอน`,
     img: `/images/บุคลากร/ช่างยนต์/8.webp`,
   },
   {
     name: `นายฉัตรชัย โพธิพันธ์`, //ชื่อ
-    position: ` `, //ตำแหน่ง
+    position: ` `, //
     department: `ช่างยนต์ `, //แผนก
     faction: ` `, //ฝ่าย
-    description: `ตำแหน่ง ครูพิเศษสอน`, //คำอธิบาย
+    description: ` ครูพิเศษสอน`, //คำอธิบาย
     img: `/images/บุคลากร/ช่างยนต์/9.webp`, //รูปภาพ
+  },
+  {
+    name: `นายอรรถพล  พรหมสูตร`, //ชื่อ
+    position: ` `, //
+    department: `ช่างยนต์ `, //แผนก
+    faction: ` `, //ฝ่าย
+    description: `  `, //คำอธิบาย
+    img: `/images/บุคลากร/ช่างยนต์/10.webp`, //รูปภาพ
   },
 ];

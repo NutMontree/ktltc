@@ -29,7 +29,7 @@ export default function Mechanic() {
                     <div>{item.position}</div>
                     <div>แผนกวิชา : {item.department}</div>
                     <div> {item.faction}</div>
-                    <div> {item.description}</div>
+                    <div>ตำแหน่ง {item.description}</div>
                   </div>
                   <div className="flex justify-end ">
                     <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
