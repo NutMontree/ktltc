@@ -1,6 +1,22 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` ขอเเสดงความยินดีกับ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/62/1.webp",
+      description: ` 
+นางสาวปวีณา ทองดี ระดับชั้นประกาศนียบัตรวิชาชีพ (ปวช.) ชั้นปีที่ 3 เเผนกวิชาช่างอิเล็กทรอนิกส์ เข้าศึกษาต่อ ทุนโครงการบ่มเพาะครูอิเล็กทรอนิกส์เเละโทรคมนาคม 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease524",
+    },
+    {
+      name: `ประกาศ`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/61/1.webp",
+      description: ` 
+เรื่อง การจัดการเรียนการสอนสำหรับนักเรียน นักศึกษา ประจำภาคเรียนที่ 2 / 2567 ในรูปเเบบออนไลน์ (online) 👉 ในวันที่ 2 - 4 ธันวาคม 2567 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease523",
+    },
+    {
       name: `วันพฤหัสบดีที่ 28 พฤศจิกายน 2567`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/60/1.webp",
       description: ` 
