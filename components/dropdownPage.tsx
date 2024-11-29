@@ -130,7 +130,7 @@ function Navbar({ className }: { className?: string }) {
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
               <HoveredLink className="" href="/develop ">
-                ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
+                ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">

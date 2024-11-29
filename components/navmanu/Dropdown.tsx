@@ -12,7 +12,7 @@ export function DropdownPage1() {
   );
 }
 
-function Navbar({}: { className?: string }) {
+function Navbar({ }: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
   return (
     <>
@@ -176,7 +176,7 @@ function Navbar({}: { className?: string }) {
                           className="hover:text-sky-500"
                           href="/develop "
                         >
-                          ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
+                          ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">

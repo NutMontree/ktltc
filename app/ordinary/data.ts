@@ -12,7 +12,7 @@ export const Data = [
     position: `รองหัวหน้าแผนกวิชา `, //ตำแหน่ง
     department: `สามัญสัมพันธ์ `, //แผนก
     faction: `หัวหน้างานกิจกรรมฯ  `, //ฝ่าย
-    description: `ตำแหน่ง ครู คศ.3`, //คำอธิบาย
+    description: `ตำแหน่ง ครู คศ.2`, //คำอธิบาย
     img: `/images/บุคลากร/สามัญ/2.webp`, //รูปภาพ
   },
   {
@@ -20,7 +20,7 @@ export const Data = [
     position: ` `, //ตำแหน่ง
     department: `สามัญสัมพันธ์ `, //แผนก
     faction: `  `, //ฝ่าย
-    description: `ตำแหน่ง ครู คศ.3`, //คำอธิบาย
+    description: `ตำแหน่ง ครู คศ.2`, //คำอธิบาย
     img: `/images/บุคลากร/สามัญ/3.webp`, //รูปภาพ
   },
   {
@@ -28,7 +28,7 @@ export const Data = [
     position: ` `, //ตำแหน่ง
     department: `สามัญสัมพันธ์ `, //แผนก
     faction: `หัวหน้างานประกันคุณภาพฯ  `, //ฝ่าย
-    description: `ตำแหน่ง ครู คศ.3`, //คำอธิบาย
+    description: `ตำแหน่ง ครู คศ.2`, //คำอธิบาย
     img: `/images/บุคลากร/สามัญ/4.webp`, //รูปภาพ
   },
   {

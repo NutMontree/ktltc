@@ -8,7 +8,7 @@ export default function Resource() {
     <>
       <div>
         <h1 className="flex justify-center text-xl">
-          ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
+          ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
         </h1>
         <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
           Student Activities Development Division Page

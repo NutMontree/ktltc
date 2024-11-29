@@ -98,7 +98,7 @@ function Navbar({ className }: { className?: string }) {
               ฝ่ายแผนงานและความร่วมมือ
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/ ">
-              ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
+              ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/ ">
               ฝ่ายวิชาการ
@@ -217,7 +217,7 @@ function Navbar({ className }: { className?: string }) {
                     ฝ่ายแผนงานและความร่วมมือ
                   </HoveredLink>
                   <HoveredLink className="hover:text-sky-500" href="/ ">
-                    ฝ่ายพัฒนากิจกรรมนักเรียน นักศึกษา
+                    ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
                   </HoveredLink>
                   <HoveredLink className="hover:text-sky-500" href="/ ">
                     ฝ่ายวิชาการ
