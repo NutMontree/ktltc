@@ -45,7 +45,7 @@ export const Data = [
     department: `สามัญสัมพันธ์ `, //แผนก
     faction: `  `, //ฝ่าย
     description: `ตำแหน่ง ครูผู้ช่วย`, //คำอธิบาย
-    img: `/images/error.webp`, //รูปภาพ
+    img: `/images/บุคลากร/สามัญ/6.webp`, //รูปภาพ
   },
   {
     name: ` นางสาวทราทิตย์  ชิดชม`, //ชื่อ
@@ -117,7 +117,7 @@ export const Data = [
     department: `สามัญสัมพันธ์ ครูพิเศษสอน`, //แผนก
     faction: `  `, //ฝ่าย
     description: `ตำแหน่ง ครูอาสาสมัครสอนภาษาจีน`, //คำอธิบาย
-    img: `/images/error.webp`, //รูปภาพ
+    img: `/images/บุคลากร/สามัญ/16.webp`, //รูปภาพ
   },
   {
     name: `นางสาวอิศราภรณ์  ราชชื่น `, //ชื่อ
@@ -125,6 +125,6 @@ export const Data = [
     department: `สามัญสัมพันธ์ `, //แผนก
     faction: `  `, //ฝ่าย
     description: `ตำแหน่ง ครูพิเศษสอน`, //คำอธิบาย
-    img: `/images/error.webp`, //รูปภาพ
+    img: `/images/บุคลากร/สามัญ/15.webp`, //รูปภาพ
   },
 ];

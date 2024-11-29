@@ -22,7 +22,7 @@ export const Data = [
     department: `การตลาด `, //แผนก
     faction: `  `, //ฝ่าย
     description: `ตำแหน่ง  ครู`, //คำอธิบาย
-    img: `/images/error.webp`, //รูปภาพ
+    img: `/images/บุคลากร/การตลาด/3.webp`, //รูปภาพ
   },
   {
     name: `นางสาวสุทธิดา เกษี`, //ชื่อ
@@ -39,6 +39,6 @@ export const Data = [
     department: `การตลาด `, //แผนก
     faction: `  `, //ฝ่าย
     description: `ตำแหน่ง ครูพิเศษสอน`, //คำอธิบาย
-    img: `/images/error.webp`, //รูปภาพ
+    img: `/images/บุคลากร/การตลาด/5.webp`, //รูปภาพ
   },
 ];
