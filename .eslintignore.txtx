@@ -18,3 +18,8 @@ build
 !plopfile.js
 !react-shim.js
 !tsup.config.ts
+# .eslintignore
+temp.js
+config/*
+# ...other ignored files
+"ignorePatterns": "**/*.d.ts"

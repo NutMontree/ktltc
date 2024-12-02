@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วันอาทิตย์ที่ 1 ธันวาคม  2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/1/11.webp",
+      description: ` 
+นางสาวภวิกา โพธิ์ขาว รองผู้อำนวยการฝ่ายบริหารทรัพยากร พร้อมด้วย คณะครู บุคลากรทางการศึกษา ร่วมถวายสักการะสดุดีเทิดพระเกียรติ และวางพวงมาลา
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease525",
+    },
+    {
       name: ` ขอเเสดงความยินดีกับ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/62/1.webp",
       description: ` 

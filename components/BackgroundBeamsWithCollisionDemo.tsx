@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
@@ -143,7 +144,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                       แจ้ง‼️ผลการเรียน ของนักเรียน นักศึกษา ภาคเรียนที่ 1
                       ปีการศึกษา 2567
                     </div>
-                    <div className="text-sky-800 text-lg text-center  text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                    <div className="text-sky-800 text-lg  text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                       สามารถดูได้ผ่านระบบลิ้งค์
                     </div>
                     <div className=" flex justify-center ">
@@ -152,7 +153,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                     https://std2018.vec.go.th/web/
                     "
                       >
-                        <div className="hover:text-sky-500 text-center text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                        <div className="hover:text-sky-500 text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                           https://std2018.vec.go.th/web/
                         </div>
                       </Link>

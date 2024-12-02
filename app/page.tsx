@@ -1,4 +1,5 @@
 // "use client";
+
 import Wellcome from "@/components/wellcome";
 import Scrollimage from "@/components/Scrollimage";
 import ShowPressRelease from "./showpressrelease/page";
