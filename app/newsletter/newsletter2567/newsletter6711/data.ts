@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: ` วันจันทร์ที่ 2 ธันวาคม 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/3/0.webp",
+      description: ` 
+โดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร คณะครูหัวหน้าแผนกวิชา ร่วมประชุมการยกระดับการเตรียมความพร้อมการจัดการเรียนการสอน 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease527",
+    },
+    {
       name: `วันเสาร์ ที่ 30 พฤศจิกายน 2567 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/2/0.webp",
       description: ` 
