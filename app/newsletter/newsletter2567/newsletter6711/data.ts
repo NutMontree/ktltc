@@ -1,6 +1,14 @@
 export const DataNewsletter = {
   navItems: [
     {
+      name: `วันเสาร์ ที่ 30 พฤศจิกายน 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/2/0.webp",
+      description: ` 
+นายสมศักดิ์ จันทานิตย์ รองผู้อำนวยการฝ่ายแผนงานและความร่วมมือ พร้อมด้วย คณะครู บุคลากรทางการศึกษา งานกองทุนเพื่อความเสมอภาคทางการศึกษา  
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease526",
+    },
+    {
       name: `วันอาทิตย์ที่ 1 ธันวาคม  2567 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/1/0.webp",
       description: ` 

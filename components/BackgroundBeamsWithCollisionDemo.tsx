@@ -14,7 +14,7 @@ export function BackgroundBeamsWithCollisionDemo() {
               <div>
                 <div className="flex justify-center">
                   <Image
-                    className="h-[150px] sm:h-[280px] lg:h-[400px] xl:h-[600px]"
+                    className="h-300px] sm:h-[500px] lg:h-[600px] xl:h-[600px] "
                     src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/61/1.webp"}
                   />
                 </div>
