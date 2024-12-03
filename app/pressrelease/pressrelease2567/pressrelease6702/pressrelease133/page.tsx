@@ -7,7 +7,7 @@ import { Image } from "@nextui-org/react";
 export default function Pressrelease() {
   return (
     <>
-      <div className="text-center text-xl">
+      <div className="text-center text-xl pb-6">
         {DataPressrelease.Item.map((item) => (
           <div key={item.title}>{item.title}</div>
         ))}

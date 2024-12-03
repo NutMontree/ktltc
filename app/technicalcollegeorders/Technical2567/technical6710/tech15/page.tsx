@@ -7,7 +7,7 @@ export default function TechnicalCollege() {
   return (
     <>
       <div>
-        <div className="text-center text-xl">
+        <div className="text-center text-xl pb-6">
           {DataTechnicalCollege.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}

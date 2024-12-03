@@ -11,7 +11,7 @@ export default function Pressrelease() {
       <div>
         {/* ***************************** Map Title ***************************** */}
 
-        <div className="text-center text-xl">
+        <div className="text-center text-xl pb-6">
           {DataPressrelease.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
@@ -108,8 +108,8 @@ export default function Pressrelease() {
               title="เข้าค่ายลูกเสือ ปี 2567 part 1"
               // frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              // referrerpolicy="strict-origin-when-cross-origin"
-              // allowfullscreen
+            // referrerpolicy="strict-origin-when-cross-origin"
+            // allowfullscreen
             />
             <br />
             <iframe
@@ -117,8 +117,8 @@ export default function Pressrelease() {
               title="26 ตุลาคม ค.ศ. 2024"
               // frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              // referrerpolicy="strict-origin-when-cross-origin"
-              // allowfullscreen
+            // referrerpolicy="strict-origin-when-cross-origin"
+            // allowfullscreen
             ></iframe>
           </div>
         </div>

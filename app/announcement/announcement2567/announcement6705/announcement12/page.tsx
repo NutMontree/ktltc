@@ -9,7 +9,7 @@ export default function Announcement() {
   return (
     <>
       <div>
-        <div className="text-center text-xl">
+        <div className="text-center text-xl pb-6">
           {DataAnnouncement.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}

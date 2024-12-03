@@ -1,6 +1,14 @@
 export const DataAnnouncement = {
   navItems: [
     {
+      name: `ประกาศ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/4/1.webp",
+      description: ` 
+เด็ก'68 รีบมาสมัครกันนะค้าบ การรับสมัครนักเรียน นักศึกษา รอบโควตา ประจำปีการศึกษา 2568 ใครที่ยังไม่มาสมัคร รีบเลย‼️ เนื่องจากเหลือเวลาอีกไม่นาน จะเริ่มประกาศรายชื่อผู้มีสิทธิเข้ารับการศึกษาต่อเเล้วนะค้าบ 
+       ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease528",
+    },
+    {
       name: `ประกาศรายชื่อ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/44/1.webp",
       description: `
