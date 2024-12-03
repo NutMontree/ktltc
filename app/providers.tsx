@@ -30,9 +30,7 @@ export function UserContextProvider({ children, themeProps }: ProvidersProps) {
   return (
     <>
       <UserContext.Provider value={{ user, setUser }}>
-        {/* <NextUIProvider navigate={router.push}> */}
         <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-        {/* </NextUIProvider> */}
       </UserContext.Provider>
     </>
   );
