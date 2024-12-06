@@ -9,7 +9,7 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
-import { dataNewsletter5 } from "./data";
+import { Data5 } from "./data";
 import { Image } from "@nextui-org/react";
 
 export default function Newsletter5() {
@@ -30,19 +30,19 @@ export default function Newsletter5() {
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   <div>
-                    {dataNewsletter5.Image.map((item) => (
+                    {Data5.Image.map((item) => (
                       <div key={item.title}>{item.title}</div>
                     ))}
                   </div>
                 </ModalHeader>
                 <ModalBody>
                   <div>
-                    {dataNewsletter5.Image.map((item) => (
+                    {Data5.Image.map((item) => (
                       <div key={item.description}>{item.description}</div>
                     ))}
                   </div>
 
-                  {dataNewsletter5.Image.map((item) => (
+                  {Data5.Image.map((item) => (
                     <div key={item.backgroundImage}>
                       <div>
                         <Image src={item.backgroundImage} alt={""}></Image>

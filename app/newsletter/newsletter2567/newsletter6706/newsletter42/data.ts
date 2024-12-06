@@ -1,4 +1,4 @@
-export const dataNewsletter = {
+export const Data = {
   Item: [
     {
       title: `" สุขาดี มีความสุข " `,

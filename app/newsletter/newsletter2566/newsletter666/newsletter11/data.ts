@@ -1,6 +1,6 @@
-export type DataNewsletter11 = typeof dataNewsletter11;
+export type Data11 = typeof Data11;
 
-export const dataNewsletter11 = {
+export const Data11 = {
   Image: [
     {
       title: "วิทยาลัยเทคนิคกันทรลักษ์",

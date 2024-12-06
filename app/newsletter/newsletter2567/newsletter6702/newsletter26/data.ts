@@ -1,4 +1,4 @@
-export const dataNewsletter = {
+export const Data = {
   Item: [
     {
       title: `20 กุมภาพันธ์ 2567`,

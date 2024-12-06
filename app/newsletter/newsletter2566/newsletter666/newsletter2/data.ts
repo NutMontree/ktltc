@@ -1,6 +1,6 @@
-export type DataNewsletter2 = typeof dataNewsletter2;
+export type Data2 = typeof Data2;
 
-export const dataNewsletter2 = {
+export const Data2 = {
   Image: [
     {
       title: "พิธีทำบุญตักบาตร เนื่องในวัน ทำบุญคุณลาน",

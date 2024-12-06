@@ -1,6 +1,6 @@
-export type DataNewsletter15 = typeof dataNewsletter15;
+export type Data15 = typeof Data15;
 
-export const dataNewsletter15 = {
+export const Data15 = {
   Image: [
     {
       title: "นางสาวทักษิณา ชมจันทร์",

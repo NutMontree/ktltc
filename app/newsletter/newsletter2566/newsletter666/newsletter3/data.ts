@@ -1,6 +1,6 @@
-export type DataNewsletter3 = typeof dataNewsletter3;
+export type Data3 = typeof Data3;
 
-export const dataNewsletter3 = {
+export const Data3 = {
   Image: [
     {
       title: "การจัดประกวดสิ่งประดิษฐ์ของคนรุ่นใหม่ ระดับสถานศึกษา",

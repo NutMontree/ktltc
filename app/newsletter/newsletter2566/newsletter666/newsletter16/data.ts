@@ -1,6 +1,6 @@
-export type DataNewsletter16 = typeof dataNewsletter16;
+export type Data16 = typeof Data16;
 
-export const dataNewsletter16 = {
+export const Data16 = {
   Image: [
     {
       title:

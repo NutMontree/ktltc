@@ -1,4 +1,4 @@
-export const DataNewsletter66 = {
+export const Data66 = {
   navItems: [
     {
       name: `คำสั่งแต่งตั้งคณะกรรมการ`,

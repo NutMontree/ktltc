@@ -1,6 +1,6 @@
-export type DataNewsletter4 = typeof dataNewsletter4;
+export type Data4 = typeof Data4;
 
-export const dataNewsletter4 = {
+export const Data4 = {
   Image: [
     {
       title: "การจัดการแข่งขันทักษะขับขี่ปลอดภัย",

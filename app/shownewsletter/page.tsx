@@ -21,13 +21,15 @@ import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { createStyles } from 'antd-style';
+import { createStyles } from "antd-style";
 
-import { DataNewsletter } from "../newsletter/newsletter2567/newsletter6711/data";
+import { Data } from "../newsletter/newsletter2567/newsletter6712/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
-    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+    &.${prefixCls}-btn-primary:not([disabled]):not(
+        .${prefixCls}-btn-dangerous
+      ) {
       border-width: 0;
 
       > span {
@@ -35,7 +37,7 @@ const useStyle = createStyles(({ prefixCls, css }) => ({
       }
 
       &::before {
-        content: '';
+        content: "";
         background: linear-gradient(135deg, #6253e1, #04befe);
         position: absolute;
         inset: 0;
@@ -78,13 +80,13 @@ export default function ShowNewsletter() {
               type="primary"
               size="large"
               icon={<AntDesignOutlined />}
-              href="/newsletter">
+              href="/newsletter"
+            >
               เนื้อหาเพิ่มเติม
             </Button>
           </Space>
         </ConfigProvider>
       </div>
-
 
       <div className="px-6 py-3">
         <Swiper
@@ -115,7 +117,7 @@ export default function ShowNewsletter() {
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
         >
-          {DataNewsletter.navItems.map((item) => (
+          {Data.navItems.map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
                 <div
@@ -129,7 +131,7 @@ export default function ShowNewsletter() {
                 "
                 >
                   <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500   "
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}

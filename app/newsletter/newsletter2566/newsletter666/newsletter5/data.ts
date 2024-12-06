@@ -1,6 +1,6 @@
-export type DataNewsletter5 = typeof dataNewsletter5;
+export type Data5 = typeof Data5;
 
-export const dataNewsletter5 = {
+export const Data5 = {
   Image: [
     {
       title: " ๒๕ พฤศจิกายน ๒๕๖๖ วันวชิราวุธ พิธีถวายราชดุดีวันมหาธีราชเจ้า ",

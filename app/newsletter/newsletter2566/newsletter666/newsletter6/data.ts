@@ -1,6 +1,6 @@
-export type DataNewsletter6 = typeof dataNewsletter6;
+export type Data6 = typeof Data6;
 
-export const dataNewsletter6 = {
+export const Data6 = {
   Image: [
     {
       title: "๑ ธันวาคม ๒๕๖๖",

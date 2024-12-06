@@ -1,6 +1,6 @@
 "use client"; // top to the file
 
-import { DataNewsletter } from "./data";
+import { Data } from "./data";
 
 import NextLink from "next/link";
 import NewsletterPage from "../../page";
@@ -18,8 +18,8 @@ export default function Newsletter6701() {
 
       <div className="2567">
         <div className="flex justify-center pt-4">
-          <div className=" grid grid-rows-4 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
-            {DataNewsletter.navItems.map((item) => (
+          <div className=" grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
+            {Data.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
                 <div className="mb-4 group relative shadow-lg text-white rounded-xl px-6 py-8 h-[250px] lg:h-[500px] lg:w-[full] overflow-hidden cursor-pointer ">
                   <div

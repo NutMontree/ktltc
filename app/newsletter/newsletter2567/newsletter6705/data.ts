@@ -1,4 +1,4 @@
-export const DataNewsletter = {
+export const Data = {
   navItems: [
     {
       id: 4,

@@ -3,7 +3,7 @@
 import NextLink from "next/link";
 import NewsletterPage from "../../page";
 
-import { DataNewsletter66 } from "./data";
+import { Data66 } from "./data";
 
 export default function Newsletter66() {
   return (
@@ -18,8 +18,8 @@ export default function Newsletter66() {
 
       <div className="2566">
         <div className="flex justify-center pt-4">
-          <div className=" grid grid-rows-4 gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6  justify-items-center justify-center ">
-            {DataNewsletter66.navItems.map((item) => (
+          <div className=" grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6  justify-items-center justify-center ">
+            {Data66.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
                 {/* <div className="mb-2 group relative rounded-xl cursor-pointer h-64 min-h-80 hover:min-h-ful"> */}
                 <div className="mb-2 group relative rounded-xl cursor-pointer px-6 py-8 h-[250px] lg:h-[] lg:w-[full]  ">

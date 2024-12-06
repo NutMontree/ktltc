@@ -1,6 +1,6 @@
-export type DataNewsletter1 = typeof dataNewsletter1;
+export type Data1 = typeof Data1;
 
-export const dataNewsletter1 = {
+export const Data1 = {
   Image: [
     {
       title: "เปิดการรับสมัครบุคคลเข้าศึกษาต่อ",

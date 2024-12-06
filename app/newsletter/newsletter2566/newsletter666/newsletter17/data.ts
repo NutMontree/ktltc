@@ -1,6 +1,6 @@
-export type DataNewsletter17 = typeof dataNewsletter17;
+export type Data17 = typeof Data17;
 
-export const dataNewsletter17 = {
+export const Data17 = {
   Image: [
     {
       title: "วันที่ 26 ธันวาคม 2566",

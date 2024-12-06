@@ -1,6 +1,6 @@
-export type DataNewsletter10 = typeof dataNewsletter10;
+export type Data10 = typeof Data10;
 
-export const dataNewsletter10 = {
+export const Data10 = {
   Image: [
     {
       title: "พิธีถวายสักการะพระอนุสาวรีย์",

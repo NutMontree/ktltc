@@ -17,7 +17,7 @@ export default function Pressrelease6611() {
       </div>
 
       <div className="flex justify-center pt-4">
-        <div className="grid grid-rows-4 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center justify-center ">
+        <div className="grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center justify-center ">
           {DataPressrelease6611.navItems.map((item) => (
             <NextLink key={item.href} href={item.href}>
               <div className="mb-2 group relative rounded-xl cursor-pointer min-h-52 hover:min-h-ful">

@@ -1,7 +1,7 @@
 "use client"; // top to the file
 import React from "react";
 
-import { DataDate, dataNewsletter, Description, ImageItem } from "./data";
+import { DataDate, Data, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
 
 export default function Pressrelease() {
@@ -9,7 +9,7 @@ export default function Pressrelease() {
     <>
       <div>
         <div className="text-center text-xl pb-6">
-          {dataNewsletter.Item.map((item) => (
+          {Data.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
         </div>

@@ -1,4 +1,4 @@
-export const dataNewsletter = {
+export const Data = {
   Item: [
     {
       title: `เมื่อวันที่ 13 มกราคม 2567 นางสาวทักษิณา ชมจันทร์`,

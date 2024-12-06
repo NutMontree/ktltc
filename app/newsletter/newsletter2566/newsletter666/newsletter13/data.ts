@@ -1,6 +1,6 @@
-export type DataNewsletter13 = typeof dataNewsletter13;
+export type Data13 = typeof Data13;
 
-export const dataNewsletter13 = {
+export const Data13 = {
   Image: [
     {
       title: "โครงการชุมชนบำบัดอย่างยั่งยืนในตำบลแพร่ระบาดยาเสพติดสูงสุด",

@@ -23,12 +23,14 @@ import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { createStyles } from 'antd-style';
+import { createStyles } from "antd-style";
 import { Data } from "../technicalcollegeorders/Technical2567/technical6711/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
-    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+    &.${prefixCls}-btn-primary:not([disabled]):not(
+        .${prefixCls}-btn-dangerous
+      ) {
       border-width: 0;
 
       > span {
@@ -36,7 +38,7 @@ const useStyle = createStyles(({ prefixCls, css }) => ({
       }
 
       &::before {
-        content: '';
+        content: "";
         background: linear-gradient(135deg, #6253e1, #04befe);
         position: absolute;
         inset: 0;
@@ -67,7 +69,7 @@ export default function ShowTechnicalcollegeorders() {
           Technical College Page
         </h1>
       </div>
- 
+
       <div className="flex justify-end px-6 pt-3">
         <ConfigProvider
           button={{
@@ -75,11 +77,11 @@ export default function ShowTechnicalcollegeorders() {
           }}
         >
           <Space>
-            <Button 
-            type="primary" 
-            size="large" 
-            icon={<AntDesignOutlined />} 
-            href="/technicalcollegeorders"
+            <Button
+              type="primary"
+              size="large"
+              icon={<AntDesignOutlined />}
+              href="/technicalcollegeorders"
             >
               เนื้อหาเพิ่มเติม
             </Button>
@@ -127,7 +129,7 @@ export default function ShowTechnicalcollegeorders() {
                   overflow-hidden"
                 >
                   <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500   "
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}

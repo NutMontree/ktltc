@@ -1,4 +1,3 @@
-
 "use client"; // top to the file
 import React from "react";
 import {
@@ -10,7 +9,7 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
-import { dataNewsletter16 } from "./data";
+import { Data16 } from "./data";
 import { Image } from "@nextui-org/react";
 
 export default function Newsletter16() {
@@ -31,14 +30,14 @@ export default function Newsletter16() {
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   <div>
-                    {dataNewsletter16.Image.map((item) => (
+                    {Data16.Image.map((item) => (
                       <div key={item.title}>{item.title}</div>
                     ))}
                   </div>
                 </ModalHeader>
                 <ModalBody>
                   <div>
-                    {dataNewsletter16.Image.map((item) => (
+                    {Data16.Image.map((item) => (
                       <div key={item.description1}>
                         {item.description1}
                         <br />
@@ -46,9 +45,8 @@ export default function Newsletter16() {
                       </div>
                     ))}
                   </div>
-         
 
-                  {dataNewsletter16.Image.map((item) => (
+                  {Data16.Image.map((item) => (
                     <div key={item.backgroundImage}>
                       <div>
                         <Image src={item.backgroundImage} alt={""}></Image>

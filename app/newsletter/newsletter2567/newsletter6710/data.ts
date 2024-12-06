@@ -1,4 +1,4 @@
-export const DataNewsletter = {
+export const Data = {
   navItems: [
     {
       name: ` 30 ตุลาคม  2567`,

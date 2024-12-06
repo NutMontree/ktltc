@@ -9,6 +9,16 @@ export default function Pressrelease2567() {
           <Button color="primary" variant="ghost">
             <Link
               className="text-lg"
+              href="/pressrelease/pressrelease2567/pressrelease6712"
+            >
+              เดือน ธันวาคม 2567
+            </Link>
+          </Button>
+        </div>
+        <div>
+          <Button color="primary" variant="ghost">
+            <Link
+              className="text-lg"
               href="/pressrelease/pressrelease2567/pressrelease6711"
             >
               เดือน พฤศจิกายน 2567

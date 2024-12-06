@@ -22,12 +22,14 @@ import NextLink from "next/link";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { dataBidding } from "../bidding/data/data";
-import { createStyles } from 'antd-style';
+import { createStyles } from "antd-style";
 import { DataAnnouncement } from "../announcement/announcement2567/announcement6710/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
-    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+    &.${prefixCls}-btn-primary:not([disabled]):not(
+        .${prefixCls}-btn-dangerous
+      ) {
       border-width: 0;
 
       > span {
@@ -35,7 +37,7 @@ const useStyle = createStyles(({ prefixCls, css }) => ({
       }
 
       &::before {
-        content: '';
+        content: "";
         background: linear-gradient(135deg, #6253e1, #04befe);
         position: absolute;
         inset: 0;
@@ -78,7 +80,8 @@ export default function ShowAnnouncement() {
               type="primary"
               size="large"
               icon={<AntDesignOutlined />}
-              href="/announcement">
+              href="/announcement"
+            >
               เนื้อหาเพิ่มเติม
             </Button>
           </Space>
@@ -125,7 +128,7 @@ export default function ShowAnnouncement() {
                   overflow-hidden"
                 >
                   <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500   "
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500   "
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
