@@ -94,16 +94,24 @@ export default function ShowPressRelease() {
               slidesPerView: 2,
               spaceBetween: 15,
             },
-            340: {
-              slidesPerView: 2,
+            400: {
+              slidesPerView: 3,
               spaceBetween: 15,
             },
             600: {
               slidesPerView: 3,
               spaceBetween: 15,
             },
-            1000: {
+            800: {
               slidesPerView: 4,
+              spaceBetween: 15,
+            },
+            1000: {
+              slidesPerView: 5,
+              spaceBetween: 15,
+            },
+            1400: {
+              slidesPerView: 6,
               spaceBetween: 15,
             },
           }}
@@ -123,7 +131,11 @@ export default function ShowPressRelease() {
                   className="
                   mb-6 relative shadow-lg rounded-xl 
                   h-[150px]
-                  sm:h-[300px]
+                  sm:h-[200px]
+                  md:h-[200px]
+                  lg:h-[200px]
+                  xl:h-[200px]
+                  2xl:h-[250px]
                   overflow-hidden"
                 >
                   <div

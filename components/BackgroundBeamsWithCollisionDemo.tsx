@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
@@ -7,35 +6,6 @@ import { Cover } from "@/components/ui/cover";
 export function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
-      <div className="px-4 py-2 ">
-        <Cover className="flex justify-center">
-          <Link href="/pressrelease/pressrelease2567/pressrelease6711/pressrelease523">
-            <div className="flex justify-center">
-              <div>
-                <div className="flex justify-center">
-                  <Image
-                    className="h-300px] sm:h-[500px] lg:h-[600px] xl:h-[600px] "
-                    src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/61/1.webp"}
-                  />
-                </div>
-
-                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
-                  <div className="text-center pt-6">ประกาศ </div>
-
-                  ประกาศ เรื่อง การจัดการเรียนการสอนสำหรับนักเรียน นักศึกษา ประจำภาคเรียนที่ 2 / 2567 ในรูปเเบบออนไลน์ (online)
-
-                  <br />
-                  👉 ในวันที่ 2 - 4 ธันวาคม 2567   <br />
-                  ***เปิดการเรียนการสอนปกติ ในวันศุกร์ที่ 6 ธันวาคม 2567    <br />
-                  KTL -TC ONE TEAM   <br />
-                </div>
-              </div>
-            </div>
-          </Link>
-        </Cover>
-      </div>
-
-
       <div className="px-4 py-2 ">
         <Cover className="flex justify-center">
           <Link href="/pressrelease/pressrelease2567/pressrelease6711/pressrelease471">

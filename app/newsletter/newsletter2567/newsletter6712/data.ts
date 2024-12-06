@@ -6,7 +6,7 @@ export const Data = {
       description: ` 
 พร้อมด้วยคณะครู บุคลากรทางการศึกษา เข้าร่วมกิจกรรมเนื่องในวันคล้ายวันพระราชสมภพ พระบาทสมเด็จพระบรมชนกาธิเบศร มหาภูมิพลอดุลยเดชมหาราช บรมนาถบพิตร วันชาติ และวันพ่อแห่งชาติ
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease541",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease541",
     },
     {
       name: `วันพุธที่ 4 ธันวาคม 2567 `,
@@ -14,7 +14,7 @@ export const Data = {
       description: ` 
  นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร เข้าร่วมพิธีปิดงานประชุมวิชาการองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย (อวท.) ระดับจังหวัดศรีสะเกษ ครั้งที่ 34  
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease538",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease538",
     },
     {
       name: `วันพุธที่ 4 ธันวาคม 2567 `,
@@ -22,7 +22,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมให้กำลังใจ นักเรียน นักศึกษา แผนกวิชาช่างไฟฟ้ากำลัง เข้าร่วมการแข่งขันทักษะวิชาชีพ และทักษะพื้นฐาน
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease537",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease537",
     },
     {
       name: `วันพุธที่ 4 ธันวาคม 2567 `,
@@ -30,7 +30,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมพิธีเปิดและให้กำลังใจ นักเรียน นักศึกษา แผนกวิชาช่างก่อสร้าง เข้าร่วมการแข่งขันทักษะวิชาชีพ และทักษะพื้นฐาน
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease536",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease536",
     },
     {
       name: ` วันอังคารที่ 3 ธันวาคม 2567  `,
@@ -38,7 +38,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมให้กำลังใจ นักเรียน นักศึกษา เเผนกวิชาการตลาด เข้าร่วมการแข่งขัน ทักษะวิชาชีพ และทักษะพื้นฐาน 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease535",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease535",
     },
     {
       name: ` วันอังคารที่ 3 ธันวาคม 2567  `,
@@ -46,7 +46,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมให้กำลังใจ นักเรียน นักศึกษา เเผนกวิชาช่างอิเล็กทรอนิกส์ เข้าร่วมการแข่งขันทักษะวิชาชีพ และทักษะพื้นฐาน
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease534",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease534",
     },
     {
       name: ` วันอังคารที่ 3  ธันวาคม 2567  `,
@@ -54,7 +54,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมให้กำลังใจ นักเรียน นักศึกษา เเผนกวิชาช่างเชื่อมโลหะ เข้าร่วมการแข่งขันทักษะวิชาชีพ และทักษะพื้นฐาน 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease533",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease533",
     },
     {
       name: ` วันอังคารที่ 3  ธันวาคม 2567  `,
@@ -62,7 +62,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมให้กำลังใจ นักเรียน นักศึกษา เเผนกวิชาช่างก่อสร้าง เข้าร่วมการแข่งขันทักษะวิชาชีพ และทักษะพื้นฐาน 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease532",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease532",
     },
     {
       name: ` วันอังคารที่ 3  ธันวาคม 2567  `,
@@ -70,7 +70,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมให้กำลังใจ นักเรียน นักศึกษา เเผนกวิชาช่างยนต์ เข้าร่วมการแข่งขันทักษะวิชาชีพ และทักษะพื้นฐาน
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease531",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease531",
     },
     {
       name: ` วันอังคารที่ 3  ธันวาคม 2567  `,
@@ -78,7 +78,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ร่วมให้กำลังใจ นักเรียน นักศึกษา เเผนกวิชาช่างกลโรงงาน เข้าร่วมการแข่งขันทักษะวิชาชีพ และทักษะพื้นฐาน 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease530",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease530",
     },
     {
       name: ` วันอังคารที่ 3  ธันวาคม 2567  `,
@@ -86,7 +86,7 @@ export const Data = {
       description: ` 
  👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร เข้าร่วมพิธีเปิดงานประชุมวิชาการองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย (อวท.) (อวท.) ระดับอาชีวศึกษา
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease529",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease529",
     },
     {
       name: ` วันจันทร์ที่ 2 ธันวาคม 2567`,
@@ -94,7 +94,7 @@ export const Data = {
       description: ` 
 โดย 👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร คณะครูหัวหน้าแผนกวิชา ร่วมประชุมการยกระดับการเตรียมความพร้อมการจัดการเรียนการสอน 
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease527",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease527",
     },
     {
       name: `วันเสาร์ ที่ 30 พฤศจิกายน 2567 `,
@@ -102,7 +102,7 @@ export const Data = {
       description: ` 
 นายสมศักดิ์ จันทานิตย์ รองผู้อำนวยการฝ่ายแผนงานและความร่วมมือ พร้อมด้วย คณะครู บุคลากรทางการศึกษา งานกองทุนเพื่อความเสมอภาคทางการศึกษา  
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease526",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease526",
     },
     {
       name: `วันอาทิตย์ที่ 1 ธันวาคม  2567 `,
@@ -110,7 +110,7 @@ export const Data = {
       description: ` 
 นางสาวภวิกา โพธิ์ขาว รองผู้อำนวยการฝ่ายบริหารทรัพยากร พร้อมด้วย คณะครู บุคลากรทางการศึกษา ร่วมถวายสักการะสดุดีเทิดพระเกียรติ และวางพวงมาลา
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease525",
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease525",
     },
   ],
 };
