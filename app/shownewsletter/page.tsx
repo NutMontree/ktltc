@@ -122,7 +122,7 @@ export default function ShowNewsletter() {
               <NextLink key={item.href} href={item.href}>
                 <div
                   className="
-                relative mb-42 shadow-lg rounded-xl 
+                relative mb-6 shadow-lg rounded-xl 
                 h-[210px] 
                 sm:h-[310px]
                 lg:h-[410px]
@@ -131,17 +131,29 @@ export default function ShowNewsletter() {
                 "
                 >
                   <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500   "
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
                   />
                 </div>
                 <div className=" ">
-                  <h1 className="text-lg lg:text-1xl text-sky-600  ">
+                  <h1
+                    className="
+                              text-[14px] md:text-[20px] sm:text-sm md:text-base 
+                            text-sky-600  
+                  "
+                  >
                     {item.name}
                   </h1>
-                  <div className="text-sm  mb-8">{item.description}</div>
+                  <div
+                    className=" 
+                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
+                              mb-8
+                              "
+                  >
+                    {item.description}
+                  </div>
                 </div>
               </NextLink>
             </SwiperSlide>

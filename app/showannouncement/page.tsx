@@ -21,7 +21,6 @@ import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
-import { dataBidding } from "../bidding/data/data";
 import { createStyles } from "antd-style";
 import { DataAnnouncement } from "../announcement/announcement2567/announcement6710/data";
 
@@ -135,10 +134,22 @@ export default function ShowAnnouncement() {
                   />
                 </div>
                 <div className=" ">
-                  <h1 className="text-lg lg:text-1xl text-sky-600  ">
+                  <h1
+                    className="
+                              text-[14px] md:text-[20px] sm:text-sm md:text-base 
+                            text-sky-600  
+                  "
+                  >
                     {item.name}
                   </h1>
-                  <div className="text-sm  mb-8">{item.description}</div>
+                  <div
+                    className=" 
+                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
+                              mb-8
+                              "
+                  >
+                    {item.description}
+                  </div>
                 </div>
               </NextLink>
             </SwiperSlide>
