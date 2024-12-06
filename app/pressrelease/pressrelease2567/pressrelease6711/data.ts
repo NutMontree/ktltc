@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` างสาววิภาวรรณ สีแดด `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/16/29.webp",
+      description: ` 
+พร้อมด้วยคณะครู บุคลากรทางการศึกษา เข้าร่วมกิจกรรมเนื่องในวันคล้ายวันพระราชสมภพ พระบาทสมเด็จพระบรมชนกาธิเบศร มหาภูมิพลอดุลยเดชมหาราช บรมนาถบพิตร วันชาติ และวันพ่อแห่งชาติ
+      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6711/pressrelease541",
+    },
+    {
       name: ` ขอเเสดงความยินดีกับ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/14/29.webp",
       description: ` 
