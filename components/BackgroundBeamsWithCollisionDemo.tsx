@@ -7,48 +7,6 @@ export function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
-      <div className="px-4 py-2 pb-[48px]">
-        <Cover className="flex justify-center">
-          <Link href="/pressrelease/pressrelease2567/pressrelease6711/pressrelease471">
-            <div className="flex justify-center">
-              <div>
-                <div className="flex justify-center">
-                  <Image
-                    className="h-[150px] sm:h-[280px] lg:h-[400px] xl:h-[500px]"
-                    src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/10/1.webp"}
-                  />
-                </div>
-
-                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
-                  <div className="text-center pt-6 text-[14px] md:text-[20px] sm:text-sm md:text-base">
-                    💥สวัสดี Dek68 ทุกคน
-                  </div>
-                  วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัครนักเรียน นักศึกษา
-                  <br />
-                  ปีการศึกษา 2568 📌📍รู้หรือไม่? ว่า <br />
-                  วิทยาลัยเทคนิคกันทรลักษ์ ทำการเปิดสาขาวิชาเพิ่ม ได้แก่
-                  <br /> 👉 ระดับ ปวช.
-                  <br /> สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์
-                  <br /> สาขาวิชาโยธา
-                  <br /> สาขาวิชาตัวถังเเละสีรถยนต์
-                  <br /> 👉 ระดับ ปวส.
-                  <br /> สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์
-                  <br /> สาขาวิชาโยธา
-                  <br /> สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถังเเละสีรถยนต์
-                  <br /> สาขาวิชาการจัดการโลจิสติกส์เเละซัพพลายเชน
-                  <br /> 📣📣 น.อกจากนี้ยังมีสาขาวิชาอีกมากมาย
-                  <br /> อย่าลืมมาเจอกันนะค้าบ
-                  <br /> พวกเราหัวใจ แสด – น้ำเงิน
-                  <br /> ยินดีต้อนรับนักเรียน - นักศึกษา เด็ก 68 ทุกคนค้าบ
-                </div>
-              </div>
-            </div>
-          </Link>
-        </Cover>
-      </div>
-      {/* ******************************************* เรื่องที่ 1 ******************************************* */}
-
-      {/* ******************************************* เรื่องที่ 2 ******************************************* */}
 
       <div className="px-4 py-2 border-t pt-[48px] pb-[48px]">
         <Cover className="flex justify-center">
@@ -87,7 +45,7 @@ export function BackgroundBeamsWithCollisionDemo() {
           </Link>
         </Cover>
       </div>
-      {/* ******************************************* เรื่องที่ 2 ******************************************* */}
+      {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 px-4 border-t pt-[48px]">
         <Cover className="flex justify-center">
