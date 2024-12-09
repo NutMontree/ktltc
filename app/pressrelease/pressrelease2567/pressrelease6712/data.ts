@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` วันจันทร์ที่ 9 ธันวาคม 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/20/6.webp",
+      description: ` 
+👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร ร่วมการประชุมแนวทางการขับเคลื่อนนโยบายกระทรวงศึกษาธิการ ในการดำเนินการระบบธนาคารหน่วยกิต 
+      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease563",
+    },
+    {
       name: `Dek68`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/19/1.webp",
       description: ` 
