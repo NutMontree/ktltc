@@ -13,16 +13,16 @@ export function BackgroundBeamsWithCollisionDemo() {
           <Link href="/pressrelease/pressrelease2567/pressrelease6712/pressrelease562">
             <div className="flex justify-center">
               <div>
+                5
                 <div className="flex justify-center">
                   <Image
                     className="h-[150px] sm:h-[280px] lg:h-[400px] xl:h-[600px]"
                     src={"/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/19/1.webp"}
                   />
                 </div>
-
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
                   <div className="text-center pt-6 text-[14px] md:text-[20px] sm:text-sm md:text-base">
-                    🎊 Dek68 รอบโควตา{" "}
+                    🎊 Dek68 รอบโควตา
                   </div>
                   เตรียมความพร้อมรายงานตัวเข้าศึกษาต่อในรั้ววิทยาลัยเทคนิคกันทรลักษ์
                   ในวันพฤหัสบดีที่ 12 ธันวาคม 2567 นี้

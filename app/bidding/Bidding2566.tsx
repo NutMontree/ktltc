@@ -47,7 +47,7 @@ export default function Bidding2566() {
             {dataBidding.navitems.map((item) => (
               <SwiperSlide key={item.name}>
                 <NextLink key={item.href} href={item.href}>
-                  <div className="mb-4 group relative shadow-lg text-white rounded-xl px-6 py-8  h-[150px] lg:h-[200px] lg:w-[full] overflow-hidden cursor-pointer lg:max-h-[180px]  h-24 min-h-0 hover:min-h-ful">
+                  <div className="mb-4 group relative shadow-lg text-white rounded-xl px-6 py-8  h-[150px] lg:h-[200px] lg:w-[full] overflow-hidden cursor-pointer lg:max-h-[180px] min-h-0 hover:min-h-ful">
                     <div
                       className="absolute inset-0 bg-contain bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover" //    lg:max-h-[180px] sm:max-h-[110px] rounded-lg
                       style={{
