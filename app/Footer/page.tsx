@@ -7,11 +7,7 @@ import React from "react";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import {
   IconBrandFacebook,
-  IconBrandGithub,
-  IconBrandX,
-  IconExchange,
   IconHome,
-  IconNewSection,
   IconTerminal2,
 } from "@tabler/icons-react";
 
@@ -125,6 +121,7 @@ export default function Footer() {
 
               <Link
                 className="hover:underline hover:text-sky-500"
+                target="_blank"
                 href="https://www.google.co.th/maps/place/7P66QM35%2BJ68/@14.7540375,104.6555032,17z/data=!3m1!4b1!4m4!3m3!8m2!3d14.7540375!4d104.6580781?hl=th&entry=ttu&g_ep=EgoyMDI0MDgyMy4wIKXMDSoASAFQAw%3D%3D"
               >
                 QM35+J68 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
@@ -146,17 +143,14 @@ export default function Footer() {
 
           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <Link
-                href="/"
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
-              >
+              <Link href="/" className="hover:underline  hover:text-sky-500 ">
                 หน้าหลัก
               </Link>
             </div>
             <div className="py-2">
               <Link
                 href="/pressrelease"
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500 "
               >
                 ข่าวประชาสัมพันธ์
               </Link>
@@ -164,7 +158,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/newsletter"
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500 "
               >
                 จดหมายข่าว
               </Link>
@@ -172,7 +166,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/announcement"
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500 "
               >
                 ข่าวประกาศ
               </Link>
@@ -199,7 +193,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/externalinternal"
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500 "
               >
                 แบบฟอร์มหนังสือภายนอก-ภายใน
               </Link>
@@ -207,27 +201,28 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/personnel "
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500"
               >
                 ข้อมูลบุคลากร
               </Link>
             </div>
             <div className="py-2">
+              <Link href="/ " className="hover:underline  hover:text-sky-500 ">
+                ไม่พบเนื้อหา
+              </Link>
+            </div>
+            <div className="py-2">
+              <Link href="/ " className="hover:underline  hover:text-sky-500">
+                ไม่พบเนื้อหา
+              </Link>
+            </div>
+            <div className="py-2">
               <Link
-                href="/ "
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                href="https://std2018.vec.go.th/web/"
+                target="_blank"
+                className="hover:underline  hover:text-sky-500"
               >
-                ไม่พบเนื้อหา
-              </Link>
-            </div>
-            <div className="py-2">
-              <Link href="/ " className="hover:underline  hover:text-sky-500">
-                ไม่พบเนื้อหา
-              </Link>
-            </div>
-            <div className="py-2">
-              <Link href="/ " className="hover:underline  hover:text-sky-500">
-                ไม่พบเนื้อหา
+                https://std2018.vec.go.th/web/
               </Link>
             </div>
             <div className="py-2">
@@ -244,7 +239,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500 "
               >
                 ไม่พบเนื้อหา
               </Link>
@@ -252,7 +247,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500 "
               >
                 ไม่พบเนื้อหา
               </Link>
@@ -260,7 +255,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500  hover:text-sky-500"
+                className="hover:underline  hover:text-sky-500 "
               >
                 ไม่พบเนื้อหา
               </Link>

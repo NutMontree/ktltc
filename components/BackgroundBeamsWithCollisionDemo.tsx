@@ -6,20 +6,23 @@ import { Cover } from "@/components/ui/cover";
 export function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
-      <div className="px-4 py-2 ">
+      {/* ******************************************* เรื่องที่ 1 ******************************************* */}
+      <div className="px-4 py-2 pb-[48px]">
         <Cover className="flex justify-center">
           <Link href="/pressrelease/pressrelease2567/pressrelease6711/pressrelease471">
             <div className="flex justify-center">
               <div>
                 <div className="flex justify-center">
                   <Image
-                    className="h-[150px] sm:h-[280px] lg:h-[400px] xl:h-[600px]"
+                    className="h-[150px] sm:h-[280px] lg:h-[400px] xl:h-[500px]"
                     src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/10/1.webp"}
                   />
                 </div>
 
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
-                  <div className="text-center pt-6">💥สวัสดี Dek68 ทุกคน</div>
+                  <div className="text-center pt-6 text-[14px] md:text-[20px] sm:text-sm md:text-base">
+                    💥สวัสดี Dek68 ทุกคน
+                  </div>
                   วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัครนักเรียน นักศึกษา
                   <br />
                   ปีการศึกษา 2568 📌📍รู้หรือไม่? ว่า <br />
@@ -43,39 +46,57 @@ export function BackgroundBeamsWithCollisionDemo() {
           </Link>
         </Cover>
       </div>
+      {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 pt-6 px-4 ">
+      {/* ******************************************* เรื่องที่ 2 ******************************************* */}
+
+      <div className="px-4 py-2 border-t pt-[48px] pb-[48px]">
         <Cover className="flex justify-center">
-          <Link href="/pressrelease/pressrelease2567/pressrelease6711/pressrelease471">
+          <Link href="/pressrelease/pressrelease2567/pressrelease6712/pressrelease562">
             <div className="flex justify-center">
               <div>
                 <div className="flex justify-center">
                   <Image
-                    className="h-[300px] sm:h-[400px] lg:h-[400px] xl:h-[400px] "
-                    src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/8/1.webp"}
+                    className="h-[150px] sm:h-[280px] lg:h-[400px] xl:h-[600px]"
+                    src={"/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/19/1.webp"}
                   />
                 </div>
 
-                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base pt-4">
-                  " Dek 68 พร้อมกันรึยัง " ประชาสัมพันธ์
-                  วิทยาลัยเทคนิคกันทรลักษ์ เปิดรับสมัคร <br />
-                  นักเรียนนักศึกษาใหม่ รอบโควตา ปีการศึกษา 2568
+                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
+                  <div className="text-center pt-6 text-[14px] md:text-[20px] sm:text-sm md:text-base">
+                    🎊 Dek68 รอบโควตา{" "}
+                  </div>
+                  เตรียมความพร้อมรายงานตัวเข้าศึกษาต่อในรั้ววิทยาลัยเทคนิคกันทรลักษ์
+                  ในวันพฤหัสบดีที่ 12 ธันวาคม 2567 นี้
                   <br />
-                  💥 เปิดรับสมัครตั้งเเต่วันนี้ ถึง 21 พฤศจิกายน 2567
+                  โดยให้ผู้ปกครอง นักเรียน นักศึกษา
+                  เตรียมค่าใช้จ่ายในการรายงานตัว ประจำปีการศึกษา 2568 ดังนี้
+                  <br />
+                  👉 ระดับ ประกาศนียบัตรวิชาชีพ (ปวช.)
+                  <br />
+                  🎀 รวม 1,170. - บาท
+                  <br />
+                  👉 ระดับ ประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.) 🎀 รวม 1,570. -
+                  บาท
+                  <br />
+                  #เด็กเทคนิคกันท์ อย่าลืมต้อนรับน้องๆกันด้วยนะค้าบ
                   <br />
                 </div>
               </div>
             </div>
           </Link>
         </Cover>
+      </div>
+      {/* ******************************************* เรื่องที่ 2 ******************************************* */}
 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 px-4 border-t pt-[48px]">
         <Cover className="flex justify-center">
           <Link href="/pressrelease/pressrelease2567/pressrelease6711/pressrelease479">
             <div className="flex justify-center">
               <div>
                 <div className="flex justify-center">
                   <Image
-                    className="h-[300px] sm:h-[400px] lg:h-[400px] xl:h-[400px] "
+                    className="h-[300px] sm:h-[370px] lg:h-[500px] xl:h-[600px] "
                     src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/16/1.webp"}
                   />
                 </div>
@@ -101,7 +122,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                 <div className="flex justify-center">
                   <Image
                     // className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
-                    className="h-[300px] sm:h-[400px] lg:h-[400px] xl:h-[400px] "
+                    className="h-[300px] sm:h-[370px] lg:h-[500px] xl:h-[600px] "
                     src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/19/1.webp"}
                   />
                 </div>

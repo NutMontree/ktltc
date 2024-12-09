@@ -9,7 +9,7 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
 // import Swiper core and required modules
-import { Navigation, Scrollbar, A11y } from "swiper/modules";
+import { Navigation, Scrollbar, A11y, FreeMode } from "swiper/modules";
 
 // Import Swiper styles
 import "swiper/css";
@@ -110,7 +110,7 @@ export default function ShowBidding() {
             },
           }}
           freeMode={true}
-          modules={[Navigation, Scrollbar, A11y]}
+          modules={[Navigation, Scrollbar, A11y, FreeMode]}
           spaceBetween={24}
           slidesPerView={3}
           navigation={true}

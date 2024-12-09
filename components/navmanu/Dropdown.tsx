@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-pattern */
 "use client"; // top to the file
 
 import { useState } from "react";
@@ -12,7 +13,7 @@ export function DropdownPage1() {
   );
 }
 
-function Navbar({ }: { className?: string }) {
+function Navbar({}: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
   return (
     <>
