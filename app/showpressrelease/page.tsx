@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
 // import Swiper core and required modules
-import { Navigation, Scrollbar, A11y } from "swiper/modules";
+import { Navigation, Scrollbar, A11y, Autoplay } from "swiper/modules";
 
 // Import Swiper styles
 import "swiper/css";
@@ -116,13 +116,24 @@ export default function ShowPressRelease() {
             },
           }}
           freeMode={true}
-          modules={[Navigation, Scrollbar, A11y]}
+          modules={[Navigation, Scrollbar, A11y, Autoplay]}
           spaceBetween={24}
           slidesPerView={3}
           navigation={true}
           scrollbar={{ draggable: true }}
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
+          centeredSlides={true}
+          autoplay={{
+            delay: 2500,
+            disableOnInteraction: false,
+          }}
+          pagination={{
+            clickable: true,
+          }}
+          // navigation={true}
+
+          className="mySwiper"
         >
           {DataPressrelease.navItems.map((item) => (
             <SwiperSlide key={item.name}>
