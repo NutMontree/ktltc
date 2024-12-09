@@ -8,12 +8,11 @@ export function BackgroundBeamsWithCollisionDemo() {
     <>
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-      <div className="py-4 pb-[48px]">
+      <div className="py-4 px-8 pb-[48px]">
         <Cover className="flex justify-center">
           <Link href="/pressrelease/pressrelease2567/pressrelease6712/pressrelease562">
             <div className="flex justify-center">
               <div>
-                5
                 <div className="flex justify-center">
                   <Image
                     className="h-[150px] sm:h-[280px] lg:h-[400px] xl:h-[600px]"
