@@ -19,7 +19,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                     src={"/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/19/1.webp"}
                   />
                 </div>
-                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
+                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-8">
                   <div className="text-center pt-6 text-[14px] md:text-[20px] sm:text-sm md:text-base">
                     🎊 Dek68 รอบโควตา
                   </div>
@@ -46,26 +46,23 @@ export function BackgroundBeamsWithCollisionDemo() {
       </div>
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 px-4 border-t pt-[48px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 px-8 border-t pt-[48px]">
         <Cover className="flex justify-center">
-          <Link href="/pressrelease/pressrelease2567/pressrelease6711/pressrelease479">
+          <Link href="/pressrelease/pressrelease2567/pressrelease6712/pressrelease565">
             <div className="flex justify-center">
               <div>
                 <div className="flex justify-center">
                   <Image
                     className="h-[300px] sm:h-[370px] lg:h-[500px] xl:h-[600px] "
-                    src={"/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/16/1.webp"}
+                    src={"/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/22/1.webp"}
                   />
                 </div>
-                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base pt-4">
-                  เเจ้ง 💥💥 ถึงนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์
-                  <br /> เจ้าหน้าที่งานปกครองจะเริ่มออกตรวจบริเวณรอบนอกวิทยาลัยฯ
-                  ในเวลา 12.00 น.
-                  <br />
-                  ให้นักเรียน นักศึกษาทุกคนทำตามกฎระเบียบ
-                  <br />
-                  เเละอยู่บริเวณภายในวิทยาลัยฯ <br />
-                  หากมีพฤติกรรมดังนี้ ให้รีบปรับปรุงตนเองด้วยนะคะ/ครับ
+                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base pt-4 px-8">
+                  ประกาศรายชื่อผู้มีสิทธิ์เข้ารายงานตัว
+                  <br /> รอบโควตา ประจำปีการศึกษา 2568 <br />
+                  ระดับ ปวช. เเละ ระดับ ปวส. <br />
+                  ในวันพฤหัสบดีที่ 12 ธันวาคม 2567 <br />ณ
+                  ห้องประชุมอาคารเฉลิมพระเกียรติ วิทยาลัยเทคนิคกันทรลักษ์
                 </div>
               </div>
             </div>
