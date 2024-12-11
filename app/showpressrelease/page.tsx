@@ -125,6 +125,7 @@ export default function ShowPressRelease() {
           modules={[Navigation, Scrollbar, A11y, Autoplay, FreeMode]}
           spaceBetween={0}
           slidesPerView={1}
+          navigation={true}
           pagination={{
             clickable: true,
           }}

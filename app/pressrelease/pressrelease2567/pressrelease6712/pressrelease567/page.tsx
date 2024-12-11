@@ -2,9 +2,9 @@
 
 import React from "react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
-import { Accordion, AccordionItem, Image } from "@nextui-org/react";
-import Link from "next/link";
+import { Image } from "@nextui-org/react";
 import { FootTitle } from "@/components/FootTitle";
+// import Link from "next/link";
 
 export default function Pressrelease() {
   return (
@@ -17,26 +17,6 @@ export default function Pressrelease() {
             <div key={item.title}>{item.title}</div>
           ))}
         </div>
-        {/* ***************************** ลบออก ***************************** */}
-        <div className="">
-          <div>
-            แจ้ง ‼️ผลการเรียน ของนักเรียน นักศึกษา ภาคเรียนที่ 1 ปีการศึกษา 2567
-          </div>
-          <div className="text-sky-800 text-lg">สามารถดูได้ผ่านระบบลิ้งค์ </div>
-          <div className="gap-2">
-            <Link
-              href="
-              https://std2018.vec.go.th/web/
-              "
-              className="hover:text-sky-500"
-            >
-          ตรวจสอบผลการเรียน
-            </Link>
-
-            <p className=" ">หรือสแกน qr code </p>
-          </div>
-        </div>
-        {/* ***************************** ลบออก ***************************** */}
 
         <div>
           {Description.map((item) => (
@@ -48,24 +28,23 @@ export default function Pressrelease() {
         {/* ***************************** Map Title ***************************** */}
 
         {/* ***************************** LInk And PDF ***************************** */}
-        <div>
-          {/* <br />
-          <p className="text-sky-800 text-lg">สามารถกดลิ้งค์โหวตได้ที่นี่ </p>
+        {/* <div className="pt-4">
+          <p className="text-sky-800 text-lg">สามารถดูรายชื่อได้ที่นี่ </p>
           <Link
             href="
-https://docs.google.com/forms/d/e/1FAIpQLSeQJJhhMigByXhluAXU1YX-Vu546FAXseeZHiavtDwlL_h24w/viewform?fbclid=IwY2xjawGVKw9leHRuA2FlbQIxMAABHSWycuu7W8Tomyo6THhyna5eRXDaPGQqdi8ccYgLI9_XdbDHNd4IB6_VBA_aem_O1sf0HHCPmm9QgKqCWm2-A                "
+https://cdn3.me-qr.com/pdf/5173919f-11d5-4324-8a80-8c08e91843f0.pdf?fbclid=IwZXh0bgNhZW0CMTAAAR2LM1aecz4FhYWhz0fxpb54NgcgXSXXYsON3nxzU3PsmOXdaIwjDkSYwkw_aem_V_pSejOiPZ9JKW2pnWmp8Q
+            "
             className="hover:text-sky-500"
+            target="_blank"
           >
             https://drive.google.com/...
           </Link>
-          <br /> <br />
-          <p>หรือสเเกนคิวอาร์โค้ดได้เลย</p>
-          <p>**** จะทำการปิดการโหวตในวันอังคารที่ 5 พฤศจิกายน 2567 ****</p> */}
-          {/* <iframe
+
+          <iframe
             className="w-full aspect-video ..."
             src="/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/54/1.pdf"
-          ></iframe> */}
-        </div>
+          ></iframe>
+        </div> */}
         {/* ***************************** LInk And PDF ***************************** */}
 
         {/* ***************************** Foot Title ***************************** */}
@@ -90,20 +69,22 @@ https://docs.google.com/forms/d/e/1FAIpQLSeQJJhhMigByXhluAXU1YX-Vu546FAXseeZHiav
             <iframe
               className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
                          w-[200px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
-              src="https://www.youtube.com/embed/1qwOVzMyCQU?si=JlO30KsNt-hv68Ls"
-              title="เข้าค่ายลูกเสือ ปี 2567 part 1"
-              // frameborder="0"
+              // src="/images/ข่าวประชาสัมพันธ์/2567/พฤศจิกายน/30/1.webm"
+              src="https://www.youtube.com/embed/8ZuEUIaiJi0?si=ksaulFAy7aKO4jjP"
+              title=" "
+              frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              // referrerpolicy="strict-origin-when-cross-origin"
-              // allowfullscreen
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
             />
             <br />
           </div>
         </div> */}
+
         {/* ***************************** Youtube ***************************** */}
 
         <div className="flex justify-center">
-          <div className="  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
+          <div className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">

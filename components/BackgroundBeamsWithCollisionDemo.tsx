@@ -99,7 +99,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                     "
                       >
                         <div className="hover:text-sky-500 text-center text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
-                          https://std2018.vec.go.th/web/
+                          ตรวจสอบผลการเรียน
                         </div>
                       </Link>
                     </div>

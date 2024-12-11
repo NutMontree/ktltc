@@ -222,7 +222,7 @@ export default function Footer() {
                 target="_blank"
                 className="hover:underline  hover:text-sky-500"
               >
-                https://std2018.vec.go.th/web/
+              ตรวจสอบผลการเรียน
               </Link>
             </div>
             <div className="py-2">
