@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `✨ยินดีต้อนรับ✨  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/26/1.gif",
+      description: ` 
+ผู้ปกครอง นักเรียน นักศึกษาทุกท่าน ที่มารายงานตัวเข้าศึกษาต่อ (รอบโควตา) ประจำปีการศึกษา 2568 ในวันพฤหัสบดีที่ 12 ธันวาคม 2567 ณ ห้องประชุมอาคารเฉลิมพระเกียรติ วิทยาลัยเทคนิคกันทรลักษ์
+  ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease570",
+    },
+    {
       name: `ประกาศรายชื่อผู้มีสิทธิ์เข้ารายงานตัว  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/25/2.webp",
       description: ` 
