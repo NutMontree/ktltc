@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` วันพฤหัสบดีที่ 12 ธันวาคม 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/26/13.webp",
+      description: ` 
+ วิทยาลัยเทคนิคกันทรลักษ์ รับรายงานตัวเข้าศึกษาต่อ (รอบโควตา)ของนักเรียน ระดับ ปวช. และ ปวส. ประจำปีการศึกษา 2568 โดย 👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ คณะผู้บริหาร ครู 
+   ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease571",
+    },
+    {
       name: `✨ยินดีต้อนรับ✨  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/26/1.gif",
       description: ` 
