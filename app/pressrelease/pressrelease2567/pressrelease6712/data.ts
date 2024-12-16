@@ -1,6 +1,22 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` วิทยาลัยเทคนิคกันทรลักษ์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/33/1.webp",
+      description: ` 
+จัดการเเข่งขันกีฬาภายใน "ดอกจานเกมส์" ประจำปีการศึกษา 2567 ระดับนักเรียน นักศึกษา ระหว่างวันที่ 19 - 20  ธันวาคม 2567 ณ สนามกีฬาวิทยาลัยเทคนิคกันทรลักษ์
+...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease578",
+    },
+    {
+      name: ` วันจันทร์ที่ 16 ธันวาคม 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/32/03.webp",
+      description: ` 
+เวลา 08.30 น. 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ครู นักเรียน นักศึกษา ร่วมคัดกรองสุขภาพ ประจำปีงบประมาณ 2568  
+...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease577",
+    },
+    {
       name: `วันเสาร์ที่ 14 ธันวาคม 2567 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/31/01.webp",
       description: ` 

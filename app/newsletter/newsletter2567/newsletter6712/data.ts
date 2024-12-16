@@ -1,6 +1,14 @@
 export const Data = {
   navItems: [
     {
+      name: ` วันจันทร์ที่ 16 ธันวาคม 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/32/0.webp",
+      description: ` 
+เวลา 08.30 น. 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร ครู นักเรียน นักศึกษา ร่วมคัดกรองสุขภาพ ประจำปีงบประมาณ 2568  
+...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease577",
+    },
+    {
       name: `วันเสาร์ที่ 14 ธันวาคม 2567 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/31/05.webp",
       description: ` 
