@@ -134,7 +134,7 @@ export default function ShowPressRelease() {
           onSlideChange={() => console.log("slide change")}
           centeredSlides={true}
           autoplay={{
-            delay: 5000,
+            delay: 10000,
             disableOnInteraction: false,
           }}
           className="mySwiper"
