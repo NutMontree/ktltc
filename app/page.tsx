@@ -9,7 +9,7 @@ import ShowBidding from "./showbidding/page";
 import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import ScrollVelocity from "@/components/Scrollvelocity";
 
-// import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
+import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import { UserContextProvider } from "./providers";
 
 export default function Page() {
@@ -24,9 +24,9 @@ export default function Page() {
           <div className="border-t py-[48px]">
             <ScrollVelocity />
           </div>
-          {/* <div className="border-t py-[48px]">
+          <div className="border-t py-[48px]">
             <BackgroundBeamsWithCollisionDemo />
-          </div> */}
+          </div>
           <div className="border-t py-[48px]">
             <ShowPressRelease />
           </div>
