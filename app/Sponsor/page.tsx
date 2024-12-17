@@ -55,20 +55,21 @@ export default function Sponsor() {
                           <Link
                             className="text-sky-500"
                             href="https://www.facebook.com/profile.php?id=61553558543619&locale=hi_IN"
+                            target="_blank"
                           >
                             <Avatar
-                              src="
-https://scontent-bkk1-2.xx.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeEg80Ccw8CC428AQ9BSp2jDVfZDudojToNV9kO52iNOg0amTHGYLCRIreANO3VDjgnd6IMu5BOq_-6tVRcgYEZU&_nc_ohc=_1afWpdYpukQ7kNvgGGY4w9&_nc_zt=23&_nc_ht=scontent-bkk1-2.xx&_nc_gid=ADjSpXRkFHVlx_hQtBmIPCL&oh=00_AYCTzeYXsK55Hq6D6D2MRdSM61K7PNvujPb4Ifo0HI6IRw&oe=6728C581                              "
+                              src="https://scontent-bkk1-2.xx.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=USikwKkM9d4Q7kNvgFg5W6X&_nc_zt=23&_nc_ht=scontent-bkk1-2.xx&_nc_gid=AU7UqSkkIVHZG2AoC7ALi1G&oh=00_AYAprPAUNoS1K4Gt2kY9GAzahdjYdh31d6K91uKyVg3hAA&oe=6766BC01"
                               className="w-20 h-20 text-large"
                             />
                           </Link>
                         </div>
 
-                        <div className="flex gap-2 flex justify-center">
+                        <div className="flex gap-2 justify-center">
                           <div>All M Min </div>
                           <Link
                             className="hover:text-sky-700 text-sky-500 "
                             href="https://www.facebook.com/messages/t/61553558543619?locale=hi_IN"
+                            target="_blank"
                           >
                             Messages
                           </Link>
