@@ -1,6 +1,22 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `เปิดรับสมัคร `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/39/01.webp",
+      description: ` 
+นักเรียน นักศึกษา "โควตารอบที่ 2"  ปีการศึกษา 2568 ตั้งเเต่วันนี้ถึง 31 มกราคม 2568 สามารถมาสมัครด้วยตนเองที่ห้องทะเบียน ตึกอำนวยการ 
+...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease582",
+    },
+    {
+      name: `ประกาศ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/38/1.webp",
+      description: ` 
+รายชื่อโควตารอบที่ 1 ผู้มีสิทธิ์เข้าศึกษาต่อวิทยาลัยเทคนิคกันทรลักษ์ ประจำปีการศึกษา 2568
+...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease583",
+    },
+    {
       name: `ประกาศ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/37/1.webp",
       description: ` 

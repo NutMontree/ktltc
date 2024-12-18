@@ -4,7 +4,7 @@ import React from "react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
 import { FootTitle } from "@/components/FootTitle";
-// import Link from "next/link";
+import Link from "next/link";
 
 export default function Pressrelease() {
   return (
@@ -28,14 +28,14 @@ export default function Pressrelease() {
         {/* ***************************** Map Title ***************************** */}
 
         {/* ***************************** LInk And PDF ***************************** */}
-        {/* <div className="pt-4">
+        <div className="pt-4">
           <p className="text-sky-800 text-lg">
-            รายละเอียดสามารถเปิดดูได้ที่นี่{" "}
+            รายชื่อนักเรียน ระดับประกาศนียบัตรวิชาชีพ (ปวช.)
           </p>
           <Link
             href="
-https://cdn3.me-qr.com/pdf/723b8fd5-e5fd-4b62-875d-330a6b40c138.pdf?fbclid=IwZXh0bgNhZW0CMTAAAR2HjlImvJi92r1IpE2ktqwDxK_BPxn6rLFnO58OKKHjzO94U_vzWMtI9g4_aem_P_BlarrVzwHdpUk8dINyXw
-"
+https://cdn3.me-qr.com/pdf/2fd30bda-eb3a-4da3-abe1-ad5ee6429e7a.pdf?fbclid=IwZXh0bgNhZW0CMTAAAR0IMoDmXKnVoZf7tp4ITPz8_WgYF4yfnn0faZ_NIkfyDHFPsHUbXsRcpfI_aem_w8OfvxoMNFUMDrDWYGfYUQ
+// "
             className="hover:text-sky-500"
             target="_blank"
           >
@@ -44,9 +44,31 @@ https://cdn3.me-qr.com/pdf/723b8fd5-e5fd-4b62-875d-330a6b40c138.pdf?fbclid=IwZXh
 
           <iframe
             className="w-full aspect-video ..."
-            src="/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/25/2.pdf"
+            src="/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/38/1.pdf"
           ></iframe>
-        </div> */}
+        </div>
+
+        {/* ***************************** LInk And PDF ***************************** */}
+
+        <div className="pt-4">
+          <p className="text-sky-800 text-lg">
+            รายชื่อนักศึกษา ระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)
+          </p>
+          <Link
+            href="
+https://cdn3.me-qr.com/pdf/cb7636c7-c27a-41ed-9648-2ebfd07b060b.pdf?fbclid=IwZXh0bgNhZW0CMTAAAR2ksppFi1IR1imxXIUCbZjv4nOFupz4l4-sU0RXneEmxM2tzvbKx3WNDzU_aem_cqSMxJcEZKmVhfHxxeSgvw
+// "
+            className="hover:text-sky-500"
+            target="_blank"
+          >
+            https://drive.google.com/...
+          </Link>
+
+          <iframe
+            className="w-full aspect-video ..."
+            src="/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/38/2.pdf"
+          ></iframe>
+        </div>
         {/* ***************************** LInk And PDF ***************************** */}
 
         {/* ***************************** Foot Title ***************************** */}
@@ -86,7 +108,7 @@ https://cdn3.me-qr.com/pdf/723b8fd5-e5fd-4b62-875d-330a6b40c138.pdf?fbclid=IwZXh
         {/* ***************************** Youtube ***************************** */}
 
         <div className="flex justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
+          <div className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
@@ -96,19 +118,6 @@ https://cdn3.me-qr.com/pdf/723b8fd5-e5fd-4b62-875d-330a6b40c138.pdf?fbclid=IwZXh
             ))}
           </div>
         </div>
-
-        {/* ************ Foot-Image ************ */}
-        {/* <div className="Foot-Image">
-          <div className="flex scale-90 hover:scale-110 transition duration-500 rounded-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center justify-center ">
-            <Image
-              src={"/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/6/1.webp"}
-              alt={""}
-            />
-          </div>
-        </div> */}
-        {/* ************ Foot-Image ************ */}
-
-        {/* ***************************** Map Image ***************************** */}
       </div>
     </>
   );
