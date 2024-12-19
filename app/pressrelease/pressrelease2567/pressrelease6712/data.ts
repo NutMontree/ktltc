@@ -1,6 +1,30 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ภาพบรรยากาศที่ 2`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/45/067.webp",
+      description: ` 
+กิจกรรมการเเข่งขันกีฬาภายใน "ดอกจานเกมส์" ประจำปีการศึกษา 2567 ระดับนักเรียน นักศึกษา ระหว่างวันที่ 19 - 20 ธันวาคม 2567 ณ สนามกีฬาวิทยาลัยเทคนิคกันทรลักษ์ 
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease589",
+    },
+    {
+      name: `ภาพบรรยากาศที่ 1 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/44/70.webp",
+      description: ` 
+กิจกรรมการเเข่งขันกีฬาภายใน "ดอกจานเกมส์" ประจำปีการศึกษา 2567 ระดับนักเรียน นักศึกษา ระหว่างวันที่ 19 - 20 ธันวาคม 2567 ณ สนามกีฬาวิทยาลัยเทคนิคกันทรลักษ์ 
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease588",
+    },
+    {
+      name: `ขอขอบพระคุณ`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/43/1.webp",
+      description: ` 
+👉สส.ธนา กิจไพบูลย์ชัย ศรีสะเกษ เขต 3 สนับสนุนน้ำดื่มจำนวน 30 ลัง ในกิจกรรมการเเข่งขันกีฬาภายใน "ดอกจานเกมส์" ประจำปีการศึกษา 2567
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease587",
+    },
+    {
       name: `ภาพบรรยากาศ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/42/08.webp",
       description: ` 
