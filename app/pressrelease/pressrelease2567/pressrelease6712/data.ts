@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` พิธีเปิดงาน ดอกจานเกมส์ ประจำปีการศึกษา 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/46/097.webp",
+      description: ` 
+ 
+      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease590",
+    },
+    {
       name: `ภาพบรรยากาศที่ 2`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/45/067.webp",
       description: ` 
