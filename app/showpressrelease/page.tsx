@@ -101,7 +101,7 @@ export default function ShowPressRelease() {
               spaceBetween: 15,
             },
             400: {
-              slidesPerView: 3,
+              slidesPerView: 2,
               spaceBetween: 15,
             },
             600: {
@@ -134,7 +134,7 @@ export default function ShowPressRelease() {
           onSlideChange={() => console.log("slide change")}
           centeredSlides={true}
           autoplay={{
-            delay: 10000,
+            delay: 10500,
             disableOnInteraction: false,
           }}
           className="mySwiper"

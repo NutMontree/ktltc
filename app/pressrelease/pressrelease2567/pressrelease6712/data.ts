@@ -1,10 +1,41 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `  ขอเชิญชวน  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/49/2.webp",
+      description: ` 
+คณะครู บุคลากรทางการศึกษา นักเรียน นักศึกษา ร่วมประกวดการเเต่งกายชุดซานตาคลอส/ซานตาริน่า โครงการThai and West Traditional (เทศกาลฮาโลวีน ผีตาโขน สารทเดือนสิบ และประเพณีรำผีฟ้า)      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease594",
+    },
+    {
+      name: ` ขอเชิญชวน `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/49/1.webp",
+      description: ` 
+คณะครู บุคลากรทางการศึกษา นักเรียน นักศึกษา ร่วมประกวดการเเต่งกายผี โครงการThai and West Traditional (เทศกาลฮาโลวีน ผีตาโขน สารทเดือนสิบ และประเพณีรำผีฟ้า     
+...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease593",
+    },
+    {
+      name: `องค์การสหประชาชาติ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/48/6.webp",
+      description: ` 
+มีมติเมื่อวันที่ ๒๐ ธันวาคม ๒๕๕๖ รับรองให้วันที่ ๕ ธันวาคม ของทุกปี ซึ่งเป็นวันคล้ายวันพระราชสมภพของพระบาทสมเด็จพระบรมชนกาธิเบศร มหาภูมิพลอดุลยเดชมหาราช บรมนาถบพิตร เป็นวันดินโลก
+      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease592",
+    },
+    {
+      name: ` วันศุกร์ที่ 20 ธันวาคม 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/47/47.webp",
+      description: ` 
+👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร มอบถ้วยและเหรียญรางวัลให้กับนักกีฬา ในกิจกรรมการแข่งขันกีฬาภายใน “ดอกจานเกมส์”
+      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease591",
+    },
+    {
       name: ` พิธีเปิดงาน ดอกจานเกมส์ ประจำปีการศึกษา 2567`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/46/097.webp",
       description: ` 
- 
+      526 ไฟล์
       ...`,
       href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease590",
     },
