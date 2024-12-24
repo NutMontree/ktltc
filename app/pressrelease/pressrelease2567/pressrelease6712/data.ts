@@ -1,6 +1,30 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `  “ส่งท้ายปีเก่า ต้อนรับปีใหม่” `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/52/1.webp",
+      description: ` 
+  เชิญชวน คณะครู บุคลากรทางการศึกษา นักเรียน นักศึกษา ร่วมกิจกรรม ทำบุญตักบาตร ข้าวสาร อาหารแห้ง (พระสงฆ์ 9 รูป)
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease597",
+    },
+    {
+      name: `  ขอเเสดงความยินดีกับ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/51/1.webp",
+      description: ` 
+ 👉นายมานะศักดิ์ อารมณ์สวะ ครูเเผนกวิชาช่างกลโรงงาน เนื่องในโอกาสบรรจุเเต่งตั้งเป็นข้าราชการครู ตำเเหน่ง ครูผู้ช่วย ณ วิทยาลัยเทคนิคนครพนม 
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease596",
+    },
+    {
+      name: ` เเจ้งกำหนดการ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/50/4.webp",
+      description: ` 
+โครงการThai and West Traditional (เทศกาลฮาโลวีน ผีตาโขน สารทเดือนสิบ และประเพณีรำผีฟ้า)และโครงการพัฒนาทักษะทางภาษา/กิจกรรมวันคริสต์มาส) ในวันพฤหัสบดีที่ 26 ธันวาคม 2567 
+...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease595",
+    },
+    {
       name: `  ขอเชิญชวน  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/49/2.webp",
       description: ` 
