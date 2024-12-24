@@ -41,7 +41,7 @@ export default function Bidding2566() {
             }}
             freeMode={true}
             modules={[FreeMode, Pagination]}
-            className="max-w-[90%] lg:max-w-[80%] mySwiper" // min-w-[90%]
+            className="max-w-[90%] lg:max-w-[80%]" // min-w-[90%]
           >
             {/* ดึงข้อมูลจากหน้า  DataPressRelease มาแสดงผลที่หน้า SwipperPressRelease*/}
             {dataBidding.navitems.map((item) => (

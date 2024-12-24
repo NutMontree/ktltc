@@ -39,7 +39,7 @@ const useStyle = createStyles(({ prefixCls, css }) => ({
 
       &::before {
         content: "";
-        background: linear-gradient(135deg, #6253e1, #04befe);
+
         position: absolute;
         inset: 0;
         opacity: 1;
