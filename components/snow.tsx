@@ -27,6 +27,8 @@ export default function Snow() {
         <div className="snow">&#10052;</div>
         <div className="snow">&#10052;</div>
         <div className="snow">&#10052;</div>
+        {/* <div className="snow">&#10052;</div> */}
+        {/* <div className="snow">&#10052;</div>
         <div className="snow">&#10052;</div>
         <div className="snow">&#10052;</div>
         <div className="snow">&#10052;</div>
@@ -51,9 +53,7 @@ export default function Snow() {
         <div className="snow">&#10052;</div>
         <div className="snow">&#10052;</div>
         <div className="snow">&#10052;</div>
-        <div className="snow">&#10052;</div>
-        <div className="snow">&#10052;</div>
-        <div className="snow">&#10052;</div>
+        <div className="snow">&#10052;</div> */}
       </div>
     </div>
   );
