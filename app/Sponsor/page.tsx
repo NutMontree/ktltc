@@ -58,7 +58,7 @@ export default function Sponsor() {
                             target="_blank"
                           >
                             <Avatar
-                              src="https://scontent-bkk1-2.xx.fbcdn.net/v/t39.30808-6/455241879_122158260428118618_1989508605048075991_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=USikwKkM9d4Q7kNvgFg5W6X&_nc_zt=23&_nc_ht=scontent-bkk1-2.xx&_nc_gid=AU7UqSkkIVHZG2AoC7ALi1G&oh=00_AYAprPAUNoS1K4Gt2kY9GAzahdjYdh31d6K91uKyVg3hAA&oe=6766BC01"
+                              src="/images/admin1.webp"
                               className="w-20 h-20 text-large"
                             />
                           </Link>

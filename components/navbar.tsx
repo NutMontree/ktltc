@@ -14,13 +14,13 @@ import { DropdownPage } from "./dropdownPage";
 import { DropdownPage1 } from "./navmanu/Dropdown";
 import React from "react";
 
-import {
-  DropdownItem,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  Avatar,
-} from "@nextui-org/react";
+// import {
+//   DropdownItem,
+//   DropdownTrigger,
+//   Dropdown,
+//   DropdownMenu,
+//   Avatar,
+// } from "@nextui-org/react";
 
 export const NavbarPage = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -64,7 +64,7 @@ export const NavbarPage = () => {
             className="sm:hidden"
           />
           {/* *************************************************** */}
-          <Dropdown placement="bottom-end">
+          {/* <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar
                 isBordered
@@ -110,7 +110,7 @@ export const NavbarPage = () => {
                 </div>
               </DropdownItem>
             </DropdownMenu>
-          </Dropdown>
+          </Dropdown> */}
           {/* *************************************************** */}
         </NavbarContent>
 

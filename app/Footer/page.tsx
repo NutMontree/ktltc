@@ -143,14 +143,14 @@ export default function Footer() {
 
           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
             <div className="py-2">
-              <Link href="/" className="hover:underline  hover:text-sky-500 ">
+              <Link href="/" className="hover:underline hover:text-sky-500">
                 หน้าหลัก
               </Link>
             </div>
             <div className="py-2">
               <Link
                 href="/pressrelease"
-                className="hover:underline  hover:text-sky-500 "
+                className="hover:underline hover:text-sky-500"
               >
                 ข่าวประชาสัมพันธ์
               </Link>
@@ -158,7 +158,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/newsletter"
-                className="hover:underline  hover:text-sky-500 "
+                className="hover:underline hover:text-sky-500"
               >
                 จดหมายข่าว
               </Link>
@@ -166,7 +166,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/announcement"
-                className="hover:underline  hover:text-sky-500 "
+                className="hover:underline hover:text-sky-500"
               >
                 ข่าวประกาศ
               </Link>
@@ -174,7 +174,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/bidding"
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
                 ข่าวประกวดราคา
               </Link>
@@ -182,7 +182,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/technicalcollegeorders"
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
                 คำสั่งวิทยาลัยเทคนิค
               </Link>
@@ -193,7 +193,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/externalinternal"
-                className="hover:underline  hover:text-sky-500 "
+                className="hover:underline hover:text-sky-500 "
               >
                 แบบฟอร์มหนังสือภายนอก-ภายใน
               </Link>
@@ -201,18 +201,22 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/personnel "
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
                 ข้อมูลบุคลากร
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline  hover:text-sky-500 ">
-                ไม่พบเนื้อหา
+              <Link
+                href="https://www.facebook.com/profile.php?id=61571228871228 "
+                target="_blank"
+                className="hover:underline hover:text-sky-500 "
+              >
+                ตู้เสมารักษ์ สถานศึกษาสีขาว วิทยาลัยเทคนิคกันทรลักษ์
               </Link>
             </div>
             <div className="py-2">
-              <Link href="/ " className="hover:underline  hover:text-sky-500">
+              <Link href="/ " className="hover:underline hover:text-sky-500">
                 ไม่พบเนื้อหา
               </Link>
             </div>
@@ -220,15 +224,15 @@ export default function Footer() {
               <Link
                 href="https://std2018.vec.go.th/web/"
                 target="_blank"
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
-              ตรวจสอบผลการเรียน
+                ตรวจสอบผลการเรียน
               </Link>
             </div>
             <div className="py-2">
               <Link
                 href="/minigame "
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
                 Mini Game
               </Link>
@@ -239,7 +243,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500 "
+                className="hover:underline hover:text-sky-500"
               >
                 ไม่พบเนื้อหา
               </Link>
@@ -247,7 +251,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500 "
+                className="hover:underline hover:text-sky-500"
               >
                 ไม่พบเนื้อหา
               </Link>
@@ -255,7 +259,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500 "
+                className="hover:underline hover:text-sky-500"
               >
                 ไม่พบเนื้อหา
               </Link>
@@ -263,7 +267,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
                 ไม่พบเนื้อหา
               </Link>
@@ -271,7 +275,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
                 ไม่พบเนื้อหา
               </Link>
@@ -279,7 +283,7 @@ export default function Footer() {
             <div className="py-2">
               <Link
                 href="/ "
-                className="hover:underline  hover:text-sky-500"
+                className="hover:underline hover:text-sky-500"
               >
                 ไม่พบเนื้อหา
               </Link>
