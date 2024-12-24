@@ -1,6 +1,6 @@
 "use client"; // top to the file
 
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
 import React from "react";
 import { Card } from "@nextui-org/react";
 
@@ -28,12 +28,15 @@ export default function Wellcome() {
                 >
                   ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
                 </CardItem>
-                <CardItem translateZ="100" className="w-full mt-4">
+                <CardItem
+                  translateZ="100"
+                  className="w-full mt-4 flex justify-center"
+                >
                   <Image
                     src="/images/3.webp"
-                    height="1000"
-                    width="1000"
-                    className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl"
+                    // height="1000"
+                    // width="1000"
+                    className="h-64 w-full object-cover rounded-xl group-hover/card:shadow-xl"
                     alt="thumbnail"
                   />
                 </CardItem>

@@ -11,6 +11,43 @@
   font-family: "Prompt", sans-serif;
 }
 
+@media (-ms-high-contrast: active) {
+  /* Your general contrast theme styles */
+}
+
+@media (-ms-high-contrast: black-on-white) {
+  /* Your specific light contrast theme styles */
+}
+
+@media (-ms-high-contrast: white-on-black) {
+  /* Your specific dark contrast theme styles */
+}
+
+/* For elements that need to opt-out of contrast theme styles */
+.opt-out-of-high-contrast {
+  -ms-high-contrast-adjust: none;
+}
+
+@media (-ms-high-contrast: active), (forced-colors: active) {
+  /* Your general contrast theme styles */
+}
+
+@media (-ms-high-contrast: black-on-white),
+  (forced-colors: active) and (prefers-color-scheme: light) {
+  /* Your specific light contrast theme styles */
+}
+
+@media (-ms-high-contrast: white-on-black),
+  (forced-colors: active) and (prefers-color-scheme: dark) {
+  /* Your specific dark contrast theme styles */
+}
+
+/* For elements that need to opt-out of contrast theme styles */
+.opt-out-of-high-contrast {
+  -ms-high-contrast-adjust: none;
+  forced-color-adjust: none;
+}
+
 .prompt-thin {
   font-family: "Prompt", sans-serif;
   font-weight: 100;
