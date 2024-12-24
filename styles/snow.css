@@ -23,17 +23,14 @@
 }
 
 .snow:nth-child(2n) {
-  filter: blur(1px);
   font-size: 15px;
 }
 
 .snow:nth-child(6n) {
-  filter: blur(2px);
   font-size: 14px;
 }
 
 .snow:nth-child(10n) {
-  filter: blur(5px);
   font-size: 12px;
 }
 
