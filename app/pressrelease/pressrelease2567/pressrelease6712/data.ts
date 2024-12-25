@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `เเจ้ง 🎉 กำหนดการโครงการ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/54/1.webp",
+      description: ` 
+Thai and West Traditional (เทศกาลฮาโลวีน ผีตาโขน สารทเดือนสิบ และประเพณีรำผีฟ้า) และโครงการพัฒนาทักษะทางภาษา/กิจกรรมวันคริสต์มาส Merry Christmas ในวันที่ 26 ธันวาคม 2567 
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease599",
+    },
+    {
       name: ` Merry Christmas  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/53/1.webp",
       description: ` 
