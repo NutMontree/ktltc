@@ -1,6 +1,14 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` Merry Christmas  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/53/1.webp",
+      description: ` 
+May the miracle of Christmas fill your heart with warmth and love. Christmas is the time of giving and sharing. It is the time of loving and forgiving. Merry Christmas. ❄️🤍🎄
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease598",
+    },
+    {
       name: `  “ส่งท้ายปีเก่า ต้อนรับปีใหม่” `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/52/1.webp",
       description: ` 
