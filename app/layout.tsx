@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { Toaster } from "react-hot-toast";
-import { fontSans } from "@/config/fonts";
+import { prompt } from "@/config/fonts";
 import { UserContextProvider } from "./providers";
 import { siteConfig } from "@/config/site";
 import { NavbarPage } from "@/components/navbar";
@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={clsx(" ", fontSans.variable)}>
+      <body className={clsx("promp-sans", prompt.variable)}>
         <UserContextProvider
           themeProps={{ attribute: "class", defaultTheme: "light" }}
         >

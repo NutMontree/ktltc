@@ -21,7 +21,7 @@ export default function HistoryEducational() {
           />
         </div>
         <div>
-          <div className="text-xl font-semibold mx-auto font-normal text-neutral-600 dark:text-neutral-400">
+          <div className="text-xl mx-auto font-normal text-neutral-600 dark:text-neutral-400">
             <FlipWords words={words} className="text-sky-700 " />
             <div className="pl-2">วิทยาลัยเทคนิคกันทรลักษ์</div>
           </div>
@@ -99,7 +99,7 @@ export default function HistoryEducational() {
         </div>
         <br />
         <br />
-        <div className="text-xl font-semibold mx-auto font-normal text-neutral-600 dark:text-neutral-400">
+        <div className="text-xl font-semibold mx-auto text-neutral-600 dark:text-neutral-400">
           ภาพอาคารสถานที่
         </div>
 
