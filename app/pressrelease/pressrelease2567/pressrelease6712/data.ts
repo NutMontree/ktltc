@@ -1,6 +1,38 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `  วันศุกร์ที่ 27 ธันวาคม 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/64/1.webp",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ 👉นางสาวภวิกา โพธิ์ขาว รองผู้อำนวยการฝ่ายบริหารทรัพยากร 
+  ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease609",
+    },
+    {
+      name: `  วันศุกร์ที่ 27 ธันวาคม 2567 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/63/02.webp",
+      description: ` 
+ 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร คณะครู บุคลากรทางการศึกษา นักเรียน นักศึกษา ร่วมเปิดพิธีโครงการจุดบริการจิตอาสาช่างชุมชน 
+  ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease608",
+    },
+    {
+      name: `  วันพฤหัสบดีที่ 26 ธันวาคม 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/62/16.webp",
+      description: ` 
+วิทยาลัยเทคนิคกันทรลักษ์ จัดกิจกรรมโครงการ Thai and West Traditional (เทศกาลฮาโลวีน ผีตาโขน สารทเดือนสิบ และประเพณีรำผีฟ้า) และโครงการพัฒนา 
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease607",
+    },
+    {
+      name: `  วันพฤหัสบดีที่ 26 ธันวาคม 2567`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/61/01.webp",
+      description: ` 
+นายสัมฤทธิ์ กาญจนสุนทร ผู้ทรงคุณวุฒิ กรรมการวิทยาลัยฯ ผู้แทนจาก บริษัท นิว ไลฟ์เมด จำกัด บริจาคเงินจำนวน 200,000 บาท เพื่อเป็นทุนการศึกษาสนับ
+ ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease606",
+    },
+    {
       name: ` วันพฤหัสบดีที่ 26 ธันวาคม 2567`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/60/33.webp",
       description: ` 
