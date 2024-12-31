@@ -1,6 +1,30 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: ` ใกล้สิ้นปีเเล้ว`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/67/06.webp",
+      description: ` 
+ มีอะไรจะบอกรีบบอกนะ อิอิ  ขอให้นักเรียน นักศึกษาทุกคนใช้ชีวิตอย่างมีสติ ขับขี่รถบนท้องถนนอย่างปลอดภัย ดูเเลสุขภาพร่างกายให้ดี  
+      ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease612",
+    },
+    {
+      name: `  ประชาสัมพันธ์  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/66/1.webp",
+      description: ` 
+  ร่วมโครงการจุดบริการจิตอาสาช่างชุมชน (ซ่อมบำรุง รักษารถ ป้ายเตือนจราจร) ในช่วงเทศกาลปีใหม่ โดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิค
+     ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease611",
+    },
+    {
+      name: `    ประกาศวันหยุดรับสมัคร `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/65/1.webp",
+      description: ` 
+ นักเรียน นักศึกษา (โควตารอบที่ 2 ) ประจำปีการศึกษา 2568
+   ...`,
+      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease610",
+    },
+    {
       name: `  วันศุกร์ที่ 27 ธันวาคม 2567 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/64/1.webp",
       description: ` 
