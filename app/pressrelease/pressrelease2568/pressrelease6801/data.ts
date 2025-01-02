@@ -1,0 +1,20 @@
+export const DataPressrelease = {
+  navItems: [
+    {
+      name: ` สวัสดีปีใหม่ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/2/05.webp",
+      description: ` 
+ตัวเเทนคณะครูขออวยพรให้กับนักเรียน นักศึกษาวิทยาลัยเทคนิคกันทรลักษ์ทุกคน เนื่องในโอกาสวารดิถีขึ้นปีใหม่ 2568 นี้ 
+...`,
+      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease2",
+    },
+    {
+      name: ` คณะผู้บริหาร `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/1/2.webp",
+      description: ` 
+นำโดย 👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย      
+...`,
+      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease1",
+    },
+  ],
+};

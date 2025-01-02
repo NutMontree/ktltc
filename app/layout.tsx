@@ -13,7 +13,7 @@ import Header from "@/components/header";
 import Footer from "./Footer/page";
 import Link from "next/link";
 import clsx from "clsx";
-import Snow from "@/components/snow";
+// import Snow from "@/components/snow";
 
 export const metadata: Metadata = {
   title: {
@@ -45,7 +45,7 @@ export default function RootLayout({
         <UserContextProvider
           themeProps={{ attribute: "class", defaultTheme: "light" }}
         >
-          <Snow />
+          {/* <Snow /> */}
           <div>
             <div className=" ">
               <Header />

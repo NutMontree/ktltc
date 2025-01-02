@@ -1,7 +1,7 @@
 import React from "react";
 import { Image } from "@nextui-org/react";
 import Link from "next/link";
-import { Cover } from "@/components/ui/cover";
+// import { Cover } from "@/components/ui/cover";
 
 export function BackgroundBeamsWithCollisionDemo() {
   return (
@@ -9,7 +9,7 @@ export function BackgroundBeamsWithCollisionDemo() {
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
       <div className="py-3">
-        <Cover className="flex justify-center">
+        <div className="flex justify-center">
           <Link href="/pressrelease/pressrelease2567/pressrelease6712/pressrelease582">
             <div className="flex justify-center">
               <div className="px-4">
@@ -62,7 +62,7 @@ export function BackgroundBeamsWithCollisionDemo() {
               </div>
             </div>
           </Link>
-        </Cover>
+        </div>
       </div>
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
       {/* 
