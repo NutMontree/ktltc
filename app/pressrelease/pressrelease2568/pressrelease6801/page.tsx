@@ -5,7 +5,7 @@ import PressReleasePage from "../../page";
 import NextLink from "next/link";
 import { DataPressrelease } from "./data";
 
-export default function Pressrelease6710() {
+export default function Page() {
   return (
     <>
       <PressReleasePage />
