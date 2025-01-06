@@ -23,7 +23,6 @@ export default function Page() {
             grid gap-1 
             grid-cols-2 
             md:grid-cols-4 
- 
                       "
           >
             {DataPressrelease.navItems.map((item) => (
