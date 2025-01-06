@@ -15,7 +15,8 @@ import Header from "@/components/header";
 
 import Link from "next/link";
 import clsx from "clsx";
-import Footer from "./footer/page";
+        import Footer from "./Footer/page";
+ 
 // import Snow from "@/components/snow";
 
 export const metadata: Metadata = {
