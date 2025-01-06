@@ -11,7 +11,7 @@ import { CommentOutlined } from "@ant-design/icons";
 import { FloatingNavDemo } from "@/components/FloatingNavDemo";
 import { Metadata, Viewport } from "next";
 import Header from "@/components/header";
-import Footer from "./Footer/page";
+import Footer from "./footer/page";
 import Link from "next/link";
 import clsx from "clsx";
 // import Snow from "@/components/snow";
