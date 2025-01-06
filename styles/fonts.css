@@ -1,52 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@import "scrollvelocity.css";
-@import "fonts.css";
-@import "test.css";
-@import "snow.css";
-
-@media (-ms-high-contrast: active) {
-  /* Your general contrast theme styles */
-}
-
-@media (-ms-high-contrast: black-on-white) {
-  /* Your specific light contrast theme styles */
-}
-
-@media (-ms-high-contrast: white-on-black) {
-  /* Your specific dark contrast theme styles */
-}
-
-/* For elements that need to opt-out of contrast theme styles */
-.opt-out-of-high-contrast {
-  -ms-high-contrast-adjust: none;
-}
-
-@media (-ms-high-contrast: active), (forced-colors: active) {
-  /* Your general contrast theme styles */
-}
-
-@media (-ms-high-contrast: black-on-white),
-  (forced-colors: active) and (prefers-color-scheme: light) {
-  /* Your specific light contrast theme styles */
-}
-
-@media (-ms-high-contrast: white-on-black),
-  (forced-colors: active) and (prefers-color-scheme: dark) {
-  /* Your specific dark contrast theme styles */
-}
-
-/* For elements that need to opt-out of contrast theme styles */
-.opt-out-of-high-contrast {
-  -ms-high-contrast-adjust: none;
-  forced-color-adjust: none;
-}
-
-* {
-  font-family: "Prompt", serif;
-}
+@import url("https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 .prompt-thin {
   font-family: "Prompt", serif;
