@@ -11,9 +11,11 @@ import { CommentOutlined } from "@ant-design/icons";
 import { FloatingNavDemo } from "@/components/FloatingNavDemo";
 import { Metadata, Viewport } from "next";
 import Header from "@/components/header";
-import Footer from "./footer/page";
+// import Footer from "./footer/page";
+
 import Link from "next/link";
 import clsx from "clsx";
+import Footer from "./footer/page";
 // import Snow from "@/components/snow";
 
 export const metadata: Metadata = {
