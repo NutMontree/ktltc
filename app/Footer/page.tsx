@@ -4,38 +4,38 @@ import { Image } from "@nextui-org/react";
 import Link from "next/link";
 
 import React from "react";
-// import { FloatingDock } from "@/components/ui/floating-dock";
-// import {
-//   IconBrandFacebook,
-//   IconHome,
-//   IconTerminal2,
-// } from "@tabler/icons-react";
+import { FloatingDock } from "@/components/ui/floating-dock";
+import {
+  IconBrandFacebook,
+  IconHome,
+  IconTerminal2,
+} from "@tabler/icons-react";
 
 export default function Footer() {
-  // const links = [
-  //   {
-  //     title: "Home",
-  //     icon: (
-  //       <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-  //     ),
-  //     href: "#",
-  //   },
+  const links = [
+    {
+      title: "Home",
+      icon: (
+        <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "#",
+    },
  
-  //   {
-  //     title: "Products",
-  //     icon: (
-  //       <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-  //     ),
-  //     href: "#",
-  //   },
-  //   {
-  //     title: "Facebook",
-  //     icon: (
-  //       <IconBrandFacebook className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-  //     ),
-  //     href: "https://www.facebook.com/profile.php?id=100004276455648",
-  //   },
-  // ];
+    {
+      title: "Products",
+      icon: (
+        <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "#",
+    },
+    {
+      title: "Facebook",
+      icon: (
+        <IconBrandFacebook className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "https://www.facebook.com/profile.php?id=100004276455648",
+    },
+  ];
   return (
     <>
       <div className="">
@@ -442,14 +442,14 @@ export default function Footer() {
         </footer>
       </div>
 
-      {/* <div>
+      <div>
         <div className="flex items-center justify-center px-16 py-16 w-full">
           <FloatingDock
             mobileClassName=" " // only for demo, remove for production
             items={links}
           />
         </div>
-      </div> */}
+      </div>
 
       <div className="w-full py-3 ">
         <div className="flex gap-2 justify-center">
