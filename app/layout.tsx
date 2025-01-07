@@ -46,43 +46,40 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       {/* <body className={clsx("promp-sans", prompt.variable)}> */}
-      <body className={clsx(" ", fontSans.variable)}>
+      <body className={clsx("", fontSans.variable)}>
         <UserContextProvider
           themeProps={{ attribute: "class", defaultTheme: "light" }}
         >
           {/* <Snow /> */}
-          <div>
-            <div className=" ">
-              <Header />
-            </div>
-            <NavbarPage />
+          <Header />
+          <NavbarPage />
+          <div className="">
             <Toaster
               position="bottom-right"
               toastOptions={{ duration: 2000 }}
             />
             <FloatingNavDemo />
-            <main>
+            <main className="mx-auto max-w-screen-2xl">
               {children}
               <SpeedInsights />
             </main>
-
             <Footer />
-          </div>
-          <FloatButton
-            icon={<CommentOutlined />}
-            tooltip={
-              <div>
+            <FloatButton
+              icon={<CommentOutlined />}
+              tooltip={
                 <div>
-                  <Link
-                    className="  text-sky-500"
-                    href="https://www.facebook.com/messages/t/100004276455648"
-                  >
-                    Mesesnger
-                  </Link>
+                  <div>
+                    <Link
+                      className="  text-sky-500"
+                      href="https://www.facebook.com/messages/t/100004276455648"
+                    >
+                      Mesesnger
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            }
-          />
+              }
+            />
+          </div>
         </UserContextProvider>
       </body>
     </html>

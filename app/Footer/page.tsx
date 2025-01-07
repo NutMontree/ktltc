@@ -38,19 +38,16 @@ export default function Footer() {
   ];
   return (
     <>
-      <div className="">
-        <div className="">
+      <div className="border-t mx-auto max-w-screen-2xl" />
+      <div>
+        <div className="bg-red-800">
           <footer
             className="
-                  bg-red-800
-                  border-t 
+                  
                   justify-between 
-                  px-[24px]
-                  py-[24px]
-                  lg:px-12  
-                  sm:px-12  
                   text-white
-                 justify-items-center
+                  justify-items-center
+                  mx-auto max-w-screen-2xl px-4 py-10 md:px-8
                   "
           >
             <div className=" ">
@@ -190,290 +187,299 @@ export default function Footer() {
           </footer>
         </div>
 
-        <footer
-          className="
-          bg-red-800
-          border-y 
-          justify-between 
-          px-[24px]
-          py-[24px]  
-          text-white
-          "
-        >
-          <div className="">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[24px]">
-              <div className="">
-                <div className="py-2 ">
-                  <div className="pb-6 text-lg text-center">
-                    ประวัติสถานศึกษา
-                  </div>
-                  <div className="">
-                    <Link
-                      href="/historyeducational "
-                      className="hover:underline "
-                    >
+        <div className="bg-red-800">
+          <footer
+            className="
+                text-white
+                  border-t 
+                  justify-between 
+                  justify-items-center
+                  mx-auto max-w-screen-2xl px-4 py-10 md:px-8
+                  "
+          >
+            <div className="">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[24px]">
+                <div className="">
+                  <div className="py-2 ">
+                    <div className="pb-6 text-lg text-center">
                       ประวัติสถานศึกษา
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/philosophy " className="hover:underline ">
-                      ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/eduadmin " className="hover:underline ">
-                      ทำเนียบผู้บริหาร
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link
-                      href="/administrativestructure "
-                      className="hover:underline "
-                    >
-                      โครงสร้างการบริหารงานสถานศึกษา
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/executiveboard " className="hover:underline ">
-                      คณะกรรมการบริหารสถานศึกษา
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className=" py-2">
-                  <div className="pb-6 text-lg text-center">
-                    ข้อมูลพื้นฐาน 9 ประการ
-                  </div>
-                  <div className="py-2">
-                    <Link
-                      href="/historyeducational "
-                      className="hover:underline "
-                    >
-                      ข้อมูลสถานศึกษา
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/personnel " className="hover:underline ">
-                      ข้อมูลบุคลากร
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/sid " className="hover:underline ">
-                      ข้อมูลนักเรียน นักศึกษา
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      ข้อมูลหลักสูตร
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      ข้อมูลครุภัณฑ์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      ข้อมูลงบประมาณ
-                    </Link>
-                    <div className="py-2">
-                      <Link href="/buildings " className="hover:underline ">
-                        ข้อมูลอาคารสถานที่
+                    </div>
+                    <div className="">
+                      <Link
+                        href="/historyeducational "
+                        className="hover:underline "
+                      >
+                        ประวัติสถานศึกษา
                       </Link>
                     </div>
-
                     <div className="py-2">
-                      <Link href="/ " className="hover:underline ">
-                        ข้อมูลตลาดแรงงาน
+                      <Link href="/philosophy " className="hover:underline ">
+                        ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
                       </Link>
                     </div>
-
+                    <div className="py-2">
+                      <Link href="/eduadmin " className="hover:underline ">
+                        ทำเนียบผู้บริหาร
+                      </Link>
+                    </div>
                     <div className="py-2">
                       <Link
-                        href="https://www.sisaket.go.th/"
+                        href="/administrativestructure "
+                        className="hover:underline "
+                      >
+                        โครงสร้างการบริหารงานสถานศึกษา
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link
+                        href="/executiveboard "
+                        className="hover:underline "
+                      >
+                        คณะกรรมการบริหารสถานศึกษา
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className=" py-2">
+                    <div className="pb-6 text-lg text-center">
+                      ข้อมูลพื้นฐาน 9 ประการ
+                    </div>
+                    <div className="py-2">
+                      <Link
+                        href="/historyeducational "
+                        className="hover:underline "
+                      >
+                        ข้อมูลสถานศึกษา
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/personnel " className="hover:underline ">
+                        ข้อมูลบุคลากร
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/sid " className="hover:underline ">
+                        ข้อมูลนักเรียน นักศึกษา
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        ข้อมูลหลักสูตร
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        ข้อมูลครุภัณฑ์
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        ข้อมูลงบประมาณ
+                      </Link>
+                      <div className="py-2">
+                        <Link href="/buildings " className="hover:underline ">
+                          ข้อมูลอาคารสถานที่
+                        </Link>
+                      </div>
+
+                      <div className="py-2">
+                        <Link href="/ " className="hover:underline ">
+                          ข้อมูลตลาดแรงงาน
+                        </Link>
+                      </div>
+
+                      <div className="py-2">
+                        <Link
+                          href="https://www.sisaket.go.th/"
+                          target="_blank"
+                          className="hover:underline "
+                        >
+                          ข้อมูลของจังหวัด
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className=" py-2 ">
+                    <div className="pb-6 text-lg text-center">
+                      หน่วยงานภายใน
+                    </div>
+                    <div className="py-2">
+                      <Link href="/resource " className="hover:underline ">
+                        ฝ่ายบริหารทรัพยากร
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/plan " className="hover:underline ">
+                        ฝ่ายแผนงานและความร่วมมือ
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/develop " className="hover:underline ">
+                        ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/academic " className="hover:underline ">
+                        ฝ่ายวิชาการ
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className=" py-2">
+                    <div className="pb-6 text-lg text-center">
+                      ข้อมูลบุคลากร
+                    </div>
+
+                    <div className="py-2">
+                      <Link href="/executive " className="hover:underline ">
+                        ผู้บริหารสถานศึกษา
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/mechanic " className="hover:underline ">
+                        แผนกวิชาช่างยนต์
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/machine " className="hover:underline ">
+                        แผนกวิชาช่างกลโรงงาน
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/welder " className="hover:underline ">
+                        แผนกวิชาช่างเชื่อมโลหะ
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/electricity " className="hover:underline ">
+                        แผนกวิชาช่างไฟฟ้ากำลัง
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/electronics " className="hover:underline ">
+                        แผนกวิชาช่างอิเล็กทรอนิกส์
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/technique " className="hover:underline ">
+                        แผนกวิชาเทคนิคพื้นฐาน
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/construct " className="hover:underline ">
+                        แผนกวิชาช่างก่อสร้าง
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/accounting " className="hover:underline ">
+                        แผนกวิชาบัญชี
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/marketing" className="hover:underline ">
+                        แผนกวิชาการตลาด
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/technology " className="hover:underline ">
+                        แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/hotel " className="hover:underline ">
+                        แผนกวิชาการโรงแรม
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ordinary " className="hover:underline ">
+                        แผนกวิชาสามัญสัมพันธ์
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className=" py-2">
+                    <div className="pb-6 text-lg text-center">เมนูลัด</div>
+                    <div className="py-2">
+                      <Link
+                        href="https://std2018.vec.go.th/web/ "
                         target="_blank"
                         className="hover:underline "
                       >
-                        ข้อมูลของจังหวัด
+                        ระบบ ศธ. ออนไลน์
                       </Link>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className=" py-2 ">
-                  <div className="pb-6 text-lg text-center">หน่วยงานภายใน</div>
-                  <div className="py-2">
-                    <Link href="/resource " className="hover:underline ">
-                      ฝ่ายบริหารทรัพยากร
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/plan " className="hover:underline ">
-                      ฝ่ายแผนงานและความร่วมมือ
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/develop " className="hover:underline ">
-                      ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/academic " className="hover:underline ">
-                      ฝ่ายวิชาการ
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className=" py-2">
-                  <div className="pb-6 text-lg text-center">ข้อมูลบุคลากร</div>
-
-                  <div className="py-2">
-                    <Link href="/executive " className="hover:underline ">
-                      ผู้บริหารสถานศึกษา
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/mechanic " className="hover:underline ">
-                      แผนกวิชาช่างยนต์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/machine " className="hover:underline ">
-                      แผนกวิชาช่างกลโรงงาน
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/welder " className="hover:underline ">
-                      แผนกวิชาช่างเชื่อมโลหะ
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/electricity " className="hover:underline ">
-                      แผนกวิชาช่างไฟฟ้ากำลัง
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/electronics " className="hover:underline ">
-                      แผนกวิชาช่างอิเล็กทรอนิกส์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/technique " className="hover:underline ">
-                      แผนกวิชาเทคนิคพื้นฐาน
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/construct " className="hover:underline ">
-                      แผนกวิชาช่างก่อสร้าง
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/accounting " className="hover:underline ">
-                      แผนกวิชาบัญชี
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/marketing" className="hover:underline ">
-                      แผนกวิชาการตลาด
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/technology " className="hover:underline ">
-                      แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/hotel " className="hover:underline ">
-                      แผนกวิชาการโรงแรม
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ordinary " className="hover:underline ">
-                      แผนกวิชาสามัญสัมพันธ์
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className=" py-2">
-                  <div className="pb-6 text-lg text-center">เมนูลัด</div>
-                  <div className="py-2">
-                    <Link
-                      href="https://std2018.vec.go.th/web/ "
-                      target="_blank"
-                      className="hover:underline "
-                    >
-                      ระบบ ศธ. ออนไลน์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link
-                      href="https://std2018.vec.go.th/web/ "
-                      target="_blank"
-                      className="hover:underline "
-                    >
-                      ตรวจสอบผลการเรียน
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      รับงานอิเล็กทรอนิกส์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      สมัครเรียนออนไลน์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      บทเรียนออนไลน์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/pressrelease " className="hover:underline ">
-                      ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link
-                      href="https://v-cop.go.th/ "
-                      target="_blank"
-                      className="hover:underline "
-                    >
-                      ศูนย์กำลังคนอาชีวศึกษา (V-COP)
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      รายงานประจำของสถานศึกษา (SAR)
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      ID Plan
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/ " className="hover:underline ">
-                      แบบประเมินความพึงพอใจของผู้ใช้ <br />
-                      บริการข้อมูลด้านระบบสารสนเทศ
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/pressrelease " className="hover:underline ">
-                      ภาพรวมกิจกรรมในสถานศึกษา
-                    </Link>
+                    <div className="py-2">
+                      <Link
+                        href="https://std2018.vec.go.th/web/ "
+                        target="_blank"
+                        className="hover:underline "
+                      >
+                        ตรวจสอบผลการเรียน
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        รับงานอิเล็กทรอนิกส์
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        สมัครเรียนออนไลน์
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        บทเรียนออนไลน์
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/pressrelease " className="hover:underline ">
+                        ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link
+                        href="https://v-cop.go.th/ "
+                        target="_blank"
+                        className="hover:underline "
+                      >
+                        ศูนย์กำลังคนอาชีวศึกษา (V-COP)
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        รายงานประจำของสถานศึกษา (SAR)
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        ID Plan
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        แบบประเมินความพึงพอใจของผู้ใช้ <br />
+                        บริการข้อมูลด้านระบบสารสนเทศ
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/pressrelease " className="hover:underline ">
+                        ภาพรวมกิจกรรมในสถานศึกษา
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        </div>
       </div>
+      <div className="border-y mx-auto max-w-screen-2xl" />
 
       <div>
         <div className="flex items-center justify-center px-16 pt-16  w-full">
