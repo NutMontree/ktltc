@@ -20,9 +20,10 @@ export default function Page() {
         <div className="flex justify-center pt-4">
           <div
             className=" 
-            grid gap-1 
+            grid gap-4
             grid-cols-2 
-            md:grid-cols-4 
+            md:grid-cols-4 '
+            
                       "
           >
             {DataPressrelease.navItems.map((item) => (
@@ -38,6 +39,7 @@ export default function Page() {
                 <div>
                   <h1 className="text-base text-sky-600">{item.name}</h1>
                   <div className="text-sm">{item.description}</div>
+                  <div className="text-xs text-slate-500">{item.date}</div>
                 </div>
               </NextLink>
             ))}

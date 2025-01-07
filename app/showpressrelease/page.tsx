@@ -172,10 +172,18 @@ export default function ShowPressRelease() {
                   <div
                     className=" 
                               text-[12px] md:text-[14px] sm:text-sm md:text-base 
-                              mb-8
+                              mb-2
                               "
                   >
                     {item.description}
+                  </div>
+                  <div
+                    className="text-xs text-slate-500
+                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
+                              mb-10
+                              "
+                  >
+                    {item.date}
                   </div>
                 </div>
               </NextLink>
