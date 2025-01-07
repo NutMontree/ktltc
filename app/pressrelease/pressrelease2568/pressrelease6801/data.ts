@@ -2,11 +2,19 @@ export const DataPressrelease = {
   navItems: [
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/7/13.webp",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ร่วมพิธีเปิดการแข่งขันทักษะวิชาชีพ ประเภทวิชาช่างอุสาหกรรม
+      ...`,
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press7",
+    },
+    {
+      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/6/37.webp",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ในนามประธานคณะกรรมการจัดการแข่งขันทักษะวิชาชีพ 
       ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease6",
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press6",
     },
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์  `,
@@ -14,7 +22,7 @@ export const DataPressrelease = {
       description: ` 
  นำโดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร คณะครู บุคลากรทางการศึกษา 
  ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease4",
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press4",
     },
     {
       name: ` วันจันทร์ที่ 6 มกราคม  2568 `,
@@ -22,7 +30,7 @@ export const DataPressrelease = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมแสดงความยินดีเนื่องในโอกาสย้ายมาดำรงตำเเหน่ง 
 ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease3",
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press3",
     },
     {
       name: ` สวัสดีปีใหม่ `,
@@ -30,7 +38,7 @@ export const DataPressrelease = {
       description: ` 
 ตัวเเทนคณะครูขออวยพรให้กับนักเรียน นักศึกษาวิทยาลัยเทคนิคกันทรลักษ์ทุกคน เนื่องในโอกาสวารดิถีขึ้นปีใหม่ 2568 นี้ 
 ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease2",
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press2",
     },
     {
       name: ` คณะผู้บริหาร `,
@@ -38,7 +46,7 @@ export const DataPressrelease = {
       description: ` 
 นำโดย 👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย      
 ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease1",
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press1",
     },
   ],
 };
