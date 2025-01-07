@@ -39,149 +39,156 @@ export default function Footer() {
   return (
     <>
       <div className="">
-        <footer
-          className="
+        <div className="">
+          <footer
+            className="
                   bg-red-800
                   border-t 
-                  md:flex 
-                  xl:justify-between 
+                  justify-between 
                   px-[24px]
                   py-[24px]
                   lg:px-12  
                   sm:px-12  
                   text-white
+                 justify-items-center
                   "
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-24">
-            <span className="">
-              <div>
-                <Image
-                  removeWrapper
-                  alt="Relaxing app background"
-                  className="w-40"
-                  src="/images/logo1.png"
-                />
-              </div>
-              <div className="flex gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div>061-4122765 หรือ 045-811753</div>
-              </div>
-              <div className="flex gap-2 py-2 pl-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+          >
+            <div className=" ">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-[24px]">
+                <span className="">
+                  <div>
+                    <Image
+                      removeWrapper
+                      alt="Relaxing app background"
+                      className="w-40"
+                      src="/images/logo1.png"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>061-4122765 หรือ 045-811753</div>
+                  </div>
+                  <div className="flex gap-2 py-2 pl-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
 
-                <Link
-                  className="hover:underline "
-                  target="_blank"
-                  href="https://www.google.co.th/maps/place/7P66QM35%2BJ68/@14.7540375,104.6555032,17z/data=!3m1!4b1!4m4!3m3!8m2!3d14.7540375!4d104.6580781?hl=th&entry=ttu&g_ep=EgoyMDI0MDgyMy4wIKXMDSoASAFQAw%3D%3D"
-                >
-                  QM35+J68 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
-                </Link>
-              </div>
-              <div className="flex gap-2 py-2 pl-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-5"
-                >
-                  <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
-                  <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
-                </svg>
-                ktl11022021@gmail.com
-              </div>
-            </span>
+                    <Link
+                      className="hover:underline "
+                      target="_blank"
+                      href="https://www.google.co.th/maps/place/7P66QM35%2BJ68/@14.7540375,104.6555032,17z/data=!3m1!4b1!4m4!3m3!8m2!3d14.7540375!4d104.6580781?hl=th&entry=ttu&g_ep=EgoyMDI0MDgyMy4wIKXMDSoASAFQAw%3D%3D"
+                    >
+                      QM35+J68 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
+                    </Link>
+                  </div>
+                  <div className="flex gap-2 py-2 pl-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="size-5"
+                    >
+                      <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+                      <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+                    </svg>
+                    ktl11022021@gmail.com
+                  </div>
+                </span>
 
-            <div className=" py-2 ">
-              <div className="py-2">
-                <Link href="/pressrelease" className="hover:underline ">
-                  ข่าวประชาสัมพันธ์
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/newsletter" className="hover:underline ">
-                  จดหมายข่าว
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/announcement" className="hover:underline ">
-                  ข่าวประกาศ
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/bidding" className="hover:underline ">
-                  ข่าวประกวดราคา
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link
-                  href="/technicalcollegeorders"
-                  className="hover:underline "
-                >
-                  คำสั่งวิทยาลัยเทคนิค
-                </Link>
+                <div className=" py-2 ">
+                  <div className="py-2">
+                    <Link href="/pressrelease" className="hover:underline ">
+                      ข่าวประชาสัมพันธ์
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/newsletter" className="hover:underline ">
+                      จดหมายข่าว
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/announcement" className="hover:underline ">
+                      ข่าวประกาศ
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/bidding" className="hover:underline ">
+                      ข่าวประกวดราคา
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      href="/technicalcollegeorders"
+                      className="hover:underline "
+                    >
+                      คำสั่งวิทยาลัยเทคนิค
+                    </Link>
+                  </div>
+                </div>
+
+                <div className=" py-2">
+                  <div className="py-2">
+                    <Link
+                      href="/externalinternal"
+                      className="hover:underline  "
+                    >
+                      แบบฟอร์มหนังสือภายนอก-ภายใน
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/personnel " className="hover:underline ">
+                      ข้อมูลบุคลากร
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      href="https://www.facebook.com/profile.php?id=61571228871228 "
+                      target="_blank"
+                      className="hover:underline  "
+                    >
+                      ตู้เสมารักษ์ สถานศึกษาสีขาว
+                    </Link>
+                  </div>
+
+                  <div className="py-2">
+                    <Link
+                      href="https://std2018.vec.go.th/web/"
+                      target="_blank"
+                      className="hover:underline "
+                    >
+                      ตรวจสอบผลการเรียน
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/minigame " className="hover:underline ">
+                      Mini Game
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className=" py-2">
-              <div className="py-2">
-                <Link href="/externalinternal" className="hover:underline  ">
-                  แบบฟอร์มหนังสือภายนอก-ภายใน
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/personnel " className="hover:underline ">
-                  ข้อมูลบุคลากร
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link
-                  href="https://www.facebook.com/profile.php?id=61571228871228 "
-                  target="_blank"
-                  className="hover:underline  "
-                >
-                  ตู้เสมารักษ์ สถานศึกษาสีขาว
-                </Link>
-              </div>
-
-              <div className="py-2">
-                <Link
-                  href="https://std2018.vec.go.th/web/"
-                  target="_blank"
-                  className="hover:underline "
-                >
-                  ตรวจสอบผลการเรียน
-                </Link>
-              </div>
-              <div className="py-2">
-                <Link href="/minigame " className="hover:underline ">
-                  Mini Game
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
+          </footer>
+        </div>
 
         <footer
           className="
