@@ -2,6 +2,24 @@ export const DataPressrelease = {
   navItems: [
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/11/01.webp",
+      date: "7 มกราคม 2568",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
+      `,
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press12",
+    },
+    {
+      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/12/01.webp",
+      date: "7 มกราคม 2568",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
+      `,
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press11",
+    },
+    {
+      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/10/15.webp",
       date: "7 มกราคม 2568",
       description: ` 
