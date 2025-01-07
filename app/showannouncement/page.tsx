@@ -22,7 +22,7 @@ import NextLink from "next/link";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
-import { DataAnnouncement } from "../announcement/announcement2567/announcement6710/data";
+import { DataAnnouncement } from "../announcement/announcement2568/announcement6801/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
