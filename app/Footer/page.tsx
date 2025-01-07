@@ -43,7 +43,6 @@ export default function Footer() {
         <div className="bg-red-800">
           <footer
             className="
-                  
                   justify-between 
                   text-white
                   justify-items-center
@@ -190,9 +189,8 @@ export default function Footer() {
         <div className="bg-red-800">
           <footer
             className="
-                text-white
-                  border-t 
                   justify-between 
+                  text-white
                   justify-items-center
                   mx-auto max-w-screen-2xl px-4 py-10 md:px-8
                   "
@@ -463,7 +461,7 @@ export default function Footer() {
                     </div>
                     <div className="py-2">
                       <Link href="/ " className="hover:underline ">
-                        แบบประเมินความพึงพอใจของผู้ใช้ <br />
+                        แบบประเมินความพึงพอใจของผู้ใช้
                         บริการข้อมูลด้านระบบสารสนเทศ
                       </Link>
                     </div>
