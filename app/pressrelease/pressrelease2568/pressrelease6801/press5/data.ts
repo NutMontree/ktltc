@@ -2,7 +2,7 @@ export const DataPressrelease = {
   Item: [
     {
       title: `
-ประกาศเลขที่นั่งสอบ
+ประกาศเลขที่นั่งสอบ VNET
       `,
     },
   ],

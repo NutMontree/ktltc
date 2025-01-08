@@ -59,7 +59,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ในนามประธานคณะกรรมการจัดการแข่งขันทักษะวิชาชีพ 
       ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease6",
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press6",
     },
   ],
 };

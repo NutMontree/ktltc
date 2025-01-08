@@ -6,7 +6,7 @@ export const DataAnnouncement = {
       description: ` 
 ระดับชั้น: ประกาศนียบัตรวิชาชีพ ชั้นปีที่ 3 วิทยาลัยเทคนิคกันทรลักษ์ 19 ม.ค. 2568 13:00 น.
       ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/pressrelease5",
+      href: "/pressrelease/pressrelease2568/pressrelease6801/press5",
     },
   ],
 };
