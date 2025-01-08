@@ -7,7 +7,7 @@ export const Data = {
       description: `
 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ คณะครู เข้าร่วมโครงการปฏิบัติธรรมผู้บริหารและครูวิถีพุทธ
 ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease349",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease349",
     },
     {
       id: 26,
@@ -16,7 +16,7 @@ export const Data = {
       description: `
 วิทยาลัยเทคนิคกันทรลักษ์ 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะครู
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease346",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease346",
     },
     {
       id: 25,
@@ -25,7 +25,7 @@ export const Data = {
       description: `
  วิทยาลัยเทคนิคกันทรลักษ์ จัดโครงการ DLTV R Service โดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease345",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease345",
     },
     {
       id: 24,
@@ -34,7 +34,7 @@ export const Data = {
       description: `
  เข้าร่วมกิจกรรมอารมศูนย์ฝึกขับขี่ปลอดภัยฮอนด้า Honda Safety Riding Canter ดำเนินการโดย บริษัท บุรีรัมย์ยนตรการ จำกัด
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease344",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease344",
     },
     {
       id: 23,
@@ -43,7 +43,7 @@ export const Data = {
       description: `
 ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ได้ขึ้นให้โอวาทและจัดระเบียบแก่นักเรียน นักศึกษา พร้อมด้วยครูเวรประจำวันขึ้นให้ข้อมูลข่าวสารแก่นักเรียน นักศึกษา
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease342",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease342",
     },
     {
       id: 22,
@@ -52,7 +52,7 @@ export const Data = {
       description: `
 รองผู้อำนวยการฝ่ายบริหารทรัพยากร ต้อนรับ บริษัท GWM BIG AUTO Sisaket เข้ามาให้ความรู้เกี่ยวกับเครื่องยนต์ระบบไฟฟ้ากับนักศึกษา ระดับ ปวส.   
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease341",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease341",
     },
     {
       id: 21,
@@ -61,7 +61,7 @@ export const Data = {
       description: `
 รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียน นักศึกษา พร้อมด้วยคณะผู้กำกับลูกเสือ ได้เข้าร่วมโครงการพัฒนาคุณลักษณะอันพึงประสงค์ของผู้เรียนอาชีวศึกษา 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease340",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease340",
     },
     {
       id: 20,
@@ -70,7 +70,7 @@ export const Data = {
       description: `
 วิทยาลัยเทคนิคกันทรลักษ์ 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ได้รับเกียรติเป็นประธานกล่าวเปิดงาน 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6708/pressrelease339",
+      href: "/pressrelease/2567/pressrelease6708/pressrelease339",
     },
 
     {

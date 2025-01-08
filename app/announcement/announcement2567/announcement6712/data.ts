@@ -6,7 +6,7 @@ export const DataAnnouncement = {
       description: ` 
 📣เปิดรับสมัครนักเรียน นักศึกษา "โควตารอบที่ 2"  ปีการศึกษา 2568 ตั้งเเต่วันนี้ถึง 31 มกราคม 2568 สามารถมาสมัครด้วยตนเองที่ห้องทะเบียน ตึกอำนวยการ 
 ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease582",
+      href: "/pressrelease/2567/pressrelease6712/pressrelease582",
     },
     {
       name: `ประกาศรายชื่อ`,
@@ -14,7 +14,7 @@ export const DataAnnouncement = {
       description: ` 
 ผู้มีสิทธิ์เข้ารายงานตัว รอบโควตา ประจำปีการศึกษา 2568 ระดับ ปวช. เเละ ระดับ ปวส. ในวันพฤหัสบดีที่ 12 ธันวาคม 2567 ณ ห้องประชุมอาคารเฉลิมพระเกียรติ วิทยาลัยเทคนิคกันทรลักษ์
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease565",
+      href: "/pressrelease/2567/pressrelease6712/pressrelease565",
     },
     {
       name: `ประกาศ `,
@@ -22,7 +22,7 @@ export const DataAnnouncement = {
       description: ` 
 เด็ก'68 รีบมาสมัครกันนะค้าบ การรับสมัครนักเรียน นักศึกษา รอบโควตา ประจำปีการศึกษา 2568 ใครที่ยังไม่มาสมัคร รีบเลย‼️ เนื่องจากเหลือเวลาอีกไม่นาน จะเริ่มประกาศรายชื่อผู้มีสิทธิเข้ารับการศึกษาต่อเเล้วนะค้าบ 
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6712/pressrelease528",
+      href: "/pressrelease/2567/pressrelease6712/pressrelease528",
     },
   ],
 };

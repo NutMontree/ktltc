@@ -6,7 +6,7 @@ export const Data = {
       description: `
 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ คณะผู้บริหาร นำคณะครูวิทยาลัยเทคนิคกันทรลักษ์ ร่วมการถวายผ้าพระกฐินพระราชทาน ประจำปี 2567
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease459",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease459",
     },
     {
       name: ` 29 ตุลาคม  2567`,
@@ -14,7 +14,7 @@ export const Data = {
       description: `
 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ รับโล่ประกาศเกียรติคุณสถานศึกษาระดับอาชีวศึกษาที่มีอัตราการชำระหนี้ดีที่สุด ซึ่งวิทยาลัยเทคนิคกันทรลักษ์อยู่ใน 25 อันดับแรกของประเทศ 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease458",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease458",
     },
     {
       name: `  26 ตุลาคม 2567 `,
@@ -22,14 +22,14 @@ export const Data = {
       description: `
 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร คณะครู บุคลากรทางการศึกษา ร่วมเป็นเจ้าภาพทอดกฐินสามัคคี ณ วัดจานคุณาราม ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ
  ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease456",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease456",
     },
     {
       name: `นายอาทร  ศรีมะณี`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/41/0.webp",
       description: `
  รองผู้อำนวยการฝ่ายวิชาการ นำคณะครู และบุคลากรทางการศึกษา เข้าร่วมพิธีวางพวงมาลา เนื่องในวันปิยมหาราช  บริเวณลานพระบรมราชานุเสาวรีย์ พระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัว ณ ที่ว่าการอำเภอกันทรลักษ์      ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease447",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease447",
     },
     {
       name: `คณะผู้บริหาร`,
@@ -37,7 +37,7 @@ export const Data = {
       description: `
 ร่วมประชุมสัญจรผู้บริหารอาชีวศึกษาจังหวัดศรีสะเกษ (สอจ.ศก.) ครั้งที่ 1 ณ ห้องประชุมอาคารเฉลิมพระเกียรติวิทยาลัยเทคนิคกันทรลักษ์
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease445",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease445",
     },
     {
       name: `นายอุทัย  จรรยากรณ์ `,
@@ -46,7 +46,7 @@ export const Data = {
 หัวหน้าเเผนกวิชายานยนต์ไฟฟ้า
       เข้าศึกษาดูงานที่ บริษัทผู้ผลิตรถโฟร์ค สาธารณรัฐประชาชนจีน และเข้าร่วมประชุมการจัดการอาชีวศึกษาจัดทำหลักสูตรรูปแบบทวิวุฒิไทย-จีน
        ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease444",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease444",
     },
     {
       name: `นางสาวทักษิณา ชมจันทร์`,
@@ -54,7 +54,7 @@ export const Data = {
       description: `
 ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย 👉 นางสาวภวิกา โพธิ์ขาว รองผู้อำนวยการฝ่ายบริหารทรัพยากร เข้าร่วมประชุมติดตามการใช้
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease435",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease435",
     },
     {
       name: `นายอาทร ศรีมะณี`,
@@ -62,7 +62,7 @@ export const Data = {
       description: `
  รองผู้อำนวยการฝ่ายวิชาการ พร้อมด้วยคณะครู เจ้าหน้าที่งานวิทยบริการเเละห้องสมุด  เข้ามอบหนังสือตามโครงการปันหนังสือให้น้อง ณ ห้องสมุดแมวหางกิ้นส์ 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease434",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease434",
     },
     {
       name: `นายอาทร ศรีมะณี`,
@@ -70,7 +70,7 @@ export const Data = {
       description: `
  รองผู้อำนวยการฝ่ายวิชาการ พร้อมด้วยคณะครู เจ้าหน้าที่งานวิทยบริการเเละห้องสมุด  เข้ามอบหนังสือตามโครงการปันหนังสือให้น้อง ณ ห้องสมุดแมวหางกิ้นส์ 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease434",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease434",
     },
     {
       name: `นายอาทร ศรีมะณี`,
@@ -78,7 +78,7 @@ export const Data = {
       description: `
 รองผู้อำนวยการฝ่ายวิชาการ พร้อมด้วย คณะครู เจ้าหน้าที่งานวิทยบริการห้องสมุด เข้ามอบหนังสือตามโครงการปันหนังสือให้น้อง ณ กลุ่มเด็ก
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease431",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease431",
     },
     {
       name: `๑๕ ตุลาคม ๒๕๖๗`,
@@ -86,7 +86,7 @@ export const Data = {
       description: `
 วิทยาลัยเทคนิคกันทรลักษ์ ดำเนินการจัดการประชุมคณะกรรมการวิทยาลัยเทคนิคกันทรลักษ์ ครั้งที่ ๒ / ๒๕๖๗ 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease429",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease429",
     },
     {
       name: `นายสมศักดิ์ จันทานิตย์`,
@@ -94,7 +94,7 @@ export const Data = {
       description: `
 รองผู้อำนวยการฝ่ายแผนงานและความร่วมมือ พร้อมด้วยคณะครู บุคลากรทางการศึกษา เข้าร่วมพิธีวางพวงมาลาและถวายบังคม “วันนวมินทรมหาราช” ๑๓ ตุลาคม
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease428",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease428",
     },
     {
       name: `นางสาวทักษิณา ชมจันทร์`,
@@ -102,7 +102,7 @@ export const Data = {
       description: `
 ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ เข้าร่วมการอบรมหลักสูตร “เกณฑ์ และแนวทางการประเมินองค์การนักวิชาชีพในอนาคตเเห่งประเทศไทย (อวท.) ระดับจังหวัด ภาค ชาติ” 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease426",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease426",
     },
     {
       name: `นายสมศักดิ์ จันทานิตย์`,
@@ -110,7 +110,7 @@ export const Data = {
       description: `
 รองผู้อำนวยการฝ่ายแผนงานและความร่วมมือ พร้อมด้วยคณะครู เเละบุคลากรทางการศึกษา ดำเนินโครงการดูแลสวัสดิภาพและความเป็นอยู่ (เยี่ยมหอพัก)
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease425",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease425",
     },
     {
       name: `นางสาวทักษิณา ชมจันทร์`,
@@ -118,7 +118,7 @@ export const Data = {
       description: `
 ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย 👉นางสาวภวิกา โพธิ์ขาว รองผู้อำนวยการฝ่ายบริหารทรัพยากร ร่วมพิธีลงนามบันทึกความเข้าใจความร่วมมือ (MOU) 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease422",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease422",
     },
     {
       name: `นางสาวทักษิณา ชมจันทร์`,
@@ -126,7 +126,7 @@ export const Data = {
       description: `
 ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมการประชุมคัดเลือกผู้อำนวยการสำนักงานอาชีวศึกษาจังหวัดศรีสะเกษ  และรองประธานกรรมการอาชีวศึกษาจังหวัดศรีสะเกษ (คนที่๑)
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease420",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease420",
     },
     {
       name: `นายอาทร ศรีมะณี `,
@@ -134,7 +134,7 @@ export const Data = {
       description: `
 รองผู้อำนวยการฝ่ายวิชาการ  👉นางกิ่งดาว บุญประสิทธิ์ หัวหน้างานวัดผลและประเมินผล พร้อมด้วย คณะกรรมการร่วมพิจารณาตรวจสอบผลการเรียนก่อนเสนอขออนุมัติ
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease419",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease419",
     },
     {
       name: `นางสาววิภาวรรณ สีแดด `,
@@ -142,7 +142,7 @@ export const Data = {
       description: `
 รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา พร้อมด้วย 👉นางสาวทราทิตย์ ชิดชม หัวหน้างานแนะแนวอาชีพและการจัดหางาน นำหัวหน้าแผนกวิชา 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease418",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease418",
     },
 
     {
@@ -151,14 +151,14 @@ export const Data = {
       description: `
 จำนวน ๔ คน กราบขอพรผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ เนื่องในโอกาสเดินทางไปศึกษาต่อที่ สถาบันโปลีเทคนิคไฟฟ้ากำลังกว่างลี เมืองหนาหนิง
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease417",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease417",
     },
     {
       name: `นางสาวทักษิณา ชมจันทร์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2567/ตุลาคม/5/0.webp",
       description: `
 ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์  พร้อมด้วย คณะผู้บริหาร หัวหน้าแผนกวิชา และหัวหน้างาน ร่วมประชุมคณะกรรมการพิจารณาแผนงานโครงการประจำปีงบประมาณ พ.ศ. ๒๕๖๘      ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease415",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease415",
     },
     {
       name: `โครงการปรับพฤติกรรม `,
@@ -166,7 +166,7 @@ export const Data = {
       description: `
 ของนักเรียน นักศึกษา ด้านคุณธรรม จริยธรรม และคุณลักษณะที่พึงประสงค์ภาคเรียนที่ ๑ ปีการศึกษา ๒๕๖๗ 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease410",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease410",
     },
   ],
 };

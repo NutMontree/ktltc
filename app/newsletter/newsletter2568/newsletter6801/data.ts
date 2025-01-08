@@ -7,7 +7,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/press12",
+      href: "/pressrelease/2568/pressrelease6801/press12",
     },
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
@@ -16,7 +16,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/press11",
+      href: "/pressrelease/2568/pressrelease6801/press11",
     },
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
@@ -25,7 +25,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/press10",
+      href: "/pressrelease/2568/pressrelease6801/press10",
     },
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
@@ -34,7 +34,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/press9",
+      href: "/pressrelease/2568/pressrelease6801/press9",
     },
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
@@ -43,7 +43,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน
       `,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/press8",
+      href: "/pressrelease/2568/pressrelease6801/press8",
     },
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
@@ -51,7 +51,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ร่วมพิธีเปิดการแข่งขันทักษะวิชาชีพ ประเภทวิชาช่างอุสาหกรรม
       ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/press7",
+      href: "/pressrelease/2568/pressrelease6801/press7",
     },
     {
       name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
@@ -59,7 +59,7 @@ export const Data = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ในนามประธานคณะกรรมการจัดการแข่งขันทักษะวิชาชีพ 
       ...`,
-      href: "/pressrelease/pressrelease2568/pressrelease6801/press6",
+      href: "/pressrelease/2568/pressrelease6801/press6",
     },
   ],
 };

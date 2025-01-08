@@ -10,7 +10,7 @@ export function BackgroundBeamsWithCollisionDemo() {
 
       {/* <div className="py-3">
         <div className="flex justify-center">
-          <Link href="/pressrelease/pressrelease2567/pressrelease6712/pressrelease582">
+          <Link href="/pressrelease/2567/pressrelease6712/pressrelease582">
             <div className="flex justify-center">
               <div className="px-4">
                 <div className="flex justify-center">
@@ -70,7 +70,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         {/* border-t */}
         {/* <Cover className="flex justify-center"> */}
         <div className="flex justify-center">
-          <Link href="/pressrelease/pressrelease2567/pressrelease6712/pressrelease582">
+          <Link href="/pressrelease/2567/pressrelease6712/pressrelease582">
             <div className="flex justify-center">
               <div>
                 <div className="flex justify-center">
@@ -124,7 +124,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         </div>
         {/* <Cover className="flex justify-center "> */}
         <div className="flex justify-center ">
-          <Link href="/pressrelease/pressrelease2568/pressrelease6801/press5">
+          <Link href="/pressrelease/2568/pressrelease6801/press5">
             <div className="flex justify-center">
               <div>
                 <div className="flex justify-center">

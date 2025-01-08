@@ -445,7 +445,7 @@ export default function Footer() {
                         href="https://v-cop.go.th/ "
                         target="_blank"
                         className="hover:underline "
-                      > 
+                      >
                         ศูนย์กำลังคนอาชีวศึกษา (V-COP)
                       </Link>
                     </div>

@@ -6,7 +6,7 @@ export const DataAnnouncement = {
       description: `
 ผู้มีสิทธิเข้ารับการประเมินสมรรถนะ ตำเเหน่ง ครูพิเศษสอน สาขาวิชาช่างไฟฟ้ากำลัง  เข้ารับการประเมินสมรรถนะ ในวันที่ 29 ตุลาคม 2567 ตามวันเวลาที่กำหนด 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease450",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease450",
     },
     {
       name: `ประกาศจากฝ่ายวิชาการ`,
@@ -14,7 +14,7 @@ export const DataAnnouncement = {
       description: `
 กำหนดให้นักเรียน นักศึกษา ยื่นคำร้องขอเเก้ 0 (ศูนย์) / มส. (ไม่สมบูรณ์) ประจำภาคเรียนที่ ๑ ปีการศึกษา ๒๕๖๗ ในวันที่ ๙ - ๑๘ ตุลาคม ๒๕๖๗
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6710/pressrelease427",
+      href: "/pressrelease/2567/pressrelease6710/pressrelease427",
     },
     {
       name: `ประกาศ `,
@@ -31,7 +31,7 @@ export const DataAnnouncement = {
       description: `
 กำหนดการลงทะเบียนเรียน เเละค่าลงทะเบียนเรียน ภาคเรียนที่ ๒/๒๕๖๗ 
       ...`,
-      href: "/pressrelease/pressrelease2567/pressrelease6709/pressrelease409",
+      href: "/pressrelease/2567/pressrelease6709/pressrelease409",
     },
   ],
 };
