@@ -21,14 +21,20 @@ export default function Page() {
           <div
             className=" 
             grid gap-4
-            grid-cols-2 
-            md:grid-cols-4 '
-            
-                      "
+            grid-cols-2
+            sm:grid-cols-3
+            lg:grid-cols-4
+           "
           >
             {DataPressrelease.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-2 group relative rounded-xl cursor-pointer min-h-40 ">
+                <div
+                  className="mb-2 group relative rounded-xl cursor-pointer 
+                h-36
+                md:h-44
+                xl:h-60
+                "
+                >
                   <div
                     className="absolute inset-0 bg-cover bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover scale-90 rounded-xl"
                     style={{
