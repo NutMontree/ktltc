@@ -2,7 +2,7 @@
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
 
-import Pressrelease2566 from "./pressrelease2566/page";
+import Pressrelease2566 from "./2566/page";
 import Pressrelease2567 from "./pressrelease2567/page";
 import Pressrelease2568 from "./pressrelease2568/page";
 

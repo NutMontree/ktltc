@@ -46,7 +46,7 @@ export default function Footer() {
                   justify-between 
                   text-white
                   justify-items-center
-                  mx-auto max-w-screen-2xl px-4 py-10 md:px-8
+                  mx-auto max-w-screen-2xl px-4 pt-8  
                   "
           >
             <div className=" ">
@@ -75,7 +75,7 @@ export default function Footer() {
                     </svg>
                     <div>061-4122765 หรือ 045-811753</div>
                   </div>
-                  <div className="flex gap-2 py-2 pl-1">
+                  <div className="flex gap-2 py-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -192,7 +192,7 @@ export default function Footer() {
                   justify-between 
                   text-white
                   justify-items-center
-                  mx-auto max-w-screen-2xl px-4 py-10 md:px-8
+                  mx-auto max-w-screen-2xl px-4 py-8
                   "
           >
             <div className="">
@@ -445,7 +445,7 @@ export default function Footer() {
                         href="https://v-cop.go.th/ "
                         target="_blank"
                         className="hover:underline "
-                      >
+                      > 
                         ศูนย์กำลังคนอาชีวศึกษา (V-COP)
                       </Link>
                     </div>
