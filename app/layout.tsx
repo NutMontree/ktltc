@@ -5,17 +5,18 @@ import { fontSans } from "@/config/fonts";
 import { UserContextProvider } from "./providers";
 import { siteConfig } from "@/config/site";
 import { NavbarPage } from "@/components/navbar";
-import { FloatButton } from "antd";
+// import { FloatButton } from "antd";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { CommentOutlined } from "@ant-design/icons";
+// import { CommentOutlined } from "@ant-design/icons";
 import { FloatingNavDemo } from "@/components/FloatingNavDemo";
 import { Metadata, Viewport } from "next";
 import Header from "@/components/header";
 // import Footer from "./footer/page";
 
-import Link from "next/link";
+// import Link from "next/link";
 import clsx from "clsx";
 import Footer from "./Footer/page";
+import BackToTop from "@/components/FloatButton";
 
 // import Snow from "@/components/snow";
 
@@ -64,7 +65,8 @@ export default function RootLayout({
               <SpeedInsights />
             </main>
             <Footer />
-            <FloatButton
+            <BackToTop />
+            {/* <FloatButton
               icon={<CommentOutlined />}
               tooltip={
                 <div>
@@ -78,7 +80,7 @@ export default function RootLayout({
                   </div>
                 </div>
               }
-            />
+            /> */}
           </div>
         </UserContextProvider>
       </body>

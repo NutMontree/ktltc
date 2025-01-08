@@ -9,7 +9,7 @@ export const DataPressrelease = {
       ...`,
       href: "/pressrelease/2568/press6801/press13",
     },
-    {
+  {
       name: `ประกาศเลขที่นั่งสอบ VNET`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/5/1.webp",
       date: "7 มกราคม 2568",

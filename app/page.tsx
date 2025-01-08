@@ -8,10 +8,10 @@ import ShowAnnouncement from "./showannouncement/page";
 import ShowBidding from "./showbidding/page";
 import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import ScrollVelocity from "@/components/Scrollvelocity";
-
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import { UserContextProvider } from "./providers";
 import ShowVideos from "./showvideos/page";
+ 
 
 export default function Page() {
   return (
@@ -47,6 +47,8 @@ export default function Page() {
             <ShowVideos />
           </div>
         </main>
+        <div className="bg-black">
+        </div>
       </UserContextProvider>
     </>
   );
