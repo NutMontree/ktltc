@@ -1,75 +1,85 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ขอพระองค์ทรงพระเจริญ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/13/2.webp",
+      date: "8 มกราคม 2568",
+      description: ` 
+๘ มกราคม วันคล้ายวันประสูติ สมเด็จพระเจ้าลูกเธอ เจ้าฟ้าสิริวัณณวรี นารีรัตนราชกัญญา ปวงข้าพระพุทธเจ้า คณะผู้บริหาร คณะครู บุคลากรทางการศึกษา นักเรียน 
+      ...`,
+      href: "/pressrelease/2568/press6801/press13",
+    },
+    {
       name: `ประกาศเลขที่นั่งสอบ VNET`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/5/1.webp",
+      date: "7 มกราคม 2568",
       description: ` 
 ระดับชั้น: ประกาศนียบัตรวิชาชีพ ชั้นปีที่ 3 วิทยาลัยเทคนิคกันทรลักษ์ 19 ม.ค. 2568 13:00 น.
       ...`,
-      href: "/pressrelease/2568/pressrelease6801/press5",
+      href: "/pressrelease/2568/press6801/press5",
     },
     {
-      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      name: `  ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/11/01.webp",
       date: "7 มกราคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/2568/pressrelease6801/press12",
+      href: "/pressrelease/2568/press6801/press12",
     },
     {
-      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      name: `  ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/12/01.webp",
       date: "7 มกราคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/2568/pressrelease6801/press11",
+      href: "/pressrelease/2568/press6801/press11",
     },
     {
-      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      name: `  ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/10/15.webp",
       date: "7 มกราคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/2568/pressrelease6801/press10",
+      href: "/pressrelease/2568/press6801/press10",
     },
     {
-      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      name: `  ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/9/0.webp",
       date: "7 มกราคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน  
       `,
-      href: "/pressrelease/2568/pressrelease6801/press9",
+      href: "/pressrelease/2568/press6801/press9",
     },
     {
-      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      name: `  ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/8/0.webp",
       date: "7 มกราคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู ร่วมเยี่ยมชมให้กำลังใจนักเรียน
       `,
-      href: "/pressrelease/2568/pressrelease6801/press8",
+      href: "/pressrelease/2568/press6801/press8",
     },
     {
-      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      name: `  ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/7/13.webp",
       date: "7 มกราคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมพิธีเปิดการแข่งขันทักษะวิชาชีพ ประเภทวิชาช่างอุสาหกรรม
       `,
-      href: "/pressrelease/2568/pressrelease6801/press7",
+      href: "/pressrelease/2568/press6801/press7",
     },
     {
-      name: ` วันอังคารที่ ๗ มกราคม  ๒๕๖๘`,
+      name: `  ๗ มกราคม  ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/6/37.webp",
       date: "7 มกราคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ชมจันทร์ ทักษิณา ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ในนามประธานคณะกรรมการจัดการแข่งขันทักษะวิชาชีพ 
       `,
-      href: "/pressrelease/2568/pressrelease6801/press6",
+      href: "/pressrelease/2568/press6801/press6",
     },
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์  `,
@@ -78,7 +88,7 @@ export const DataPressrelease = {
       description: ` 
  นำโดย 👉นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้บริหาร คณะครู บุคลากรทางการศึกษา 
  `,
-      href: "/pressrelease/2568/pressrelease6801/press4",
+      href: "/pressrelease/2568/press6801/press4",
     },
     {
       name: ` วันจันทร์ที่ 6 มกราคม  2568 `,
@@ -87,7 +97,7 @@ export const DataPressrelease = {
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมแสดงความยินดีเนื่องในโอกาสย้ายมาดำรงตำเเหน่ง 
 `,
-      href: "/pressrelease/2568/pressrelease6801/press3",
+      href: "/pressrelease/2568/press6801/press3",
     },
     {
       name: ` สวัสดีปีใหม่ `,
@@ -96,7 +106,7 @@ export const DataPressrelease = {
       description: ` 
 ตัวเเทนคณะครูขออวยพรให้กับนักเรียน นักศึกษาวิทยาลัยเทคนิคกันทรลักษ์ทุกคน เนื่องในโอกาสวารดิถีขึ้นปีใหม่ 2568 นี้ 
 `,
-      href: "/pressrelease/2568/pressrelease6801/press2",
+      href: "/pressrelease/2568/press6801/press2",
     },
     {
       name: ` คณะผู้บริหาร `,
@@ -105,7 +115,7 @@ export const DataPressrelease = {
       description: ` 
 นำโดย 👉 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย      
 `,
-      href: "/pressrelease/2568/pressrelease6801/press1",
+      href: "/pressrelease/2568/press6801/press1",
     },
   ],
 };

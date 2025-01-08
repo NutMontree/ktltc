@@ -9,7 +9,7 @@ export default function Pressrelease2568() {
           <Button color="primary" variant="ghost">
             <Link
               className="text-lg"
-              href="/pressrelease/2568/pressrelease6801"
+              href="/pressrelease/2568/press6801"
             >
               เดือน มกราคม 2568
             </Link>
