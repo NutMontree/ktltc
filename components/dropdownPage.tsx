@@ -1,12 +1,7 @@
 "use client"; // top to the file
 
 import { useState } from "react";
-import {
-  HoveredLink,
-  Menu,
-  MenuItem,
-  ProductItem,
-} from "@/components/ui/navbar-menu";
+import { HoveredLink, Menu, MenuItem } from "@/components/ui/navbar-menu";
 import { cn } from "@/lib/utils";
 
 export function DropdownPage() {
@@ -271,7 +266,11 @@ function Navbar({ className }: { className?: string }) {
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
-              <HoveredLink className="" href="/ ">
+              <HoveredLink
+                className=""
+                href="https://forms.gle/Hcwfjvd7S8zTbA3C8"
+                target="_blank"
+              >
                 แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
               </HoveredLink>
             </div>

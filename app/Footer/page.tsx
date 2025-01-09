@@ -460,7 +460,11 @@ export default function Footer() {
                       </Link>
                     </div>
                     <div className="py-2">
-                      <Link href="/ " className="hover:underline ">
+                      <Link
+                        href="https://forms.gle/Hcwfjvd7S8zTbA3C8"
+                        target="_blank"
+                        className="hover:underline "
+                      >
                         แบบประเมินความพึงพอใจของผู้ใช้
                         บริการข้อมูลด้านระบบสารสนเทศ
                       </Link>

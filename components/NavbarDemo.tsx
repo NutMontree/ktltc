@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  HoveredLink,
-  Menu,
-  MenuItem,
-  ProductItem,
-} from "@/components/ui/navbar-menu";
+import { HoveredLink, Menu, MenuItem } from "@/components/ui/navbar-menu";
 import { cn } from "@/lib/utils";
 
 export function NavbarDemo() {
@@ -191,7 +186,11 @@ function Navbar({ className }: { className?: string }) {
             <HoveredLink className="hover:text-sky-500" href="/ ">
               ID Plan
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
+            <HoveredLink
+              className="hover:text-sky-500"
+              href="https://forms.gle/Hcwfjvd7S8zTbA3C8"
+              target="_blank"
+            >
               แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/ ">

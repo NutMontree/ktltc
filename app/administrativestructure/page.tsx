@@ -9,7 +9,7 @@ export default function AdministrativeStructure() {
   return (
     <>
       <div className="pb-10">
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-[18px] sm:text-[24px] md:text-[30px] lg:text:[34px] text-[#DAA520] ">
           แผนภูมิโครงสร้างการบริหารงานสถานศึกษา
         </h1>
       </div>

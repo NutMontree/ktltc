@@ -373,7 +373,11 @@ function Navbar({}: { className?: string }) {
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1
+                          className="hover:text-sky-500"
+                          href="https://forms.gle/Hcwfjvd7S8zTbA3C8"
+                          target="_blank"
+                        >
                           แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
                         </HoveredLink1>
                       </div>
