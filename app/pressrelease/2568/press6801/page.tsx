@@ -30,9 +30,11 @@ export default function Page() {
               <NextLink key={item.href} href={item.href}>
                 <div
                   className="mb-2 group relative rounded-xl cursor-pointer 
-                h-36
-                md:h-44
-                xl:h-60
+                  h-[170px]
+                  sm:h-[170px]
+                  md:h-[210px]
+                  lg:h-[210px]
+                  xl:h-[300px]
                 "
                 >
                   <div

@@ -12,7 +12,7 @@ export default function Pressrelease6710() {
 
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] ">
-          เดือน พฤศจิกายน 2567
+          เดือน ธันวาคม 2567
         </h1>
       </div>
 
