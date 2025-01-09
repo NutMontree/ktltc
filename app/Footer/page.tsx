@@ -38,7 +38,7 @@ export default function Footer() {
   ];
   return (
     <>
-      <div className="border-t mx-auto max-w-screen-2xl" />
+      <div className="border-t mx-auto max-w-screen-2xl " />
       <div>
         <div className="bg-red-800">
           <footer
@@ -46,12 +46,12 @@ export default function Footer() {
                   justify-between 
                   text-white
                   justify-items-center
-                  mx-auto max-w-screen-2xl px-4 pt-8  
+                  mx-auto max-w-screen-2xl px-4 py-[26px] 
                   "
           >
-            <div className=" ">
+            <div className="py-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-[24px]">
-                <span className="">
+                <span className="grid gap-2 pb-2">
                   <div>
                     <Image
                       removeWrapper
@@ -75,7 +75,7 @@ export default function Footer() {
                     </svg>
                     <div>061-4122765 หรือ 045-811753</div>
                   </div>
-                  <div className="flex gap-2 py-2">
+                  <div className="flex gap-2 ">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -97,7 +97,7 @@ export default function Footer() {
                       QM35+J68 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
                     </Link>
                   </div>
-                  <div className="flex gap-2 py-2 pl-1">
+                  <div className="flex gap-2  pl-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -111,39 +111,41 @@ export default function Footer() {
                   </div>
                 </span>
 
-                <div className=" py-2 ">
-                  <div className="py-2">
-                    <Link href="/pressrelease" className="hover:underline ">
-                      ข่าวประชาสัมพันธ์
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/newsletter" className="hover:underline ">
-                      จดหมายข่าว
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/announcement" className="hover:underline ">
-                      ข่าวประกาศ
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link href="/bidding" className="hover:underline ">
-                      ข่าวประกวดราคา
-                    </Link>
-                  </div>
-                  <div className="py-2">
-                    <Link
-                      href="/technicalcollegeorders"
-                      className="hover:underline "
-                    >
-                      คำสั่งวิทยาลัยเทคนิค
-                    </Link>
-                  </div>
+                <div className="border-t sm:border-none">
+                  <span className="">
+                    <div className="pt-6 sm:pt-0">
+                      <Link href="/pressrelease" className="hover:underline ">
+                        ข่าวประชาสัมพันธ์
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/newsletter" className="hover:underline ">
+                        จดหมายข่าว
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/announcement" className="hover:underline ">
+                        ข่าวประกาศ
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link href="/bidding" className="hover:underline ">
+                        ข่าวประกวดราคา
+                      </Link>
+                    </div>
+                    <div className="py-2">
+                      <Link
+                        href="/technicalcollegeorders"
+                        className="hover:underline "
+                      >
+                        คำสั่งวิทยาลัยเทคนิค
+                      </Link>
+                    </div>
+                  </span>
                 </div>
 
-                <div className=" py-2">
-                  <div className="py-2">
+                <span className="border-t sm:border-none">
+                  <div className="pt-6 sm:pt-0">
                     <Link
                       href="/externalinternal"
                       className="hover:underline  "
@@ -180,7 +182,7 @@ export default function Footer() {
                       Mini Game
                     </Link>
                   </div>
-                </div>
+                </span>
               </div>
             </div>
           </footer>
@@ -192,143 +194,134 @@ export default function Footer() {
                   justify-between 
                   text-white
                   justify-items-center
-                  mx-auto max-w-screen-2xl px-4 py-8
+                  mx-auto max-w-screen-2xl px-4 py-[26px] border-t
                   "
           >
-            <div className="">
+            <div className="py-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[24px]">
-                <div className="">
-                  <div className="py-2 ">
-                    <div className="pb-6 text-lg text-center">
+                <div className=" ">
+                  <div className="pb-4 text-lg text-center">
+                    ประวัติสถานศึกษา
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      href="/historyeducational "
+                      className="hover:underline "
+                    >
                       ประวัติสถานศึกษา
-                    </div>
-                    <div className="">
-                      <Link
-                        href="/historyeducational "
-                        className="hover:underline "
-                      >
-                        ประวัติสถานศึกษา
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/philosophy " className="hover:underline ">
-                        ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/eduadmin " className="hover:underline ">
-                        ทำเนียบผู้บริหาร
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link
-                        href="/administrativestructure "
-                        className="hover:underline "
-                      >
-                        โครงสร้างการบริหารงานสถานศึกษา
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link
-                        href="/executiveboard "
-                        className="hover:underline "
-                      >
-                        คณะกรรมการบริหารสถานศึกษา
-                      </Link>
-                    </div>
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/philosophy " className="hover:underline ">
+                      ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/eduadmin " className="hover:underline ">
+                      ทำเนียบผู้บริหาร
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      href="/administrativestructure "
+                      className="hover:underline "
+                    >
+                      โครงสร้างการบริหารงานสถานศึกษา
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/executiveboard " className="hover:underline ">
+                      คณะกรรมการบริหารสถานศึกษา
+                    </Link>
                   </div>
                 </div>
-                <div>
-                  <div className=" py-2">
-                    <div className="pb-6 text-lg text-center">
-                      ข้อมูลพื้นฐาน 9 ประการ
-                    </div>
+                <div className="border-t sm:border-none">
+                  <div className=" text-lg text-center pt-6 pb-4 sm:pt-0">
+                    ข้อมูลพื้นฐาน 9 ประการ
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      href="/historyeducational "
+                      className="hover:underline "
+                    >
+                      ข้อมูลสถานศึกษา
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/personnel " className="hover:underline ">
+                      ข้อมูลบุคลากร
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/sid " className="hover:underline ">
+                      ข้อมูลนักเรียน นักศึกษา
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/ " className="hover:underline ">
+                      ข้อมูลหลักสูตร
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/ " className="hover:underline ">
+                      ข้อมูลครุภัณฑ์
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/ " className="hover:underline ">
+                      ข้อมูลงบประมาณ
+                    </Link>
                     <div className="py-2">
-                      <Link
-                        href="/historyeducational "
-                        className="hover:underline "
-                      >
-                        ข้อมูลสถานศึกษา
+                      <Link href="/buildings " className="hover:underline ">
+                        ข้อมูลอาคารสถานที่
                       </Link>
                     </div>
-                    <div className="py-2">
-                      <Link href="/personnel " className="hover:underline ">
-                        ข้อมูลบุคลากร
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/sid " className="hover:underline ">
-                        ข้อมูลนักเรียน นักศึกษา
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/ " className="hover:underline ">
-                        ข้อมูลหลักสูตร
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/ " className="hover:underline ">
-                        ข้อมูลครุภัณฑ์
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/ " className="hover:underline ">
-                        ข้อมูลงบประมาณ
-                      </Link>
-                      <div className="py-2">
-                        <Link href="/buildings " className="hover:underline ">
-                          ข้อมูลอาคารสถานที่
-                        </Link>
-                      </div>
 
-                      <div className="py-2">
-                        <Link href="/ " className="hover:underline ">
-                          ข้อมูลตลาดแรงงาน
-                        </Link>
-                      </div>
+                    <div className="py-2">
+                      <Link href="/ " className="hover:underline ">
+                        ข้อมูลตลาดแรงงาน
+                      </Link>
+                    </div>
 
-                      <div className="py-2">
-                        <Link
-                          href="https://www.sisaket.go.th/"
-                          target="_blank"
-                          className="hover:underline "
-                        >
-                          ข้อมูลของจังหวัด
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className=" py-2 ">
-                    <div className="pb-6 text-lg text-center">
-                      หน่วยงานภายใน
-                    </div>
                     <div className="py-2">
-                      <Link href="/resource " className="hover:underline ">
-                        ฝ่ายบริหารทรัพยากร
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/plan " className="hover:underline ">
-                        ฝ่ายแผนงานและความร่วมมือ
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/develop " className="hover:underline ">
-                        ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
-                      </Link>
-                    </div>
-                    <div className="py-2">
-                      <Link href="/academic " className="hover:underline ">
-                        ฝ่ายวิชาการ
+                      <Link
+                        href="https://www.sisaket.go.th/"
+                        target="_blank"
+                        className="hover:underline "
+                      >
+                        ข้อมูลของจังหวัด
                       </Link>
                     </div>
                   </div>
                 </div>
+                <div className="border-t sm:border-none">
+                  <div className=" text-lg text-center pt-6 pb-4 sm:pt-0">
+                    หน่วยงานภายใน
+                  </div>
+                  <div className="py-2">
+                    <Link href="/resource " className="hover:underline ">
+                      ฝ่ายบริหารทรัพยากร
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/plan " className="hover:underline ">
+                      ฝ่ายแผนงานและความร่วมมือ
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/develop " className="hover:underline ">
+                      ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link href="/academic " className="hover:underline ">
+                      ฝ่ายวิชาการ
+                    </Link>
+                  </div>
+                </div>
                 <div>
-                  <div className=" py-2">
-                    <div className="pb-6 text-lg text-center">
+                  <div className="border-t sm:border-none">
+                    <div className=" text-lg text-center pt-6 pb-4 sm:pt-0">
                       ข้อมูลบุคลากร
                     </div>
 
@@ -400,8 +393,10 @@ export default function Footer() {
                   </div>
                 </div>
                 <div>
-                  <div className=" py-2">
-                    <div className="pb-6 text-lg text-center">เมนูลัด</div>
+                  <div className="border-t sm:border-none">
+                    <div className=" text-lg text-center pt-6 pb-4 sm:pt-0">
+                      เมนูลัด
+                    </div>
                     <div className="py-2">
                       <Link
                         href="https://std2018.vec.go.th/web/ "
@@ -597,18 +592,18 @@ export default function Footer() {
 //   ];
 //   return (
 //     <>
-//       <div className="">
+//       <div className="py-2">
 //         <footer className="bottom-0 left-0 z-20 w-full border-t border-y md:flex md:justify-between px-4 py-4">
 //           <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
 //             <div>
 //               <Image
 //                 removeWrapper
 //                 alt="Relaxing app background"
-//                 className="w-60 py-2"
+//                 className="w-60 "
 //                 src="/images/ktltc.png"
 //               />
 //             </div>
-//             <div className="flex gap-2 py-2">
+//             <div className="flex gap-2 ">
 //               <svg
 //                 xmlns="http://www.w3.org/2000/svg"
 //                 viewBox="0 0 24 24"
@@ -623,7 +618,7 @@ export default function Footer() {
 //               </svg>
 //               <div>061-4122765 หรือ 045-811753</div>
 //             </div>
-//             <div className="flex gap-2 py-2 ">
+//             <div className="flex gap-2  ">
 //               <svg
 //                 xmlns="http://www.w3.org/2000/svg"
 //                 viewBox="0 0 24 24"
@@ -645,7 +640,7 @@ export default function Footer() {
 //                 QM35+J68 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
 //               </Link>
 //             </div>
-//             <div className="flex gap-2 py-2 pl-1">
+//             <div className="flex gap-2  pl-1">
 //               <svg
 //                 xmlns="http://www.w3.org/2000/svg"
 //                 viewBox="0 0 24 24"
@@ -659,7 +654,7 @@ export default function Footer() {
 //             </div>
 //           </span>
 
-//           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+//           <div className="  text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
 //             <div className="py-2">
 //               <Link href="/" className="hover:underline hover:text-sky-500">
 //                 หน้าหลัก
@@ -707,7 +702,7 @@ export default function Footer() {
 //             </div>
 //           </div>
 
-//           <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+//           <div className="  text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
 //             <div className="py-2">
 //               <Link
 //                 href="/externalinternal"
@@ -757,7 +752,7 @@ export default function Footer() {
 //             </div>
 //           </div>
 
-//           {/* <div className=" py-2 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+//           {/* <div className="  text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
 //             <div className="py-2">
 //               <Link
 //                 href="/ "
