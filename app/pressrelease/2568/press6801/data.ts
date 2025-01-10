@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `เเจ้ง `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/23/0.webp",
+      date: "10 มกราคม 2568",
+      description: ` 
+🎊ตารางการถ่ายภาพเเละการเเต่งกายนักเรียน นักศึกษา ที่จะจบการศึกษา ระดับ ปวช. เเละ ปวส. ประจำปีการศึกษา 2567
+      ...`,
+          href: "/pressrelease/2568/press6801/press28",
+    },
+    {
       name: `ขอเเสดงความยินดี`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/22/1.webp",
       date: "10 มกราคม 2568",
