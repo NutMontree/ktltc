@@ -122,11 +122,12 @@ export default function ShowNewsletter() {
               <NextLink key={item.href} href={item.href}>
                 <div
                   className="
-                relative mb-6 shadow-lg rounded-xl 
-                h-[210px] 
-                sm:h-[310px]
-                lg:h-[410px]
-                xl:h-[510px]
+                mb-6 relative shadow-lg rounded-xl 
+                h-[250px]
+                xs:h-[200px] 
+                sm:h-[300px]
+                lg:h-[400px]
+                xl:h-[500px]
                 lg:w-[full] overflow-hidden 
                 "
                 >
