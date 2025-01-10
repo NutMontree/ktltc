@@ -145,12 +145,11 @@ export default function ShowPressRelease() {
                 <div
                   className="
                   mb-6 relative shadow-lg rounded-xl 
-                  h-[200px]
-                  sm:h-[200px]
-                  md:h-[210px]
-                  lg:h-[220px]
-                  xl:h-[230px]
-                  2xl:h-[240px]
+                  h-[180px]
+                  sm:h-[180px]
+                  md:h-[190px]
+                  lg:h-[200px]
+                  xl:h-[210px]
                   overflow-hidden"
                 >
                   <div
