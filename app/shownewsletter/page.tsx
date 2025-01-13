@@ -147,13 +147,11 @@ export default function ShowNewsletter() {
                   >
                     {item.name}
                   </h1>
-                  <div
-                    className=" 
-                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
-                              mb-8
-                              "
-                  >
-                    {item.description}
+                  <div>
+                    <div className="text-sm">{item.description}</div>
+                    <div className="text-xs text-slate-500 pb-12">
+                      {item.date}
+                    </div>
                   </div>
                 </div>
               </NextLink>
