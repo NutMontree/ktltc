@@ -134,7 +134,7 @@ export default function ShowPressRelease() {
           onSlideChange={() => console.log("slide change")}
           centeredSlides={true}
           autoplay={{
-            delay: 10500,
+            delay: 20000,
             disableOnInteraction: false,
           }}
           className="mySwiper"
@@ -182,6 +182,7 @@ export default function ShowPressRelease() {
                               mb-10
                               "
                   >
+                    
                     {item.date}
                   </div>
                 </div>
