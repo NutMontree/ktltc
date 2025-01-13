@@ -20,7 +20,7 @@ export default function Electronics() {
           <AccordionItem
             key="1"
             aria-label="Accordion 1"
-            title="คณะครู แผนกวิชาช่างเชื่อมโลหะ"
+            title="คณะครู แผนกวิชาช่างอิเล็กทรอนิกส์"
             className=" border rounded-xl px-4 py-1 shadow-2xl "
           >
             <div className=" flex justify-center   ">
