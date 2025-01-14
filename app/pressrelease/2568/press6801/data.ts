@@ -1,7 +1,16 @@
 export const DataPressrelease = {
   navItems: [
     {
-      name: `๑๔ มกราคม  ๒๕๖๘`,
+      name: ` ๑๔ มกราคม  ๒๕๖๘`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/40/1.webp",
+      date: "14 มกราคม 2568",
+      description: ` 
+วิทยาลัยเทคนิคกันทรลักษ์ ขอแสดงความยินดี นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ได้รับรางวัลเชิดชูครูดีวิถีพุทธ
+      ...`,
+          href: "/pressrelease/2568/press6801/press45", 
+    },
+    {
+      name: ``,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/39/29.webp",
       date: "14 มกราคม 2568",
       description: ` 
