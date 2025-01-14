@@ -27,11 +27,9 @@ export default function Pressrelease() {
         </div>
 
         {/* ***************************** Link And PDF ***************************** */}
- 
-  <div className="pt-4">
-          <p className="text-sky-800 text-lg">
-          สามารถดูข้อมูลเพิ่ม 
-          </p>
+
+        <div className="pt-4">
+          <p className="text-sky-800 text-lg">สามารถดูข้อมูลเพิ่ม</p>
           <Link
             href="
 https://drive.google.com/drive/folders/1pQwwkYi8IgscmKQCaX6T8no8sAx_lRTY?fbclid=IwZXh0bgNhZW0CMTAAAR01nXQt3EP4-B_VpC6KymfFIj90pMNucnG3PSbPhHRHWLIAht2vQLKYlMQ_aem__USME15oDwwNKmzRINP-Vw
@@ -40,8 +38,7 @@ https://drive.google.com/drive/folders/1pQwwkYi8IgscmKQCaX6T8no8sAx_lRTY?fbclid=
             target="_blank"
           >
             <p className="text-red-500">
-
-           https://drive.google.com/.../1pQwwkYi8IgscmKQCaX6T8no8sAx...
+              https://drive.google.com/.../1pQwwkYi8IgscmKQCaX6T8no8sAx...
             </p>
           </Link>
 
@@ -49,8 +46,8 @@ https://drive.google.com/drive/folders/1pQwwkYi8IgscmKQCaX6T8no8sAx_lRTY?fbclid=
             className="w-full aspect-video ..."
             src="/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/38/1.pdf"
           ></iframe> */}
-        </div> 
- 
+        </div>
+
         {/* ***************************** Link And PDF ***************************** */}
 
         <FootTitle />
@@ -78,7 +75,6 @@ https://drive.google.com/drive/folders/1pQwwkYi8IgscmKQCaX6T8no8sAx_lRTY?fbclid=
           </div>
         </div>
       </div>
- 
     </>
   );
 }

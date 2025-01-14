@@ -1,3 +1,4 @@
+ 
 "use client"; // top to the file
 
 // Import Swiper React components
@@ -134,7 +135,7 @@ export default function ShowPressRelease() {
           onSlideChange={() => console.log("slide change")}
           centeredSlides={true}
           autoplay={{
-            delay: 20000,
+            delay: 25000,
             disableOnInteraction: false,
           }}
           className="mySwiper"
@@ -144,7 +145,7 @@ export default function ShowPressRelease() {
               <NextLink key={item.href} href={item.href}>
                 <div
                   className="
-                  mb-6 relative shadow-lg rounded-xl 
+                  mb-6 relative shadow-lg rounded-2xl 
                   h-[180px]
                   sm:h-[180px]
                   md:h-[190px]
@@ -182,7 +183,6 @@ export default function ShowPressRelease() {
                               mb-10
                               "
                   >
-                    
                     {item.date}
                   </div>
                 </div>

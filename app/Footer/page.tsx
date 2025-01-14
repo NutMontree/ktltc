@@ -511,7 +511,8 @@ export default function Footer() {
   );
 }
 
-// "use client"; // top to the file
+//
+// ("use client"); // top to the file
 
 // import { Image } from "@nextui-org/react";
 // import Link from "next/link";

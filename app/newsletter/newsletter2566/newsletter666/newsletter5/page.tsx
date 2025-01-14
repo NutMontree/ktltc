@@ -14,7 +14,7 @@ import { Image } from "@nextui-org/react";
 
 export default function Newsletter5() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [scrollBehavior, setScrollBehavior] = React.useState("inside");
+
   return (
     <>
       <div className="flex flex-col gap-2">

@@ -115,9 +115,6 @@ export default function HistoryEducational() {
           </div>
         </div>
       </div>
-
     </>
   );
 }
-
-

@@ -1,4 +1,5 @@
-// "use client"; // top to the file
+//
+"use client"; // top to the file
 import { FlipWords } from "@/components/ui/flip-words";
 export default function philosophy() {
   const words = [

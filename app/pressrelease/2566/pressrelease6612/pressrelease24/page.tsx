@@ -12,10 +12,9 @@ import {
 import { DataPressrelease24 } from "./data";
 import { Image } from "@nextui-org/react";
 
-
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [scrollBehavior, setScrollBehavior] = React.useState("inside");
+
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -47,7 +46,7 @@ export default function Pressrelease() {
                       </div>
                     ))}
                   </div>
-              
+
                   <div className="justify-center flex-col">
                     {DataPressrelease24.Item.map((item) => (
                       <div

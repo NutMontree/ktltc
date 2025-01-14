@@ -30,7 +30,7 @@ export default function Pressrelease() {
               "
               className="hover:text-sky-500"
             >
-          ตรวจสอบผลการเรียน
+              ตรวจสอบผลการเรียน
             </Link>
 
             <p className=" ">หรือสแกน qr code </p>

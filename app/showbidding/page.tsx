@@ -1,4 +1,5 @@
 // showbidding
+
 "use client"; // top to the file
 
 // Import Swiper React components

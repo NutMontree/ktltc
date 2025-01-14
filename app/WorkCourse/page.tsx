@@ -32,7 +32,7 @@ export default function WorkCourse() {
               <NextLink key={item.href} href={item.href}>
                 <div className="mb-2 group relative rounded-xl cursor-pointer min-h-48 ">
                   <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center bg-top hover:scale-110 duration-500"
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}

@@ -3,7 +3,7 @@
 import React from "react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
- 
+
 import { FootTitle } from "@/components/FootTitle";
 
 export default function Pressrelease() {

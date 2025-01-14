@@ -50,7 +50,6 @@ export default function Pressrelease() {
           </div>
         </div>
       </div>
- 
     </>
   );
 }

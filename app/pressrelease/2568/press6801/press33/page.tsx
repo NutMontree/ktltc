@@ -24,7 +24,7 @@ export default function Pressrelease() {
             </div>
           ))}
         </div>
- 
+
         {/* ***************************** Link And PDF ***************************** */}
 
         <FootTitle />
@@ -52,7 +52,6 @@ export default function Pressrelease() {
           </div>
         </div>
       </div>
- 
     </>
   );
 }

@@ -1,4 +1,3 @@
-
 "use client"; // top to the file
 import React from "react";
 import {
@@ -16,7 +15,7 @@ import Link from "next/link";
 
 export default function Pressrelease() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [scrollBehavior, setScrollBehavior] = React.useState("inside");
+
   return (
     <>
       <div className="flex flex-col gap-2">

@@ -1,4 +1,3 @@
-
 "use client"; // top to the file
 import React from "react";
 import {
@@ -16,7 +15,7 @@ import { Image } from "@nextui-org/react";
 
 export default function bidding3() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [scrollBehavior, setScrollBehavior] = React.useState("inside");
+
   return (
     <>
       <div className="flex flex-col gap-2">
