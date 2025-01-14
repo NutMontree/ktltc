@@ -24,7 +24,7 @@ import NextLink from "next/link";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
-import { Data } from "../technicalcollegeorders/Technical2567/technical6712/data";
+import { Data } from "../technicalcollegeorders/Technical2568/technical6801/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
