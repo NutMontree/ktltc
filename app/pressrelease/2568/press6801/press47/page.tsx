@@ -30,9 +30,7 @@ export default function Pressrelease() {
         <div className=" ">
           <div className="px-4 py-4">
             <Link
-              href="
-https://cdn3.me-qr.com/pdf/2fd30bda-eb3a-4da3-abe1-ad5ee6429e7a.pdf?fbclid=IwZXh0bgNhZW0CMTAAAR0IMoDmXKnVoZf7tp4ITPz8_WgYF4yfnn0faZ_NIkfyDHFPsHUbXsRcpfI_aem_w8OfvxoMNFUMDrDWYGfYUQ
-// "
+              href="/images/ข่าวประชาสัมพันธ์/2568/มกราคม/42/คำสั่งให้บุคลากรไปราชการ.pdf"
               className="hover:text-sky-500 text-sky-800 text-lg"
               target="_blank"
             >
