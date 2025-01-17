@@ -20,7 +20,7 @@ export default function Hotel() {
           <AccordionItem
             key="1"
             aria-label="Accordion 1"
-            title="คณะครู แผนกวิชาการตลาด"
+            title="คณะครู แผนกวิชาการโรงแรม"
             className=" border rounded-xl px-4 py-1 shadow-2xl "
           >
             <div className=" flex justify-center   ">
