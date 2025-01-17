@@ -11,6 +11,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import { UserContextProvider } from "./providers";
 import ShowVideos from "./showvideos/page";
+import ShowFacebook from "@/components/ShowFacebook";
 
 export default function Page() {
   return (
@@ -41,6 +42,9 @@ export default function Page() {
           </div>
           <div className="border-t py-[48px]">
             <ShowTechnicalcollegeorders />
+          </div>
+          <div className="border-t py-[48px]">
+            <ShowFacebook />
           </div>
           <div className="border-t py-[48px]">
             <ShowVideos />
