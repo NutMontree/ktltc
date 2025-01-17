@@ -8,7 +8,7 @@ export function BackgroundBeamsWithCollisionDemo() {
     <>
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-      <div className="py-3">
+      <div className="py-3 border-b pb-[48px]">
         <div className="flex justify-center">
           <Link href=" ">
             <div className="flex justify-center">
@@ -21,11 +21,12 @@ export function BackgroundBeamsWithCollisionDemo() {
                   />
                 </div>
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-4">
-                  <div className="text-center">
-                    “พระราชพิธีสมมงคล” โบราณราชประเพณี ในหลวงพระชนมายุ 26,469
-                    วัน เท่ารัชกาลที่ 1
+                  <div className="text-center pt-2">
+                    “พระราชพิธีสมมงคล” <br /> โบราณราชประเพณี ในหลวงพระชนมายุ
+                    26,469 วัน เท่ารัชกาลที่ 1
                   </div>
-                  <div className="text-[14px] md:text-[20px] sm:text-sm md:text-base">
+                  {/* <div className="text-[14px] md:text-[20px] sm:text-sm md:text-base"> */}
+                  <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base">
                     พระราชพิธีสมมงคล เป็นราชประเพณีที่ถือปฏิบัติสืบกันมาช้านาน
                     พระมหากษัตริย์ทุกพระองค์ จะทรงอนุสรณ์คำนึงถึงพระราชกรณียกิจ
                     ของสมเด็จพระบรมราชบุพการีในวาระต่าง ๆ เช่น
