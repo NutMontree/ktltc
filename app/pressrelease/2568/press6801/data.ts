@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `สวัสดีชาวเด็ก 68 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/55/1.webp",
+      date: "20 มกราคม 2568",
+      description: ` 
+"วิทยาลัยเทคนิคกันทรลักษ์ เรียนเเล้วได้อะไร" สนใจเรียน เเผนกวิชาช่างไฟฟ้ากำลัง 🏭⚙️⚡️เรียนเกี่ยวกับอะไร ?
+       ...`,
+      href: "/pressrelease/2568/press6801/press60",
+    },
+    {
       name: `๑๗ มกราคม ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/54/03.webp",
       date: "20 มกราคม 2568",
