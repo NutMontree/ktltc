@@ -53,6 +53,16 @@ export default function ShowFacebook() {
                         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                       ></iframe>
                     </div>
+                    <div className="justify-items-center pt-[24px]">
+                      <iframe
+                        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057195379923%26mibextid%3DZbWKwL&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+                        width="340"
+                        height="500"
+                        scrolling="no"
+                        frameBorder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
               </AccordionItem>
