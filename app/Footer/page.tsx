@@ -160,11 +160,20 @@ export default function Footer() {
                   </div>
                   <div className="py-2">
                     <Link
-                      href="https://www.facebook.com/profile.php?id=61571228871228 "
+                      href="https://www.facebook.com/profile.php?id=61571228871228"
                       target="_blank"
                       className="hover:underline  "
                     >
                       ตู้เสมารักษ์ สถานศึกษาสีขาว
+                    </Link>
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      href="https://www.facebook.com/profile.php?id=61567041267941"
+                      target="_blank"
+                      className="hover:underline  "
+                    >
+                      ชมรม To Be Number 1
                     </Link>
                   </div>
 
