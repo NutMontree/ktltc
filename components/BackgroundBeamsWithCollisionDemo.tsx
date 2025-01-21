@@ -10,7 +10,7 @@ export function BackgroundBeamsWithCollisionDemo() {
 
       <div className="py-3 border-b pb-[48px]">
         <div className="flex justify-center">
-          <Link href=" ">
+          <Link href="http://forking.moi.go.th/page/index.php" target="_blank">
             <div className="flex justify-center">
               <div className="px-4">
                 <div className="flex justify-center">
@@ -20,6 +20,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                     src={"/images/13.webp"}
                   />
                 </div>
+
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-4">
                   <div className="text-center pt-2">
                     “พระราชพิธีสมมงคล” <br /> โบราณราชประเพณี ในหลวงพระชนมายุ
@@ -51,6 +52,13 @@ export function BackgroundBeamsWithCollisionDemo() {
                     ถวายพระบาทสมเด็จพระพุทธยอดฟ้าจุฬาโลกมหาราช ณ
                     พระที่นั่งอมรินทร์วินิจฉัย ในพระบรมมหาราชวังในวันเดียวกัน
                   </div>
+                </div>
+                <div className="justify-items-center pt-8">
+                  <Image
+                    // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
+                    className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
+                    src={"/images/bn.webp"}
+                  />
                 </div>
               </div>
             </div>
