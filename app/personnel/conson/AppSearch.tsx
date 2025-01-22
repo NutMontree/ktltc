@@ -1,6 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";

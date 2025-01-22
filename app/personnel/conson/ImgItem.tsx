@@ -1,5 +1,4 @@
 import { BackgroundGradient } from "@/components/ui/background-gradient";
-import { Image } from "@nextui-org/react";
 
 export function ImgItem(props: { img: any; onImgClick: any }) {
   const { img, onImgClick } = props;
@@ -13,7 +12,7 @@ export function ImgItem(props: { img: any; onImgClick: any }) {
             onClick={() => onImgClick(img)}
             alt={img.title.department}
           />
-          <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+          <div className="text-center xl:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
             <p>{img.title}</p>
           </div>
           <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">

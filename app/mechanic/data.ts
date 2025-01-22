@@ -9,7 +9,7 @@ export const Data = [
   },
   {
     name: `นายไกรศร  ผิวผัน`,
-    position: `รองหัวหน้าแผนกวิชา`,
+    position: ``,
     department: `แผนกวิชายานยนต์ ไฟฟ้า`,
     faction: `หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน`,
     description: ` พนักงานราชการ ครู`,
@@ -18,7 +18,7 @@ export const Data = [
 
   {
     name: `นายประดิษฐ  ใจทรง`,
-    position: ` `,
+    position: `หัวหน้าแผนกวิชา `,
     department: `ช่างยนต์ `,
     faction: `หัวหน้างานโครงการพิเศษและบริการชุมชน `,
     description: ` พนักงานราชการ ครู`,
@@ -26,7 +26,7 @@ export const Data = [
   },
   {
     name: `นายพัฒนกฤษณ์  นามคำมี`,
-    position: ` `,
+    position: `รองหัวหน้าแผนกวิชา `,
     department: `ช่างยนต์ `,
     faction: ` `,
     description: ` ครูผู้ช่วย `,

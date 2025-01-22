@@ -1,19 +1,14 @@
 import "@/styles/globals.css";
 import { Toaster } from "react-hot-toast";
-// import { prompt } from "@/config/fonts";
 import { fontSans } from "@/config/fonts";
 import { UserContextProvider } from "./providers";
 import { siteConfig } from "@/config/site";
 import { NavbarPage } from "@/components/navbar";
-// import { FloatButton } from "antd";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-// import { CommentOutlined } from "@ant-design/icons";
 import { FloatingNavDemo } from "@/components/FloatingNavDemo";
 import { Metadata, Viewport } from "next";
-import Header from "@/components/header";
-// import Footer from "./footer/page";
 
-// import Link from "next/link";
+import Header from "@/components/header";
 import clsx from "clsx";
 import Footer from "./Footer/page";
 import BackToTop from "@/components/FloatButton";
@@ -46,7 +41,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      {/* <body className={clsx("promp-sans", prompt.variable)}> */}
       <body className={clsx("", fontSans.variable)}>
         <UserContextProvider
           themeProps={{ attribute: "class", defaultTheme: "light" }}
@@ -66,21 +60,6 @@ export default function RootLayout({
             </main>
             <Footer />
             <BackToTop />
-            {/* <FloatButton
-              icon={<CommentOutlined />}
-              tooltip={
-                <div>
-                  <div>
-                    <Link
-                      className="  text-sky-500"
-                      href="https://www.facebook.com/messages/t/100004276455648"
-                    >
-                      Mesesnger
-                    </Link>
-                  </div>
-                </div>
-              }
-            /> */}
           </div>
         </UserContextProvider>
       </body>
