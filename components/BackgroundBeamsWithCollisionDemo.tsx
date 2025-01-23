@@ -53,18 +53,24 @@ export function BackgroundBeamsWithCollisionDemo() {
                     พระที่นั่งอมรินทร์วินิจฉัย ในพระบรมมหาราชวังในวันเดียวกัน
                   </div>
                 </div>
-                <div className="justify-items-center pt-8">
-                  <Image
-                    // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
-                    className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
-                    src={"/images/bn.webp"}
-                  />
-                </div>
               </div>
             </div>
           </Link>
         </div>
       </div>
+
+      <div className="py-3 border-b pb-[48px]">
+        <Link href="http://forking.moi.go.th/page/index.php" target="_blank">
+          <div className="justify-items-center pt-8">
+            <Image
+              // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
+              className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
+              src={"/images/bn.webp"}
+            />
+          </div>
+        </Link>
+      </div>
+
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 px-8 gap-8 pt-12">
