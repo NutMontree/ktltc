@@ -59,21 +59,18 @@ export function BackgroundBeamsWithCollisionDemo() {
         </div>
       </div>
 
-      <div className="py-3 border-b pb-[48px]">
+      <div className="py-3 border-b pb-[48px] pt-[48px] flex justify-center">
         <Link href="http://forking.moi.go.th/page/index.php" target="_blank">
-          <div className="justify-items-center pt-8">
-            <Image
-              // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
-              className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
-              src={"/images/bn.webp"}
-            />
-          </div>
+          <Image
+            className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
+            src={"/images/bn.webp"}
+          />
         </Link>
       </div>
 
       {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 px-8 gap-8 pt-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 px-8 gap-8 pt-[48px] pb-[48px]">
         {/* border-t */}
         {/* <Cover className="flex justify-center"> */}
         <div className="flex justify-center">
@@ -161,6 +158,57 @@ export function BackgroundBeamsWithCollisionDemo() {
           </Link>
         </div>
       </div>
+
+      {/* ******************************************* เรื่องที่ 2 ******************************************* */}
+
+      <div className="pb-[48px] border-t py-[48px]">
+        <div className="flex justify-center">
+          <div className="flex justify-center">
+            <div className="px-4">
+              <div className="flex justify-center">
+                <Image
+                  // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
+                  className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
+                  src={"/images/14.webp"}
+                />
+              </div>
+
+              <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-4">
+                <div className="text-center pt-2">
+                  วิทยาลัยเทคนิคกันทรลักษ์
+                  <br />
+                  เป็นสถานศึกษา เขตปลอดบุหรี่ตามกฎหมาย <br />
+                  ห้าม‼️ นำเข้าสถานศึกษา หากฝ่าฝืนมีโทษตามกฎหมายทันที
+                  <br />
+                  สามารถเข้ารับการปรึกษาได้ที่
+                </div>
+                <div className="flex gap-4">
+                  <div>👉 ช่องทางเพจ</div>
+                  <Link
+                    href="https://www.facebook.com/profile.php?id=61571228871228"
+                    target="_blank"
+                    className="hover:text-sky-600"
+                  >
+                    ตู้เสมารักษ์ สถานศึกษาสีขาว วิทยาลัยเทคนิคกันทรลักษ์
+                  </Link>
+                </div>
+                <div className="flex  gap-4">
+                  <div>👉 ช่องทางไลน์</div>
+                  <Link
+                    href="https://line.me/ti/g/EkPDxkVehb"
+                    target="_blank"
+                    className="hover:text-sky-600"
+                  >
+                    https://line.me/ti/g/EkPDxkVehb
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ******************************************* เรื่องที่ 2 ******************************************* */}
     </>
   );
 }
