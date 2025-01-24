@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `๒๒ มกราคม ๒๕๖๘`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/61/17.webp",
+      date: "24 มกราคม 2568",
+      description: ` 
+แผนกวิชาการโรงแรม จัดโครงการส่งเสริมบุคลิกภาพของพนักงานในงานโรงแรม เรื่อง การบริการอาหาร และเครื่องดื่ม ประจำปีการศึกษา ๒๕๖๗ โดย นางสาวทักษิณา ชมจันทร์ 
+        ...`,
+      href: "/pressrelease/2568/press6801/press66",
+    },
+    {
+      name: `๒๒ มกราคม ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/60/2.webp",
       date: "23 มกราคม 2568",
       description: ` 
