@@ -2,24 +2,6 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
-      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/77/1.webp",
-      date: "24 มกราคม 2568",
-      description: ` 
-เรื่อง นโยบายป้องกันและแก่ไขปัญหายาเสพติด โครงการสถานศึกษาสีขาว ปลอดยาเสพติดและอบายมุข
-      ...`,
-      href: "/pressrelease/2568/press6801/press82",
-    },
-    {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
-      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/76/1.webp",
-      date: "24 มกราคม 2568",
-      description: ` 
-เรื่อง มาตรการดูแลความปลอดภัยในสถานศึกษา
-      ...`,
-      href: "/pressrelease/2568/press6801/press81",
-    },
-    {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มกราคม/75/1.webp",
       date: "24 มกราคม 2568",
       description: ` 
