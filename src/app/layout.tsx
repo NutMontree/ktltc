@@ -1,7 +1,7 @@
 "use client";
 
-// import Footer from "@/components/Footer";
-// import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import { ThemeProvider } from "next-themes";
 import "../styles/index.css";
@@ -22,10 +22,8 @@ export default function RootLayout({
 
   return (
     <html suppressHydrationWarning={true} className="!scroll-smooth" lang="en">
-      {/*
         <head /> will contain the components returned by the nearest parent
         head.js. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
-      */}
       <head />
 
       <body>
@@ -37,9 +35,9 @@ export default function RootLayout({
               enableSystem={false}
               defaultTheme="light"
             >
-              {/* <Header /> */}
+              <Header />
               {children}
-              {/* <Footer /> */}
+              <Footer />
               <ScrollToTop />
             </ThemeProvider>
         )}
