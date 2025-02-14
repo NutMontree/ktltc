@@ -1,6 +1,8 @@
 import type { Config } from "tailwindcss";
+const colors = require("tailwindcss/colors");
 
-export default {
+const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,10 +11,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        ...colors,
+        // primary: "#1A202C",
       },
     },
   },
-  plugins: [],
-} satisfies Config;
+  plugins: [require("tailgrids/plugin")],
+};
+export default config;
