@@ -28,7 +28,7 @@ export default function Pressrelease() {
 
         {/* ***************************** LInk And PDF ***************************** */}
         <div className=" ">
-          <div className="pt-36 pb-4 px-8">
+          <div className="pt-8 pb-4 px-8">
             <Link
               href="/images/ข่าวประชาสัมพันธ์/2568/มกราคม/42/คำสั่งให้บุคลากรไปราชการ.pdf"
               className="hover:text-sky-500 text-sky-800 text-lg"

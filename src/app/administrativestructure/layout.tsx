@@ -5,7 +5,7 @@ export default function Layout({
 }) {
   return (
     <section>
-      <div className="pt-36 pb-4 px-8">{children}</div>
+      <div className="pt-8 pb-4 px-8">{children}</div>
     </section>
   );
 }
