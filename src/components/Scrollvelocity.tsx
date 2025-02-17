@@ -79,12 +79,12 @@ export default function ScrollVelocity() {
   return (
     <>
       <section>
-        <div className=" pb-4">
+        <div className="pb-4">
           <ParallaxText baseVelocity={-5}>
             KTLTC kantharalak technical college
           </ParallaxText>
         </div>
-        <div className=" pt-4">
+        <div className="pt-4">
           <ParallaxText baseVelocity={5}>
             KTLTC kantharalak technical college
           </ParallaxText>

@@ -2,10 +2,10 @@ import Phone from "./phone";
 import Mail from "./mail";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 
-export default function Header() {
+export default function Headers() {
   return (
     <>
-      <div className="px-24 min-w-24 pt-3 flex justify-end ">
+      <div className="px-24 min-w-24 flex justify-end ">
         <ul>
           <div className="flex gap-4 text-xs">
             <div>ติดต่อสอบถาม</div>

@@ -13,16 +13,15 @@ const Footer = () => {
             <div className="mb-10 w-full">
               <Link href="/" className="mb-6 inline-block max-w-[160px]">
                 <Image
-                  src="/images/logo/logo-white.svg"
+                  src="/images/logo.webp"
                   alt="logo"
-                  width={140}
+                  width={80}
                   height={30}
                   className="max-w-full"
                 />
               </Link>
               <p className="mb-8 max-w-[270px] text-base text-gray-7">
-                We create digital experiences for brands and companies by using
-                technology.
+                ช่องทางการติดต่อวิทยาลัยเทคนิคกันทรลักษ์
               </p>
               <div className="-mx-3 flex items-center">
                 <Link
@@ -97,39 +96,47 @@ const Footer = () => {
           <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-2/12 xl:w-2/12">
             <div className="mb-10 w-full">
               <h4 className="mb-9 text-lg font-semibold text-white">
-                About Us
+                ประวัติสถานศึกษา
               </h4>
               <ul>
                 <li>
                   <Link
-                    href="#"
+                    href="/historyeducational"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Home
+                    ประวัติสถานศึกษา
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/philosophy"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Features
+                    ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/eduadmin"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    About
+                    ทำเนียบผู้บริหาร
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/administrativestructure"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Testimonial
+                    โครงสร้างการบริหารงานสถานศึกษา
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/executiveboard"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    คณะกรรมการบริหารสถานศึกษา
                   </Link>
                 </li>
               </ul>
@@ -138,15 +145,31 @@ const Footer = () => {
           <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
             <div className="mb-10 w-full">
               <h4 className="mb-9 text-lg font-semibold text-white">
-                Features
+                ข้อมูลพื้นฐาน 9 ประการ
               </h4>
               <ul>
                 <li>
                   <Link
-                    href="#"
+                    href="/historyeducational"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    How it works
+                    ข้อมูลสถานศึกษา
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/personnel"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ข้อมูลบุคลากร
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/sid"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ข้อมูลนักเรียน นักศึกษา
                   </Link>
                 </li>
                 <li>
@@ -154,7 +177,7 @@ const Footer = () => {
                     href="#"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Privacy policy
+                    ข้อมูลหลักสูตร
                   </Link>
                 </li>
                 <li>
@@ -162,7 +185,7 @@ const Footer = () => {
                     href="#"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Terms of Service
+                    ข้อมูลครุภัณฑ์
                   </Link>
                 </li>
                 <li>
@@ -170,7 +193,32 @@ const Footer = () => {
                     href="#"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Refund policy
+                    ข้อมูลงบประมาณ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/buildings"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ข้อมูลอาคารสถานที่
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ข้อมูลตลาดแรงงาน
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://www.sisaket.go.th/"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    target="_blank"
+                  >
+                    ข้อมูลของจังหวัด
                   </Link>
                 </li>
               </ul>
@@ -179,39 +227,39 @@ const Footer = () => {
           <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
             <div className="mb-10 w-full">
               <h4 className="mb-9 text-lg font-semibold text-white">
-                Our Products
+                หน่วยงานภายใน
               </h4>
               <ul>
                 <li>
                   <Link
-                    href="#"
+                    href="/resource"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    LineIcons
+                    ฝ่ายบริหารทรัพยากร
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/plan"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Next.js Templates
+                    ฝ่ายแผนงานและความร่วมมือ
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/develop"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    TailAdmin
+                    ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/academic"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    PlainAdmin
+                    ฝ่ายวิชาการ
                   </Link>
                 </li>
               </ul>
@@ -220,39 +268,110 @@ const Footer = () => {
           <div className="w-full px-4 md:w-2/3 lg:w-6/12 xl:w-3/12">
             <div className="mb-10 w-full">
               <h4 className="mb-9 text-lg font-semibold text-white">
-                Useful Links
+                ข้อมูลบุคลากร
               </h4>
               <ul>
                 <li>
                   <Link
-                    href="#"
+                    href="/executive"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    FAQ
+                    ผู้บริหารสถานศึกษา
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/mechanic"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    Blogs
+                    แผนกวิชาช่างยนต์
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/machine"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
-                  >
-                    Support
+                  >แผนกวิชาช่างกลโรงงาน  Support
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/welder"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
-                    About
+                    แผนกวิชาช่างเชื่อมโลหะ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/electricity"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาช่างไฟฟ้ากำลัง
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/electronics"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาช่างอิเล็กทรอนิกส์
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/technique"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาเทคนิคพื้นฐาน
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/construct"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาช่างก่อสร้าง
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/accounting"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาบัญชี
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/marketing"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาการตลาด
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/technology"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/hotel"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาการโรงแรม
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/ordinary"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แผนกวิชาสามัญสัมพันธ์
                   </Link>
                 </li>
               </ul>
@@ -263,7 +382,7 @@ const Footer = () => {
 
       <div className="mt-12 border-t border-[#8890A4] border-opacity-40 py-8 lg:mt-[60px]">
         <div className="container">
-          <div className="-mx-4 flex flex-wrap">
+          {/* <div className="-mx-4 flex flex-wrap">
             <div className="w-full px-4 md:w-2/3 lg:w-1/2">
               <div className="my-1">
                 <div className="-mx-3 flex items-center justify-center md:justify-start">
@@ -302,6 +421,26 @@ const Footer = () => {
                   </Link>
                 </p>
               </div>
+            </div>
+          </div> */}
+          <div className="w-full py-3 ">
+            <div className="flex gap-2 justify-center">
+              <div className="text-white   text-xs">Copyright © 2023.</div>
+
+              <div className="text-xs text-cyan-700">
+                KTLTC / งานศูนย์ข้อมูลและสารสนเทศ
+              </div>
+            </div>
+            <div className="flex gap-2 justify-center ">
+              <div className="text-white text-xs"> Designed </div>
+              <Link
+                className="flex justify-center gap-1 text-current "
+                // href="https://www.facebook.com/profile.php?id=61553558543619"
+                href="/Sponsor"
+                title="All M Min"
+              >
+                <div className="text-xs font-medium text-white">By All M Min</div>
+              </Link>
             </div>
           </div>
         </div>
