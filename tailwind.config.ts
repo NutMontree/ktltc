@@ -12,10 +12,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
+      colors: ({ colors }) => ({
         ...colors,
-        // primary: "#1A202C",
-      },
+      }),
     },
   },
   plugins: [require("tailgrids/plugin"), heroui()],
