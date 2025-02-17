@@ -148,7 +148,7 @@ function Navbar({ className }: { className?: string }) {
         <MenuItem setActive={setActive} active={active} item="เมนูลัด">
           <div className="flex flex-col space-y-4 text-sm">
             <HoveredLink href="/GECC" className="hover:underline ">
-              ศูนย์ราชการที่สะดวก
+              ศูนย์ราชการสะดวก
             </HoveredLink>
             <HoveredLink
               className="hover:text-sky-500"

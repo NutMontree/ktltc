@@ -408,7 +408,7 @@ export default function Footer() {
                     </div>
                     <div className="py-2">
                       <Link href="/GECC" className="hover:underline ">
-                        ศูนย์ราชการที่สะดวก
+                        ศูนย์ราชการสะดวก
                       </Link>
                     </div>
                     <div className="py-2">

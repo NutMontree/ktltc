@@ -21,7 +21,7 @@ export default function page() {
       </div>
       <div className="flex justify-center">
         <h1 className="flex justify-center text-[#DAA520] text-[14px] sm:text-sm md:text-md lg:text-lg xl:text-xl">
-          ศูนย์ราชการที่สะดวก
+          ศูนย์ราชการสะดวก
         </h1>
       </div>
 

@@ -229,7 +229,7 @@ const menuData: Menu[] = [
     submenu: [
       {
         id: 61,
-        title: "ศูนย์ราชการที่สะดวก",
+        title: "ศูนย์ราชการสะดวก",
         path: "/GECC",
         newTab: false,
       },

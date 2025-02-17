@@ -11,7 +11,7 @@ const Features = () => {
             <div className="">
               <SectionTitle
                 subtitle="GECC"
-                title="ศูนย์ราชการที่สะดวก"
+                title="ศูนย์ราชการสะดวก"
                 paragraph="แถบนำทางเพื่อความสะดวกในการค้นหาข้อมูลของคุณ"
               />
               <div className="-mx-4 mt-12 flex flex-wrap lg:mt-20">

@@ -14,7 +14,7 @@ export function DropdownPage1() {
   );
 }
 
-function Navbar({}: { className?: string }) {
+function Navbar({ }: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
   return (
     <>
@@ -315,7 +315,7 @@ function Navbar({}: { className?: string }) {
                     <div className="flex flex-col space-y-1 text-sm py-2">
                       <div className="hover:bg-slate-100 rounded-lg ">
                         <HoveredLink1 href="/GECC" className="hover:underline ">
-                          ศูนย์ราชการที่สะดวก
+                          ศูนย์ราชการสะดวก
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">

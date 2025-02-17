@@ -210,7 +210,7 @@ function Navbar({ className }: { className?: string }) {
           <div className="flex flex-col space-y-1 text-sm">
             <div className="hover:bg-slate-100 rounded-lg ">
               <HoveredLink href="/GECC" className="hover:underline ">
-                ศูนย์ราชการที่สะดวก
+                ศูนย์ราชการสะดวก
               </HoveredLink>
             </div>
             <div className="hover:bg-slate-100 rounded-lg ">
