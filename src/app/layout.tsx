@@ -1,15 +1,16 @@
 "use client";
 
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
-import ScrollToTop from "@/components/ScrollToTop";
-import { ThemeProvider } from "next-themes";
-import { useEffect, useState } from "react";
-import PreLoader from "@/components/Common/PreLoader";
-import Headers from "@/components/headers";
 import "../styles/index.css";
 import "../styles/prism-vsc-dark-plus.css";
-
+import clsx from "clsx";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import Headers from "@/components/headers";
+import ScrollToTop from "@/components/ScrollToTop";
+import PreLoader from "@/components/Common/PreLoader";
+import { fontSans } from "@/config/fonts";
+import { ThemeProvider } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function RootLayout({
   children,
@@ -25,10 +26,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning={true} className="!scroll-smooth" lang="en">
       <head />
-
-      <head />
-
-      <body>
+      <body className={clsx("", fontSans.variable)}>
         {loading ? (
           <PreLoader />
         ) : (
@@ -40,7 +38,7 @@ export default function RootLayout({
             <div className="py-2">
               <Headers />
             </div>
-            <div className="">
+            <div className="pb-20">
               <Header />
             </div>
             {children}

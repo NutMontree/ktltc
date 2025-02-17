@@ -1,12 +1,12 @@
 // import Hero from "@/components/Hero";
-import Faq from "@/components/Faq";
-import Team from "@/components/Team";
-import About from "@/components/About";
-import Clients from "@/components/Clients";
-import Contact from "@/components/Contact";
-import Pricing from "@/components/Pricing";
-import CallToAction from "@/components/CallToAction";
-import Testimonials from "@/components/Testimonials";
+// import Faq from "@/components/Faq";
+// import Team from "@/components/Team";
+// import About from "@/components/About";
+// import Clients from "@/components/Clients";
+// import Contact from "@/components/Contact";
+// import Pricing from "@/components/Pricing";
+// import CallToAction from "@/components/CallToAction";
+// import Testimonials from "@/components/Testimonials";
 import ShowVideos from "./showvideos/page";
 import Features from "@/components/Features";
 import Wellcome from "@/components/wellcome";
@@ -33,15 +33,16 @@ export default function Home() {
     <main className="container">
       <ScrollUp />
       {/* <Hero /> */}
-      <div className="pt-24">
+      <div>
         <Scrollimage />
       </div>
-      <Features />
-
+      <div>
+        <Features />
+      </div>
       <div className="py-[48px]">
         <Wellcome />
       </div>
-      <div>
+      <div className="py-[48px]">
         <ScrollVelocity />
       </div>
       <div className=" py-[48px]">

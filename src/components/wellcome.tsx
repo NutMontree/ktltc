@@ -11,7 +11,7 @@ export default function Wellcome() {
   return (
     <>
       <div className=" ">
-        <div className=" ">
+        <div className="justify-items-center">
           <div className="max-w-[1000px] gap-2 grid grid-cols-12 ">
             <Card isFooterBlurred className="h-[380px] col-span-12 sm:col-span-6">
               <CardContainer className="inter-var">

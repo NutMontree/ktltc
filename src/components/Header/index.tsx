@@ -44,7 +44,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`ud-header left-0 top-0 z-40 flex w-full items-center  ${sticky
+        className={`ud-header left-0 top-0 z-40 flex w-full items-center   ${sticky
           ? "shadow-nav fixed z-[999] border-b border-stroke bg-white/80 backdrop-blur-[5px] dark:border-dark-3/20 dark:bg-dark/10"
           : "absolute bg-transparent"
           }`}
@@ -97,7 +97,10 @@ const Header = () => {
                 )}
               </Link>
             </div>
-            <div className="flex w-full items-center justify-between px-4 ">
+            <div className=" ">
+              <div className="font-bold text-2xl text-inherit">KTLTC</div>
+            </div>
+            <div className="flex w-full items-center justify-between px-2 ">
               <div>
                 <button
                   onClick={navbarToggleHandler}
@@ -109,21 +112,21 @@ const Header = () => {
                     className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? " top-[7px] rotate-45" : " "
                       } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
                         ? "bg-dark dark:bg-white"
-                        : "bg-white"
+                        : "bg-dark"
                       }`}
                   />
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? "opacity-0 " : " "
                       } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
                         ? "bg-dark dark:bg-white"
-                        : "bg-white"
+                        : "bg-dark"
                       }`}
                   />
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? " top-[-8px] -rotate-45" : " "
                       } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
                         ? "bg-dark dark:bg-white"
-                        : "bg-white"
+                        : "bg-dark"
                       }`}
                   />
                 </button>
@@ -257,7 +260,7 @@ const Header = () => {
 
                     <svg
                       viewBox="0 0 23 23"
-                      className={`h-[30px] w-[30px] fill-current text-dark dark:hidden ${!sticky && pathUrl === "/" && "text-white"
+                      className={`h-[30px] w-[30px] fill-current text-dark dark:hidden ${!sticky && pathUrl === "/" && " "
                         }`}
                     >
                       <g clipPath="url(#clip0_40_125)">

@@ -20,6 +20,15 @@ const Footer = () => {
                   className="max-w-full"
                 />
               </Link>
+              <Link href="/" className="mb-8 inline-block max-w-[160px]">
+                <Image
+                  src="/images/logo2.webp"
+                  alt="logo"
+                  width={140}
+                  height={30}
+                  className="max-w-full"
+                />
+              </Link>
               <p className="mb-8 max-w-[270px] text-base text-gray-7">
                 ช่องทางการติดต่อวิทยาลัยเทคนิคกันทรลักษ์
               </p>
@@ -45,6 +54,7 @@ const Footer = () => {
                   href="#"
                   className="px-3 text-gray-7 hover:text-white"
                 >
+
                   <svg
                     width="22"
                     height="22"

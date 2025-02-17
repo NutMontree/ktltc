@@ -3,7 +3,6 @@ const colors = require("tailwindcss/colors");
 import { heroui } from "@heroui/react";
 
 const config: Config = {
-  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -17,6 +16,7 @@ const config: Config = {
       }),
     },
   },
+  darkMode: "class",
   plugins: [require("tailgrids/plugin"), heroui()],
 };
 export default config;

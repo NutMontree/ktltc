@@ -7,30 +7,6 @@ const menuData: Menu[] = [
     path: "/",
     newTab: false,
   },
-  // {
-  //   id: 2,
-  //   title: "About",
-  //   path: "/about",
-  //   newTab: false,
-  // },
-  // {
-  //   id: 3,
-  //   title: "Pricing",
-  //   path: "/pricing",
-  //   newTab: false,
-  // },
-  // {
-  //   id: 5,
-  //   title: "Contact",
-  //   path: "/contact",
-  //   newTab: false,
-  // },
-  // {
-  //   id: 5,
-  //   title: "Blog",
-  //   path: "/blogs",
-  //   newTab: false,
-  // },
   {
     id: 2,
     title: "ประวัติสถานศึกษา",
@@ -325,36 +301,5 @@ const menuData: Menu[] = [
       },
     ],
   },
-  // {
-  //   id: 2,
-  //   title: " ",
-  //   newTab: false,
-  //   submenu: [
-  //     {
-  //       id: 21,
-  //       title: " ",
-  //       path: "/ ",
-  //       newTab: false,
-  //     },
-  //     {
-  //       id: 22,
-  //       title: " ",
-  //       path: "/ ",
-  //       newTab: false,
-  //     },
-  //     {
-  //       id: 23,
-  //       title: " ",
-  //       path: "/ ",
-  //       newTab: false,
-  //     },
-  //     {
-  //       id: 24,
-  //       title: " ",
-  //       path: "/ ",
-  //       newTab: false,
-  //     },
-  //   ],
-  // },
 ];
 export default menuData;

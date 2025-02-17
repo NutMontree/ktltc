@@ -62,7 +62,7 @@ export default function ShowPressRelease() {
   const { styles } = useStyle();
   return (
     <>
-      <div className="relative z-20 overflow-hidden bg-white dark:bg-dark lg:pb-[50px] lg:pt-[40px]">
+      <div className="relative z-20 overflow-hidden lg:pt-[40px]">
         <span className="absolute left-4 top-4 -z-[1]">
           <svg
             width="48"
@@ -484,7 +484,7 @@ export default function ShowPressRelease() {
             </Swiper>
           </div>
         </div>
-        <span className="absolute bottom-4 right-4 -z-[1]">
+        {/* <span className="absolute bottom-4 right-4 -z-[1]">
           <svg
             width="48"
             height="134"
@@ -773,7 +773,7 @@ export default function ShowPressRelease() {
               fill="#3758F9"
             />
           </svg>
-        </span>
+        </span> */}
       </div>
 
 
