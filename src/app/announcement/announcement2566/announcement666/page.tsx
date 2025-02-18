@@ -11,13 +11,13 @@ export default function Announcement66() {
       <AnnouncementPage />
 
       <div>
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
           ปีการศึกษา 2566
         </h1>
       </div>
 
       <div className="2566">
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-4 px-2">
           <div className=" grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6  justify-items-center justify-center ">
             {DataAnnouncement66.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>

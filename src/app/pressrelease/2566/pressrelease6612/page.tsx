@@ -11,12 +11,12 @@ export default function Pressrelease6612() {
       <PressReleasePage />
 
       <div>
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
           เดือน ธันวาคม 2566
         </h1>
       </div>
 
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-center pt-4 px-2">
         <div className="grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
           {DataPressrelease6612.navItems.map((item) => (
             <NextLink key={item.href} href={item.href}>

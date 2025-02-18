@@ -10,7 +10,7 @@ export default function Electricity() {
   return (
     <>
       <div className="pb-10">
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
           แผนกวิชาช่างไฟฟ้ากำลัง
         </h1>
       </div>
@@ -55,7 +55,7 @@ export default function Electricity() {
             </div>{" "}
           </AccordionItem>
         </Accordion>
-     
+
         <div className="justify-items-center pt-[24px]">
           <iframe
             src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057195379923%26mibextid%3DZbWKwL&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"

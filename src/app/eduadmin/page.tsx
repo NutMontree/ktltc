@@ -9,7 +9,7 @@ export default function EDUAdmin() {
   return (
     <>
       <div className="pb-10">
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
           ทำเนียบผู้บริหาร
         </h1>
       </div>

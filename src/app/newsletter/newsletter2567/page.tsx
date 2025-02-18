@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@nextui-org/button";
+import { Button } from "antd";
 
 export default function Newsletter() {
   return (
@@ -7,7 +7,7 @@ export default function Newsletter() {
       <div>
         <div className="gap-2 grid">
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6712"
@@ -17,7 +17,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6711"
@@ -27,7 +27,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6710"
@@ -37,7 +37,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6709"
@@ -47,7 +47,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6708"
@@ -57,7 +57,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6707"
@@ -67,7 +67,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6706"
@@ -77,7 +77,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6705"
@@ -87,7 +87,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6704"
@@ -97,7 +97,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6703"
@@ -107,7 +107,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6702"
@@ -117,7 +117,7 @@ export default function Newsletter() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2567/newsletter6701"

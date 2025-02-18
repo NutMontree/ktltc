@@ -10,10 +10,10 @@ export default function ExternalInternal() {
     <>
       <div>
         <div className="pt-8 pb-8">
-          <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
             แบบฟอร์มหนังสือภายนอก-ภายใน
           </h1>
-          <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
             External-internal book form
           </h1>
         </div>

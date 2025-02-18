@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Button } from "@nextui-org/react";
+import { Button } from "antd";
 
 export default function Technical2567() {
   return (
     <>
       <div className="gap-2 grid">
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6712"
@@ -16,7 +16,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6711"
@@ -26,7 +26,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6710"
@@ -36,7 +36,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6709"
@@ -46,7 +46,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6708"
@@ -56,7 +56,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6707"
@@ -66,7 +66,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6706"
@@ -76,7 +76,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6705"
@@ -86,7 +86,7 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/Technical2567/technical6704"
@@ -96,21 +96,21 @@ export default function Technical2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link className="text-lg" href="#">
               เดือน มีนาคม 2567 (ไม่มีข้อมูล)
             </Link>
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link className="text-lg" href="#">
               เดือน กุมภาพันธ์ 2567 (ไม่มีข้อมูล)
             </Link>
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link className="text-lg" href="#">
               เดือน มกราคม 2567 (ไม่มีข้อมูล)
             </Link>

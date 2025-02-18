@@ -11,16 +11,16 @@ export default function Page() {
       <PressReleasePage />
 
       <div>
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
-          เดือน พฤศจิกายน 2567
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
+          เดือน กุมภาพันธ์ 2567
         </h1>
       </div>
 
       <div className="2567">
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-4 px-2">
           <div
             className=" 
-            grid gap-4
+            grid gap-2
             grid-cols-2
             sm:grid-cols-3
             lg:grid-cols-4
@@ -38,7 +38,7 @@ export default function Page() {
                 "
                 >
                   <div
-                    className="absolute inset-0 bg-cover bg-center hover:scale-110 transition duration-500 cursor-pointer object-cover scale-90 rounded-xl"
+                    className="absolute inset-0 bg-cover bg-center hover:scale-100 transition duration-500 cursor-pointer object-cover scale-95 rounded-xl"
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}

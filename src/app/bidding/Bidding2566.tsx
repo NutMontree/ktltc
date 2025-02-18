@@ -20,7 +20,7 @@ export default function Bidding2566() {
   return (
     <>
       <div>
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">2566</h1>
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">2566</h1>
 
         <div className="swiper-2556">
           <Swiper

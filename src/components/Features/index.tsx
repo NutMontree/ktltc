@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SectionTitle from "../Common/SectionTitle";
 import SingleFeature from "./SingleFeature";
 import featuresData from "./featuresData";
@@ -9,11 +10,13 @@ const Features = () => {
         <div>
           <div className="relative z-20 overflow-hidden lg:pb-[30px] pt-[40px] lg:pt-[100px]">
             <div className="">
-              <SectionTitle
-                subtitle="GECC"
-                title="ศูนย์ราชการสะดวก"
-                paragraph="แถบนำทางเพื่อความสะดวกในการค้นหาข้อมูลของคุณ"
-              />
+              <Link href='/GECC'>
+                <SectionTitle
+                  subtitle="GECC"
+                  title="ศูนย์ราชการสะดวก"
+                  paragraph="แถบนำทางเพื่อความสะดวกในการค้นหาข้อมูลของคุณ"
+                />
+              </Link>
               <div className="-mx-4 mt-12 flex flex-wrap lg:mt-20">
                 {featuresData.map((feature, i) => (
                   <SingleFeature key={i} feature={feature} />

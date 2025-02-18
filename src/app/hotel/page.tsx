@@ -10,7 +10,7 @@ export default function Hotel() {
   return (
     <>
       <div className="pb-10">
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
           แผนกวิชาการโรงแรม
         </h1>
       </div>

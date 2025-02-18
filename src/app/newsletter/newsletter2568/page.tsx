@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@nextui-org/button";
+import { Button } from "antd";
 
 export default function Newsletter2568() {
   return (
@@ -7,7 +7,7 @@ export default function Newsletter2568() {
       <div>
         <div className="gap-2 grid">
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2568/newsletter6802"
@@ -17,7 +17,7 @@ export default function Newsletter2568() {
             </Button>
           </div>
           <div>
-            <Button color="primary" variant="ghost">
+            <Button color="primary">
               <Link
                 className="text-lg"
                 href="/newsletter/newsletter2568/newsletter6801"

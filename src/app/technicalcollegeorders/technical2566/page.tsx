@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Button } from "@nextui-org/react";
+import { Button } from "antd";
 
 export default function Technical2566() {
   return (
     <>
       <div className="gap-2">
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/technicalcollegeorders/technical2566/technical666"

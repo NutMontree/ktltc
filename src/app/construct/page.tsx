@@ -9,7 +9,7 @@ export default function Construct() {
   return (
     <>
       <div className="pb-10">
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
           แผนกวิชาช่างก่อสร้าง
         </h1>
       </div>

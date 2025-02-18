@@ -8,7 +8,8 @@ const featuresData: Feature[] = [
         width="36"
         height="36"
         fill="white"
-        viewBox="0 0 512 512">
+        viewBox="0 0 512 512"
+        className="scale-90 hover:scale-100 transition duration-500">
         <path d="M64 464l48 0 0 48-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L229.5 0c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3L384 304l-48 0 0-144-80 0c-17.7 0-32-14.3-32-32l0-80L64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z" /></svg>
     ),
     title: "service",
@@ -24,6 +25,7 @@ const featuresData: Feature[] = [
         height="36"
         fill="none"
         viewBox="0 0 36 36"
+        className="scale-90 hover:scale-100 transition duration-500"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
@@ -45,6 +47,7 @@ const featuresData: Feature[] = [
         height="37"
         viewBox="0 0 37 37"
         fill="none"
+        className="scale-90 hover:scale-100 transition duration-500"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
@@ -130,6 +133,7 @@ const featuresData: Feature[] = [
         width="37"
         height="37"
         fill="white"
+        className="scale-90 hover:scale-100 transition duration-500"
         viewBox="0 0 576 512"> <path d="M565.6 36.2C572.1 40.7 576 48.1 576 56l0 336c0 10-6.2 18.9-15.5 22.4l-168 64c-5.2 2-10.9 2.1-16.1 .3L192.5 417.5l-160 61c-7.4 2.8-15.7 1.8-22.2-2.7S0 463.9 0 456L0 120c0-10 6.1-18.9 15.5-22.4l168-64c5.2-2 10.9-2.1 16.1-.3L383.5 94.5l160-61c7.4-2.8 15.7-1.8 22.2 2.7zM48 136.5l0 284.6 120-45.7 0-284.6L48 136.5zM360 422.7l0-285.4-144-48 0 285.4 144 48zm48-1.5l120-45.7 0-284.6L408 136.5l0 284.6z" /></svg>
     ),
     title: "Maps",

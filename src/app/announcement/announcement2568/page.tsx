@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Button } from "@nextui-org/react";
+import { Button } from "antd";
 
 export default function Announcement2568() {
   return (
     <>
       <div className="gap-2 grid">
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/announcement/announcement2568/announcement6802"
@@ -16,7 +16,7 @@ export default function Announcement2568() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/announcement/announcement2568/announcement6801"

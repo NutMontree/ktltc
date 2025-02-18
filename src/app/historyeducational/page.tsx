@@ -17,6 +17,8 @@ export default function HistoryEducational() {
             removeWrapper
             alt="Relaxing app background"
             className="w-60 py-2 flex justify-center"
+            width="auto"
+            height='auto'
             src="/images/logo.webp"
           />
         </div>

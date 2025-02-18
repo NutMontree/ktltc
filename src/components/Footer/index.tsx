@@ -15,8 +15,8 @@ const Footer = () => {
                 <Image
                   src="/images/logo.webp"
                   alt="logo"
-                  width={80}
-                  height={30}
+                  width='80'
+                  height='30'
                   className="max-w-full"
                 />
               </Link>
@@ -24,8 +24,8 @@ const Footer = () => {
                 <Image
                   src="/images/logo2.webp"
                   alt="logo"
-                  width={140}
-                  height={30}
+                  width='140'
+                  height='30'
                   className="max-w-full"
                 />
               </Link>
@@ -301,7 +301,7 @@ const Footer = () => {
                   <Link
                     href="/machine"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
-                  >แผนกวิชาช่างกลโรงงาน  Support
+                  >แผนกวิชาช่างกลโรงงาน
                   </Link>
                 </li>
                 <li>
@@ -435,21 +435,21 @@ const Footer = () => {
           </div> */}
           <div className="w-full py-3 ">
             <div className="flex gap-2 justify-center">
-              <div className="text-white   text-xs">Copyright © 2023.</div>
+              <div className="text-gray-7 text-xs">Copyright © 2023.</div>
 
-              <div className="text-xs text-cyan-700">
+              <div className="text-xs text-cyan-500">
                 KTLTC / งานศูนย์ข้อมูลและสารสนเทศ
               </div>
             </div>
             <div className="flex gap-2 justify-center ">
-              <div className="text-white text-xs"> Designed </div>
+              <div className="text-gray-7 text-xs"> Designed </div>
               <Link
                 className="flex justify-center gap-1 text-current "
                 // href="https://www.facebook.com/profile.php?id=61553558543619"
                 href="/Sponsor"
                 title="All M Min"
               >
-                <div className="text-xs font-medium text-white">By All M Min</div>
+                <div className="text-xs font-medium text-gray-7">By All M Min</div>
               </Link>
             </div>
           </div>

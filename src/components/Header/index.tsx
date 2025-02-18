@@ -63,15 +63,15 @@ const Header = () => {
                     <Image
                       src={`/images/logo.webp`}
                       alt="logo"
-                      width={240}
-                      height={30}
+                      width='240'
+                      height='30'
                       className="header-logo w-full dark:hidden"
                     />
                     <Image
                       src={`/images/logo.webp`}
                       alt="logo"
-                      width={240}
-                      height={30}
+                      width='240'
+                      height='30'
                       className="header-logo hidden w-full dark:block"
                     />
                   </>
@@ -83,15 +83,15 @@ const Header = () => {
                         : "/images/logo.webp"
                         }`}
                       alt="logo"
-                      width={140}
-                      height={30}
+                      width='140'
+                      height='30'
                       className="header-logo w-full dark:hidden"
                     />
                     <Image
                       src={"/images/logo.webp"}
                       alt="logo"
-                      width={140}
-                      height={30}
+                      width='140'
+                      height='30'
                       className="header-logo hidden w-full dark:block"
                     />
                   </>

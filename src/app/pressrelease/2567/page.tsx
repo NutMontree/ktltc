@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Button } from "@nextui-org/react";
+import { Button } from "antd";
 
 export default function Pressrelease2567() {
   return (
     <>
       <div className="gap-2 grid">
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6712"
@@ -16,7 +16,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6711"
@@ -26,7 +26,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6710"
@@ -36,7 +36,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6709"
@@ -46,7 +46,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6708"
@@ -56,7 +56,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6707"
@@ -66,7 +66,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6706"
@@ -76,7 +76,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6705"
@@ -86,7 +86,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6704"
@@ -96,7 +96,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6703"
@@ -106,7 +106,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6702"
@@ -116,7 +116,7 @@ export default function Pressrelease2567() {
           </Button>
         </div>
         <div>
-          <Button color="primary" variant="ghost">
+          <Button color="primary">
             <Link
               className="text-lg"
               href="/pressrelease/2567/pressrelease6701"

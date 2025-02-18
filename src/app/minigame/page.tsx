@@ -8,7 +8,7 @@ export default function MiniGame() {
     <>
       <div className="">
         <div className="">
-          <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
             Mini Game
           </h1>
         </div>

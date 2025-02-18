@@ -10,7 +10,7 @@ export default function Officer() {
     <>
       <div>
         <div className="py-24">
-          <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
             ฝ่ายบริหารทรัพยากร
           </h1>
         </div>
@@ -38,7 +38,7 @@ export default function Officer() {
 
       <div>
         <div className="py-24">
-          <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
             ฝ่ายแผนงานและความร่วมมือ
           </h1>
         </div>
@@ -66,7 +66,7 @@ export default function Officer() {
 
       <div>
         <div className="py-24">
-          <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
             ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
           </h1>
         </div>
@@ -94,7 +94,7 @@ export default function Officer() {
 
       <div>
         <div className="py-24">
-          <h1 className="flex justify-center text-xl text-[#DAA520] ">
+          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
             ฝ่ายวิชาการ
           </h1>
         </div>

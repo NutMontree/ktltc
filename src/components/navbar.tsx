@@ -77,7 +77,7 @@ export const NavbarPage = () => {
                 color="secondary"
                 name="Jason Hughes"
                 size="sm"
-                src="/images/logo.webp"
+                src="/images/logo.webp" width="auto"  height='auto'
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">

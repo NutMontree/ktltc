@@ -12,13 +12,13 @@ export default function WorkRegistration() {
 
       <div>
         <h1 className="flex justify-center text-xl ">งานทะเบียน</h1>
-        <h1 className="flex justify-center text-xl text-[#DAA520] ">
+        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
           WorkRegistration
         </h1>
       </div>
 
       <div className="2567">
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-4 px-2">
           <div
             className=" grid gap-2 
           h-full
