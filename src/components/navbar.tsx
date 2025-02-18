@@ -34,7 +34,7 @@ export const NavbarPage = () => {
         <NavbarContent>
           <NavbarBrand>
             <Link className="flex justify-start items-center gap-2" href="/">
-              <div className="scale-90 hover:scale-100 transition duration-500 rounded-full">
+              <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
                 <Logo />
               </div>
               <div className=" ">

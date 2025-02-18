@@ -366,7 +366,7 @@ export default function ShowPressRelease() {
             </h1>
           </div>
 
-          <div className="flex justify-end px-6 pt-3">
+          <div className="flex justify-end pt-3 pr-2">
             <ConfigProvider
               button={{
                 className: styles.linearGradientButton,
@@ -385,7 +385,7 @@ export default function ShowPressRelease() {
             </ConfigProvider>
           </div>
 
-          <div className="px-6 py-3">
+          <div className="py-3">
             <Swiper
               breakpoints={{
                 0: {
@@ -436,12 +436,12 @@ export default function ShowPressRelease() {
                   <NextLink key={item.href} href={item.href}>
                     <div
                       className="
-                  mb-6 relative shadow-lg rounded-2xl 
-                  h-[190px] 
-                  sm:h-[190px] 
-                  md:h-[200px] 
-                  lg:h-[210px] 
-                  xl:h-[220px]    bvw
+                  mb-4 relative shadow-lg rounded-2xl 
+                  h-[180px]
+                  sm:h-[180px] 
+                  md:h-[200px]
+                  lg:h-[210px]
+                  xl:h-[220px]
                   overflow-hidden"
                     >
                       {/* h-[180px] sm:h-[180px] md:h-[190px] lg:h-[200px] xl:h-[210px] */}

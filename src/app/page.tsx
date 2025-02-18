@@ -30,43 +30,46 @@ export const metadata: Metadata = {
 export default function Home() {
 
   return (
-    <main className="container">
-      <ScrollUp />
-      {/* <Hero /> */}
+    <main className=" ">
       <div>
+
+        <ScrollUp />
+      </div>
+      {/* <Hero /> */}
+      <div className="px-1">
         <Scrollimage />
       </div>
-      <div>
+      <div className="px-2">
         <Features />
       </div>
-      <div className="py-[48px]">
+      <div className="py-[48px] px-2">
         <Wellcome />
       </div>
-      <div className="py-[48px]">
+      <div className="py-[48px] px-2">
         <ScrollVelocity />
       </div>
-      <div className=" py-[48px]">
+      <div className=" py-[48px] px-2">
         <BackgroundBeamsWithCollisionDemo />
       </div>
       <div className=" ">
         <ShowPressRelease />
       </div>
-      <div className=" py-[48px]">
+      <div className=" py-[48px] px-2">
         <ShowNewsletter />
       </div>
-      <div className=" py-[48px]">
+      <div className=" py-[48px] px-2">
         <ShowAnnouncement />
       </div>
-      <div className=" py-[48px]">
+      <div className=" py-[48px] px-2">
         <ShowBidding />
       </div>
-      <div className=" py-[48px]">
+      <div className=" py-[48px] px-2">
         <ShowTechnicalcollegeorders />
       </div>
       <div className=" py-[48px]">
         <ShowFacebook />
       </div>
-      <div className=" py-[48px]">
+      <div className=" py-[48px] px-2">
         <ShowVideos />
       </div>
 

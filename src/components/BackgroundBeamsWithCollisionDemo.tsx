@@ -14,7 +14,7 @@ export function BackgroundBeamsWithCollisionDemo() {
           <div className="flex justify-center">
             <Link href="/pressrelease/2568/press6802/press24" target="_blank">
               <div className="flex justify-center">
-                <div className="px-4">
+                <div className="">
                   <div className="flex justify-center">
                     <Image
                       // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
@@ -23,7 +23,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                     />
                   </div>
 
-                  <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-4">
+                  <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                     <div className="px md:px-8 pt-2">
                       <p className="text-center">
                         "หนทางสู่ความสำเร็จ ล้วนเริ่มจากการเรียนรู้เเละปฏิบัติ"
@@ -66,7 +66,7 @@ export function BackgroundBeamsWithCollisionDemo() {
 
         {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 px-8 gap-8 pt-[48px] pb-[48px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 pt-[48px] pb-[48px]">
           <div className="flex justify-center">
             {/* <Link href="/pressrelease/2567/pressrelease6712/pressrelease582"> */}
             <div className="flex justify-center">
@@ -123,7 +123,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                     />
                   </div>
                   <div>
-                    <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-4">
+                    <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                       <div className="text-center pt-6">
                         ยินดีต้อนรับสู่รั้ว เเสด น้ำเงิน วิทยาลัยเทคนิคกันทรลักษ์
                         <br />
@@ -148,7 +148,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         {/* <div className="pb-[48px] py-[48px]">
         <div className="flex justify-center">
           <div className="flex justify-center">
-            <div className="px-4">
+            <div className="">
               <div className="flex justify-center">
                 <Image
                   // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
@@ -157,7 +157,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                 />
               </div>
 
-              <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-4">
+              <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                 <div className="text-center pt-2">
                   วิทยาลัยเทคนิคกันทรลักษ์
                   <br />
@@ -199,7 +199,7 @@ export function BackgroundBeamsWithCollisionDemo() {
         <div className="flex justify-center">
           <Link href="pressrelease/2568/press6802/press15" target="_blank">
             <div className="flex justify-center">
-              <div className="px-4">
+              <div className="">
                 <div className="flex justify-center">
                   <Image
                     // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
@@ -208,7 +208,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                   />
                 </div>
 
-                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base px-4">
+                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                   <div className="text-center pt-2">
                     ยินดีต้อนรับสู่รั้ว เเสด น้ำเงิน วิทยาลัยเทคนิคกันทรลักษ์
                     <br />

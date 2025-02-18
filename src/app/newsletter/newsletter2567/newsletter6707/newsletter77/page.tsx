@@ -8,7 +8,7 @@ export default function Pressrelease() {
   return (
     <>
       <div>
-        <div className="text-center text-xl pb-6">
+        <div className="text-center text-xl pb-6 px-2">
           {Data.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
@@ -52,7 +52,7 @@ export default function Pressrelease() {
           <div className="w-fit mx-auto grid justify-items-center justify-center">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
-                <div className="scale-90 hover:scale-100 transition duration-500 rounded-full">
+                <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
                   <Image src={item.img} alt={""}></Image>
                 </div>
               </div>

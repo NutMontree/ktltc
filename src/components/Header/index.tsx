@@ -54,7 +54,8 @@ const Header = () => {
             <div className="w-24 max-w-full px-4">
               <Link
                 href="/"
-                className={`navbar-logo block w-full ${sticky ? "py-2" : "py-12"
+                className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90 
+                   ${sticky ? "py-2" : "py-12"
                   } `}
               >
                 {pathUrl !== "/" ? (
@@ -98,7 +99,12 @@ const Header = () => {
               </Link>
             </div>
             <div className=" ">
-              <div className="font-bold text-2xl text-inherit">KTLTC</div>
+              <Link
+                href="/"
+                className="font-bold text-2xl text-inherit">
+                KTLTC
+              </Link>
+
             </div>
             <div className="flex w-full items-center justify-between px-2 ">
               <div>

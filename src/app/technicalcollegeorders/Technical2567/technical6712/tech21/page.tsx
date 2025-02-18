@@ -12,7 +12,7 @@ export default function TechnicalCollege() {
             <div key={item.title}>{item.title}</div>
           ))}
         </div>
-        <div>
+        <div className='px-2'>
           {Description.map((item) => (
             <div key={item.description}>
               <div>{item.description}</div>

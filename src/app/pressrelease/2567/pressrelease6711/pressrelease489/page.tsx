@@ -12,13 +12,13 @@ export default function Pressrelease() {
       <div>
         {/* ***************************** Map Title ***************************** */}
 
-        <div className="text-center text-xl pb-6">
+        <div className="text-center text-xl pb-6 px-2">
           {DataPressrelease.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
         </div>
 
-        <div>
+        <div className='px-2'>
           {Description.map((item) => (
             <div key={item.description}>
               <div>{item.description}</div>
@@ -74,8 +74,8 @@ https://docs.google.com/forms/d/e/1FAIpQLSeQJJhhMigByXhluAXU1YX-Vu546FAXseeZHiav
               title=" "
               // frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              // referrerpolicy="strict-origin-when-cross-origin"
-              // allowfullscreen
+            // referrerpolicy="strict-origin-when-cross-origin"
+            // allowfullscreen
             />
             <br />
           </div>

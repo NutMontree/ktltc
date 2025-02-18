@@ -12,13 +12,13 @@ export default function Pressrelease() {
   return (
     <>
       <div>
-        <div className="text-center text-xl pb-6">
+        <div className="text-center text-xl pb-6 px-2">
           {DataPressrelease.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
         </div>
 
-        <div>
+        <div className='px-2'>
           {Description.map((item) => (
             <div key={item.description}>
               <div>{item.description}</div>
@@ -28,7 +28,13 @@ export default function Pressrelease() {
 
         {/* ***************************** LInk And PDF ***************************** */}
         <div className=" ">
-          <div className="pt-8 pb-4 px-8">
+          <div
+            className="
+      px-4 py-4
+      lg:px-12  
+      sm:px-12  
+      "
+          >
             <Link
               href="/images/ข่าวประชาสัมพันธ์/2568/มกราคม/42/คำสั่งให้บุคลากรไปราชการ.pdf"
               className="hover:text-sky-500 text-sky-800 text-lg"
@@ -61,7 +67,7 @@ export default function Pressrelease() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div key={item.imgs}>
-                <div className="scale-90 hover:scale-100 transition duration-500 rounded-full">
+                <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
                   <Image src={item.imgs} alt={""}></Image>
                 </div>
               </div>

@@ -72,7 +72,7 @@ export default function ShowBidding() {
           </h1>
         </div>
 
-        <div className="flex justify-end px-6 pt-3">
+        <div className="flex justify-end  pt-3">
           <ConfigProvider
             button={{
               className: styles.linearGradientButton,
@@ -91,7 +91,7 @@ export default function ShowBidding() {
           </ConfigProvider>
         </div>
 
-        <div className="px-6 py-3">
+        <div className=" py-3">
           <Swiper
             breakpoints={{
               0: {

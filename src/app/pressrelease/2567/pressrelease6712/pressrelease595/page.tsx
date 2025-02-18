@@ -12,13 +12,13 @@ export default function Pressrelease() {
       <div>
         {/* ***************************** Map Title ***************************** */}
 
-        <div className="text-center text-xl pb-6">
+        <div className="text-center text-xl pb-6 px-2">
           {DataPressrelease.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
         </div>
 
-        <div>
+        <div className='px-2'>
           {Description.map((item) => (
             <div key={item.description}>
               <div>{item.description}</div>
@@ -90,7 +90,7 @@ https://cdn3.me-qr.com/pdf/2fd30bda-eb3a-4da3-abe1-ad5ee6429e7a.pdf?fbclid=IwZXh
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
-                <div className="scale-90 hover:scale-100 transition duration-500 rounded-full">
+                <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
                   <Image src={item.img} alt={""}></Image>
                 </div>
               </div>
