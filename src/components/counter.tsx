@@ -1,14 +1,14 @@
-"use client";
+// "use client";
 
-import { useState } from "react";
-import { Button } from "antd";
+// import { useState } from "react";
+// import { Button } from "antd";
 
-export const Counter = () => {
-	const [count, setCount] = useState(0);
+// export const Counter = () => {
+// 	const [count, setCount] = useState(0);
 
-	return (
-		<Button radius="full" onPress={() => setCount(count + 1)}>
-			Count is {count}
-		</Button>
-	);
-};
+// 	return (
+// 		<Button radius="full" onPress={() => setCount(count + 1)}>
+// 			Count is {count}
+// 		</Button>
+// 	);
+// };
