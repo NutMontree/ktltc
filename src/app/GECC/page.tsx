@@ -39,7 +39,7 @@ export default function page() {
               <AccordionItem
                 key="2"
                 aria-label="Accordion 2"
-                title="หัวข้อที่ 2"
+                title="แบบสํารวจ"
               >
                 <Contents2 />
               </AccordionItem>
