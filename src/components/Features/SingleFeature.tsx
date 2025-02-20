@@ -4,7 +4,7 @@ import Link from "next/link";
 const SingleFeature = ({ feature }: { feature: Feature }) => {
   const { icon, title, paragraph, btn, btnLink } = feature;
   return (
-    <div className="w-full px-4 md:w-1/2 lg:w-1/4">
+    <div className="px-4 w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5">
       <div className="wow fadeInUp group mb-12" data-wow-delay=".15s">
         <Link
           href={btnLink}
