@@ -23,8 +23,34 @@ export default function Pressrelease() {
           ))}
         </div>
 
-        {/* ***************************** LInk And PDF ***************************** */}
+        {
+          /* ***************************** LInk And PDF ***************************** */
+        }
 
+        <div className="pt-4  px-2">
+          <p className="text-sky-800 text-lg">
+            เอกสารเพิ่มเติม
+          </p>
+          <Link
+            href="
+        https://storage.me-qr.com/pdf/2e21775f-9ee6-49e9-8bd3-0c7a8dfc721f.pdf?fbclid=IwY2xjawIoselleHRuA2FlbQIxMAABHWnrhiulbVuHbJUgtTu-uDOwdE18CRbCia3BAZVmgrFGQV1yvccXye7bbg_aem_VnhLkle3pQWO2ou8lMCzTA
+        // "
+            className="hover:text-sky-500"
+            target="_blank"
+          >
+            https://drive.google.com/...
+          </Link>
+
+          {/* <iframe
+            className="w-full aspect-video pt-4"
+            src="/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/38/1.pdf"
+          ></iframe> */}
+        </div>
+
+
+        {
+          /* ***************************** LInk And PDF ***************************** */
+        }
         <div className='px-2'>
           <FootTitle />
         </div>
