@@ -5,8 +5,8 @@ const featuresData: Feature[] = [
     id: 1,
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg"
-        width="36"
-        height="36"
+        width="60"
+        height="60"
         fill="white"
         viewBox="0 0 512 512"
         className="scale-90 hover:scale-100 transition duration-500">
@@ -21,8 +21,8 @@ const featuresData: Feature[] = [
     id: 2,
     icon: (
       <svg
-        width="36"
-        height="36"
+        width="60"
+        height="60"
         fill="none"
         viewBox="0 0 36 36"
         className="scale-90 hover:scale-100 transition duration-500"
@@ -43,8 +43,8 @@ const featuresData: Feature[] = [
     id: 3,
     icon: (
       <svg
-        width="37"
-        height="37"
+        width="60"
+        height="60"
         viewBox="0 0 37 37"
         fill="none"
         className="scale-90 hover:scale-100 transition duration-500"
@@ -130,8 +130,8 @@ const featuresData: Feature[] = [
     id: 5,
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg"
-        width="37"
-        height="37"
+        width="60"
+        height="60"
         fill="white"
         className="scale-90 hover:scale-100 transition duration-500"
         viewBox="0 0 576 512"> <path d="M565.6 36.2C572.1 40.7 576 48.1 576 56l0 336c0 10-6.2 18.9-15.5 22.4l-168 64c-5.2 2-10.9 2.1-16.1 .3L192.5 417.5l-160 61c-7.4 2.8-15.7 1.8-22.2-2.7S0 463.9 0 456L0 120c0-10 6.1-18.9 15.5-22.4l168-64c5.2-2 10.9-2.1 16.1-.3L383.5 94.5l160-61c7.4-2.8 15.7-1.8 22.2 2.7zM48 136.5l0 284.6 120-45.7 0-284.6L48 136.5zM360 422.7l0-285.4-144-48 0 285.4 144 48zm48-1.5l120-45.7 0-284.6L408 136.5l0 284.6z" /></svg>
@@ -144,13 +144,11 @@ const featuresData: Feature[] = [
   {
     id: 6,
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg"
-        width="37"
-        height="37"
-        fill="white"
-        className="scale-90 hover:scale-100 transition duration-500"
-        viewBox="0 0 576 512">
-        <path d="M160 368c26.5 0 48 21.5 48 48l0 16 72.5-54.4c8.3-6.2 18.4-9.6 28.8-9.6L448 368c8.8 0 16-7.2 16-16l0-288c0-8.8-7.2-16-16-16L64 48c-8.8 0-16 7.2-16 16l0 288c0 8.8 7.2 16 16 16l96 0zm48 124l-.2 .2-5.1 3.8-17.1 12.8c-4.8 3.6-11.3 4.2-16.8 1.5s-8.8-8.2-8.8-14.3l0-21.3 0-6.4 0-.3 0-4 0-48-48 0-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L448 0c35.3 0 64 28.7 64 64l0 288c0 35.3-28.7 64-64 64l-138.7 0L208 492z" /></svg>
+      <img
+        src='/images/qrplan.png'
+        alt='QR Plan'
+        width="75"
+        height="80" />
     ),
     title: "แบบสํารวจ GECC",
     paragraph: "แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์",
