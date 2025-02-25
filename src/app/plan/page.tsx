@@ -20,7 +20,7 @@ export default function Resource() {
         </h1>
       </div>
 
-      <div className="pt-8">
+      <div className="py-8">
         <Accordion isCompact>
           <AccordionItem
             key="1"
