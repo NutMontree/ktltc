@@ -31,45 +31,44 @@ export default function Home() {
 
   return (
     <main className=" ">
-      <div>
-
+      <div className="container">
         <ScrollUp />
       </div>
       {/* <Hero /> */}
-      <div className="px-1">
+      <div className="container">
         <Scrollimage />
       </div>
-      <div className="px-2">
+      <div className="container">
         <Features />
       </div>
-      <div className="py-[48px] px-2">
+      <div className="container py-[48px] ">
         <Wellcome />
       </div>
-      <div className="py-[48px] px-2">
+      <div className="container py-[48px] ">
         <ScrollVelocity />
       </div>
-      <div className=" py-[48px] px-2">
+      <div className="container py-[48px] ">
         <BackgroundBeamsWithCollisionDemo />
       </div>
-      <div className=" ">
+      <div className="container">
         <ShowPressRelease />
       </div>
-      <div className=" py-[48px] px-2">
+      <div className="container py-[48px]">
         <ShowNewsletter />
       </div>
-      <div className=" py-[48px] px-2">
+      <div className="container py-[48px]">
         <ShowAnnouncement />
       </div>
-      <div className=" py-[48px] px-2">
+      <div className="container py-[48px]">
         <ShowBidding />
       </div>
-      <div className=" py-[48px] px-2">
+      <div className="container py-[48px]">
         <ShowTechnicalcollegeorders />
       </div>
-      <div className=" py-[48px]">
+      <div className="container py-[48px]">
         <ShowFacebook />
       </div>
-      <div className=" py-[48px] px-2">
+      <div className="container py-[48px]">
         <ShowVideos />
       </div>
 
