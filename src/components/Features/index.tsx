@@ -315,7 +315,10 @@ const Features = () => {
             </span>
           </div>
         </div>
-      </section></>
+      </section>
+      {/* <section className="">
+      </section> */}
+    </>
   );
 };
 
