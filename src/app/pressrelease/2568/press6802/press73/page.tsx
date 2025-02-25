@@ -33,7 +33,7 @@ export default function Pressrelease() {
           </p>
           <Link
             href="
-        https://storage.me-qr.com/pdf/2e21775f-9ee6-49e9-8bd3-0c7a8dfc721f.pdf?fbclid=IwY2xjawIoselleHRuA2FlbQIxMAABHWnrhiulbVuHbJUgtTu-uDOwdE18CRbCia3BAZVmgrFGQV1yvccXye7bbg_aem_VnhLkle3pQWO2ou8lMCzTA
+      https://drive.google.com/drive/folders/14GvEH1eMVwoxptL3nFCpZWiLU_sG4HUx?fbclid=IwZXh0bgNhZW0CMTAAAR1ebyTPkN5P6TNik-2TWFcCuIRclsBp3AKDhkw5W0mwYWu2EKHe4v7l97Q_aem_2W78lZCOQGeUS2zOpz1lVA
         // "
             className="hover:text-sky-500"
             target="_blank"
@@ -67,7 +67,7 @@ export default function Pressrelease() {
         {/* ***************************** Youtube ***************************** */}
 
         <div className="flex justify-center">
-          <div className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
+          <div className="  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
             {ImageItem.map((item) => (
               <div key={item.imgs}>
                 <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
