@@ -201,8 +201,8 @@ export default function page() {
           <div className="grid md:grid-flow-col gap-4">
             <div>
               <div className="bg-orange-500 py-4 px-4 rounded-lg">
-                <p>กลุ่มงานทะเบียน</p>
-                <p>ฝ่ายบริหารทรัพยากร วิทยาลัยเทคนิคกันทรลักษ์</p>
+                <p>กลุ่มงานวัดผลและประเมินผล</p>
+                <p>ฝ่ายวิชาการ วิทยาลัยเทคนิคกันทรลักษ์</p>
               </div>
               <div className="grid md:grid-flow-col pt-8 gap-4">
                 <div className="grid gap-3">
