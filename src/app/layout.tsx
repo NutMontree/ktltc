@@ -11,6 +11,7 @@ import PreLoader from "@/components/Common/PreLoader";
 import { fontSans } from "@/config/fonts";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
+import FloatingNavDemo from "@/components/FloatingNavDemo";
 
 export default function RootLayout({
   children,
@@ -43,6 +44,7 @@ export default function RootLayout({
             </div>
             {children}
             <Footer />
+            <FloatingNavDemo />
             <ScrollToTop />
           </ThemeProvider>
         )}

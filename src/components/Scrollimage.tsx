@@ -5,7 +5,7 @@ import { Image } from "@nextui-org/react";
 
 const Scrollimage: React.FC = () => (
   <>
-    <div className=" ">
+    <div className="container">
       <Carousel arrows infinite={true} autoplay autoplaySpeed={4000} adaptiveHeight>
         <div>
           <Image removeWrapper className="w-full" src="/images/11.webp" />

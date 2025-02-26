@@ -65,7 +65,7 @@ export const NavbarPage = () => {
           </div>
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="sm:hidden"
+            className=" "
           />
           {/* *************************************************** */}
           {/* <Dropdown placement="bottom-end">
