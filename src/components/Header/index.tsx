@@ -249,7 +249,7 @@ const Header = () => {
                   </ul>
                 </nav>
               </div>
-              <div className="hidden items-center justify-end pr-16 sm:flex lg:pr-0">
+              <div className="  items-center justify-end pr-16 sm:flex lg:pr-0">
                 {/* theme toggler */}
                 <button
                   aria-label="theme toggler"
