@@ -15,7 +15,7 @@ const featuresData: Feature[] = [
     title: "service",
     paragraph: "เอกสารทะเบียนและเอกสารอื่นๆ",
     btn: "",
-    btnLink: "/#",
+    btnLink: "/GECC",
   },
   {
     id: 2,
@@ -37,7 +37,7 @@ const featuresData: Feature[] = [
     title: "Contect",
     paragraph: "ช่องทางอิเล็กทรอนิกส์สำหรับการติดต่อวิทยาลัยเทคนิคกันทรลักษ์",
     btn: "",
-    btnLink: "/#",
+    btnLink: "https://line.me/ti/g2/lE1gdiKYbUTFrBCjWTUY7DjOQx2dSw2QPAv4fw?utm_source=invitation&utm_medium=QR_code&utm_campaign=default",
   },
   {
     id: 3,

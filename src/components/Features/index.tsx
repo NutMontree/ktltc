@@ -1,7 +1,9 @@
+"use client"
 import Link from "next/link";
 import SectionTitle from "../Common/SectionTitle";
 import SingleFeature from "./SingleFeature";
 import featuresData from "./featuresData";
+import { Image } from "@nextui-org/react";
 
 const Features = () => {
   return (
@@ -16,6 +18,8 @@ const Features = () => {
                   title="ศูนย์ราชการสะดวก"
                   paragraph="แถบนำทางเพื่อความสะดวกในการค้นหาข้อมูลของคุณ"
                 />
+                <Image src='/images/logo/GECCBG.webp' alt={"GECCBG"}></Image>
+
               </Link>
               <div className="-mx-4 mt-12 flex flex-wrap lg:mt-20">
                 {featuresData.map((feature, i) => (
