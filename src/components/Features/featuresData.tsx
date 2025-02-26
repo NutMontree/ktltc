@@ -155,6 +155,20 @@ const featuresData: Feature[] = [
     btn: "",
     btnLink: "https://docs.google.com/forms/d/e/1FAIpQLSdEf2XmgVMrNhz7Fl6O_8e_4yp5SjWyGxhC-pM64vIMPfBw3w/viewform",
   },
+  {
+    id: 6,
+    icon: (
+      <img
+        src='/images/logo/qrGRECC.webp'
+        alt='QR Plan'
+        width="75"
+        height="80" />
+    ),
+    title: "แบบสํารวจ GECC",
+    paragraph: "แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์",
+    btn: "",
+    btnLink: "https://docs.google.com/forms/d/e/1FAIpQLSca9AXgqHmgVFMu9uHw16JyizUeFZ3JSVlPCB5fWpYScYwRww/viewform",
+  },
 
 ];
 export default featuresData;

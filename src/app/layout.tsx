@@ -12,6 +12,7 @@ import { fontSans } from "@/config/fonts";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import FloatingNavDemo from "@/components/FloatingNavDemo";
+import '@ant-design/v5-patch-for-react-19';
 
 export default function RootLayout({
   children,
