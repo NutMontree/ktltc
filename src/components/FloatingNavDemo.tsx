@@ -37,7 +37,7 @@ import { FloatButton } from 'antd';
 
 const FloatingNavDemo: React.FC = () => (
     <>
-        <div className='pb-12'>
+        <div className=' '>
             <FloatButton.Group
                 trigger="hover"
                 type="primary"
