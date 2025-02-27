@@ -20,6 +20,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                       // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
                       className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
                       src={"/images/ข่าวประชาสัมพันธ์/2568/กุมภาพันธ์/24/1.webp"}
+                      alt=''
                     />
                   </div>
 
@@ -75,6 +76,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                   <Image
                     className="h-[150px] sm:h-[200px] lg:h-[300px] xl:h-[380px] "
                     src={"/images/14.webp"}
+                    alt=''
                   />
                 </div>
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
@@ -120,6 +122,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                       // className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
                       className="h-[150px] sm:h-[200px] lg:h-[300px] xl:h-[380px] "
                       src={"/images/ข่าวประชาสัมพันธ์/2568/กุมภาพันธ์/15/1.gif"}
+                      alt=''
                     />
                   </div>
                   <div>
