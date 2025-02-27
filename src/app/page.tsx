@@ -22,7 +22,7 @@ import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import { Metadata } from "next";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = {     
   title: "ktltc",
   description: "วิทยาลัยเทคนิคกันทรลักษ์",
 };

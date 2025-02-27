@@ -29,17 +29,18 @@ export default function Pressrelease() {
 
         <div className="pt-4  px-2">
           <p className="text-sky-800 text-lg">
-            เอกสารเพิ่มเติม
+            สามารถดูตารางเรียนได้ที่นี่ หรือสเเกน QR Code
           </p>
           <Link
             href="
-      https://drive.google.com/drive/folders/14GvEH1eMVwoxptL3nFCpZWiLU_sG4HUx?fbclid=IwZXh0bgNhZW0CMTAAAR1ebyTPkN5P6TNik-2TWFcCuIRclsBp3AKDhkw5W0mwYWu2EKHe4v7l97Q_aem_2W78lZCOQGeUS2zOpz1lVA
+      https://drive.google.com/drive/folders/14GvEH1eMVwoxptL3nFCpZWiLU_sG4HUx?fbclid=IwY2xjawIs6olleHRuA2FlbQIxMAABHfCnsLyNjIohZd6B_HKw9waJ0G2A97twqKXro4zvUJyJ4WXsVmAzPSB0iA_aem_En2KxqSmzjchi1x0k79XKg
         // "
             className="hover:text-sky-500"
             target="_blank"
           >
             https://drive.google.com/...
           </Link>
+          <p> *** หมายเหตุ ระยะเวลาเรียน เริ่มตั้งแต่วันที่ 24 กุมภาพันธ์ - 21 มีนาคม 2568</p>
 
           {/* <iframe
             className="w-full aspect-video pt-4"

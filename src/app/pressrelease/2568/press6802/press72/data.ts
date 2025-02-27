@@ -2,7 +2,7 @@ export const DataPressrelease = {
   Item: [
     {
       title: `
-วิทยาลัยเทคนิคกันทรลักษ์ 
+เเจ้ง 💥ตารางเรียน Block Course
        `,
     },
   ],
@@ -11,10 +11,35 @@ export const DataPressrelease = {
 export const Description = [
   {
     description: ` 
-ในวันอังคารที่ ๒๕ กุมภาพันธ์ ๒๕๖๘ เวลา ๐๘.๐๐ - ๑๒.๐๐ น. ณ โดมอเนกประสงค์วิทยาลัยเทคนิคกันทรลักษ์
+เเจ้ง 💥ตารางเรียน Block Course ประจำภาคเรียนที่ 2/2567
 `},
   {
     description: ` 
+แผนกวิชาที่มีการจัดการเรียนการสอน
+
+    `},
+  {
+    description: ` 
+1.แผนกวิชาช่างยนต์
+
+    `},
+  {
+    description: ` 
+2.แผนกวิชายานยนต์ไฟฟ้า
+
+    `},
+  {
+    description: ` 
+3.แผนกวิชาช่างก่อสร้าง
+
+    `},
+  {
+    description: ` 
+4.แผนกวิชาช่างอิเล็กทรอนิกส์
+    `},
+  {
+    description: ` 
+5.แผนกวิชาการบัญชี
 
     `},
   {
