@@ -1,18 +1,20 @@
 "use client";
 
 import "../styles/index.css";
+import '@ant-design/v5-patch-for-react-19';
 import "../styles/prism-vsc-dark-plus.css";
+
 import clsx from "clsx";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import Headers from "@/components/headers";
+import TopHeader from "@/components/TopHeader";
 import ScrollToTop from "@/components/ScrollToTop";
 import PreLoader from "@/components/Common/PreLoader";
+import FloatingNavDemo from "@/components/FloatingNavDemo";
+
 import { fontSans } from "@/config/fonts";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
-import FloatingNavDemo from "@/components/FloatingNavDemo";
-import '@ant-design/v5-patch-for-react-19';
 
 export default function RootLayout({
   children,
@@ -22,7 +24,7 @@ export default function RootLayout({
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
+    setTimeout(() => setLoading(false), 0);
   }, []);
 
   return (
@@ -38,7 +40,7 @@ export default function RootLayout({
             defaultTheme="light"
           >
             <div className="py-2">
-              <Headers />
+              <TopHeader />
             </div>
             <div className="pb-20">
               <Header />

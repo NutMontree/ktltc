@@ -2,7 +2,7 @@ import Phone from "./phone";
 import Mail from "./mail";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 
-export default function Headers() {
+export default function TopHeader() {
   return (
     <>
       <div className="px-24 min-w-24 flex justify-end ">

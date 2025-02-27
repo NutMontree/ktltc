@@ -8,7 +8,7 @@ export default function Academicing() {
     <>
       {/* ********************* ฝ่ายบริหารทรัพยากร ********************* */}
       <div className=" ">
- 
+
         <div className="flex justify-center pb-4">
           <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
             <Image src={"/images/ผู้บริหาร/4.webp"} alt={""} />
