@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กุมภาพันธ์/63/01.webp",
+      date: "28 มกราคม 2568",
+      description: ` 
+added 48 new photos.
+      ...`,
+      href: "/pressrelease/2568/press6802/press78",
+    },
+    {
       name: ` ๒๗ กุมภาพันธ์ ๒๕๖๘  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กุมภาพันธ์/62/014.webp",
       date: "28 มกราคม 2568",
