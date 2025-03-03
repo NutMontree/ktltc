@@ -73,7 +73,7 @@ export default function Footer() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <div>061-4122765 หรือ 045-811753</div>
+                    <div>061-4122765 หรือ 045-811053</div>
                   </div>
                   <div className="flex gap-2 ">
                     <svg

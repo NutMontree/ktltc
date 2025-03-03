@@ -60,7 +60,7 @@ export default function TopHeader() {
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="px-1 py-2">
-                    <div className="text-tiny">061-4122765 หรือ 045-811753</div>
+                    <div className="text-tiny">061-4122765 หรือ 045-811053</div>
                   </div>
                 </PopoverContent>
               </Popover>

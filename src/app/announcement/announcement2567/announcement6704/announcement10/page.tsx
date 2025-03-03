@@ -50,7 +50,7 @@ export default function Announcement() {
           <div>Gmail : ktl11022021@gmail.com</div>
           <div>สอบถามข้อมูลเพิ่มเติม</div>
           <div>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๗๕๓ </div>
-          <div>โทร : 061-4122765 หรือ 045-811753</div>
+          <div>โทร : 061-4122765 หรือ 045-811053</div>
         </div>
 
         {/* <div className="link">
