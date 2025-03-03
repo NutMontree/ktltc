@@ -8,7 +8,7 @@ import TMW from "./TMW";
 import CDW from "./CDW";
 import ARAL from "./ARAL";
 
-export default function Academic() {
+export default function page() {
   return (
     <>
       <div>

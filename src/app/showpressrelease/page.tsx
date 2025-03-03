@@ -1,12 +1,15 @@
 "use client"; // top to the file
 
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/free-mode";
+import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/scrollbar";
+
+// Import Swiper React components
+import { Swiper, SwiperSlide } from "swiper/react";
+
 // import Swiper core and required modules
 import {
   Navigation,
@@ -15,12 +18,6 @@ import {
   Autoplay,
   FreeMode,
 } from "swiper/modules";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 
 // import required modules
 import NextLink from "next/link";
@@ -426,7 +423,7 @@ export default function ShowPressRelease() {
               onSlideChange={() => console.log("slide change")}
               centeredSlides={true}
               autoplay={{
-                delay: 25000,
+                delay: 30000,
                 disableOnInteraction: false,
               }}
               className="mySwiper"

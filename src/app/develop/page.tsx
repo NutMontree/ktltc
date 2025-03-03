@@ -6,7 +6,7 @@ import SA from "./Sa";
 import Space from "./Spcs";
 
 
-export default function Resource() {
+export default function page() {
   return (
     <>
       <div>

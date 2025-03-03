@@ -12,7 +12,7 @@ import BASW from "./BASW";
 import PRW from "./PRW";
 import RW from "./RW";
 
-export default function Resource() {
+export default function page() {
   return (
     <>
       <div>

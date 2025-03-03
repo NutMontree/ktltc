@@ -8,7 +8,7 @@ import CW from "./CW";
 import TABPW from "./TABPW";
 import RDIAI from "./RDIAI";
 
-export default function Resource() {
+export default function page() {
   return (
     <>
       <div>
