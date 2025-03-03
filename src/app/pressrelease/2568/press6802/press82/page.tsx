@@ -5,54 +5,58 @@ import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
 import { FootTitle } from "@/components/FootTitle";
 import Link from "next/link";
+import Breadcrumb from "@/components/Common/Breadcrumb";
 
 export default function Pressrelease() {
+
   return (
     <>
-      <div>
-        <div className="text-center text-xl pb-6 px-2">
-          {DataPressrelease.Item.map((item) => (
-            <div key={item.title}>{item.title}</div>
-          ))}
-        </div>
-        <div className='px-2'>
-          {Description.map((item) => (
-            <div key={item.description}>
-              <div>{item.description}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* ***************************** LInk And PDF ***************************** */}
-
-        <div className='px-2'>
-          <FootTitle />
-        </div>
-
-        <div className="date px-2">
-          {DataDate.map((item) => (
-            <div key={item.date}>
-              <div className="text-xs text-slate-500">{item.date}</div>
-            </div>
-          ))}
-        </div>
-        <br />
-
-        {/* ***************************** Youtube ***************************** */}
-
-
-        <div className="flex justify-center">
-          <div className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
-            {ImageItem.map((item) => (
-              <div key={item.imgs}>
-                <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
-                  <Image src={item.imgs} alt={""}></Image>
-                </div>
-              </div>
+      <section className="">
+        <Breadcrumb pageName="Pressrelease" />
+        <div className="py-12">
+          <div className="text-center text-xl pb-6 px-2">
+            {DataPressrelease.Item.map((item) => (
+              <div key={item.title}>{item.title}</div>
             ))}
           </div>
+          <div className='px-2'>
+            {Description.map((item) => (
+              <div key={item.description}>
+                <div>{item.description}</div>
+              </div>
+            ))}
+
+            {/* ***************************** LInk And PDF ***************************** */}
+
+            <div className='px-2'>
+              <FootTitle />
+            </div>
+
+            <div className="date px-2">
+              {DataDate.map((item) => (
+                <div key={item.date}>
+                  <div className="text-xs text-slate-500">{item.date}</div>
+                </div>
+              ))}
+            </div>
+            <br />
+
+            {/* ***************************** Youtube ***************************** */}
+
+            <div className="flex justify-center">
+              <div className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
+                {ImageItem.map((item) => (
+                  <div key={item.imgs}>
+                    <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
+                      <Image src={item.imgs} alt={""}></Image>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }

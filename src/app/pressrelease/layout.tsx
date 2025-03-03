@@ -3,7 +3,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <section>
       <div
         className="
-container py-8
+container
       "
       >
         {children}
