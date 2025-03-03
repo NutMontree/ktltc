@@ -40,6 +40,14 @@ export default function RW() {
                 <p>20. ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
                 <p>21. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย</p>
             </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/7.webp" alt="Image description ทรัพยากร" />
+                </div>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/8.webp" alt="Image description ทรัพยากร" />
+                </div>
+            </div>
         </>
     )
 }

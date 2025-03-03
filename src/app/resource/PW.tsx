@@ -24,6 +24,15 @@ export default function PW() {
                 <p>10. ดูแลบำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
                 <p>11. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย</p>
             </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/6.webp" alt="Image description ทรัพยากร" />
+                </div>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/7.webp" alt="Image description ทรัพยากร" />
+                </div>
+            </div>
+
         </>
     )
 }

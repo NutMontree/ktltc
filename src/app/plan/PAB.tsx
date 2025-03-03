@@ -24,6 +24,14 @@ export default function PAB() {
                 <p>9. ดูแล บำรุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
                 <p>10. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย</p>
             </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/แผน/1.webp" alt="Image description ทรัพยากร" />
+                </div>
+                {/* <div className='rounded-[22px] pt-4'>
+                                            <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
+                                        </div> */}
+            </div>
         </>
     )
 }

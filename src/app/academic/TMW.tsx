@@ -18,7 +18,14 @@ export default function TMW() {
                 <p>4. รับผิดชอบ ดูแล บำรุง รักษา วัสดุอุปกรณ์ให้อยู่ในสภาพพร้อมใช้งานและให้บริการด้านโสตทัศนูปกรณ์ต่างๆ การใช้ห้องสมุดโสตทัศนศึกษา</p>
                 <p>5. จัดทำปฏิทินการปฏิบัติงาน เสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น</p>
                 <p>6. ดูแล บำรุง รักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
-
+            </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/วิชาการ/3.webp" alt="Image description ทรัพยากร" />
+                </div>
+                {/* <div className='rounded-[22px] pt-4'>
+                                            <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
+                                        </div> */}
             </div>
         </>
     )

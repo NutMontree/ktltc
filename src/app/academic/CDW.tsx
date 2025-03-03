@@ -26,6 +26,14 @@ export default function CDW() {
                 <p>12. จัดทำปฏิทินการปฏิบัติงาน เสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น</p>
                 <p>13. ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
             </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/วิชาการ/4.webp" alt="Image description ทรัพยากร" />
+                </div>
+                {/* <div className='rounded-[22px] pt-4'>
+                                            <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
+                                        </div> */}
+            </div>
         </>
     )
 

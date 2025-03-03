@@ -13,10 +13,10 @@ export default function Academic() {
     <>
       <div>
         <h1 className="flex justify-center text-xl">
-          ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
+          ฝ่ายวิชาการ
         </h1>
         <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
-          Student Activities Development Division Page
+          Academic Affairs
         </h1>
       </div>
 

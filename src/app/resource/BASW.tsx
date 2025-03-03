@@ -7,7 +7,7 @@ export default function BASW() {
             <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงาน</h1>
             <div className='flex justify-center pb-4'>
                 <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/ทรัพยากร/อาคารและสถานที่.webp" alt="Image description ทรัพยากร" />
+                    <Image src="/images/บุคลากร/ทรัพยากร/ทะเบียน.webp" alt="Image description ทรัพยากร" />
                 </div>
             </div>
             <div className='text-base sm:text-lg py-6'>
@@ -24,6 +24,15 @@ export default function BASW() {
                 </p>
                 <p>8. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย</p>
             </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/10.webp" alt="Image description ทรัพยากร" />
+                </div>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/11.webp" alt="Image description ทรัพยากร" />
+                </div>
+            </div>
+
         </>
     )
 }

@@ -22,6 +22,14 @@ export default function HRD() {
                 <p>8. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย</p>
                 <p>9. </p>
             </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/2.webp" alt="Image description ทรัพยากร" />
+                </div>
+                {/* <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
+                </div> */}
+            </div>
         </>
     )
 }

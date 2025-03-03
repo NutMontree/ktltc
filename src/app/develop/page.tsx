@@ -2,6 +2,9 @@
 
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import Developing from "./Developing";
+import SA from "./Sa";
+import Space from "./Spcs";
+
 
 export default function Resource() {
   return (
@@ -19,13 +22,16 @@ export default function Resource() {
         <Accordion isCompact>
           <AccordionItem
             key="1"
-            aria-label="Accordion 1"
+            aria-label="1"
             title="แผนภูมิโครงสร้างการบริหารงานสถานศึกษา"
           >
             <Developing />
           </AccordionItem>
-          <AccordionItem key="2" aria-label="Accordion 2" title="ไม่มีข้อมูล">
-            {/* <Pressrelease2566 /> */}
+          <AccordionItem key="2" aria-label="2" title="งานกิจกรรมนักเรียนนักศึกษา">
+            <SA />
+          </AccordionItem>
+          <AccordionItem key="3" aria-label="3" title="งานโครงการพิเศษและบริการชุมชน">
+            <Space />
           </AccordionItem>
         </Accordion>
       </div>

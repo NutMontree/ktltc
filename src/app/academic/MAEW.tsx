@@ -24,6 +24,14 @@ export default function MAEW() {
                 <p>10. จัดทำปฏิทินการปฏิบัติงาน เสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น</p>
                 <p>11. ดูแล บำรุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
             </div>
+            <div className='grid md:grid-flow-col gap-4'>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/วิชาการ/2.webp" alt="Image description ทรัพยากร" />
+                </div>
+                {/* <div className='rounded-[22px] pt-4'>
+                                <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
+                            </div> */}
+            </div>
         </>
     )
 

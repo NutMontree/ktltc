@@ -9,6 +9,8 @@ import HR from "./HR";
 import AW from "./AW";
 import PW from "./PW";
 import BASW from "./BASW";
+import PRW from "./PRW";
+import RW from "./RW";
 
 export default function Resource() {
   return (
@@ -41,13 +43,13 @@ export default function Resource() {
             <PW />
           </AccordionItem>
           <AccordionItem key="7" aria-label="7" title="งานอาคารและสถานที่">
-            <BASW />
+            <RW />
           </AccordionItem>
           <AccordionItem key="8" aria-label="8" title="งานทะเบียน">
             <BASW />
           </AccordionItem>
           <AccordionItem key="9" aria-label="9" title="งานประชาสัมพันธ์">
-            <BASW />
+            <PRW />
           </AccordionItem>
         </Accordion>
       </div>
