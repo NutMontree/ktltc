@@ -4,16 +4,35 @@ import React from "react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
 import { FootTitle } from "@/components/FootTitle";
-import Link from "next/link";
-import Breadcrumb from "@/components/Common/Breadcrumb";
+import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { Breadcrumb } from 'antd';
 
 export default function Pressrelease() {
 
   return (
     <>
-      <section className="">
-        <Breadcrumb pageName="Pressrelease" />
-        <div className="py-12">
+      <Breadcrumb
+        items={[
+          {
+            href: '/',
+            title: <HomeOutlined />,
+          },
+          {
+            href: '/pressrelease/2568/press6802',
+            title: (
+              <>
+                <UserOutlined />
+                <span>Application List</span>
+              </>
+            ),
+          },
+          {
+            title: 'Application',
+          },
+        ]}
+      />
+      <section className="pt-20">
+        <div className="">
           <div className="text-center text-xl pb-6 px-2">
             {DataPressrelease.Item.map((item) => (
               <div key={item.title}>{item.title}</div>
