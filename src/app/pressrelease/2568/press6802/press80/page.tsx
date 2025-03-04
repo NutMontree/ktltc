@@ -4,14 +4,14 @@ import React from "react";
 import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@nextui-org/react";
 import { FootTitle } from "@/components/FootTitle";
-// import { HomeOutlined, UserOutlined } from '@ant-design/icons';
-// import { Breadcrumb } from 'antd';
+import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { Breadcrumb } from 'antd';
 
 
 export default function Pressrelease() {
   return (
     <>
-      {/* <Breadcrumb
+      <Breadcrumb
         items={[
           {
             href: '/',
@@ -30,7 +30,7 @@ export default function Pressrelease() {
             title: 'Application',
           },
         ]}
-      /> */}
+      />
       <div className="pt-20">
         <div className="text-center text-xl pb-6 px-2">
           {DataPressrelease.Item.map((item) => (
