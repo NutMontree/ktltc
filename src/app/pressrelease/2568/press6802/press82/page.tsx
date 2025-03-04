@@ -18,7 +18,7 @@ export default function Pressrelease() {
             title: <HomeOutlined />,
           },
           {
-            href: '/',
+            href: '/pressrelease/2568/press6802',
             title: (
               <>
                 <UserOutlined />
