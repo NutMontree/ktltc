@@ -26,7 +26,7 @@ import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 
-import { DataPressrelease } from "../pressrelease/2568/press6802/data";
+import { DataPressrelease } from "../pressrelease/2568/press6803/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`

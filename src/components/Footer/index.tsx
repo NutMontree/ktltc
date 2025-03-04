@@ -35,7 +35,7 @@ const Footer = () => {
               <div className="-mx-3 flex items-center">
                 <Link
                   aria-label="social link"
-                  href="https://www.facebook.com/profile.php?id=100004276455648"
+                  href="https://www.facebook.com/profile.php?id=100057326985699"
                   className="px-3 text-gray-7 hover:text-white"
                 >
                   <svg
