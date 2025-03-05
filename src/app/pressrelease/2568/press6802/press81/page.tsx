@@ -15,9 +15,10 @@ export default function Pressrelease() {
           {
             href: '/',
             title: <HomeOutlined />,
+            className: 'dark:text-white dark:hover:text-white'
           },
           {
-            href: '/pressrelease/2568/press6802',
+            href: '/pressrelease/2568/press6803', className: 'dark:text-white dark:hover:text-white',
             title: (
               <>
                 <UserOutlined />
@@ -27,6 +28,7 @@ export default function Pressrelease() {
           },
           {
             title: 'Application',
+            className: 'dark:text-gray-400'
           },
         ]}
       />
