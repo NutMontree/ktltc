@@ -236,13 +236,13 @@ const menuData: Menu[] = [
       {
         id: 62,
         title: "ระบบ ศธ. ออนไลน์",
-        path: "/https://std2018.vec.go.th/web",
+        path: "https://std2018.vec.go.th/web",
         newTab: false,
       },
       {
         id: 63,
         title: "ตรวจสอบผลการเรียน",
-        path: "/https://std2018.vec.go.th/web/",
+        path: "https://std2018.vec.go.th/web/",
         newTab: false,
       },
       {
@@ -266,19 +266,13 @@ const menuData: Menu[] = [
       {
         id: 67,
         title: "ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ",
-        path: "/ ",
-        newTab: false,
-      },
-      {
-        id: 68,
-        title: "ศูนย์กำลังคนอาชีวศึกษา (V-COP)",
-        path: "/ ",
+        path: "/pressrelease ",
         newTab: false,
       },
       {
         id: 69,
         title: "ศูนย์กำลังคนอาชีวศึกษา (V-COP)",
-        path: "/https://v-cop.go.th/",
+        path: "https://v-cop.go.th/",
         newTab: false,
       },
       {
@@ -289,14 +283,14 @@ const menuData: Menu[] = [
       },
       {
         id: 611,
-        title: "ID Plan",
-        path: "/ ",
+        title: "Plan PDCA",
+        path: "https://ktltcp.vercel.app/ ",
         newTab: false,
       },
       {
         id: 612,
         title: "แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ",
-        path: "/https://forms.gle/Hcwfjvd7S8zTbA3C8",
+        path: "https://forms.gle/Hcwfjvd7S8zTbA3C8",
         newTab: false,
       },
     ],

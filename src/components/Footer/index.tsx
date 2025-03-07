@@ -275,7 +275,7 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-          <div className="w-full px-4 md:w-2/3 lg:w-6/12 xl:w-3/12">
+          <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
             <div className="mb-10 w-full">
               <h4 className="mb-9 text-lg font-semibold text-white">
                 ข้อมูลบุคลากร
@@ -382,6 +382,135 @@ const Footer = () => {
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     แผนกวิชาสามัญสัมพันธ์
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
+            <div className="mb-10 w-full">
+              <h4 className="mb-9 text-lg font-semibold text-white">
+                เมนูลัด
+              </h4>
+              <ul>
+                <li>
+                  <Link
+                    href="/GECC"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ศูนย์ราชการสะดวก
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://std2018.vec.go.th/web"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ระบบ ศธ. ออนไลน์
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://std2018.vec.go.th/web/"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >ตรวจสอบผลการเรียน
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/ "
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    รับงานอิเล็กทรอนิกส์
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/ "
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    สมัครเรียนออนไลน์
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/ "
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    บทเรียนออนไลน์
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/pressrelease"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://v-cop.go.th/"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ศูนย์กำลังคนอาชีวศึกษา (V-COP)
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/ "
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    รายงานประจำของสถานศึกษา (SAR)
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/ "
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    ID Plan
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="https://forms.gle/Hcwfjvd7S8zTbA3C8"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
+            <div className="mb-10 w-full">
+              <h4 className="mb-9 text-lg font-semibold text-white">
+                อื่น ๆ
+              </h4>
+              <ul>
+                <li>
+                  <Link
+                    href="https://ktltcp.vercel.app/"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    Plan PDCA
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/minigame"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    Mini Game
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/qrcode"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    Create QR Code Free
                   </Link>
                 </li>
               </ul>
