@@ -1,9 +1,12 @@
-"use client";
+import React from 'react';
 
-export default function SubTest() {
-  return (
-    <>
-      <div className="texts">Sub Test Page</div>
-    </>
-  );
-}
+const Page = () => (
+
+  <>
+    <div>Test page     </div>
+
+
+  </>
+);
+
+export default Page;
