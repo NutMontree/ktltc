@@ -23,7 +23,7 @@ import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 
-import { Data } from "../newsletter/newsletter2568/newsletter6802/data";
+import { Data } from "../newsletter/newsletter2568/newsletter6803/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`

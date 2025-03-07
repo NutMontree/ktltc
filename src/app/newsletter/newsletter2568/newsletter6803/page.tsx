@@ -1,29 +1,28 @@
 "use client"; // top to the file
 
 import NextLink from "next/link";
+import NewsletterPage from "../../page";
+import { Data } from "./data";
 
-import AnnouncementPage from "../../page";
-import { DataAnnouncement } from "./data";
-
-export default function Announcement() {
+export default function Newsletter() {
   return (
     <>
-      <AnnouncementPage />
+      <NewsletterPage />
 
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
-          เดือน กุมภาพันธ์ 2567
+          เดือน กุมภาพันธ์ 2568
         </h1>
       </div>
 
-      <div className=" ">
+      <div className="2567">
         <div className="flex justify-center pt-4 px-2">
           <div className=" grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
-            {DataAnnouncement.navItems.map((item) => (
+            {Data.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>
-                <div className="mb-2 group relative rounded-xl cursor-pointer min-h-48 ">
+                <div className="mb-6 relative shadow-lg rounded-xl  h-[250px] lg:h-[500px] lg:w-[full] overflow-hidden ">
                   <div
-                    className="absolute inset-0 bg-cover bg-center hover:scale-100 transition duration-500 cursor-pointer object-cover scale-95 rounded-xl"
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500   "
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
