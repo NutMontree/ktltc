@@ -77,7 +77,7 @@ export default function page() {
           <div className="bg-red-500 py-4 px-4 rounded-lg">
             <p>งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
           </div>
-          <div className="bg-orange-500 py-4 rounded-lg">
+          <div className="bg-orange-500 py-4 px-4 rounded-lg">
             <p>กลุ่มงานทะเบียน</p>
             <p>ฝ่ายบริหารทรัพยากร วิทยาลัยเทคนิคกันทรลักษ์</p>
           </div>
