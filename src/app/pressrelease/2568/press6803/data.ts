@@ -2,6 +2,24 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/5/462.webp",
+      date: "7 มีนาคม 2568",
+      description: ` 
+พิธีมอบใบประกาศนียบัตรเเก่ผู้สำเร็จการศึกษา ปีการศึกษา 2567 
+        ...`,
+      href: "/pressrelease/2568/press6803/press6",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/5/231.webp",
+      date: "7 มีนาคม 2568",
+      description: ` 
+พิธีมอบใบประกาศนียบัตรเเก่ผู้สำเร็จการศึกษา ปีการศึกษา 2567 
+        ...`,
+      href: "/pressrelease/2568/press6803/press6",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/5/001.webp",
       date: "7 มีนาคม 2568",
       description: ` 
