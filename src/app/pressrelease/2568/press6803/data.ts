@@ -2,8 +2,8 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `๑๐ มีนาคม ๒๕๖๘`,
-      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/6/01.webp", 
-      date: "7 มีนาคม 2568",
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/6/01.webp",
+      date: "10 มีนาคม 2568",
       description: ` 
 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ จัดโครงการสัมมนาการจัด
         ...`,

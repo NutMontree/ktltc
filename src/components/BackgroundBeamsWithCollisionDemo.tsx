@@ -12,7 +12,7 @@ export function BackgroundBeamsWithCollisionDemo() {
 
         <div className="py-3 pb-[48px]">
           <div className="flex justify-center">
-            <Link href="/pressrelease/2568/press6802/press24" target="_blank">
+            <Link href="/pressrelease/2568/press6803/press4" target="_blank">
               <div className="flex justify-center">
                 <div className="">
                   <div className="flex justify-center">

@@ -428,7 +428,7 @@ export default function ShowPressRelease() {
               }}
               className="mySwiper"
             >
-              {DataPressrelease.navItems.map((item) => (
+              {DataPressrelease.navItems.slice(0, 3).map((item) => (
                 <SwiperSlide key={item.name}>
                   <NextLink key={item.href} href={item.href}>
                     <div
