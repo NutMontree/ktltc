@@ -159,7 +159,7 @@ export default function ShowNewsletter() {
                     <div
                       className="text-xs text-slate-500
                               text-[12px] md:text-[14px] sm:text-sm md:text-base 
-                              mb-10
+                              mb-10 pt-1 md:pt-0
                               "
                     >
                       {item.date}

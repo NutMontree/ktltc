@@ -455,27 +455,27 @@ export default function ShowPressRelease() {
                         <div className=" ">
                           <h1
                             className="
-                              text-[14px] md:text-[20px] sm:text-sm md:text-base 
-                            text-sky-600  
-                  "
+                                      text-[14px] md:text-[20px] sm:text-sm md:text-base 
+                                    text-sky-600  
+                                    "
                           >
                             {item.name}
                           </h1>
                           <div
                             className=" 
-                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
-                              mb-2
-                              "
+                                      text-[12px] md:text-[14px] sm:text-sm md:text-base 
+                                      mb-2
+                                      "
                           >
                             {item.description}
                           </div>
                           <div className="flex gap-1">
-                            <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
+                            <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' width={20} height={20} />
                             <div
                               className="text-xs text-slate-500
-                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
-                              mb-10
-                              "
+                                        text-[12px] md:text-[14px] sm:text-sm md:text-base 
+                                        mb-10 pt-1 md:pt-0
+                                        "
                             >
                               {item.date}
                             </div>
