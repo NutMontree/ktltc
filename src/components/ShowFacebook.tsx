@@ -1,13 +1,16 @@
 "use client"; // top to the file
 import React from "react";
 import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Image } from "@nextui-org/react";
 
 export default function ShowFacebook() {
   return (
     <>
       <div>
         <h1 className="flex justify-center text-xxl pt-3 font-bold pb-8 ">
-          Page Facebook
+          <Image src='/images/facebook-svgrepo-com.svg' alt='logo-youtube' width={60} height={60} />
+
+
         </h1>
       </div>
       <div>

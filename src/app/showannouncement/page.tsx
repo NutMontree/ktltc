@@ -56,36 +56,38 @@ export default function ShowAnnouncement() {
   const { styles } = useStyle();
   return (
     <>
-      <div>
-        <h1 className="flex justify-center text-xxl pt-3 font-bold">
-          ข่าวประกาศ
-        </h1>
-      </div>
-
-      <div className="flex justify-center">
-        <h1 className="flex justify-center text-xxl text-[#DAA520] ">
-          Announcement New
-        </h1>
-      </div>
-
-      <div className="flex justify-end pt-3">
-        <ConfigProvider
-          button={{
-            className: styles.linearGradientButton,
-          }}
-        >
-          <Space>
-            <Button
-              type="primary"
-              size="large"
-              icon={<AntDesignOutlined />}
-              href="/announcement"
+      <div className="grid grid-flow-col py-4">
+        <div className="justify-items-start">
+          <div className="grid grid-flow-col">
+            <div className="bg-red-500 w-2" />
+            <div className="pl-4">
+              <h1 className="text-xxl font-bold">ข่าวประกาศ</h1>
+              <h1 className="text-xxl text-[#DAA520]">Announcement New</h1>
+            </div>
+          </div>
+        </div>
+        <div className="justify-items-end">
+          <div className=" ">
+            <ConfigProvider
+              button={{
+                className: styles.linearGradientButton,
+              }}
             >
-              เนื้อหาเพิ่มเติม
-            </Button>
-          </Space>
-        </ConfigProvider>
-      </div>
+              <Space>
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<AntDesignOutlined />}
+                  href="/announcement"
+                >
+                  เนื้อหาเพิ่มเติม
+                </Button>
+              </Space>
+            </ConfigProvider>
+          </div>
+        </div>
+      </div >
+
 
       <div className=" py-3">
         <Swiper
@@ -116,7 +118,7 @@ export default function ShowAnnouncement() {
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
         >
-          {DataAnnouncement.navItems.map((item) => (
+          {DataAnnouncement.navItems.slice(0, 4).map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
                 <div

@@ -59,37 +59,40 @@ export default function ShowBidding() {
   const { styles } = useStyle();
   return (
     <>
+      <div className="grid grid-flow-col py-4">
+        <div className="justify-items-start">
+          <div className="grid grid-flow-col">
+            <div className="bg-red-500 w-2" />
+            <div className="pl-4">
+              <h1 className="text-xxl font-bold">ข่าวประกวดราคา</h1>
+              <h1 className="text-xxl text-[#DAA520]">Bidding</h1>
+            </div>
+          </div>
+        </div>
+        <div className="justify-items-end">
+          <div className=" ">
+            <ConfigProvider
+              button={{
+                className: styles.linearGradientButton,
+              }}
+            >
+              <Space>
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<AntDesignOutlined />}
+                  href="/bidding"
+                >
+                  เนื้อหาเพิ่มเติม
+                </Button>
+              </Space>
+            </ConfigProvider>
+          </div>
+        </div>
+      </div >
+
+
       <div className="relative z-20 overflow-hidden  ">
-        <div>
-          <h1 className="flex justify-center text-xxl pt-3 font-bold">
-            ข่าวประกวดราคา
-          </h1>
-        </div>
-
-        <div className="flex justify-center">
-          <h1 className="flex justify-center text-xxl text-[#DAA520] ">
-            Bidding
-          </h1>
-        </div>
-
-        <div className="flex justify-end  pt-3">
-          <ConfigProvider
-            button={{
-              className: styles.linearGradientButton,
-            }}
-          >
-            <Space>
-              <Button
-                type="primary"
-                size="large"
-                icon={<AntDesignOutlined />}
-                href="/bidding"
-              >
-                เนื้อหาเพิ่มเติม
-              </Button>
-            </Space>
-          </ConfigProvider>
-        </div>
 
         <div className=" py-3">
           <Swiper

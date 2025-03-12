@@ -7,10 +7,10 @@
 // import Pricing from "@/components/Pricing";
 // import CallToAction from "@/components/CallToAction";
 // import Testimonials from "@/components/Testimonials";
-import ShowVideos from "./showvideos/page";
 import Features from "@/components/Features";
 import Wellcome from "@/components/wellcome";
 import ShowBidding from "./showbidding/page";
+import ShowYoutube from "./ShowYoutube/page";
 import ShowNewsletter from "./shownewsletter/page";
 import Scrollimage from "@/components/Scrollimage";
 import ScrollUp from "@/components/Common/ScrollUp";
@@ -47,7 +47,7 @@ export default function Home() {
       <div className="container py-[48px] ">
         <ScrollVelocity />
       </div>
-      <div className="container py-[48px] ">
+      <div className="container">
         <BackgroundBeamsWithCollisionDemo />
       </div>
       <div className="container">
@@ -69,7 +69,7 @@ export default function Home() {
         <ShowFacebook />
       </div>
       <div className="container py-[48px]">
-        <ShowVideos />
+        <ShowYoutube />
       </div>
 
       {/* <About />

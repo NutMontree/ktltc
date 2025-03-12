@@ -10,7 +10,7 @@ export function BackgroundBeamsWithCollisionDemo() {
       <div className=" ">
         {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-        <div className="py-3 pb-[48px]">
+        <div className="pt-3 pb-[48px]">
           <div className="flex justify-center">
             <Link href="/pressrelease/2568/press6803/press4" target="_blank">
               <div className="flex justify-center">
@@ -67,7 +67,7 @@ export function BackgroundBeamsWithCollisionDemo() {
 
         {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 pt-[48px] pb-[48px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 pt-[48px]">
           <div className="flex justify-center">
             {/* <Link href="/pressrelease/2567/pressrelease6712/pressrelease582"> */}
             <div className="flex justify-center">

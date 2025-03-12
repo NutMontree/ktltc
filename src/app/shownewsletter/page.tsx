@@ -57,39 +57,44 @@ export default function ShowNewsletter() {
   const { styles } = useStyle();
   return (
     <>
-      <div>
-        <h1 className="flex justify-center text-xxl pt-3 font-bold">
-          จดหมายข่าว
-        </h1>
-      </div>
-
-      <div className="flex justify-center">
-        <h1 className="flex justify-center text-xxl text-[#DAA520] ">
-          Newsletter
-        </h1>
-      </div>
-
-      <div className="flex justify-end pt-3">
-        <ConfigProvider
-          button={{
-            className: styles.linearGradientButton,
-          }}
-        >
-          <Space>
-            <Button
-              type="primary"
-              size="large"
-              icon={<AntDesignOutlined />}
-              href="/newsletter"
+      <div className="grid grid-flow-col py-4">
+        <div className="justify-items-start">
+          <div className="grid grid-flow-col">
+            <div className="bg-red-500 w-2" />
+            <div className="pl-4">
+              <h1 className="text-xxl font-bold">จดหมายข่าว</h1>
+              <h1 className="text-xxl text-[#DAA520]">Newsletter</h1>
+            </div>
+          </div>
+        </div>
+        <div className="justify-items-end">
+          <div className=" ">
+            <ConfigProvider
+              button={{
+                className: styles.linearGradientButton,
+              }}
             >
-              เนื้อหาเพิ่มเติม
-            </Button>
-          </Space>
-        </ConfigProvider>
-      </div>
+              <Space>
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<AntDesignOutlined />}
+                  href="/newsletter"
+                >
+                  เนื้อหาเพิ่มเติม
+                </Button>
+              </Space>
+            </ConfigProvider>
+          </div>
+        </div>
+      </div >
 
-      <div className="py-3">
-        <Swiper
+      <div className="py-3             
+            grid gap-2
+            grid-cols-1
+            sm:grid-cols-1
+            lg:grid-cols-3">
+        {/* <Swiper
           breakpoints={{
             0: {
               slidesPerView: 2,
@@ -116,48 +121,48 @@ export default function ShowNewsletter() {
           scrollbar={{ draggable: true }}
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
-        >
-          {Data.navItems.map((item) => (
-            <SwiperSlide key={item.name}>
-              <NextLink key={item.href} href={item.href}>
-                <div
-                  className="
+        > */}
+        {Data.navItems.slice(0, 4).map((item) => (
+          <SwiperSlide key={item.name}>
+            <NextLink key={item.href} href={item.href}>
+              <div
+                className="
                 mb-6 relative shadow-lg rounded-xl 
-                h-[250px]
-                xs:h-[200px] 
-                sm:h-[300px]
-                lg:h-[400px]
-                xl:h-[500px]
+                h-[500px]
+                xs:h-[500px] 
+                sm:h-[750px]
+                lg:h-[450px]
+                xl:h-[600px]
                 lg:w-[full] overflow-hidden 
                 "
-                >
-                  <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
-                    style={{
-                      backgroundImage: `url(${item.backgroundImage})`,
-                    }}
-                  />
-                </div>
-                <div className=" ">
-                  <h1
-                    className="
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
+                  style={{
+                    backgroundImage: `url(${item.backgroundImage})`,
+                  }}
+                />
+              </div>
+              <div className=" ">
+                <h1
+                  className="
                               text-[14px] md:text-[20px] sm:text-sm md:text-base 
                             text-sky-600  
                   "
-                  >
-                    {item.name}
-                  </h1>
-                  <div>
-                    <div className="text-sm">{item.description}</div>
-                    <div className="text-xs text-slate-500 pb-12">
-                      {item.date}
-                    </div>
+                >
+                  {item.name}
+                </h1>
+                <div>
+                  <div className="text-sm">{item.description}</div>
+                  <div className="text-xs text-slate-500 pb-12">
+                    {item.date}
                   </div>
                 </div>
-              </NextLink>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+              </div>
+            </NextLink>
+          </SwiperSlide>
+        ))}
+        {/* </Swiper> */}
       </div>
     </>
   );

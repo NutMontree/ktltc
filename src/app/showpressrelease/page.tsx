@@ -348,91 +348,94 @@ export default function ShowPressRelease() {
               transform="rotate(180 1.66732 1.66683)"
               fill="#13C296"
             />
-          </svg>
-        </span>
-        <div className=" ">
-          <div>
-            <h1 className="flex justify-center text-xxl pt-3 font-bold">
-              ข่าวประชาสัมพันธ์
-            </h1>
-          </div>
+          </svg></span>
 
-          <div className="flex justify-center">
-            <h1 className="flex justify-center text-xxl text-[#DAA520] ">
-              Press Release Page
-            </h1>
-          </div>
+        <div className="pt-28">
+          <div className=" ">
+            <div className="grid grid-flow-col py-4">
+              <div className="justify-items-start">
+                <div className="grid grid-flow-col">
+                  <div className="bg-red-500 w-2" />
+                  <div className="pl-4">
+                    <h1 className="text-xxl font-bold">ข่าวประชาสัมพันธ์</h1>
+                    <h1 className="text-xxl text-[#DAA520]"> Press Release Page</h1>
+                  </div>
+                </div>
+              </div>
+              <div className="justify-items-end">
+                <div className=" ">
+                  <ConfigProvider
+                    button={{
+                      className: styles.linearGradientButton,
+                    }}
+                  >
+                    <Space>
+                      <Button
+                        type="primary"
+                        size="large"
+                        icon={<AntDesignOutlined />}
+                        href="/pressrelease"
+                      >
+                        เนื้อหาเพิ่มเติม
+                      </Button>
+                    </Space>
+                  </ConfigProvider>
+                </div>
+              </div>
+            </div >
 
-          <div className="flex justify-end pt-3 pr-2">
-            <ConfigProvider
-              button={{
-                className: styles.linearGradientButton,
-              }}
-            >
-              <Space>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<AntDesignOutlined />}
-                  href="/pressrelease"
-                >
-                  เนื้อหาเพิ่มเติม
-                </Button>
-              </Space>
-            </ConfigProvider>
-          </div>
-
-          <div className="py-3">
-            <Swiper
-              breakpoints={{
-                0: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
-                400: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
-                600: {
-                  slidesPerView: 3,
-                  spaceBetween: 15,
-                },
-                800: {
-                  slidesPerView: 4,
-                  spaceBetween: 15,
-                },
-                1000: {
-                  slidesPerView: 5,
-                  spaceBetween: 15,
-                },
-                1400: {
-                  slidesPerView: 6,
-                  spaceBetween: 15,
-                },
-              }}
-              freeMode={true}
-              modules={[Navigation, Scrollbar, A11y, Autoplay, FreeMode]}
-              spaceBetween={0}
-              slidesPerView={1}
-              navigation={true}
-              pagination={{
-                clickable: true,
-              }}
-              scrollbar={{ draggable: true }}
-              onSwiper={(swiper) => console.log(swiper)}
-              onSlideChange={() => console.log("slide change")}
-              centeredSlides={true}
-              autoplay={{
-                delay: 30000,
-                disableOnInteraction: false,
-              }}
-              className="mySwiper"
-            >
-              {DataPressrelease.navItems.slice(0, 3).map((item) => (
-                <SwiperSlide key={item.name}>
-                  <NextLink key={item.href} href={item.href}>
-                    <div
-                      className="
+            <div className="py-3">
+              <Swiper
+                breakpoints={{
+                  0: {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                  },
+                  400: {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                  },
+                  600: {
+                    slidesPerView: 3,
+                    spaceBetween: 15,
+                  },
+                  800: {
+                    slidesPerView: 4,
+                    spaceBetween: 15,
+                  },
+                  1000: {
+                    slidesPerView: 5,
+                    spaceBetween: 15,
+                  },
+                  1400: {
+                    slidesPerView: 6,
+                    spaceBetween: 15,
+                  },
+                }}
+                freeMode={true}
+                modules={[Navigation, Scrollbar, A11y, Autoplay, FreeMode]}
+                spaceBetween={0}
+                slidesPerView={1}
+                navigation={true}
+                pagination={{
+                  clickable: true,
+                }}
+                scrollbar={{ draggable: true }}
+                onSwiper={(swiper) => console.log(swiper)}
+                onSlideChange={() => console.log("slide change")}
+                centeredSlides={true}
+                autoplay={{
+                  delay: 2000,
+                  disableOnInteraction: false,
+                }}
+                className="mySwiper"
+              >
+                <div>
+                  {DataPressrelease.navItems.slice(0, 6).map((item) => (
+                    <SwiperSlide key={item.name}>
+                      <NextLink key={item.href} href={item.href}>
+                        <div
+                          className="
                   mb-4 relative shadow-lg rounded-2xl 
                   h-[180px]
                   sm:h-[180px] 
@@ -440,47 +443,50 @@ export default function ShowPressRelease() {
                   lg:h-[210px]
                   xl:h-[220px]
                   overflow-hidden"
-                    >
-                      {/* h-[180px] sm:h-[180px] md:h-[190px] lg:h-[200px] xl:h-[210px] */}
-                      <div
-                        className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
-                        style={{
-                          backgroundImage: `url(${item.backgroundImage})`,
-                        }}
-                      />
-                    </div>
-                    <div className=" ">
-                      <h1
-                        className="
+                        >
+                          {/* h-[180px] sm:h-[180px] md:h-[190px] lg:h-[200px] xl:h-[210px] */}
+                          <div
+                            className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
+                            style={{
+                              backgroundImage: `url(${item.backgroundImage})`,
+                            }}
+                          />
+                        </div>
+                        <div className=" ">
+                          <h1
+                            className="
                               text-[14px] md:text-[20px] sm:text-sm md:text-base 
                             text-sky-600  
                   "
-                      >
-                        {item.name}
-                      </h1>
-                      <div
-                        className=" 
+                          >
+                            {item.name}
+                          </h1>
+                          <div
+                            className=" 
                               text-[12px] md:text-[14px] sm:text-sm md:text-base 
                               mb-2
                               "
-                      >
-                        {item.description}
-                      </div>
-                      <div
-                        className="text-xs text-slate-500
+                          >
+                            {item.description}
+                          </div>
+                          <div
+                            className="text-xs text-slate-500
                               text-[12px] md:text-[14px] sm:text-sm md:text-base 
                               mb-10
                               "
-                      >
-                        {item.date}
-                      </div>
-                    </div>
-                  </NextLink>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                          >
+                            {item.date}
+                          </div>
+                        </div>
+                      </NextLink>
+                    </SwiperSlide>
+                  ))}
+                </div>
+              </Swiper>
+            </div>
           </div>
         </div>
+
         {/* <span className="absolute bottom-4 right-4 -z-[1]">
           <svg
             width="48"
