@@ -8,9 +8,7 @@ export default function ShowFacebook() {
     <>
       <div>
         <h1 className="flex justify-center text-xxl pt-3 font-bold pb-8 ">
-          <Image src='/images/facebook-svgrepo-com.svg' alt='logo-youtube' width={60} height={60} />
-
-
+          <Image src='/images/icon/facebook-svgrepo-com.svg' alt='logo-youtube' width={60} height={60} />
         </h1>
       </div>
       <div>

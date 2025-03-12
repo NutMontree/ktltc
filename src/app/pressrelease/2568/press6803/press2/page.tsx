@@ -80,10 +80,11 @@ https://drive.google.com/drive/folders/1suoq-l9x5EmS8bBfVM94UeK6VaRy2NTy?fbclid=
               <FootTitle />
             </div>
 
-            <div className="date px-2">
+            <div className="date px-2 flex py-2 gap-2">
+              <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
               {DataDate.map((item) => (
                 <div key={item.date}>
-                  <div className="text-xs text-slate-500">{item.date}</div>
+                  <div className="text-xs text-slate-500 pt-1">{item.date}</div>
                 </div>
               ))}
             </div>

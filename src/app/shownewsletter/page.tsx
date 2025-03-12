@@ -16,8 +16,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
-// import required modules
 import NextLink from "next/link";
+import { Image } from "@nextui-org/react";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
@@ -122,7 +122,7 @@ export default function ShowNewsletter() {
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
         > */}
-        {Data.navItems.slice(0, 4).map((item) => (
+        {Data.navItems.slice(0, 3).map((item) => (
           <SwiperSlide key={item.name}>
             <NextLink key={item.href} href={item.href}>
               <div
@@ -154,8 +154,16 @@ export default function ShowNewsletter() {
                 </h1>
                 <div>
                   <div className="text-sm">{item.description}</div>
-                  <div className="text-xs text-slate-500 pb-12">
-                    {item.date}
+                  <div className="flex gap-1">
+                    <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
+                    <div
+                      className="text-xs text-slate-500
+                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
+                              mb-10
+                              "
+                    >
+                      {item.date}
+                    </div>
                   </div>
                 </div>
               </div>

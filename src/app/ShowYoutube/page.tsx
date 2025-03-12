@@ -8,7 +8,7 @@ export default function ShowYoutube() {
     <>
       <div>
         <h1 className="flex justify-center text-xxl pt-3 font-bold pb-8 ">
-          <Image src='/images/youtube-svgrepo-com.svg' alt='logo-youtube' width={70} height={70} />
+          <Image src='/images/icon/youtube-svgrepo-com.svg' alt='logo-youtube' width={70} height={70} />
         </h1>
       </div>
       <div>

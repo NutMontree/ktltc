@@ -19,7 +19,7 @@ import {
   FreeMode,
 } from "swiper/modules";
 
-// import required modules
+import { Image } from "@nextui-org/react";
 import NextLink from "next/link";
 
 import { Button, ConfigProvider, Space } from "antd";
@@ -469,13 +469,16 @@ export default function ShowPressRelease() {
                           >
                             {item.description}
                           </div>
-                          <div
-                            className="text-xs text-slate-500
+                          <div className="flex gap-1">
+                            <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
+                            <div
+                              className="text-xs text-slate-500
                               text-[12px] md:text-[14px] sm:text-sm md:text-base 
                               mb-10
                               "
-                          >
-                            {item.date}
+                            >
+                              {item.date}
+                            </div>
                           </div>
                         </div>
                       </NextLink>
