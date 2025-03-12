@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import CounterPage from "../counter";
 
 const Footer = () => {
   return (
@@ -562,6 +563,9 @@ const Footer = () => {
               </div>
             </div>
           </div> */}
+          <div>
+            <CounterPage />
+          </div>
           <div className="w-full py-3 ">
             <div className="flex gap-2 justify-center">
               <div className="text-gray-7 text-xs">Copyright © 2023.</div>

@@ -72,9 +72,6 @@ export default function Home() {
       <div className="container py-[48px]">
         <ShowYoutube />
       </div>
-      <div className="container py-[48px]">
-        <CounterPage />
-      </div>
 
       {/* <About />
       <CallToAction />
