@@ -21,6 +21,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import { Metadata } from "next";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
+import CounterPage from "@/components/counter";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -70,6 +71,9 @@ export default function Home() {
       </div>
       <div className="container py-[48px]">
         <ShowYoutube />
+      </div>
+      <div className="container py-[48px]">
+        <CounterPage />
       </div>
 
       {/* <About />
