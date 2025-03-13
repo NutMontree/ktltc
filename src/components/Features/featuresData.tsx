@@ -4,7 +4,7 @@ const featuresData: Feature[] = [
   {
     id: 1,
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg"
+      <svg xmlns="http://www.w3.org/2000/svg" className="fill-black dark:fill-white"
         width="50"
         height="50"
         fill="white"
@@ -129,7 +129,7 @@ const featuresData: Feature[] = [
   {
     id: 5,
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg"
+      <svg xmlns="http://www.w3.org/2000/svg" className="fill-black dark:fill-white"
         width="50"
         height="50"
         fill="white"
