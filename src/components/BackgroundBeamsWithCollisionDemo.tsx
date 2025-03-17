@@ -74,7 +74,7 @@ export function BackgroundBeamsWithCollisionDemo() {
               <div>
                 <div className="flex justify-center">
                   <Image
-                    className="h-[150px] sm:h-[200px] lg:h-[300px] xl:h-[380px] "
+                    className="h-[150px] sm:h-[200px] lg:h-[270px] xl:h-[380px] "
                     src={"/images/14.webp"}
                     alt=''
                   />
@@ -120,7 +120,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                   <div className="flex justify-center">
                     <Image
                       // className="h-[300px] sm:h-[500px] lg:h-[700px] xl:h-[900px] "
-                      className="h-[150px] sm:h-[200px] lg:h-[300px] xl:h-[380px] "
+                      className="h-[150px] sm:h-[200px] lg:h-[270px] xl:h-[380px] "
                       src={"/images/ข่าวประชาสัมพันธ์/2568/กุมภาพันธ์/15/1.gif"}
                       alt=''
                     />
