@@ -66,7 +66,7 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
 
               <iframe
                 className="w-full h-screen aspect-video pt-4"
-                src="/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/13/ประกาศรับสมัครเจ้าหน้าที่งานสื่อ+นักการ.pdf"
+                src="/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/13/1.pdf"
               ></iframe>
             </div>
 
@@ -106,10 +106,8 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
   );
 }
 
-{
   /* ***************************** LInk And PDF ***************************** */
-}
-{
+
   /* <div className="pt-4">
           <p className="text-sky-800 text-lg">
             รายชื่อนักเรียน ระดับประกาศนียบัตรวิชาชีพ (ปวช.)
@@ -129,7 +127,6 @@ https://cdn3.me-qr.com/pdf/2fd30bda-eb3a-4da3-abe1-ad5ee6429e7a.pdf?fbclid=IwZXh
             src="/images/ข่าวประชาสัมพันธ์/2567/ธันวาคม/38/1.pdf"
           ></iframe>
         </div> */
-}
 
 {
   /* ***************************** LInk And PDF ***************************** */
