@@ -4,7 +4,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex justify-center">
       </div>
       <div className="container py-12">
-        {children}.
+        {children}
       </div>
     </section>
   );

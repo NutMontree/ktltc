@@ -11,7 +11,7 @@ import TopHeader from "@/components/TopHeader";
 import ScrollToTop from "@/components/ScrollToTop";
 import PreLoader from "@/components/Common/PreLoader";
 import FloatingNavDemo from "@/components/FloatingNavDemo";
-import CookieConsentBanner from './CookieConsentBanner'
+import CookieConsentBanner from './cookie/page'
 import { fontSans } from "@/config/fonts";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
