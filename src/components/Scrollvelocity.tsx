@@ -81,12 +81,12 @@ export default function ScrollVelocity() {
       <section>
         <div className="pb-4">
           <ParallaxText baseVelocity={-5}>
-            KTLTC kantharalak technical college
+            วิทยาลัยเทคนิคกันทรลักษ์ KTLTC kantharalak technical college
           </ParallaxText>
         </div>
         <div className="pt-4">
           <ParallaxText baseVelocity={5}>
-            KTLTC kantharalak technical college
+            wellcome KTLTC kantharalak technical college
           </ParallaxText>
         </div>
       </section>

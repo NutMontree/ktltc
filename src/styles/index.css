@@ -13,7 +13,7 @@ body {
 }
 
 .sticky-menu #navbarToggler span {
-  @apply bg-dark dark:bg-white;
+  @apply bg-[#6f7276] dark:bg-white;
 }
 
 .sticky-menu #navbarCollapse li > a {
@@ -30,7 +30,7 @@ body {
 }
 
 .sticky-menu .signUpBtn {
-  @apply bg-primary hover:bg-dark text-white hover:text-white;
+  @apply bg-primary hover:bg-[#6f7276] text-white hover:text-white;
 }
 
 .navbarTogglerActive > span:nth-child(1) {

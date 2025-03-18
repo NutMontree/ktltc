@@ -11,7 +11,7 @@ import TopHeader from "@/components/TopHeader";
 import ScrollToTop from "@/components/ScrollToTop";
 import PreLoader from "@/components/Common/PreLoader";
 import FloatingNavDemo from "@/components/FloatingNavDemo";
-
+import CookieConsentBanner from './CookieConsentBanner'
 import { fontSans } from "@/config/fonts";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
@@ -39,6 +39,7 @@ export default function RootLayout({
             enableSystem={false}
             defaultTheme="light"
           >
+            <CookieConsentBanner />
             <div className="py-2">
               <TopHeader />
             </div>
