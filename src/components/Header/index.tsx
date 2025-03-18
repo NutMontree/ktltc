@@ -249,7 +249,25 @@ const Header = () => {
                   </ul>
                 </nav>
               </div>
-              <div className="  items-center justify-end pr-16 sm:flex lg:pr-0">
+
+              <div className="flex items-center justify-end pr-16 sm:flex lg:pr-0 gap-2 sm:gap-4">
+                <Link
+                  aria-label="social link"
+                  href="https://www.facebook.com/profile.php?id=100057326985699"
+                  target="_blank"
+                  className="duration-300 text-white rounded-full bg-blue-600 px-1 pt-2 dark:fill-white"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 22 22"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="fill-current "
+                  >
+                    <path d="M16.294 8.86875H14.369H13.6815V8.18125V6.05V5.3625H14.369H15.8128C16.1909 5.3625 16.5003 5.0875 16.5003 4.675V1.03125C16.5003 0.653125 16.2253 0.34375 15.8128 0.34375H13.3034C10.5878 0.34375 8.69714 2.26875 8.69714 5.12187V8.1125V8.8H8.00964H5.67214C5.19089 8.8 4.74402 9.17812 4.74402 9.72812V12.2031C4.74402 12.6844 5.12214 13.1313 5.67214 13.1313H7.94089H8.62839V13.8188V20.7281C8.62839 21.2094 9.00652 21.6562 9.55652 21.6562H12.7878C12.994 21.6562 13.1659 21.5531 13.3034 21.4156C13.4409 21.2781 13.544 21.0375 13.544 20.8312V13.8531V13.1656H14.2659H15.8128C16.2596 13.1656 16.6034 12.8906 16.6721 12.4781V12.4438V12.4094L17.1534 10.0375C17.1878 9.79688 17.1534 9.52187 16.9471 9.24687C16.8784 9.075 16.569 8.90312 16.294 8.86875Z" />
+                  </svg>
+                </Link>
                 {/* theme toggler */}
                 <button
                   aria-label="theme toggler"
