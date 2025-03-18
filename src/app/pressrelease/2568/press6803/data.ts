@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `๑๗ มีนาคม ๒๕๖๘`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/14/0.webp",
+      date: "17 มีนาคม 2568",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย นายอาทร ศรีมะณี รองผู้อำนวยการฝ่ายวิชาการ คณะครู 
+...`,
+      href: "/pressrelease/2568/press6803/press19",
+    },
+    {
       name: `ประกาศ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/13/2.webp",
       date: "17 มีนาคม 2568",
