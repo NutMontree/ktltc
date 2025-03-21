@@ -7,7 +7,7 @@ input = input("INSERT_INPUT_HERE : ")
 
 def generate():
     client = genai.Client(
-        api_key="AIzaSyAVodAOvzJFe8YlksyUBTbYf-BTuh0BfWc",
+        api_key='.env'
     )
 
     model = "gemini-2.0-flash"
