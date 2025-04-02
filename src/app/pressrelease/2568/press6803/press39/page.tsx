@@ -44,8 +44,8 @@ export default function Pressrelease() {
           </div>
           <div className='px-2'>
             {Description.map((item) => (
-              <div key={item.description}>
-                <div>{item.description}</div>
+              <div key={item?.description ?? "undefined"}>
+                {item?.description && <div>{item.description}</div>}
               </div>
             ))}
 
