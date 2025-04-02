@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ประกาศรายชื่อ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/32/1.webp",
+      date: "2 เมษายน 2568",
+      description: ` 
+ผู้ผ่านการสอบคัดเลือกเพื่อศึกษาต่อ (รอบสอบคัดเลือก) ประจำปีการศึกษา 2568 ระดับ ปวช. เเละ ปวส.
+ ...`,
+      href: "/pressrelease/2568/press6803/press39",
+    },
+    {
       name: `ประกาศ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/31/1.webp",
       date: "31 มีนาคม 2568",
