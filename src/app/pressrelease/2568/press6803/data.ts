@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `คิดถึงกันไหม...   `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/33/1.webp",
+      date: "2 เมษายน 2568",
+      description: ` 
+ช่วงปิดเทอม อีกหนึ่งปีการศึกษาที่ผ่านไป พร้อมกับบทเรียนใหม่ ๆ ไม่ใช่แค่ในห้องเรียน แต่รวมถึงเรื่องราวในชีวิตด้วย 🎢✨ 
+      ...`,
+      href: "/pressrelease/2568/press6803/press40",
+    },
+    {
       name: `ประกาศรายชื่อ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/32/1.webp",
       date: "2 เมษายน 2568",
