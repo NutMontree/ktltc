@@ -19,7 +19,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                   <Image
                     // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
                     className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
-                    src={"/images/ข่าวประชาสัมพันธ์/2568/เมษายน/5/1.webp"}
+                    src={"/images/ข่าวประชาสัมพันธ์/2568/เมษายน/6/2.webp"}
                     alt=''
                   />
                 </div>
@@ -27,13 +27,41 @@ export function BackgroundBeamsWithCollisionDemo() {
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                   <div className="px md:px-8 pt-2">
                     <p className="text-center ">
-                      💜ทรงพระเจริญ 💜 ๒ เมษายน วันคล้ายวันพระราชสมภพ
+                      ๖ เมษายน วันจักรี
                     </p>
-                    สมเด็จพระกนิษฐาธิราชเจ้า กรมสมเด็จพระเทพรัตนราชสุดาฯ สยามบรมราชกุมารี  เนื่องในโอกาสวันคล้ายวันพระราชสมภพ ทรงเจริญพระชนมายุ ๗๐ พรรษา
+                    วันรำลึกถึงพระบาทสมเด็จพระพุทธยอดฟ้าจุฬาโลกมหาราช เเละวันที่ระลึกมหาจักรีบรมราชวงศ์ วันที่ ๖ เมษายน พ.ศ. ๒๓๒๕
+                    <br />
+                    ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์                    <br />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* </Link>   */}
+          </div>
+        </div>
 
+        <div className="pt-3 pb-[48px]">
+          <div className="flex justify-center">
+            {/* <Link href="/pressrelease/2568/press6803/press4" target="_blank"> */}
+            <div className="flex justify-center">
+              <div className="">
+                <div className="flex justify-center">
+                  <Image
+                    // className="h-[300px] sm:h-[600px] lg:h-[600px] xl:h-[600px]"
+                    className="scale-90 hover:scale-100 transition duration-500 rounded-lg"
+                    src={"/images/ข่าวประชาสัมพันธ์/2568/เมษายน/6/1.webp"}
+                    alt=''
+                  />
+                </div>
+
+                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                  <div className="px md:px-8 pt-2">
+                    <p className="text-center ">
+                      ❤️ทรงพระเจริญ❤️๕ เมษายน วันคล้ายวันประสูติ
+                    </p>
+                    ทูลกระหม่อมหญิงอุบลรัตนราชกัญญา สิริวัฒนาพรรณวดี
                     <br />
                     ด้วยเกล้าด้วยกระหม่อม ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์
-                    <br />
                   </div>
                 </div>
               </div>
