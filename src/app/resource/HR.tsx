@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image } from "@nextui-org/react";
+import Link from "next/link";
 
 export default function HRD() {
     return (
@@ -26,9 +27,43 @@ export default function HRD() {
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/ทรัพยากร/2.webp" alt="Image description ทรัพยากร" />
                 </div>
-                {/* <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                </div> */}
+            </div>
+            <div className='grid md:grid-flow-col gap-4'>
+
+                <div className="pt-4">
+                    <p className="text-sky-800 text-lg">
+                        pdf
+                    </p>
+                    <Link
+                        href="/images/ข่าวประชาสัมพันธ์/2568/เมษายน/9/รานงานผลการปฏิบัติงาน (ข้าราชการครู).pdf"
+                        className="hover:text-sky-500"
+                        target="_blank"
+                    >
+                        รานงานผลการปฏิบัติงาน (ข้าราชการครู).pdf
+                    </Link>
+
+                    <iframe
+                        className="w-full h-screen aspect-video pt-4"
+                        src="/images/ข่าวประชาสัมพันธ์/2568/เมษายน/9/รานงานผลการปฏิบัติงาน (ข้าราชการครู).pdf"
+                    ></iframe>
+                </div>
+                <div className="pt-4">
+                    <p className="text-sky-800 text-lg">
+                        pdf
+                    </p>
+                    <Link
+                        href="/images/ข่าวประชาสัมพันธ์/2568/เมษายน/9/รายงานผลการปฏิบัติงาน (พนักงานราชการครู)"
+                        className="hover:text-sky-500"
+                        target="_blank"
+                    >
+                        รายงานผลการปฏิบัติงาน (พนักงานราชการครู).pdf
+                    </Link>
+
+                    <iframe
+                        className="w-full h-screen aspect-video pt-4"
+                        src="/images/ข่าวประชาสัมพันธ์/2568/เมษายน/9/รายงานผลการปฏิบัติงาน (พนักงานราชการครู).pdf"
+                    ></iframe>
+                </div>
             </div>
         </>
     )
