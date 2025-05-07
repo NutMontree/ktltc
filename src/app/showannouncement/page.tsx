@@ -80,7 +80,7 @@ export default function ShowAnnouncement() {
                   icon={<AntDesignOutlined />}
                   href="/announcement"
                 >
-                  เนื้อหาเพิ่มเติม
+                  เนื้อหาทั้งหมด
                 </Button>
               </Space>
             </ConfigProvider>

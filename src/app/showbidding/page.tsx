@@ -83,7 +83,7 @@ export default function ShowBidding() {
                   icon={<AntDesignOutlined />}
                   href="/bidding"
                 >
-                  เนื้อหาเพิ่มเติม
+                  เนื้อหาทั้งหมด
                 </Button>
               </Space>
             </ConfigProvider>

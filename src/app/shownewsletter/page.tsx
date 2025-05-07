@@ -81,7 +81,7 @@ export default function ShowNewsletter() {
                   icon={<AntDesignOutlined />}
                   href="/newsletter"
                 >
-                  เนื้อหาเพิ่มเติม
+                  เนื้อหาทั้งหมด
                 </Button>
               </Space>
             </ConfigProvider>

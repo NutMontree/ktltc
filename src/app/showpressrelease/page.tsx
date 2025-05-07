@@ -331,7 +331,7 @@ export default function ShowPressRelease() {
                       icon={<AntDesignOutlined />}
                       href="/pressrelease"
                     >
-                      เนื้อหาเพิ่มเติม
+                      เนื้อหาทั้งหมด
                     </Button>
                   </Space>
                 </ConfigProvider>
@@ -362,7 +362,7 @@ export default function ShowPressRelease() {
                       />
                     </div>
                     <div>
-                      <h1 className="text-[14px] md:text-[20px] sm:text-sm md:text-base font-bold hover:text-sky-600" >
+                      <h1 className="text-[14px] md:text-[20px] sm:text-sm md:text-base text-sky-600 hover:text-sky-400" >
                         {item.name}
                       </h1>
                       <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2">

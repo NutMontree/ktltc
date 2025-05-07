@@ -6,10 +6,11 @@ import { Image } from "@nextui-org/react";
 export default function ShowFacebook() {
   return (
     <>
-      <div>
-        <h1 className="flex justify-center text-xxl pt-3 font-bold pb-8 ">
+      <div className="flex justify-center gap-4">
+        <div className="flex justify-center">
           <Image src='/images/icon/facebook-svgrepo-com.svg' alt='logo-youtube' width={60} height={60} />
-        </h1>
+        </div>
+        <h1 className="text-3xl pt-3 font-bold pb-8 ">Facebook</h1>
       </div>
       <div>
         <div>

@@ -81,7 +81,7 @@ export default function ShowTechnicalcollegeorders() {
                   icon={<AntDesignOutlined />}
                   href="/technicalcollegeorders"
                 >
-                  เนื้อหาเพิ่มเติม
+                  เนื้อหาทั้งหมด
                 </Button>
               </Space>
             </ConfigProvider>

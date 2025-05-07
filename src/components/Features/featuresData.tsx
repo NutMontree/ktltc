@@ -123,7 +123,7 @@ const featuresData: Feature[] = [
   //   ),
   //   title: "News",
   //   paragraph: "ศูนย์ข้อมูลข่าวสาร",
-  //   btn: "เนื้อหาเพิ่มเติม",
+  //   btn: "เนื้อหาทั้งหมด",
   //   btnLink: "/#",
   // },
   {
