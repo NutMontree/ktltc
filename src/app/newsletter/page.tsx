@@ -1,13 +1,35 @@
 "use client"; // top to the file
-
-import { Accordion, AccordionItem } from "@nextui-org/react";
-
-import Newsletter2567 from "./newsletter2567/page";
-import Newsletter2566 from "./newsletter2566/page";
-import Newsletter2568 from "./newsletter2568/page";
+import { AntDesignOutlined } from '@ant-design/icons';
+import { Button, ConfigProvider, Space } from 'antd';
+import { createStyles } from 'antd-style';
 import Link from "next/link";
 
+const useStyle = createStyles(({ prefixCls, css }) => ({
+  linearGradientButton: css`
+    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+      > span {
+        position: relative;
+      }
+
+      &::before {
+        content: '';
+        background: linear-gradient(135deg, #6253e1, #04befe);
+        position: absolute;
+        inset: -1px;
+        opacity: 1;
+        transition: all 0.3s;
+        border-radius: inherit;
+      }
+
+      &:hover::before {
+        opacity: 0;
+      }
+    }
+  `,
+}));
+
 export default function NewsletterPage() {
+  const { styles } = useStyle();
   return (
     <>
       <div className="relative z-10 overflow-hidden pb-[60px] pt-[100px] ">
@@ -36,38 +58,58 @@ export default function NewsletterPage() {
                 </p>
               </li>
             </ul>
-
-
           </div>
         </div>
       </div >
 
-      <div>
-        <Accordion isCompact>
-          <AccordionItem
-            key="1"
-            aria-label="Accordion 1"
-            title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2568"
-          >
-            <Newsletter2568 />
-          </AccordionItem>
-
-          <AccordionItem
-            key="2"
-            aria-label="Accordion 2"
-            title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2567"
-          >
-            <Newsletter2567 />
-          </AccordionItem>
-
-          <AccordionItem
-            key="3"
-            aria-label="Accordion 3"
-            title="วิทยาลัยเทคนิคกันทรลักษ์ ปีการศึกษา 2566"
-          >
-            <Newsletter2566 />
-          </AccordionItem>
-        </Accordion>
+      <div className="pt-20">
+        <div className="grid gap-4">
+          <div>
+            <Link href='https://ktltc.vercel.app/newsletter/newsletter2568'>
+              <ConfigProvider
+                button={{
+                  className: styles.linearGradientButton,
+                }}
+              >
+                <Space>
+                  <Button type="primary" size="large" icon={<AntDesignOutlined />}>
+                    จดหมายข่าว ปีการศึกษา 2568
+                  </Button>
+                </Space>
+              </ConfigProvider>
+            </Link>
+          </div>
+          <div>
+            <Link href='https://ktltcv1.vercel.app/newsletter/newsletter2567'>
+              <ConfigProvider
+                button={{
+                  className: styles.linearGradientButton,
+                }}
+              >
+                <Space>
+                  <Button type="primary" size="large" icon={<AntDesignOutlined />}>
+                    จดหมายข่าว ปีการศึกษา 2567
+                  </Button>
+                </Space>
+              </ConfigProvider>
+            </Link>
+          </div>
+          <div>
+            <Link href='https://ktltcv1.vercel.app/newsletter/newsletter2566'>
+              <ConfigProvider
+                button={{
+                  className: styles.linearGradientButton,
+                }}
+              >
+                <Space>
+                  <Button type="primary" size="large" icon={<AntDesignOutlined />}>
+                    จดหมายข่าว ปีการศึกษา 2566
+                  </Button>
+                </Space>
+              </ConfigProvider>
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

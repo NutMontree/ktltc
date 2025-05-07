@@ -10,7 +10,7 @@ const CookieConsentBanner = () => {
         const consentCookie = cookie.get("cookieConsent");
 
         if (!consentCookie) {
-            setShowBanner(true);
+            setShowBanner(false);
         }
     }, []);
 
