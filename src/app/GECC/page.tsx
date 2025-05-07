@@ -127,7 +127,7 @@ export default function page() {
                     title={
                       <div className="flex items-center space-x-2">
                         <img width="35" height="35" src="https://img.icons8.com/external-flat-lima-studio/64/external-backlink-coding-flat-lima-studio.png" alt="external-backlink-coding-flat-lima-studio" />
-                        <span>Photos</span>
+                        <span>บริการ</span>
                       </div>
                     }>
                     <Card className="text-base">
@@ -136,7 +136,7 @@ export default function page() {
                           <Link target="_blank" href="https://admission.vec.go.th/web/Login.htm?mode=index">
                             <div className="flex gap-2 hover:text-sky-500">
                               <img width={20} height={20} src="https://img.icons8.com/fluency/48/link.png" alt="link" />
-                              <div >สมัครเรียนออนไลน์</div>
+                              <div>สมัครเรียนออนไลน์</div>
                             </div>
                           </Link>
                         </div>

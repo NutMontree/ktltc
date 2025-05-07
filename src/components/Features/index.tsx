@@ -12,7 +12,7 @@ const Features = () => {
         <div>
           <div className="relative z-20 overflow-hidden lg:pb-[30px] pt-[40px] lg:pt-[100px]">
             <div className="">
-              <Link href='https://ktltc.vercel.app/GECC'>
+              <Link href='/GECC'>
                 <SectionTitle
                   subtitle="GECC"
                   title="ศูนย์ราชการสะดวก"
