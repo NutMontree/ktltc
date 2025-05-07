@@ -4,13 +4,13 @@ import cookie from "js-cookie";
 import Link from "next/link";
 
 const CookieConsentBanner = () => {
-    const [showBanner, setShowBanner] = useState(true);
+    const [showBanner, setShowBanner] = useState(false);
 
     useEffect(() => {
         const consentCookie = cookie.get("cookieConsent");
 
         if (!consentCookie) {
-            setShowBanner(false);
+            setShowBanner(true);
         }
     }, []);
 
