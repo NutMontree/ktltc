@@ -69,7 +69,7 @@ export default function PressReleasePage() {
       <div className="pt-20">
         <div className="grid gap-4">
           <div>
-            <Link href='http://localhost:3000/pressrelease/2568'>
+            <Link href='/pressrelease/2568'>
               <ConfigProvider
                 button={{
                   className: styles.linearGradientButton,
