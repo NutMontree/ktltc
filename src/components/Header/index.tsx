@@ -53,7 +53,7 @@ const Header = () => {
           <div className="relative -mx-4 flex items-center justify-between ">
             <div className="w-24 max-w-full px-4">
               <Link
-                href="/"
+                href="https://ktltc.vercel.app/"
                 className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90 
                    ${sticky ? "py-2" : "py-12"
                   } `}
@@ -100,7 +100,7 @@ const Header = () => {
             </div>
             <div className=" ">
               <Link
-                href="/"
+                href="https://ktltc.vercel.app/"
                 className="font-bold text-2xl text-inherit">
                 KTLTC
               </Link>

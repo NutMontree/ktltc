@@ -69,9 +69,9 @@ export default function Home() {
       <div className="container py-[48px]">
         <ShowFacebook />
       </div>
-      {/* <div className="container py-[48px]">
+      <div className="container py-[48px]">
         <ShowYoutube />
-      </div> */}
+      </div>
 
       {/* <About />
       <CallToAction />
