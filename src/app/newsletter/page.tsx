@@ -65,7 +65,7 @@ export default function NewsletterPage() {
       <div className="pt-20">
         <div className="grid gap-4">
           <div>
-            <Link href='https://ktltc.vercel.app/newsletter/newsletter2568'>
+            <Link href='/newsletter/newsletter2568'>
               <ConfigProvider
                 button={{
                   className: styles.linearGradientButton,
