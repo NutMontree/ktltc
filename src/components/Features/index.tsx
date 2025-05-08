@@ -9,6 +9,21 @@ const Features = () => {
   return (
     <>
       <section className=" ">
+        <div className="flex justify-center">
+          <div className="pt-24 xl:pt-32">
+            <iframe
+              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+               w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
+              src="/images/ศูนย์ราชการสะดวก.mp4"
+              title=" "
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+            <br />
+          </div>
+        </div>
+
         <div>
           <div className="relative z-20 overflow-hidden lg:pb-[30px] pt-[40px] lg:pt-[100px]">
             <div className="">
