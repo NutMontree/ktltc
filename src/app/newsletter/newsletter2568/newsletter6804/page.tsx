@@ -11,7 +11,7 @@ export default function Newsletter() {
 
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
-          เดือน มีนาคม 2568
+          เดือน พฤษภาคม 2568
         </h1>
       </div>
 
