@@ -1,15 +1,11 @@
 "use client"; // top to the file
 
 // Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-
+import { SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
-// import Swiper core and required modules
-import { Navigation, Scrollbar, A11y, FreeMode } from "swiper/modules";
-
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
@@ -23,7 +19,7 @@ import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 
-import { Data } from "../newsletter/newsletter2568/newsletter6804/data";
+import { Data } from "../newsletter/newsletter2568/newsletter6805/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
@@ -94,34 +90,7 @@ export default function ShowNewsletter() {
             grid-cols-1
             sm:grid-cols-1
             lg:grid-cols-3">
-        {/* <Swiper
-          breakpoints={{
-            0: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            340: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            600: {
-              slidesPerView: 3,
-              spaceBetween: 15,
-            },
-            800: {
-              slidesPerView: 4,
-              spaceBetween: 15,
-            },
-          }}
-          freeMode={true}
-          modules={[Navigation, Scrollbar, A11y, FreeMode]}
-          spaceBetween={24}
-          slidesPerView={3}
-          navigation={true}
-          scrollbar={{ draggable: true }}
-          onSwiper={(swiper) => console.log(swiper)}
-          onSlideChange={() => console.log("slide change")}
-        > */}
+
         {Data.navItems.slice(0, 3).map((item) => (
           <SwiperSlide key={item.name}>
             <NextLink key={item.href} href={item.href}>
@@ -170,7 +139,6 @@ export default function ShowNewsletter() {
             </NextLink>
           </SwiperSlide>
         ))}
-        {/* </Swiper> */}
       </div>
     </>
   );
