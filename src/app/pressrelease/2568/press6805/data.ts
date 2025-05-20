@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤษภาคม/41/06.webp",
+      date: "19 พฤษภาคม 2568",
+      description: ` 
+ การเเต่งกายประจำวันของนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์ ภาคเรียนที่ 1 ประจำปีการศึกษา 2568 
+ ...`,
+      href: "/pressrelease/2568/press6805/press40",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤษภาคม/39/1.webp",
       date: "19 พฤษภาคม 2568",
       description: ` 

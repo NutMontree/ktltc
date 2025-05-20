@@ -7,9 +7,9 @@ const Scrollimage: React.FC = () => (
   <>
     <div className="container">
       <Carousel arrows infinite={true} autoplay autoplaySpeed={4000} adaptiveHeight>
-        <div>
+        {/* <div>
           <Image removeWrapper className="w-full" src="/images/15.webp" />
-        </div>
+        </div> */}
         <div>
           <Image removeWrapper className="w-full" src="/images/8.webp" />
         </div>
