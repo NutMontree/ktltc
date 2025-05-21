@@ -1,20 +1,14 @@
 "use client"
 import Link from "next/link";
 import SectionTitle from "../Common/SectionTitle";
-import SingleFeature from "./SingleFeature";
-import featuresData from "./featuresData";
 import { Image } from "@nextui-org/react";
 import { Card, Tabs, Tab, } from "@nextui-org/react";
-import { CardBody, } from "@/components/ui/3d-card";
-import { Button } from "antd";
 
 const Features = () => {
   const variants = ["underlined"];
   return (
     <>
       <section className=" ">
-
-
         <div>
           <div className="relative z-20 overflow-hidden lg:pb-[30px] pt-[40px] lg:pt-[100px]">
             <div className="">
@@ -24,9 +18,7 @@ const Features = () => {
                   title="ศูนย์ราชการสะดวก"
                   paragraph="แถบนำทางเพื่อความสะดวกในการค้นหาข้อมูลของคุณ"
                 />
-
               </Link>
-
             </div>
             <span className="absolute bottom-4 right-4 -z-[1]">
               <svg
@@ -321,12 +313,6 @@ const Features = () => {
           </div>
         </div>
 
-
-
-
-
-
-
         <div className="py-8">
           <Card >
             <div className="flex flex-col px-2 py-2">
@@ -348,7 +334,7 @@ const Features = () => {
                           <div className="flex justify-center">
                             <img className="pt-1.5" width="70" height="70" src="https://img.icons8.com/pastel-glyph/64/FA5252/conclusion-contract.png" alt="conclusion-contract" />
                           </div>
-                          <div className="hover:text-sky-500 pt-2">สมัครเรียนออนไลน์</div>
+                          <div className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">สมัครเรียนออนไลน์</div>
                         </div>
                       </Link>
                     </div>
@@ -358,7 +344,7 @@ const Features = () => {
                           <div className="flex justify-center">
                             <img className="pt-1.5" width="70" height="70" src="https://img.icons8.com/pastel-glyph/64/FA5252/conclusion-contract.png" alt="conclusion-contract" />
                           </div>
-                          <div className="hover:text-sky-500 pt-2">เอกสารทะเบียน</div>
+                          <div className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">เอกสารทะเบียน</div>
                         </div>
                       </Link>
                     </div>
@@ -380,7 +366,7 @@ const Features = () => {
                         <div className="flex justify-center">
                           <div className="">
                             <img width="80" height="80" src="https://img.icons8.com/external-flatart-icons-outline-flatarticons/64/FA5252/external-phone-call-stay-at-home-flatart-icons-outline-flatarticons.png" alt="external-phone-call-stay-at-home-flatart-icons-outline-flatarticons" />
-                            <p className="hover:text-sky-500 pt-2">0614122765</p>
+                            <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">0614122765</p>
                           </div>
                         </div>
                         <div className="flex justify-center">
@@ -429,7 +415,7 @@ const Features = () => {
                           <div className="flex justify-center">
                             <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
                           </div>
-                          <p className="hover:text-sky-500 pt-2">แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
+                          <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
                         </Link>
                         <Link href='https://docs.google.com/forms/d/e/1FAIpQLSca9AXgqHmgVFMu9uHw16JyizUeFZ3JSVlPCB5fWpYScYwRww/viewform' className="">
                           <div className=" hover:text-sky-500">
