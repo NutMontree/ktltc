@@ -36,73 +36,61 @@ export default function page() {
   return (
     <>
 
+      <Breadcrumb
+        items={[
+          {
+            href: '/',
+            title: <HomeOutlined />,
+            className: 'dark:text-white dark:hover:text-white'
+          },
+          {
+            href: 'GECC',
+            className: 'dark:text-white dark:hover:text-white',
+            title: (
+              <>
+                <UserOutlined />
+                <span>GECC</span>
+              </>
+            ),
 
-      {/* <div>
-        <Card
-          isFooterBlurred
-          className="col-span-12 sm:col-span-6"
-        >
-         <div className="flex flex-col px-4 py-4">
-            <Tabs aria-label="Options"
-              <Tab key="วิสัยทัศน์ " title="วิสัยทัศน์">
-                <Card>
-                  <CardBody className="px-4 py-4">
-                    ผลิตและพัฒนากำลังคน โดยขับเคลื่อนการจัดการความรู้ด้วยเทคโนโลยี
-                    เป็นประชาคมแห่งการเรียนรู้ เน้นการทำงานเป็นทีม
-                    มีความร่วมมือกับสถานประกอบการและชุมชน
-                  </CardBody>
-                </Card>
-              </Tab>
-              <Tab key="เอกลักษ์" title="เอกลักษ์">
-                <Card>
-                  <CardBody className="px-4 py-4">ผู้นำบริการสู่ชุมชน</CardBody>
-                </Card>
-              </Tab>
-            </Tabs>
-          </div>
-        </Card>
-      </div> */}
+          },
+          {
+            title: 'งานศูนย์ราชการสะดวก',
+            className: 'dark:text-gray-400'
+          },
+        ]}
+      />
 
-      <div className="pt-4 px-2">
-        <Breadcrumb
-          items={[
-            {
-              href: '/',
-              title: <HomeOutlined />,
-              className: 'dark:text-white dark:hover:text-white'
-            },
-            {
-              href: '/pressrelease/2568/press6802',
-              className: 'dark:text-white dark:hover:text-white',
-              title: (
-                <>
-                  <UserOutlined />
-                  <span>GECC</span>
-                </>
-              ),
-
-            },
-            {
-              title: 'งานศูนย์ราชการสะดวก',
-              className: 'dark:text-gray-400'
-            },
-          ]}
-        />
+      <div className="pt-24">
+        <Image src='/images/logo/GECCBG.webp' alt={"GECCBG"}></Image>
       </div>
-
       <div className="py-4">
-        <div className="">
+        {/* <div className="">
           <div className="flex justify-center">
             <Image src="/images/logo/GECC.webp" alt={""} className="scale-90 hover:scale-100 transition duration-500 rounded-ful lg:w-80"></Image>
             <Image src="/images/logo/สอศ.webp" alt={""} className="scale-90 hover:scale-100 transition duration-500 rounded-ful lg:w-80 pt-2 md:pt-4 xl:pt-0"></Image>
           </div>
-        </div >
+        </div > */}
         <div className=" ">
-          <div className="text-center">
+          {/* <div className="text-center">
             <p className="flex justify-center pt-3 font-bold text-[14px] sm:text-sm md:text-md lg:text-lg xl:text-xl">งานศูนย์ราชการสะดวก: <br /> Government Easy Contact Center: GECC</p>
             <p className="flex justify-center text-[#DAA520] text-[14px] sm:text-sm md:text-md lg:text-lg xl:text-xl">วิทยาลัยเทคนิคกันทรลักษ์</p>
-          </div>
+          </div> */}
 
+          <div className="flex justify-center">
+            <div className="pt-6 xl:pt-32">
+              <iframe
+                className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+               w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
+                src="/images/gecc/ศูนย์ราชการสะดวก.mp4"
+                title=" "
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+              <br />
+            </div>
+          </div>
 
           <text className="grid gap-8">
             <div className="bg-red-500 py-4 px-4 rounded-lg">

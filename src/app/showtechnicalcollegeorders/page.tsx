@@ -67,29 +67,7 @@ export default function ShowTechnicalcollegeorders() {
             </div>
           </div>
         </div>
-        <div className="justify-items-end">
-          <div className=" ">
-            <ConfigProvider
-              button={{
-                className: styles.linearGradientButton,
-              }}
-            >
-              <Space>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<AntDesignOutlined />}
-                  href="/technicalcollegeorders"
-                >
-                  เนื้อหาทั้งหมด
-                </Button>
-              </Space>
-            </ConfigProvider>
-          </div>
-        </div>
       </div >
-
-
 
       <div className=" py-3">
         <Swiper
@@ -159,6 +137,26 @@ export default function ShowTechnicalcollegeorders() {
             </SwiperSlide>
           ))}
         </Swiper>
+      </div>
+      <div className="justify-items-center pt-4">
+        <div className=" ">
+          <ConfigProvider
+            button={{
+              className: styles.linearGradientButton,
+            }}
+          >
+            <Space>
+              <Button
+                type="primary"
+                size="large"
+                icon={<AntDesignOutlined />}
+                href="/technicalcollegeorders"
+              >
+                เนื้อหาทั้งหมด
+              </Button>
+            </Space>
+          </ConfigProvider>
+        </div>
       </div>
     </>
   );

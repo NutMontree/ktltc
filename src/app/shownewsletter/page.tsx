@@ -63,26 +63,7 @@ export default function ShowNewsletter() {
             </div>
           </div>
         </div>
-        <div className="justify-items-end">
-          <div className=" ">
-            <ConfigProvider
-              button={{
-                className: styles.linearGradientButton,
-              }}
-            >
-              <Space>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<AntDesignOutlined />}
-                  href="/newsletter"
-                >
-                  เนื้อหาทั้งหมด
-                </Button>
-              </Space>
-            </ConfigProvider>
-          </div>
-        </div>
+
       </div >
 
       <div className="py-3             
@@ -124,7 +105,7 @@ export default function ShowNewsletter() {
                 <div>
                   <div className="text-sm">{item.description}</div>
                   <div className="flex gap-1">
-                    <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
+                    <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
                     <div
                       className="text-xs text-slate-500
                               text-[12px] md:text-[14px] sm:text-sm md:text-base 
@@ -139,6 +120,26 @@ export default function ShowNewsletter() {
             </NextLink>
           </SwiperSlide>
         ))}
+      </div>
+      <div className="justify-items-center pt-4">
+        <div className=" ">
+          <ConfigProvider
+            button={{
+              className: styles.linearGradientButton,
+            }}
+          >
+            <Space>
+              <Button
+                type="primary"
+                size="large"
+                icon={<AntDesignOutlined />}
+                href="/newsletter"
+              >
+                เนื้อหาทั้งหมด
+              </Button>
+            </Space>
+          </ConfigProvider>
+        </div>
       </div>
     </>
   );

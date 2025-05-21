@@ -69,31 +69,9 @@ export default function ShowBidding() {
             </div>
           </div>
         </div>
-        <div className="justify-items-end">
-          <div className=" ">
-            <ConfigProvider
-              button={{
-                className: styles.linearGradientButton,
-              }}
-            >
-              <Space>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<AntDesignOutlined />}
-                  href="/bidding"
-                >
-                  เนื้อหาทั้งหมด
-                </Button>
-              </Space>
-            </ConfigProvider>
-          </div>
-        </div>
       </div >
 
-
       <div className="relative z-20 overflow-hidden  ">
-
         <div className=" py-3">
           <Swiper
             breakpoints={{
@@ -453,9 +431,27 @@ export default function ShowBidding() {
             </svg>
           </span>
         </div>
-
       </div>
-
+      <div className="justify-items-center pt-4">
+        <div className=" ">
+          <ConfigProvider
+            button={{
+              className: styles.linearGradientButton,
+            }}
+          >
+            <Space>
+              <Button
+                type="primary"
+                size="large"
+                icon={<AntDesignOutlined />}
+                href="/bidding"
+              >
+                เนื้อหาทั้งหมด
+              </Button>
+            </Space>
+          </ConfigProvider>
+        </div>
+      </div>
     </>
   );
 }

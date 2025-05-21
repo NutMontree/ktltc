@@ -321,22 +321,7 @@ export default function ShowPressRelease() {
                 </div>
               </div>
             </div>
-            <div className="justify-items-end">
-              <div className=" ">
-                <ConfigProvider  >
-                  <Space>
-                    <Button
-                      type="primary"
-                      size="large"
-                      icon={<AntDesignOutlined />}
-                      href="/pressrelease"
-                    >
-                      เนื้อหาทั้งหมด
-                    </Button>
-                  </Space>
-                </ConfigProvider>
-              </div>
-            </div>
+
           </div >
           {/*   title title title title title title title title title title title title title title title title title title */}
 
@@ -368,8 +353,8 @@ export default function ShowPressRelease() {
                       <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2">
                         {item.description}
                       </div>
-                      <div className="flex gap-1">
-                        <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' width={20} height={20} />
+                      <div className="flex gap-2">
+                        <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
                         <div className="text-xs text-slate-500 text-[12px] md:text-[14px] sm:text-sm md:text-base">
                           {item.date}
                         </div>
@@ -380,7 +365,22 @@ export default function ShowPressRelease() {
               ))}
             </div>
           </div>
-
+          <div className="justify-items-center pt-6">
+            <div className=" ">
+              <ConfigProvider  >
+                <Space>
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<AntDesignOutlined />}
+                    href="/pressrelease"
+                  >
+                    ข้อมูลทั้งหมด
+                  </Button>
+                </Space>
+              </ConfigProvider>
+            </div>
+          </div>
 
           {/* <div className="py-3">
             <Swiper

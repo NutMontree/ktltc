@@ -13,20 +13,7 @@ const Features = () => {
   return (
     <>
       <section className=" ">
-        <div className="flex justify-center">
-          <div className="pt-24 xl:pt-32">
-            <iframe
-              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
-               w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
-              src="/images/gecc/ศูนย์ราชการสะดวก.mp4"
-              title=" "
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
-            <br />
-          </div>
-        </div>
+
 
         <div>
           <div className="relative z-20 overflow-hidden lg:pb-[30px] pt-[40px] lg:pt-[100px]">
@@ -37,14 +24,9 @@ const Features = () => {
                   title="ศูนย์ราชการสะดวก"
                   paragraph="แถบนำทางเพื่อความสะดวกในการค้นหาข้อมูลของคุณ"
                 />
-                <Image src='/images/logo/GECCBG.webp' alt={"GECCBG"}></Image>
 
               </Link>
-              <div className="-mx-4 mt-12 flex flex-wrap lg:mt-20">
-                {featuresData.map((feature, i) => (
-                  <SingleFeature key={i} feature={feature} />
-                ))}
-              </div>
+
             </div>
             <span className="absolute bottom-4 right-4 -z-[1]">
               <svg
@@ -338,7 +320,6 @@ const Features = () => {
             </span>
           </div>
         </div>
-      </section >
 
 
 
@@ -346,89 +327,129 @@ const Features = () => {
 
 
 
-      <div className="py-8">
-        <div >
-          <div className="flex flex-col px-2 py-2">
-            <Tabs color="default" variant="underlined" className="">
-              <Tab
-                className="text-xl p-8"
-                key="บริการ"
-                title={
-                  <div className="flex items-center space-x-2">
-                    <Image src='/images/gecc/24.png' alt={"GECCBG"} width="60" height="60" className="sm:hidden" ></Image>
-                    <span className="font-medium text-xl hidden sm:flex">บริการ</span>
+        <div className="py-8">
+          <Card >
+            <div className="flex flex-col px-2 py-2">
+              <Tabs color="default" variant="underlined" className="">
+                <Tab
+                  className="text-xl p-8"
+                  key="บริการ"
+                  title={
+                    <div className="flex items-center space-x-2">
+                      <Image src='/images/gecc/24.png' alt={"GECCBG"} width="60" height="60" className="sm:hidden" ></Image>
+                      <span className="font-medium text-xl hidden sm:flex">บริการ</span>
+                    </div>
+                  }>
+                  <div className="text-center sm:hidden">บริการ</div>
+                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+                    <div className="flex justify-center">
+                      <Link target="_blank" href="https://admission.vec.go.th/web/Login.htm?mode=index">
+                        <div className="pt-4">
+                          <div className="flex justify-center">
+                            <img className="pt-1.5" width="70" height="70" src="https://img.icons8.com/pastel-glyph/64/FA5252/conclusion-contract.png" alt="conclusion-contract" />
+                          </div>
+                          <div className="hover:text-sky-500 pt-2">สมัครเรียนออนไลน์</div>
+                        </div>
+                      </Link>
+                    </div>
+                    <div className="flex justify-center">
+                      <Link href={'/GECC'} className="">
+                        <div className="pt-4">
+                          <div className="flex justify-center">
+                            <img className="pt-1.5" width="70" height="70" src="https://img.icons8.com/pastel-glyph/64/FA5252/conclusion-contract.png" alt="conclusion-contract" />
+                          </div>
+                          <div className="hover:text-sky-500 pt-2">เอกสารทะเบียน</div>
+                        </div>
+                      </Link>
+                    </div>
                   </div>
-                }>
-                <div className="text-center sm:hidden">บริการ</div>
-                <Link href={'/GECC'} className="">
-                  <div className="pt-4">
-                    <Image src='/images/gecc/1.gif' alt={"GECCBG"} width="60" height="60" className=""></Image>
-                    <div className="">เอกสารทะเบียน</div>
-                  </div>
-                </Link>
-
-              </Tab>
-              <Tab
-                className="text-xl p-8"
-                key="ติดต่อ"
-                title={
-                  <div className="flex items-center space-x-2">
-                    <Image src='/images/gecc/icons8-male-user.gif' alt={"GECCBG"} width="60" height="60" className="sm:hidden" ></Image>
-                    <span className="pr-12 hidden sm:flex">ติดต่อ</span>
-                  </div>
-                }>
-                <div className="text-center sm:hidden">ติดต่อ</div>
-                <div className="text-base">
-                  <div className="px-4 py-4">
-                    <div className="grid md:grid-flow-col gap-4">
-                      <div className="">
-                        <div className="grid gap-3">
-                          <div>
-                            <div className="flex gap-2 ">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="1.5"
-                                stroke="currentColor"
-                                className="size-6"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
-                                />
-                              </svg>
-                              <div className="hover:text-sky-500">0614122765</div>
-                            </div>
+                </Tab>
+                <Tab
+                  className="text-xl p-8"
+                  key="ติดต่อ"
+                  title={
+                    <div className="flex items-center space-x-2">
+                      <Image src='/images/gecc/icons8-male-user.gif' alt={"GECCBG"} width="50" height="58" className="sm:hidden" ></Image>
+                      <span className="text-center font-medium text-xl hidden sm:flex">ติดต่อ</span>
+                    </div>
+                  }>
+                  <div className="text-center sm:hidden">ติดต่อ</div>
+                  <div className="text-base">
+                    <div className="pt-4">
+                      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                        <div className="flex justify-center">
+                          <div className="">
+                            <img width="80" height="80" src="https://img.icons8.com/external-flatart-icons-outline-flatarticons/64/FA5252/external-phone-call-stay-at-home-flatart-icons-outline-flatarticons.png" alt="external-phone-call-stay-at-home-flatart-icons-outline-flatarticons" />
+                            <p className="hover:text-sky-500 pt-2">0614122765</p>
                           </div>
                         </div>
-                      </div>
-                      <div className="grid md:grid-flow-col gap-4">
-                        <div className="grid gap-3">
-                          <div>
-                            <Link target="_blank" href="/pdf/ทะเบียน/คำร้องขอย้ายสถานศึกษา.pdf">
-                              <div className="flex gap-2 hover:text-sky-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="fill-black dark:fill-white" width={20} height={20} viewBox="0 0 512 512"><path d="M64 464l48 0 0 48-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L229.5 0c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3L384 304l-48 0 0-144-80 0c-17.7 0-32-14.3-32-32l0-80L64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z" /></svg>
-                                <div>
-                                  <Link href={'https://line.me/ti/g2/lE1gdiKYbUTFrBCjWTUY7DjOQx2dSw2QPAv4fw?utm_source=invitation&utm_medium=QR_code&utm_campaign=default'}>
-                                    ศูนย์ GECC ร้องทุกข์ KTL-TC
-                                    Open in LINE
-                                  </Link>
-                                </div>
+                        <div className="flex justify-center">
+                          <Link target="_blank" href="https://line.me/ti/g2/lE1gdiKYbUTFrBCjWTUY7DjOQx2dSw2QPAv4fw?utm_source=invitation&utm_medium=QR_code&utm_campaign=default">
+                            <div className=" hover:text-sky-500">
+                              <div className="flex justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0,0,256,256">
+                                  <g fill="#fa5252" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none"><g transform="scale(5.12,5.12)"><path d="M9,4c-2.74952,0 -5,2.25048 -5,5v32c0,2.74952 2.25048,5 5,5h32c2.74952,0 5,-2.25048 5,-5v-32c0,-2.74952 -2.25048,-5 -5,-5zM9,6h32c1.66848,0 3,1.33152 3,3v32c0,1.66848 -1.33152,3 -3,3h-32c-1.66848,0 -3,-1.33152 -3,-3v-32c0,-1.66848 1.33152,-3 3,-3zM25,10c-8.70295,0 -16,5.67833 -16,12.94727c0,6.4852 5.78406,11.75277 13.33594,12.76563h0.00195c0.19879,0.04248 0.42756,0.11023 0.5625,0.17383c0.02758,0.013 0.0246,0.01414 0.03906,0.02344c-0.00265,0.08215 0.02293,0.46014 -0.01562,0.75c-0.0095,0.05611 -0.17325,1.02539 -0.20703,1.2168v0.00195c-0.04664,0.26694 -0.22285,0.80451 0.23242,1.49023c0.22764,0.34286 0.69911,0.62028 1.14063,0.6582c0.44151,0.03792 0.84667,-0.07119 1.29883,-0.26172c1.03507,-0.4288 3.10185,-1.65023 5.48828,-3.2832c2.38434,-1.63154 4.95921,-3.61104 6.64453,-5.51172c2.29202,-2.46674 3.47852,-5.1272 3.47852,-8.02344c0,-7.26804 -7.29697,-12.94727 -16,-12.94727zM25,12c7.83897,0 14,5.0413 14,10.94727c0,2.37272 -0.89401,4.46084 -2.94727,6.66797l-0.00977,0.00977l-0.00781,0.00977c-1.46188,1.65187 -3.97117,3.61058 -6.28711,5.19531c-2.25597,1.5437 -4.36199,2.72956 -4.99805,3.00977c0.06529,-0.38394 0.15039,-0.88281 0.15039,-0.88281l0.00391,-0.01758l0.00195,-0.01758c0.05563,-0.41836 0.20533,-1.05296 -0.11328,-1.83789v-0.00195v-0.00195c-0.23741,-0.5779 -0.67938,-0.8315 -1.04102,-1.00195c-0.36164,-0.17045 -0.70927,-0.25877 -0.99805,-0.32031l-0.03906,-0.00977l-0.04102,-0.00391c-6.82439,-0.88616 -11.67383,-5.49331 -11.67383,-10.79687c0,-5.90706 6.16095,-10.94727 14,-10.94727zM23.99219,18.99805c-0.50381,0.00935 -0.99219,0.39383 -0.99219,1.00195v6c0,0.552 0.448,1 1,1c0.552,0 1,-0.448 1,-1v-2.87891l2.18555,3.45898c0.566,0.792 1.81445,0.39292 1.81445,-0.58008v-6c0,-0.552 -0.448,-1 -1,-1c-0.552,0 -1,0.448 -1,1v3l-2.18555,-3.58008c-0.21225,-0.297 -0.51998,-0.42748 -0.82227,-0.42187zM15,19c-0.552,0 -1,0.448 -1,1v6c0,0.552 0.448,1 1,1h3c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1h-2v-5c0,-0.552 -0.448,-1 -1,-1zM21,19c-0.552,0 -1,0.448 -1,1v6c0,0.552 0.448,1 1,1c0.552,0 1,-0.448 1,-1v-6c0,-0.552 -0.448,-1 -1,-1zM31,19c-0.552,0 -1,0.448 -1,1v6c0,0.552 0.448,1 1,1h3c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1h-2v-1h2c0.553,0 1,-0.448 1,-1c0,-0.552 -0.447,-1 -1,-1h-2v-1h2c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1z"></path></g></g>
+                                </svg>
                               </div>
-                            </Link>
-                          </div>
+                              <div>
+                                <p className="pt-2">ศูนย์ GECC ร้องทุกข์</p>
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                        <div className="flex justify-center">
+                          <Link target="_blank" href="https://maps.app.goo.gl/LSK6jriPzmmQSz846">
+                            <div className=" hover:text-sky-500">
+                              <img width="75" height="75" src="https://img.icons8.com/ios/50/FA5252/place-marker--v1.png" alt="place-marker--v1" />
+                              <div>
+                                <p className="pt-2">ที่ตั้ง/GPS</p>
+                              </div>
+                            </div>
+                          </Link>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Tab>
-            </Tabs>
-          </div>
+                </Tab>
+                <Tab
+                  className="text-xl p-8"
+                  key="แบบสํารวจ"
+                  title={
+                    <div className="flex items-center space-x-2">
+                      <Image src='/images/gecc/1.gif' alt={"GECCBG"} width="50" height="58" className="sm:hidden" ></Image>
+                      <span className="text-center font-medium text-xl hidden sm:flex">แบบสํารวจ</span>
+                    </div>
+                  }>
+                  <div className="text-center sm:hidden">แบบสํารวจ</div>
+                  <div className="text-base">
+                    <div className="pt-4">
+                      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+
+                        <Link href='https://docs.google.com/forms/d/e/1FAIpQLSdEf2XmgVMrNhz7Fl6O_8e_4yp5SjWyGxhC-pM64vIMPfBw3w/viewform' className="">
+                          <div className="flex justify-center">
+                            <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
+                          </div>
+                          <p className="hover:text-sky-500 pt-2">แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
+                        </Link>
+                        <Link href='https://docs.google.com/forms/d/e/1FAIpQLSca9AXgqHmgVFMu9uHw16JyizUeFZ3JSVlPCB5fWpYScYwRww/viewform' className="">
+                          <div className=" hover:text-sky-500">
+                            <div className="flex justify-center">
+                              <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
+                            </div>
+                            <div>
+                              <p className="pt-2">แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </Tab>
+              </Tabs>
+            </div>
+          </Card >
         </div >
-      </div >
+      </section >
     </>
   );
 };
