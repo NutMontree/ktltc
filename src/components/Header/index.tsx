@@ -52,12 +52,12 @@ const Header = () => {
       >
 
         <div className="container">
-          <div className="relative -mx-4 flex items-center justify-between ">
+          <div className="relative -mx-4 flex items-center justify-between gap-4">
             <div className="w-24 max-w-full px-4 ">
               <Link
                 href="https://ktltc.vercel.app/"
                 className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90 
-                   ${sticky ? "py-2" : "py-12"
+                   ${sticky ? "py-8" : "py-12"
                   } `}
               >
                 {pathUrl !== "/" ? (
@@ -69,13 +69,13 @@ const Header = () => {
                       height='30'
                       className="header-logo w-full dark:hidden hidden lg:block"  //hidden lg:block
                     />
-                    <Image
+                    {/* <Image
                       src={`/images/logo.webp`}
                       alt="logo"
                       width='240'
                       height='30'
-                      className="header-logo hidden w-full dark:block "
-                    />
+                      className="header-logo hidden w-full dark:block"
+                    /> */}
                   </>
                 ) : (
                   <>
@@ -87,15 +87,15 @@ const Header = () => {
                       alt="logo"
                       width='140'
                       height='30'
-                      className="header-logo w-full dark:hidden "
+                      className="header-logo w-full dark:hidden hidden lg:block"
                     />
-                    <Image
+                    {/* <Image
                       src={"/images/logo.webp"}
                       alt="logo"
                       width='140'
                       height='30'
-                      className="header-logo hidden w-full dark:block "
-                    />
+                      className="header-logo hidden w-full dark:block  "
+                    /> */}
                   </>
                 )}
               </Link>
@@ -136,7 +136,7 @@ const Header = () => {
               </Link>
 
             </div>
-            <div className="flex w-full items-center justify-between px-2 ">
+            <div className="flex w-full justify-center">
               <div>
 
                 <nav
@@ -261,9 +261,6 @@ const Header = () => {
                 </Link>
               </div>
 
-              <div className="flex items-center justify-end pr-16 sm:flex lg:pr-0 gap-2 sm:gap-4">
-
-              </div>
             </div>
             <div>
 
@@ -289,7 +286,7 @@ const Header = () => {
             <button
               aria-label="theme toggler"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex h-8 w-8 items-center justify-center text-body-color duration-300 dark:text-white"
+              className="flex h-8 w-8 items-center justify-center text-body-color duration-300 dark:text-white pr-6"
             >
               <span>
                 <svg
