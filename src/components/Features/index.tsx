@@ -332,8 +332,7 @@ const Features = () => {
                       <Link target="_blank" href="https://admission.vec.go.th/web/Login.htm?mode=index">
                         <div className="pt-4">
                           <div className="flex justify-center">
-                            <img className="pt-1.5" width="70" height="70" src="https://img.icons8.com/pastel-glyph/64/FA5252/conclusion-contract.png" alt="conclusion-contract" />
-                          </div>
+                            <img width="76" height="76" src="https://img.icons8.com/parakeet-line/48/FA5252/reviewer-male.png" alt="reviewer-male" />                          </div>
                           <div className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">สมัครเรียนออนไลน์</div>
                         </div>
                       </Link>
@@ -378,7 +377,7 @@ const Features = () => {
                                 </svg>
                               </div>
                               <div>
-                                <p className="pt-2">ศูนย์ GECC ร้องทุกข์</p>
+                                <p className="pt-2 hover:text-sky-500 text-[14px] md:text-[20px] sm:text-sm md:text-base">ศูนย์ GECC ร้องทุกข์</p>
                               </div>
                             </div>
                           </Link>
@@ -388,7 +387,7 @@ const Features = () => {
                             <div className=" hover:text-sky-500">
                               <img width="75" height="75" src="https://img.icons8.com/ios/50/FA5252/place-marker--v1.png" alt="place-marker--v1" />
                               <div>
-                                <p className="pt-2">ที่ตั้ง/GPS</p>
+                                <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">ที่ตั้ง/GPS</p>
                               </div>
                             </div>
                           </Link>
@@ -423,7 +422,7 @@ const Features = () => {
                               <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
                             </div>
                             <div>
-                              <p className="pt-2">แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
+                              <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
                             </div>
                           </div>
                         </Link>

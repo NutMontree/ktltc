@@ -17,41 +17,6 @@ export const Description = [
     description: ` 
 
     `},
-  {
-    description: ` 
-
-    `},
-  {
-    description: ` 
-   `},
-  {
-    description: ` 
- 
-  `},
-  {
-    description: ` 
- 
-  `},
-  {
-    description: ` 
- 
-  `},
-  {
-    description: ` 
- 
-  `},
-  {
-    description: ` 
- 
-  `},
-  {
-    description: ` 
- 
-  `},
-  {
-    description: ` 
- 
-  `},
 ]
 
 export const DataDate = [{ date: `21 พฤษภาคม 2568` }];
