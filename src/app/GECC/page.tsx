@@ -265,7 +265,6 @@ export default function page() {
             <div className="text-center py-4">เวลาปฏิบัติงานวันจันทร์-ศุกร์ 07.30 น.-17.30น.<br />(ไม่พักเที่ยง)</div>
           </div>
 
-
           <div className="pt-24">
             <div className="bg-orange-500 py-4 px-4 rounded-lg">
               <p>กลุ่มงานวัดผลและประเมินผล</p>

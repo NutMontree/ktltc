@@ -324,9 +324,6 @@ export default function ShowPressRelease() {
 
           </div >
           {/*   title title title title title title title title title title title title title title title title title title */}
-
-
-
           <div className="grid grid-flow-col">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
               {DataPressrelease.navItems.slice(0, 4).map((item) => (

@@ -422,7 +422,7 @@ const Features = () => {
                           <div className="flex justify-center">
                             <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
                           </div>
-                          <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
+                          <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก</p>
                         </Link>
                         <Link href='https://docs.google.com/forms/d/e/1FAIpQLSca9AXgqHmgVFMu9uHw16JyizUeFZ3JSVlPCB5fWpYScYwRww/viewform' className="">
                           <div className=" hover:text-sky-500">
@@ -430,7 +430,7 @@ const Features = () => {
                               <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
                             </div>
                             <div>
-                              <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์</p>
+                              <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก</p>
                             </div>
                           </div>
                         </Link>
