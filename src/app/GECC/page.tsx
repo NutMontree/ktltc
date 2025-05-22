@@ -64,45 +64,33 @@ export default function page() {
       <div className="pt-24">
         <Image src='/images/logo/GECCBG.webp' alt={"GECCBG"}></Image>
       </div>
-      <div className="py-4">
-        {/* <div className="">
-          <div className="flex justify-center">
-            <Image src="/images/logo/GECC.webp" alt={""} className="scale-90 hover:scale-100 transition duration-500 rounded-ful lg:w-80"></Image>
-            <Image src="/images/logo/สอศ.webp" alt={""} className="scale-90 hover:scale-100 transition duration-500 rounded-ful lg:w-80 pt-2 md:pt-4 xl:pt-0"></Image>
-          </div>
-        </div > */}
-        <div className=" ">
-          {/* <div className="text-center">
-            <p className="flex justify-center pt-3 font-bold text-[14px] sm:text-sm md:text-md lg:text-lg xl:text-xl">งานศูนย์ราชการสะดวก: <br /> Government Easy Contact Center: GECC</p>
-            <p className="flex justify-center text-[#DAA520] text-[14px] sm:text-sm md:text-md lg:text-lg xl:text-xl">วิทยาลัยเทคนิคกันทรลักษ์</p>
-          </div> */}
 
-          <div className="flex justify-center">
-            <div className="pt-6 xl:pt-32">
-              <iframe
-                className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
-               w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
-                src="/images/gecc/ศูนย์ราชการสะดวก.mp4"
-                title=" "
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              />
-              <br />
-            </div>
+      <div className="">
+
+        <div className="">
+
+          <div className="flex justify-center pt-6 xl:pt-12">
+            <iframe
+              className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
+                w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
+              src="/images/gecc/ศูนย์ราชการสะดวก.mp4"
+              title=" "
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
           </div>
 
-
-
-          <div className="flex justify-items-center" >
-            <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057326985699&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077" width="340" height="500" scrolling="no"
+          <div className="flex justify-center pt-6 xl:pt-12">
+            <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057326985699&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077"
+              width="340"
+              height="500"
+              scrolling="no"
               allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
             </iframe>
           </div>
 
-
-
-          <div className="grid gap-8">
+          <div className="grid gap-8 pt-6 xl:pt-12">
             <div className="bg-red-500 py-4 px-4 rounded-lg">
               <p>งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
             </div>
@@ -266,19 +254,17 @@ export default function page() {
           </div>
 
           <div className="">
-            <div className="">
+            <div className="flex justify-center  ">
               <iframe
                 src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fktltc&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                 width="340"
-                height="650"
-                scrolling="no"
-                frameBorder="0"
+                height="500"
                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
               ></iframe>
             </div>
+            <div className="text-center py-4">เวลาปฏิบัติงานวันจันทร์-ศุกร์ 07.30 น.-17.30น.<br />(ไม่พักเที่ยง)</div>
           </div>
 
-          <div className="text-center py-47">เวลาปฏิบัติงานวันจันทร์-ศุกร์ 07.30 น.-17.30น.<br />(ไม่พักเที่ยง)</div>
 
           <div className="pt-24">
             <div className="bg-orange-500 py-4 px-4 rounded-lg">
@@ -286,8 +272,8 @@ export default function page() {
               <p>ฝ่ายวิชาการ วิทยาลัยเทคนิคกันทรลักษ์</p>
             </div>
             <div className="grid md:grid-flow-col gap-4">
-              <div className="py-8">
-                <div className="grid gap-3">
+              <div className="">
+                <div className="grid gap-3 pt-8">
                   <div>
                     <Link href="#">
                       <div className="flex gap-2 hover:text-sky-500">
@@ -322,28 +308,21 @@ export default function page() {
                   </div>
                 </div>
               </div>
-              <div className="grid md:grid-flow-col py-8 gap-2">
-                {/* <div className="grid gap-1">
-                  <div>ข่าวสารประชาสัมพันธ์</div>
-                </div> */}
+              <div className="grid md:grid-flow-col  gap-2">
                 <div className="grid gap-1">
-                  <div className="justify-items-center ">
+                  <div className="justify-items-center pt-8">
                     <iframe
-                      src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61573391563533&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="340"
+                      src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61573391563533&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+                      width="340"
                       height="500"
                       scrolling="no"
-                      frameBorder="0"
                       allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                     ></iframe>
                   </div>
-
                 </div>
               </div>
             </div>
-
-            <div>
-              <div className="text-center py-4">เวลาปฏิบัติงานวันจันทร์-ศุกร์ 07.30 น.-17.30น.<br />(ไม่พักเที่ยง)</div>
-            </div>
+            <div className="text-center py-4">เวลาปฏิบัติงานวันจันทร์-ศุกร์ 07.30 น.-17.30น.<br />(ไม่พักเที่ยง)</div>
           </div >
         </div >
       </div >
@@ -354,9 +333,9 @@ export default function page() {
           <p>คู่มือการใช้งาน</p>
         </div>
         <div className="grid md:grid-flow-col gap-4">
-          <div className="py-8">
-            <div className="grid gap-3">
-              <div>
+          <div className="">
+            <div className="grid gap-3 pt-8">
+              <div className="">
                 <Link target="_blank" href="/pdf/คู่มือ/คู่มือการดำเนินงานเรื่องร้องเรียนร้องทุก.pdf"  >
                   <div className="flex gap-2 hover:text-sky-500">
                     <svg xmlns="http://www.w3.org/2000/svg" className="fill-black dark:fill-white" width={20} height={20} viewBox="0 0 512 512"> <path d="M64 464l48 0 0 48-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L229.5 0c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3L384 304l-48 0 0-144-80 0c-17.7 0-32-14.3-32-32l0-80L64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z" /></svg>
@@ -486,21 +465,7 @@ export default function page() {
               </div>
             </div>
           </div>
-          <div className="grid md:grid-flow-col py-8 gap-2">
-            {/* <div className="grid gap-1">
-                  <div>ข่าวสารประชาสัมพันธ์</div>
-                </div> */}
-            {/* <div className="grid gap-1">
-              <div className="justify-items-center ">
-                <iframe
-                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61573391563533&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="340"
-                  height="500"
-                  scrolling="no"
-                  frameBorder="0"
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                ></iframe>
-              </div>
-            </div> */}
+          <div className="grid md:grid-flow-col py-0 md:py-8 gap-2">
             <div className="grid gap-3">
               <div>
                 <Link target="_blank" href="/pdf/คู่มือ/คู่มืองานพัสดุ.pdf">
