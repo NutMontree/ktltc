@@ -313,6 +313,14 @@ const Features = () => {
           </div>
         </div>
 
+        <div className="fb-page" data-href="https://www.facebook.com/ngan.prachasamphanth.withyalay.thekhnikh" data-tabs="timeline" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="true"></div>
+        <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fngan.prachasamphanth.withyalay.thekhnikh&tabs=timeline&width=0&height=0&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077"
+
+          height="0"
+          scrolling="no"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+        </iframe>
+
         <div className="py-8">
           <Card >
             <div className="flex flex-col px-2 py-2">

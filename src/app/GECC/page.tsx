@@ -92,7 +92,17 @@ export default function page() {
             </div>
           </div>
 
-          <text className="grid gap-8">
+
+
+          <div className="flex justify-items-center" >
+            <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057326985699&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077" width="340" height="500" scrolling="no"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+            </iframe>
+          </div>
+
+
+
+          <div className="grid gap-8">
             <div className="bg-red-500 py-4 px-4 rounded-lg">
               <p>งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
             </div>
@@ -100,7 +110,7 @@ export default function page() {
               <p>กลุ่มงานทะเบียน</p>
               <p>ฝ่ายบริหารทรัพยากร วิทยาลัยเทคนิคกันทรลักษ์</p>
             </div>
-          </text>
+          </div>
 
           <div className="py-8">
             <Card
