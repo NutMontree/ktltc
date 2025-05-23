@@ -45,7 +45,12 @@ export default function Page() {
                 </div>
                 <div>
                   <h1 className="text-base text-sky-600">{item.name}</h1>
-                  <div className="text-sm">{item.description}</div>
+                  <div className="text-sm">
+                    {item.description}
+                    <p className="text-gray-500">
+                      ...ดูเพิ่มเติม
+                    </p>
+                  </div>
                   <div className="text-xs text-slate-500">{item.date}</div>
                 </div>
               </NextLink>
