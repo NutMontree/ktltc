@@ -45,9 +45,9 @@ const Header = () => {
     <>
 
       <header
-        className={`ud-header left-0 top-0 z-40 flex w-full items-center   ${sticky
+        className={`ud-header left-0 top-0 z-40 flex w-full items-center ${sticky
           ? "shadow-nav fixed z-[999] border-b border-stroke bg-white/80 backdrop-blur-[5px] dark:border-dark-3/20 dark:bg-dark/10"
-          : "absolute bg-transparent"
+          : "absolute bg-transparen"
           }`}
       >
 
@@ -57,7 +57,7 @@ const Header = () => {
               <Link
                 href="https://ktltc.vercel.app/"
                 className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90 
-                   ${sticky ? "py-8" : "py-14"
+                   ${sticky ? "py-8 " : "py-14"
                   } `}
               >
                 {pathUrl !== "/" ? (
@@ -67,7 +67,7 @@ const Header = () => {
                       alt="logo"
                       width='240'
                       height='30'
-                      className="header-logo w-full dark:hidden hidden lg:block"  //hidden lg:block
+                      className="header-logo w-full dark:hidden hidden lg:block"
                     />
                     {/* <Image
                       src={`/images/logo.webp`}
@@ -268,7 +268,7 @@ const Header = () => {
                 href="https://www.facebook.com/profile.php?id=100057326985699"
                 target="_blank"
               >
-                <Image src='/images/facebook.webp' alt={"facebook_logo"} width="100" height="100" className="pr-4 w-14 "></Image>
+                <Image src='/images/facebook.webp' alt={"facebook_logo"} width="100" height="100" className="pr-4 w-14"></Image>
               </Link>
             </div>
             <div>

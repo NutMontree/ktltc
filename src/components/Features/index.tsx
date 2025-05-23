@@ -324,7 +324,7 @@ const Features = () => {
         <div className="py-8">
           <Card >
             <div className="flex flex-col px-2 py-2">
-              <Tabs color="default" variant="underlined" className="">
+              <Tabs color="default" variant="underlined" className="flex justify-center">
                 <Tab
                   className="text-xl p-8"
                   key="บริการ"
