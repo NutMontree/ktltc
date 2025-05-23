@@ -131,7 +131,7 @@ const Header = () => {
             <div className="hidden lg:block">
               <Link
                 href="https://ktltc.vercel.app/"
-                className="font-bold text-2xl text-inherit pl-24">
+                className="font-bold text-2xl text-inherit">
                 KTLTC
               </Link>
 
