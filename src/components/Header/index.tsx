@@ -52,12 +52,12 @@ const Header = () => {
       >
 
         <div className="container">
-          <div className="relative -mx-4 flex items-center justify-between gap-4">
+          <div className="relative -mx-4 flex items-center justify-between">
             <div className="w-24 max-w-full px-4 ">
               <Link
                 href="https://ktltc.vercel.app/"
                 className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90 
-                   ${sticky ? "py-8" : "py-12"
+                   ${sticky ? "py-8" : "py-14"
                   } `}
               >
                 {pathUrl !== "/" ? (
@@ -131,14 +131,13 @@ const Header = () => {
             <div className="hidden lg:block">
               <Link
                 href="https://ktltc.vercel.app/"
-                className="font-bold text-2xl text-inherit">
+                className="font-bold text-2xl text-inherit pl-24">
                 KTLTC
               </Link>
 
             </div>
             <div className="flex w-full justify-center">
               <div>
-
                 <nav
                   id="navbarCollapse"
                   className={` navbar absolute right-0 z-30 w-[350px] rounded bg-white px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-dark-2 lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 lg:dark:bg-transparent ${navbarOpen
@@ -260,53 +259,47 @@ const Header = () => {
                   </div>
                 </Link>
               </div>
-
             </div>
             <div>
-
             </div>
-            <Link
-              aria-label="social link"
-              href="https://www.facebook.com/profile.php?id=100057326985699"
-              target="_blank"
-              className="duration-300 text-white rounded-full bg-blue-600 px-1 pt-2 dark:fill-white"
-            >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 22 22"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="fill-current "
+            <div className="">
+              <Link
+                aria-label="social link"
+                href="https://www.facebook.com/profile.php?id=100057326985699"
+                target="_blank"
               >
-                <path d="M16.294 8.86875H14.369H13.6815V8.18125V6.05V5.3625H14.369H15.8128C16.1909 5.3625 16.5003 5.0875 16.5003 4.675V1.03125C16.5003 0.653125 16.2253 0.34375 15.8128 0.34375H13.3034C10.5878 0.34375 8.69714 2.26875 8.69714 5.12187V8.1125V8.8H8.00964H5.67214C5.19089 8.8 4.74402 9.17812 4.74402 9.72812V12.2031C4.74402 12.6844 5.12214 13.1313 5.67214 13.1313H7.94089H8.62839V13.8188V20.7281C8.62839 21.2094 9.00652 21.6562 9.55652 21.6562H12.7878C12.994 21.6562 13.1659 21.5531 13.3034 21.4156C13.4409 21.2781 13.544 21.0375 13.544 20.8312V13.8531V13.1656H14.2659H15.8128C16.2596 13.1656 16.6034 12.8906 16.6721 12.4781V12.4438V12.4094L17.1534 10.0375C17.1878 9.79688 17.1534 9.52187 16.9471 9.24687C16.8784 9.075 16.569 8.90312 16.294 8.86875Z" />
-              </svg>
-            </Link>
-            {/* theme toggler */}
-            <button
-              aria-label="theme toggler"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex h-8 w-8 items-center justify-center text-body-color duration-300 dark:text-white pr-6"
-            >
-              <span>
-                <svg
-                  viewBox="0 0 16 16"
-                  className="hidden h-[22px] w-[22px] fill-current dark:block"
-                >
-                  <path d="M4.50663 3.2267L3.30663 2.03337L2.36663 2.97337L3.55996 4.1667L4.50663 3.2267ZM2.66663 7.00003H0.666626V8.33337H2.66663V7.00003ZM8.66663 0.366699H7.33329V2.33337H8.66663V0.366699V0.366699ZM13.6333 2.97337L12.6933 2.03337L11.5 3.2267L12.44 4.1667L13.6333 2.97337ZM11.4933 12.1067L12.6866 13.3067L13.6266 12.3667L12.4266 11.1734L11.4933 12.1067ZM13.3333 7.00003V8.33337H15.3333V7.00003H13.3333ZM7.99996 3.6667C5.79329 3.6667 3.99996 5.46003 3.99996 7.6667C3.99996 9.87337 5.79329 11.6667 7.99996 11.6667C10.2066 11.6667 12 9.87337 12 7.6667C12 5.46003 10.2066 3.6667 7.99996 3.6667ZM7.33329 14.9667H8.66663V13H7.33329V14.9667ZM2.36663 12.36L3.30663 13.3L4.49996 12.1L3.55996 11.16L2.36663 12.36Z" />
-                </svg>
+                <Image src='/images/facebook.webp' alt={"facebook_logo"} width="100" height="100" className="pr-4 w-14 "></Image>
+              </Link>
+            </div>
+            <div>
+              {/* theme toggler */}
+              <button
+                aria-label="theme toggler"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex h-8 w-8 items-center justify-center text-body-color duration-300 dark:text-white pr-6"
+              >
+                <span>
+                  <svg
+                    viewBox="0 0 16 16"
+                    className="hidden h-[22px] w-[22px] fill-current dark:block"
+                  >
+                    <path d="M4.50663 3.2267L3.30663 2.03337L2.36663 2.97337L3.55996 4.1667L4.50663 3.2267ZM2.66663 7.00003H0.666626V8.33337H2.66663V7.00003ZM8.66663 0.366699H7.33329V2.33337H8.66663V0.366699V0.366699ZM13.6333 2.97337L12.6933 2.03337L11.5 3.2267L12.44 4.1667L13.6333 2.97337ZM11.4933 12.1067L12.6866 13.3067L13.6266 12.3667L12.4266 11.1734L11.4933 12.1067ZM13.3333 7.00003V8.33337H15.3333V7.00003H13.3333ZM7.99996 3.6667C5.79329 3.6667 3.99996 5.46003 3.99996 7.6667C3.99996 9.87337 5.79329 11.6667 7.99996 11.6667C10.2066 11.6667 12 9.87337 12 7.6667C12 5.46003 10.2066 3.6667 7.99996 3.6667ZM7.33329 14.9667H8.66663V13H7.33329V14.9667ZM2.36663 12.36L3.30663 13.3L4.49996 12.1L3.55996 11.16L2.36663 12.36Z" />
+                  </svg>
 
-                <svg
-                  viewBox="0 0 23 23"
-                  className={`h-[30px] w-[30px] fill-current text-dark dark:hidden ${!sticky && pathUrl === "/" && " "
-                    }`}
-                >
-                  <g clipPath="url(#clip0_40_125)">
-                    <path d="M16.6111 15.855C17.591 15.1394 18.3151 14.1979 18.7723 13.1623C16.4824 13.4065 14.1342 12.4631 12.6795 10.4711C11.2248 8.47905 11.0409 5.95516 11.9705 3.84818C10.8449 3.9685 9.72768 4.37162 8.74781 5.08719C5.7759 7.25747 5.12529 11.4308 7.29558 14.4028C9.46586 17.3747 13.6392 18.0253 16.6111 15.855Z" />
-                  </g>
-                </svg>
-              </span>
-            </button>
+                  <svg
+                    viewBox="0 0 23 23"
+                    className={`h-[30px] w-[30px] fill-current text-dark dark:hidden ${!sticky && pathUrl === "/" && " "
+                      }`}
+                  >
+                    <g clipPath="url(#clip0_40_125)">
+                      <path d="M16.6111 15.855C17.591 15.1394 18.3151 14.1979 18.7723 13.1623C16.4824 13.4065 14.1342 12.4631 12.6795 10.4711C11.2248 8.47905 11.0409 5.95516 11.9705 3.84818C10.8449 3.9685 9.72768 4.37162 8.74781 5.08719C5.7759 7.25747 5.12529 11.4308 7.29558 14.4028C9.46586 17.3747 13.6392 18.0253 16.6111 15.855Z" />
+                    </g>
+                  </svg>
+                </span>
+              </button>
+            </div>
+
+
           </div>
         </div>
       </header >
