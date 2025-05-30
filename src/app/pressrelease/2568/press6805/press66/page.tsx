@@ -50,6 +50,20 @@ export default function Pressrelease() {
             ))}
 
             {/* ***************************** LInk And PDF ***************************** */}
+            <div className="pt-4">
+              <p className="text-sky-800 text-lg">
+                ****สามารถเข้าดูข้อมูลเพิ่มเติมได้ที่นี่
+              </p>
+              <Link
+                href="
+https://www.studentloan.or.th/?fbclid=IwY2xjawKmY2BleHRuA2FlbQIxMABicmlkETFMekVoRWdSZkVIZ1hpeW5oAR4jF4Y2jHDp0pN8aHGC5zmEIUlLwfWwRIPsdGX_dYvIYkuvEi1BvqerAxUU6A_aem_mW0DR8j0cHBb6_LjFWESug// "
+                className="hover:text-sky-500"
+                target="_blank"
+              >
+                https://www.studentloan.or.th
+              </Link>
+            </div>
+            {/* ***************************** LInk And PDF ***************************** */}
 
             <div className='px-2'>
               <FootTitle />
