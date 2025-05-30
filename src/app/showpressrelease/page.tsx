@@ -337,7 +337,7 @@ export default function ShowPressRelease() {
                                     hover:bg-orange-500
                                     ">
                       <div
-                        className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
+                        className="absolute inset-0 bg-cover bg-no-repeat bg-top hover:scale-110 duration-500"
                         style={{
                           backgroundImage: `url(${item.backgroundImage})`,
                         }}
