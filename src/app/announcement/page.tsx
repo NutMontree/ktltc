@@ -64,7 +64,7 @@ export default function AnnouncementPage() {
       <div className="pt-20">
         <div className="grid gap-4">
           <div>
-            <Link href='/newsletter/newsletter2568'>
+            <Link href='/announcement/announcement2568'>
               <ConfigProvider
                 button={{
                   className: styles.linearGradientButton,
