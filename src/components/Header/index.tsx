@@ -47,17 +47,17 @@ const Header = () => {
       <header
         className={`ud-header left-0 top-0 z-40 flex w-full items-center ${sticky
           ? "shadow-nav fixed z-[999] border-b border-stroke bg-white/80 backdrop-blur-[5px] dark:border-dark-3/20 dark:bg-dark/10"
-          : "absolute bg-transparen"
+          : "absolute bg-transparen py-10"
           }`}
       >
 
         <div className="container">
-          <div className="relative -mx-4 flex items-center justify-between">
+          <div className="relative -mx-4 flex items-center justify-between py-1">
             <div className="w-24 max-w-full px-4 ">
               <Link
                 href="https://ktltc.vercel.app/"
-                className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90 
-                   ${sticky ? "py-8 " : "py-14"
+                className={` 
+                   ${sticky ? " " : " "
                   } `}
               >
                 {pathUrl !== "/" ? (
@@ -87,7 +87,7 @@ const Header = () => {
                       alt="logo"
                       width='140'
                       height='30'
-                      className="header-logo w-full dark:hidden hidden lg:block"
+                      className="header-logo w-full hidden lg:block"
                     />
                     {/* <Image
                       src={"/images/logo.webp"}
