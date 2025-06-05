@@ -61,11 +61,10 @@ export default function PressReleasePage() {
                 </p>
               </li>
             </ul>
-
-
           </div>
         </div>
       </div >
+      
       <div className="pt-20">
         <div className="grid gap-4">
           <div>
