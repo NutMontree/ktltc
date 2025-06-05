@@ -14,7 +14,7 @@ const Faq = () => {
         />
 
         <div className="-mx-4 mt-[60px] flex flex-wrap lg:mt-20">
-          <div className="w-full px-4 lg:w-1/2">
+          <div className="w-full lg:w-1/2">
             <SingleFaq
               question="How to use TailGrids?"
               answer="It takes 2-3 weeks to get your first blog post ready. That includes the in-depth research & creation of your monthly content marketing strategy that we do before writing your first blog post, Ipsum available ."
@@ -29,7 +29,7 @@ const Faq = () => {
             />
           </div>
 
-          <div className="w-full px-4 lg:w-1/2">
+          <div className="w-full lg:w-1/2">
             <SingleFaq
               question="Can I use this template for commercial project?"
               answer="It takes 2-3 weeks to get your first blog post ready. That includes the in-depth research & creation of your monthly content marketing strategy that we do before writing your first blog post, Ipsum available ."

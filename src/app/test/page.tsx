@@ -35,7 +35,7 @@ export default function page() {
   )
 }
 
-                                                   
+
 
 // "use client";
 // import { useTheme } from "next-themes";
@@ -92,7 +92,7 @@ export default function page() {
 
 //         <div className="container">
 //           <div className="relative -mx-4 flex items-center justify-between gap-4">
-//             <div className="w-24 max-w-full px-4 ">
+//             <div className="w-24 max-w-full ">
 //               <Link
 //                 href="https://ktltc.vercel.app/"
 //                 className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90

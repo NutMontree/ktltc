@@ -84,11 +84,11 @@ export default function ShowBidding() {
                 spaceBetween: 15,
               },
               600: {
-                slidesPerView: 3,
+                slidesPerView: 2,
                 spaceBetween: 15,
               },
-              800: {
-                slidesPerView: 4,
+              900: {
+                slidesPerView: 3,
                 spaceBetween: 15,
               },
             }}

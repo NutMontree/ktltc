@@ -22,7 +22,7 @@ import { Image } from "@nextui-org/react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
-import { DataAnnouncement } from "../announcement/announcement2568/announcement6805/data";
+import { DataAnnouncement } from "../announcement/announcement2568/announcement6806/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
@@ -80,11 +80,11 @@ export default function ShowAnnouncement() {
               spaceBetween: 15,
             },
             600: {
-              slidesPerView: 3,
+              slidesPerView: 2,
               spaceBetween: 15,
             },
-            800: {
-              slidesPerView: 4,
+            900: {
+              slidesPerView: 3,
               spaceBetween: 15,
             },
           }}
@@ -97,7 +97,7 @@ export default function ShowAnnouncement() {
           onSwiper={(swiper) => console.log(swiper)}
           onSlideChange={() => console.log("slide change")}
         >
-          {DataAnnouncement.navItems.slice(0, 4).map((item) => (
+          {DataAnnouncement.navItems.slice(0, 3).map((item) => (
             <SwiperSlide key={item.name}>
               <NextLink key={item.href} href={item.href}>
                 <div

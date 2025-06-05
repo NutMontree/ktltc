@@ -16,7 +16,7 @@ export default function Newsletter() {
       </div>
 
       <div className="2567">
-        <div className="flex justify-center pt-4 px-2">
+        <div className="flex justify-center pt-4">
           <div className=" grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
             {Data.navItems.map((item) => (
               <NextLink key={item.href} href={item.href}>

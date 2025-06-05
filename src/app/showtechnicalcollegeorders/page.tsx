@@ -81,11 +81,11 @@ export default function ShowTechnicalcollegeorders() {
               spaceBetween: 15,
             },
             600: {
-              slidesPerView: 3,
+              slidesPerView: 2,
               spaceBetween: 15,
             },
-            1000: {
-              slidesPerView: 4,
+            900: {
+              slidesPerView: 3,
               spaceBetween: 15,
             },
           }}

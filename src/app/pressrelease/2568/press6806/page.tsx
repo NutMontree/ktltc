@@ -3,6 +3,7 @@
 import NextLink from "next/link";
 import { DataPressrelease } from "./data";
 import Pressrelease2568 from "../page";
+import { Image } from "@nextui-org/react";
 
 export default function Page() {
   return (
@@ -16,7 +17,7 @@ export default function Page() {
       </div>
 
       <div className="2567">
-        <div className="flex justify-center pt-4 px-2">
+        <div className="flex justify-center pt-4">
           <div
             className=" 
             grid gap-2
@@ -44,14 +45,23 @@ export default function Page() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-base text-sky-600">{item.name}</h1>
-                  <div className="text-sm">
-                    {item.description}
-                    <p className="text-gray-500">
-                      ...ดูเพิ่มเติม
-                    </p>
+                  <h1 className="text-[14px] md:text-[20px] sm:text-sm md:text-base text-sky-600 hover:text-sky-400" >
+                    {item.name}
+                  </h1>
+                  <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2 flex">
+                    <div>
+                      {item.description}
+                      < p className="text-gray-500">
+                        ...ดูเพิ่มเติม
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-xs text-slate-500">{item.date}</div>
+                  <div className="flex gap-2">
+                    <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
+                    <div className="text-xs text-slate-500 text-[12px] md:text-[14px] sm:text-sm md:text-base">
+                      {item.date}
+                    </div>
+                  </div>
                 </div>
               </NextLink>
             ))}

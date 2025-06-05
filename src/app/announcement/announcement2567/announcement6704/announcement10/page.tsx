@@ -46,10 +46,10 @@ export default function Announcement() {
             วิทยาลัยเทคนิคกันทรลักษ์ Today
           </div>
           <div>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </div>
-          <div>Website : www.ktltc.ac.th</div>
+          <div>Website : ktltc.vercel.app</div>
           <div>Gmail : ktl11022021@gmail.com</div>
           <div>สอบถามข้อมูลเพิ่มเติม</div>
-          <div>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๗๕๓ </div>
+          <div>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๐๕๓ </div>
           <div>โทร : 061-4122765 หรือ 045-811053</div>
         </div>
 

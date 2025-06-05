@@ -8,7 +8,7 @@ const PopularArticle = (props: {
 }) => {
   const { image, title, name } = props;
   return (
-    <div className="w-full px-4 md:w-1/2 lg:w-full">
+    <div className="w-full md:w-1/2 lg:w-full">
       <div
         className="wow fadeInUp mb-5 flex w-full items-center border-b border-stroke pb-5 dark:border-dark-3"
         data-wow-delay=".1s"

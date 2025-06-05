@@ -12,7 +12,7 @@ import { Image } from "@nextui-org/react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 
-import { DataPressrelease } from "../pressrelease/2568/press6805/data";
+import { DataPressrelease } from "../pressrelease/2568/press6806/data";
 import Link from "next/link";
 
 export default function ShowPressRelease() {
@@ -347,11 +347,13 @@ export default function ShowPressRelease() {
                       <h1 className="text-[14px] md:text-[20px] sm:text-sm md:text-base text-sky-600 hover:text-sky-400" >
                         {item.name}
                       </h1>
-                      <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2">
-                        {item.description}
-                        <p className="text-gray-500">
-                          ...ดูเพิ่มเติม
-                        </p>
+                      <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2 flex">
+                        <div>
+                          {item.description}
+                          < p className="text-gray-500">
+                            ...ดูเพิ่มเติม
+                          </p>
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
@@ -381,8 +383,8 @@ export default function ShowPressRelease() {
               </ConfigProvider>
             </div>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
     </>
   );
 }

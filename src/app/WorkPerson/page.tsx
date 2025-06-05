@@ -18,7 +18,7 @@ export default function WorkPerson() {
       </div>
 
       <div className="2567">
-        <div className="flex justify-center pt-4 px-2">
+        <div className="flex justify-center pt-4">
           <div
             className=" grid gap-2 
           h-full

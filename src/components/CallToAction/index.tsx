@@ -6,7 +6,7 @@ const CallToAction = () => {
       <div className="container mx-auto">
         <div className="relative overflow-hidden">
           <div className="-mx-4 flex flex-wrap items-stretch">
-            <div className="w-full px-4">
+            <div className="w-full">
               <div className="mx-auto max-w-[570px] text-center">
                 <h2 className="mb-2.5 text-3xl font-bold text-white md:text-[38px] md:leading-[1.44]">
                   <span>What Are You Looking For?</span>

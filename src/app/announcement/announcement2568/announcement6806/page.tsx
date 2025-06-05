@@ -12,11 +12,11 @@ export default function Announcement() {
 
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
-          ปีการศึกษา 2567
+          เดือน มิถุนายน 2568
         </h1>
       </div>
 
-      <div className="2567">
+      <div className=" ">
         <div className="flex justify-center pt-4">
           <div className=" grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  justify-items-center justify-center ">
             {DataAnnouncement.navItems.map((item) => (

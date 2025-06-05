@@ -4,7 +4,7 @@ const Blog = () => {
       <div className="container">
         <div className="-mx-4 flex flex-wrap">
           {/* {blogData.map((blog) => (
-            <div key={blog.id} className="w-full px-4 md:w-1/2 lg:w-1/3">
+            <div key={blog.id} className="w-full md:w-1/2 lg:w-1/3">
               <SingleBlog blog={blog} />
             </div>
           ))} */}

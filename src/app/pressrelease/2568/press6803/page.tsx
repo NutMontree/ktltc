@@ -1,5 +1,5 @@
 "use client"; // top to the file
- 
+
 import NextLink from "next/link";
 import { DataPressrelease } from "./data";
 import Pressrelease2568 from "../page";
@@ -16,7 +16,7 @@ export default function Page() {
       </div>
 
       <div className="2567">
-        <div className="flex justify-center pt-4 px-2">
+        <div className="flex justify-center pt-4">
           <div
             className=" 
             grid gap-2

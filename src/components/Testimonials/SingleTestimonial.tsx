@@ -19,7 +19,7 @@ const SingleTestimonial = ({ testimonial }: { testimonial: Testimonial }) => {
   }
 
   return (
-    <div className="w-full px-4 md:w-1/2 lg:w-1/3">
+    <div className="w-full md:w-1/2 lg:w-1/3">
       <div
         className="rounded-xl bg-white px-4 py-[30px] shadow-testimonial dark:bg-dark sm:px-[30px]"
         data-wow-delay=".1s"
