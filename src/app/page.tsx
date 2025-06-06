@@ -47,9 +47,9 @@ export default function Home() {
       <div className="container py-[48px]">
         <ScrollVelocity />
       </div>
-      {/* <div className="container">
+      <div className="container">
         <BackgroundBeamsWithCollisionDemo />
-      </div> */}
+      </div>
       <div className="container">
         <ShowPressRelease />
       </div>
