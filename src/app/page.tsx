@@ -41,10 +41,10 @@ export default function Home() {
       <div className="container">
         <Features />
       </div>
-      <div className="container py-[48px] ">
+      <div className="container py-[48px]">
         <Wellcome />
       </div>
-      <div className="container py-[48px] ">
+      <div className="container py-[48px]">
         <ScrollVelocity />
       </div>
       {/* <div className="container">
