@@ -315,18 +315,17 @@ const Features = () => {
 
         <div className="fb-page" data-href="https://www.facebook.com/ngan.prachasamphanth.withyalay.thekhnikh" data-tabs="timeline" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="true"></div>
         <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fngan.prachasamphanth.withyalay.thekhnikh&tabs=timeline&width=0&height=0&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077"
-
           height="0"
           scrolling="no"
           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
         </iframe>
 
         <div className="py-8">
-          <Card >
-            <div className="flex flex-col px-2 py-2">
+          <Card className="pt-4 pb-2 px-4">
+            <div className="flex flex-col">
               <Tabs color="default" variant="underlined" className="flex justify-center">
                 <Tab
-                  className="text-xl p-8"
+                  className="text-xl"
                   key="บริการ"
                   title={
                     <div className="flex items-center space-x-2">
@@ -335,19 +334,19 @@ const Features = () => {
                     </div>
                   }>
                   <div className="text-center sm:hidden">บริการ</div>
-                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
-                    <div className="flex justify-center">
+                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-2">
+                    <div className="flex justify-center hover:bg-[#f1f1f1] rounded-2xl dark:hover:text-black">
                       <Link target="_blank" href="https://admission.vec.go.th/web/Login.htm?mode=index">
-                        <div className="pt-4">
+                        <div className="py-4">
                           <div className="flex justify-center">
                             <img width="76" height="76" src="https://img.icons8.com/parakeet-line/48/FA5252/reviewer-male.png" alt="reviewer-male" />                          </div>
                           <div className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">สมัครเรียนออนไลน์</div>
                         </div>
                       </Link>
                     </div>
-                    <div className="flex justify-center">
+                    <div className="flex justify-center hover:bg-[#f1f1f1] rounded-2xl dark:hover:text-black">
                       <Link href={'/GECC'} className="">
-                        <div className="pt-4">
+                        <div className="py-4">
                           <div className="flex justify-center">
                             <img className="pt-1.5" width="70" height="70" src="https://img.icons8.com/pastel-glyph/64/FA5252/conclusion-contract.png" alt="conclusion-contract" />
                           </div>
@@ -358,7 +357,7 @@ const Features = () => {
                   </div>
                 </Tab>
                 <Tab
-                  className="text-xl p-8"
+                  className="text-xl"
                   key="ติดต่อ"
                   title={
                     <div className="flex items-center space-x-2">
@@ -368,15 +367,15 @@ const Features = () => {
                   }>
                   <div className="text-center sm:hidden">ติดต่อ</div>
                   <div className="text-base">
-                    <div className="pt-4">
-                      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-                        <div className="flex justify-center">
+                    <div className="">
+                      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2">
+                        <div className="flex justify-center hover:bg-[#f1f1f1] rounded-2xl py-4 dark:hover:text-black">
                           <div className="">
                             <img width="80" height="80" src="https://img.icons8.com/external-flatart-icons-outline-flatarticons/64/FA5252/external-phone-call-stay-at-home-flatart-icons-outline-flatarticons.png" alt="external-phone-call-stay-at-home-flatart-icons-outline-flatarticons" />
                             <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">0614122765</p>
                           </div>
                         </div>
-                        <div className="flex justify-center">
+                        <div className="flex justify-center hover:bg-[#f1f1f1] rounded-2xl py-4 dark:hover:text-black">
                           <Link target="_blank" href="https://line.me/ti/g2/lE1gdiKYbUTFrBCjWTUY7DjOQx2dSw2QPAv4fw?utm_source=invitation&utm_medium=QR_code&utm_campaign=default">
                             <div className=" hover:text-sky-500">
                               <div className="flex justify-center">
@@ -390,7 +389,7 @@ const Features = () => {
                             </div>
                           </Link>
                         </div>
-                        <div className="flex justify-center">
+                        <div className="flex justify-center hover:bg-[#f1f1f1] rounded-2xl py-4 dark:hover:text-black">
                           <Link target="_blank" href="https://maps.app.goo.gl/LSK6jriPzmmQSz846">
                             <div className=" hover:text-sky-500">
                               <img width="75" height="75" src="https://img.icons8.com/ios/50/FA5252/place-marker--v1.png" alt="place-marker--v1" />
@@ -405,7 +404,7 @@ const Features = () => {
                   </div>
                 </Tab>
                 <Tab
-                  className="text-xl p-8"
+                  className="text-xl"
                   key="แบบสํารวจ"
                   title={
                     <div className="flex items-center space-x-2">
@@ -415,22 +414,21 @@ const Features = () => {
                   }>
                   <div className="text-center sm:hidden">แบบสํารวจ</div>
                   <div className="text-base">
-                    <div className="pt-4">
-                      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
-
-                        <Link href='https://docs.google.com/forms/d/e/1FAIpQLSdEf2XmgVMrNhz7Fl6O_8e_4yp5SjWyGxhC-pM64vIMPfBw3w/viewform' className="">
+                    <div className="">
+                      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-2">
+                        <Link href='https://docs.google.com/forms/d/e/1FAIpQLSdEf2XmgVMrNhz7Fl6O_8e_4yp5SjWyGxhC-pM64vIMPfBw3w/viewform' className="hover:bg-[#f1f1f1] rounded-2xl py-4 dark:hover:text-black">
                           <div className="flex justify-center">
                             <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
                           </div>
-                          <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก</p>
+                          <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base px-4">แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก</p>
                         </Link>
-                        <Link href='https://docs.google.com/forms/d/e/1FAIpQLSca9AXgqHmgVFMu9uHw16JyizUeFZ3JSVlPCB5fWpYScYwRww/viewform' className="">
+                        <Link href='https://docs.google.com/forms/d/e/1FAIpQLSca9AXgqHmgVFMu9uHw16JyizUeFZ3JSVlPCB5fWpYScYwRww/viewform' className="hover:bg-[#f1f1f1] rounded-2xl py-4 dark:hover:text-black">
                           <div className=" hover:text-sky-500">
                             <div className="flex justify-center">
                               <img width="80" height="80" src="https://img.icons8.com/ios/50/FA5252/qr-code--v1.png" alt="qr-code--v1" />
                             </div>
                             <div>
-                              <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก</p>
+                              <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base px-4">แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก</p>
                             </div>
                           </div>
                         </Link>
