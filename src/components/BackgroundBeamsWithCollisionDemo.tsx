@@ -52,7 +52,7 @@ export function BackgroundBeamsWithCollisionDemo() {
 
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                   <div className="px md:px-8 pt-2">
-                    <p className="text-center ">
+                    <div className="text-center">
                       ขอเชิญชวนพี่น้องชาวไทย เชื้อชาติไทย 🇹🇭
                       <br />
                       ร่วมส่งกำลังใจแก่ทหารที่ปฏิบัติหน้าที่ป้องกันประเทศบริเวณชายแดน โดยติด
@@ -62,7 +62,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                       </p>
                       <br />
                       ❤️🤍💙🤍❤️
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>
