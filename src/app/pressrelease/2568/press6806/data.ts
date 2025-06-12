@@ -7,7 +7,7 @@ export const DataPressrelease = {
       description: ` 
 วิทยาลัยเทคนิคกันทรลักษ์ นำโดย  นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ นำคณะครู บุคลากรทางการศึกษา 
 `,
-      href: "/pressrelease/2568/press6806/    ",
+      href: "/pressrelease/2568/press6806/press20",
     },
     {
       name: `๑๐ มิถุนายน ๒๕๖๘`,
