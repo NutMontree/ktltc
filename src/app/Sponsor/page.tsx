@@ -81,6 +81,12 @@ export default function Sponsor() {
                             src="/images/5.gif"
                           ></iframe>
                         </div>
+
+                        {/* <div className="flex justify-center">
+                          <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fall.m.min.2024&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077" width="340" height="500"
+                            scrolling="no" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+                        </div> */}
+
                       </ModalBody>
                       <ModalFooter>
                         <Button
