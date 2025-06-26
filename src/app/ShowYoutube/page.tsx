@@ -24,6 +24,21 @@ export default function ShowYoutube() {
               >
                 <div className="flex justify-center px-[24px]">
                   <div className="gap-[24px] grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 justify-items-center">
+                    <div >
+                      <iframe
+                        className="h-[300px] sm:h-[400px] lg:h-[400px] xl:h-[400px] 
+                         w-[350px] sm:w-[600px] lg:w-[500px] xl:w-[400px]  
+                         rounded-2xl"
+                        width="560"
+                        height="315"
+                        src="https://www.youtube.com/embed/908PSchHFiU?si=I6XoZHsfF0Ceot7M"
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen>
+                      </iframe>
+                    </div>
                     <div className="">
                       <iframe
                         className="h-[300px] sm:h-[400px] lg:h-[400px] xl:h-[400px] 
