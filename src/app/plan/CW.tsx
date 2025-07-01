@@ -5,7 +5,7 @@ import { Image } from "@nextui-org/react";
 export default function CW() {
     return (
         <>
-            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงาน</h1>
+            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงานความร่วมมือ</h1>
             <div className='flex justify-center pb-4'>
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/แผน/งานความร่วมมือ.webp" alt="Image description ทรัพยากร" />
@@ -22,9 +22,6 @@ export default function CW() {
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/แผน/3.webp" alt="Image description ทรัพยากร" />
                 </div>
-                {/* <div className='rounded-[22px] pt-4'>
-                                                        <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                                                    </div> */}
             </div>
         </>
     )

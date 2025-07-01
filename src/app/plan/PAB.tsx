@@ -5,7 +5,7 @@ import { Image } from "@nextui-org/react";
 export default function PAB() {
     return (
         <>
-            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงาน</h1>
+            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงานวางแผน และงบประมาณ</h1>
             <div className='flex justify-center pb-4'>
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/แผน/งานวางแผนและงบประมาณ.webp" alt="Image description ทรัพยากร" />

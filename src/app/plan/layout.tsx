@@ -2,7 +2,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section>
       <div
-        className="container pt-8"
+        className="container py-12"
       >{children}</div>
     </section>
   );

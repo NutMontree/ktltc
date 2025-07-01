@@ -1,10 +1,12 @@
 import React from 'react'
 import { Image } from "@nextui-org/react";
+import Link from 'next/link'
+import { Button } from "@heroui/react";
 
 export default function RDIAI() {
     return (
         <>
-            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงาน</h1>
+            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงานวิจัย พัฒนา นวัตกรรมและสิ่งประดิษฐ์</h1>
             <div className='flex justify-center pb-4'>
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/แผน/งานวิจัยพัฒนานวัตกรรมและสิ่งประดิษฐ์.webp" alt="Image description ทรัพยากร" />
@@ -22,9 +24,11 @@ export default function RDIAI() {
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/แผน/2.webp" alt="Image description ทรัพยากร" />
                 </div>
-                {/* <div className='rounded-[22px] pt-4'>
-                                                        <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                                                    </div> */}
+            </div>
+            <div className='flex justify-center pt-8'>
+                <Button className='px-12 py-8 text-xl' color="primary" variant="shadow">
+                    <Link href='/plan/sar'>เอกสาร SAR</Link>
+                </Button>
             </div>
         </>
     )
