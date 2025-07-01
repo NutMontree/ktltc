@@ -27,7 +27,7 @@ export default function RDIAI() {
             </div>
             <div className='flex justify-center pt-8'>
                 <Button className='px-12 py-8 text-xl' color="primary" variant="shadow">
-                    <Link href='/plan/sar'>เอกสาร SAR</Link>
+                    <Link href='/plan/sar'>รายงานประจำของสถานศึกษา (SAR)</Link>
                 </Button>
             </div>
         </>

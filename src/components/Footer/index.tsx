@@ -459,7 +459,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <Link
-                    href="/ "
+                    href="/plan/sar"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     รายงานประจำของสถานศึกษา (SAR)

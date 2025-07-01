@@ -272,7 +272,7 @@ const menuData: Menu[] = [
       {
         id: 610,
         title: "รายงานประจำของสถานศึกษา (SAR)",
-        path: "/ ",
+        path: "/plan/sar",
         newTab: false,
       },
       {

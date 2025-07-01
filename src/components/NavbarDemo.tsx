@@ -183,7 +183,7 @@ function Navbar({ className }: { className?: string }) {
             >
               ศูนย์กำลังคนอาชีวศึกษา (V-COP)
             </HoveredLink>
-            <HoveredLink className="hover:text-sky-500" href="/ ">
+            <HoveredLink className="hover:text-sky-500" href="/plan/sar">
               รายงานประจำของสถานศึกษา (SAR)
             </HoveredLink>
             <HoveredLink className="hover:text-sky-500" href="/ ">

@@ -369,7 +369,7 @@ function Navbar({ }: { className?: string }) {
                         </HoveredLink1>
                       </div>
                       <div className="hover:bg-slate-100 rounded-lg ">
-                        <HoveredLink1 className="hover:text-sky-500" href="/ ">
+                        <HoveredLink1 className="hover:text-sky-500" href="/plan/sar">
                           รายงานประจำของสถานศึกษา (SAR)
                         </HoveredLink1>
                       </div>
