@@ -656,6 +656,10 @@ export default function page() {
         </div>
       </div>
 
+      <div className="pb-24 justify-items-center">
+        <Image src="/images/logo/QrGECC.webp" width={300} height={300} alt={""} className="scale-90 hover:scale-100 transition duration-500 rounded-ful lg:w-80"></Image>
+        <Link target="_blank" href='https://line.me/ti/g2/lE1gdiKYbUTFrBCjWTUY7DjOQx2dSw2QPAv4fw?utm_source=invitation&utm_medium=QR_code&utm_campaign=default' className="text-xl hover:text-sky-500">Link ร้องทุกร้องเรียนศูนย์ GECC/ktltc</Link>
+      </div>
 
       <div>
         <div className="pb-24">
