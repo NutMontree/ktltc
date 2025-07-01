@@ -1,17 +1,18 @@
 "use client"; // top to the file
 import React from "react";
 import Link from "next/link";
-import { Image } from "@nextui-org/react";
+// import { Image } from "@nextui-org/react";
 import { Button, Modal } from 'antd';
 import { HomeOutlined, UserOutlined, } from '@ant-design/icons';
 import { Breadcrumb } from 'antd';
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
-import { Card } from "@nextui-org/react";
+// import { CardBody } from "@/components/ui/3d-card";
+// import { Card } from "@nextui-org/react";
 import { Tabs, Tab } from "@heroui/react";
+// import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from "@heroui/react";
+import { Card, CardHeader, CardBody, CardFooter, Divider, Image } from "@heroui/react";
+
 
 export default function page() {
-
-
   const warning1 = () => {
     Modal.warning({
       title: "ลงทะเบียนเรียนรายวิชา",
@@ -35,7 +36,6 @@ export default function page() {
 
   return (
     <>
-
       <Breadcrumb
         items={[
           {
@@ -66,9 +66,7 @@ export default function page() {
       </div>
 
       <div className="">
-
         <div className="">
-
           <div className="flex justify-center pt-6 xl:pt-12">
             <iframe
               className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
@@ -89,8 +87,6 @@ export default function page() {
             </div>
           </div>
 
-
-
           <div className="flex justify-center pt-6 xl:pt-12">
             <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057326985699&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077"
               width="340"
@@ -100,15 +96,26 @@ export default function page() {
             </iframe>
           </div>
 
-          <div className="grid gap-8 pt-6 xl:pt-12">
-            <div className="bg-red-500 py-4 px-4 rounded-lg">
-              <p>งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
-            </div>
-            <div className="bg-orange-500 py-4 px-4 rounded-lg">
+          <Card className="m">
+            <CardHeader className="flex gap-3">
+              <Image
+                alt="heroui logo"
+                height={40}
+                radius="sm"
+                src="/images/logo.webp"
+                width={40}
+              />
+              <div className="flex flex-col">
+                <p className="text-md">งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
+                <p className="text-small text-default-500">ฝ่ายบริหารทรัพยากร วิทยาลัยเทคนิคกันทรลักษ์</p>
+              </div>
+            </CardHeader>
+            <Divider />
+            <CardBody>
               <p>กลุ่มงานทะเบียน</p>
-              <p>ฝ่ายบริหารทรัพยากร วิทยาลัยเทคนิคกันทรลักษ์</p>
-            </div>
-          </div>
+            </CardBody>
+            <Divider />
+          </Card>
 
           <div className="py-8">
             <Card
@@ -276,10 +283,26 @@ export default function page() {
           </div>
 
           <div className="pt-24">
-            <div className="bg-orange-500 py-4 px-4 rounded-lg">
-              <p>กลุ่มงานวัดผลและประเมินผล</p>
-              <p>ฝ่ายวิชาการ วิทยาลัยเทคนิคกันทรลักษ์</p>
-            </div>
+            <Card className="m">
+              <CardHeader className="flex gap-3">
+                <Image
+                  alt="heroui logo"
+                  height={40}
+                  radius="sm"
+                  src="/images/logo.webp"
+                  width={40}
+                />
+                <div className="flex flex-col">
+                  <p className="text-md">งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
+                  <p className="text-small text-default-500">ฝ่ายวิชาการ วิทยาลัยเทคนิคกันทรลักษ์</p>
+                </div>
+              </CardHeader>
+              <Divider />
+              <CardBody>
+                <p>กลุ่มงานวัดผลและประเมินผล</p>
+              </CardBody>
+              <Divider />
+            </Card>
             <div className="grid md:grid-flow-col gap-4">
               <div className="">
                 <div className="grid gap-3 pt-8">
@@ -336,11 +359,28 @@ export default function page() {
         </div >
       </div >
 
-      <div className="1">
-        <div className="bg-orange-500 py-4 px-4 rounded-lg">
-          <p>เอกสาร</p>
-          <p>คู่มือการใช้งาน</p>
-        </div>
+      <div className="pt-24">
+        <Card className="m">
+          <CardHeader className="flex gap-3">
+            <Image
+              alt="heroui logo"
+              height={40}
+              radius="sm"
+              src="/images/logo.webp"
+              width={40}
+            />
+            <div className="flex flex-col">
+              <p className="text-md">งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
+              <p className="text-small text-default-500">เอกสาร</p>
+            </div>
+          </CardHeader>
+          <Divider />
+          <CardBody>
+            <p>คู่มือการใช้งาน</p>
+          </CardBody>
+          <Divider />
+        </Card>
+
         <div className="grid md:grid-flow-col gap-4">
           <div className="">
             <div className="grid gap-3 pt-8">
@@ -616,23 +656,25 @@ export default function page() {
         </div>
       </div>
 
-
       <div className="pb-24 justify-items-center">
         <Image src="/images/logo/QrGECC.webp" width={300} height={300} alt={""} className="scale-90 hover:scale-100 transition duration-500 rounded-ful lg:w-80"></Image>
         <Link target="_blank" href='https://line.me/ti/g2/lE1gdiKYbUTFrBCjWTUY7DjOQx2dSw2QPAv4fw?utm_source=invitation&utm_medium=QR_code&utm_campaign=default' className="text-xl hover:text-sky-500">Link ร้องทุกร้องเรียนศูนย์ GECC/ktltc</Link>
       </div>
 
-
       <div>
         <div className="pb-24">
-          <Link target="_blank" href="/pdf/1.pdf">
-            <div className="flex gap-2 hover:text-sky-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="fill-black dark:fill-white" width={20} height={20} viewBox="0 0 512 512"> <path d="M64 464l48 0 0 48-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L229.5 0c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3L384 304l-48 0 0-144-80 0c-17.7 0-32-14.3-32-32l0-80L64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z" /></svg>
-              <div className="">การประเมินและการรับรองมาตรฐาน การให้บริการของศูนย์ราชการสะดวก วิทยาลัยเทคนิคกันทรลักษ์ ประจำปี 2568</div>
+          <Link target="_blank" href="/pdf/คู่มือ/แผนการติดตามผลการดำเนินการของศูนย์ราชกา.pdf">
+            <div className="flex gap-2">
+              <div className="flex gap-2 hover:text-sky-500">
+                <svg xmlns="http://www.w3.org/2000/svg" className="fill-black dark:fill-white" width={20} height={20} viewBox="0 0 512 512"> <path d="M64 464l48 0 0 48-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L229.5 0c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3L384 304l-48 0 0-144-80 0c-17.7 0-32-14.3-32-32l0-80L64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z" /></svg>
+              </div>
+              <p>
+                การประเมินและการรับรองมาตรฐาน การให้บริการของศูนย์ราชการสะดวก วิทยาลัยเทคนิคกันทรลักษ์ ประจำปี 2568
+              </p>
             </div>
           </Link>
         </div>
-      </div>
+      </div >
 
     </>
   );
