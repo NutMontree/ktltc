@@ -21,6 +21,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import { Metadata } from "next";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
+import CalendarPage from "@/components/Calendar";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -80,6 +81,8 @@ export default function Home() {
       <Team />
       <Contact />
       <Clients /> */}
+      <CalendarPage />
+
       <div id="fb-root"></div>
       <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v22.0&appId=952832906928077"></script>
       <div className="fb-comments" data-href="https://www.facebook.com/permalink.php?story_fbid=pfbid0SoQQJJH18oLEp5Zt4kF9hKXdJGhyXw41Md5hJv9WWpzWzNjGyit4DzyHAoL27BnPl&amp;id=61575575410714" data-width="" data-numposts="5"></div>

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Image } from "@nextui-org/react";
 import Link from 'next/link'
-import { Button } from "@heroui/react";
 
 export default function RDIAI() {
     return (
@@ -22,14 +21,10 @@ export default function RDIAI() {
             </div>
             <div className='grid md:grid-flow-col gap-4'>
                 <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/แผน/2.webp" alt="Image description ทรัพยากร" />
+                    <Image src="/images/บุคลากร/แผน/2.webp" alt="Image" />
                 </div>
             </div>
-            <div className='flex justify-center pt-8'>
-                <Button className='px-12 py-8 text-xl' color="primary" variant="shadow">
-                    <Link href='/plan/sar'>รายงานประจำของสถานศึกษา (SAR)</Link>
-                </Button>
-            </div>
+
         </>
     )
 }

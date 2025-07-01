@@ -82,6 +82,16 @@ export default function page() {
           </div>
 
           <div className="flex justify-center pt-6 xl:pt-12">
+            <div className=" justify-items-center justify-center pb-4">
+              <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
+                <Image src='/images/ข่าวประชาสัมพันธ์/2568/มิถุนายน/74/0.webp' alt={""}></Image>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div className="flex justify-center pt-6 xl:pt-12">
             <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057326985699&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077"
               width="340"
               height="500"

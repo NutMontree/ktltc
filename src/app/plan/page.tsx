@@ -7,6 +7,7 @@ import PAB from "./PAB";
 import CW from "./CW";
 import TABPW from "./TABPW";
 import RDIAI from "./RDIAI";
+import QAES from "./QAES";
 
 export default function page() {
   return (
@@ -22,10 +23,7 @@ export default function page() {
 
       <div className="py-8">
         <Accordion isCompact>
-          <AccordionItem
-            key="1"
-            aria-label="1"
-            title="แผนภูมิโครงสร้างการบริหารงานสถานศึกษา"
+          <AccordionItem key="1" aria-label="1" title="แผนภูมิโครงสร้างการบริหารงานสถานศึกษา"
           >
             <Planning />
           </AccordionItem>
@@ -45,6 +43,9 @@ export default function page() {
           </AccordionItem>
           <AccordionItem key="5" aria-label="5" title="งานวิจัย พัฒนา นวัตกรรมและสิ่งประดิษฐ์">
             <RDIAI />
+          </AccordionItem>
+          <AccordionItem key="6" aria-label="6" title="งานประกันคุณภาพและมาตรฐานการศึกษา">
+            <QAES />
           </AccordionItem>
         </Accordion>
       </div>
