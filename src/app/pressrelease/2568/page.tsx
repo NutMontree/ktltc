@@ -13,6 +13,13 @@ export default function Pressrelease2568() {
       <div className="grid gap-4 pt-20 pb-4">
         <div>
           <Button color="primary">
+            <Link className="text-lg" href="/pressrelease/2568/press6807">
+              เดือน กรกฎาคม 2568
+            </Link>
+          </Button>
+        </div>
+        <div>
+          <Button color="primary">
             <Link className="text-lg" href="/pressrelease/2568/press6806">
               เดือน มิถุนายน 2568
             </Link>
