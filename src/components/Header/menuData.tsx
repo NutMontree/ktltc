@@ -248,7 +248,7 @@ const menuData: Menu[] = [
       {
         id: 65,
         title: "สมัครเรียนออนไลน์",
-        path: "/ ",
+        path: "/https://admission.vec.go.th/web/Login.htm?mode=index",
         newTab: false,
       },
       {
