@@ -3,6 +3,8 @@ import React from 'react'
 import { DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const items: MenuProps['items'] = [
   {
@@ -397,19 +399,69 @@ const items: MenuProps['items'] = [
 ];
 
 export default function Testpage() {
+
+  const pathUrl = usePathname();
+  // Navbar toggle
+  const [navbarOpen, setNavbarOpen] = useState(false);
+  const navbarToggleHandler = () => {
+    setNavbarOpen(!navbarOpen);
+  };
+  // Sticky Navbar
+  const [sticky, setSticky] = useState(false);
+  const handleStickyNavbar = () => {
+    if (window.scrollY >= 80) {
+      setSticky(true);
+    } else {
+      setSticky(false);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", handleStickyNavbar);
+  });
+
+
   return (
     <>
       <div className='text-center py-8'>Test Page</div>
+
       <div>
         <Dropdown menu={{ items }}>
           <a onClick={(e) => e.preventDefault()}>
             <Space>
-              Menu
-              <DownOutlined />
+              <button
+                onClick={navbarToggleHandler}
+                id="navbarToggler"
+                aria-label="Mobile Menu"
+                className="absolute px-6  rounded-lg   ring-primary lg:hidden "
+              >
+                <span
+                  className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? " top-[7px] rotate-45" : " "
+                    } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
+                      ? "bg-dark dark:bg-white"
+                      : "bg-dark"
+                    }`}
+                />
+                <span
+                  className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? "opacity-0 " : " "
+                    } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
+                      ? "bg-dark dark:bg-white"
+                      : "bg-dark"
+                    }`}
+                />
+                <span
+                  className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? " top-[-8px] -rotate-45" : " "
+                    } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
+                      ? "bg-dark dark:bg-white"
+                      : "bg-dark"
+                    }`}
+                />
+              </button>
             </Space>
           </a>
         </Dropdown>
       </div>
+
+
 
     </>)
 }

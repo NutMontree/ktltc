@@ -9,7 +9,7 @@ export function BackgroundBeamsWithCollisionDemo() {
     <>
       <div className="">
         {/* ******************************************* เรื่องที่ 1 ******************************************* */}
-        <div className="pt-3 pb-[48px]">
+        {/* <div className="pt-3 pb-[48px]">
           <div className="flex justify-center">
             <div className="flex justify-center">
               <div className="">
@@ -38,7 +38,7 @@ export function BackgroundBeamsWithCollisionDemo() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
         {/* ******************************************* เรื่องที่ 2 ******************************************* */}
