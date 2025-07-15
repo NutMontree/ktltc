@@ -36,7 +36,7 @@ export default function Home() {
         <ScrollUp />
       </div>
       {/* <Hero /> */}
-      <div className=" ">
+      <div className="container">
         <Scrollimage />
       </div>
       <div className="container">

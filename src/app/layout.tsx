@@ -46,7 +46,9 @@ export default function RootLayout({
             <div className="pb-20">
               <Header />
             </div>
-            {children}
+            <div >
+              {children}
+            </div>
             <Footer />
             <FloatingNavDemo />
             <ScrollToTop />
