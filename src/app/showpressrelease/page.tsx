@@ -317,7 +317,7 @@ export default function ShowPressRelease() {
                 <div className="bg-red-500 w-2" />
                 <div className="pl-4">
                   <h1 className="text-xxl font-bold">ข่าวประชาสัมพันธ์</h1>
-                  <h1 className="text-xxl text-[#DAA520]"> Press Release Page</h1>
+                  <h1 className="text-xxl text-[#DAA520]">Press Release Page</h1>
                 </div>
               </div>
             </div>
