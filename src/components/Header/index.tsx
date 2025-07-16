@@ -53,11 +53,11 @@ const Header = () => {
 
         <div className="container">
           <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-24 max-w-full px-4 ">
+            <div className="w-24 max-w-full px-4">
               <Link
                 href="https://ktltc.vercel.app/"
-                className={`navbar-logo block w-full hover:scale-110 duration-500 scale-90 
-                   ${sticky ? "py-8 " : "py-14"
+                className={`navbar-logo block 
+                   ${sticky ? "xs:py-8 md:py-8 lg:py-4" : "py-14 md:py-10"
                   } `}
               >
                 {pathUrl !== "/" ? (
@@ -69,13 +69,13 @@ const Header = () => {
                       height='30'
                       className="header-logo w-full dark:hidden hidden lg:block"
                     />
-                    {/* <Image
+                    <Image
                       src={`/images/logo.webp`}
                       alt="logo"
                       width='240'
                       height='30'
-                      className="header-logo hidden w-full dark:block"
-                    /> */}
+                      className="header-logo hidden w-full dark:block "
+                    />
                   </>
                 ) : (
                   <>
@@ -85,17 +85,17 @@ const Header = () => {
                         : "/images/logo.webp"
                         }`}
                       alt="logo"
-                      width='140'
+                      width='240'
                       height='30'
-                      className="header-logo w-full dark:hidden hidden lg:block"
+                      className="header-logo w-full dark:hidden hidden"
                     />
-                    {/* <Image
+                    <Image
                       src={"/images/logo.webp"}
                       alt="logo"
-                      width='140'
+                      width='240'
                       height='30'
-                      className="header-logo hidden w-full dark:block  "
-                    /> */}
+                      className="header-logo hidden w-full xs:hidden lg:block"
+                    />
                   </>
                 )}
               </Link>
