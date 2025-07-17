@@ -27,7 +27,6 @@ export const Description = [
 export const DataDate = [{ date: `15 กรกฎาคม 2568` }];
 
 export const ImageItem = [
-  { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/00.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/01.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/02.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/03.webp" },
@@ -46,6 +45,7 @@ export const ImageItem = [
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/18.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/20.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/21.webp" },
+  { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/00.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/22.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/23.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/27/17.webp" },
