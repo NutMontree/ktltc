@@ -65,17 +65,37 @@ export default function page() {
         <Image src='/images/logo/GECCBG.webp' alt={"GECCBG"}></Image>
       </div>
 
+
+      {/* ***************************** Link ***************************** */}
+      <div className="flex justify-center">
+        <div className="flex pt-6 xl:pt-12">
+          <div>
+            <Link
+              href="https://docs.google.com/forms/d/194h3utMLMylUwcjhtCl_U7HnvJ7Oo3P0Gkqg0vQiBSY/viewform?edit_requested=true"
+              target="_blank"
+            >
+              <Image src="/images/gecc/qr2.webp" alt="qr-photos"></Image>
+            </Link>
+          </div>
+          <div>
+            <Link
+              href="https://docs.google.com/forms/d/11njKP2updYfffqs2ByjlbXJQtpelHD-zvcIXMUYOYIA/viewform?edit_requested=true"
+              target="_blank"
+            >
+              <Image src="/images/gecc/qr1.webp" alt="qr-photos"></Image>
+            </Link>
+          </div>
+        </div>
+      </div>
+      {/* ***************************** Link ***************************** */}
+
       <div className="">
         <div className="">
           <div className="flex justify-center pt-6 xl:pt-12">
             <iframe
               className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
-                w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
+                         w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px]"
               src="/images/gecc/ศูนย์ราชการสะดวก.mp4"
-              title=" "
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
             />
           </div>
 
