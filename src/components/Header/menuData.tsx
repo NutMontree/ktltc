@@ -289,5 +289,11 @@ const menuData: Menu[] = [
       },
     ],
   },
+  {
+    id: 7,
+    title: "ITA",
+    newTab: false,
+    path: "/ITA",
+  },
 ];
 export default menuData;
