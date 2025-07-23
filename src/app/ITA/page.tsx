@@ -38,6 +38,31 @@ import O34 from "./034/page";
 import O35 from "./035/page";
 import O36 from "./036/page";
 import O37 from "./037/page";
+import { JSX, SVGProps } from "react";
+
+const AnchorIcon = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => {
+    return (
+        <svg
+            aria-hidden="true"
+            focusable="false"
+            height="24"
+            role="presentation"
+            viewBox="0 0 24 24"
+            width="24"
+            {...props}
+        >
+            <path
+                d="M8.465,11.293c1.133-1.133,3.109-1.133,4.242,0L13.414,12l1.414-1.414l-0.707-0.707c-0.943-0.944-2.199-1.465-3.535-1.465 S7.994,8.935,7.051,9.879L4.929,12c-1.948,1.949-1.948,5.122,0,7.071c0.975,0.975,2.255,1.462,3.535,1.462 c1.281,0,2.562-0.487,3.536-1.462l0.707-0.707l-1.414-1.414l-0.707,0.707c-1.17,1.167-3.073,1.169-4.243,0 c-1.169-1.17-1.169-3.073,0-4.243L8.465,11.293z"
+                fill="currentColor"
+            />
+            <path
+                d="M12,4.929l-0.707,0.707l1.414,1.414l0.707-0.707c1.169-1.167,3.072-1.169,4.243,0c1.169,1.17,1.169,3.073,0,4.243 l-2.122,2.121c-1.133,1.133-3.109,1.133-4.242,0L10.586,12l-1.414,1.414l0.707,0.707c0.943,0.944,2.199,1.465,3.535,1.465 s2.592-0.521,3.535-1.465L19.071,12c1.948-1.949,1.948-5.122,0-7.071C17.121,2.979,13.948,2.98,12,4.929z"
+                fill="currentColor"
+            />
+        </svg>
+    );
+};
+
 
 export default function ITA() {
 
@@ -55,7 +80,7 @@ export default function ITA() {
 
             <div className="pb-12">
                 <Accordion variant="splitted" disabledKeys={["2"]}>
-                    <AccordionItem key="1" aria-label="ITA คืออะไร ?" title="ITA คืออะไร ?">
+                    <AccordionItem indicator={<AnchorIcon />} key="1" aria-label="ITA คืออะไร ?" title="ITA คืออะไร ?">
                         <div className="py-4">
                             <div className="grid md:grid-flow-col">
                                 <div className="rounded-xl">
@@ -95,7 +120,7 @@ export default function ITA() {
 
             <div>
                 <Accordion
-                    variant="splitted" disabledKeys={[
+                    selectionMode="multiple" variant="splitted" disabledKeys={[
                         "4",
                         "5",
                         "6",
@@ -122,115 +147,115 @@ export default function ITA() {
                         "36",
                         "37",
                     ]}>
-                    <AccordionItem key="1" aria-label="1" title="O1 โครงสร้าง">
+                    <AccordionItem indicator={<AnchorIcon />} key="1" aria-label="1" title="O1 โครงสร้าง">
                         <O1 />
                     </AccordionItem>
-                    <AccordionItem key="2" aria-label="2" title="O2 ข้อมูลผู้บริหาร">
+                    <AccordionItem indicator={<AnchorIcon />} key="2" aria-label="2" title="O2 ข้อมูลผู้บริหาร">
                         <O2 />
                     </AccordionItem>
-                    <AccordionItem key="3" aria-label="3" title="O3 อำนาจหน้าที่">
+                    <AccordionItem indicator={<AnchorIcon />} key="3" aria-label="3" title="O3 อำนาจหน้าที่">
                         <O3 />
                     </AccordionItem>
-                    <AccordionItem key="4" aria-label="4" title="O4 แผนพัฒนา สถานศึกษา">
+                    <AccordionItem indicator={<AnchorIcon />} key="4" aria-label="4" title="O4 แผนพัฒนา สถานศึกษา">
                         <O4 />
                     </AccordionItem>
-                    <AccordionItem key="5" aria-label="5" title="O5 ข้อมูลการติดต่อ">
+                    <AccordionItem indicator={<AnchorIcon />} key="5" aria-label="5" title="O5 ข้อมูลการติดต่อ">
                         <O5 />
                     </AccordionItem>
-                    <AccordionItem key="6" aria-label="6" title="O6 กฎหมายที่เกี่ยวข้อง">
+                    <AccordionItem indicator={<AnchorIcon />} key="6" aria-label="6" title="O6 กฎหมายที่เกี่ยวข้อง">
                         <O6 />
                     </AccordionItem>
-                    <AccordionItem key="7" aria-label="7" title="O7 ข่าวประชาสัมพันธ์">
+                    <AccordionItem indicator={<AnchorIcon />} key="7" aria-label="7" title="O7 ข่าวประชาสัมพันธ์">
                         <O7 />
                     </AccordionItem>
-                    <AccordionItem key="8" aria-label="8" title="O8 Q&A">
+                    <AccordionItem indicator={<AnchorIcon />} key="8" aria-label="8" title="O8 Q&A">
                         <O8 />
                     </AccordionItem>
-                    <AccordionItem key="9" aria-label="9" title="O9 Social Network">
+                    <AccordionItem indicator={<AnchorIcon />} key="9" aria-label="9" title="O9 Social Network">
                         <O9 />
                     </AccordionItem>
-                    <AccordionItem key="10" aria-label="10" title="O10 แผนดำเนินงานประจำปี">
+                    <AccordionItem indicator={<AnchorIcon />} key="10" aria-label="10" title="O10 แผนดำเนินงานประจำปี">
                         <O10 />
                     </AccordionItem>
-                    <AccordionItem key="11" aria-label="11" title="O11 รายงานผลการดําเนินงานประจําปี">
+                    <AccordionItem indicator={<AnchorIcon />} key="11" aria-label="11" title="O11 รายงานผลการดําเนินงานประจําปี">
                         <O11 />
                     </AccordionItem>
-                    <AccordionItem key="12" aria-label="12" title="O12 คู่มือหรือมาตรฐานการปฏิบัติงาน">
+                    <AccordionItem indicator={<AnchorIcon />} key="12" aria-label="12" title="O12 คู่มือหรือมาตรฐานการปฏิบัติงาน">
                         <O12 />
                     </AccordionItem>
-                    <AccordionItem key="13" aria-label="13" title="O13 คู่มือหรือมาตรฐาน การให้บริการ">
+                    <AccordionItem indicator={<AnchorIcon />} key="13" aria-label="13" title="O13 คู่มือหรือมาตรฐาน การให้บริการ">
                         <O13 />
                     </AccordionItem>
-                    <AccordionItem key="14" aria-label="14" title="O14 ข้อมูลเชิงสถิติ การให้บริการ">
+                    <AccordionItem indicator={<AnchorIcon />} key="14" aria-label="14" title="O14 ข้อมูลเชิงสถิติ การให้บริการ">
                         <O14 />
                     </AccordionItem>
-                    <AccordionItem key="15" aria-label="15" title="O15 รายงานผลการ สํารวจความ พึงพอใจการให้บริการ">
+                    <AccordionItem indicator={<AnchorIcon />} key="15" aria-label="15" title="O15 รายงานผลการ สํารวจความ พึงพอใจการให้บริการ">
                         <O15 />
                     </AccordionItem>
-                    <AccordionItem key="16" aria-label="16" title="O16 E-Service">
+                    <AccordionItem indicator={<AnchorIcon />} key="16" aria-label="16" title="O16 E-Service">
                         <O16 />
                     </AccordionItem>
-                    <AccordionItem key="17" aria-label="17" title="O17 แผนการใช้จ่าย งบประมาณ ประจําปี">
+                    <AccordionItem indicator={<AnchorIcon />} key="17" aria-label="17" title="O17 แผนการใช้จ่าย งบประมาณ ประจําปี">
                         <O17 />
                     </AccordionItem>
-                    <AccordionItem key="18" aria-label="18" title="O18 ผลการใช้จ่าย งบประมาณ ประจําปี">
+                    <AccordionItem indicator={<AnchorIcon />} key="18" aria-label="18" title="O18 ผลการใช้จ่าย งบประมาณ ประจําปี">
                         <O18 />
                     </AccordionItem>
-                    <AccordionItem key="19" aria-label="19" title="O19 แผนการจัดซื้อจัด จ้างหรือแผนการจัดหาพัสดุ">
+                    <AccordionItem indicator={<AnchorIcon />} key="19" aria-label="19" title="O19 แผนการจัดซื้อจัด จ้างหรือแผนการจัดหาพัสดุ">
                         <O19 />
                     </AccordionItem>
-                    <AccordionItem subtitle={<span> ทำเอกสารเพิ่มเติม <strong>ข้อมูลไม่ครบ</strong> </span>} key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ">
+                    <AccordionItem indicator={<AnchorIcon />} subtitle={<span> ทำเอกสารเพิ่มเติม <strong>ข้อมูลไม่ครบ</strong> </span>} key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ">
                         <O20 />
                     </AccordionItem>
-                    <AccordionItem key="21" aria-label="21" title="O21 สรุปผลการจัดซื้อ จัดจ้างหรือจัดหาพัสดุรายเดือน">
+                    <AccordionItem indicator={<AnchorIcon />} key="21" aria-label="21" title="O21 สรุปผลการจัดซื้อ จัดจ้างหรือจัดหาพัสดุรายเดือน">
                         <O21 />
                     </AccordionItem>
-                    <AccordionItem key="22" aria-label="22" title="O22 แผนการจัดซื้อจัดจ้างหรือแผนการจัดหาพัสดุ">
+                    <AccordionItem indicator={<AnchorIcon />} key="22" aria-label="22" title="O22 แผนการจัดซื้อจัดจ้างหรือแผนการจัดหาพัสดุ">
                         <O22 />
                     </AccordionItem>
-                    <AccordionItem key="23" aria-label="23" title="O23 การดําเนิน โครงการ/กิจกรรม ที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
+                    <AccordionItem indicator={<AnchorIcon />} key="23" aria-label="23" title="O23 การดําเนิน โครงการ/กิจกรรม ที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
                         <O23 />
                     </AccordionItem>
-                    <AccordionItem key="24" aria-label="24" title="O24 หลักเกณฑ์การ บริหารและพัฒนา ทรัพยากรบุคคล">
+                    <AccordionItem indicator={<AnchorIcon />} key="24" aria-label="24" title="O24 หลักเกณฑ์การ บริหารและพัฒนา ทรัพยากรบุคคล">
                         <O24 />
                     </AccordionItem>
-                    <AccordionItem key="25" aria-label="25" title="O25 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
+                    <AccordionItem indicator={<AnchorIcon />} key="25" aria-label="25" title="O25 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
                         <O25 />
                     </AccordionItem>
-                    <AccordionItem key="26" aria-label="26" title="O26 แนวทางปฏิบัติการ จัดการร้องเรียนการทุจริตและ ประพฤติมิชอบ">
+                    <AccordionItem indicator={<AnchorIcon />} key="26" aria-label="26" title="O26 แนวทางปฏิบัติการ จัดการร้องเรียนการทุจริตและ ประพฤติมิชอบ">
                         <O26 />
                     </AccordionItem>
-                    <AccordionItem key="27" aria-label="27" title="O27 ช่องทางแจ้งเรื่อง ร้องเรียนการทุจริตและประพฤติ มิชอบ">
+                    <AccordionItem indicator={<AnchorIcon />} key="27" aria-label="27" title="O27 ช่องทางแจ้งเรื่อง ร้องเรียนการทุจริตและประพฤติ มิชอบ">
                         <O27 />
                     </AccordionItem>
-                    <AccordionItem key="28" aria-label="28" title="O28 ข้อมูลเชิงสถิติเรื่อง ร้องเรียนการทุจริตและประพฤติมิชอบ">
+                    <AccordionItem indicator={<AnchorIcon />} key="28" aria-label="28" title="O28 ข้อมูลเชิงสถิติเรื่อง ร้องเรียนการทุจริตและประพฤติมิชอบ">
                         <O28 />
                     </AccordionItem>
-                    <AccordionItem key="29" aria-label="29" title="O29 การเปิดโอกาสให้ เกิดการมีส่วนร่วม">
+                    <AccordionItem indicator={<AnchorIcon />} key="29" aria-label="29" title="O29 การเปิดโอกาสให้ เกิดการมีส่วนร่วม">
                         <O29 />
                     </AccordionItem>
-                    <AccordionItem key="30" aria-label="30" title="O30 นโยบายไม่รับ ของขวัญ (No Gift Policy)">
+                    <AccordionItem indicator={<AnchorIcon />} key="30" aria-label="30" title="O30 นโยบายไม่รับ ของขวัญ (No Gift Policy)">
                         <O30 />
                     </AccordionItem>
-                    <AccordionItem key="31" aria-label="31" title="O31 การมีส่วนร่วมของ ผู้บริหาร สถานศึกษา">
+                    <AccordionItem indicator={<AnchorIcon />} key="31" aria-label="31" title="O31 การมีส่วนร่วมของ ผู้บริหาร สถานศึกษา">
                         <O31 />
                     </AccordionItem>
-                    <AccordionItem key="32" aria-label="32" title="O32 การประเมินผล ควบคุมภายใน">
+                    <AccordionItem indicator={<AnchorIcon />} key="32" aria-label="32" title="O32 การประเมินผล ควบคุมภายใน">
                         <O32 />
                     </AccordionItem>
-                    <AccordionItem key="33" aria-label="33" title="O33 การเสริมสร้าง วัฒนธรรมองค์กร">
+                    <AccordionItem indicator={<AnchorIcon />} key="33" aria-label="33" title="O33 การเสริมสร้าง วัฒนธรรมองค์กร">
                         <O33 />
                     </AccordionItem>
-                    <AccordionItem key="34" aria-label="34" title="O34 โครงการ/กิจกรรม ที่เกี่ยวข้องกับ การป้องกัน การทุจริต">
+                    <AccordionItem indicator={<AnchorIcon />} key="34" aria-label="34" title="O34 โครงการ/กิจกรรม ที่เกี่ยวข้องกับ การป้องกัน การทุจริต">
                         <O34 />
                     </AccordionItem>
-                    <AccordionItem key="35" aria-label="35" title="O35 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่เกี่ยวกับ การป้องกัน การ ทุจริตประจําปี">
+                    <AccordionItem indicator={<AnchorIcon />} key="35" aria-label="35" title="O35 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่เกี่ยวกับ การป้องกัน การ ทุจริตประจําปี">
                         <O35 />
                     </AccordionItem>
-                    <AccordionItem key="36" aria-label="36" title="O36 มาตรการส่งเสริม คุณธรรมและความโปร่งใส ภายในสถานศึกษา">
+                    <AccordionItem indicator={<AnchorIcon />} key="36" aria-label="36" title="O36 มาตรการส่งเสริม คุณธรรมและความโปร่งใส ภายในสถานศึกษา">
                         <O36 />
                     </AccordionItem>
-                    <AccordionItem key="37" aria-label="37" title="O37 การดําเนินการ ตามมาตรการ ส่งเสริม คุณธรรมและ ความโปร่งใส ภายในสถานศึกษา">
+                    <AccordionItem indicator={<AnchorIcon />} key="37" aria-label="37" title="O37 การดําเนินการ ตามมาตรการ ส่งเสริม คุณธรรมและ ความโปร่งใส ภายในสถานศึกษา">
                         <O37 />
                     </AccordionItem>
                 </Accordion>
