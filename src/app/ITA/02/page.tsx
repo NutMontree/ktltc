@@ -17,7 +17,6 @@ export default function page() {
 
             <div className='hover:text-blue-500 dark:hover:text-blue-400'>
                 <LinkPreview
-                    target='_blank'
                     url='https://ktltc.vercel.app/executiveboard'>
                     <p>1. ข้อมูลโครงสร้างวิทยาลัยฯ</p>
                 </LinkPreview>

@@ -9,7 +9,6 @@ export default function page() {
 
             <div className='hover:text-blue-500 dark:hover:text-blue-400'>
                 <LinkPreview
-                    target='_blank'
                     url='https://ktltc.vercel.app/technicalcollegeorders/Technical2567/technical6710/tech16'>
                     <p>1. คำสั่งมอบหมายหน้าที่ให้บุคลากรปฏิบัติหน้าที่ ประจำปีการศึกษา 2567</p>
                 </LinkPreview>
