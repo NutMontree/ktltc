@@ -2,10 +2,8 @@
 
 
 "use client"; // top to the file
-
-import NextLink from "next/link";
+import { LinkPreview } from "@/components/ui/link-preview";
 import { DataOTAC } from "./data";
-import { Image } from "@nextui-org/react";
 
 export default function OTAC() {
     return (
@@ -20,7 +18,7 @@ export default function OTAC() {
                                   lg:grid-cols-2
                                   ">
                         {DataOTAC.navItems.map((item) => (
-                            <NextLink key={item.href} href={item.href}>
+                            <LinkPreview key={item.href} url={item.href}>
                                 <div
                                     className="mb-2 group relative rounded-xl cursor-pointer 
                                                h-[100px]
@@ -55,7 +53,7 @@ export default function OTAC() {
                                         </div>
                                     </div> */}
                                 </div>
-                            </NextLink>
+                            </LinkPreview>
                         ))}
                     </div>
                 </div>

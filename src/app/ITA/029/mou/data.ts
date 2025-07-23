@@ -7,7 +7,7 @@ export const DataMOU = {
             description: ` 
  นางสาวทักษิณา ชมจันทร์  ร่วมบันทึกข้อตกลงความร่วมมือ (MOU) ในโครงการสถานศึกษาสีขาว ปลอดยาเสพติด และอบายมุข ระหว่าง วิทยาลัยเทคนิคกันทรลักษ์ ร่วมกับ โรงเรียนบ้านหนองคับคา
        ...`,
-            href: "/pressrelease/2568/press6801/press99",
+            href: "https://ktltc.vercel.app/pressrelease/2568/press6801/press99",
         },
         {
             name: `๒๒ มกราคม ๒๕๖๘`,
@@ -16,7 +16,7 @@ export const DataMOU = {
             description: ` 
  นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมบันทึกข้อตกลงความร่วมมือ (MOU) ในโครงการสถานศึกษาสีขาว ปลอดยาเสพติด และอบายมุข ระหว่าง
         ...`,
-            href: "/pressrelease/2568/press6801/press65",
+            href: "https://ktltc.vercel.app/pressrelease/2568/press6801/press65",
         },
         {
             name: `๒๒ มกราคม ๒๕๖๘`,
@@ -25,7 +25,7 @@ export const DataMOU = {
             description: ` 
  นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมบันทึกข้อตกลงความร่วมมือ (MOU) ในโครงการสถานศึกษาสีขาว ปลอดยาเสพติด และอบายมุข ระหว่าง
         ...`,
-            href: "/pressrelease/2568/press6801/press64",
+            href: "https://ktltc.vercel.app/pressrelease/2568/press6801/press64",
         },
         {
             name: `๒๒ มกราคม ๒๕๖๘`,
@@ -34,7 +34,7 @@ export const DataMOU = {
             description: ` 
  นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมบันทึกข้อตกลงความร่วมมือ (MOU) ในโครงการสถานศึกษาสีขาว ปลอดยาเสพติด และอบายมุข ระหว่าง
         ...`,
-            href: "/pressrelease/2568/press6801/press63",
+            href: "https://ktltc.vercel.app/pressrelease/2568/press6801/press63",
         },
         {
             name: `๒๒ มกราคม ๒๕๖๘`,
@@ -43,7 +43,7 @@ export const DataMOU = {
             description: ` 
  นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมบันทึกข้อตกลงความร่วมมือ (MOU) ในโครงการสถานศึกษาสีขาว ปลอดยาเสพติด และอบายมุข ระหว่าง
         ...`,
-            href: "/pressrelease/2568/press6801/press62",
+            href: "https://ktltc.vercel.app/pressrelease/2568/press6801/press62",
         },
 
     ],

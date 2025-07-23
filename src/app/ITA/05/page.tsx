@@ -11,7 +11,6 @@ export default function page() {
                 4) แผนที่ตั้ง<br />
             </div>
 
-
             <div></div>
         </>
     )

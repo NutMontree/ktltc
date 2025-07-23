@@ -1,9 +1,6 @@
-
-
-
 "use client"; // top to the file
 
-import NextLink from "next/link";
+import { LinkPreview } from "@/components/ui/link-preview";
 import { DataMOU } from "./data";
 import { Image } from "@nextui-org/react";
 
@@ -20,7 +17,7 @@ export default function MOU() {
                                   lg:grid-cols-3
                                   ">
                         {DataMOU.navItems.map((item) => (
-                            <NextLink key={item.href} href={item.href}>
+                            <LinkPreview key={item.href} url={item.href}>
                                 <div
                                     className="mb-2 group relative rounded-xl cursor-pointer 
                                                h-[170px]
@@ -55,7 +52,7 @@ export default function MOU() {
                                         </div>
                                     </div>
                                 </div>
-                            </NextLink>
+                            </LinkPreview>
                         ))}
                     </div>
                 </div>

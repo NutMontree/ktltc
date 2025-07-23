@@ -1,6 +1,4 @@
 "use client"
-import { Accordion, AccordionItem } from "@heroui/react";
-import { Image } from "@nextui-org/react";
 import O1 from "./01/page";
 import O2 from "./02/page";
 import O3 from "./03/page";
@@ -38,6 +36,8 @@ import O34 from "./034/page";
 import O35 from "./035/page";
 import O36 from "./036/page";
 import O37 from "./037/page";
+import { Accordion, AccordionItem } from "@heroui/react";
+// import { Image } from "@nextui-org/react";
 import { JSX, SVGProps } from "react";
 
 const AnchorIcon = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => {
@@ -68,6 +68,9 @@ export default function ITA() {
 
     return (
         <>
+
+
+
             <div className="py-[84px]">
                 <p className="text-center text-xl">ประเมินคุณธรรมและความโปร่งใส (ITA)</p>
                 <p className="text-center pt-2">
@@ -84,7 +87,7 @@ export default function ITA() {
                         <div className="py-4">
                             <div className="grid md:grid-flow-col">
                                 <div className="rounded-xl">
-                                    <Image
+                                    <img
                                         src="/images/ita/ita.webp"
                                         alt="ITA Image"
                                         className="mx-auto" />

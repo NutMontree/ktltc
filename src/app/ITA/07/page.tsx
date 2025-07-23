@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import React from 'react'
+import React from 'react';
+import { LinkPreview } from "@/components/ui/link-preview";
 
 export default function page() {
     return (
@@ -10,39 +10,39 @@ export default function page() {
 
             <div className='flex flex-col gap-1'>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                    <Link
+                    <LinkPreview
                         target='_blank'
-                        href='https://ktltc.vercel.app/pressrelease'>
+                        url='https://ktltc.vercel.app/pressrelease'>
                         <p>1. ข่าวประชาสัมพันธ์</p>
-                    </Link>
+                    </LinkPreview>
                 </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                    <Link
+                    <LinkPreview
                         target='_blank'
-                        href='https://ktltc.vercel.app/newsletter'>
+                        url='https://ktltc.vercel.app/newsletter'>
                         <p>2. จดหมายข่าว</p>
-                    </Link>
+                    </LinkPreview>
                 </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                    <Link
+                    <LinkPreview
                         target='_blank'
-                        href='https://ktltc.vercel.app/announcement'>
+                        url='https://ktltc.vercel.app/announcement'>
                         <p>3. ข่าวประกาศ</p>
-                    </Link>
+                    </LinkPreview>
                 </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                    <Link
+                    <LinkPreview
                         target='_blank'
-                        href='https://ktltc.vercel.app/bidding'>
+                        url='https://ktltc.vercel.app/bidding'>
                         <p>4. ข่าวประกวดราคา</p>
-                    </Link>
+                    </LinkPreview>
                 </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                    <Link
+                    <LinkPreview
                         target='_blank'
-                        href='https://ktltc.vercel.app/technicalcollegeorders'>
+                        url='https://ktltc.vercel.app/technicalcollegeorders'>
                         <p>5. คำสั่งวิทยาลัยเทคนิค</p>
-                    </Link>
+                    </LinkPreview>
                 </div>
             </div>
         </>

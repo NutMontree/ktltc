@@ -1,6 +1,5 @@
-import Link from 'next/link'
-import React from 'react'
-
+import React from 'react';
+import { LinkPreview } from "@/components/ui/link-preview";
 export default function page() {
     return (
         <>
@@ -9,11 +8,11 @@ export default function page() {
             </div>
 
             <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <Link
+                <LinkPreview
                     target='_blank'
-                    href='https://ktltc.vercel.app/technicalcollegeorders/Technical2567/technical6710/tech16'>
+                    url='https://ktltc.vercel.app/technicalcollegeorders/Technical2567/technical6710/tech16'>
                     <p>1. คำสั่งมอบหมายหน้าที่ให้บุคลากรปฏิบัติหน้าที่ ประจำปีการศึกษา 2567</p>
-                </Link>
+                </LinkPreview>
             </div>
         </>
     )

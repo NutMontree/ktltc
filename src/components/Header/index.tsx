@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import menuData from "./menuData";
+import NavbarModal from "../navbar-modal";
 
 const Header = () => {
 
@@ -247,7 +248,8 @@ const Header = () => {
                           </div>
                         </li>
                       ),
-                    )}
+                    )} 
+          
                   </ul>
                 </nav>
               </div>

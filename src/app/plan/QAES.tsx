@@ -1,5 +1,5 @@
 import React from 'react'
-import Link from 'next/link';
+import { LinkPreview } from "@/components/ui/link-preview";
 import { Image } from "@nextui-org/react";
 import { Button } from "@heroui/react";
 
@@ -37,7 +37,7 @@ export default function QAES() {
 
             <div className='flex justify-center pt-8'>
                 <Button className='px-12 py-8 text-xl' color="primary" variant="shadow">
-                    <Link href='/plan/sar'>รายงานประจำของสถานศึกษา (SAR)</Link>
+                    <LinkPreview url='/plan/sar'>รายงานประจำของสถานศึกษา (SAR)</LinkPreview>
                 </Button>
             </div>
         </>)

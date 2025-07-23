@@ -1,6 +1,6 @@
 import React from 'react'
 import { Image } from "@nextui-org/react";
-import Link from 'next/link'
+
 
 export default function RDIAI() {
     return (

@@ -1,11 +1,7 @@
-
-
-
 "use client"; // top to the file
 
-import NextLink from "next/link";
+import { LinkPreview } from "@/components/ui/link-preview";
 import { DataNGP } from "./data";
-import { Image } from "@nextui-org/react";
 
 export default function NGP() {
     return (
@@ -20,7 +16,7 @@ export default function NGP() {
                                   lg:grid-cols-2
                                   ">
                         {DataNGP.navItems.map((item) => (
-                            <NextLink key={item.href} href={item.href}>
+                            <LinkPreview key={item.href} url={item.href}>
                                 <div
                                     className="mb-2 group relative rounded-xl cursor-pointer 
                                                h-[100px]
@@ -55,7 +51,7 @@ export default function NGP() {
                                         </div>
                                     </div> */}
                                 </div>
-                            </NextLink>
+                            </LinkPreview>
                         ))}
                     </div>
                 </div>
