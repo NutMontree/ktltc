@@ -5,6 +5,15 @@ import { Card, CardHeader, CardBody, CardFooter, Divider, Image } from "@heroui/
 export default function page() {
     return (
         <>
+            <div className='pb-6 text-xs md:text-sm lg:text-base text-blue-500 dark:text-blue-400'>
+                <p>– แสดงคู่มือหรือแนวทางการปฏิบัติงานที่เจ้าหน้าที่ของสถานศึกษาที่ใช้ยึดถือปฏิบัติให้เป็นมาตรฐานเดียวกัน</p>
+                <p>
+                    – มีข้อมูลหรือรายละเอียดการปฏิบัติงาน
+                    อย่างน้อย 1 คู่มือ
+                    ซึ่งเป็นคู่มือการปฏิบัติภารกิจใดสำหรับเจ้าหน้าที่หรือพนักงาน
+                    ตำแหน่งใด กำหนดวิธีการขั้นตอนการปฏิบัติอย่างไร เช่น  คู่มือการปฏิบัติงานสำหรับเจ้าหน้าที่งานพัสดุ งานการเงิน เป็นต้น</p>
+            </div>
+
             <div className="pt-2">
                 <Card className="m">
                     <CardHeader className="flex gap-3">

@@ -4,33 +4,41 @@ import React from 'react'
 export default function page() {
     return (
         <>
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <Link
-                    target='_blank'
-                    href='https://www.facebook.com/profile.php?id=100057326985699'>
-                    <p>Facebook เพจ วิทยาลัยเทคนิคกันทรลักษ์</p>
-                </Link>
+            <div className='pb-6 text-xs md:text-sm lg:text-base text-blue-500 dark:text-blue-400'>
+                <p>
+                    – แสดงตำแหน่งบนเว็บไซต์ของสถานศึกษาหรือช่องทางที่สามารถเชื่อมโยงไปยังเครือข่ายสังคมออนไลน์ของสถานศึกษา ยกตัวอย่าง เช่น Facebook, Twitter, Instagram, Tiktok เป็นต้น
+                </p>
             </div>
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <Link
-                    target='_blank'
-                    href='https://www.facebook.com/ngan.prachasamphanth.withyalay.thekhnikh'>
-                    <p>Facebook งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์ </p>
-                </Link>
-            </div>
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <Link
-                    target='_blank'
-                    href='https://www.youtube.com/channel/UCHuaK-licd7-XrT4qQhHr3Q'>
-                    <p>Youtube วิทยาลัยเทคนิคกันทรลักษ์ Today</p>
-                </Link>
-            </div>
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <Link
-                    target='_blank'
-                    href='https://www.youtube.com/channel/UCDBgY-OPUZvAYkWArn5KUsw'>
-                    <p>Youtube Datacenter Department</p>
-                </Link>
+
+            <div className='flex flex-col gap-2'>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'>
+                    <Link
+                        target='_blank'
+                        href='https://www.facebook.com/profile.php?id=100057326985699'>
+                        <p>1. Facebook เพจ วิทยาลัยเทคนิคกันทรลักษ์</p>
+                    </Link>
+                </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'>
+                    <Link
+                        target='_blank'
+                        href='https://www.facebook.com/ngan.prachasamphanth.withyalay.thekhnikh'>
+                        <p>2. Facebook งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์ </p>
+                    </Link>
+                </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'>
+                    <Link
+                        target='_blank'
+                        href='https://www.youtube.com/channel/UCHuaK-licd7-XrT4qQhHr3Q'>
+                        <p>3. Youtube วิทยาลัยเทคนิคกันทรลักษ์ Today</p>
+                    </Link>
+                </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'>
+                    <Link
+                        target='_blank'
+                        href='https://www.youtube.com/channel/UCDBgY-OPUZvAYkWArn5KUsw'>
+                        <p>4. Youtube Datacenter Department</p>
+                    </Link>
+                </div>
             </div>
 
         </>

@@ -125,12 +125,8 @@ export default function ITA() {
                     "26",
                     "27",
                     "28",
-                    "29",
-                    "30",
-                    "31",
                     "32",
                     "33",
-                    "34",
                     "35",
                     "36",
                     "37",
@@ -140,17 +136,7 @@ export default function ITA() {
                             <O1 />
                         </div>
                     </AccordionItem>
-                    <AccordionItem
-                        key="2"
-                        aria-label="2"
-                        // subtitle={
-                        //     <span>
-                        //         Press to expand <strong>key 2</strong>
-                        //     </span>
-                        // }
-                        title="O2 ข้อมูลผู้บริหาร
-                    "
-                    >
+                    <AccordionItem key="2" aria-label="2" title="O2 ข้อมูลผู้บริหาร">
                         <div>
                             <O2 />
                         </div>
