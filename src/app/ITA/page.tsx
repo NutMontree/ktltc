@@ -39,12 +39,10 @@ import O35 from "./035/page";
 import O36 from "./036/page";
 import O37 from "./037/page";
 
-
 export default function ITA() {
 
     return (
         <>
-
             <div className="py-[84px]">
                 <p className="text-center text-xl">ประเมินคุณธรรมและความโปร่งใส (ITA)</p>
                 <p className="text-center pt-2">
@@ -58,36 +56,28 @@ export default function ITA() {
             <div className="pb-12">
                 <Accordion variant="splitted" disabledKeys={["2"]}>
                     <AccordionItem key="1" aria-label="ITA คืออะไร ?" title="ITA คืออะไร ?">
-                        <div className="px-4 py-4">
-                            <div className="grid md:grid-flow-col gap-4">
+                        <div className="py-4">
+                            <div className="grid md:grid-flow-col">
                                 <div className="rounded-xl">
                                     <Image
                                         src="/images/ita/ita.webp"
                                         alt="ITA Image"
                                         className="mx-auto" />
                                 </div>
-
                                 <div className="bg-slate-300rounded-xl">
-
                                     <div className="text-center font-bold text-xl">
                                         <div>
                                             ITA คืออะไร ?
                                         </div>
                                     </div>
-
                                     <div className="flex">
                                         <div className="font-bold">I</div>
                                         <div className="pr-1">ntegrity</div>
-
                                         <div className="pr-1">and</div>
-
                                         <div className="font-bold">T</div>
                                         <div className="pr-1">ransparency</div>
-
-
                                         <div className="font-bold">A</div>
                                         <div className="pr-1">ssessment</div>
-
                                     </div>
                                     <div>
                                         <div>
@@ -104,223 +94,144 @@ export default function ITA() {
             </div>
 
             <div>
-                <Accordion variant="splitted" disabledKeys={[
-                    "4",
-                    "5",
-                    "6",
-                    "8",
-                    "10",
-                    "11",
-                    "14",
-                    "15",
-                    "16",
-                    "17",
-                    "18",
-                    "19",
-                    "21",
-                    "22",
-                    "23",
-                    "24",
-                    "25",
-                    "26",
-                    "27",
-                    "28",
-                    "32",
-                    "33",
-                    "35",
-                    "36",
-                    "37",
-                ]}>
+                <Accordion
+                    variant="splitted" disabledKeys={[
+                        "4",
+                        "5",
+                        "6",
+                        "8",
+                        "10",
+                        "11",
+                        "14",
+                        "15",
+                        "16",
+                        "17",
+                        "18",
+                        "19",
+                        "21",
+                        "22",
+                        "23",
+                        "24",
+                        "25",
+                        "26",
+                        "27",
+                        "28",
+                        "32",
+                        "33",
+                        "35",
+                        "36",
+                        "37",
+                    ]}>
                     <AccordionItem key="1" aria-label="1" title="O1 โครงสร้าง">
-                        <div>
-                            <O1 />
-                        </div>
+                        <O1 />
                     </AccordionItem>
                     <AccordionItem key="2" aria-label="2" title="O2 ข้อมูลผู้บริหาร">
-                        <div>
-                            <O2 />
-                        </div>
+                        <O2 />
                     </AccordionItem>
                     <AccordionItem key="3" aria-label="3" title="O3 อำนาจหน้าที่">
-                        <div>
-                            <O3 />
-                        </div>
+                        <O3 />
                     </AccordionItem>
                     <AccordionItem key="4" aria-label="4" title="O4 แผนพัฒนา สถานศึกษา">
-                        <div>
-                            <O4 />
-                        </div>
+                        <O4 />
                     </AccordionItem>
                     <AccordionItem key="5" aria-label="5" title="O5 ข้อมูลการติดต่อ">
-                        <div>
-                            <O5 />
-                        </div>
+                        <O5 />
                     </AccordionItem>
                     <AccordionItem key="6" aria-label="6" title="O6 กฎหมายที่เกี่ยวข้อง">
-                        <div>
-                            <O6 />
-                        </div>
+                        <O6 />
                     </AccordionItem>
                     <AccordionItem key="7" aria-label="7" title="O7 ข่าวประชาสัมพันธ์">
-                        <div>
-                            <O7 />
-                        </div>
+                        <O7 />
                     </AccordionItem>
                     <AccordionItem key="8" aria-label="8" title="O8 Q&A">
-                        <div>
-                            <O8 />
-                        </div>
+                        <O8 />
                     </AccordionItem>
                     <AccordionItem key="9" aria-label="9" title="O9 Social Network">
-                        <div>
-                            <O9 />
-                        </div>
+                        <O9 />
                     </AccordionItem>
                     <AccordionItem key="10" aria-label="10" title="O10 แผนดำเนินงานประจำปี">
-                        <div>
-                            <O10 />
-                        </div>
+                        <O10 />
                     </AccordionItem>
                     <AccordionItem key="11" aria-label="11" title="O11 รายงานผลการดําเนินงานประจําปี">
-                        <div>
-                            <O11 />
-                        </div>
+                        <O11 />
                     </AccordionItem>
                     <AccordionItem key="12" aria-label="12" title="O12 คู่มือหรือมาตรฐานการปฏิบัติงาน">
-                        <div>
-                            <O12 />
-                        </div>
+                        <O12 />
                     </AccordionItem>
                     <AccordionItem key="13" aria-label="13" title="O13 คู่มือหรือมาตรฐาน การให้บริการ">
-                        <div>
-                            <O13 />
-                        </div>
+                        <O13 />
                     </AccordionItem>
                     <AccordionItem key="14" aria-label="14" title="O14 ข้อมูลเชิงสถิติ การให้บริการ">
-                        <div>
-                            <O14 />
-                        </div>
+                        <O14 />
                     </AccordionItem>
                     <AccordionItem key="15" aria-label="15" title="O15 รายงานผลการ สํารวจความ พึงพอใจการให้บริการ">
-                        <div>
-                            <O15 />
-                        </div>
+                        <O15 />
                     </AccordionItem>
                     <AccordionItem key="16" aria-label="16" title="O16 E-Service">
-                        <div>
-                            <O16 />
-                        </div>
+                        <O16 />
                     </AccordionItem>
                     <AccordionItem key="17" aria-label="17" title="O17 แผนการใช้จ่าย งบประมาณ ประจําปี">
-                        <div>
-                            <O17 />
-                        </div>
+                        <O17 />
                     </AccordionItem>
                     <AccordionItem key="18" aria-label="18" title="O18 ผลการใช้จ่าย งบประมาณ ประจําปี">
-                        <div>
-                            <O18 />
-                        </div>
+                        <O18 />
                     </AccordionItem>
                     <AccordionItem key="19" aria-label="19" title="O19 แผนการจัดซื้อจัด จ้างหรือแผนการจัดหาพัสดุ">
-                        <div>
-                            <O19 />
-                        </div>
+                        <O19 />
                     </AccordionItem>
-                    <AccordionItem
-                        subtitle={
-                            <span>
-                                ทำเอกสารเพิ่มเติม  <strong>ข้อมูลไม่ครบ</strong>
-                            </span>
-                        }
-                        key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ">
-                        <div>
-                            <O20 />
-                        </div>
+                    <AccordionItem subtitle={<span> ทำเอกสารเพิ่มเติม <strong>ข้อมูลไม่ครบ</strong> </span>} key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ">
+                        <O20 />
                     </AccordionItem>
                     <AccordionItem key="21" aria-label="21" title="O21 สรุปผลการจัดซื้อ จัดจ้างหรือจัดหาพัสดุรายเดือน">
-                        <div>
-                            <O21 />
-                        </div>
+                        <O21 />
                     </AccordionItem>
                     <AccordionItem key="22" aria-label="22" title="O22 แผนการจัดซื้อจัดจ้างหรือแผนการจัดหาพัสดุ">
-                        <div>
-                            <O22 />
-                        </div>
+                        <O22 />
                     </AccordionItem>
                     <AccordionItem key="23" aria-label="23" title="O23 การดําเนิน โครงการ/กิจกรรม ที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
-                        <div>
-                            <O23 />
-                        </div>
+                        <O23 />
                     </AccordionItem>
                     <AccordionItem key="24" aria-label="24" title="O24 หลักเกณฑ์การ บริหารและพัฒนา ทรัพยากรบุคคล">
-                        <div>
-                            <O24 />
-                        </div>
+                        <O24 />
                     </AccordionItem>
                     <AccordionItem key="25" aria-label="25" title="O25 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
-                        <div>
-                            <O25 />
-                        </div>
+                        <O25 />
                     </AccordionItem>
                     <AccordionItem key="26" aria-label="26" title="O26 แนวทางปฏิบัติการ จัดการร้องเรียนการทุจริตและ ประพฤติมิชอบ">
-                        <div>
-                            <O26 />
-                        </div>
+                        <O26 />
                     </AccordionItem>
                     <AccordionItem key="27" aria-label="27" title="O27 ช่องทางแจ้งเรื่อง ร้องเรียนการทุจริตและประพฤติ มิชอบ">
-                        <div>
-                            <O27 />
-                        </div>
+                        <O27 />
                     </AccordionItem>
                     <AccordionItem key="28" aria-label="28" title="O28 ข้อมูลเชิงสถิติเรื่อง ร้องเรียนการทุจริตและประพฤติมิชอบ">
-                        <div>
-                            <O28 />
-                        </div>
+                        <O28 />
                     </AccordionItem>
                     <AccordionItem key="29" aria-label="29" title="O29 การเปิดโอกาสให้ เกิดการมีส่วนร่วม">
-                        <div>
-                            <O29 />
-                        </div>
+                        <O29 />
                     </AccordionItem>
                     <AccordionItem key="30" aria-label="30" title="O30 นโยบายไม่รับ ของขวัญ (No Gift Policy)">
-                        <div>
-                            <O30 />
-                        </div>
+                        <O30 />
                     </AccordionItem>
                     <AccordionItem key="31" aria-label="31" title="O31 การมีส่วนร่วมของ ผู้บริหาร สถานศึกษา">
-                        <div>
-                            <O31 />
-                        </div>
+                        <O31 />
                     </AccordionItem>
                     <AccordionItem key="32" aria-label="32" title="O32 การประเมินผล ควบคุมภายใน">
-                        <div>
-                            <O32 />
-                        </div>
+                        <O32 />
                     </AccordionItem>
                     <AccordionItem key="33" aria-label="33" title="O33 การเสริมสร้าง วัฒนธรรมองค์กร">
-                        <div>
-                            <O33 />
-                        </div>
+                        <O33 />
                     </AccordionItem>
                     <AccordionItem key="34" aria-label="34" title="O34 โครงการ/กิจกรรม ที่เกี่ยวข้องกับ การป้องกัน การทุจริต">
-                        <div>
-                            <O34 />
-                        </div>
+                        <O34 />
                     </AccordionItem>
                     <AccordionItem key="35" aria-label="35" title="O35 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่เกี่ยวกับ การป้องกัน การ ทุจริตประจําปี">
-                        <div>
-                            <O35 />
-                        </div>
+                        <O35 />
                     </AccordionItem>
                     <AccordionItem key="36" aria-label="36" title="O36 มาตรการส่งเสริม คุณธรรมและความโปร่งใส ภายในสถานศึกษา">
-                        <div>
-                            <O36 />
-                        </div>
+                        <O36 />
                     </AccordionItem>
                     <AccordionItem key="37" aria-label="37" title="O37 การดําเนินการ ตามมาตรการ ส่งเสริม คุณธรรมและ ความโปร่งใส ภายในสถานศึกษา">
-                        <div>
-                            <O37 />
-                        </div>
+                        <O37 />
                     </AccordionItem>
                 </Accordion>
             </div >
