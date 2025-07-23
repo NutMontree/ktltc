@@ -80,7 +80,7 @@ export default function ITA() {
 
             <div className="pb-12">
                 <Accordion variant="splitted" disabledKeys={["2"]}>
-                    <AccordionItem indicator={<AnchorIcon />} key="1" aria-label="ITA คืออะไร ?" title="ITA คืออะไร ?">
+                    <AccordionItem key="1" aria-label="ITA คืออะไร ?" title="ITA คืออะไร ?">
                         <div className="py-4">
                             <div className="grid md:grid-flow-col">
                                 <div className="rounded-xl">
