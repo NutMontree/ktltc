@@ -39,6 +39,33 @@ export function BackgroundBeamsWithCollisionDemo() {
           </div>
         </div>
         {/* ******************************************* เรื่องที่ 1 ******************************************* */}
+        {/* ******************************************* เรื่องที่ 1 ******************************************* */}
+        <div className="pt-3 pb-[48px]">
+          <div className="flex justify-center">
+            <div className="flex justify-center">
+              <div className="">
+                <div className="flex justify-center">
+                  <Image
+                    // className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
+                    className="rounded-xl shadow-2xl"
+                    src={"/images/ข่าวประชาสัมพันธ์/2568/มิถุนายน/14/1.webp"}
+                    alt=''
+                  />
+                </div>
+                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                  <div className="px md:px-8 pt-2">
+                    <div className="text-center">
+                      วิทยาลัยเทคนิคกันทรลักษ์
+                      <br />
+                      ขอส่งกำลังใจไปยังทหารไทยทุกนาย ที่ปฏิบัติหน้าที่ปกป้องแผ่นดิน ณ แนวชายแดนไทย - กัมพูชา รวมถึงพี่น้องประชาชนในพื้นที่ ขอให้ทุกท่านปลอดภัย และผ่านพ้นสถานการณ์นี้ไปด้วยหัวใจที่เข้มแข็ง
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* ******************************************* เรื่องที่ 1 ******************************************* */}
 
         {/* ******************************************* เรื่องที่ 2 ******************************************* */}
         {/* <div className="pt-3 pb-[48px]">
