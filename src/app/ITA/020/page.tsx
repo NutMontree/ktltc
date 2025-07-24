@@ -17,7 +17,7 @@ export default function page() {
                 <LinkPreview
                     
                     url='https://ktltc.vercel.app/bidding'>
-                    <p>ข่าวประกวดราคา</p>
+<p className='hover:text-orange-500 dark:hover:text-orange-400'>ข่าวประกวดราคา</p>
                 </LinkPreview>
             </div>
         </>

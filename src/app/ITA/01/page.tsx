@@ -13,10 +13,10 @@ export default function page() {
                 </p>
             </div>
 
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
+            <div>
                 <LinkPreview
                     url='https://ktltc.vercel.app/administrativestructure'>
-                    <p>1. ข้อมูลโครงสร้างวิทยาลัยฯ</p>
+                    <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ข้อมูลโครงสร้างวิทยาลัยฯ</p>
                 </LinkPreview>
             </div>
         </>

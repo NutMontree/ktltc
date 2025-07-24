@@ -18,7 +18,7 @@ export default function OTAC() {
                                   lg:grid-cols-2
                                   ">
                         {DataOTAC.navItems.map((item) => (
-                            <LinkPreview key={item.href} url={item.href}>
+                            <LinkPreview key={item.url} url={item.url}>
                                 <div
                                     className="mb-2 group relative rounded-xl cursor-pointer 
                                                h-[100px]
@@ -46,12 +46,6 @@ export default function OTAC() {
                                             </p>
                                         </div>
                                     </div>
-                                    {/* <div className="flex gap-2">
-                                        <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
-                                        <div className="text-xs text-slate-500 text-[12px] md:text-[14px] sm:text-sm md:text-base">
-                                            {item.date}
-                                        </div>
-                                    </div> */}
                                 </div>
                             </LinkPreview>
                         ))}

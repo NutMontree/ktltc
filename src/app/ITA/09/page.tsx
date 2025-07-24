@@ -15,28 +15,28 @@ export default function page() {
                     <LinkPreview
                         
                         url='https://www.facebook.com/profile.php?id=100057326985699'>
-                        <p>1. Facebook เพจ วิทยาลัยเทคนิคกันทรลักษ์</p>
+    <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. Facebook เพจ วิทยาลัยเทคนิคกันทรลักษ์</p>
                     </LinkPreview>
                 </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
                     <LinkPreview
                         
                         url='https://www.facebook.com/ngan.prachasamphanth.withyalay.thekhnikh'>
-                        <p>2. Facebook งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์ </p>
+    <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. Facebook งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์ </p>
                     </LinkPreview>
                 </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
                     <LinkPreview
                         
                         url='https://www.youtube.com/channel/UCHuaK-licd7-XrT4qQhHr3Q'>
-                        <p>3. Youtube วิทยาลัยเทคนิคกันทรลักษ์ Today</p>
+    <p className='hover:text-orange-500 dark:hover:text-orange-400'>3. Youtube วิทยาลัยเทคนิคกันทรลักษ์ Today</p>
                     </LinkPreview>
                 </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'>
                     <LinkPreview
                         
                         url='https://www.youtube.com/channel/UCDBgY-OPUZvAYkWArn5KUsw'>
-                        <p>4. Youtube Datacenter Department</p>
+    <p className='hover:text-orange-500 dark:hover:text-orange-400'>4. Youtube Datacenter Department</p>
                     </LinkPreview>
                 </div>
             </div>
