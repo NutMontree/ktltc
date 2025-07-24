@@ -74,13 +74,15 @@ export default function Pressrelease() {
 
             <div className="flex justify-center">
               <div className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
-                {ImageItem.map((item) => (
-                  <div key={item.imgs}>
-                    <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
-                      <Image src={item.imgs} alt={""}></Image>
+                {ImageItem.map((item) =>
+                  item ? (
+                    <div key={item.imgs}>
+                      <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
+                        <Image src={item.imgs} alt={""}></Image>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ) : null
+                )}
               </div>
             </div>
           </div>
