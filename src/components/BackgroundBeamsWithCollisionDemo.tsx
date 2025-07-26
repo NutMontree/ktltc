@@ -17,6 +17,41 @@ export function BackgroundBeamsWithCollisionDemo() {
                   <Image
                     // className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
                     className="rounded-xl shadow-2xl"
+                    src={"/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/58/00.webp"}
+                    alt=''
+                  />
+                </div>
+                <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
+                  <div className="px md:px-8 pt-2">
+                    <div className="text-center">
+                      วิทยาลัยเทคนิคกันทรลักษ์
+                      <br />
+                      ระหว่างวันที่ ๒๕ - ๓๑ กรกฎาคม ๒๕๖๘
+                      <br />
+                      ขอเชิญชวนร่วมลงนามถวายพระพร ผ่านเว็บไซต์
+                      <p className="hover:text-blue-500">
+                        https://wellwishes.royaloffice.th/index.php/home/index/47
+                      </p>
+                      เนื่องในโอกาสวันเฉลิมพระชนมพรรษา พระบาทสมเด็จพระปรเมนทรรามาธิบดีศรีสินทร มหาวชิราลงกรณ พระวชิรเกล้าเจ้าอยู่หัว
+                      <br />
+                      ๒๘ กรกฎาคม ๒๕๖๘
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* ******************************************* เรื่องที่ 1 ******************************************* */}
+        {/* ******************************************* เรื่องที่ 1 ******************************************* */}
+        <div className="pt-3 pb-[48px]">
+          <div className="flex justify-center">
+            <div className="flex justify-center">
+              <div className="">
+                <div className="flex justify-center">
+                  <Image
+                    // className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
+                    className="rounded-xl shadow-2xl"
                     src={"/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/55/00.webp"}
                     alt=''
                   />
