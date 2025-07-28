@@ -17,16 +17,18 @@ export function BackgroundBeamsWithCollisionDemo() {
                   <Image
                     // className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
                     className="rounded-xl shadow-2xl"
-                    src={"/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/58/00.webp"}
+                    src={"/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/72/1.webp"}
                     alt=''
                   />
                 </div>
                 <div className="text-[10px] md:text-[12px] sm:text-sm md:text-base lg:text-base ">
                   <div className="px md:px-8 pt-2">
                     <div className="text-center">
-                      วิทยาลัยเทคนิคกันทรลักษ์
+                      ทรงพระเจริญ
                       <br />
-                      ระหว่างวันที่ ๒๕ - ๓๑ กรกฎาคม ๒๕๖๘
+                      ๒๘ กรกฎาคม ๒๕๖๘ วันเฉลิมพระชนมพรรษา พระบาทสมเด็จพระปรเมนทรรามาธิบดีศรีสินทรมหาวชิราลงกรณ พระวชิรเกล้าเจ้าอยู่หัว
+                      <br />
+                      ด้วยเกล้าด้วยกระหม่อมขอเดชะ ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา นักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยประชาชนคนไทย
                       <br />
                       ขอเชิญชวนร่วมลงนามถวายพระพร ผ่านเว็บไซต์
                       <p className="hover:text-blue-500">
@@ -42,7 +44,6 @@ export function BackgroundBeamsWithCollisionDemo() {
             </div>
           </div>
         </div>
-        {/* ******************************************* เรื่องที่ 1 ******************************************* */}
         {/* ******************************************* เรื่องที่ 1 ******************************************* */}
         <div className="pt-3 pb-[48px]">
           <div className="flex justify-center">
