@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ประชาสัมพันธ์ถึงผู้สนันสนุน`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/75/1.webp",
+      date: "27 กรกฎาคม 2568",
+      description: `
+เปิดรับบริจาค 1.เเป้งสำหรับเด็ก/เเป้งสำหรับผู้ใหญ่/เเป้งเย็น 2.ถุงบรรจุของ (ทุกขนาด) 3.ถุงดำ/กระสอบเเพ็คของ
+`,
+      href: "/pressrelease/2568/press6807/press75",
+    },
+    {
       name: `6 ขั้นตอน`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กรกฎาคม/74/1.webp",
       date: "27 กรกฎาคม 2568",
