@@ -38,7 +38,7 @@ export default function AnnouncementPage() {
           <div className="text-center">
             <h1 className="flex justify-center text-xl ">ข่าวประกาศ</h1>
             <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
-              Announcement New Page
+              Announcement
             </h1>
             <ul className="flex items-center justify-center gap-[10px]">
               <li>
@@ -54,7 +54,7 @@ export default function AnnouncementPage() {
                   <span className="text-body-color dark:text-dark-6">
                     /
                   </span>
-                  pressrelease
+                  Announcement
                 </p>
               </li>
             </ul>
