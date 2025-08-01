@@ -12,7 +12,7 @@ import { Image } from "@nextui-org/react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 
-import { DataPressrelease } from "../pressrelease/2568/press6807/data";
+import { DataPressrelease } from "../pressrelease/2568/press6808/data";
 import Link from "next/link";
 
 export default function ShowPressRelease() {
