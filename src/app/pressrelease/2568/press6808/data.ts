@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `๓ สิงหาคม ๒๕๖๘`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/สิงหาคม/34/00.webp",
+      date: "3 สิงหาคม 2568",
+      description: `
+สมเด็จพระเจ้าลูกเธอ เจ้าฟ้าสิริวัณณวรี นารีรัตนราชกัญญา ทรงพระกรุณาโปรดให้พลเอกศิวะ ภระมรทัต เป็นผู้แทนพระองค์ เชิญถุงพระราชทาน
+`,
+      href: "/pressrelease/2568/press6808/press34",
+    },
+    {
+      name: `๓ สิงหาคม ๒๕๖๘`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/สิงหาคม/33/00.webp",
       date: "3 สิงหาคม 2568",
       description: `
