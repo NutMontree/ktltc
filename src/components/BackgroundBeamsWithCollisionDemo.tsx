@@ -170,7 +170,7 @@ export function BackgroundBeamsWithCollisionDemo() {
                   <iframe
                     className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
                   w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px]  "
-                    src="/images/ข่าวประชาสัมพันธ์/2568/สิงหาคม/42/1.mp4"
+                    src="/images/ข่าวประชาสัมพันธ์/2568/สิงหาคม/42/1.mpg"
                   />
                 </div>
                 <br />
