@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `ทรงพระเจริญ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/สิงหาคม/44/00.webp",
+      date: "7 สิงหาคม 2568",
+      description: `
+สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ พระบรมราชชนนีพันปีหลวง เนื่องในโอกาสวันเฉลิมพระชนมพรรษา ๑๒ สิงหาคม ๒๕๖๘
+ `,
+      href: "/pressrelease/2568/press6808/press44",
+    },
+    {
       name: `วิทยาลัยเทคนิคกันทรลักษ์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/สิงหาคม/43/1.webp",
       date: "7 สิงหาคม 2568",

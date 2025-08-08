@@ -74,14 +74,9 @@ export default function Pressrelease() {
               <div className=" py-2  gap-4">
                 <iframe
                   className="h-[200px] sm:h-[400px] lg:h-[500px] xl:h-[600px] 
-               w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px] "
-                  src="/images/ข่าวประชาสัมพันธ์/2568/สิงหาคม/42/1.mp4"
-                  title=" "
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
+                  w-[350px] sm:w-[600px] lg:w-[700px] xl:w-[1080px]  "
+                  src="https://www.youtube.com/embed/k7hgxrwGgrw?si=VWg12pZKYfKEVnUz"
+                  title="YouTube video player" />
                 <br />
               </div>
             </div>
