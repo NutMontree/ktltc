@@ -20,6 +20,7 @@ type LinkPreviewProps = {
   height?: number;
   quality?: number;
   layout?: string;
+  target?: React.HTMLAttributeAnchorTarget;
 } & (
     | { isStatic: true; imageSrc: string }
     | { isStatic?: false; imageSrc?: never }
@@ -31,7 +32,8 @@ export const LinkPreview = ({
   className,
   width = 200,
   height = 125,
-  quality = 50,
+  quality = 50,  
+  target,
   layout = "fixed",
   isStatic = false,
   imageSrc = "",

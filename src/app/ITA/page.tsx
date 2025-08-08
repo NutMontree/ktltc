@@ -125,13 +125,10 @@ export default function ITA() {
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
                         "4",
-                        "6",
                         "8",
                         "10",
                         "11",
-                        "14",
                         "15",
-                        "16",
                         "17",
                         "18",
                         "19",
@@ -141,7 +138,6 @@ export default function ITA() {
                         "24",
                         "25",
                         "26",
-                        "27",
                         "28",
                         "32",
                         "33",

@@ -1,3 +1,5 @@
+import { LinkPreview } from '@/components/ui/link-preview'
+import Link from 'next/link'
 import React from 'react'
 
 export default function page() {
@@ -8,7 +10,7 @@ export default function page() {
                 – สามารถเข้าถึงหรือเชื่อมโยงไปยังช่องทางข้างต้นได้จากเว็บไซต์หลักของสถานศึกษา <br />
             </div>
 
-            <div></div>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview target="_blank" url='https://line.me/ti/g2/lE1gdiKYbUTFrBCjWTUY7DjOQx2dSw2QPAv4fw?utm_source=invitation&utm_medium=QR_code&utm_campaign=default'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>01. ศูนย์ GECC ร้องทุกข์</p> </LinkPreview> </div>
         </>
     )
 }
