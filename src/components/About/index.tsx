@@ -1,5 +1,8 @@
+"use client"; // top to the file
 import Image from "next/image";
 import Link from "next/link";
+import { FootTitle } from "../FootTitle";
+import Personnel from "@/app/personnel/page";
 
 const About = () => {
   return (
@@ -13,27 +16,51 @@ const About = () => {
             <div className="w-full lg:w-1/2">
               <div className="mb-12 max-w-[540px] lg:mb-0">
                 <h2 className="mb-5 text-3xl font-bold leading-tight text-dark dark:text-white sm:text-[40px] sm:leading-[1.2]">
-                  Brilliant Toolkit to Build Next.js SaaS Websites.
+                  วิทยาลัยเทคนิคกันทรลักษ์
                 </h2>
-                <p className="mb-10 text-base leading-relaxed text-body-color dark:text-dark-6">
-                  The main thrust is to focus on educating attendees on how to
-                  best protect highly vulnerable business applications with
-                  interactive panel discussions and roundtables led by subject
-                  matter experts.
+                <div className="mb-10 text-base leading-relaxed text-body-color dark:text-dark-6">
+                  (ชื่อเดิม วิทยาลัยการอาชีพกันทรลักษ์ แก้ไขเมื่อ 8 เมษายน 2559)
                   <br /> <br />
-                  The main thrust is to focus on educating attendees on how to
-                  best protect highly vulnerable business applications with
-                  interactive panel.
-                </p>
+                  ที่อยู่ : 82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110 <br />
+                  <p>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
+                  <p>
+                    เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ วิทยาลัยเทคนิคกันทรลักษ์
+                    Today
+                  </p>
+                  <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
+                  <p>Website : ktltc.vercel.app</p>
+                  <p>Gmail : ktl11022021@gmail.com</p><br />
+                  <p>สอบถามข้อมูลเพิ่มเติม</p>
+                  <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๐๕๓ </p>
+                  <br />
+
+                  <Link target="_blank" href="https://maps.app.goo.gl/LSK6jriPzmmQSz846">
+                    <div className=" hover:text-sky-500">
+                      <div>
+                        <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">ที่ตั้ง/GPS</p>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
 
                 <Link
-                  href="#"
+                  href="https://ktltc.vercel.app/historyeducational"
                   className="inline-flex items-center justify-center rounded-md bg-primary px-7 py-3 text-center text-base font-medium text-white duration-300 hover:bg-primary/90"
                 >
-                  Know More
+                  ประวัติสถานศึกษา
+                </Link>
+                <br />
+                <br />
+                <Link
+                  href="https://ktltc.vercel.app/personnel"
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-7 py-3 text-center text-base font-medium text-white duration-300 hover:bg-primary/90"
+                >
+                  ข้อมูลบุคลากรทางการศึกษา
                 </Link>
               </div>
             </div>
+
+
 
             <div className="w-full lg:w-1/2">
               <div className="-mx-2 flex flex-wrap sm:-mx-4 lg:-mx-2 xl:-mx-4">
@@ -42,7 +69,7 @@ const About = () => {
                     className={`relative mb-4 sm:mb-8 sm:h-[400px] md:h-[540px] lg:h-[400px] xl:h-[500px] `}
                   >
                     <Image
-                      src="/images/about/about-image-01.jpg"
+                      src="/images/ภาพวิลัย/มุมสูง/01.webp"
                       alt="about image"
                       fill
                       className="h-full w-full object-cover object-center"
@@ -53,7 +80,7 @@ const About = () => {
                 <div className="w-full px-2 sm:w-1/2 sm:px-4 lg:px-2 xl:px-4">
                   <div className="relative mb-4 sm:mb-8 sm:h-[220px] md:h-[346px] lg:mb-4 lg:h-[225px] xl:mb-8 xl:h-[310px]">
                     <Image
-                      src="/images/about/about-image-02.jpg"
+                      src="/images/ภาพวิลัย/มุมสูง/21.webp"
                       alt="about image"
                       fill
                       className="h-full w-full object-cover object-center"
@@ -63,13 +90,13 @@ const About = () => {
                   <div className="relative z-10 mb-4 flex items-center justify-center overflow-hidden bg-primary px-6 py-12 sm:mb-8 sm:h-[160px] sm:p-5 lg:mb-4 xl:mb-8">
                     <div>
                       <span className="block text-5xl font-extrabold text-white">
-                        09
+                        31
                       </span>
                       <span className="block text-base font-semibold text-white">
-                        We have
+                        Opened for
                       </span>
                       <span className="block text-base font-medium text-white text-opacity-70">
-                        Years of experience
+                        31 years of experience
                       </span>
                     </div>
                     <div>
@@ -186,6 +213,8 @@ const About = () => {
                 </div>
               </div>
             </div>
+          </div>
+          <div>
           </div>
         </div>
       </div>
