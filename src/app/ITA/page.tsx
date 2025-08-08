@@ -68,9 +68,6 @@ export default function ITA() {
 
     return (
         <>
-
-
-
             <div className="py-[84px]">
                 <p className="text-center text-xl">ประเมินคุณธรรมและความโปร่งใส (ITA)</p>
                 <p className="text-center pt-2">
@@ -122,28 +119,14 @@ export default function ITA() {
             </div>
 
             <div>
+                <div>
+                    <p className="text-sky-500 text-xl font-bold py-6">
+                        ตัวชี้วัดย่อยที่ 9.1 ข้อมูลพื้นฐาน (o1 - o6)
+                    </p>
+                </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
                         "4",
-                        "8",
-                        "10",
-                        "11",
-                        "15",
-                        "17",
-                        "18",
-                        "19",
-                        "21",
-                        "22",
-                        "23",
-                        "24",
-                        "25",
-                        "26",
-                        "28",
-                        "32",
-                        "33",
-                        "35",
-                        "36",
-                        "37",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="1" aria-label="1" title="O1 โครงสร้าง">
                         <O1 />
@@ -163,6 +146,22 @@ export default function ITA() {
                     <AccordionItem indicator={<AnchorIcon />} key="6" aria-label="6" title="O6 กฎหมายที่เกี่ยวข้อง">
                         <O6 />
                     </AccordionItem>
+                </Accordion>
+            </div >
+
+            <div>
+                <div>
+                    <p className="text-sky-500 text-xl font-bold py-6">
+                        ตัวชี้วัดย่อยที่ 9.2 การบริหารงาน (o7 - o16)
+                    </p>
+                </div>
+                <Accordion
+                    selectionMode="multiple" variant="splitted" disabledKeys={[
+                        "8",
+                        "10",
+                        "11",
+                        "15",
+                    ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="7" aria-label="7" title="O7 ข่าวประชาสัมพันธ์">
                         <O7 />
                     </AccordionItem>
@@ -193,6 +192,23 @@ export default function ITA() {
                     <AccordionItem indicator={<AnchorIcon />} key="16" aria-label="16" title="O16 E-Service">
                         <O16 />
                     </AccordionItem>
+                </Accordion>
+            </div >
+
+            <div>
+                <div>
+                    <p className="text-sky-500 text-xl font-bold py-6">
+                        ตัวชี้วัดย่อยที่ 9.3 การบริหารเงินงบประมาณ (o17 - o22)
+                    </p>
+                </div>
+                <Accordion
+                    selectionMode="multiple" variant="splitted" disabledKeys={[
+                        "17",
+                        "18",
+                        "19",
+                        "21",
+                        "22",
+                    ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="17" aria-label="17" title="O17 แผนการใช้จ่าย งบประมาณ ประจําปี">
                         <O17 />
                     </AccordionItem>
@@ -211,6 +227,21 @@ export default function ITA() {
                     <AccordionItem indicator={<AnchorIcon />} key="22" aria-label="22" title="O22 แผนการจัดซื้อจัดจ้างหรือแผนการจัดหาพัสดุ">
                         <O22 />
                     </AccordionItem>
+                </Accordion>
+            </div >
+
+            <div>
+                <div>
+                    <p className="text-sky-500 text-xl font-bold py-6">
+                        ตัวชี้วัดย่อยที่ 9.4 การบริหารและพัฒนาทรัพยากรบุคคล (o23 - o25)
+                    </p>
+                </div>
+                <Accordion
+                    selectionMode="multiple" variant="splitted" disabledKeys={[
+                        "23",
+                        "24",
+                        "25",
+                    ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="23" aria-label="23" title="O23 การดําเนิน โครงการ/กิจกรรม ที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
                         <O23 />
                     </AccordionItem>
@@ -220,6 +251,20 @@ export default function ITA() {
                     <AccordionItem indicator={<AnchorIcon />} key="25" aria-label="25" title="O25 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
                         <O25 />
                     </AccordionItem>
+                </Accordion>
+            </div >
+
+            <div>
+                <div>
+                    <p className="text-sky-500 text-xl font-bold py-6">
+                        ตัวชี้วัดย่อยที่ 9.5 การส่งเสริมความโปร่งใสในสถานศึกษา (o26 - o29)
+                    </p>
+                </div>
+                <Accordion
+                    selectionMode="multiple" variant="splitted" disabledKeys={[
+                        "26",
+                        "28",
+                    ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="26" aria-label="26" title="O26 แนวทางปฏิบัติการ จัดการร้องเรียนการทุจริตและ ประพฤติมิชอบ">
                         <O26 />
                     </AccordionItem>
@@ -232,6 +277,21 @@ export default function ITA() {
                     <AccordionItem indicator={<AnchorIcon />} key="29" aria-label="29" title="O29 การเปิดโอกาสให้ เกิดการมีส่วนร่วม">
                         <O29 />
                     </AccordionItem>
+                </Accordion>
+            </div >
+
+            <div>
+                <div>
+                    <p className="text-sky-500 text-xl font-bold py-6">
+                        ตัวชี้วัดย่อยที่ 10.1 การดำเนินการ เพื่อป้องกันทุจริต (o30 - o35)
+                    </p>
+                </div>
+                <Accordion
+                    selectionMode="multiple" variant="splitted" disabledKeys={[
+                        "32",
+                        "33",
+                        "35",
+                    ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="30" aria-label="30" title="O30 นโยบายไม่รับ ของขวัญ (No Gift Policy)">
                         <O30 />
                     </AccordionItem>
@@ -250,6 +310,20 @@ export default function ITA() {
                     <AccordionItem indicator={<AnchorIcon />} key="35" aria-label="35" title="O35 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่เกี่ยวกับ การป้องกัน การ ทุจริตประจําปี">
                         <O35 />
                     </AccordionItem>
+                </Accordion>
+            </div >
+
+            <div>
+                <div>
+                    <p className="text-sky-500 text-xl font-bold py-6">
+                        ตัวชี้วัดย่อย 10.2 มาตรการภายในเพื่อป้องกันการทุจริต (o36 - o37)
+                    </p>
+                </div>
+                <Accordion
+                    selectionMode="multiple" variant="splitted" disabledKeys={[
+                        "36",
+                        "37",
+                    ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="36" aria-label="36" title="O36 มาตรการส่งเสริม คุณธรรมและความโปร่งใส ภายในสถานศึกษา">
                         <O36 />
                     </AccordionItem>
