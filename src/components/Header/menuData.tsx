@@ -287,6 +287,12 @@ const menuData: Menu[] = [
         path: "https://forms.gle/Hcwfjvd7S8zTbA3C8",
         newTab: false,
       },
+      {
+        id: 612,
+        title: "Q&A",
+        path: "/ITA/08",
+        newTab: false,
+      },
     ],
   },
   {

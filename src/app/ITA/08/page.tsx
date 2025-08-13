@@ -2,11 +2,33 @@
 export default function page() {
     return (
         <>
-            <div className='pb-6 text-xs md:text-sm lg:text-base text-blue-500 dark:text-blue-400'>
-                – แสดงตำแหน่งบนเว็บไซต์ของสถานศึกษาที่บุคคลภายนอก สามารถสอบถามข้อมูลต่าง ๆ ได้ และหน่วยงานสามารถสื่อสารให้คำตอบกับ ผู้สอบถามได้ โดยมีลักษณะเป็นการสื่อสารได้สองทางบนหน้าเว็บไซต์ของสถานศึกษา (Q&A) ยกตัวอย่าง เช่น Web board, กล่องข้อความถาม-ตอบ,Messenger Live Chat, Chatbot เป็นต้น
+            <div>
+                <div>
+                    <iframe
+                        src="https://padlet.com/embed/fpugfje0yejm0bqx"
+                        allow="camera;microphone;geolocation;display-capture;clipboard-write"
+                        className="w-full h-screen"
+                    >
+                    </iframe>
+                    <div
+                        className="display:flex;align-items:center;justify-content:end;margin:0;height:28px"
+                    >
+                        <a href="https://padlet.com?ref=embed"
+                            className="display:block;flex-grow:0;margin:0;border:none;padding:0;text-decoration:none"
+                            target="_blank">
+                            <div
+                                className="display:flex;align-items:center;"
+                            >
+                                <img src="https://padlet.net/embeds/made_with_padlet_2022.png"
+                                    width="114"
+                                    height="28"
+                                    className="padding:0;margin:0;background:0 0;border:none;box-shadow:none"
+                                    alt="Made with Padlet" />
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
-
-            <div></div>
         </>
     )
 }
