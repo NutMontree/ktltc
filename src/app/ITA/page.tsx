@@ -126,7 +126,7 @@ export default function ITA() {
                 </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
-                        "4",
+
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="1" aria-label="1" title="O1 โครงสร้าง">
                         <O1 />
@@ -288,7 +288,6 @@ export default function ITA() {
                 </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
-                        "32",
                         "33",
                         "35",
                     ]}>
