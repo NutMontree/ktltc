@@ -15,11 +15,13 @@ export default function page() {
 
             <div className='hover:text-blue-500 dark:hover:text-blue-400 color'>
                 <LinkPreview
-                    
+
                     url='https://ktltc.vercel.app/bidding'>
-<p className='hover:text-orange-500 dark:hover:text-orange-400'>ข่าวประกวดราคา</p>
+                    <p className='hover:text-orange-500 dark:hover:text-orange-400'>ข่าวประกวดราคา</p>
                 </LinkPreview>
             </div>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400 color'> <LinkPreview url='/images/ita/pdf/o20(1).pdf'><p className='flexhover:text-orange-500 dark:hover:text-orange-400'>ประกาศจัดทำแผนครัวร้อน ครัวเย็น งปม 68 (File PDF)</p></LinkPreview> </div>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400 color'> <LinkPreview url='/images/ita/pdf/o20(2).pdf'><p className='flexhover:text-orange-500 dark:hover:text-orange-400'>ประกาศผู้ชนะการเสนอราคา ครัวร้อน ครัวเย็น (File PDF)</p></LinkPreview> </div>
         </>
     )
 }
