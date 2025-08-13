@@ -1,5 +1,5 @@
 
-export default function page() {
+export default function QAPage() {
     return (
         <>
             <div>
@@ -7,7 +7,7 @@ export default function page() {
                     <iframe
                         src="https://padlet.com/embed/fpugfje0yejm0bqx"
                         allow="camera;microphone;geolocation;display-capture;clipboard-write"
-                        className="w-full h-screen"
+                        className="w-full h-screen rounded-xl"
                     >
                     </iframe>
                     <div

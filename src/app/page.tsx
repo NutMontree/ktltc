@@ -22,6 +22,7 @@ import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import { Metadata } from "next";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import CalendarPage from "@/components/Calendar";
+import QAPage from "./ITA/08/page";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -82,6 +83,9 @@ export default function Home() {
       <Contact />
       <Clients /> */}
       <CalendarPage />
+      <div className="container py-[48px]">
+        <QAPage />
+      </div>
 
       <div id="fb-root"></div>
       <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v22.0&appId=952832906928077"></script>
