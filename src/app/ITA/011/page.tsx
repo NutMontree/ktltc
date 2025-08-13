@@ -1,3 +1,4 @@
+import { LinkPreview } from '@/components/ui/link-preview'
 import React from 'react'
 
 export default function page() {
@@ -12,7 +13,7 @@ export default function page() {
                 (หากไม่มีปัญหา อุปสรรค และข้อเสนอแนะ ให้เขียนบอกว่า "ไม่มีปัญหา อุปสรรค และข้อเสนอแนะ" แต่ต้องปรากฎรายละเอียดครบทั้ง 3 องค์ประกอบ)<br />
             </div>
 
-            <div></div>
+            <div> <LinkPreview url='/images/ita/pdf/o11รายงานผลการดำเนินงานประจำปี.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. o11รายงานผลการดำเนินงานประจำปี</p> </LinkPreview> </div>
         </>
     )
 }

@@ -293,6 +293,12 @@ const menuData: Menu[] = [
         path: "/ITA/08",
         newTab: false,
       },
+      {
+        id: 612,
+        title: "ktltcQA",
+        path: "https://ktltcqa.vercel.app/",
+        newTab: false,
+      },
     ],
   },
   {

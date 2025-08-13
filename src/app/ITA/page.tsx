@@ -158,7 +158,6 @@ export default function ITA() {
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
                         "10",
-                        "11",
                         "15",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="7" aria-label="7" title="O7 ข่าวประชาสัมพันธ์">
