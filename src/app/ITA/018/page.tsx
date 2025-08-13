@@ -1,3 +1,4 @@
+import { LinkPreview } from '@/components/ui/link-preview'
 import React from 'react'
 
 export default function page() {
@@ -11,7 +12,7 @@ export default function page() {
                 - เป็นรายงานผลย้อนหลัง 1 ปีงบประมาณ <br />
             </div>
 
-            <div></div>
+            <div> <LinkPreview url='/images/ita/pdf/o18ผลการใช้จ่ายงบประมาณประจำปี.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. o18ผลการใช้จ่ายงบประมาณประจำปี</p> </LinkPreview> </div>
         </>
     )
 }

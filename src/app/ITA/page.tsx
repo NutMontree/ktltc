@@ -204,8 +204,6 @@ export default function ITA() {
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
                         "17",
-                        "18",
-                        "19",
                         "21",
                         "22",
                     ]}>
@@ -218,7 +216,8 @@ export default function ITA() {
                     <AccordionItem indicator={<AnchorIcon />} key="19" aria-label="19" title="O19 แผนการจัดซื้อจัด จ้างหรือแผนการจัดหาพัสดุ">
                         <O19 />
                     </AccordionItem>
-                    <AccordionItem indicator={<AnchorIcon />} subtitle={<span> ทำเอกสารเพิ่มเติม <strong>ข้อมูลไม่ครบ</strong> </span>} key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ">
+                    {/* <AccordionItem indicator={<AnchorIcon />} subtitle={<span> ทำเอกสารเพิ่มเติม <strong>ข้อมูลไม่ครบ</strong> </span>} key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ"> */}
+                    <AccordionItem indicator={<AnchorIcon />} key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ">
                         <O20 />
                     </AccordionItem>
                     <AccordionItem indicator={<AnchorIcon />} key="21" aria-label="21" title="O21 สรุปผลการจัดซื้อ จัดจ้างหรือจัดหาพัสดุรายเดือน">
