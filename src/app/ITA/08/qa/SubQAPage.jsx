@@ -1,13 +1,12 @@
 // import TicketCard from "../../../(components)/TicketCard";
 import TicketCard from "@/app/(components)/TicketCard";
-import Backbrop from "./Backbrop";
 
 import Link from "next/link";
 
 const getTickets = async () => {
   try {
     const res = await fetch("http://localhost:3000/api/Tickets", {
-      // const res = await fetch("https://ktltc.vercel.app/api/Tickets", {
+    // const res = await fetch("https://ktltc.vercel.app/api/Tickets", {
       cache: "no-store",
     });
 
@@ -25,7 +24,7 @@ export default async function SubQAPage() {
   const data = await getTickets();
 
   if (!data?.tickets) {
-    return <p>No tickets.</p>;
+    return <p>ไม่พบข้อมูล</p>;
   }
 
   const tickets = data.tickets;
@@ -83,8 +82,6 @@ export default async function SubQAPage() {
           </div>
         </div>
       </Link>
-
-      <Backbrop />
     </>
   );
 }

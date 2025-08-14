@@ -289,14 +289,8 @@ const menuData: Menu[] = [
       },
       {
         id: 612,
-        title: "Q&A",
-        path: "/ITA/08",
-        newTab: false,
-      },
-      {
-        id: 612,
-        title: "ktltcQA",
-        path: "http://localhost:3000/",
+        title: "ktltcQ&A",
+        path: "/ITA/08/qa",
         newTab: false,
       },
     ],

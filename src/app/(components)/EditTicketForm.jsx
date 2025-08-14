@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const EditTicketForm = ({ ticket }) => {
   const EDITMODE = ticket._id === "new" ? false : true;
@@ -47,7 +48,6 @@ const EditTicketForm = ({ ticket }) => {
       const res = await fetch("/api/Tickets", {
         method: "POST",
         body: JSON.stringify({ formData }),
-        //@ts-ignore
         "Content-Type": "application/json",
       });
       if (!res.ok) {
@@ -68,7 +68,9 @@ const EditTicketForm = ({ ticket }) => {
             method="post"
             className="flex w-full flex-col gap-3 py-24"
           >
-            <h3>{EDITMODE ? "อัพเดทข้อความใหม่" : "เพิ่มข้อความใหม่"}</h3>
+            <h3 className="text-xl">
+              {EDITMODE ? "อัพเดทข้อความใหม่" : "เพิ่มข้อความใหม่"}
+            </h3>
             <label>หัวเรื่อง</label>
             <input
               id="title"
@@ -77,7 +79,8 @@ const EditTicketForm = ({ ticket }) => {
               onChange={handleChange}
               required={true}
               value={formData.title}
-              className="rounded-2xl bg-gray-100 px-4 py-2"
+              // className="rounded-2xl bg-gray-100 px-4 py-2"
+              className="rounded-xl border px-4 py-2"
             />
             <label>คำอธิบาย</label>
             <textarea
@@ -87,7 +90,7 @@ const EditTicketForm = ({ ticket }) => {
               required={true}
               value={formData.description}
               rows="5"
-              className="rounded-2xl bg-gray-100 px-4 py-2"
+              className="rounded-xl border px-4 py-2"
             />
             <label>ชื่อผู้โพส</label>
             <input
@@ -97,13 +100,19 @@ const EditTicketForm = ({ ticket }) => {
               required={true}
               value={formData.category}
               rows="5"
-              className="rounded-2xl bg-gray-100 px-4 py-2"
+              className="rounded-xl border px-4 py-2"
             ></input>
             <input
               type="submit"
               className="rounded-2xl bg-sky-500 px-2 py-2"
-              value={EDITMODE ? "Update" : "Submit"}
+              value={EDITMODE ? "อัพเดทข้อมูล" : "ส่งข้อมูล"}
             />
+            <Link
+              href={"/ITA/08/qa"}
+              className="px-2 py-2 text-center text-lg text-sky-800 dark:text-sky-200"
+            >
+              ย้อนกลับ
+            </Link>
           </form>
         </div>
       </div>
