@@ -22,7 +22,7 @@ import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import { Metadata } from "next";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import CalendarPage from "@/components/Calendar";
-import QAPage from "./ITA/08/page";
+import SubQAPage from "./ITA/08/qa/SubQAPage";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -84,7 +84,7 @@ export default function Home() {
       <Clients /> */}
       <CalendarPage />
       <div className="container py-[48px]">
-        <QAPage />
+        <SubQAPage />
       </div>
 
       <div id="fb-root"></div>

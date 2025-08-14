@@ -296,7 +296,7 @@ const menuData: Menu[] = [
       {
         id: 612,
         title: "ktltcQA",
-        path: "https://ktltcqa.vercel.app/",
+        path: "http://localhost:3000/",
         newTab: false,
       },
     ],

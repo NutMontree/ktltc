@@ -1,8 +1,12 @@
 
+import { LinkPreview } from '@/components/ui/link-preview'
+import Link from 'next/link'
+// import SubQAPage from './qa/SubQAPage'
+
 export default function QAPage() {
     return (
         <>
-            <div>
+            {/* <div>
                 <div>
                     <iframe
                         src="https://padlet.com/embed/fpugfje0yejm0bqx"
@@ -28,7 +32,14 @@ export default function QAPage() {
                         </a>
                     </div>
                 </div>
-            </div>
+            </div> */}
+
+
+            <div> <Link href='/ITA/08/qa'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ระบบ Q&A วิทยาลัยเทคนิคกันทรลักษ์</p> </Link> </div>
+
+            {/* <div>
+                <SubQAPage />
+            </div> */}
         </>
     )
 }
