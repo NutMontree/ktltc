@@ -203,7 +203,6 @@ export default function ITA() {
                 </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
-                        "21",
                         "22",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="17" aria-label="17" title="O17 แผนการใช้จ่าย งบประมาณ ประจําปี">
@@ -259,7 +258,6 @@ export default function ITA() {
                 </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
-                        "26",
                         "28",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="26" aria-label="26" title="O26 แนวทางปฏิบัติการ จัดการร้องเรียนการทุจริตและ ประพฤติมิชอบ">

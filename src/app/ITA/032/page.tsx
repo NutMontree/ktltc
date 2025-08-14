@@ -1,4 +1,4 @@
-import { LinkPreview } from '@/components/ui/link-preview'
+import Link from 'next/link'
 import React from 'react'
 
 export default function page() {
@@ -14,22 +14,22 @@ export default function page() {
             </div>
 
             <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <LinkPreview
-                    url='/images/ita/pdf/o32การประเมินผลควบคุมภายใน.pdf'>
+                <Link
+                    href='/images/ita/pdf/o32การประเมินผลควบคุมภายใน.pdf'>
                     <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แผนพัฒนาการจัดการศึกษาวิทยาลัยเทคนิคกันทรลักษ์</p>
-                </LinkPreview>
+                </Link>
             </div>
             <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <LinkPreview
-                    url='/images/ita/pdf/รายงานการประเมินองค์ประกอบของการควบคุม.pdf'>
+                <Link
+                    href='/images/ita/pdf/รายงานการประเมินองค์ประกอบของการควบคุม.pdf'>
                     <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. รายงานการประเมินองค์ประกอบของการควบคุมภายใน</p>
-                </LinkPreview>
+                </Link>
             </div>
             <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <LinkPreview
-                    url='/images/ita/pdf/หนังสือรับรองการประเมินการควบคุมภายในขอ.pdf'>
+                <Link
+                    href='/images/ita/pdf/หนังสือรับรองการประเมินการควบคุมภายในขอ.pdf'>
                     <p className='hover:text-orange-500 dark:hover:text-orange-400'>3. หนังสือรับรองการประเมินการควบคุมภายในของสถานศึกษา</p>
-                </LinkPreview>
+                </Link>
             </div>
         </>
     )

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 export default function page() {
@@ -9,7 +10,7 @@ export default function page() {
                 – เป็นข้อมูลแบบรายเดือน ที่มีข้อมูลครอบคลุมในระยะเวลา 6 เดือนแรกของปีงบประมาณปัจจุบัน <br />
             </div>
 
-            <div></div>
+            <div> <Link href='/images/ita/pdf/o-21.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. สรุปผลการดำเนินการจัดซื้อจัดจ้าง</p> </Link> </div>
         </>
     )
 }

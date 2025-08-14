@@ -8,18 +8,12 @@ const EditTicketForm = ({ ticket }) => {
   const startingTicketData = {
     title: "",
     description: "",
-    // priority: 1,
-    // progress: 0,
-    // status: "not started",
     category: "",
   };
 
   if (EDITMODE) {
     startingTicketData["title"] = ticket.title;
     startingTicketData["description"] = ticket.description;
-    // startingTicketData["priority"] = ticket.priority;
-    // startingTicketData["progress"] = ticket.progress;
-    // startingTicketData["status"] = ticket.status;
     startingTicketData["category"] = ticket.category;
   }
 
@@ -65,134 +59,53 @@ const EditTicketForm = ({ ticket }) => {
     router.push("/");
   };
 
-  const categories = [
-    "Hardware Problem",
-    "Software Problem",
-    "Application Deveopment",
-    "Project",
-  ];
-
   return (
     <>
-      <div className="flex justify-center">
-        <form
-          onSubmit={handleSubmit}
-          method="post"
-          className="flex flex-col gap-3 w-1/2"
-        >
-          <h3>{EDITMODE ? "อัพเดทข้อความใหม่" : "เพิ่มข้อความใหม่"}</h3>
-          <label>หัวเรื่อง</label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            onChange={handleChange}
-            required={true}
-            value={formData.title}
-            className="bg-gray-100 rounded-2xl px-4 py-2"
-          />
-          <label>คำอธิบาย</label>
-          <textarea
-            id="description"
-            name="description"
-            onChange={handleChange}
-            required={true}
-            value={formData.description}
-            rows="5"
-            className="bg-gray-100 rounded-2xl px-4 py-2"
-          />
-          <label>ชื่อผู้โพส</label>
-          <input
-            id="category"
-            name="category"
-            onChange={handleChange}
-            required={true}
-            value={formData.category}
-            rows="5"
-            className="bg-gray-100 rounded-2xl px-4 py-2"
-          ></input>
-          {/* <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
+      <div className="container">
+        <div className="flex justify-center">
+          <form
+            onSubmit={handleSubmit}
+            method="post"
+            className="flex w-full flex-col gap-3 py-24"
           >
-            {categories?.map((category, _index) => (
-              <option key={_index} value={category}>
-                {category}
-              </option>
-            ))}
-          </select> */}
-
-          {/* <label>Priority</label>
-          <div>
+            <h3>{EDITMODE ? "อัพเดทข้อความใหม่" : "เพิ่มข้อความใหม่"}</h3>
+            <label>หัวเรื่อง</label>
             <input
-              id="priority-1"
-              name="priority"
-              type="radio"
+              id="title"
+              name="title"
+              type="text"
               onChange={handleChange}
-              value={1}
-              checked={formData.priority == 1}
+              required={true}
+              value={formData.title}
+              className="rounded-2xl bg-gray-100 px-4 py-2"
             />
-            <label>1</label>
+            <label>คำอธิบาย</label>
+            <textarea
+              id="description"
+              name="description"
+              onChange={handleChange}
+              required={true}
+              value={formData.description}
+              rows="5"
+              className="rounded-2xl bg-gray-100 px-4 py-2"
+            />
+            <label>ชื่อผู้โพส</label>
             <input
-              id="priority-2"
-              name="priority"
-              type="radio"
+              id="category"
+              name="category"
               onChange={handleChange}
-              value={2}
-              checked={formData.priority == 2}
-            />
-            <label>2</label>
+              required={true}
+              value={formData.category}
+              rows="5"
+              className="rounded-2xl bg-gray-100 px-4 py-2"
+            ></input>
             <input
-              id="priority-3"
-              name="priority"
-              type="radio"
-              onChange={handleChange}
-              value={3}
-              checked={formData.priority == 3}
+              type="submit"
+              className="rounded-2xl bg-sky-500 px-2 py-2"
+              value={EDITMODE ? "Update" : "Submit"}
             />
-            <label>3</label>
-            <input
-              id="priority-4"
-              name="priority"
-              type="radio"
-              onChange={handleChange}
-              value={4}
-              checked={formData.priority == 4}
-            />
-            <label>4</label>
-            <input
-              id="priority-5"
-              name="priority"
-              type="radio"
-              onChange={handleChange}
-              value={5}
-              checked={formData.priority == 5}
-            />
-            <label>5</label>
-          </div>
-          <label>Progress</label>
-          <input
-            type="range"
-            id="progress"
-            name="progress"
-            value={formData.progress}
-            min="0"
-            max="100"
-            onChange={handleChange}
-          />
-          <label>Status</label>
-          <select name="status" value={formData.status} onChange={handleChange}>
-            <option value="not started">Not Started</option>
-            <option value="started">Started</option>
-            <option value="done">Done</option>
-          </select> */}
-          <input
-            type="submit"
-            className="bg-sky-500 rounded-2xl px-2 py-2"
-            value={EDITMODE ? "Update" : "Submit"}
-          />
-        </form>
+          </form>
+        </div>
       </div>
     </>
   );

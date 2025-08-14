@@ -1,12 +1,13 @@
-import React from "react";
-import TicketCard from "../../../(components)/TicketCard";
+// import TicketCard from "../../../(components)/TicketCard";
+import TicketCard from "@/app/(components)/TicketCard";
+import Backbrop from "./Backbrop";
 
 import Link from "next/link";
 
 const getTickets = async () => {
   try {
-    // const res = await fetch("http://localhost:3000/api/Tickets", {
-    const res = await fetch("https://ktltc.vercel.app/api/Tickets", {
+    const res = await fetch("http://localhost:3000/api/Tickets", {
+      // const res = await fetch("https://ktltc.vercel.app/api/Tickets", {
       cache: "no-store",
     });
 
@@ -23,7 +24,6 @@ const getTickets = async () => {
 export default async function SubQAPage() {
   const data = await getTickets();
 
-  // Make sure we have tickets needed for production build.
   if (!data?.tickets) {
     return <p>No tickets.</p>;
   }
@@ -47,7 +47,6 @@ export default async function SubQAPage() {
                 key={categoryIndex}
                 className="hover:bg-card-hover bg-card m-2 flex flex-col rounded-2xl p-3 shadow-lg"
               >
-                {/* <hr /> */}
                 <div className="grid grid-cols-2">
                   <div className="flex justify-start">
                     <img
@@ -71,24 +70,6 @@ export default async function SubQAPage() {
                 </div>
               </div>
             ))}
-
-          {/* {tickets &&
-          uniqueCategories.map((uniqueCategory, categoryIndex) => (
-            <div key={categoryIndex} className="mb-4">
-              <h2>{uniqueCategory}</h2>
-              <div className="lg:grid grid-cols-2 xl:grid-cols-4 ">
-                {tickets
-                  .filter((ticket) => ticket.category === uniqueCategory)
-                  .map((filteredTicket, index) => (
-                    <TicketCard
-                      id={filteredTicket.id}
-                      key={filteredTicket.id}
-                      ticket={filteredTicket}
-                    />
-                  ))}
-              </div>
-            </div>
-          ))} */}
         </div>
       </div>
 
@@ -102,6 +83,8 @@ export default async function SubQAPage() {
           </div>
         </div>
       </Link>
+
+      <Backbrop />
     </>
   );
 }
