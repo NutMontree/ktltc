@@ -19,6 +19,18 @@ export default function page() {
                     <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แผนพัฒนาการจัดการศึกษาวิทยาลัยเทคนิคกันทรลักษ์</p>
                 </LinkPreview>
             </div>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
+                <LinkPreview
+                    url='/images/ita/pdf/รายงานการประเมินองค์ประกอบของการควบคุม.pdf'>
+                    <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. รายงานการประเมินองค์ประกอบของการควบคุมภายใน</p>
+                </LinkPreview>
+            </div>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
+                <LinkPreview
+                    url='/images/ita/pdf/หนังสือรับรองการประเมินการควบคุมภายในขอ.pdf'>
+                    <p className='hover:text-orange-500 dark:hover:text-orange-400'>3. หนังสือรับรองการประเมินการควบคุมภายในของสถานศึกษา</p>
+                </LinkPreview>
+            </div>
         </>
     )
 }

@@ -203,7 +203,6 @@ export default function ITA() {
                 </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
-                        "17",
                         "21",
                         "22",
                     ]}>
@@ -239,7 +238,6 @@ export default function ITA() {
                     selectionMode="multiple" variant="splitted" disabledKeys={[
                         "23",
                         "24",
-                        "25",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="23" aria-label="23" title="O23 การดําเนิน โครงการ/กิจกรรม ที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
                         <O23 />
@@ -287,7 +285,6 @@ export default function ITA() {
                 </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
-                        "33",
                         "35",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="30" aria-label="30" title="O30 นโยบายไม่รับ ของขวัญ (No Gift Policy)">

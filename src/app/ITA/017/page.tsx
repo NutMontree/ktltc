@@ -1,3 +1,4 @@
+import { LinkPreview } from '@/components/ui/link-preview'
 import React from 'react'
 
 export default function page() {
@@ -10,7 +11,7 @@ export default function page() {
                 – เป็นแผนที่มีระยะเวลาบังคับใช้ในปีงบประมาณปัจจุบัน <br />
             </div>
 
-            <div></div>
+            <div> <LinkPreview url='/images/ita/pdf/017-งบหน้า68.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. งบหน้ารายจ่ายตามแผนงาน/งาน/โครงการ/ ประจำปีงบประมาณ 2568</p> </LinkPreview> </div>
         </>
     )
 }
