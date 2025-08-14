@@ -101,6 +101,9 @@ const Header = () => {
                 )}
               </Link>
             </div>
+            <div className="lg:hidden">
+              <Link href={'/ITA'}>ITA</Link>
+            </div>
             <button
               onClick={navbarToggleHandler}
               id="navbarToggler"
@@ -248,8 +251,8 @@ const Header = () => {
                           </div>
                         </li>
                       ),
-                    )} 
-          
+                    )}
+
                   </ul>
                 </nav>
               </div>
