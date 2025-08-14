@@ -110,6 +110,7 @@ const EditTicketForm = ({ ticket }) => {
             <Link
               href={"/ITA/08/qa"}
               className="px-2 py-2 text-center text-lg text-sky-800 dark:text-sky-200"
+              
             >
               ย้อนกลับ
             </Link>
