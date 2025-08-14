@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 export default function page() {
@@ -9,7 +10,8 @@ export default function page() {
                 - เป็นรายงานผลย้อนหลัง 1 ปีงบประมาณ <br />
             </div>
 
-            <div></div>
+            <div> <Link href='/images/ita/pdf/o22.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แสดงผลการจัดซื้อจัดจ้างของสถานศึกษา PDF</p> </Link> </div>
+
         </>
     )
 }
