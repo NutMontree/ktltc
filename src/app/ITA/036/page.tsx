@@ -1,4 +1,5 @@
 import React from 'react'
+import MPM from './mpm/page'
 
 export default function page() {
     return (
@@ -10,7 +11,9 @@ export default function page() {
             </div>
 
 
-            <div></div>
+            <div>
+                <MPM />
+            </div>
         </>
     )
 }

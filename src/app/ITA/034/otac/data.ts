@@ -8,7 +8,7 @@ export const DataOTAC = {
 
 นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ ร่วมการประชุมผู้บริหารสำนักงานคณะกรรมการการอาชีวศึกษา ครั้งที่ ๑/๒๕๖๘ (ประชุมผ่านระบบ ZOOM ) 
       ...`,
-            href: "https://ktltcv1.vercel.app/pressrelease/2568/press6801/press100",
+            href: "https://ktltc.vercel.app/pressrelease/2568/press6801/press100",
         },
         {
             name: ` วันจันทร์ที่ 16 ธันวาคม 2567`,

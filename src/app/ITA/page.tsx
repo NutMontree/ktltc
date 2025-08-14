@@ -311,7 +311,6 @@ export default function ITA() {
                 </div>
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
-                        "36",
                         "37",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="36" aria-label="36" title="O36 มาตรการส่งเสริม คุณธรรมและความโปร่งใส ภายในสถานศึกษา">
