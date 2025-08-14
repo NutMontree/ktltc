@@ -18,7 +18,7 @@ export default function OTAC() {
                                   lg:grid-cols-2
                                   ">
                         {DataOTAC.navItems.map((item) => (
-                            <LinkPreview key={item.url} url={item.url}>
+                            <LinkPreview key={item.href} url={item.href}>
                                 <div
                                     className="mb-2 group relative rounded-xl cursor-pointer 
                                                h-[100px]

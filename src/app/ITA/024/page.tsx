@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import React from 'react'
+import HRM from './HRM/page'
 
 export default function page() {
     return (
@@ -12,7 +14,25 @@ export default function page() {
                 5. การสร้างขวัญกําลังใจ เช่น การขอพระราชทานเครื่องราชอิสริยาภรณ์,การแสดงความยินดีครูและบุคลากรทางการศึกษาที่ผ่านการเลื่อนวิทยฐานะที่สูงขึ้น,การเชิดชูเกียรติครูและบุคลากรดีเด่น เป็นต้น <br />
             </div>
 
-            <div></div>
+            <p className='text-xl'>File PDF</p>
+            <p className='text-xs md:text-sm lg:text-base text-blue-500 dark:text-blue-400'>
+                1. การสรรหาและคัดเลือกบุคลากรเช่นการสรรหาและคัดเลือก พนักงานราชการ,ครูพิเศษสอน, เจ้าหน้าที่ เป็นต้น (กรณีไม่มีการสรรหา ให้ใช้การต่อสัญญา)<br />
+            </p>
+            <div className='grid gap-6 pt-4'>
+                <div className='grid gap-2 md:gap-4'>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครเจ้าหน้าที่งานสื่อ+นักการ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1.  ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง เจ้าหน้าที่ธุรการ งานสื่อ+นักการ</p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราวรายเดือน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. ประกาศรับสมัครลูกจ้างชั่วคราวรายเดือน ตำแหน่ง ครูพิเศษสอน สาขาช่างชนต์</p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราว.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>3.  ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง ครูพิเศษสอน สาขาช่างไฟฟ้ากำลัง</p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราวตน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>4. ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง นักการ ภาโรง </p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครครูพิเศษสอน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>5. ประกาศรับสมัครครูพิเศษสอน สาขาวิชาการจัดการโลจิสติกส์</p> </Link> </div>
+
+                </div>
+                <div>
+                    <p className='text-xl'>Link Wab Page</p>
+                    <HRM />
+                </div>
+            </div>
+
         </>
     )
 }

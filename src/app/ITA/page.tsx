@@ -236,7 +236,6 @@ export default function ITA() {
                 <Accordion
                     selectionMode="multiple" variant="splitted" disabledKeys={[
                         "23",
-                        "24",
                     ]}>
                     <AccordionItem indicator={<AnchorIcon />} key="23" aria-label="23" title="O23 การดําเนิน โครงการ/กิจกรรม ที่แสดงถึง การพัฒนา ทรัพยากรบุคคล">
                         <O23 />

@@ -1,6 +1,5 @@
 export const DataAnnouncement = {
   navItems: [
-
     {
       name: `ประกาศ`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/13/2.webp",
@@ -10,6 +9,5 @@ export const DataAnnouncement = {
 ...`,
       href: "/pressrelease/2568/press6803/press18",
     },
-
   ],
 };

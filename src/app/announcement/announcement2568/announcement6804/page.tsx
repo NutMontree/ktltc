@@ -2,13 +2,13 @@
 
 import NextLink from "next/link";
 
-import AnnouncementPage from "../../page";
 import { DataAnnouncement } from "./data";
+import Announcement2568 from "../page";
 
 export default function Announcement() {
   return (
     <>
-      <AnnouncementPage />
+      <Announcement2568 />
 
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
