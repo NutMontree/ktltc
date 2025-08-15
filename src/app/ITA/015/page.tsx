@@ -11,8 +11,8 @@ export default function page() {
             </div>
 
             <p className='text-xl'>File PDF</p>
-            <div className='py-4'> <Link href='/images/ita/pdf/รายงานสรุปสำรวจความพึ่งพอใจของผู้รับบริ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. รายงานสรุปผลสำรวจความพึ่งพอใจของผู้รับบริการศูนย์ราชการสะดวก</p> </Link> </div>
-            <div> <Link href='/images/ita/pdf/แบบสำรวจสำรวจความพึ่งพอใจของผู้รับบริกา.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. แบบสำรวจความพึ่งพอใจของผู้รับบริการศูนย์ราชการสะดวก</p> </Link> </div>
+            <div className='py-4'> <Link href='/images/ita/pdf/รายงานสรุปสำรวจความพึ่งพอใจของผู้รับบริ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. รายงานสรุปผลสำรวจความพึ่งพอใจของผู้รับบริการศูนย์ราชการสะดวก</p> </Link> </div>
+            <div> <Link href='/images/ita/pdf/แบบสำรวจสำรวจความพึ่งพอใจของผู้รับบริกา.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>2. แบบสำรวจความพึ่งพอใจของผู้รับบริการศูนย์ราชการสะดวก</p> </Link> </div>
         </>
     )
 }

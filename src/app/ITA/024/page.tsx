@@ -21,17 +21,17 @@ export default function page() {
 
             <div className='grid gap-6 pt-4'>
                 <div className='grid gap-2 '>
-                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครเจ้าหน้าที่งานสื่อ+นักการ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1.  ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง เจ้าหน้าที่ธุรการ งานสื่อ+นักการ</p> </Link> </div>
-                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราวรายเดือน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. ประกาศรับสมัครลูกจ้างชั่วคราวรายเดือน ตำแหน่ง ครูพิเศษสอน สาขาช่างชนต์</p> </Link> </div>
-                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราว.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>3.  ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง ครูพิเศษสอน สาขาช่างไฟฟ้ากำลัง</p> </Link> </div>
-                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราวตน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>4. ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง นักการ ภาโรง </p> </Link> </div>
-                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครครูพิเศษสอน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>5. ประกาศรับสมัครครูพิเศษสอน สาขาวิชาการจัดการโลจิสติกส์</p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครเจ้าหน้าที่งานสื่อ+นักการ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1.  ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง เจ้าหน้าที่ธุรการ งานสื่อ+นักการ</p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราวรายเดือน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>2. ประกาศรับสมัครลูกจ้างชั่วคราวรายเดือน ตำแหน่ง ครูพิเศษสอน สาขาช่างชนต์</p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราว.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>3.  ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง ครูพิเศษสอน สาขาช่างไฟฟ้ากำลัง</p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครลูกจ้างชั่วคราวตน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>4. ประกาศรับสมัครลูกจ้างชั่วคราว ตำแหน่ง นักการ ภาโรง </p> </Link> </div>
+                    <div> <Link href='/images/ita/pdf/ประกาศรับสมัครครูพิเศษสอน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>5. ประกาศรับสมัครครูพิเศษสอน สาขาวิชาการจัดการโลจิสติกส์</p> </Link> </div>
 
                 </div>
                 <p className='text-xs md:text-sm lg:text-base text-blue-500 dark:text-blue-400 pt-2'>
                     4. การประเมินผลการปฏิบัติงานบุคลากร เช่น รายงานผลการประเมินเงินเดือน เป็นต้น<br />
                 </p>
-                <div> <Link href='/images/ita/pdf/แบบประเมินผลการปฏิบัติงานตำแหน่งพนักงาน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แบบประเมินผลการปฏิบัติงานตำแหน่งพนักงานราชการ</p> </Link> </div>
+                <div> <Link href='/images/ita/pdf/แบบประเมินผลการปฏิบัติงานตำแหน่งพนักงาน.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. แบบประเมินผลการปฏิบัติงานตำแหน่งพนักงานราชการ</p> </Link> </div>
 
 
                 <div>

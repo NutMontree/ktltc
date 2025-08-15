@@ -11,7 +11,7 @@ export default function page() {
             </div>
 
             <p className='text-xl pt-4'>File PDF</p>
-            <div className='py-4'> <Link href='/images/ita/pdf/o22.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แสดงผลการจัดซื้อจัดจ้างของสถานศึกษา PDF</p> </Link> </div>
+            <div className='py-4'> <Link href='/images/ita/pdf/o22.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. แสดงผลการจัดซื้อจัดจ้างของสถานศึกษา PDF</p> </Link> </div>
 
         </>
     )

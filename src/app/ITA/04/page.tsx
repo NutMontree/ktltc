@@ -14,7 +14,7 @@ export default function page() {
             </div>
 
             <p className='text-xl'>File PDF</p>
-            <div className='hover:text-blue-500 dark:hover:text-blue-400 py-4'> <LinkPreview url='/images/ita/pdf/o4.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แผนพัฒนาการจัดการศึกษาวิทยาลัยเทคนิคกันทรลักษ์</p> </LinkPreview> </div>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400 py-4'> <LinkPreview url='/images/ita/pdf/o4.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. แผนพัฒนาการจัดการศึกษาวิทยาลัยเทคนิคกันทรลักษ์</p> </LinkPreview> </div>
         </>
     )
 }

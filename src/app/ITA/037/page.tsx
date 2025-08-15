@@ -13,8 +13,8 @@ export default function page() {
 
             <p className='text-xl'>File PDF</p>
             <div className='grid gap-4 py-4'>
-                <div className='hover:text-blue-500 dark:hover:text-blue-400'> <Link href='/images/ita/pdf/รายงานการประเมินองค์ประกอบของการควบคุม.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. รายงานการประเมินองค์ประกอบของการควบคุมภายใน</p> </Link> </div>
-                <div className='hover:text-blue-500 dark:hover:text-blue-400'> <Link href='/images/ita/pdf/หนังสือรับรองการประเมินการควบคุมภายในขอ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. หนังสือรับรองการประเมินการควบคุมภายในของสถานศึกษา</p> </Link> </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'> <Link href='/images/ita/pdf/รายงานการประเมินองค์ประกอบของการควบคุม.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. รายงานการประเมินองค์ประกอบของการควบคุมภายใน</p> </Link> </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'> <Link href='/images/ita/pdf/หนังสือรับรองการประเมินการควบคุมภายในขอ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. หนังสือรับรองการประเมินการควบคุมภายในของสถานศึกษา</p> </Link> </div>
             </div>
         </>
     )

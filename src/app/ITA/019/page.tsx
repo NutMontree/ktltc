@@ -12,9 +12,9 @@ export default function page() {
 
             <div className='grid gap-4 py-4'>
                 <p className='text-xl'>File PDF</p>
-                <div> <LinkPreview url='/images/ita/pdf/ประกาศจัดทำแผน_อุปกรณ์การเรียนของนักเรีย.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ประกาศจัดทำแผน อุปกรณ์การเรียนของนักเรีย</p> </LinkPreview> </div>
+                <div> <LinkPreview url='/images/ita/pdf/ประกาศจัดทำแผน_อุปกรณ์การเรียนของนักเรีย.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. ประกาศจัดทำแผน อุปกรณ์การเรียนของนักเรีย</p> </LinkPreview> </div>
                 <p className='text-xl pt-4'>Link Wab Page</p>
-                <div> <LinkPreview url='https://www.gprocurement.go.th/new_index.html'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. เว็บไซต์ pgrocurement ระบบการจัดซื้อจัดจ้างภาครัฐ</p> </LinkPreview> <Image className='pt-6' src='/images/ita/pdf/o19.jpg' alt={"o19"} /> </div>
+                <div> <LinkPreview url='https://www.gprocurement.go.th/new_index.html'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>2. เว็บไซต์ pgrocurement ระบบการจัดซื้อจัดจ้างภาครัฐ</p> </LinkPreview> <Image className='pt-6' src='/images/ita/pdf/o19.jpg' alt={"o19"} /> </div>
             </div>
         </>
     )

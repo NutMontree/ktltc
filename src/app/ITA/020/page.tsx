@@ -15,13 +15,13 @@ export default function page() {
                     <LinkPreview
 
                         url='https://ktltc.vercel.app/bidding'>
-                        <p className='hover:text-orange-500 dark:hover:text-orange-400'>ข่าวประกวดราคา</p>
+                        <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>ข่าวประกวดราคา</p>
                     </LinkPreview>
                 </div>
 
                 <p className='text-xl pt-4'>File PDF</p>
-                <div className='hover:text-blue-500 dark:hover:text-blue-400 color'> <LinkPreview url='/images/ita/pdf/o20(1).pdf'><p className='flexhover:text-orange-500 dark:hover:text-orange-400'>ประกาศจัดทำแผนครัวร้อน ครัวเย็น งปม 2568</p></LinkPreview> </div>
-                <div className='hover:text-blue-500 dark:hover:text-blue-400 color'> <LinkPreview url='/images/ita/pdf/o20(2).pdf'><p className='flexhover:text-orange-500 dark:hover:text-orange-400'>ประกาศผู้ชนะการเสนอราคา ครัวร้อน ครัวเย็น</p></LinkPreview> </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400 color'> <LinkPreview url='/images/ita/pdf/o20(1).pdf'><p className='flexhover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>ประกาศจัดทำแผนครัวร้อน ครัวเย็น งปม 2568</p></LinkPreview> </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400 color'> <LinkPreview url='/images/ita/pdf/o20(2).pdf'><p className='flexhover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>ประกาศผู้ชนะการเสนอราคา ครัวร้อน ครัวเย็น</p></LinkPreview> </div>
             </div>
         </>
     )

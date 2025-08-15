@@ -15,8 +15,8 @@ export default function page() {
 
             <p className='text-xl'>File PDF</p>
             <div className='grid gap-4 py-4'>
-                <div> <LinkPreview url='/images/ita/pdf/o10-โครงการ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. โครงการจัดทำบัตรประจำตัวนักเรียน นักศึกษา ประจำปีการศึกษา 2568</p> </LinkPreview> </div>
-                <div> <LinkPreview url='/images/ita/pdf/o10-รวมรูปเล่มแผนปฎิบัติราชการ_ปีงบประมาณ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. รวมรูปเล่มแผนปฎิบัติราชการ ปีงบประมาณ 2568</p> </LinkPreview> </div>
+                <div> <LinkPreview url='/images/ita/pdf/o10-โครงการ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. โครงการจัดทำบัตรประจำตัวนักเรียน นักศึกษา ประจำปีการศึกษา 2568</p> </LinkPreview> </div>
+                <div> <LinkPreview url='/images/ita/pdf/o10-รวมรูปเล่มแผนปฎิบัติราชการ_ปีงบประมาณ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>2. รวมรูปเล่มแผนปฎิบัติราชการ ปีงบประมาณ 2568</p> </LinkPreview> </div>
             </div>
         </>
     )

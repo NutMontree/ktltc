@@ -16,8 +16,8 @@ export default function page() {
 
             <p className='text-xl pt-4'>File PDF</p>
             <div className='grid gap-4 py-4'>
-                <div> <LinkPreview url='/images/ita/pdf/o25-โรงการอบรมเชิงปฏิบัติการในหัวข้อหัวใจ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. โครงการอบรมเชิงปฏิบัติการในหัวข้อ "หัวใจในการบริการ เพื่อยกระดับคุณภาพการจัดการศึกาา วิทยาลัยเทคนิคกันทรลักษ์ ปี 2568"</p> </LinkPreview> </div>
-                <div> <LinkPreview url='/images/ita/pdf/o25-ประเมินผลโครงการพัฒนาระบบประกันฯ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. ประเมินผลโครงการพัฒนาระบบประกันฯ"</p> </LinkPreview> </div>
+                <div> <LinkPreview url='/images/ita/pdf/o25-โรงการอบรมเชิงปฏิบัติการในหัวข้อหัวใจ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. โครงการอบรมเชิงปฏิบัติการในหัวข้อ "หัวใจในการบริการ เพื่อยกระดับคุณภาพการจัดการศึกาา วิทยาลัยเทคนิคกันทรลักษ์ ปี 2568"</p> </LinkPreview> </div>
+                <div> <LinkPreview url='/images/ita/pdf/o25-ประเมินผลโครงการพัฒนาระบบประกันฯ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>2. ประเมินผลโครงการพัฒนาระบบประกันฯ"</p> </LinkPreview> </div>
             </div>
 
         </>
