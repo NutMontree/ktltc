@@ -7,12 +7,8 @@ export default function page() {
                 <p>แสดงข้อมูลหน้าที่และอำนาจของสถานศึกษาตามที่กฎหมายกำหนด เช่น คำสั่งมอบหมายหน้าที่ของสถานศึกษา ระเบียบสำนักงานคณะกรรมการอาชีวศึกษา ว่าด้วยการบริหารสถานศึกษา เป็นต้น</p>
             </div>
 
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <LinkPreview
-                    url='https://ktltc.vercel.app/technicalcollegeorders/Technical2567/technical6710/tech16'>
-<p className='hover:text-orange-500 dark:hover:text-orange-400'>1. คำสั่งมอบหมายหน้าที่ให้บุคลากรปฏิบัติหน้าที่ ประจำปีการศึกษา 2567</p>
-                </LinkPreview>
-            </div>
+            <p className='text-xl'>File PDF</p>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400 py-4'> <LinkPreview url='https://ktltc.vercel.app/technicalcollegeorders/Technical2567/technical6710/tech16'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. คำสั่งมอบหมายหน้าที่ให้บุคลากรปฏิบัติหน้าที่ ประจำปีการศึกษา 2567</p> </LinkPreview> </div>
         </>
     )
 }

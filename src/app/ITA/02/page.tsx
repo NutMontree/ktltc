@@ -15,12 +15,8 @@ export default function page() {
                 </p>
             </div>
 
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <LinkPreview
-                    url='https://ktltc.vercel.app/executiveboard'>
-                    <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ข้อมูลโครงสร้างวิทยาลัยฯ</p>
-                </LinkPreview>
-            </div>
+            <p className='text-xl'>File PDF</p>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400 py-4'> <LinkPreview url='https://ktltc.vercel.app/executiveboard'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ข้อมูลโครงสร้างวิทยาลัยฯ</p> </LinkPreview> </div>
         </>
     )
 }

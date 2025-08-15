@@ -13,7 +13,8 @@ export default function page() {
                 </p>
             </div >
 
-            <div>
+            <p className='text-xl'>Link Wab Page</p>
+            <div className='py-4'>
                 <MOU />
             </div>
         </>

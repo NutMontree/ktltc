@@ -14,7 +14,8 @@ export default function page() {
                 - เป็นรายงานผลย้อนหลัง 1 ปีงบประมาณ <br />
             </div>
 
-            <div className='grid gap-2 xs:gap-4'>
+            <p className='text-xl pt-4'>File PDF</p>
+            <div className='grid gap-4 py-4'>
                 <div> <LinkPreview url='/images/ita/pdf/o25-โรงการอบรมเชิงปฏิบัติการในหัวข้อหัวใจ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. โครงการอบรมเชิงปฏิบัติการในหัวข้อ "หัวใจในการบริการ เพื่อยกระดับคุณภาพการจัดการศึกาา วิทยาลัยเทคนิคกันทรลักษ์ ปี 2568"</p> </LinkPreview> </div>
                 <div> <LinkPreview url='/images/ita/pdf/o25-ประเมินผลโครงการพัฒนาระบบประกันฯ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. ประเมินผลโครงการพัฒนาระบบประกันฯ"</p> </LinkPreview> </div>
             </div>

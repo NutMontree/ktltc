@@ -13,12 +13,8 @@ export default function page() {
                 – เป็นแผนที่มีระยะเวลาบังคับใช้ครอบคลุมปีงบประมาณปัจจุบัน<br />
             </div>
 
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <LinkPreview
-                    url='/images/ita/pdf/o4.pdf'>
-                    <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แผนพัฒนาการจัดการศึกษาวิทยาลัยเทคนิคกันทรลักษ์</p>
-                </LinkPreview>
-            </div>
+            <p className='text-xl'>File PDF</p>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400 py-4'> <LinkPreview url='/images/ita/pdf/o4.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. แผนพัฒนาการจัดการศึกษาวิทยาลัยเทคนิคกันทรลักษ์</p> </LinkPreview> </div>
         </>
     )
 }

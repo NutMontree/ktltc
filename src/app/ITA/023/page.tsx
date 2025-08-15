@@ -13,7 +13,8 @@ export default function page() {
                 - เป็นการดําเนินการในปีงบประมาณปัจจุบัน <br />
             </div>
 
-            <div className='grid gap-4 md:gap-2'>
+            <p className='text-xl pt-4'>File PDF</p>
+            <div className='grid gap-4 py-4'>
                 <div> <Link href='/images/ita/pdf/o23-โครงการอบรมเชิงปฏิบัติการขยายผลการประ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1.โครงการอบรมเชิงปฏิบัติการขยายผลการประเมินคูณธรรมและความโปร่งใสในการดำเนินงาน (ITA) </p> </Link> </div>
                 <div> <Link href='/images/ita/pdf/o23-โครงการพัฒนาระบบการประกันคุณภาพฯ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. โครงการพัฒนาระบบการประกันคุณภาพและมาตรฐานการศึกษา ประจำปีการศึกษา 2568</p> </Link> </div>
                 <div> <Link href='/images/ita/pdf/o23-โรงการอบรมเชิงปฏิบัติการในหัวข้อหัวใจใ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>3. โรงการอบรมเชิงปฏิบัติการในหัวข้อหัวใจในการบริการ เพื่อยกระดับคุณภาพการจัดการศึกษา วิทยาลัยเทคนิคกันทรลักษ์ ปี 2568</p> </Link> </div>

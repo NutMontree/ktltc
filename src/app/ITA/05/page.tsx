@@ -12,12 +12,8 @@ export default function page() {
                 4) แผนที่ตั้ง<br />
             </div>
 
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'>
-                <LinkPreview
-                    url='https://ktltc.vercel.app/about'>
-                    <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. About Page</p>
-                </LinkPreview>
-            </div>
+            <p className='text-xl'>File PDF</p>
+            <div className='hover:text-blue-500 dark:hover:text-blue-400 py-4'> <LinkPreview url='https://ktltc.vercel.app/about'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. About Page</p> </LinkPreview> </div>
         </>
     )
 }

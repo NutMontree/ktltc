@@ -13,10 +13,10 @@ export default function page() {
                 – เป็นแผนที่มีระยะเวลาบังคับใช้ในปีงบประมาณปัจุบัน<br />
             </div>
 
-
-            <div className='grid gap-4 md:gap-2'>
-                <div> <LinkPreview url='/images/ita/pdf/o10-โครงการ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. o10-โครงการ</p> </LinkPreview> </div>
-                <div> <LinkPreview url='/images/ita/pdf/o10-รวมรูปเล่มแผนปฎิบัติราชการ_ปีงบประมาณ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. o10-รวมรูปเล่มแผนปฎิบัติราชการ ปีงบประมาณ</p> </LinkPreview> </div>
+            <p className='text-xl'>File PDF</p>
+            <div className='grid gap-4 py-4'>
+                <div> <LinkPreview url='/images/ita/pdf/o10-โครงการ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. โครงการจัดทำบัตรประจำตัวนักเรียน นักศึกษา ประจำปีการศึกษา 2568</p> </LinkPreview> </div>
+                <div> <LinkPreview url='/images/ita/pdf/o10-รวมรูปเล่มแผนปฎิบัติราชการ_ปีงบประมาณ.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. รวมรูปเล่มแผนปฎิบัติราชการ ปีงบประมาณ 2568</p> </LinkPreview> </div>
             </div>
         </>
     )

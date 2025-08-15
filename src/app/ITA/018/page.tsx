@@ -12,7 +12,8 @@ export default function page() {
                 - เป็นรายงานผลย้อนหลัง 1 ปีงบประมาณ <br />
             </div>
 
-            <div> <LinkPreview url='/images/ita/pdf/o18ผลการใช้จ่ายงบประมาณประจำปี.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. o18ผลการใช้จ่ายงบประมาณประจำปี</p> </LinkPreview> </div>
+            <p className='text-xl'>File PDF</p>
+            <div className='py-4'> <LinkPreview url='/images/ita/pdf/o18ผลการใช้จ่ายงบประมาณประจำปี.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ผลการใช้จ่ายงบประมาณประจำปี</p> </LinkPreview> </div>
         </>
     )
 }

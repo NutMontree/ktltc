@@ -6,6 +6,8 @@ import Link from 'next/link'
 export default function QAPage() {
     return (
         <>
+            <p className='text-xl'>Link Wab Page</p>
+            <div className='py-4'> <Link href='/ITA/08/qa'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ระบบ Q&A วิทยาลัยเทคนิคกันทรลักษ์</p> </Link> </div>
             {/* <div>
                 <div>
                     <iframe
@@ -32,13 +34,6 @@ export default function QAPage() {
                         </a>
                     </div>
                 </div>
-            </div> */}
-
-
-            <div> <Link href='/ITA/08/qa'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ระบบ Q&A วิทยาลัยเทคนิคกันทรลักษ์</p> </Link> </div>
-
-            {/* <div>
-                <SubQAPage />
             </div> */}
         </>
     )

@@ -8,7 +8,8 @@ export default function page() {
                 – แสดงกฎหมายที่เกี่ยวข้องกับการดำเนินงานหรือการปฏิบัติงานของสถานศึกษา เช่น แผนการศึกษาแห่งชาติ ประกาศกระทรวงศึกษาธิการใช้มาตรฐานการอาชีวศึกษา ระดับ ปวช. และ ปวส. เป็นต้น
             </div>
 
-            <div className='grid gap-4 md:gap-2'>
+            <p className='text-xl'>File PDF</p>
+            <div className='grid gap-4 py-4'>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='/images/ita/pdf/1.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>01. O6 พรบ.การจัดซื้อจัดจ้างและการบริหารพัสดุภา</p> </LinkPreview> </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='/images/ita/pdf/2.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>02. O6 ระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจ</p> </LinkPreview> </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='/images/ita/pdf/3.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>03. การเบิกเงินจากคลัง 2562</p> </LinkPreview> </div>

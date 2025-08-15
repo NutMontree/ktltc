@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 export default function page() {
@@ -12,7 +13,12 @@ export default function page() {
                 - เป็นรายงานผลย้อนหลัง 1 ปีงบประมาณ <br />
             </div>
 
-            <div></div>
+            <p className='text-xl'>File PDF</p>
+            <div className='grid gap-4 py-4'>
+                <div> <Link href='/images/ita/pdf/o35-โครงการภายใต้กิจกรรมส่งเสริมคุณธรรม.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. โครงการภายใต้กิจกรรมส่งเสริมคุณธรรม จริยธรรม และธรรมาภิบาลในสถานศึกษา แผนงานบูรณาการต่อต้านการทุจริตและประพฤติมิชอบ ประจำปีงบประมาณ พ.ศ. 2568</p> </Link> </div>
+                <div> <Link href='/images/ita/pdf/o35-โครงการถวายเทียนพรรษา.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. โครงการภายใต้กิจกรรมส่งเสริมคุณธรรม จริยธรรม และธรรมาภิบาลในสถานศึกษา แผนงานบูรณาการต่อต้านการทุจริตและประพฤติมิชอบ ประจำปีงบประมาณ พ.ศ. 2568  อวท. (โครงการถวายเทียนพรรษา)</p> </Link> </div>
+                <div> <Link href='/images/ita/pdf/o35-โครงการอบรมเขียนแผนปฏิบัติงานอวท.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>3. โครงการภายใต้กิจกรรมส่งเสริมคุณธรรม จริยธรรม และธรรมาภิบาลในสถานศึกษา แผนงานบูรณาการต่อต้านการทุจริตและประพฤติมิชอบ ประจำปีงบประมาณ พ.ศ. 2568  อวท. (โครงการอบรมเขียนแผนปฏิบัติงานองค์การนักวิชาชีพแห่งประเทศไทย วิทยาลัยเทคนิคกันทรลักษ์)</p> </Link> </div>
+            </div>
         </>
     )
 }

@@ -9,8 +9,11 @@ export default function page() {
                 – สามารถเข้าถึงหรือเชื่อมโยงไปยังช่องทางข้างต้นจากเว็บไซต์หลักของสถานศึกษา <br />
             </div>
 
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='https://std2018.vec.go.th/web/Index.htm?mode=index'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>01. ระบบบริหารสถานศึกษา ศธ.02 ออนไลน์</p> </LinkPreview> </div>
-            <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='https://ktltc.vercel.app/'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>02. ktltc.vercel.app</p> </LinkPreview> </div>
+            <p className='text-xl pt-4'>Link Wab Page</p>
+            <div className='grid gap-4 py-4'>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='https://std2018.vec.go.th/web/Index.htm?mode=index'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>01. ระบบบริหารสถานศึกษา ศธ.02 ออนไลน์</p> </LinkPreview> </div>
+                <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='https://ktltc.vercel.app/'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>02. ktltc.vercel.app</p> </LinkPreview> </div>
+            </div>
         </>
     )
 }

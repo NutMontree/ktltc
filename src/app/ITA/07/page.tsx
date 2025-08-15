@@ -8,7 +8,8 @@ export default function page() {
                 <p>– แสดงข้อมูลข่าวสารต่าง ๆ ที่เกี่ยวข้องกับการดำเนินงานตาม อำนาจหน้าที่หรือภารกิจ ของสถานศึกษาเป็นข้อมูลข่าวสารที่เกิดขึ้นในปีงบประมาณปัจจุบัน</p>
             </div>
 
-            <div className='grid gap-4 md:gap-2'>
+            <p className='text-xl'>Link Wab Page</p>
+            <div className='grid gap-4 py-4'>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='https://ktltc.vercel.app/pressrelease'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>1. ข่าวประชาสัมพันธ์</p> </LinkPreview> </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='https://ktltc.vercel.app/newsletter'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>2. จดหมายข่าว</p> </LinkPreview> </div>
                 <div className='hover:text-blue-500 dark:hover:text-blue-400'> <LinkPreview url='https://ktltc.vercel.app/announcement'> <p className='hover:text-orange-500 dark:hover:text-orange-400'>3. ข่าวประกาศ</p> </LinkPreview> </div>
