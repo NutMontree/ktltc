@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const AboutPage = () => {
   return (
-    <main>
+    <main className="container">
       <Breadcrumb pageName="About Us Page" />
       <About />
     </main>
