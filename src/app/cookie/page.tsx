@@ -4,7 +4,7 @@ import cookie from "js-cookie";
 import Link from "next/link";
 
 const CookieConsentBanner = () => {
-    const [showBanner, setShowBanner] = useState(false);
+    const [showBanner, setShowBanner] = useState(true);
 
     useEffect(() => {
         const consentCookie = cookie.get("cookieConsent");
