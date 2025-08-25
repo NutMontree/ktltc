@@ -21,6 +21,11 @@ export default function MiniGame() {
             </p>
           </Link>
         </div>
+        <div className="flex justify-center pt-8">
+          <Link href="/TypingTestApp" className="">
+            <p className="hover:text-sky-500 flex justify-center">เกมทดสอบความเร็วการพิมพ์</p>
+          </Link>
+        </div>
       </div>
     </>
   );

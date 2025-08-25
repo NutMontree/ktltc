@@ -321,7 +321,6 @@ export default function ShowPressRelease() {
                 </div>
               </div>
             </div>
-
           </div >
           {/*   title title title title title title title title title title title title title title title title title title */}
           <div className="grid grid-flow-col">
