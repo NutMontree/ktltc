@@ -330,7 +330,7 @@ export default function ShowPressRelease() {
                   <Link key={item.href} href={item.href}>
                     <div className="
                                     mb-4 relative shadow-lg rounded-xl 
-                                    h-[180px]
+                                    h-[180px] xl:h-[250px]
  
                                     overflow-hidden
                                     hover:bg-orange-500
