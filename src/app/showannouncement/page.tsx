@@ -22,7 +22,7 @@ import { Image } from "@nextui-org/react";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
-import { DataAnnouncement } from "../announcement/announcement2568/announcement6806/data";
+import { DataAnnouncement } from "../announcement/announcement2568/announcement6808/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
