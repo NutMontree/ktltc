@@ -20,7 +20,7 @@ export default function Pressrelease() {
             className: 'dark:text-white dark:hover:text-white'
           },
           {
-            href: '/pressrelease/2568/press6807',
+            href: '/pressrelease/2568/press6808',
             className: 'dark:text-white dark:hover:text-white',
             title: (
               <>

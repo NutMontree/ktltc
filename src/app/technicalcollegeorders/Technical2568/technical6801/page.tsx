@@ -12,7 +12,7 @@ export default function page() {
 
       <div>
         <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
-          เดือน สิงหาคม 2567
+          เดือน มกราคม 2568
         </h1>
       </div>
 
