@@ -15,7 +15,7 @@ export function BackgroundBeamsWithCollisionDemo() {
               src="https://www.youtube.com/embed/tEqHeRdAiD0?si=q8RHAfYFgNKyCzzB"
               title="YouTube video player" />
           </div>
-          <div className="xs:text-[10px] xl:text-[15px] md:pt-8 xl:pt-0">
+          <div className="ext-[12px] md:text-[14px] sm:text-sm md:text-base md:pt-8 xl:pt-0">
             <p className="text-center">ภาพบรรยากาศ วันที่ 24 กรกฎาคม - 5  สิงหาคม 2568</p>
             <p>
               13 วัน ในครอบครัว KTL- TC  จากวันแรก จนถึงวันนี้
