@@ -15,7 +15,7 @@ export function BackgroundBeamsWithCollisionDemo() {
               src="https://www.youtube.com/embed/tEqHeRdAiD0?si=q8RHAfYFgNKyCzzB"
               title="YouTube video player" />
           </div>
-          <div className="xs:text-[12px] xl:text-[15px] md:pt-8 xl:pt-0">
+          <div className="xs:text-[10px] xl:text-[15px] md:pt-8 xl:pt-0">
             <p className="text-center">ภาพบรรยากาศ วันที่ 24 กรกฎาคม - 5  สิงหาคม 2568</p>
             <p>
               13 วัน ในครอบครัว KTL- TC  จากวันแรก จนถึงวันนี้
@@ -41,7 +41,7 @@ export function BackgroundBeamsWithCollisionDemo() {
               src="https://www.youtube.com/embed/k7hgxrwGgrw?si=VWg12pZKYfKEVnUz"
               title="YouTube video player" />
           </div>
-          <div className="xs:text-[12px] xl:text-[15px] md:pt-8 xl:pt-0">
+          <div className="xs:text-[10px] xl:text-[15px] md:pt-8 xl:pt-0">
             <p className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</p>
             <p>
               ขอขอบคุณ คณะผู้บริหาร นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะครู บุคลากรทางการศึกษา นักเรียน นักศึกษาทุกท่าน ในการรับมือสถานการณ์ปะทะชายเเดนไทย - กัมพูชา เเละได้รับมือดูเเลศูนย์พักพิงผู้อพยพวิทยาลัยเทคนิคกันทรลักษ์
