@@ -73,7 +73,6 @@ export default function Home() {
       <div className="container py-[48px]">
         <ShowYoutube />
       </div>
-
       {/* <About />
       <CallToAction />
       <Pricing />
