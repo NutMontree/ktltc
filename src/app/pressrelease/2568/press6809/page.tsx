@@ -51,9 +51,6 @@ export default function Page() {
                   <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2 flex">
                     <div>
                       {item.description}
-                      < p className="text-gray-500">
-                        ...ดูเพิ่มเติม
-                      </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
