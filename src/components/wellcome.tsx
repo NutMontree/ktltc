@@ -33,7 +33,7 @@ export default function Wellcome() {
                     className="w-full mt-4 flex justify-center"
                   >
                     <Image
-                      src="/images/3.webp"
+                      src="/images/ปก/3.webp"
                       // height="1000"
                       // width="1000"
                       className="h-64 w-full object-cover rounded-xl group-hover/card:shadow-xl"
