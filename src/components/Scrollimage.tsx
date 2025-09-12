@@ -8,19 +8,22 @@ const Scrollimage: React.FC = () => (
     <div>
       <Carousel arrows infinite={true} autoplay autoplaySpeed={4000} adaptiveHeight>
         <div>
-          <Image removeWrapper className="w-full" src="/images/17.webp" />
+          <Image removeWrapper className="w-full" src="/images/ปก/19.webp" />
         </div>
         <div>
-          <Image removeWrapper className="w-full" src="/images/18.webp" />
+          <Image removeWrapper className="w-full" src="/images/ปก/17.webp" />
         </div>
         <div>
-          <Image removeWrapper className="w-full" src="/images/8.webp" />
+          <Image removeWrapper className="w-full" src="/images/ปก/18.webp" />
         </div>
         <div>
-          <Image removeWrapper className="w-full" src="/images/1.webp" />
+          <Image removeWrapper className="w-full" src="/images/ปก/8.webp" />
         </div>
         <div>
-          <Image removeWrapper className="w-full" src="/images/2.webp" />
+          <Image removeWrapper className="w-full" src="/images/ปก/1.webp" />
+        </div>
+        <div>
+          <Image removeWrapper className="w-full" src="/images/ปก/2.webp" />
         </div>
       </Carousel>
     </div>
