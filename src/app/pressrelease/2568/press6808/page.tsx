@@ -21,7 +21,7 @@ export default function Page() {
           <div
             className=" 
             grid gap-2
-            grid-cols-2WW
+            grid-cols-2
             sm:grid-cols-3
             lg:grid-cols-4
            "
