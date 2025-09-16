@@ -53,14 +53,14 @@ export default function Home() {
       <div className="container">
         <BackgroundBeamsWithCollisionDemo />
       </div>
-      <div className="container py-[48px]">
-        <Internships />
-      </div>
       <div className="container">
         <ShowPressRelease />
       </div>
       <div className="container py-[48px]">
         <ShowNewsletter />
+      </div>
+      <div className="container py-[48px]">
+        <Internships />
       </div>
       <div className="container py-[48px]">
         <ShowAnnouncement />

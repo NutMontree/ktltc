@@ -2,11 +2,123 @@ export const DataInternships = {
   navItems: [
     {
       name: `นักศึกษา`,
-      backgroundImage: "/images/internships/2568/08/3.webp",
+      backgroundImage: "/images/internships/2568/23/1.webp",
       date: "16 กันยายน 2568",
       description: `
       วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
-      href: "/internships/SubInternships/2568/08",
+      href: "/internships/SubInternships/2568/23",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/22/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/22",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/21/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/21",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/20/6.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/20",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/19/7.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/19",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/18/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/18",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/17/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/17",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/16/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/16",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/15/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/15",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/14/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/14",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/13/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/13",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/12/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/12",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/11/2.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/11",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/10/2.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/10",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/09/1.webp",
+      date: "16 กันยายน 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/09",
     },
     {
       name: `นักศึกษา`,
