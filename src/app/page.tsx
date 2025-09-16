@@ -23,6 +23,7 @@ import { Metadata } from "next";
 import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
+import Internships from "./internships/page";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -51,6 +52,9 @@ export default function Home() {
       </div>
       <div className="container">
         <BackgroundBeamsWithCollisionDemo />
+      </div>
+      <div className="container py-[48px]">
+        <Internships />
       </div>
       <div className="container">
         <ShowPressRelease />

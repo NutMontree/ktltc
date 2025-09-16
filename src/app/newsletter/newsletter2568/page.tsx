@@ -12,7 +12,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6809    "
+                href="/newsletter/newsletter2568/newsletter6809"
               >
                 เดือน กันยายน 2568
               </Link>
