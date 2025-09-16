@@ -58,7 +58,7 @@ export default function CreateQRCode() {
                                 <span className="text-body-color dark:text-dark-6">
                                     /
                                 </span>
-                                pressrelease
+                                Qrcode
                             </p>
                         </li>
                     </ul>

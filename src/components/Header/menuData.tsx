@@ -293,6 +293,12 @@ const menuData: Menu[] = [
         path: "/ITA/08/qa",
         newTab: false,
       },
+      {
+      id: 613,
+      title: "Create Qr Code Free",
+      path: "/qrcode",
+      newTab: false,
+      },
     ],
   },
   {
