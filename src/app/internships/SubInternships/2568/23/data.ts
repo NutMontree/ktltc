@@ -38,4 +38,9 @@ export const TageLink = [
 
 export const ImageItem = [
   { imgs: "/images/internships/2568/23/1.webp" },
+  { imgs: "/images/internships/2568/23/2.webp" },
+  { imgs: "/images/internships/2568/23/3.webp" },
+  { imgs: "/images/internships/2568/23/4.webp" },
+  { imgs: "/images/internships/2568/23/5.webp" },
+  { imgs: "/images/internships/2568/23/6.webp" },
 ] 
