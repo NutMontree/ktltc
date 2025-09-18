@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กันยายน/43/1.webp",
+      date: "18 กันยายน 2568",
+      description: `
+ เเจ้ง...กำหนดการโครงการปฐมนิเทศนักเรียน นักศึกษา และประชุมผู้ปกครองนักเรียน  นักศึกษาก่อนออกฝึกงาน/ฝึกอาชีพ ภาคเรียนที่ 2 ปีการศึกษา 2568 … See more
+ `,
+      href: "/pressrelease/2568/press6809/press43",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กันยายน/42/00.webp",
       date: "18 กันยายน 2568",
       description: `
