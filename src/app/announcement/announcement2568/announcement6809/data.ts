@@ -1,13 +1,13 @@
 export const DataAnnouncement = {
   navItems: [
     {
-      name: ` `,
-      backgroundImage: " ",
-      date: " ",
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กันยายน/41/00.webp",
+      date: "18 กันยายน 2568",
       description: `
- 
-    `,
-      href: " ",
+ประกาศ...กำหนดการปิดและเปิดภาคเรียน ภาคเรียนที่ 2 ปีการศึกษา 2568… See more
+`,
+      href: "/pressrelease/2568/press6809/press41",
     },
   ],
 };

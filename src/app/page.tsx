@@ -24,6 +24,7 @@ import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWi
 import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
 import Internships from "./internships/page";
+import Showvideo from "./Showvideo/page";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -73,6 +74,9 @@ export default function Home() {
       </div>
       <div className="container py-[48px]">
         <ShowFacebook />
+      </div>
+      <div className="container py-[48px]">
+        <Showvideo />
       </div>
       <div className="container py-[48px]">
         <ShowYoutube />

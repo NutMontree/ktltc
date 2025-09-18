@@ -10,7 +10,7 @@ export default function ShowYoutube() {
         <div className="flex justify-center">
           <Image src='/images/icon/youtube-svgrepo-com.svg' alt='logo-youtube' width={70} height={70} />
         </div>
-        <h1 className="text-3xl pt-3 font-bold pb-8 ">Youtube</h1>
+        <h1 className="text-3xl pt-4 font-bold pb-8 ">Youtube</h1>
       </div>
       <div>
         <div>

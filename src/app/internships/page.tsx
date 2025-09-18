@@ -19,8 +19,8 @@ export default function Internships() {
 
     return (
         <>
-            <div className="relative z-20 overflow-hidden lg:pt-[40px]">
-                <div className="pt-28">
+            <div className="relative z-20 overflow-hidden">
+                <div className="">
                     {/*   title title title title title title title title title title title title title title title title title title */}
                     <div className="grid grid-flow-col py-4">
                         <div className="justify-items-start">
