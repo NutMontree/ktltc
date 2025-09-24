@@ -24,28 +24,13 @@ export default function HRD() {
                     <p>7. ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
                     <p>8. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย</p>
                 </div>
-
-                <div className='grid md:grid-flow-col gap-4'>
-                    <div className='rounded-[22px] pt-4'>
-                        <Image src="/images/บุคลากร/ทรัพยากร/2.webp" alt="Image description ทรัพยากร" />
-                    </div>
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/ทรัพยากร/2.webp" alt="Image description ทรัพยากร" />
                 </div>
-
-                <div className='pt-12'>
-
-                    <h1 className="text-xxl text-[#DAA520] flex justify-center">การประเมินผลการพัฒนางานตามข้อตกลง (PA)</h1>
-
-                    <div>
-                        <PaPage />
-                    </div>
+                <div>
+                    <PaPage />
                 </div>
             </main >
         </>
     )
 }
-
-
-
-// นางสาวณัญสินี ชวดพงษ์
-// นางสาวล้ำค่า จินาวัลย์
-// นายสิริปัญญ์ เสริมสิริพิพัฒน์
