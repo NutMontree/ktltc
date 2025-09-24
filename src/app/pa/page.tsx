@@ -131,6 +131,38 @@ export default function PaPage() {
                                                 src="/pdf/งานบุคลากร/นายสิริปัญญ์.pdf"
                                             ></iframe>
                                         </div>
+
+                                        <div className="pt-4">
+                                            <p className="text-sky-800 text-lg">
+                                                PDF
+                                            </p>
+                                            <Link
+                                                href="/pdf/งานบุคลากร/นางสาวณัญสินี.pdf"
+                                                className="hover:text-sky-500"
+                                                target="_blank"
+                                            >นางสาวณัญสินี ชวดพงษ์</Link>
+
+                                            <iframe
+                                                className="w-full h-screen aspect-video pt-4"
+                                                src="/pdf/งานบุคลากร/นางสาวณัญสินี.pdf"
+                                            ></iframe>
+                                        </div>
+
+                                        <div className="pt-4">
+                                            <p className="text-sky-800 text-lg">
+                                                PDF
+                                            </p>
+                                            <Link
+                                                href="/pdf/งานบุคลากร/นางสาวล้ำค่า.pdf"
+                                                className="hover:text-sky-500"
+                                                target="_blank"
+                                            >นางสาวล้ำค่า จินาวัลย์</Link>
+
+                                            <iframe
+                                                className="w-full h-screen aspect-video pt-4"
+                                                src="/pdf/งานบุคลากร/นางสาวล้ำค่า.pdf"
+                                            ></iframe>
+                                        </div>
                                     </div>
                                 </div>
 
