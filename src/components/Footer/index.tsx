@@ -481,6 +481,14 @@ const Footer = () => {
                     แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
                   </LinkPreview>
                 </li>
+                <li>
+                  <LinkPreview
+                    url='/pa'
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    Performance Agreement: PA
+                  </LinkPreview>
+                </li>
               </ul>
             </div>
           </div>

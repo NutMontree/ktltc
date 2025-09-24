@@ -299,6 +299,12 @@ const menuData: Menu[] = [
         path: "/qrcode",
         newTab: false,
       },
+      {
+        id: 614,
+        title: "Performance Agreement: PA",
+        path: "/pa",
+        newTab: false,
+      },
     ],
   },
   {
