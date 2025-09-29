@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `28 กันยายน`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กันยายน/60/00.webp",
+      date: "29 กันยายน 2568",
+      description: `
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร คณะครู และบุคลากรทางการศึกษา ได้ร่วมกันจัดกิจกรรมเข้าแถวเ… See more
+    `,
+      href: "/pressrelease/2568/press6809/press60",
+    },
+    {
+      name: `28 กันยายน`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/กันยายน/59/00.webp",
       date: "29 กันยายน 2568",
       description: `
