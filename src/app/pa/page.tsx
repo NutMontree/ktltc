@@ -48,7 +48,7 @@ export default function PaPage() {
 
                                         {/* ******************************** Photos ******************************** */}
                                         <div className=''>นางนงลักษร์ ศรีชา<Image src={'/pdf/งานบุคลากร/นางนงลักษรื.webp'} className='py-4 rounded-[22px]' /></div>
-                                        <div className=''>นางวีนัส สุวรรณ<Image src={'/pdf/งานบุคลากร/นางวีนัส.webp'} className='py-4 rounded-[22px]' /></div>
+                                        <div className=''>นางวีนัส สุวรรณ<Image src={'/pdf/งานบุคลากร/นางวีนัส.webp'} className='py-4 WW' /></div>
                                         {/* ******************************** Photos ******************************** */}
                                         {/* ***************************** Link And PDF ***************************** */}
                                         <div className="pt-4">
