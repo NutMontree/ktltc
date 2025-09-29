@@ -27,6 +27,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
     "@types/js-cookie": "^3.0.6",
+    "@vercel/analytics": "^1.5.0",
     "antd": "^5.24.0",
     "antd-style": "^3.7.1",
     "autoprefixer": "^10.4.20",

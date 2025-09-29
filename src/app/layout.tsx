@@ -12,9 +12,10 @@ import ScrollToTop from "@/components/ScrollToTop";
 import PreLoader from "@/components/Common/PreLoader";
 import FloatingNavDemo from "@/components/FloatingNavDemo";
 import CookieConsentBanner from './cookie/page'
-import { fontSans } from "@/config/fonts";
+import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
+import { fontSans } from "@/config/fonts";
 
 export default function RootLayout({
   children,
@@ -52,6 +53,7 @@ export default function RootLayout({
             <Footer />
             <FloatingNavDemo />
             <ScrollToTop />
+            <Analytics />
           </ThemeProvider>
         )}
       </body>
