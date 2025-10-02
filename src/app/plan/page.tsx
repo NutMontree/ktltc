@@ -35,9 +35,9 @@ export default function page() {
                   Ktltc Plan
                 </button>
               </Link>
-              <Link href='https://ktltcp.vercel.app/plan'>
+              <Link href='https://ktltc.vercel.app/pdca'>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded-full">
-                  เอกสาร  PDCA
+                  แบบฟอร์ม PDCA
                 </button>
               </Link>
             </div>

@@ -56,9 +56,6 @@ export default function Home() {
         <BackgroundBeamsWithCollisionDemo />
       </div>
       <div className="container">
-        <PDCA />
-      </div>
-      <div className="container">
         <ShowPressRelease />
       </div>
       <div className="container py-[48px]">
