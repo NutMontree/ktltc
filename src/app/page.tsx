@@ -25,6 +25,7 @@ import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
 import Internships from "./internships/page";
 import Showvideo from "./Showvideo/page";
+import PDCA from "./pdca/page";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -53,6 +54,9 @@ export default function Home() {
       </div>
       <div className="container">
         <BackgroundBeamsWithCollisionDemo />
+      </div>
+      <div className="container">
+        <PDCA />
       </div>
       <div className="container">
         <ShowPressRelease />
