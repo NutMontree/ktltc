@@ -37,7 +37,7 @@ export default function page() {
               </Link>
               <Link href='https://ktltc.vercel.app/pdca'>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded-full">
-                  แบบฟอร์ม PDCA 1
+                  แบบฟอร์ม PDCA
                 </button>
               </Link>
             </div>
