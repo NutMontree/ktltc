@@ -2,6 +2,14 @@ export const DataInternships = {
   navItems: [
     {
       name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/25/12.webp",
+      date: "1 ตุลาคม 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/25",
+    },
+    {
+      name: `นักศึกษา`,
       backgroundImage: "/images/internships/2568/24/2.webp",
       date: "22 กันยายน 2568",
       description: `
