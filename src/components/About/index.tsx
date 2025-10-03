@@ -29,7 +29,7 @@ const About = () => {
                   </p>
                   <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
                   <p>Website : ktltc.vercel.app</p>
-                  <p>Gmail : ktl11022021@gmail.com</p><br />
+                  <p>Gmail : relationktl@gmail.com</p><br />
                   <p>สอบถามข้อมูลเพิ่มเติม</p>
                   <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๐๕๓ </p>
                   <br />

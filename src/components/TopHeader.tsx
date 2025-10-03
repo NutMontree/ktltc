@@ -117,7 +117,7 @@ export default function TopHeader() {
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="px-1 py-2">
-                    <div className="text-tiny">ktl11022021@gmail.com</div>
+                    <div className="text-tiny">relationktl@gmail.com</div>
                   </div>
                 </PopoverContent>
               </Popover>
