@@ -76,7 +76,7 @@ export default function PDCA() {
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/แบบฟอร์มโครงการ.docx"
+                            href="/pdf/pdca/แบบฟอร์มโครงการ.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
@@ -94,7 +94,7 @@ export default function PDCA() {
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน.docx"
+                            href="/pdf/pdca/การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
@@ -103,16 +103,16 @@ export default function PDCA() {
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ ปร.docx"
+                            href="/pdf/pdca/ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ ปร.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            7. ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ ปร
+                            7. ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำป.docx"
+                            href="/pdf/pdca/ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำป.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
