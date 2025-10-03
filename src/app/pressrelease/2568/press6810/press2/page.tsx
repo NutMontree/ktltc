@@ -80,7 +80,7 @@ export default function Pressrelease() {
             duration: 0.2,
             delay: 0.4,
           }}
-          className="relative z-10 mx-auto  py-6 text-lg font-normal text-neutral-600 dark:text-neutral-400"
+          className="relative z-10 mx-auto py-6 font-normal text-neutral-600 dark:text-neutral-400"
         >
           <div className='grid gap-2'>
             {Description.map((item) => (

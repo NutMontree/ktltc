@@ -8,6 +8,7 @@ import { FootTitle } from "@/components/FootTitle";
 import { HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb } from 'antd';
 // import { TageLink } from "./data";
+import { motion } from "motion/react";
 
 export default function Pressrelease() {
 
@@ -36,48 +37,118 @@ export default function Pressrelease() {
           },
         ]}
       />
-      <section className="pt-20">
-        <div className="">
-          <div className="text-center text-xl pb-6">
-            {DataPressrelease.Item.map((item) => (
-              <div key={item.title}>{item.title}</div>
+      <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
+        <div className="absolute top-0 h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
+      </div>
+      <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
+        <div className="absolute h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
+      </div>
+      <div className="absolute inset-x-0 bottom-0 h-px w-full bg-neutral-200/80 dark:bg-neutral-800/80">
+        <div className="absolute mx-auto h-px w-40 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+      </div>
+      <div className="px-4 py-10 md:py-20">
+        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
+          {""
+            .split(" ")
+            .map((word, index) => (
+              <motion.span
+                key={index}
+                initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
+                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                transition={{
+                  duration: 0.3,
+                  delay: index * 0.1,
+                  ease: "easeInOut",
+                }}
+                className="mr-2 inline-block"
+              >
+                {word}
+                {DataPressrelease.Item.map((item) => (
+                  <div key={item.title}>{item.title}</div>
+                ))}
+              </motion.span>
             ))}
-          </div>
+        </h1>
+        <motion.p
+          initial={{
+            opacity: 0,
+          }}
+          animate={{
+            opacity: 1,
+          }}
+          transition={{
+            duration: 0.2,
+            delay: 0.4,
+          }}
+          className="relative z-10 mx-auto py-6 font-normal text-neutral-600 dark:text-neutral-400"
+        >
           <div className='grid gap-2'>
             {Description.map((item) => (
               <div key={item?.description ?? "undefined"}>
                 {item?.description && <div >{item.description}</div>}
               </div>
             ))}
-
-            {/* ******************************* TageLink ******************************* */}
-            {/* {TageLink.map((item) => (
+          </div>
+        </motion.p>
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 10,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.2,
+            delay: 0.6,
+          }}
+        >
+          {/* ******************************* TageLink ******************************* */}
+          {/* {TageLink.map((item) => (
               <Link key={item.href} href={item.href} target="_blank">
                 <div className="text-sky-600 dark:text-sky-300">{item.tage}</div>
               </Link>
             ))} */}
-            {/* ******************************* TageLink ******************************* */}
-            {/* ***************************** LInk And PDF ***************************** */}
-            <div className="pt-4">
-              <p className="text-sky-800 text-lg">
-                รายละเอียดค่าลงทะเบียนทุกระดับชั้น
-              </p>
-              <Link
-                href="
+          {/* ******************************* TageLink ******************************* */}
+          {/* ***************************** LInk And PDF ***************************** */}
+          <div className="pt-4">
+            <p className="text-sky-800 text-lg">
+              รายละเอียดค่าลงทะเบียนทุกระดับชั้น
+            </p>
+            <Link
+              href="
 https://drive.google.com/drive/folders/1TgPURXEF7lnGpTKB1ZCScUPa_09qwNg7?fbclid=IwY2xjawNMUH1leHRuA2FlbQIxMABicmlkETFrQnE5cUg2cHN6TEZNZ1pwAR4FFVDL42zvJnKqFHetJlDG9VfjSvWyx226F4SAhHzYiR78YrO8tJdZlf82pw_aem_huuLURZ9_prRg7lQIi_RcQ
 "
-                className="hover:text-sky-500"
-                target="_blank"
-              >
-                https://drive.google.com/...
-              </Link>
-            </div>
-            {/* ***************************** LInk And PDF ***************************** */}
+              className="hover:text-sky-500"
+              target="_blank"
+            >
+              https://drive.google.com/...
+            </Link>
+          </div>
+          {/* ***************************** LInk And PDF ***************************** */}
 
-            <div className=''>
-              <FootTitle />
-            </div>
+          <div className=''>
+            <FootTitle />
+          </div>
+        </motion.div>
 
+
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 10,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.2,
+            delay: 0.8,
+          }}
+        >
+          <div className="">
             <div className="date flex py-2 gap-2">
               <Image isBlurred src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
               {DataDate.map((item) => (
@@ -93,7 +164,7 @@ https://drive.google.com/drive/folders/1TgPURXEF7lnGpTKB1ZCScUPa_09qwNg7?fbclid=
             {/* ***************************** Youtube / Image*****************************  */}
 
             <div className="flex justify-center">
-              <div className="  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
                 {ImageItem.map((item) =>
                   item ? (
                     <div key={item.imgs}>
@@ -106,8 +177,10 @@ https://drive.google.com/drive/folders/1TgPURXEF7lnGpTKB1ZCScUPa_09qwNg7?fbclid=
               </div>
             </div>
           </div>
-        </div>
-      </section >
+        </motion.div>
+      </div>
+
+
     </>
   );
 }
