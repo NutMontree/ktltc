@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { DataDate, DataPressrelease, Description, ImageItem, } from "./data";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 import { FootTitle } from "@/components/FootTitle";
 import { HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb } from 'antd';
@@ -58,7 +58,20 @@ export default function Pressrelease() {
             ))} */}
             {/* ******************************* TageLink ******************************* */}
             {/* ***************************** LInk And PDF ***************************** */}
-
+            <div className="pt-4">
+              <p className="text-sky-800 text-lg">
+                รายละเอียดค่าลงทะเบียนทุกระดับชั้น
+              </p>
+              <Link
+                href="
+https://drive.google.com/drive/folders/1TgPURXEF7lnGpTKB1ZCScUPa_09qwNg7?fbclid=IwY2xjawNMUH1leHRuA2FlbQIxMABicmlkETFrQnE5cUg2cHN6TEZNZ1pwAR4FFVDL42zvJnKqFHetJlDG9VfjSvWyx226F4SAhHzYiR78YrO8tJdZlf82pw_aem_huuLURZ9_prRg7lQIi_RcQ
+"
+                className="hover:text-sky-500"
+                target="_blank"
+              >
+                https://drive.google.com/...
+              </Link>
+            </div>
             {/* ***************************** LInk And PDF ***************************** */}
 
             <div className=''>
@@ -66,7 +79,7 @@ export default function Pressrelease() {
             </div>
 
             <div className="date flex py-2 gap-2">
-              <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
+              <Image isBlurred src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
               {DataDate.map((item) => (
                 <div key={item.date}>
                   <div className="text-xs text-slate-500 pt-1">{item.date}</div>
@@ -80,12 +93,12 @@ export default function Pressrelease() {
             {/* ***************************** Youtube / Image*****************************  */}
 
             <div className="flex justify-center">
-              <div className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
+              <div className="  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
                 {ImageItem.map((item) =>
                   item ? (
                     <div key={item.imgs}>
                       <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
-                        <Image src={item.imgs} alt={""}></Image>
+                        <Image isBlurred src={item.imgs} alt={""}></Image>
                       </div>
                     </div>
                   ) : null

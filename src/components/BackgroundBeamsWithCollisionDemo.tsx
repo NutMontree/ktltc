@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 
 export function BackgroundBeamsWithCollisionDemo() {
   return (
@@ -12,6 +12,7 @@ export function BackgroundBeamsWithCollisionDemo() {
             <div className="">
               <div className="flex justify-center">
                 <Image
+                  isBlurred
                   //  className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
                   className="rounded-xl shadow-2xl"
                   src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/3/00.webp"}
@@ -33,6 +34,7 @@ export function BackgroundBeamsWithCollisionDemo() {
             <div className="">
               <div className="flex justify-center">
                 <Image
+                  isBlurred
                   //  className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
                   className="rounded-xl shadow-2xl"
                   src={"/images/ข่าวประชาสัมพันธ์/2568/กันยายน/37/1.webp"}
