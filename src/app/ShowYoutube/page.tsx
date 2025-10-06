@@ -26,6 +26,51 @@ export default function ShowYoutube() {
                   <div className="gap-[24px] grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 justify-items-center">
                     <div >
                       <iframe
+                        src="https://www.youtube.com/embed/tEqHeRdAiD0?si=q8RHAfYFgNKyCzzB"
+                        className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
+                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
+                                   rounded-2xl"
+                        width="560"
+                        height="315"
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen>
+                      </iframe>
+                    </div>
+                    <div >
+                      <iframe
+                        src="https://www.youtube.com/embed/k7hgxrwGgrw?si=VWg12pZKYfKEVnUz"
+                        className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
+                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
+                                   rounded-2xl"
+                        width="560"
+                        height="315"
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen>
+                      </iframe>
+                    </div>
+                    <div >
+                      <iframe
+                        src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1804472173610242%2F&show_text=true&width=560&t=0"
+                        className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
+                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
+                                   rounded-2xl"
+                        width="560"
+                        height="315"
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen>
+                      </iframe>
+                    </div>
+                    <div >
+                      <iframe
                         src="https://www.youtube.com/embed/tVReYxrSav0?si=HZpppAn8DwMvccUr"
                         className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
                                    w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    

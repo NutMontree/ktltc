@@ -2,9 +2,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section>
       <div
-        className="
-  pb-80
-      "
+        className="container"
       >{children}</div>
     </section>
   );
