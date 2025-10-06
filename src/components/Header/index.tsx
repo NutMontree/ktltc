@@ -68,15 +68,15 @@ const Header = () => {
                       alt="logo"
                       width='240'
                       height='30'
-                      className="header-logo w-full dark:hidden hidden lg:block"
+                      className="header-logo w-full hidden lg:block"
                     />
-                    <Image
+                    {/* <Image
                       src={`/images/logo.webp`}
                       alt="logo"
                       width='240'
                       height='30'
                       className="header-logo hidden w-full dark:block "
-                    />
+                    /> */}
                   </>
                 ) : (
                   <>
