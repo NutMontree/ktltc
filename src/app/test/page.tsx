@@ -4,12 +4,13 @@ import { Box, Lock, Search, Settings, Sparkles } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { CometCard } from "@/components/ui/comet-card";
 import { Meteors } from "@/components/ui/meteors";
+import { Image } from "@nextui-org/react";
 
 export default function page() {
   return (
     <>
       <div className="">
-        <div className="relative w-full max-w-xl">
+        {/* <div className="relative w-full max-w-xl">
           <div className="absolute inset-0 h-full w-full scale-[0.80] transform rounded-full bg-red-500 bg-gradient-to-r from-blue-500 to-teal-500 blur-3xl" />
           <div className="relative flex h-full flex-col items-start justify-end overflow-hidden rounded-2xl border border-gray-800 bg-gray-900 px-4 py-8 shadow-xl">
             <div className="mb-4 flex h-5 w-5 items-center justify-center rounded-full border border-gray-500">
@@ -64,7 +65,7 @@ export default function page() {
                     loading="lazy"
                     className="absolute inset-0 h-full w-full rounded-[16px] bg-[#000000] object-cover contrast-75"
                     alt="Invite background"
-                    src="https://images.unsplash.com/photo-1505506874110-6a7a69069a08?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src="https://image.unsplash.com/photo-1505506874110-6a7a69069a08?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     style={{
                       boxShadow: "rgba(0, 0, 0, 0.05) 0px 5px 6px 0px",
                       opacity: 1,
@@ -78,71 +79,72 @@ export default function page() {
               </div>
             </div>
           </CometCard>
-        </div>
+        </div> */}
 
 
         <div className="py-24">
-          <GlowingEffectDemo />
+          <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12">
+            <GridItem
+              // md:[grid-area:3/1/4/13]
+              area="md:[grid-area:1/1/2/13] flex items-center justify-center"
+              // icon={<Box className="h-4 w-4 text-black dark:text-neutral-400" />}
+              // title="Do things the right way"
+              // description="Running out of copy so I'll write anything."
+              image={<>  <Image className="" isBlurred src={'/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/6/1.webp'} alt={""}></Image></>}
+            />
+
+            <GridItem
+              area="md:[grid-area:2/1/2/7] flex items-center justify-center"
+              // icon={<Settings className="h-4 w-4 text-black dark:text-neutral-400" />}
+              // title="The best AI code editor ever."
+              // description="Yes, it's true. I'm not even kidding. Ask my mom if you don't believe me."
+              image={<>  <Image className="" isBlurred src={'/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/6/2.webp'} alt={""}></Image></>}
+
+            />
+
+            <GridItem
+              area="md:[grid-area:2/7/2/13] flex items-center justify-center"
+              // icon={<Lock className="h-4 w-4 text-black dark:text-neutral-400" />}
+              // title="You should buy Aceternity UI Pro"
+              // description="It's the best money you'll ever spend"
+              image={<>  <Image className=" " isBlurred src={'/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/6/3.webp'} alt={""}></Image></>}
+            />
+
+            <GridItem
+              area="md:[grid-area:3/1/3/7] flex items-center justify-center"
+              // icon={<Sparkles className="h-4 w-4 text-black dark:text-neutral-400" />}
+              // title="This card is also built by Cursor"
+              // description="I'm not even kidding. Ask my mom if you don't believe me."
+              image={<>  <Image className="" isBlurred src={'/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/6/4.webp'} alt={""}></Image></>}
+            />
+
+            <GridItem
+              area="md:[grid-area:3/7/3/13] flex items-center justify-center"
+              // icon={<Search className="h-4 w-4 text-black dark:text-neutral-400" />}
+              // title="Coming soon on Aceternity UI"
+              // description="I'm writing the code as I record this, no shit."
+              image={<>  <Image className="" isBlurred src={'/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/6/5.webp'} alt={""}></Image></>}
+            />
+          </ul>
         </div>
       </div>
     </>
   )
 }
 
-
-
-export function GlowingEffectDemo() {
-  return (
-    <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2">
-      <GridItem
-        area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
-        icon={<Box className="h-4 w-4 text-black dark:text-neutral-400" />}
-        title="Do things the right way"
-        description="Running out of copy so I'll write anything."
-      />
-
-      <GridItem
-        area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
-        icon={<Settings className="h-4 w-4 text-black dark:text-neutral-400" />}
-        title="The best AI code editor ever."
-        description="Yes, it's true. I'm not even kidding. Ask my mom if you don't believe me."
-      />
-
-      <GridItem
-        area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
-        icon={<Lock className="h-4 w-4 text-black dark:text-neutral-400" />}
-        title="You should buy Aceternity UI Pro"
-        description="It's the best money you'll ever spend"
-      />
-
-      <GridItem
-        area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
-        icon={<Sparkles className="h-4 w-4 text-black dark:text-neutral-400" />}
-        title="This card is also built by Cursor"
-        description="I'm not even kidding. Ask my mom if you don't believe me."
-      />
-
-      <GridItem
-        area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
-        icon={<Search className="h-4 w-4 text-black dark:text-neutral-400" />}
-        title="Coming soon on Aceternity UI"
-        description="I'm writing the code as I record this, no shit."
-      />
-    </ul>
-  );
-}
-
 interface GridItemProps {
   area: string;
-  icon: React.ReactNode;
-  title: string;
-  description: React.ReactNode;
+  // icon: React.ReactNode;
+  // title: string;
+  // description: React.ReactNode;
+  image: React.ReactNode;
 }
 
-const GridItem = ({ area, icon, title, description }: GridItemProps) => {
+// const GridItem = ({ area, icon, title, description, image }: GridItemProps) => {
+const GridItem = ({ area, image }: GridItemProps) => {
   return (
-    <li className={`min-h-[14rem] list-none ${area}`}>
-      <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
+    <li className={`  ${area}`}>
+      <div className="relative h-full rounded-2xl  p-2 md:rounded-3xl md:p-3">
         <GlowingEffect
           spread={40}
           glow={true}
@@ -151,7 +153,9 @@ const GridItem = ({ area, icon, title, description }: GridItemProps) => {
           inactiveZone={0.01}
         />
         <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
-          <div className="relative flex flex-1 flex-col justify-between gap-3">
+          <div className="">
+            <div>{image}</div>
+            {/* 
             <div className="w-fit rounded-lg border border-gray-600 p-2">
               {icon}
             </div>
@@ -162,7 +166,7 @@ const GridItem = ({ area, icon, title, description }: GridItemProps) => {
               <h2 className="font-sans text-sm/[1.125rem] text-black md:text-base/[1.375rem] dark:text-neutral-400 [&_b]:md:font-semibold [&_strong]:md:font-semibold">
                 {description}
               </h2>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

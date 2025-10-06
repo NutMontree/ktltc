@@ -26,6 +26,7 @@ import SubQAPage from "./ITA/08/qa/SubQAPage";
 import Internships from "./internships/page";
 import Showvideo from "./Showvideo/page";
 import PDCA from "./pdca/page";
+import GlowingPage from "./Glowing/page";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -51,6 +52,9 @@ export default function Home() {
       </div>
       <div className="container py-[48px]">
         <ScrollVelocity />
+      </div>
+      <div className="container">
+        <GlowingPage />
       </div>
       <div className="container">
         <BackgroundBeamsWithCollisionDemo />
