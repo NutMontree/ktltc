@@ -41,9 +41,9 @@ export default function RootLayout({
             defaultTheme="light"
           >
             <CookieConsentBanner />
-            {/* <div className="py-2">
+            <div className="py-2">
               <TopHeader />
-            </div> */}
+            </div>
             <div className="pb-20">
               <Header />
             </div>

@@ -4,7 +4,7 @@ export const DataPressrelease = {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/3/00.webp",
       date: "1 ตุลาคม 2568",
-      description: `p
+      description: `ps
 กำหนดการลงทะเบียนเรียน ภาคเรียนที่ 2 ปีการศึกษา 2568… See more
 `,
       href: "/pressrelease/2568/press6810/press3",

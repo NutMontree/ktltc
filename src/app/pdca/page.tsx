@@ -71,6 +71,15 @@ export default function PDCA() {
                             className="hover:text-sky-500"
                             target="_blank"
                         >
+                            3. แบบฟอร์มขออนุมัติโครงการ (เฉพาะงานแผน)
+                        </Link>
+                    </div>
+                    <div>
+                        <Link
+                            href="/pdf/pdca/แบบฟอร์มขออนุมัติโครงการ1.docx"
+                            className="hover:text-sky-500"
+                            target="_blank"
+                        >
                             3. แบบฟอร์มขออนุมัติโครงการ
                         </Link>
                     </div>
@@ -80,7 +89,7 @@ export default function PDCA() {
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            4. แบบฟอร์มโครงการ
+                            5. แบบฟอร์มโครงการ
                         </Link>
                     </div>
                     <div>
@@ -89,7 +98,7 @@ export default function PDCA() {
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            5. แบบรายงานผลการดำเนินงานโครงการ แบบย่อ (2แผ่น)
+                            6. แบบรายงานผลการดำเนินงานโครงการ แบบย่อ (2แผ่น)
                         </Link>
                     </div>
                     <div>
@@ -98,7 +107,7 @@ export default function PDCA() {
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            6. การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน
+                            7. การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน
                         </Link>
                     </div>
                     <div>
@@ -107,7 +116,7 @@ export default function PDCA() {
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            7. ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ
+                            8. ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ
                         </Link>
                     </div>
                     <div>
@@ -116,7 +125,7 @@ export default function PDCA() {
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            8. ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำป
+                            9. ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำป
                         </Link>
                     </div>
                 </div>
