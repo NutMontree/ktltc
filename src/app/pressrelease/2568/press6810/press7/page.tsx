@@ -124,8 +124,6 @@ export default function Pressrelease() {
             >
               https://drive.google.com/...
             </Link>
-
-
           </div>
           {/* ***************************** LInk And PDF ***************************** */}
 

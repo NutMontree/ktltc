@@ -28,9 +28,17 @@ export default function QAES() {
                 </div>
             </div>
 
-            <div className='flex justify-center pt-8'>
+            <div className='flex justify-center pt-8 gap-4'>
                 <Button className='px-12 py-8 text-xl' color="primary" variant="shadow">
                     <LinkPreview url='/plan/sar'>รายงานประจำของสถานศึกษา (SAR)</LinkPreview>
+                </Button>
+                <Button className='px-12 py-8 text-xl' color="primary" variant="shadow">
+                    <LinkPreview
+                        url="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
+                        target="_blank"
+                    >
+                        ฉบับจริงรายงานการประกันภายนอกรอบ5
+                    </LinkPreview>
                 </Button>
             </div>
         </>)
