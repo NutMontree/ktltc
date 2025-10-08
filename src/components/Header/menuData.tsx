@@ -287,18 +287,18 @@ const menuData: Menu[] = [
         path: "https://forms.gle/Hcwfjvd7S8zTbA3C8",
         newTab: false,
       },
-      {
-        id: 612,
-        title: "ktltcQ&A",
-        path: "/ITA/08/qa",
-        newTab: false,
-      },
-      {
-        id: 613,
-        title: "Create QrCode Free",
-        path: "/qrcode",
-        newTab: false,
-      },
+      // {
+      //   id: 612,
+      //   title: "ktltcQ&A",
+      //   path: "/ITA/08/qa",
+      //   newTab: false,
+      // },
+      // {
+      //   id: 613,
+      //   title: "Create QrCode Free",
+      //   path: "/qrcode",
+      //   newTab: false,
+      // },
       {
         id: 614,
         title: "Performance Agreement: PA",
@@ -307,11 +307,11 @@ const menuData: Menu[] = [
       },
     ],
   },
-  {
-    id: 7,
-    title: "ITA",
-    newTab: false,
-    path: "/ITA",
-  },
+  // {
+  //   id: 7,
+  //   title: "ITA",
+  //   newTab: false,
+  //   path: "/ITA",
+  // },
 ];
 export default menuData;

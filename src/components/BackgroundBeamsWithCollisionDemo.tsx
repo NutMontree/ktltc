@@ -1,50 +1,69 @@
 "use client"
 import React from "react";
-import { Image } from "@heroui/react";
-
+import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { Image, } from "@nextui-org/react";
 export function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 justify-items-center justify-center pb-12 gap-8">
-        {/* ******************************************* เรื่องที่ 1 ******************************************* */}
-        <div className="">
-          <div className="flex justify-center">
-            <div className="">
-              <div className="flex justify-center">
-                <Image
-                  isBlurred
-                  //  className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
-                  className="rounded-xl shadow-2xl"
-                  src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/3/00.webp"}
-                  alt=''
-                />
-              </div>
-            </div>
-          </div>
-          {/* <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base lg:text-base hidden xl:flex">
-            <div className="px md:px-8 pt-2">
-              วิทยาลัยเทคนิคกันทรลักษ์  <br />
-            </div>
-          </div> */}
-        </div>
-        {/* ******************************************* เรื่องที่ 1 ******************************************* */}
-        {/* ******************************************* เรื่องที่ 2 ******************************************* */}
-        <div className="">
-          <div className="flex justify-center">
-            <div className="">
-              <div className="flex justify-center">
-                <Image
-                  isBlurred
-                  //  className="scale-90 hover:scale-100 transition duration-500 rounded-xl shadow-2xl"
-                  className="rounded-xl shadow-2xl"
-                  src={"/images/ข่าวประชาสัมพันธ์/2568/กันยายน/37/1.webp"}
-                  alt=''
-                />
-              </div>
+      <div className="py-24">
+        <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
+          <GridItem
+            area="md:[grid-area:1/1/2/13] flex items-center justify-center"
+            title={<div className="pt-6">ทรงพระเจริญ</div>}
+            description={<div className="pt-2 pb-6">๘ ตุลาคม ๒๕๖๘ เนื่องในวันคล้ายวันประสูติ พระเจ้าวรวงศ์เธอ พระองค์เจ้าสิริภาจุฑาภรณ์ ด้วยเกล้าด้วยกระหม่อมขอเดชะ ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์</div>}
+            image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/18/00.webp"} alt={""}></Image></>}
+          />
+        </ul>
+      </div>
+
+      <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
+        <GridItem
+          area="md:[grid-area:2/1/2/7] flex items-center justify-center"
+          image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/3/00.webp"} alt={""}></Image></>} title={""} description={undefined}
+
+        />
+
+        <GridItem
+          area="md:[grid-area:2/7/2/13] flex items-center justify-center"
+          image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/กันยายน/37/1.webp"} alt={""}></Image></>} title={""} description={undefined} />
+      </ul>
+    </>
+  );
+}
+
+interface GridItemProps {
+  area: string;
+  title: React.ReactNode;
+  description: React.ReactNode;
+  image: React.ReactNode;
+}
+
+const GridItem = ({ area, image, title, description }: GridItemProps) => {
+  return (
+    <li className={`  ${area}`}>
+      <div className="relative h-full rounded-2xl  p-2 md:rounded-3xl ">
+        <GlowingEffect
+          spread={40}
+          glow={true}
+          disabled={false}
+          proximity={64}
+          inactiveZone={0.01}
+        />
+        <div className=" ">
+          <div className="">
+            <div>{image}</div>
+
+            <div className="space-y-3 text-center">
+              <h3 className="-tracking-4 pt-0.5 font-sans text-xl/[1.375rem] font-semibold text-balance text-black md:text-2xl/[1.875rem] dark:text-white">
+                {title}
+              </h3>
+              <h2 className="font-sans text-sm/[1.125rem] text-black md:text-base/[1.375rem] dark:text-neutral-400 [&_b]:md:font-semibold [&_strong]:md:font-semibold">
+                {description}
+              </h2>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </li>
   );
-}
+};

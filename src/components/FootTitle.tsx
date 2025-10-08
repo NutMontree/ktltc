@@ -1,7 +1,7 @@
 export function FootTitle() {
   return (
     <>
-      <div className="text-xs pt-6">
+      <div className="text-xs">
         <h1 className="text-base">KTL-TC ONE TEAM </h1>
         <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
         <p className="border-t pt-[12px] ">

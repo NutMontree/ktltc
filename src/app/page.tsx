@@ -58,10 +58,10 @@ export default function Home() {
         <ScrollVelocity />
       </div>
       <div className="container">
-        <GlowingPage />
+        <BackgroundBeamsWithCollisionDemo />
       </div>
       <div className="container">
-        <BackgroundBeamsWithCollisionDemo />
+        <GlowingPage />
       </div>
       <div className="container">
         <ShowPressRelease />

@@ -7,7 +7,7 @@ export default function GlowingPage() {
     return (
         <>
             <div className="py-24">
-                <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12">
+                <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
                     <GridItem
                         // md:[grid-area:3/1/4/13]
                         area="md:[grid-area:1/1/2/13] flex items-center justify-center"
@@ -68,7 +68,7 @@ interface GridItemProps {
 const GridItem = ({ area, image }: GridItemProps) => {
     return (
         <li className={`  ${area}`}>
-            <div className="relative h-full rounded-2xl  p-2 md:rounded-3xl md:p-3">
+            <div className="relative h-full rounded-2xl  p-2 md:rounded-3xl ">
                 <GlowingEffect
                     spread={40}
                     glow={true}
@@ -76,7 +76,7 @@ const GridItem = ({ area, image }: GridItemProps) => {
                     proximity={64}
                     inactiveZone={0.01}
                 />
-                <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
+                <div className=" ">
                     <div className="">
                         <div>{image}</div>
                         {/* 
