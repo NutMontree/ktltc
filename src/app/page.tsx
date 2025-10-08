@@ -27,6 +27,7 @@ import Internships from "./internships/page";
 import Showvideo from "./Showvideo/page";
 import PDCA from "./pdca/page";
 import GlowingPage from "./Glowing/page";
+import ExternalQualityAssurance from "@/components/ExternalQualityAssurance";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -43,6 +44,9 @@ export default function Home() {
       {/* <Hero /> */}
       <div className="container">
         <Scrollimage />
+      </div>
+      <div className="container">
+        <ExternalQualityAssurance />
       </div>
       <div className="container">
         <Features />
