@@ -12,6 +12,16 @@ export default function Announcement2568() {
           <Button color="primary">
             <Link
               className="text-lg"
+              href="/announcement/announcement2568/announcement6810"
+            >
+              เดือน ตุลาคม 2568
+            </Link>
+          </Button>
+        </div>
+        <div>
+          <Button color="primary">
+            <Link
+              className="text-lg"
               href="/announcement/announcement2568/announcement6809"
             >
               เดือน กันยายน 2568
