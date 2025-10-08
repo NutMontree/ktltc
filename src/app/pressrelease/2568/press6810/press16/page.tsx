@@ -9,7 +9,7 @@ import { Breadcrumb } from 'antd';
 import { TageLink } from "./data";
 import { motion } from "motion/react";
 
-export function TageFucntion() {
+const TageFucntion = () => {
   return (
     <div>
       {/* <div>
@@ -26,7 +26,7 @@ export function TageFucntion() {
   )
 }
 
-export function ImageFunction() {
+const ImageFunction = () => {
   return (
     <div>
       <div className="flex justify-center">

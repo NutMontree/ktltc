@@ -2,7 +2,7 @@
 import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Image, } from "@nextui-org/react";
-export function BackgroundBeamsWithCollisionDemo() {
+export default function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
       <div className="py-24">

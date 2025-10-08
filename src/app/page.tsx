@@ -20,14 +20,12 @@ import ShowPressRelease from "./showpressrelease/page";
 import ScrollVelocity from "@/components/Scrollvelocity";
 import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
 import { Metadata } from "next";
-import { BackgroundBeamsWithCollisionDemo } from "@/components/BackgroundBeamsWithCollisionDemo";
 import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
 import Internships from "./internships/page";
-import Showvideo from "./Showvideo/page";
-import PDCA from "./pdca/page";
 import GlowingPage from "./Glowing/page";
 import ExternalQualityAssurance from "@/components/ExternalQualityAssurance";
+import BackgroundBeamsWithCollisionDemo from "@/components/BackgroundBeamsWithCollisionDemo";
 
 export const metadata: Metadata = {
   title: "ktltc",
