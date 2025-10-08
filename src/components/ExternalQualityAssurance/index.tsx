@@ -14,9 +14,9 @@ const ExternalQualityAssurance = () => {
                 <Image src='/images/logo/logoTH.webp' className="" width={100} height={100} alt={""}></Image>
               </div>
               <div className="py-8 fron leading-relaxed sm:leading-relaxed">
-                <p className="text-center dark:hover:text-black xs:text-md md:text-base lg:text-xl xl:text-2xl">รายงานผลการประกันคุณภาพภายนอกด้านการอาชีวศึกษา</p>
-                <p className="text-center dark:hover:text-black xs:text-xs md:text-sm lg:text-lg xl:text-xl">วิทยาลัยเทคนิคกันทรลักษ์ สังกัด สำนักงานคณะกรรมการการอาชีวศึกษา กระทรวงศึกษาธิการ</p>
-                <p className="text-center dark:hover:text-black xs:text-xs md:text-sm lg:text-lg xl:text-xl">ระดับชั้นที่เปิดสอน ประกาศนียบัตรวิชาชีพ (ปวช.) และ ประกาศนียบัตรวิชาชีพชั้นสูง(ปวส.)</p>
+                <p className="text-center dark:hover:text-black text-[12px] md:text-[14px] sm:text-sm md:text-base">รายงานผลการประกันคุณภาพภายนอกด้านการอาชีวศึกษา</p>
+                <p className="text-center dark:hover:text-black text-[12px] md:text-[14px] sm:text-sm md:text-base">วิทยาลัยเทคนิคกันทรลักษ์ สังกัด สำนักงานคณะกรรมการการอาชีวศึกษา กระทรวงศึกษาธิการ</p>
+                <p className="text-center dark:hover:text-black text-[12px] md:text-[14px] sm:text-sm md:text-base">ระดับชั้นที่เปิดสอน ประกาศนียบัตรวิชาชีพ (ปวช.) และ ประกาศนียบัตรวิชาชีพชั้นสูง(ปวส.)</p>
               </div>
             </LinkPreview>
           </Card>
