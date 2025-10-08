@@ -1,6 +1,15 @@
 export const Data = {
   navItems: [
     {
+      name: `โครงการปัจฉิมนิเทศ`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/20/0.webp",
+      date: "8 ตุลาคม 2568",
+      description: `
+นักเรียน นักศึกษาหลังการฝึกงาน/ฝึกอาชีพ ประจำปีการศึกษา 2568 แผนกวิชาการโรงเเรม วิทยาลัยเทคนิคกันทรลักษ์… See more
+`,
+      href: "/pressrelease/2568/press6810/press20",
+    },
+    {
       name: `วันที่ 7 ตุลาคม 2568 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/15/0.webp",
       date: "8 ตุลาคม 2568",
