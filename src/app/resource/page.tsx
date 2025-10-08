@@ -11,6 +11,7 @@ import PW from "./PW";
 import BASW from "./BASW";
 import PRW from "./PRW";
 import RW from "./RW";
+import CGCA from "./CGCA";
 
 export default function page() {
   return (
@@ -50,6 +51,9 @@ export default function page() {
           </AccordionItem>
           <AccordionItem key="9" aria-label="9" title="งานประชาสัมพันธ์">
             <PRW />
+          </AccordionItem>
+          <AccordionItem key="10" aria-label="10" title="งานบริหารศูนย์ราชการสะดวก">
+            <CGCA />
           </AccordionItem>
         </Accordion>
       </div>

@@ -42,10 +42,10 @@ export default function RW() {
             </div>
             <div className='grid md:grid-flow-col gap-4'>
                 <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/ทรัพยากร/7.webp" alt="Image description ทรัพยากร" />
+                    <Image src="/images/บุคลากร/ช่างยนต์/7.webp" alt="Image description ทรัพยากร" />
                 </div>
                 <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/ทรัพยากร/8.webp" alt="Image description ทรัพยากร" />
+                    <Image src="/images/บุคลากร/เจ้าหน้าที่/ฝ่ายบริหารทรัพยากร/11.webp" alt="Image description ทรัพยากร" />
                 </div>
             </div>
         </>

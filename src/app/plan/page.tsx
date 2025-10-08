@@ -8,6 +8,9 @@ import CW from "./CW";
 import TABPW from "./TABPW";
 import RDIAI from "./RDIAI";
 import QAES from "./QAES";
+import DataCenter from "./DataCenter";
+import KTCVS from "./KTCVS";
+import FFEE from "./FFEE";
 
 export default function page() {
   return (
@@ -42,17 +45,26 @@ export default function page() {
               </Link>
             </div>
           </AccordionItem>
-          <AccordionItem key="3" aria-label="3" title="งานความร่วมมือ">
+          <AccordionItem key="3" aria-label="3" title="งานศูนย์ข้อมูลและสารสนเทศ">
+            <DataCenter />
+          </AccordionItem>
+          <AccordionItem key="4" aria-label="4" title="งานความร่วมมือ">
             <CW />
           </AccordionItem>
-          <AccordionItem key="4" aria-label="4" title="งานส่งเสริมผลิตผล การค้าและประกอบธุรกิจ">
+          <AccordionItem key="5" aria-label="5" title="งานส่งเสริมผลิตผล การค้าและประกอบธุรกิจ">
             <TABPW />
           </AccordionItem>
-          <AccordionItem key="5" aria-label="5" title="งานวิจัย พัฒนา นวัตกรรมและสิ่งประดิษฐ์">
+          <AccordionItem key="6" aria-label="6" title="งานวิจัย พัฒนา นวัตกรรมและสิ่งประดิษฐ์">
             <RDIAI />
           </AccordionItem>
-          <AccordionItem key="6" aria-label="6" title="งานประกันคุณภาพและมาตรฐานการศึกษา">
+          <AccordionItem key="7" aria-label="7" title="งานประกันคุณภาพและมาตรฐานการศึกษา">
             <QAES />
+          </AccordionItem>
+          <AccordionItem key="8" aria-label="8" title="งานร้านค้าสวัสดิการวิทยาลัยเทคนิคกันทรลักษ์">
+            <KTCVS />
+          </AccordionItem>
+          <AccordionItem key="9" aria-label="9" title="งานกองทุนเพื่อความเสมอภาคทางการศึกษา">
+            <FFEE />
           </AccordionItem>
         </Accordion>
       </div>

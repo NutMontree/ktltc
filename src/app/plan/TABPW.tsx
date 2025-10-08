@@ -19,11 +19,8 @@ export default function CW() {
                 <p>4. ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
             </div> */}
             <div className='grid md:grid-flow-col gap-4'>
-                <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/แผน/1.webp" alt="Image description" />
-                </div>
-                <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/แผน/3.webp" alt="Image description" />
+                <div className='rounded-[22px] pt-4 flex justify-center items-center'>
+                    <Image src="/images/บุคลากร/การตลาด/4.webp" alt="Image description" />
                 </div>
             </div>
         </>

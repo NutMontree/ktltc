@@ -20,7 +20,7 @@ export default function CW() {
             </div>
             <div className='grid md:grid-flow-col gap-4'>
                 <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/แผน/3.webp" alt="Image description ทรัพยากร" />
+                    <Image src="/images/บุคลากร/แผน/6.webp" alt="Image description ทรัพยากร" />
                 </div>
             </div>
         </>

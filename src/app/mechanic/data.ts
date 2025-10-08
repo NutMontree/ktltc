@@ -1,21 +1,36 @@
 export const Data = [
   {
+    name: `นายพัฒนกฤษณ์  นามคำมี`,
+    position: `หัวหน้าแผนกวิชา `,
+    department: `ช่างยนต์ `,
+    faction: ` `,
+    description: ` ครูผู้ช่วย `,
+    img: `/images/บุคลากร/ช่างยนต์/4.webp`,
+  },
+  {
+    name: `นายไกรศร  ผิวผัน`,
+    position: `รองหัวหน้าแผนกวิชา`,
+    department: `แผนกวิชายานยนต์ ไฟฟ้า`,
+    faction: `หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน`,
+    description: ` พนักงานราชการ ครู`,
+    img: `/images/บุคลากร/ช่างยนต์/2.webp`,
+  },
+  {
     name: `นายอุทัย จรรยากรณ์`,
-    position: `หัวหน้าแผนกวิชา`,
+    position: `หัวหน้าแผนกวิชาช่างยนต์ไฟฟ้า`,
     department: `แผนกวิชายานยนต์ ไฟฟ้า`,
     faction: `หัวหน้างานการเงิน`,
     description: ` ครู`,
     img: `/images/บุคลากร/ช่างยนต์/1.webp`,
   },
   {
-    name: `นายไกรศร  ผิวผัน`,
-    position: ``,
-    department: `แผนกวิชายานยนต์ ไฟฟ้า`,
-    faction: `หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน`,
-    description: ` พนักงานราชการ ครู`,
-    img: `/images/บุคลากร/ช่างยนต์/2.webp`,
+    name: `จ่าสิบเอกชาติชาย  ฝอยทอง`,
+    position: `รองหัวหน้าแผนกวิชาช่างยนต์ไฟฟ้า`,
+    department: `ช่างยนต์ `,
+    faction: ` `,
+    description: ` ครูวิชาชีพผู้ทรงคุณค่า`,
+    img: `/images/บุคลากร/ช่างยนต์/6.webp`,
   },
-
   {
     name: `นายประดิษฐ  ใจทรง`,
     position: `หัวหน้าแผนกวิชา `,
@@ -25,28 +40,12 @@ export const Data = [
     img: `/images/บุคลากร/ช่างยนต์/3.webp`,
   },
   {
-    name: `นายพัฒนกฤษณ์  นามคำมี`,
-    position: `รองหัวหน้าแผนกวิชา `,
-    department: `ช่างยนต์ `,
-    faction: ` `,
-    description: ` ครูผู้ช่วย `,
-    img: `/images/บุคลากร/ช่างยนต์/4.webp`,
-  },
-  {
     name: `นายสุขสันต์  สิทธิมวล`,
     position: ` `,
     department: `ช่างยนต์ `,
     faction: `หัวหน้างานอาคารสถานที่`,
     description: ` พนักงานราชการ ครู`,
     img: `/images/บุคลากร/ช่างยนต์/5.webp`,
-  },
-  {
-    name: `จ่าสิบเอกชาติชาย  ฝอยทอง`,
-    position: ` `,
-    department: `ช่างยนต์ `,
-    faction: ` `,
-    description: ` ครูวิชาชีพผู้ทรงคุณค่า`,
-    img: `/images/บุคลากร/ช่างยนต์/6.webp`,
   },
 
   {

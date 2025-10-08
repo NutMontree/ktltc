@@ -28,9 +28,9 @@ export default function Finance() {
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/ทรัพยากร/4.webp" alt="Image description ทรัพยากร" />
                 </div>
-                {/* <div className='rounded-[22px] pt-4'>
-                                <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                            </div> */}
+                <div className='rounded-[22px] pt-4'>
+                    <Image src="/images/บุคลากร/เจ้าหน้าที่/ฝ่ายบริหารทรัพยากร/3.webp" alt="Image description ทรัพยากร" />
+                </div>
             </div>
 
         </>

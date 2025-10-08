@@ -5,7 +5,7 @@ import { Image } from "@nextui-org/react";
 export default function Spcs() {
     return (
         <>
-            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบงาน</h1>
+            <h1 className='text-xl text-center py-2'>คณะผู้รับผิดชอบ งานโครงการพิเศษและบริการชุมชน</h1>
             <div className='flex justify-center pb-4'>
                 <div className='rounded-[22px] pt-4'>
                     <Image src="/images/บุคลากร/ฝ่ายพัฒนากิจการ/งานโครงการพิเศษและบริการชุมชน.webp" alt="Image description ทรัพยากร" />
@@ -27,13 +27,11 @@ export default function Spcs() {
                 <p>12. ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย</p>
             </div>
             <div className='grid md:grid-flow-col gap-4'>
-                <div className='rounded-[22px] pt-4'>
-                    <Image src="/images/บุคลากร/ฝ่ายพัฒนากิจการ/3.webp" alt="Image description ทรัพยากร" />
+                <div className='rounded-[22px] pt-4 flex justify-center items-center'>
+                    <Image src="/images/error.webp" alt="Image description ทรัพยากร" />
                 </div>
-                {/* <div className='rounded-[22px] pt-4'>
-                                            <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                                        </div> */}
             </div>
+            <p className='text-center'>นายยศพล นีละเสน</p>
         </>
     )
 }
