@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `ทรงพระเจริญ  `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/19/1.webp",
+      date: "8 ตุลาคม 2568",
+      description: `
+๘ ตุลาคม ๒๕๖๘ เนื่องในวันคล้ายวันประสูติ พระเจ้าวรวงศ์เธอ พระองค์เจ้าสิริภาจุฑาภรณ์ ด้วยเกล้าด้วยกระหม่อมขอเดชะ … See more
+`,
+      href: "/pressrelease/2568/press6810/press19",
+    },
+    {
+      name: `ทรงพระเจริญ  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/18/00.webp",
       date: "8 ตุลาคม 2568",
       description: `

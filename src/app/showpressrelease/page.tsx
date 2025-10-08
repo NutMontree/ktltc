@@ -325,7 +325,7 @@ export default function ShowPressRelease() {
           {/*   title title title title title title title title title title title title title title title title title title */}
           <div className="grid grid-flow-col">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-              {DataPressrelease.navItems.slice(0, 4).map((item) => (
+              {DataPressrelease.navItems.slice(0, 8).map((item) => (
                 <div key={item.name} className="hover:bg-orange-300 px-2 py-2 rounded-xl ">
                   <Link key={item.href} href={item.href}>
                     <div className="
