@@ -11,8 +11,7 @@ export default function BackgroundBeamsWithCollisionDemo() {
             area="md:[grid-area:1/1/2/13] flex items-center justify-center"
             title={<div className="pt-6">๑๓ ตุลาคม วันนวมินทรมหาราช</div>}
             description={<div className="pt-2 pb-6">
-              นคล้ายวันสวรรคต พระบาทสมเด็จพระบรมชนกาธิเบศร มหาภูมิพล<br />
-              อดุลยเดชมหาราช บรมนาถบพิตร<br />
+              วันคล้ายวันสวรรคต พระบาทสมเด็จพระบรมชนกาธิเบศร มหาภูมิพล อดุลยเดชมหาราช บรมนาถบพิตร<br />
               น้อมสำนึกในพระมหากรุณาธิคุณอันหาที่สุดมิได้<br />
               ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์              </div>}
             image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/32/00.webp"} alt={""}></Image></>}
