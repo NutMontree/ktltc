@@ -49,83 +49,83 @@ export default function PDCA() {
                 <div className='grid gap-4'>
                     <div>
                         <Link
-                            href="/pdf/pdca/แบบฟอร์มขออนุญาตดำเนินโครงการ.docx"
+                            href="/pdf/pdca/1.การจัดทำรูปเล่ม_PDCA_และ_11_ขั้นตอน.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            1. แบบฟอร์มขออนุญาตดำเนินโครงการ
+                            1.การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/แบบฟอร์มขออนุญาตรายงานผลดำเนินโครงการ.docx"
+                            href="/pdf/pdca/2.แบบฟอร์มขออนุมัติโครงการ(เฉพาะงานวางแผน).docx"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            2. แบบฟอร์มขออนุญาตรายงานผลดำเนินโครงการ
+                            2.แบบฟอร์มขออนุมัติโครงการ(เฉพาะงานวางแผน)
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/แบบฟอร์มขออนุมัติโครงการ.docx"
+                            href="/pdf/pdca/3.แบบฟอร์มขออนุมัติโครงการ.docx"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            3. แบบฟอร์มขออนุมัติโครงการ (เฉพาะงานแผน)
+                            3.แบบฟอร์มขออนุมัติโครงการ
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/แบบฟอร์มขออนุมัติโครงการ1.docx"
+                            href="/pdf/pdca/4.แบบฟอร์มขออนุญาตดำเนินโครงการ.docx"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            3. แบบฟอร์มขออนุมัติโครงการ
+                            4.แบบฟอร์มขออนุญาตดำเนินโครงการ
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/แบบฟอร์มโครงการ.doc"
+                            href="/pdf/pdca/5.ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำปี.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            5. แบบฟอร์มโครงการ
+                            5.ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำปี
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/แบบรายงานผลการดำเนินงานโครงการ แบบย่อ (2แผ.docx"
+                            href="/pdf/pdca/6.ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            6. แบบรายงานผลการดำเนินงานโครงการ แบบย่อ (2แผ่น)
+                            6.ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน.doc"
+                            href="/pdf/pdca/7.แบบฟอร์มโครงการ.doc"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            7. การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน
+                            7.แบบฟอร์มโครงการ
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ ปร.doc"
+                            href="/pdf/pdca/8.แบบฟอร์มบันทึกข้อความขออนุญาตรายงานผลดำ.docx"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            8. ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ
+                            8.แบบฟอร์มบันทึกข้อความขออนุญาตรายงานผลดำ
                         </Link>
                     </div>
                     <div>
                         <Link
-                            href="/pdf/pdca/ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำป.doc"
+                            href="/pdf/pdca/9.แบบรายงานผลการดำเนินงานโครงการ_แบบย่อ.docx"
                             className="hover:text-sky-500"
                             target="_blank"
                         >
-                            9. ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำป
+                            9.แบบรายงานผลการดำเนินงานโครงการ_แบบย่อ
                         </Link>
                     </div>
                 </div>

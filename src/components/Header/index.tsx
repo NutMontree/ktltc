@@ -101,9 +101,9 @@ const Header = () => {
                 )}
               </Link>
             </div>
-            <div className="lg:hidden">
+            {/* <div className="lg:hidden">
               <Link href={'/ITA'}>ITA</Link>
-            </div>
+            </div> */}
             <button
               onClick={navbarToggleHandler}
               id="navbarToggler"

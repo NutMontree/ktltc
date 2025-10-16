@@ -275,18 +275,18 @@ const menuData: Menu[] = [
         path: "/plan/sar",
         newTab: false,
       },
-      {
-        id: 610,
-        title: "Plan PDCA",
-        path: "https://ktltcp.vercel.app/ ",
-        newTab: false,
-      },
-      {
-        id: 611,
-        title: "แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ",
-        path: "https://forms.gle/Hcwfjvd7S8zTbA3C8",
-        newTab: false,
-      },
+      // {
+      //   id: 610,
+      //   title: "Plan PDCA",
+      //   path: "https://ktltcp.vercel.app/ ",
+      //   newTab: false,
+      // },
+      // {
+      //   id: 611,
+      //   title: "แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ",
+      //   path: "https://forms.gle/Hcwfjvd7S8zTbA3C8",
+      //   newTab: false,
+      // },
       // {
       //   id: 612,
       //   title: "ktltcQ&A",
