@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `16 ตุลาคม 2568`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/38/00.webp",
+      date: "16 ตุลาคม 2568",
+      description: `
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร ครู และบุคลากรทางการศึกษา … See more
+`,
+      href: "/pressrelease/2568/press6810/press38",
+    },
+    {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/37/00.webp",
       date: "16 ตุลาคม 2568",

@@ -31,8 +31,9 @@ https://drive.google.com/drive/folders/17yF1S_5pyCMmsrSKJPg9vPfG0UU7EEfM?fbclid=
 const ImageFunction = () => {
   return (
     <div>
+      <Image src={'/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/37/00.webp'} className=" " />
       <div className="flex justify-center">
-        <div className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
           {ImageItem.map((item) => item ? (<div key={item.imgs}><div className="scale-95 hover:scale-100 transition duration-500 rounded-full"><Image isBlurred src={item.imgs} alt={""}></Image></div></div>) : null)}
         </div>
       </div>
