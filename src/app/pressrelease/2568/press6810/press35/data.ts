@@ -4,7 +4,7 @@ export const DataPressrelease = {
 };
 
 // วันที่ลงข้อมูล 
-export const DataDate = [{ date: `14 ตุลาคม 2568` }];
+export const DataDate = [{ date: `16 ตุลาคม 2568` }];
 
 // คำอธิบายข่าว
 export const Description = [
