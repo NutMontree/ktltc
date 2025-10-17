@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `16 ตุลาคม 2568`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/39/00.webp",
+      date: "17 ตุลาคม 2568",
+      description: `
+แผนกวิชาช่างยนต์ วิทยาลัยเทคนิคกันทรลักษ์ ได้จัดโครงการปัจฉิมนิเทศนักเรียน นักศึกษา หลังเสร็จสิ้นการฝึกงาน/ฝึกอาชีพ … See more
+`,
+      href: "/pressrelease/2568/press6810/press39",
+    },
+    {
+      name: `16 ตุลาคม 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/38/00.webp",
       date: "16 ตุลาคม 2568",
       description: `
