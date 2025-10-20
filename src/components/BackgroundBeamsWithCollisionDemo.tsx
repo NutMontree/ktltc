@@ -18,7 +18,7 @@ export default function BackgroundBeamsWithCollisionDemo() {
           />
         </ul>
       </div>
-
+      {/* 
       <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
         <GridItem
           area="md:[grid-area:2/1/2/7] flex items-center justify-center"
@@ -29,7 +29,11 @@ export default function BackgroundBeamsWithCollisionDemo() {
         <GridItem
           area="md:[grid-area:2/7/2/13] flex items-center justify-center"
           image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/กันยายน/37/1.webp"} alt={""}></Image></>} title={""} description={undefined} />
-      </ul>
+      </ul> */}
+
+      <GridItem
+        area="md:[grid-area:2/7/2/13] flex items-center justify-center"
+        image={<><Image className="" isBlurred src={"images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/46/00.webp"} alt={""}></Image></>} title={""} description={undefined} />
     </>
   );
 }
