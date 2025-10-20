@@ -2,6 +2,7 @@
 import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Image, } from "@nextui-org/react";
+
 export default function BackgroundBeamsWithCollisionDemo() {
   return (
     <>

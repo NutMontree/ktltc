@@ -25,7 +25,7 @@ import SubQAPage from "./ITA/08/qa/SubQAPage";
 import Internships from "./internships/page";
 import GlowingPage from "./Glowing/page";
 import ExternalQualityAssurance from "@/components/ExternalQualityAssurance";
-import BackgroundBeamsWithCollisionDemo from "@/components/BackgroundBeamsWithCollisionDemo";
+import BackgroundBeamsWithCollisionDemo from '@/components/BackgroundBeamsWithCollisionDemo'
 
 export const metadata: Metadata = {
   title: "ktltc",
