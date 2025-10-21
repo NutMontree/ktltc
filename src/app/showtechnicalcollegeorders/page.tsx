@@ -61,7 +61,7 @@ export default function ShowTechnicalcollegeorders() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
+        transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
       >
         <div className="grid grid-flow-col py-4">
           <div className="justify-items-start">

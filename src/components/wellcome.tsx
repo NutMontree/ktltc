@@ -13,7 +13,7 @@ export default function Wellcome() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
+        transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
       >
         <div className=" ">
           <div className="justify-items-center">

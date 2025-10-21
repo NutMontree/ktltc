@@ -10,7 +10,7 @@ const ExternalQualityAssurance = () => {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
+        transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
       >
         <section className="grid grid-cols-1 xs:grid-cols-1 md:grid-cols-1 lg:grid-cols-2  gap-4 pt-12">
           <div className="">
