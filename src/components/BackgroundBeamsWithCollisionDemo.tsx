@@ -2,23 +2,29 @@
 import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Image, } from "@nextui-org/react";
+import { motion } from "framer-motion";
 
 export default function BackgroundBeamsWithCollisionDemo() {
   return (
     <>
-      <div className="py-24">
-        <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
-          <GridItem
-            area="md:[grid-area:1/1/2/13] flex items-center justify-center"
-            title={<div className="pt-6">๒๑ ตุลาคม ๒๕๖๘</div>}
-            description={<div className="pt-2 pb-6">
-              วันคล้ายวันพระราชสมภพ สมเด็จพระศรีนครินทราบรมราชชนนี “สมเด็จย่า”
-              น้อมรำลึกในพระมหากรุณาธิคุณตราบนิรันดร์ ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์           </div>}
-            image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/49/00.webp"} alt={""}></Image></>}
-          />
-        </ul>
-      </div>
-      {/* 
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
+      >
+        <div className="py-24">
+          <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
+            <GridItem
+              area="md:[grid-area:1/1/2/13] flex items-center justify-center"
+              title={<div className="pt-6">๒๑ ตุลาคม ๒๕๖๘</div>}
+              description={<div className="pt-2 pb-6">
+                วันคล้ายวันพระราชสมภพ สมเด็จพระศรีนครินทราบรมราชชนนี “สมเด็จย่า”
+                น้อมรำลึกในพระมหากรุณาธิคุณตราบนิรันดร์ ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์           </div>}
+              image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/49/00.webp"} alt={""}></Image></>}
+            />
+          </ul>
+        </div>
+        {/* 
       <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
         <GridItem
           area="md:[grid-area:2/1/2/7] flex items-center justify-center"
@@ -31,9 +37,10 @@ export default function BackgroundBeamsWithCollisionDemo() {
           image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/กันยายน/37/1.webp"} alt={""}></Image></>} title={""} description={undefined} />
       </ul> */}
 
-      <GridItem
-        area="md:[grid-area:2/7/2/13] flex items-center justify-center"
-        image={<><Image className="" isBlurred src={"images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/46/00.webp"} alt={""}></Image></>} title={""} description={undefined} />
+        <GridItem
+          area="md:[grid-area:2/7/2/13] flex items-center justify-center"
+          image={<><Image className="" isBlurred src={"images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/46/00.webp"} alt={""}></Image></>} title={""} description={undefined} />
+      </motion.div>
     </>
   );
 }

@@ -3,6 +3,7 @@ import React from 'react';
 import { Calendar, theme } from 'antd';
 import type { CalendarProps } from 'antd';
 import type { Dayjs } from 'dayjs';
+import { motion } from "framer-motion";
 
 const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
     console.log(value.format('YYYY-MM-DD'), mode);
@@ -18,11 +19,17 @@ export default function CalendarPage() {
     };
     return (
         <>
-            <div className="flex justify-center">
-                <div style={wrapperStyle}>
-                    <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+            <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
+            >
+                <div className="flex justify-center">
+                    <div style={wrapperStyle}>
+                        <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+                    </div>
                 </div>
-            </div>
+            </motion.div>
         </>
     )
 }
