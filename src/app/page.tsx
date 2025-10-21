@@ -7,25 +7,26 @@
 // import Pricing from "@/components/Pricing";
 // import CallToAction from "@/components/CallToAction";
 // import Testimonials from "@/components/Testimonials";
-import Features from "@/components/Features";
-import welcome from "@/components/welcome";
-import ShowBidding from "./showbidding/page";
-import ShowYoutube from "./ShowYoutube/page";
-import ShowNewsletter from "./shownewsletter/page";
-import Scrollimage from "@/components/Scrollimage";
-import ScrollUp from "@/components/Common/ScrollUp";
-import ShowFacebook from "@/components/ShowFacebook";
-import ShowAnnouncement from "./showannouncement/page";
-import ShowPressRelease from "./showpressrelease/page";
-import ScrollVelocity from "@/components/Scrollvelocity";
-import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
+
 import { Metadata } from "next";
+
+import BackgroundBeamsWithCollisionDemo from "@/components/BackgroundBeamsWithCollisionDemo";
+import ScrollUp from "@/components/Common/ScrollUp";
+import ExternalQualityAssurance from "@/components/ExternalQualityAssurance";
+import Features from "@/components/Features";
+import Scrollimage from "@/components/Scrollimage";
+import ScrollVelocity from "@/components/Scrollvelocity";
+import WelcomePage from "@/components/WelcomePage"
+import ShowPressRelease from "./showpressrelease/page";
+import ShowNewsletter from "./shownewsletter/page";
+import Internships from "./internships/page";
+import ShowAnnouncement from "./showannouncement/page";
+import ShowBidding from "./showbidding/page";
+import ShowTechnicalcollegeorders from "./showtechnicalcollegeorders/page";
+import ShowFacebook from "@/components/ShowFacebook";
+import ShowYoutube from "./ShowYoutube/page";
 import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
-import Internships from "./internships/page";
-// import GlowingPage from "./Glowing/page";
-import ExternalQualityAssurance from "@/components/ExternalQualityAssurance";
-import BackgroundBeamsWithCollisionDemo from '@/components/BackgroundBeamsWithCollisionDemo'
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -50,7 +51,7 @@ export default function Home() {
         <Features />
       </div>
       <div className="container py-[48px]">
-        <welcome />
+        <WelcomePage />
       </div>
       <div className="container py-[48px]">
         <ScrollVelocity />
