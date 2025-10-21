@@ -23,7 +23,7 @@ import { Metadata } from "next";
 import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
 import Internships from "./internships/page";
-import GlowingPage from "./Glowing/page";
+// import GlowingPage from "./Glowing/page";
 import ExternalQualityAssurance from "@/components/ExternalQualityAssurance";
 import BackgroundBeamsWithCollisionDemo from '@/components/BackgroundBeamsWithCollisionDemo'
 
@@ -58,9 +58,9 @@ export default function Home() {
       <div className="container">
         <BackgroundBeamsWithCollisionDemo />
       </div>
-      <div className="container">
+      {/* <div className="container">
         <GlowingPage />
-      </div>
+      </div> */}
       <div className="container">
         <ShowPressRelease />
       </div>
