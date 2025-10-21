@@ -9,17 +9,13 @@ const getTickets = async () => {
       next: { revalidate: 600 },
     });
 
-
-    console.log("Fetch status:", res.status);
     if (!res.ok) {
-      const text = await res.text();
-      console.error("Fetch error body:", text);
       throw new Error("Failed to fetch topics");
     }
 
     return res.json();
   } catch (error) {
-    console.error("Error loading topics: ", error);
+    console.log("Error loading topics: ", error);
   }
 };
 
