@@ -8,7 +8,7 @@
 // import CallToAction from "@/components/CallToAction";
 // import Testimonials from "@/components/Testimonials";
 import Features from "@/components/Features";
-import Wellcome from "@/components/wellcome";
+import welcome from "@/components/welcome";
 import ShowBidding from "./showbidding/page";
 import ShowYoutube from "./ShowYoutube/page";
 import ShowNewsletter from "./shownewsletter/page";
@@ -50,7 +50,7 @@ export default function Home() {
         <Features />
       </div>
       <div className="container py-[48px]">
-        <Wellcome />
+        <welcome />
       </div>
       <div className="container py-[48px]">
         <ScrollVelocity />

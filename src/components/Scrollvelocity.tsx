@@ -86,7 +86,7 @@ export default function ScrollVelocity() {
         </div>
         <div className="pt-4">
           <ParallaxText baseVelocity={5}>
-            wellcome KTLTC kantharalak technical college
+            welcome KTLTC kantharalak technical college
           </ParallaxText>
         </div>
       </section>

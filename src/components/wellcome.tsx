@@ -7,7 +7,7 @@ import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import TabsPage from "@/components/Tabs";
 import { motion } from "framer-motion";
 
-export default function Wellcome() {
+export default function welcome() {
   return (
     <>
       <motion.div
