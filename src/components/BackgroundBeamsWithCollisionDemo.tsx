@@ -16,11 +16,13 @@ export default function BackgroundBeamsWithCollisionDemo() {
           <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12">
             <GridItem
               area="md:[grid-area:1/1/2/13] flex items-center justify-center"
-              title={<div className="pt-6">๒๑ ตุลาคม ๒๕๖๘</div>}
+              title={<div className="pt-6">23 ตุลาคม วันปิยมหาราช</div>}
               description={<div className="pt-2 pb-6">
-                วันคล้ายวันพระราชสมภพ สมเด็จพระศรีนครินทราบรมราชชนนี “สมเด็จย่า”
-                น้อมรำลึกในพระมหากรุณาธิคุณตราบนิรันดร์ ข้าพระพุทธเจ้า คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา วิทยาลัยเทคนิคกันทรลักษ์           </div>}
-              image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/49/00.webp"} alt={""}></Image></>}
+                น้อมรำลึกในพระมหากรุณาธิคุณ พระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัว <br />
+                ด้วยเกล้าด้วยกระหม่อมขอเดชะ ข้าพระพุทธเจ้า<br />
+                คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา  วิทยาลัยเทคนิคกันทรลักษ์<br />
+              </div>}
+              image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/57/00.webp"} alt={""}></Image></>}
             />
           </ul>
         </div>
