@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import Link from "next/link";
 const EditTicketForm = ({ ticket }) => {
   const EDITMODE = ticket._id === "new" ? false : true;
   const router = useRouter();
+
   const startingTicketData = {
     title: "",
     description: "",
@@ -19,11 +21,10 @@ const EditTicketForm = ({ ticket }) => {
   }
 
   const [formData, setFormData] = useState(startingTicketData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.name;
-
+    const { name, value } = e.target;
     setFormData((preState) => ({
       ...preState,
       [name]: value,
@@ -32,92 +33,138 @@ const EditTicketForm = ({ ticket }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    if (EDITMODE) {
-      const res = await fetch(`/api/Tickets/${ticket._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({ formData }),
-      });
-      if (!res.ok) {
-        throw new Error("Failed to update ticket");
+    try {
+      if (EDITMODE) {
+        const res = await fetch(`/api/Tickets/${ticket._id}`, {
+          method: "PUT",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ formData }),
+        });
+        if (!res.ok) throw new Error("Failed to update ticket");
+      } else {
+        const res = await fetch("/api/Tickets", {
+          method: "POST",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ formData }),
+        });
+        if (!res.ok) throw new Error("Failed to create ticket");
       }
-    } else {
-      const res = await fetch("/api/Tickets", {
-        method: "POST",
-        body: JSON.stringify({ formData }),
-        "Content-Type": "application/json",
-      });
-      if (!res.ok) {
-        throw new Error("Failed to create ticket");
-      }
+
+      router.refresh();
+      router.push("/ITA/08/qa");
+    } catch (error) {
+      console.error(error);
+      alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    router.refresh();
-    router.push("/");
   };
 
   return (
-    <>
-      <div className="container">
-        <div className="flex justify-center">
-          <form
-            onSubmit={handleSubmit}
-            method="post"
-            className="flex w-full flex-col gap-3 py-24"
-          >
-            <h3 className="text-xl">
-              {EDITMODE ? "อัพเดทข้อความใหม่" : "เพิ่มข้อความใหม่"}
-            </h3>
-            <label>หัวเรื่อง</label>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-gray-50 to-blue-100 px-4 py-12">
+      <div className="w-full max-w-lg rounded-3xl border border-gray-100 bg-white p-8 shadow-xl">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-800">
+            {EDITMODE ? "🛠️ แก้ไขความคิดเห็น" : "💬 เพิ่มความคิดเห็นใหม่"}
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">
+            กรุณากรอกข้อมูลให้ครบถ้วนก่อนกดส่ง
+          </p>
+          <div className="mx-auto mt-3 h-1 w-16 rounded-full bg-blue-500"></div>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Title */}
+          <div>
+            <label
+              htmlFor="title"
+              className="mb-1 block font-medium text-gray-700"
+            >
+              หัวเรื่อง
+            </label>
             <input
               id="title"
               name="title"
               type="text"
+              placeholder="กรอกหัวข้อที่ต้องการโพสต์..."
               onChange={handleChange}
-              required={true}
               value={formData.title}
-              // className="rounded-2xl bg-gray-100 px-4 py-2"
-              className="rounded-xl border px-4 py-2"
+              required
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
-            <label>คำอธิบาย</label>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label
+              htmlFor="description"
+              className="mb-1 block font-medium text-gray-700"
+            >
+              คำอธิบาย
+            </label>
             <textarea
               id="description"
               name="description"
+              placeholder="อธิบายรายละเอียดเพิ่มเติม..."
               onChange={handleChange}
-              required={true}
               value={formData.description}
+              required
               rows="5"
-              className="rounded-xl border px-4 py-2"
+              className="w-full resize-none rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
-            <label>ชื่อผู้โพส</label>
+          </div>
+
+          {/* Category */}
+          <div>
+            <label
+              htmlFor="category"
+              className="mb-1 block font-medium text-gray-700"
+            >
+              ชื่อผู้โพสต์
+            </label>
             <input
               id="category"
               name="category"
+              placeholder="ระบุชื่อของคุณ..."
               onChange={handleChange}
-              required={true}
               value={formData.category}
-              rows="5"
-              className="rounded-xl border px-4 py-2"
-            ></input>
-            <input
-              type="submit"
-              className="rounded-2xl bg-sky-500 px-2 py-2"
-              value={EDITMODE ? "อัพเดทข้อมูล" : "ส่งข้อมูล"}
+              required
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex items-center justify-between pt-4">
             <Link
-              href={"/ITA/08/qa"}
-              className="px-2 py-2 text-center text-lg text-sky-800 dark:text-sky-200"
-              
+              href="/ITA/08/qa"
+              className="rounded-full border border-blue-300 px-5 py-2 font-medium text-blue-600 transition hover:bg-blue-50"
             >
-              ย้อนกลับ
+              ⬅️ ย้อนกลับ
             </Link>
-          </form>
-        </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`rounded-full px-6 py-2 font-semibold text-white shadow-md transition-transform duration-200 ${
+                isSubmitting
+                  ? "cursor-not-allowed bg-blue-300"
+                  : "bg-blue-500 hover:scale-105 hover:bg-blue-600"
+              }`}
+            >
+              {isSubmitting
+                ? "⏳ กำลังส่ง..."
+                : EDITMODE
+                  ? "💾 อัพเดตข้อมูล"
+                  : "🚀 ส่งความคิดเห็น"}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

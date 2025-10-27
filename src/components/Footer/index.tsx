@@ -16,18 +16,18 @@ const Footer = () => {
                 <Image
                   src="/images/logo.webp"
                   alt="logo"
-                  width='80'
-                  height='30'
-                  className="max-w-full"
+                  width={80}
+                  height={30}
+                  style={{ width: "auto", height: "auto" }}
                 />
               </LinkPreview>
               <LinkPreview url="https://ktltc.vercel.app/" className="mb-8 inline-block max-w-[160px]">
                 <Image
                   src="/images/logo2.webp"
                   alt="logo"
-                  width='140'
-                  height='30'
-                  className="max-w-full"
+                  width={120}
+                  height={40}
+                  style={{ width: "auto", height: "auto" }}
                 />
               </LinkPreview>
               <p className="mb-8 max-w-[270px] text-base text-gray-7">

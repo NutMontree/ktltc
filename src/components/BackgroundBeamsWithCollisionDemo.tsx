@@ -34,17 +34,18 @@ export default function BackgroundBeamsWithCollisionDemo() {
         <GridItem
           area="md:[grid-area:2/1/2/7] flex items-center justify-center"
           image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/3/00.webp"} alt={""}></Image></>} title={""} description={undefined}
-
         />
 
         <GridItem
           area="md:[grid-area:2/7/2/13] flex items-center justify-center"
-          image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/กันยายน/37/1.webp"} alt={""}></Image></>} title={""} description={undefined} />
+          image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/กันยายน/37/1.webp"} alt={""}></Image></>} title={""} description={undefined} 
+          />
       </ul> */}
 
-        <GridItem
+        {/* <GridItem
           area="md:[grid-area:2/7/2/13] flex items-center justify-center"
-          image={<><Image className="" isBlurred src={"images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/46/00.webp"} alt={""}></Image></>} title={""} description={undefined} />
+          image={<><Image className="" isBlurred src={"images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/46/00.webp"} alt={""}></Image></>} title={""} description={undefined} 
+          /> */}
       </motion.div>
     </>
   );

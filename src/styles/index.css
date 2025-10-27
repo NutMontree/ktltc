@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+  filter: grayscale(90%);
+}
+
+@media print {
+  html {
+    filter: none;
+  }
+}
+
 .link:hover {
   color: dodgerblue;
 }
