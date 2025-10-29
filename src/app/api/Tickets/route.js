@@ -1,14 +1,27 @@
 import Ticket from "@/app/models/Ticket";
 import { NextResponse } from "next/server";
 
+// export async function GET() {
+//   try {
+//     const tickets = await Ticket.find();
+
+//     return NextResponse.json({ tickets }, { status: 200 });
+//   } catch (err) {
+//     console.log(err);
+//     return NextResponse.json({ message: "Error", err }, { status: 500 });
+//   }
+// }
+
 export async function GET() {
   try {
-    const tickets = await Ticket.find();
-
-    return NextResponse.json({ tickets }, { status: 200 });
-  } catch (err) {
-    console.log(err);
-    return NextResponse.json({ message: "Error", err }, { status: 500 });
+    const { tickets } = await getAllTickets(); // 💡 เรียกใช้ Logic
+    return NextResponse.json({ tickets });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Failed to get tickets", error },
+      { status: 500 },
+    );
   }
 }
 

@@ -1,32 +1,31 @@
 import TicketCard from "@/app/(components)/TicketCard";
 import Link from "next/link";
+// 💡 1. Import ฟังก์ชัน Logic สำหรับดึงข้อมูลโดยตรง
+import { getAllTickets } from "@/lib/data"; // (ปรับแก้ Path นี้ ถ้าจำเป็น)
 
+/**
+ * 💡 2. อัปเดตฟังก์ชัน getTickets
+ * เปลี่ยนจากการ fetch API มาเป็นการเรียกใช้ฟังก์ชัน Server Logic โดยตรง
+ * เพื่อแก้ปัญหา Vercel WAF 403 Forbidden
+ */
 const getTickets = async () => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/Tickets`,
-      {
-        cache: "no-store",
-      },
-    );
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error(`❌ Fetch failed: ${res.status} ${res.statusText}`, text);
-      throw new Error(`Failed to fetch topics (${res.status})`);
-    }
-
-    return await res.json();
+    // นี่คือการเรียกใช้ฟังก์ชันบน Server โดยตรง ไม่ผ่าน Network
+    const data = await getAllTickets();
+    return data;
   } catch (error) {
-    console.error("❌ Error loading topics:", error);
+    console.error("❌ Error loading topics in Page:", error);
+    // คืนค่าว่างตามโครงสร้างเดิม เพื่อให้ UI ไม่พัง
     return { tickets: [] };
   }
 };
 
 export default async function SubQAPage() {
+  // ดึงข้อมูลด้วยวิธีใหม่
   const data = await getTickets();
   const tickets = data?.tickets || [];
 
+  // --- ส่วนจัดการกรณีไม่มีข้อมูล (เหมือนเดิม) ---
   if (!tickets.length) {
     return (
       <div className="flex h-[60vh] flex-col items-center justify-center text-gray-500">
@@ -40,10 +39,25 @@ export default async function SubQAPage() {
     );
   }
 
-  const uniqueCategories = [
-    ...new Set(tickets.map(({ category }) => category)),
-  ];
+  // --- 💡 3. ส่วนปรับปรุงประสิทธิภาพ (จัดกลุ่มด้วย reduce) ---
+  const ticketsByCategory = tickets.reduce((acc, ticket) => {
+    // ถ้า category ไม่มีค่า หรือเป็น null/undefined ให้ใช้ค่า default
+    const category = ticket.category || "ไม่ระบุหมวดหมู่";
 
+    // ถ้ายังไม่มีหมวดหมู่นี้ใน object ให้สร้างเป็น Array ว่างรอไว้
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+
+    // เพิ่ม ticket เข้าไปใน Array ของหมวดหมู่นั้นๆ
+    acc[category].push(ticket);
+    return acc;
+  }, {}); // ค่าเริ่มต้นคือ Object ว่าง {}
+
+  // ดึงชื่อหมวดหมู่ทั้งหมดออกมาจาก Object ที่เราสร้าง
+  const categories = Object.keys(ticketsByCategory);
+
+  // --- 4. ส่วนแสดงผล (Render) ---
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="mx-auto max-w-5xl p-6">
@@ -58,10 +72,10 @@ export default async function SubQAPage() {
           <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-blue-500"></div>
         </div>
 
-        {/* Categories */}
-        {uniqueCategories.map((uniqueCategory) => (
+        {/* Categories (วนลูปจาก categories ที่จัดกลุ่มแล้ว) */}
+        {categories.map((category) => (
           <div
-            key={`category-${uniqueCategory}`}
+            key={`category-${category}`}
             className="mb-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-lg transition-shadow duration-300 hover:shadow-2xl"
           >
             <div className="mb-4 flex items-center">
@@ -71,22 +85,19 @@ export default async function SubQAPage() {
                 className="mr-3 h-12 w-12 rounded-full border border-gray-200"
               />
               <h2 className="text-lg font-semibold text-gray-700">
-                {uniqueCategory || "ไม่ระบุหมวดหมู่"}
+                {category} {/* ใช้ชื่อ category จาก key ได้เลย */}
               </h2>
             </div>
 
             <div className="space-y-3">
-              {tickets
-                .filter((ticket) => ticket.category === uniqueCategory)
-                .map((filteredTicket, i) => (
-                  <TicketCard
-                    key={
-                      filteredTicket._id || filteredTicket.id || `ticket-${i}`
-                    }
-                    id={filteredTicket._id || filteredTicket.id}
-                    ticket={filteredTicket}
-                  />
-                ))}
+              {/* วนลูป tickets จากหมวดหมู่นั้นๆ (ไม่ต้อง .filter ซ้ำ) */}
+              {ticketsByCategory[category].map((filteredTicket, i) => (
+                <TicketCard
+                  key={filteredTicket._id || filteredTicket.id || `ticket-${i}`}
+                  id={filteredTicket._id || filteredTicket.id}
+                  ticket={filteredTicket}
+                />
+              ))}
             </div>
           </div>
         ))}
