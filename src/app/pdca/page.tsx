@@ -51,7 +51,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/1.การจัดทำรูปเล่ม_PDCA_และ_11_ขั้นตอน.doc"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             1.การจัดทำรูปเล่ม PDCA และ 11 ขั้นตอน
                         </Link>
@@ -60,7 +59,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/2.แบบฟอร์มขออนุมัติโครงการ(เฉพาะงานวางแผน).docx"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             2.แบบฟอร์มขออนุมัติโครงการ(เฉพาะงานวางแผน)
                         </Link>
@@ -69,7 +67,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/3.แบบฟอร์มขออนุมัติโครงการ.docx"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             3.แบบฟอร์มขออนุมัติโครงการ
                         </Link>
@@ -78,7 +75,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/4.แบบฟอร์มขออนุญาตดำเนินโครงการ.docx"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             4.แบบฟอร์มขออนุญาตดำเนินโครงการ
                         </Link>
@@ -87,7 +83,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/5.ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำปี.doc"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             5.ขออนุญาตปรับเพิ่มงบประมาณโครงการประจำปี
                         </Link>
@@ -96,7 +91,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/6.ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ.doc"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             6.ขออนุญาตปรับโครงการเข้าแผนปฏิบัติการ
                         </Link>
@@ -105,7 +99,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/7.แบบฟอร์มโครงการ.doc"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             7.แบบฟอร์มโครงการ
                         </Link>
@@ -114,7 +107,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/8.แบบฟอร์มบันทึกข้อความขออนุญาตรายงานผลดำ.docx"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             8.แบบฟอร์มบันทึกข้อความขออนุญาตรายงานผลดำ
                         </Link>
@@ -123,7 +115,6 @@ export default function PDCA() {
                         <Link
                             href="/pdf/pdca/9.แบบรายงานผลการดำเนินงานโครงการ_แบบย่อ.docx"
                             className="hover:text-sky-500"
-                            target="_blank"
                         >
                             9.แบบรายงานผลการดำเนินงานโครงการ_แบบย่อ
                         </Link>
