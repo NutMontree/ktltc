@@ -1,6 +1,15 @@
 export const DataPressrelease = {
   navItems: [
     {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์ `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/73/00.webp",
+      date: "29 ตุลาคม 2568",
+      description: `
+วันที่ 29 ตุลาคม 2568 นักเรียน นักศึกษาทุนนวัตกรรมสายอาชีพชั้นสูง และงานโครงการพิเศษและบริกา… See more
+`,
+      href: "/pressrelease/2568/press6810/press73",
+    },
+    {
       name: `29 ตุลาคม พ.ศ. 2568  `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/72/00.webp",
       date: "29 ตุลาคม 2568",
