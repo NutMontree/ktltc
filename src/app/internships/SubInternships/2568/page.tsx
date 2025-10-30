@@ -26,8 +26,9 @@ export default function Internships2568() {
             lg:grid-cols-4
            "
                     >
-                        {DataInternships.navItems.map((item) => (
-                            <NextLink key={item.href} href={item.href}>
+                        {DataInternships.navItems.map((item, index) => (
+                            <NextLink key={`${item.href}-${index}`} href={item.href}
+                            >
                                 <div
                                     className="mb-2 group relative rounded-xl cursor-pointer 
                   h-[170px]

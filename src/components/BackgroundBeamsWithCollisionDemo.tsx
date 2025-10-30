@@ -3,6 +3,7 @@ import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Image, } from "@nextui-org/react";
 import { motion } from "framer-motion";
+import { LinkPreview } from "./ui/link-preview";
 
 export default function BackgroundBeamsWithCollisionDemo() {
   return (
@@ -42,10 +43,17 @@ export default function BackgroundBeamsWithCollisionDemo() {
           />
       </ul> */}
 
-        {/* <GridItem
+        <GridItem
           area="md:[grid-area:2/7/2/13] flex items-center justify-center"
-          image={<><Image className="" isBlurred src={"images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/46/00.webp"} alt={""}></Image></>} title={""} description={undefined} 
-          /> */}
+          image={<>
+
+            <LinkPreview
+              url="https://ktltc.vercel.app/pressrelease/2568/press6810/press77">
+              <Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/77/00.webp"} alt={""}></Image>.
+            </LinkPreview>
+          </>} title={""} description={undefined}
+        />
+
       </motion.div>
     </>
   );
@@ -61,7 +69,7 @@ interface GridItemProps {
 const GridItem = ({ area, image, title, description }: GridItemProps) => {
   return (
     <li className={`  ${area}`}>
-      <div className="relative h-full rounded-2xl  p-2 md:rounded-3xl ">
+      <div className="relative h-full rounded-2xl p-2 md:rounded-3xl ">
         <GlowingEffect
           spread={40}
           glow={true}

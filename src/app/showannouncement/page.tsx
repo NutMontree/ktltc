@@ -103,9 +103,9 @@ export default function ShowAnnouncement() {
             onSwiper={(swiper) => console.log(swiper)}
             onSlideChange={() => console.log("slide change")}
           >
-            {DataAnnouncement.navItems.slice(0, 3).map((item) => (
-              <SwiperSlide key={item.name}>
-                <NextLink key={item.href} href={item.href}>
+            {DataAnnouncement.navItems.slice(0, 3).map((item, index) => (
+              <SwiperSlide key={`${item.href}-${index}`}>
+                <NextLink href={item.href} passHref>
                   <div
                     className="
                   mb-6 relative shadow-lg rounded-xl 

@@ -104,9 +104,9 @@ export default function ShowTechnicalcollegeorders() {
             onSwiper={(swiper) => console.log(swiper)}
             onSlideChange={() => console.log("slide change")}
           >
-            {Data.navItems.map((item) => (
-              <SwiperSlide key={item.name}>
-                <NextLink key={item.href} href={item.href}>
+            {Data.navItems.map((item, index) => (
+              <SwiperSlide key={`${item.href}-${index}`}>
+                <NextLink href={item.href}>
                   <div
                     className="
                   mb-6 relative shadow-lg rounded-xl 

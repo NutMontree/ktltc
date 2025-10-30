@@ -107,8 +107,8 @@ export default function ShowBidding() {
               onSwiper={(swiper) => console.log(swiper)}
               onSlideChange={() => console.log("slide change")}
             >
-              {dataBidding.navitems.map((item) => (
-                <SwiperSlide key={item.name}>
+              {dataBidding.navitems.map((item, index) => (
+                <SwiperSlide key={`${item.name}-${index}`}>
                   <NextLink key={item.href} href={item.href}>
                     <div
                       className="

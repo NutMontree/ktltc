@@ -26,8 +26,8 @@ export default function Page() {
             lg:grid-cols-4
            "
           >
-            {DataPressrelease.navItems.map((item) => (
-              <NextLink key={item.href} href={item.href}>
+            {DataPressrelease.navItems.map((item, index) => (
+              <NextLink key={`${item.href}-${index}`} href={item.href}>
                 <div
                   className="mb-2 group relative rounded-xl cursor-pointer 
                   h-[170px]
@@ -45,16 +45,19 @@ export default function Page() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-[14px] md:text-[20px] sm:text-sm md:text-base text-sky-600 hover:text-sky-400" >
+                  <h1 className="text-[14px] md:text-[20px] sm:text-sm md:text-base text-sky-600 hover:text-sky-400">
                     {item.name}
                   </h1>
                   <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2 flex">
-                    <div>
-                      {item.description}
-                    </div>
+                    <div>{item.description}</div>
                   </div>
                   <div className="flex gap-2">
-                    <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
+                    <Image
+                      src="/images/icons8-calendar.gif"
+                      alt="logo-youtube"
+                      width={20}
+                      height={20}
+                    />
                     <div className="text-xs text-slate-500 text-[12px] md:text-[14px] sm:text-sm md:text-base">
                       {item.date}
                     </div>
