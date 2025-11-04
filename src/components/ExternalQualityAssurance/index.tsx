@@ -12,7 +12,7 @@ const ExternalQualityAssurance = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
       >
-        <section className="grid grid-cols-1 xs:grid-cols-1 md:grid-cols-1 lg:grid-cols-2  gap-4 pt-12">
+        <section className="grid grid-cols-1 xs:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 pt-24">
           <div className="">
             <Card className="rounded-2xl hover:bg-[#f1f1f1]">
               <LinkPreview url="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf" target="_blank" className="dark:hover:text-black ">

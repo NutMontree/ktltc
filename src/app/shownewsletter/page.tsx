@@ -20,7 +20,7 @@ import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 import { motion } from "framer-motion";
 
-import { Data } from "../newsletter/newsletter2568/newsletter6810/data";
+import { Data } from "../newsletter/newsletter2568/newsletter6811/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
