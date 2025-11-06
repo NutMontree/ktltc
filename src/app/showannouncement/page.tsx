@@ -23,7 +23,7 @@ import { motion } from "framer-motion";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
-import { DataAnnouncement } from "../announcement/announcement2568/announcement6810/data";
+import { DataAnnouncement } from "../announcement/announcement2568/announcement6811/data";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
   linearGradientButton: css`
