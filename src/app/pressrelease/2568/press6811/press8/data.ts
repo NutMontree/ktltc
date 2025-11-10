@@ -1,7 +1,7 @@
 // ชื่อข่าว 
 export const DataPressrelease = {
   Item: [
-    { title: `ประกาศ`, },
+    { title: `ข่าวประชาสัมพันธ์`, },
     { title: `วิทยาลัยเทคนิคกันทรลักษ์`, },
   ],
 };

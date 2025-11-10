@@ -1,0 +1,52 @@
+// ชื่อข่าว 
+export const DataPressrelease = {
+  Item: [
+    { title: `ข่าวประชาสัมพันธ์`, },
+    { title: `วิทยาลัยเทคนิคกันทรลักษ์`, },
+  ],
+};
+
+// วันที่ลงข้อมูล 
+export const DataDate = [{ date: `10 พฤศจิกายน 2568` }];
+
+// คำอธิบายข่าว
+export const Description = [
+  { description: `วิทยาลัยเทคนิคกันทรลักษ์` },
+  { description: `      นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร ครู บุคลากรทางการศึกษา นักเรียน และนักศึกษา` },
+  { description: `        สถานศึกษา วิทยาลัยเทคนิคกันทรลักษ์ ได้รับผลการประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (Integrity and Transparency Assessment Online : ITA) ประจำปีงบประมาณ พ.ศ. 2568` },
+  { description: `         โดยมีผลคะแนนรวม 90.77 คะแนน ซึ่งอยู่ในเกณฑ์ผลการประเมินระดับ “ผ่านดี”` },
+  { description: `          ถือเป็นความภาคภูมิใจของวิทยาลัยฯ และสะท้อนถึงการบริหารจัดการที่โปร่งใส ตรวจสอบได้ รวมถึงความร่วมมือของทุกภาคส่วนในสถานศึกษา` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+  // { description: `` },
+];
+
+// ลิงค์
+export const TageLink = [
+  {
+    tage: ``,
+    href: ``,
+  },
+  // {
+  // tage: ``,
+  // href: ``,
+  // },
+]
+
+// รูปภาพ
+export const ImageItem = [
+  { imgs: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/00.webp" },
+]
