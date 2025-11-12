@@ -26,7 +26,7 @@ export default function BackgroundBeamsWithCollisionDemo() {
                 คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา <br />
                 วิทยาลัยเทคนิคกันทรลักษ์
               </div>}
-              image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/63/00.webp"} alt={""}></Image></>}
+              image={<><Image className="" isBlurred src={"/63/00.webp"} alt={""}></Image></>}
             />
           </ul>
         </div>
@@ -48,8 +48,8 @@ export default function BackgroundBeamsWithCollisionDemo() {
           image={<>
 
             <LinkPreview
-              url="https://ktltc.vercel.app/pressrelease/2568/press6810/press77">
-              <Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/77/00.webp"} alt={""}></Image>.
+              url="https://ktltcv2.vercel.app/pressrelease/2568/press6810/press77">
+              <Image className="" isBlurred src={"/77/00.webp"} alt={""}></Image>.
             </LinkPreview>
           </>} title={""} description={undefined}
         />
