@@ -20,70 +20,70 @@ export default function Pressrelease2568() {
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6810">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6810">
               เดือน ตุลาคม 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6809">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6809">
               เดือน กันยายน 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6808">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6808">
               เดือน สิงหาคม 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6807">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6807">
               เดือน กรกฎาคม 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6806">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6806">
               เดือน มิถุนายน 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6805">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6805">
               เดือน พฤษภาคม 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6804">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6804">
               เดือน เมษายน 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6803">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6803">
               เดือน มีนาคม 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6802">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6802">
               เดือน กุมภาพันธ์ 2568
             </Link>
           </Button>
         </div>
         <div>
           <Button color="primary">
-            <Link className="text-lg" href="/pressrelease/2568/press6801">
+            <Link className="text-lg" href="https://ktltcv2.vercel.app/pressrelease/2568/press6801">
               เดือน มกราคม 2568
             </Link>
           </Button>

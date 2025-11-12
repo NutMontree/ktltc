@@ -1,3 +1,4 @@
+"use client"
 import { LinkPreview } from "@/components/ui/link-preview";
 import React from 'react'
 import { Card, CardHeader, CardBody, Divider, Image } from "@heroui/react";
