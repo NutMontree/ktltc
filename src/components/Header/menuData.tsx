@@ -305,6 +305,12 @@ const menuData: Menu[] = [
         path: "/pa",
         newTab: false,
       },
+      {
+        id: 615,
+        title: "EmploymentDashboard",
+        path: "/EmploymentDashboard",
+        newTab: false,
+      },
     ],
   },
   // {
