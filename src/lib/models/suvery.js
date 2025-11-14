@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 // กำหนดโครงสร้าง (Schema) สำหรับข้อมูลการสำรวจ
-const surveySchema = new Schema(
+const suverySchema = new Schema(
     {
         // 1. ข้อมูลส่วนตัวและติดต่อ
         studentId: { type: String, required: true },
@@ -80,7 +80,7 @@ const surveySchema = new Schema(
     }
 );
 
-// ตรวจสอบว่า Model ชื่อ 'Survey' ถูกสร้างไปแล้วหรือไม่
-const Survey = mongoose.models.Survey || mongoose.model("Survey", surveySchema);
+// ตรวจสอบว่า Model ชื่อ 'suvery' ถูกสร้างไปแล้วหรือไม่
+const suvery = mongoose.models.suvery || mongoose.model("suvery", suverySchema);
 
-export default Survey;
+export default suvery;

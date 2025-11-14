@@ -1,4 +1,4 @@
-// my-projext/src/app/survey/page.js
+// my-projext/src/app/suvery/page.js
 
 "use client";
 
@@ -84,7 +84,7 @@ const initialFormData = {
 
 // -----------------------------------------------------------
 
-export default function GraduateSurveyForm() {
+export default function GraduatesuveryForm() {
     const [formData, setFormData] = useState(initialFormData);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -136,7 +136,7 @@ export default function GraduateSurveyForm() {
 
         // 💡 สมมติว่ามี API Route สำหรับรับข้อมูลสำรวจนี้
         try {
-            const res = await fetch('/api/survey', {
+            const res = await fetch('/api/suvery', {
                 method: 'POST',
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify(submissionData),
@@ -146,7 +146,7 @@ export default function GraduateSurveyForm() {
                 alert('บันทึกข้อมูลสำรวจสำเร็จ!');
                 router.push('/EmploymentDashboard'); // นำทางกลับ Dashboard
             } else {
-                throw new Error('Failed to submit survey data');
+                throw new Error('Failed to submit suvery data');
             }
         } catch (error) {
             console.error(error);
