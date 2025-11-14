@@ -29,28 +29,36 @@ interface SuveryListProps {
 // -----------------------------------------------------------------
 const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }) => {
 
-    const formatDate = (isoString: string | undefined): string => {
-        if (!isoString) return 'N/A';
-        try {
-            const date = new Date(isoString);
-            if (isNaN(date.getTime())) return 'Invalid Date';
+    // ✅ แก้ไข: ขยาย Type ให้รองรับ Date object, string, หรือ undefined
+    const formatDate = (isoValue: Date | string | undefined): string => {
+        if (!isoValue) return 'N/A';
 
-            return date.toLocaleDateString('th-TH', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-            });
-        } catch (e) {
-            return 'Invalid Date';
+        let date: Date;
+
+        if (isoValue instanceof Date) {
+            date = isoValue;
+        } else if (typeof isoValue === 'string') {
+            date = new Date(isoValue);
+        } else {
+            return 'N/A';
         }
+
+        if (isNaN(date.getTime())) return 'Invalid Date';
+
+        return date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
     };
 
     // 💡 Logic การแปลง Type จาก API ที่ใช้ String
     const getStatusText = (status: Isuvery['currentStatus'] | undefined): string => {
-        if (status === 'ไม่ได้ทำงาน') return 'ไม่ได้ทำงาน';
+        // อ้างอิงจาก Isuvery (ทำงานแล้ว/ไม่ได้ทำงาน)
         if (status === 'ทำงานแล้ว') return 'ทำงานแล้ว';
+        if (status === 'ไม่ได้ทำงาน') return 'ไม่ได้ทำงาน';
         return 'ไม่ระบุ';
     };
 
@@ -74,6 +82,7 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
                     {getStatusText(suvery.currentStatus)}
                 </span>
             </td>
+            {/* ✅ แก้ไข: suvery.submittedAt สามารถรับค่า Date หรือ string ได้แล้ว */}
             <td className="py-3 px-4 text-sm text-gray-600">{formatDate(suvery.submittedAt)}</td>
             <td className="py-3 px-4">
                 <div className='flex justify-end gap-3'>
@@ -102,7 +111,6 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
                     </button>
 
                     {/* 3. ปุ่มลบ (Delete) */}
-                    {/* 💡 แทนที่ปุ่ม alert ด้วย Component DeleteBtn จริง */}
                     <DeleteBtn id={suvery._id} />
                 </div>
             </td>
