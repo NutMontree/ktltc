@@ -15,7 +15,7 @@
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -39,7 +39,8 @@
     "components/settings.tsx",
     "components/Shapes.tsx",
     "components/use-smooth-transform.js",
-    "app/profile/page.jsx"
+    "app/profile/page.jsx",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
