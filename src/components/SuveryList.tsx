@@ -5,9 +5,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { HiPencilAlt, HiOutlineTrash, HiEye } from "react-icons/hi";
+import SuveryDetailModal from './SuveryDetailModal';
 // 💡 Casing Conflict (Error 1261): ต้องแน่ใจว่าชื่อไฟล์ Modal คือ 'SuveryDetailModal.tsx'
 // import SuveryDetailModal from './SuveryDetailModal';
-import SuveryDetailModal from './SuveryDetailModal';
+
 
 // -----------------------------------------------------------------
 // 💡 INTERFACES/TYPES
