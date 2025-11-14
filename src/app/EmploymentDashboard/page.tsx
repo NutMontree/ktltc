@@ -1,15 +1,14 @@
-// src/app/page.js (หรือไฟล์หลักที่ใช้แสดง Dashboard)
-
+// server
 import TaskList from '@/components/TaskList';
+import survey from '@/app/survey/page'
 import Link from 'next/link';
 export const dynamic = 'force-dynamic';
-// ฟังก์ชันสำหรับดึงข้อมูลทั้งหมด
+
 const getTasks = async () => {
-    // 💡 แก้ไข: ใช้ URL เต็มใน Development (เพื่อ Node.js fetch) 
-    // และใช้ Path ภายในใน Production (เพื่อหลีกเลี่ยงปัญหา 403/Security)
+
     const API_URL = process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3000/api/tasks' // URL เต็มสำหรับ Dev
-        : '/api/tasks'; // Path ภายในสำหรับ Production
+        ? 'http://localhost:3000/api/tasks'
+        : '/api/tasks';
 
     try {
         const res = await fetch(API_URL, {
@@ -30,15 +29,18 @@ const getTasks = async () => {
             console.error('❌ An unknown error occurred:', error);
         }
 
-        // หากเกิดข้อผิดพลาดในการเชื่อมต่อ ให้ส่ง Task เปล่ากลับไป
+
         return { tasks: [] };
     }
 };
 
-// 1. มีหน้า dashbord เพื่อแสดงข้อมูลทั้งหมดที่ผู้ใช้งานกรอกข้อมูล
+const getServery = async () => {
+    const API_URL = process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3000/api/survey'
+        : '/api/survery';
+}
+
 export default async function EmploymentDashboard() {
-    // Note: ข้อความแจ้งเตือน "Dynamic server usage" จะยังคงอยู่ 
-    // เพราะเราใช้ cache: 'no-store' ซึ่งเจตนาให้หน้านี้เป็น Dynamic อยู่แล้ว
     const { tasks } = await getTasks();
 
     return (
