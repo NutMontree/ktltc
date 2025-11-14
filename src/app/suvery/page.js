@@ -303,8 +303,8 @@ export default function GraduatesuveryForm() {
                             <label className={labelClass} htmlFor="currentStatus">สถานการณ์ทำงานปัจจุบัน *</label>
                             <select id="currentStatus" name="currentStatus" onChange={handleChange} value={formData.currentStatus} className={inputClass} required>
                                 <option value="">-- เลือกสถานะ --</option>
-                                <option value="1">1 ไม่ได้ทำงาน</option>
-                                <option value="2">2 ทำงานแล้ว</option>
+                                <option value="ไม่ได้ทำงาน">1 ไม่ได้ทำงาน</option>
+                                <option value="ทำงานแล้ว">2 ทำงานแล้ว</option>
                             </select>
                         </div>
 
@@ -347,9 +347,9 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass} htmlFor="unemployedReason">สาเหตุที่ยังไม่ได้ทำงาน (รายละเอียดเพิ่มเติม):</label>
                                     <select id="unemployedReason" name="unemployedReason" onChange={handleChange} value={formData.unemployedReason} className={inputClass} required>
                                         <option value="">-- เลือกสาเหตุ --</option>
-                                        <option value="1">1 ยังไม่ประสงค์ทำงาน</option>
-                                        <option value="2">2 รอฟังคำตอบจากหน่วยงาน</option>
-                                        <option value="3">3 หางานทำไม่ได้</option>
+                                        <option value="ยังไม่ประสงค์ทำงาน">1 ยังไม่ประสงค์ทำงาน</option>
+                                        <option value="รอฟังคำตอบจากหน่วยงาน">2 รอฟังคำตอบจากหน่วยงาน</option>
+                                        <option value="หางานทำไม่ได้">3 หางานทำไม่ได้</option>
                                         <option value="4">4 อื่นๆ (โปรดระบุ)</option>
                                     </select>
                                     {isUnemployedOther && (
@@ -404,10 +404,10 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass} htmlFor="salaryRange">ปัจจุบันท่านได้รับเงินค่าจ้าง (โดยเฉลี่ยต่อเดือน) *</label>
                                     <select id="salaryRange" name="salaryRange" onChange={handleChange} value={formData.salaryRange} className={inputClass} required>
                                         <option value="">-- เลือกช่วงรายได้ --</option>
-                                        <option value="1">1 ต่ำกว่า 7,940 บาท</option>
-                                        <option value="2">2 7,941 - 10,000 บาท</option>
-                                        <option value="3">3 10,001 - 15,000 บาท</option>
-                                        <option value="4">4 15,001 - 20,000 บาท</option>
+                                        <option value="ต่ำกว่า 7,940 บาท">1 ต่ำกว่า 7,940 บาท</option>
+                                        <option value="7,941 - 10,000 บาท">2 7,941 - 10,000 บาท</option>
+                                        <option value="10,001 - 15,000 บาท">3 10,001 - 15,000 บาท</option>
+                                        <option value="15,001 - 20,000 บาท">4 15,001 - 20,000 บาท</option>
                                         <option value="5">5 อื่นๆ (โปรดระบุ)</option>
                                     </select>
                                     {isSalaryOther && (
@@ -419,11 +419,11 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass}>ลักษณะงานที่ทำ ตรงกับสาขาที่ท่านได้สำเร็จการศึกษาหรือไม่ *</label>
                                     <div className="flex gap-6 mt-1">
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobMatch" value="1" checked={formData.jobMatch === '1'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
+                                            <input type="radio" name="jobMatch" value="ไม่ตรง" checked={formData.jobMatch === '1'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
                                             <span className="ml-2 text-gray-700">1 ตรง</span>
                                         </label>
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobMatch" value="2" checked={formData.jobMatch === '2'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
+                                            <input type="radio" name="jobMatch" value="ไม่ตรง" checked={formData.jobMatch === '2'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
                                             <span className="ml-2 text-gray-700">2 ไม่ตรง</span>
                                         </label>
                                     </div>
@@ -433,11 +433,11 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass}>ท่านพึงพอใจกับงานที่ทำอยู่๋ในปัจจุบันหรือไม่ *</label>
                                     <div className="flex gap-6 mt-1">
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobSatisfaction" value="1" checked={formData.jobSatisfaction === '1'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
+                                            <input type="radio" name="jobSatisfaction" value="พึงพอใจ" checked={formData.jobSatisfaction === '1'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
                                             <span className="ml-2 text-gray-700">1 พึงพอใจ</span>
                                         </label>
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobSatisfaction" value="2" checked={formData.jobSatisfaction === '2'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
+                                            <input type="radio" name="jobSatisfaction" value="ไม่พึงพอใจ" checked={formData.jobSatisfaction === '2'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
                                             <span className="ml-2 text-gray-700">2 ไม่พึงพอใจ</span>
                                         </label>
                                     </div>
@@ -468,9 +468,9 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass} htmlFor="furtherStudyLevel">ระดับการศึกษาที่ต้องการศึกษาต่อ/กำลังศึกษาต่อ *</label>
                                     <select id="furtherStudyLevel" name="furtherStudyLevel" onChange={handleChange} value={formData.furtherStudyLevel} className={inputClass} required>
                                         <option value="">-- เลือกระดับ --</option>
-                                        <option value="1">1 ระดับปริญญาตรี</option>
-                                        <option value="2">2 ระดับปริญญาโท</option>
-                                        <option value="3">3 ระดับปริญญาเอก</option>
+                                        <option value="ระดับปริญญาตรี">1 ระดับปริญญาตรี</option>
+                                        <option value="ระดับปริญญาโท">2 ระดับปริญญาโท</option>
+                                        <option value="ระดับปริญญาเอก">3 ระดับปริญญาเอก</option>
                                     </select>
                                 </div>
 
@@ -490,9 +490,9 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass} htmlFor="furtherStudyReason">สาเหตุที่ต้องการศึกษาต่อ *</label>
                                     <select id="furtherStudyReason" name="furtherStudyReason" onChange={handleChange} value={formData.furtherStudyReason} className={inputClass} required>
                                         <option value="">-- เลือกสาเหตุ --</option>
-                                        <option value="1">1 เป็นความต้องการของบิดา/มารดา หรือผู้ปกครอง</option>
-                                        <option value="2">2 ได้รับทุนการศึกษาต่อ</option>
-                                        <option value="3">3 งานที่ทำต้องการใช้วุฒิที่สูงกว่า ปวช./ปวส.</option>
+                                        <option value="เป็นความต้องการของบิดา/มารดา หรือผู้ปกครอง">1 เป็นความต้องการของบิดา/มารดา หรือผู้ปกครอง</option>
+                                        <option value="ได้รับทุนการศึกษาต่อ">2 ได้รับทุนการศึกษาต่อ</option>
+                                        <option value="งานที่ทำต้องการใช้วุฒิที่สูงกว่า ปวช./ปวส.">3 งานที่ทำต้องการใช้วุฒิที่สูงกว่า ปวช./ปวส.</option>
                                         <option value="4">4 อื่นๆ (โปรดระบุ)</option>
                                     </select>
                                     {isFurtherStudyReasonOther && (

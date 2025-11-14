@@ -1,51 +1,38 @@
 // src/components/SuveryDetailModal.tsx
 
 'use client';
-
 import React from 'react';
 
-// -----------------------------------------------------------------
-// 💡 INTERFACE/TYPES ที่ปรับปรุง Type Safety
-// -----------------------------------------------------------------
-
-// 🔥 ปรับปรุง Type: เปลี่ยน 'String' เป็น 'string' (ตัวเล็ก) และเพิ่ม 'null'/'undefined' ให้กับ Field ที่อาจไม่มีข้อมูล
 export interface SuveryItem {
     _id: string;
-    // ใช้ string | null | undefined สำหรับ Field ที่ไม่ได้บังคับกรอก (หรือลบ [key: string]: any ออกเพื่อ Type Safety สูงสุด)
     roomId?: string | null;
     studentId: string;
     fullName: string;
-    major?: string; // ทำให้เป็น Optional
-    employmentStatus?: string | null; // ทำให้เป็น Optional และรับค่า null ได้
+    major?: string;
+    employmentStatus?: string | null;
     companyName?: string | null;
     salary?: number | null;
     satisfaction?: number | null;
     createdAt: string;
-    // เพิ่ม Field อื่นๆ ที่ใช้ใน placeholders และอาจจะส่งมาด้วย
     graduationYear?: number;
-    currentStatus?: '1' | '2'; // 1: ไม่ได้ทำงาน, 2: ทำงานแล้ว
+    currentStatus?: '1' | '2';
     age?: number | null;
     contactTel?: string | null;
     contactEmail?: string | null;
 
-    // **ใช้ Record<string, any> แทน [key: string]: any เพื่อความปลอดภัย**
     [key: string]: any;
 }
 
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    // อนุญาตให้รับ IsuveryItem หรือ null เพื่อให้เข้ากันกับ List Component
     suvery: SuveryItem | null;
 }
 
 const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {
-    // Early exit: ตรวจสอบครั้งเดียว
     if (!isOpen || !suvery) return null;
 
-    // 💡 ฟังก์ชันจัดการค่าที่แสดงผล
     const formatValue = (key: string, value: any): string => {
-        // จัดรูปแบบวันที่ (ใช้ฟิลด์ 'createdAt')
         if (key === 'createdAt' && value) {
             try {
                 return new Date(value).toLocaleDateString('th-TH', {
@@ -165,26 +152,8 @@ const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {
             onClick={onClose}
         >
             <div
-                className="
-                    bg-white 
-                    w-full 
-                    max-w-4xl 
-                    rounded-2xl 
-                    shadow-2xl 
-                    border 
-                    border-white/30 
-                    p-6 
-                    transform 
-                    transition-all 
-                    duration-300
-                    max-h-[95vh]
-                    overflow-y-auto
-                    scrollbar-thin 
-                    scrollbar-thumb-gray-300
-                    scrollbar-track-transparent
-                "
-                onClick={(e) => e.stopPropagation()}
-            >
+                className=" bg-white  w-full  max-w-4xl  rounded-2xl  shadow-2xl  border  border-white/30  p-6  transform  transition-all  duration-300 max-h-[95vh] overflow-y-auto scrollbar-thin  scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6 sticky top-0 bg-white/95 backdrop-blur-lg py-3 z-10 border-b">
                     <h3 className="text-2xl font-bold text-violet-600">
@@ -222,7 +191,7 @@ const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 </div>
 
                 {/* Data Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {displayData.map(([key, value]) => (
                         <div
                             key={key}
