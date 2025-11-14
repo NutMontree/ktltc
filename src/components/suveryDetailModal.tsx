@@ -2,9 +2,10 @@
 
 import React from 'react';
 
+// Interface ยังคงเหมือนเดิม
 export interface SuveryItem {
     _id: string;
-    roomId: String;
+    roomId: String | undefined;
     studentId: string;
     fullName: string;
     major: string;
@@ -25,23 +26,12 @@ interface ModalProps {
 const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
     if (!isOpen || !suvery) return null;
 
-    const formatLabel = (key: string): string => {
-        const labels: Record<string, string> = {
-            roomId: "ห้องเรียน",
-            studentId: "รหัสนักศึกษา",
-            fullName: "ชื่อ-สกุล",
-            major: "สาขาวิชา",
-            employmentStatus: "สถานะการทำงาน",
-            companyName: "ชื่อบริษัท",
-            salary: "เงินเดือน (บาท)",
-            satisfaction: "ความพึงพอใจ (1-5)",
-            createdAt: "วันที่บันทึก",
-        };
-        return labels[key] || key;
-    };
+    // *** ลบฟังก์ชัน formatLabel ออกไป เนื่องจากใช้ placeholders แทน ***
+    // const formatLabel = (key: string): string => { ... }; 
 
     const formatValue = (key: string, value: any): string => {
-        if (key === 'createdAt') {
+        // จัดรูปแบบวันที่
+        if (key === 'createdAt' && value) {
             return new Date(value).toLocaleDateString('th-TH', {
                 year: 'numeric',
                 month: 'long',
@@ -50,18 +40,15 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 minute: '2-digit',
             });
         }
-        if (key === 'salary') return value.toLocaleString('th-TH');
+        // จัดรูปแบบเงินเดือน
+        if (key === 'salary' && typeof value === 'number') {
+            return value.toLocaleString('th-TH');
+        }
+        // จัดรูปแบบค่าอื่นๆ
         return String(value);
     };
 
-    const displayData = Object.entries(suvery)
-        .filter(([key]) =>
-            key !== '__v' &&
-            key !== '_id' &&
-            key !== 'submittedAt' &&
-            key !== 'updatedAt'
-        );
-
+    // อ็อบเจกต์ placeholders ที่คุณให้มา
     const placeholders: Record<string, string> = {
         // 1. ข้อมูลส่วนตัวและติดต่อ
         roomId: "ห้องเรียน",
@@ -70,7 +57,6 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         age: "อายุ",
         contactTel: "เบอร์ที่สามารถติดต่อได้",
         contactEmail: "อีเมล",
-
         // 2. ที่อยู่ติดต่อได้
         addrNumber: "เลขที่",
         addrBuilding: "อาคาร/หมู่บ้าน",
@@ -81,30 +67,25 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         addrDistrict: "อำเภอ/เขต",
         addrProvince: "จังหวัด",
         addrZipCode: "รหัสไปรษณีย์",
-
         // 3. ข้อมูลการศึกษา
         homeProvince: "ภูมิลำเนา (จังหวัด)",
         graduationYear: "ปีที่จบการศึกษา",
         educationLevel: "ระดับการศึกษาที่จบ",
         gender: "เพศ",
         gpa: "เกรดเฉลี่ยสะสม",
-
         // 4. สถานการณ์ทำงานปัจจุบัน
         currentStatus: "สถานะการทำงานปัจจุบัน",
-
         // 4.1 ไม่ได้ทำงาน
         notWorkingReasonGroup: "เหตุผลที่ยังไม่ได้ทำงาน (กลุ่ม)",
         jobSearchProblem: "ปัญหาในการหางาน",
         unemployedReason: "สาเหตุที่ยังไม่ได้ทำงาน",
         unemployedReasonOther: "โปรดระบุสาเหตุอื่น",
-
         // 4.2 ทำงานแล้ว
         employmentType: "ประเภทหน่วยงาน",
         employmentTypeOther: "โปรดระบุประเภทหน่วยงานอื่น",
         jobTitle: "ตำแหน่งงาน",
         workplaceName: "ชื่อสถานที่ทำงาน",
         workplaceTel: "เบอร์โทรศัพท์สถานที่ทำงาน",
-
         // ที่อยู่สถานที่ทำงาน
         workplaceAddrNumber: "เลขที่ (ที่ทำงาน)",
         workplaceAddrMoo: "หมู่ (ที่ทำงาน)",
@@ -114,15 +95,12 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         workplaceAddrDistrict: "อำเภอ/เขต (ที่ทำงาน)",
         workplaceAddrProvince: "จังหวัด (ที่ทำงาน)",
         workplaceAddrZipCode: "รหัสไปรษณีย์ (ที่ทำงาน)",
-
         // รายได้
         salaryRange: "ช่วงรายได้",
         salaryRangeOther: "รายได้ (ระบุเอง)",
-
         // ความสัมพันธ์งาน–สาขา
         jobMatch: "ตรงกับสาขาหรือไม่",
         jobSatisfaction: "ความพึงพอใจในงาน",
-
         // 5. การศึกษาต่อ
         furtherStudyIntention: "ความต้องการศึกษาต่อ",
         furtherStudyLevel: "ระดับที่ต้องการศึกษาต่อ",
@@ -130,12 +108,26 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         furtherStudyMajorDetail: "โปรดระบุสาขาใหม่",
         furtherStudyReason: "สาเหตุที่ต้องการศึกษาต่อ",
         furtherStudyReasonOther: "โปรดระบุสาเหตุอื่น",
-
         // 6. ข้อเสนอแนะ
         suggestion: "ข้อเสนอแนะ",
-
         createdAt: "วันที่กรอกข้อมูล"
     };
+
+    // 🔥 ปรับปรุงการกรองข้อมูล: ไม่แสดงฟิลด์ระบบ และฟิลด์ที่ไม่มีค่า
+    const displayData = Object.entries(suvery)
+        .filter(([key, value]) => {
+            const excludedKeys = ['__v', '_id', 'submittedAt', 'updatedAt'];
+            if (excludedKeys.includes(key)) return false;
+
+            // กรองค่าที่เป็น null, undefined หรือ string ว่าง
+            if (value === null || value === undefined) return false;
+            if (typeof value === 'string' && value.trim() === '') return false;
+            // กรองค่าที่เป็น 0 หรือ false ออก หากไม่ต้องการแสดง (แต่โดยทั่วไปมักจะแสดงตัวเลข 0)
+            // if (value === 0 || value === false) return false; 
+
+            // แสดงเฉพาะ Field ที่มี Label ใน placeholders
+            return placeholders.hasOwnProperty(key);
+        });
 
     return (
         <div
@@ -207,6 +199,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                             className="p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200"
                         >
                             <p className="text-xs font-medium text-violet-700 uppercase tracking-wide">
+                                {/* 🔥 ใช้ placeholders[key] เพื่อแสดง Label ภาษาไทย */}
                                 {placeholders[key] || key}
                             </p>
                             <p className="text-lg font-semibold text-gray-900 mt-1 break-words">

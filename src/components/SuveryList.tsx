@@ -5,34 +5,41 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { HiPencilAlt, HiOutlineTrash, HiEye } from "react-icons/hi";
+// 💡 การ Import ที่ถูกต้อง (สมมติว่าชื่อไฟล์คือ SuveryDetailModal.tsx และอยู่ในโฟลเดอร์เดียวกัน)
 import SuveryDetailModal from './SuveryDetailModal';
-// 💡 Casing Conflict (Error 1261): ต้องแน่ใจว่าชื่อไฟล์ Modal คือ 'SuveryDetailModal.tsx'
-// import SuveryDetailModal from './SuveryDetailModal';
 
 
 // -----------------------------------------------------------------
 // 💡 INTERFACES/TYPES
 // -----------------------------------------------------------------
 
-// 💡 แก้ไข: เพิ่ม Field ที่ขาดหายไปตามที่ SuveryDetailModal คาดหวัง
+// 💡 Isuvery: กำหนด Type ที่รวมข้อมูลที่ต้องการสำหรับ List และ Modal
+// **หมายเหตุ:** Interface นี้ควรตรงกับ Interface 'SuveryItem' ในไฟล์ SuveryDetailModal.tsx
 export interface Isuvery {
     _id: string;
-    roomId: String;
+    // ข้อมูลหลักสำหรับ List
     studentId: string;
     fullName: string;
     graduationYear: number;
-    currentStatus: string; // '1' หรือ '2' (สำหรับ List)
+    currentStatus: string; // '1' หรือ '2'
     submittedAt: string; // ISO Date string (สำหรับ List)
 
-    // 🔥 เพิ่ม Field เหล่านี้เพื่อแก้ไข Error 2740 (Type Mismatch)
+    // 🔥 Field ที่จำเป็นสำหรับ SuveryDetailModal (อ้างอิงจาก Modal เดิม)
     major: string;
-    employmentStatus: string; // ข้อมูลสถานะการทำงานแบบละเอียด
+    employmentStatus: string;
     companyName: string;
     salary: number; // หากเก็บใน DB เป็น Number
     satisfaction: number; // หากเก็บใน DB เป็น Number
-    createdAt: string; // วันที่สร้าง/บันทึก (มักใช้ใน Modal แทน submittedAt)
+    createdAt: string; // วันที่สร้าง/บันทึก (สำหรับ Modal)
 
-    [key: string]: any; // ใช้สำหรับ Field อื่นๆ ที่ไม่ได้ระบุชัดเจน
+    // 🔥 เพิ่ม Field อื่นๆ ที่อาจจะถูกดึงมาทั้งหมดตาม placeholders ใน Modal
+    roomId: string | undefined; // เปลี่ยนเป็น Optional หรือลบออกหากไม่จำเป็น
+    age?: number;
+    contactTel?: string;
+    contactEmail?: string;
+    // ... (เพิ่ม Field อื่นๆ ตามที่ Modal ต้องการแสดง)
+
+    [key: string]: any; // ใช้สำหรับ Field อื่นๆ ที่ไม่ได้ระบุชัดเจนทั้งหมด
 }
 
 // 💡 กำหนด Type สำหรับ Props ของ SurveyListItem
@@ -78,7 +85,7 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
         if (status === '2') return 'text-green-700 bg-green-100 border border-green-200';
         return 'text-gray-500 bg-gray-100';
     };
-    // ... (โค้ด TR ของ SurveyListItem เหมือนเดิม)
+
     return (
         <tr
             key={suvery._id}
@@ -182,6 +189,7 @@ const SuveryList: React.FC<SuveryListProps> = ({ suverys }) => {
             </div>
 
             {isModalOpen && selectedsuvery && (
+                // 💡 Prop `suvery` ตอนนี้มี Field ครบตามที่ SuveryDetailModal คาดหวัง
                 <SuveryDetailModal suvery={selectedsuvery} isOpen={isModalOpen} onClose={handleCloseModal} />
             )}
         </>
