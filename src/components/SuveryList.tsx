@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { HiPencilAlt, HiOutlineTrash, HiEye } from "react-icons/hi";
-import SuveryDetailModal from '@/components/SuveryDetailModal'
+import SuveryModal from "./SuveryModal"
 import { Isuvery } from './Isuvery';
 
 
@@ -185,7 +185,7 @@ const SuveryList: React.FC<SuveryListProps> = ({ suverys, isLoading, isError }) 
             </div>
 
             {isModalOpen && selectedsuvery && (
-                <SuveryDetailModal suvery={selectedsuvery} isOpen={isModalOpen} onClose={handleCloseModal} />
+                <SuveryModal suvery={selectedsuvery} isOpen={isModalOpen} onClose={handleCloseModal} />
             )}
         </>
     );
