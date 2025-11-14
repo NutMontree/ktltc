@@ -38,7 +38,8 @@ export const dynamic = 'force-dynamic';
 // ฟังก์ชันสำหรับดึงข้อมูล Surveys (suverys)
 const getsuverys = async () => {
     const API_URL = process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3000/api/suvery'
+        // ? 'http://localhost:3000/api/suvery'
+        ? 'https://ktltc.vercel.app/api/suvery'
         : '/api/suvery';
 
     try {
