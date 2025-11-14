@@ -2,6 +2,7 @@
 
 'use client';
 import React from 'react';
+import { Isuvery } from './Isuvery';
 
 export interface SuveryItem {
     _id: string;
@@ -24,9 +25,10 @@ export interface SuveryItem {
 }
 
 interface ModalProps {
+    // 💡 เปลี่ยนชื่อ Type จาก 'SuveryItem' เป็น 'Isuvery' (หรืออัปเดต Type ภายใน 'SuveryItem' ให้ตรงกับ Isuvery)
+    suvery: Isuvery;
     isOpen: boolean;
     onClose: () => void;
-    suvery: SuveryItem | null;
 }
 
 const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {

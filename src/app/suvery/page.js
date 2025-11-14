@@ -3,10 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-// ใช้ Lucide icons แทนการ import ภายนอก
 import { User, GraduationCap, Briefcase, ChevronRight, BookOpen, MessageSquare, Check, X, Loader2 } from 'lucide-react';
 
-// --- State Initialization (ใช้สำหรับฟอร์มที่มี Field เยอะมาก) ---
 const initialFormData = {
     // 1. ข้อมูลส่วนตัว
     roomId: '',
@@ -83,11 +81,9 @@ const initialFormData = {
     suggestion: '',
 };
 
-// --- Custom Tailwind Class Definitions (ใช้คลาส Tailwind โดยตรง) ---
 const inputClass = "w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 shadow-sm transition duration-150";
 const labelClass = "text-sm font-semibold text-gray-700 mb-1";
 
-// --- Section Component (เพื่อความสะอาดของโค้ด) ---
 const FormSection = ({ title, icon: Icon, children }) => (
     <section className="space-y-4 pt-6 border-t border-gray-200">
         <h2 className="text-2xl font-bold flex items-center text-blue-700">
@@ -110,7 +106,6 @@ export default function GraduatesuveryForm() {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        // Logic สำหรับ radio/checkbox หรือ text input
         const newValue = type === 'radio' ? value : value;
 
         setFormData(prev => ({
@@ -119,27 +114,18 @@ export default function GraduatesuveryForm() {
         }));
     };
 
-    // ฟังก์ชันจัดการ Logic การแสดงผลตามเงื่อนไข
+
     const isWorking = formData.currentStatus === '2';
     const isNotWorking = formData.currentStatus === '1';
-
     const isEmploymentTypeOther = isWorking && formData.employmentType === 'อื่นๆ';
-
     const isSalaryOther = isWorking && formData.salaryRange === '5';
-
     const isFurtherStudy = formData.furtherStudyIntention === 'ต้องการศึกษาต่อ';
     const isFurtherStudyReasonOther = isFurtherStudy && formData.furtherStudyReason === '4';
-
     const isUnemployedOther = isNotWorking && formData.unemployedReason === '4';
-
     const isUnemployedLookingForJob = isNotWorking && formData.notWorkingReasonGroup === 'หางานทำไม่ได้';
 
-    // Custom alert function (เนื่องจากห้ามใช้ alert() เดิม)
     const showMessage = (msg, type = 'info') => {
-        // In a real app, this would trigger a modal or toast notification
         console.log(`[${type.toUpperCase()}] ${msg}`);
-        // For simplicity in this single file, we use a basic window alert as a fallback
-        // but normally this would be a styled component visible in the UI
         if (typeof window !== 'undefined') {
             window.alert(msg);
         }
@@ -154,7 +140,6 @@ export default function GraduatesuveryForm() {
             return;
         }
 
-        // 💡 เพิ่มการเก็บวันเวลาที่กรอกข้อมูล
         const submissionData = {
             ...formData,
             college: collegeName,
@@ -164,17 +149,12 @@ export default function GraduatesuveryForm() {
 
         setIsSubmitting(true);
 
-        // 💡 สมมติว่ามี API Route สำหรับรับข้อมูลสำรวจนี้
         try {
-            // Mock API call since actual API endpoint doesn't exist in this context
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-
-            // Check if mock submission is successful
+            await new Promise(resolve => setTimeout(resolve, 1500));
             const isMockSuccess = true;
-
             if (isMockSuccess) {
                 showMessage('บันทึกข้อมูลสำรวจสำเร็จ!', 'success');
-                // router.push('/EmploymentDashboard'); // Uncomment in Next.js environment
+                router.push('/EmploymentDashboard'); 
             } else {
                 throw new Error('Failed to submit survey data');
             }
@@ -531,7 +511,7 @@ export default function GraduatesuveryForm() {
                             {isSubmitting ? (
                                 <><Loader2 className="w-5 h-5 animate-spin mr-2" /> กำลังบันทึก...</>
                             ) : (
-                                <><ChevronRight className="w-5 h-5 mr-1" /> ยืนยันและส่งข้อมูล</>
+                                <><ChevronRight className="w-5 h-5 mr-1" /> แก้ไขข้อมูลแบบสำรวจ</>
                             )}
                         </button>
                     </div>

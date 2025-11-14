@@ -1,12 +1,12 @@
 // src/components/SuveryList.tsx
-
 "use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { HiPencilAlt, HiOutlineTrash, HiEye } from "react-icons/hi";
-import SuveryModal from "./SuveryModal"
+import SuveryModal from '@/components/SuveryModal'
 import { Isuvery } from './Isuvery';
+import DeleteBtn from './DeleteBtn';
 
 
 // -----------------------------------------------------------------
@@ -20,7 +20,6 @@ interface SurveyListItemProps {
 
 interface SuveryListProps {
     suverys: Isuvery[];
-    // 💡 รับสถานะการโหลดและ Error จาก Parent Component
     isLoading: boolean;
     isError: boolean;
 }
@@ -48,16 +47,16 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
         }
     };
 
-    // ใช้ Isuvery['currentStatus'] เพื่อระบุ Type ที่ชัดเจน
+    // 💡 Logic การแปลง Type จาก API ที่ใช้ String
     const getStatusText = (status: Isuvery['currentStatus'] | undefined): string => {
-        if (status === '1') return 'ไม่ได้ทำงาน';
-        if (status === '2') return 'ทำงานแล้ว';
+        if (status === 'ไม่ได้ทำงาน') return 'ไม่ได้ทำงาน';
+        if (status === 'ทำงานแล้ว') return 'ทำงานแล้ว';
         return 'ไม่ระบุ';
     };
 
     const getStatusColor = (status: Isuvery['currentStatus'] | undefined): string => {
-        if (status === '1') return 'text-red-600 bg-red-100 border border-red-200';
-        if (status === '2') return 'text-green-700 bg-green-100 border border-green-200';
+        if (status === 'ไม่ได้ทำงาน') return 'text-red-600 bg-red-100 border border-red-200';
+        if (status === 'ทำงานแล้ว') return 'text-green-700 bg-green-100 border border-green-200';
         return 'text-gray-500 bg-gray-100';
     };
 
@@ -78,13 +77,18 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
             <td className="py-3 px-4 text-sm text-gray-600">{formatDate(suvery.submittedAt)}</td>
             <td className="py-3 px-4">
                 <div className='flex justify-end gap-3'>
+                    {/* 1. ปุ่มแก้ไข (Edit) */}
                     <Link
                         href={`/suvery/edit/${suvery._id}`}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()} // ป้องกันการเปิด Modal
                         className="text-gray-400 hover:text-yellow-600 transition p-1"
+                        aria-label="แก้ไขข้อมูล"
+                        title="แก้ไขข้อมูล"
                     >
                         <HiPencilAlt size={20} />
                     </Link>
+
+                    {/* 2. ปุ่มดูรายละเอียด (View) */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -92,19 +96,14 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
                         }}
                         className="text-violet-600 hover:text-violet-800 transition p-1"
                         aria-label="ดูรายละเอียด"
+                        title="ดูรายละเอียด"
                     >
                         <HiEye size={20} />
                     </button>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            alert(`ต้องการลบข้อมูลของ ${suvery.fullName} ใช่หรือไม่?`);
-                        }}
-                        className="text-gray-400 hover:text-red-600 transition p-1"
-                        aria-label="ลบข้อมูล"
-                    >
-                        <HiOutlineTrash size={20} />
-                    </button>
+
+                    {/* 3. ปุ่มลบ (Delete) */}
+                    {/* 💡 แทนที่ปุ่ม alert ด้วย Component DeleteBtn จริง */}
+                    <DeleteBtn id={suvery._id} />
                 </div>
             </td>
         </tr>
