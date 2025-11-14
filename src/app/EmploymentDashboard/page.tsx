@@ -3,13 +3,13 @@ import SuveryList from '@/components/SuveryList';
 import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
-const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-// const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+// const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 const getsuverys = async () => {
     try {
-        const res = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/suvery`, {
-        // const res = await fetch(`${BASE_URL}/api/suvery`, {
+        // const res = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/suvery`, {
+        const res = await fetch(`${BASE_URL}/api/suvery`, {
             cache: 'no-store'
         });
 

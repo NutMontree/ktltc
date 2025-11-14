@@ -53,7 +53,7 @@ export default async function EditSuveryPage({ params }: EditPageProps) {
     if (!id) {
         return (
             <div className="p-8 text-center text-red-600">
-                <h2>Invalid Survey ID Access</h2>
+                <h2>Invalid suvery ID Access</h2>
                 <p>The system could not retrieve the dynamic segment ID.</p>
             </div>
         );

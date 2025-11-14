@@ -105,15 +105,96 @@ export default function GraduatesuveryForm() {
     const collegeProvince = 'ศรีสะเกษ';
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        const newValue = type === 'radio' ? value : value;
+        const { name, value, type } = e.target;
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: newValue
-        }));
+        console.log(`Event: ${name} changed to ${value}`); // ตรวจสอบการเปลี่ยนแปลง
+
+        setFormData(prev => {
+            const newData = { ...prev, [name]: value };
+
+            // --- Logic การจัดการข้อมูล: ส่วนที่ 3 สถานการณ์ทำงานปัจจุบัน ---
+            if (name === 'currentStatus') {
+                if (value === 'ไม่ได้ทำงาน') {
+                    console.log("Status: ไม่ได้ทำงาน -> ล้างข้อมูลงาน");
+                    // ล้างข้อมูลส่วน 3.2 (ทำงานแล้ว), ส่วน 5 (รายได้), และ ส่วน 8 (ปัญหาหางาน)
+                    newData.employmentType = '';
+                    newData.employmentTypeOther = '';
+                    newData.jobTitle = '';
+                    newData.workplaceName = '';
+                    newData.workplaceAddrNumber = '';
+                    newData.workplaceAddrMoo = '';
+                    newData.workplaceAddrSoi = '';
+                    newData.workplaceAddrRoad = '';
+                    newData.workplaceAddrSubDistrict = '';
+                    newData.workplaceAddrDistrict = '';
+                    newData.workplaceAddrProvince = '';
+                    newData.workplaceAddrZipCode = '';
+                    newData.workplaceTel = '';
+                    newData.salaryRange = '';
+                    newData.salaryRangeOther = '';
+                    newData.jobMatch = '';
+                    newData.jobSatisfaction = '';
+                    newData.jobSearchProblem = '';
+                } else if (value === 'ทำงานแล้ว') {
+                    console.log("Status: ทำงานแล้ว -> ล้างข้อมูลไม่ได้ทำงาน");
+                    // ล้างข้อมูลส่วน 3.1 (ไม่ได้ทำงาน) และ ส่วน 6 (สาเหตุยังไม่ได้ทำงาน)
+                    newData.notWorkingReasonGroup = '';
+                    newData.notWorkingReasonOther = '';
+                    newData.unemployedReason = '';
+                    newData.unemployedReasonOther = '';
+                    newData.jobSearchProblem = '';
+                }
+            }
+
+            // Logic พิเศษสำหรับ: 3.1.1 กลุ่มเหตุผลไม่ได้ทำงาน
+            if (name === 'notWorkingReasonGroup') {
+                // ถ้าไม่ได้เลือก 'หางานทำไม่ได้' ให้ล้างปัญหาการหางาน
+                if (value !== 'หางานทำไม่ได้') {
+                    newData.jobSearchProblem = '';
+                }
+            }
+
+            // Logic พิเศษสำหรับ: 3.1.2 อื่นๆ (โปรดระบุ) - สาเหตุที่ยังไม่ได้ทำงาน (รายละเอียด)
+            if (name === 'unemployedReason' && value !== '4') {
+                newData.unemployedReasonOther = '';
+            }
+
+            // Logic พิเศษสำหรับ: 3.2.1 ประเภทหน่วยงาน อื่นๆ
+            if (name === 'employmentType' && value !== 'อื่นๆ') {
+                newData.employmentTypeOther = '';
+            }
+
+            // Logic พิเศษสำหรับ: 3.2.2 รายได้อื่นๆ
+            if (name === 'salaryRange' && value !== '5') {
+                newData.salaryRangeOther = '';
+            }
+
+            // --- Logic การจัดการข้อมูล: ส่วนที่ 4 การศึกษาต่อ ---
+            if (name === 'furtherStudyIntention') {
+                if (value === 'ไม่ต้องการศึกษาต่อ') {
+                    console.log("Intention: ไม่ต้องการศึกษาต่อ -> ล้างข้อมูลการศึกษาต่อ");
+                    // ล้างข้อมูลที่เกี่ยวข้องกับการศึกษาต่อทั้งหมด
+                    newData.furtherStudyLevel = '';
+                    newData.furtherStudyMajor = '';
+                    newData.furtherStudyMajorDetail = '';
+                    newData.furtherStudyReason = '';
+                    newData.furtherStudyReasonOther = '';
+                }
+            }
+
+            // Logic พิเศษสำหรับ: 4.1 สาขาที่ต้องการศึกษาต่อ "ระบุสาขา"
+            if (name === 'furtherStudyMajor' && value !== 'ระบุสาขา') {
+                newData.furtherStudyMajorDetail = '';
+            }
+
+            // Logic พิเศษสำหรับ: 4.2 สาเหตุที่ต้องการศึกษาต่อ "4 อื่นๆ (โปรดระบุ)"
+            if (name === 'furtherStudyReason' && value !== '4') {
+                newData.furtherStudyReasonOther = '';
+            }
+
+            return newData;
+        });
     };
-
 
     const isWorking = formData.currentStatus === '2';
     const isNotWorking = formData.currentStatus === '1';
@@ -134,11 +215,7 @@ export default function GraduatesuveryForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!formData.fullName || !formData.studentId) {
-            showMessage('กรุณากรอกชื่อและรหัสนักศึกษาให้ครบถ้วน', 'warning');
-            return;
-        }
+        // ... (ส่วนการตรวจสอบข้อมูล) ...
 
         const submissionData = {
             ...formData,
@@ -150,22 +227,33 @@ export default function GraduatesuveryForm() {
         setIsSubmitting(true);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            const isMockSuccess = true;
-            if (isMockSuccess) {
-                showMessage('บันทึกข้อมูลสำรวจสำเร็จ!', 'success');
-                router.push('/EmploymentDashboard'); 
-            } else {
-                throw new Error('Failed to submit survey data');
+            // ** เริ่มต้น: การส่งข้อมูลไปยัง API Endpoint จริงๆ **
+            const response = await fetch('/api/suvery', {
+                method: 'POST', // ใช้ POST สำหรับการสร้างข้อมูลใหม่
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(submissionData), // ส่งข้อมูลในรูปแบบ JSON
+            });
+
+            if (!response.ok) {
+                // ถ้าสถานะ HTTP ไม่ใช่ 2xx จะเข้าสู่ catch block
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'การส่งข้อมูลล้มเหลวที่เซิร์ฟเวอร์');
             }
+            // ** สิ้นสุด: การส่งข้อมูลไปยัง API Endpoint จริงๆ **
+
+            // ส่วนนี้จะทำงานเมื่อสำเร็จ
+            showMessage('บันทึกข้อมูลสำรวจสำเร็จ!', 'success');
+            router.push('/EmploymentDashboard');
+
         } catch (error) {
             console.error(error);
-            showMessage('เกิดข้อผิดพลาดในการบันทึกข้อมูลสำรวจ', 'error');
+            showMessage(`เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message || 'กรุณาลองใหม่อีกครั้ง'}`, 'error');
         } finally {
             setIsSubmitting(false);
         }
     };
-
     return (
         <div className="min-h-screen bg-gray-50 font-inter py-12 px-4 sm:px-6 lg:px-8">
             <div className="container mx-auto max-w-5xl">
@@ -283,8 +371,8 @@ export default function GraduatesuveryForm() {
                             <label className={labelClass} htmlFor="currentStatus">สถานการณ์ทำงานปัจจุบัน *</label>
                             <select id="currentStatus" name="currentStatus" onChange={handleChange} value={formData.currentStatus} className={inputClass} required>
                                 <option value="">-- เลือกสถานะ --</option>
-                                <option value="ไม่ได้ทำงาน">1 ไม่ได้ทำงาน</option>
-                                <option value="ทำงานแล้ว">2 ทำงานแล้ว</option>
+                                <option value="1">1 ไม่ได้ทำงาน</option>
+                                <option value="2">2 ทำงานแล้ว</option>
                             </select>
                         </div>
 
@@ -399,11 +487,11 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass}>ลักษณะงานที่ทำ ตรงกับสาขาที่ท่านได้สำเร็จการศึกษาหรือไม่ *</label>
                                     <div className="flex gap-6 mt-1">
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobMatch" value="ไม่ตรง" checked={formData.jobMatch === '1'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
+                                            <input type="radio" name="jobMatch" value="ไม่ตรง" checked={formData.jobMatch === 'ไม่ตรง'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
                                             <span className="ml-2 text-gray-700">1 ตรง</span>
                                         </label>
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobMatch" value="ไม่ตรง" checked={formData.jobMatch === '2'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
+                                            <input type="radio" name="jobMatch" value="ไม่ตรง" checked={formData.jobMatch === 'ไม่ตรง'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
                                             <span className="ml-2 text-gray-700">2 ไม่ตรง</span>
                                         </label>
                                     </div>
@@ -413,11 +501,11 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass}>ท่านพึงพอใจกับงานที่ทำอยู่๋ในปัจจุบันหรือไม่ *</label>
                                     <div className="flex gap-6 mt-1">
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobSatisfaction" value="พึงพอใจ" checked={formData.jobSatisfaction === '1'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
+                                            <input type="radio" name="jobSatisfaction" value="พึงพอใจ" checked={formData.jobSatisfaction === 'พึงพอใจ'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
                                             <span className="ml-2 text-gray-700">1 พึงพอใจ</span>
                                         </label>
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobSatisfaction" value="ไม่พึงพอใจ" checked={formData.jobSatisfaction === '2'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
+                                            <input type="radio" name="jobSatisfaction" value="ไม่พึงพอใจ" checked={formData.jobSatisfaction === 'ไม่พึงพอใจ'} onChange={handleChange} className="form-radio h-5 w-5 text-red-600 focus:ring-red-500" />
                                             <span className="ml-2 text-gray-700">2 ไม่พึงพอใจ</span>
                                         </label>
                                     </div>

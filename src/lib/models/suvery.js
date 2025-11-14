@@ -7,7 +7,12 @@ const suverySchema = new Schema(
     {
         // 1. ข้อมูลส่วนตัวและติดต่อ
         roomId: { type: String, required: true },
-        studentId: { type: String, required: true },
+        studentId: {
+            type: String,
+            required: true,
+            unique: true, // 👈 นี่คือจุดสำคัญที่ทำให้เกิด E11000
+            trim: true
+        },
         fullName: { type: String, required: true },
         age: { type: Number },
 
