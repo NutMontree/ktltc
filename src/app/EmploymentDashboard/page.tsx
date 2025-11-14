@@ -1,33 +1,44 @@
+// src/app/page.js (หรือไฟล์หลักที่ใช้แสดง Dashboard)
+
 import TaskList from '@/components/TaskList';
 import Link from 'next/link';
-
+export const dynamic = 'force-dynamic';
 // ฟังก์ชันสำหรับดึงข้อมูลทั้งหมด
 const getTasks = async () => {
+    // 💡 แก้ไข: ใช้ URL เต็มใน Development (เพื่อ Node.js fetch) 
+    // และใช้ Path ภายในใน Production (เพื่อหลีกเลี่ยงปัญหา 403/Security)
+    const API_URL = process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3000/api/tasks' // URL เต็มสำหรับ Dev
+        : '/api/tasks'; // Path ภายในสำหรับ Production
+
     try {
-        const res = await fetch('http://localhost:3000/api/tasks', {
-            cache: 'no-store',
+        const res = await fetch(API_URL, {
+            // cache: 'no-store', // เพื่อให้ข้อมูลอัปเดตล่าสุดเสมอ (ทำให้หน้านี้เป็น Dynamic)
         });
 
         if (!res.ok) {
-            // ... (โค้ดจัดการ error)
+            const errorText = await res.text();
+            console.error(`❌ Failed to fetch tasks: Status ${res.status}, Body: ${errorText}`);
+            throw new Error('Failed to fetch tasks');
         }
 
         return res.json();
-    } catch (error) { // <--- ตรงนี้คือที่เกิดปัญหา
-        // 💡 การแก้ไข: Type Check ก่อนใช้งาน
+    } catch (error) {
         if (error instanceof Error) {
             console.error('❌ Error loading tasks:', error.message);
         } else {
-            // จัดการกับ error ชนิดอื่นๆ ที่ไม่ใช่ Error object
             console.error('❌ An unknown error occurred:', error);
         }
 
+        // หากเกิดข้อผิดพลาดในการเชื่อมต่อ ให้ส่ง Task เปล่ากลับไป
         return { tasks: [] };
     }
 };
 
 // 1. มีหน้า dashbord เพื่อแสดงข้อมูลทั้งหมดที่ผู้ใช้งานกรอกข้อมูล
 export default async function EmploymentDashboard() {
+    // Note: ข้อความแจ้งเตือน "Dynamic server usage" จะยังคงอยู่ 
+    // เพราะเราใช้ cache: 'no-store' ซึ่งเจตนาให้หน้านี้เป็น Dynamic อยู่แล้ว
     const { tasks } = await getTasks();
 
     return (

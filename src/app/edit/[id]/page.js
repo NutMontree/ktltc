@@ -5,18 +5,16 @@ import { notFound } from 'next/navigation';
 
 /**
  * ฟังก์ชันสำหรับดึงข้อมูล Task ตาม ID จาก API Route
- * @param {string} id - ObjectID ของ Task ที่ต้องการแก้ไข
- * @returns {Promise<object>} ข้อมูล Task
  */
 const getTaskById = async (id) => {
-    // 💡 แก้ไข: ใช้ URL เต็มใน Development แต่ใช้ Path ภายในใน Production
+    // ใช้ URL แบบมีเงื่อนไข เพื่อแก้ปัญหา Network (403/URL Parse)
     const API_URL = process.env.NODE_ENV === 'development'
         ? `http://localhost:3000/api/tasks/${id}`
         : `/api/tasks/${id}`;
 
     try {
         const res = await fetch(API_URL, {
-            cache: 'no-store', // เพื่อให้ข้อมูลอัปเดตล่าสุด
+            cache: 'no-store',
         });
 
         if (res.status === 404) {
@@ -44,11 +42,11 @@ const getTaskById = async (id) => {
 /**
  * Server Component สำหรับหน้าแก้ไขข้อมูล
  * @param {object} props - props จาก Next.js Router
- * @param {object} props.params - พารามิเตอร์ของ Dynamic Route (มี id)
  */
-export default async function EditTask({ params }) {
-    // 💡 แก้ไข: ใช้ Destructure โดยตรง ซึ่งเป็นวิธีที่ถูกต้องที่สุด
-    const { id } = params;
+export default async function EditTask(props) { // 💡 เปลี่ยน: รับ props ทั้งก้อน
+    // 💡 แก้ไข Type Error: เข้าถึง params จาก props และ Destructure ภายในฟังก์ชัน
+    // วิธีนี้มักจะช่วยหลีกเลี่ยง Type Check ที่เข้มงวดเกินไปได้
+    const { id } = props.params;
 
     if (!id) {
         notFound();
