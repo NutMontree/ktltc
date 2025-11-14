@@ -1,23 +1,20 @@
-// src/app/api/suvery/[id]/route.js (ฉบับแก้ไขครั้งที่ 3)
+// src/app/api/suvery/[id]/route.js
 
 import { NextResponse } from "next/server";
-import connectMongoDB from "@/lib/mongodb";
-import Suvery from '@/lib/models/suvery';
+import connectMongoDB from "@/lib/mongodb"; // 💡 ตรวจสอบ Path ว่าถูกต้อง
+import Suvery from '@/lib/models/suvery'; // 💡 ต้อง Import ชื่อ Model ด้วยตัวใหญ่
 
-// 💡 GET Handler: รับ context เพื่อหลีกเลี่ยง Promise Error
-export async function GET(request, context) {
+export async function GET(request, { params }) {
     try {
-        await connectMongoDB();
-        const { id } = context.params; // ✅ ใช้ context.params
+        await connectMongoDB(); // 💡 ต้องเรียกใช้ทุกครั้ง
 
-        if (!id) {
-            // 💡 เพิ่มการจัดการกรณีที่ ID เป็น undefined หรือ null
-            return NextResponse.json({ message: "ID is missing in the route." }, { status: 400 });
-        }
+        const { id } = params;
 
+        // 💡 Mongoose Query: ต้องใช้ Suvery ที่ถูก Import
         const suvery = await Suvery.findOne({ _id: id });
 
         if (!suvery) {
+            // ถ้าไม่พบจะตอบกลับ 404 (ซึ่งตอนนี้เกิดอยู่)
             return NextResponse.json({ message: "Suvery entry not found" }, { status: 404 });
         }
 
@@ -29,28 +26,5 @@ export async function GET(request, context) {
             { message: "Failed to fetch suvery entry", error: error.message },
             { status: 500 }
         );
-    }
-}
-
-// 💡 PUT Handler:
-export async function PUT(request, context) {
-    try {
-        const { id } = context.params; // ✅ ใช้ context.params
-        const updatedData = await request.json();
-
-        if (!id) {
-            return NextResponse.json({ message: "ID is missing in the route." }, { status: 400 });
-        }
-
-        // ... (ส่วนการอัปเดตข้อมูล)
-
-        return NextResponse.json({ message: "Suvery updated successfully", suvery: result }, { status: 200 });
-
-    } catch (error) {
-        console.error("❌ SERVER PUT (UPDATE) ERROR:", error);
-        return NextResponse.json({
-            message: "Failed to update suvery due to server error.",
-            error: error.message
-        }, { status: 500 });
     }
 }
