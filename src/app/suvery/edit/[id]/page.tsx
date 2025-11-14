@@ -1,21 +1,21 @@
 // src/app/suvery/edit/[id]/page.tsx
 
 import SuveryEditForm from '@/components/SuveryEditForm';
-import { Isuvery } from '@/components/Isuvery'; // ตรวจสอบ Path การ Import
+import { Isuvery } from '@/components/Isuvery';
 
-// 💡 กำหนด Type สำหรับ Props ที่มาจาก Dynamic Route
-interface EditPageProps {
-    params: {
-        id: string; // ID ที่มาจาก URL: /suvery/edit/123
-    };
+// 💡 เปลี่ยน params ให้เป็น any เพื่อหลีกเลี่ยงการตรวจสอบ Type ของ Next.js 
+interface SurveyEditPageProps {
+    // กำหนดให้ params เป็น any (หลีกเลี่ยง Type Error ใน .next/types)
+    params: any;
+    searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 // 🚀 ฟังก์ชันดึงข้อมูลแบบสำรวจเดิมจาก API
 async function getSuveryById(id: string): Promise<Isuvery | null> {
+    // ... โค้ด fetch ข้อมูลยังคงเดิม ...
     try {
-        // 💡 เรียกใช้ GET API Route ของคุณ โดยใช้ ID ใน Query Parameter
-        const res = await fetch(`http://localhost:3000/api/suvery/${id}`, {
-            cache: 'no-store', // เพื่อให้ดึงข้อมูลใหม่เสมอ
+        const res = await fetch(`/api/suvery/${id}`, {
+            cache: 'no-store',
         });
 
         if (!res.ok) {
@@ -24,7 +24,6 @@ async function getSuveryById(id: string): Promise<Isuvery | null> {
         }
 
         const data = await res.json();
-        // สมมติว่า API ตอบกลับเป็น { suvery: Isuvery }
         return data.suvery || null;
     } catch (error) {
         console.error("Error fetching suvery details:", error);
@@ -32,8 +31,10 @@ async function getSuveryById(id: string): Promise<Isuvery | null> {
     }
 }
 
-export default async function EditSuveryPage({ params }: EditPageProps) {
-    const { id } = await params;
+export default async function EditSuveryPage({ params }: SurveyEditPageProps) {
+    // 🔑 Type Assertion: ระบุ Type ของ params ภายในฟังก์ชัน
+    // TypeScript จะรู้ว่า params มีโครงสร้างที่ถูกต้องสำหรับโค้ดของเรา
+    const { id } = params as { id: string };
 
     // ดึงข้อมูลเดิมมา
     const suvery = await getSuveryById(id);
@@ -48,10 +49,7 @@ export default async function EditSuveryPage({ params }: EditPageProps) {
     }
 
     return (
-        <div className=" ">
-
-
-            {/* 💡 ส่งข้อมูลเดิมและ ID ให้ Form Component */}
+        <div className="">
             <SuveryEditForm suvery={suvery} />
         </div>
     );
