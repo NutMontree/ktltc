@@ -371,8 +371,8 @@ export default function GraduatesuveryForm() {
                             <label className={labelClass} htmlFor="currentStatus">สถานการณ์ทำงานปัจจุบัน *</label>
                             <select id="currentStatus" name="currentStatus" onChange={handleChange} value={formData.currentStatus} className={inputClass} required>
                                 <option value="">-- เลือกสถานะ --</option>
-                                <option value="1">1 ไม่ได้ทำงาน</option>
-                                <option value="2">2 ทำงานแล้ว</option>
+                                <option value="ไม่ได้ทำงาน">1 ไม่ได้ทำงาน</option>
+                                <option value="ทำงานแล้ว">2 ทำงานแล้ว</option>
                             </select>
                         </div>
 

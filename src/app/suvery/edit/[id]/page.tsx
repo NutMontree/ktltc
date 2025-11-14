@@ -1,27 +1,31 @@
 // src/app/suvery/edit/[id]/page.tsx
 
 import SuveryEditForm from '@/components/SuveryEditForm';
-import { Isuvery } from '@/components/Isuvery'; // ตรวจสอบ Path การ Import
+import { Isuvery } from '@/components/Isuvery';
+import { unstable_noStore as noStore } from 'next/cache'; // 💡 ต้อง Import ตัวนี้กลับมา
+import mongoose from "mongoose";
 
-// 💡 กำหนด Type สำหรับ Props ที่ถูกต้องของ Server Component
+// -----------------------------------------------------------------
+// 💡 INTERFACES/TYPES (คงเดิม)
+// -----------------------------------------------------------------
+
 interface EditPageProps {
     params: {
-        id: string; // ID ที่มาจาก URL: /suvery/edit/123
+        id: string;
     };
-    // รวมถึง searchParams เพื่อความสมบูรณ์
     searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-// 🚀 ฟังก์ชันดึงข้อมูลแบบสำรวจเดิมจาก API
+// -----------------------------------------------------------------
+// 🚀 ฟังก์ชันดึงข้อมูลแบบสำรวจเดิมจาก API (ต้องเป็น async)
+// -----------------------------------------------------------------
 async function getSuveryById(id: string): Promise<Isuvery | null> {
-    if (!id) {
-        // ป้องกันการ fetch เมื่อ id เป็น undefined ในระหว่าง pre-render
-        console.error("Attempt to fetch with undefined ID.");
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        console.error("Invalid or missing ID provided.");
         return null;
     }
 
-    // ในระหว่างการพัฒนา (dev) ควรใช้ URL เต็ม หรือใช้เพียง Path (ตามที่คุณใช้) 
-    // ถ้าโค้ดรันบน Server (Server Component) การใช้ Path `/api/...` ก็เพียงพอ
+    // ใช้ Path Parameter
     const apiUrl = `/api/suvery/${id}`;
 
     try {
@@ -30,13 +34,11 @@ async function getSuveryById(id: string): Promise<Isuvery | null> {
         });
 
         if (!res.ok) {
-            // บันทึกสถานะ HTTP error
             console.error(`Failed to fetch suvery details: ${res.status} for ID: ${id}`);
             return null;
         }
 
         const data = await res.json();
-        // สมมติว่า API ตอบกลับเป็น { suvery: Isuvery }
         return data.suvery || null;
     } catch (error) {
         console.error("Error fetching suvery details:", error);
@@ -44,36 +46,37 @@ async function getSuveryById(id: string): Promise<Isuvery | null> {
     }
 }
 
-// 🔑 Server Component: ต้องเป็น async function เพื่อรับ props จาก Next.js
+// -----------------------------------------------------------------
+// 🔑 Server Component: EditSuveryPage (ต้องมี 'async' เสมอ)
+// -----------------------------------------------------------------
 export default async function EditSuveryPage({ params }: EditPageProps) {
-    // ดึงค่า id ออกมาโดยตรง
+    // 🛑 ส่วนที่สำคัญที่สุด: บังคับให้รันในโหมด Dynamic
+    noStore();
+
+    // ✅ Next.js จะ Resolve params ให้เมื่อเรียกใช้ noStore()
     const { id } = params;
 
-    // เราเพิ่มการป้องกันเพิ่มเติมที่นี่ เพราะ Next.js อาจส่ง undefined มาในระหว่างการ dev
-    if (!id) {
-        return (
-            <div className="p-8 text-center text-red-600">
-                <h2>Invalid suvery ID Access</h2>
-                <p>The system could not retrieve the dynamic segment ID.</p>
-            </div>
-        );
-    }
-
-    // ดึงข้อมูลเดิมมา
+    // ✅ ใช้ await เพื่อรอการดึงข้อมูล
     const suvery = await getSuveryById(id);
 
     if (!suvery) {
         return (
-            <div className="p-8 text-center text-red-600">
-                <h2>ไม่พบข้อมูลแบบสำรวจ ID: {id}</h2>
-                <p>โปรดตรวจสอบ ID หรือลองใหม่อีกครั้ง</p>
+            <div className="p-8 text-center bg-white min-h-[40vh] shadow-lg rounded-xl flex flex-col justify-center items-center">
+                <h2 className="text-3xl font-extrabold text-red-600 mb-2">ไม่พบข้อมูลแบบสำรวจ 🙁</h2>
+                <p className="text-gray-500">รหัสที่ท่านต้องการแก้ไข: <span className="font-mono bg-gray-100 p-1 rounded text-sm">{id || "N/A"}</span></p>
+                <a
+                    href="/EmploymentDashboard"
+                    className="mt-6 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
+                >
+                    กลับไปหน้าแสดงรายการ
+                </a>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">แก้ไขแบบสำรวจ</h1>
+        <div className="container mx-auto p-4 max-w-7xl">
+            <h1 className="text-4xl font-extrabold mb-8 text-violet-800 border-b pb-4">✏️ แก้ไขข้อมูลแบบสำรวจ</h1>
             <SuveryEditForm suvery={suvery} />
         </div>
     );
