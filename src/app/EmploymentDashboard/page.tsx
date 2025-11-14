@@ -1,116 +1,88 @@
-// server
-import TaskList from '@/components/TaskList';
+// EmploymentDashboard.tsx
+
 import SuveryList from '@/components/SuveryList';
 import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
-// ฟังก์ชันสำหรับดึงข้อมูล Tasks
-// const getTasks = async () => {
+// ------------------------------------------------------------------
+// ** การแก้ไข URL โดยใช้ Environment Variable (ส่วนที่ 1) **
+// ------------------------------------------------------------------
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
-//     const API_URL = process.env.NODE_ENV === 'development'
-//         ? 'http://localhost:3000/api/tasks'
-//         : '/api/tasks';
-
-//     try {
-//         const res = await fetch(API_URL, {
-//             // cache: 'no-store', // เพื่อให้ข้อมูลอัปเดตล่าสุดเสมอ (ทำให้หน้านี้เป็น Dynamic)
-//         });
-
-//         if (!res.ok) {
-//             const errorText = await res.text();
-//             console.error(`❌ Failed to fetch tasks: Status ${res.status}, Body: ${errorText}`);
-//             throw new Error('Failed to fetch tasks');
-//         }
-
-//         return res.json();
-//     } catch (error) {
-//         if (error instanceof Error) {
-//             console.error('❌ Error loading tasks:', error.message);
-//         } else {
-//             console.error('❌ An unknown error occurred:', error);
-//         }
-
-//         // คืนค่าอาร์เรย์ว่างในกรณีเกิดข้อผิดพลาด เพื่อให้การ Destructure ในคอมโพเนนต์ใช้งานได้
-//         return { tasks: [] };
-//     }
-// };
-
-// ฟังก์ชันสำหรับดึงข้อมูล Surveys (suverys)
 const getsuverys = async () => {
-    const API_URL = process.env.NODE_ENV === 'development'
-        // ? 'http://localhost:3000/api/suvery'
-        ? 'https://ktltc.vercel.app/api/suvery'
-        : '/api/suvery';
-
     try {
-        const res = await fetch(API_URL, {
-
+        // ใช้ NEXT_PUBLIC_BASE_URL เพื่อสร้าง Absolute URL
+        const res = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/suvery`, {
+            cache: 'no-store'
         });
 
         if (!res.ok) {
-            const error = await res.text()
-            console.error(`❌ Failed to fetch survery: Status ${res.status}, Body: ${error}`);
-            throw new Error('Failed to fetch survery');
+            throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}. Response body: ${await res.text()}`);
         }
-
         return res.json();
     } catch (error) {
-        if (error instanceof Error) {
-            console.error('❌ Error loading survery:', error.message);
-        } else {
-            console.error('❌ An unknown error occurred:', error);
-        }
-
-        // 💡 แก้ไขแล้ว: คืนค่า key เป็น 'suverys' (พหูพจน์) เพื่อให้ตรงกับการ Destructure ในคอมโพเนนต์
+        console.error("❌ Error loading survery:", (error as Error).message);
         return { suverys: [] };
     }
 }
+// ------------------------------------------------------------------
+
 
 export default async function EmploymentDashboard() {
-    // การ Destructure จะทำงานได้อย่างถูกต้อง แม้ว่าการ Fetch จะล้มเหลว
-    // const { tasks } = await getTasks();
-    const { suverys } = await getsuverys();
+    const suverysData = await getsuverys();
+    const suverys = suverysData.suverys;
 
     return (
-        <>
-            {/* <div className="container mx-auto p-4">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800">✅ ข้อมูลที่ถูกบันทึก (Dashboard)</h1>
-                    <Link
-                        href="/add"
-                        className="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300"
-                    >
-                        ➕ กรอกข้อมูลใหม่
-                    </Link>
-                </div>
+        // พื้นหลังอ่อนลง: bg-gray-50 -> bg-slate-50 หรือ bg-white/50
+        <div className="min-h-screen bg-white/50 py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto space-y-12">
 
-                {tasks.length > 0 ? (
-                    <TaskList tasks={tasks} />
-                ) : (
-                    <p className="text-center text-gray-500 text-lg p-10 border border-dashed rounded-lg">
-                        ยังไม่มีข้อมูลในระบบ ลองกรอกข้อมูลใหม่ดูสิ!
-                    </p>
-                )}
-            </div> */}
-
-            <div className='pt-24'>
-                <div>
+                {/* Header Section */}
+                <div className="flex justify-between items-center pb-6 border-b border-gray-100">
+                    <h1 className="text-4xl font-extrabold text-violet-800 tracking-tight flex items-center">
+                        {/* ไอคอนปรับสีให้เข้ากับ Theme */}
+                        <svg className="w-9 h-9 mr-3 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19V6l12-3v14M9 19h12M9 19c-1.333 0-2-1.333-2-2 0-1.333 0-2 2-2M21 5c-1.333 0-2-1.333-2-2 0-1.333 0-2 2-2"></path></svg>
+                        Dashboard ข้อมูลแบบสำรวจ
+                    </h1>
+                    {/* ปุ่ม: ปรับสี, Shadow, Hover Effect */}
                     <Link
                         href="/suvery"
-                        className="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300"
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-semibold rounded-xl shadow-lg text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-violet-500 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] drop-shadow-md"
                     >
-                        ➕ กรอกข้อมูลใหม่
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                        กรอกแบบสำรวจใหม่
                     </Link>
                 </div>
 
-                {suverys.length > 0 ? (
-                    <SuveryList suverys={suverys} />
-                ) : (
-                    <p className="text-center text-gray-500 text-lg p-10 border border-dashed rounded-lg">
-                        ยังไม่มีข้อมูลแบบสำรวจในระบบ ลองกรอกข้อมูลใหม่ดูสิ!
-                    </p>
-                )}
+                {/* Main Content Card */}
+                {/* เพิ่ม Shadow และ Rounded ให้ดูพรีเมียม */}
+                <div className="bg-white shadow-2xl rounded-2xl overflow-hidden p-8 sm:p-10 border border-gray-100">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-8 border-b border-violet-100 pb-4">
+                        รายการข้อมูลที่ถูกบันทึก
+                    </h2>
+                    {suverys.length > 0 ? (
+                        <SuveryList suverys={suverys} />
+                    ) : (
+                        // Empty State: ปรับสีและ Shadow
+                        <div className="p-12 text-center bg-violet-50/50 border-2 border-dashed border-violet-300 rounded-xl transition duration-500 hover:border-violet-500 shadow-inner">
+                            <svg className="mx-auto h-14 w-14 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m-9 1-2 2V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                            <h3 className="mt-4 text-xl font-semibold text-gray-900">ยังไม่มีข้อมูลแบบสำรวจ</h3>
+                            <p className="mt-2 text-base text-gray-600">
+                                ลองเพิ่มข้อมูลแบบสำรวจใหม่เพื่อเริ่มต้นใช้งาน
+                            </p>
+                            <div className="mt-8">
+                                <Link
+                                    href="/suvery"
+                                    // ปุ่มรอง: ปรับสไตล์ให้เข้ากัน
+                                    className="inline-flex items-center px-6 py-3 border border-violet-500 text-base font-medium rounded-full shadow-sm text-violet-600 bg-white hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition duration-300 hover:shadow-md"
+                                >
+                                    กรอกข้อมูลแบบสำรวจ
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-        </>
+        </div>
     );
 }
