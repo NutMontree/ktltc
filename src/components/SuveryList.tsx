@@ -5,8 +5,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { HiPencilAlt, HiOutlineTrash, HiEye } from "react-icons/hi";
-import SuveryDetailModal from './SuveryDetailModal';
+
 import { Isuvery } from './Isuvery';
+import SuveryDetailModal from './suveryDetailModal';
 
 // -----------------------------------------------------------------
 // 💡 INTERFACES/TYPES
