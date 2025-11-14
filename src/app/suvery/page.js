@@ -9,6 +9,7 @@ import { User, GraduationCap, Briefcase, ChevronRight, BookOpen, MessageSquare, 
 // --- State Initialization (ใช้สำหรับฟอร์มที่มี Field เยอะมาก) ---
 const initialFormData = {
     // 1. ข้อมูลส่วนตัว
+    roomId: '',
     studentId: '',
     fullName: '',
     age: '',
@@ -202,6 +203,7 @@ export default function GraduatesuveryForm() {
 
                     {/* --- 1. ข้อมูลส่วนตัวและติดต่อ --- */}
                     <FormSection title="1. ข้อมูลส่วนตัวและการติดต่อ" icon={User}>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="col-span-1">
                                 <label className={labelClass} htmlFor="studentId">รหัสนักศึกษา *</label>
@@ -212,6 +214,10 @@ export default function GraduatesuveryForm() {
                                 <input id="fullName" name="fullName" onChange={handleChange} value={formData.fullName} className={inputClass} type="text" placeholder="ชื่อ-สกุล" required />
                             </div>
                             <div className="col-span-1">
+                                <label className={labelClass} htmlFor="roomId">ห้องเรียน *</label>
+                                <input id="roomId" name="roomId" onChange={handleChange} value={formData.roomId} className={inputClass} type="text" placeholder="ห้องเรียน" required />
+                            </div>
+                            <div className="col-span-1">
                                 <label className={labelClass} htmlFor="age">อายุ</label>
                                 <input id="age" name="age" onChange={handleChange} value={formData.age} className={inputClass} type="number" placeholder="อายุ" min="15" />
                             </div>
@@ -219,7 +225,7 @@ export default function GraduatesuveryForm() {
                                 <label className={labelClass} htmlFor="contactTel">เบอร์ที่สามารถติดต่อได้</label>
                                 <input id="contactTel" name="contactTel" onChange={handleChange} value={formData.contactTel} className={inputClass} type="tel" placeholder="เบอร์โทรศัพท์" />
                             </div>
-                            <div className="md:col-span-2">
+                            <div className="md:col-span-1">
                                 <label className={labelClass} htmlFor="contactEmail">E-mail</label>
                                 <input id="contactEmail" name="contactEmail" onChange={handleChange} value={formData.contactEmail} className={inputClass} type="email" placeholder="E-mail" />
                             </div>

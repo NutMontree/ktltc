@@ -1,28 +1,34 @@
-// src/components/suveryList.tsx
+// แนะนำ: ควรย้าย Interface นี้ไปไว้ในไฟล์ Type กลาง เช่น src/types/suvery.ts หรือ src/types/index.ts
 
-// 💡 กำหนด Type สำหรับข้อมูล suvery
-// เราใช้ Partial<Record<string, any>> เพื่อให้ Type เข้ากันได้กับโครงสร้าง Mongoose Schema ที่ซับซ้อนและ Dynamic
-// อย่างไรก็ตาม การกำหนด Type ให้ละเอียดจะดีที่สุด แต่เพื่อแก้ error เร่งด่วน เราจะกำหนด Field สำคัญก่อน
-export interface Isuvery {
+// 💡 อัปเดต: เปลี่ยนชื่อเป็น SuveryItem และเพิ่ม Field ที่ Modal ต้องใช้
+export interface SuveryItem {
     _id: string;
     studentId: string;
     fullName: string;
     graduationYear: number;
-    currentStatus: string; // '1' หรือ '2'
-    submittedAt: string; // ISO Date string
-    // เพิ่ม Field อื่นๆ ที่คุณต้องการใช้ใน Modal หรือ List ที่นี่
-    [key: string]: any; // ใช้สำหรับ Field อื่นๆ ที่ไม่ได้ระบุชัดเจน
+
+    // ข้อมูลที่แสดงใน List
+    currentStatus: string; // '1' (ไม่ได้ทำงาน) หรือ '2' (ทำงานแล้ว)
+    submittedAt: string; // ISO Date string (วันที่กรอก)
+
+    // ข้อมูลที่ Modal ต้องใช้ (จาก Mongoose Schema)
+    major: string;
+    employmentStatus: string; // สถานะการจ้างงาน
+    companyName: string;
+    salary: number; // หรือ string, ตามที่คุณเก็บใน DB
+    satisfaction: number; // 1-5 (ความพึงพอใจ)
+
+    // 💡 หากใช้ submittedAt แทน createdAt ให้เปลี่ยนชื่อใน Modal ด้วย
+    [key: string]: any; // ใช้สำหรับ Field อื่นๆ และหลีกเลี่ยง Error 7053
 }
 
 // 💡 กำหนด Type สำหรับ Props ของ suveryListItem
-interface suveryListItemProps {
-    suvery: Isuvery;
-    onDetailClick: (suvery: Isuvery) => void;
+interface SuveryListItemProps { // ใช้ PascalCase
+    suvery: SuveryItem; // 💡 ใช้ SuveryItem
+    onDetailClick: (suvery: SuveryItem) => void; // 💡 ใช้ SuveryItem
 }
 
 // 💡 กำหนด Type สำหรับ Props ของ suveryList หลัก
-interface suveryListProps {
-    suverys: Isuvery[];
+interface SuveryListProps { // ใช้ PascalCase
+    suverys: SuveryItem[]; // 💡 ใช้ SuveryItem
 }
-
-// -----------------------------------------------------------
