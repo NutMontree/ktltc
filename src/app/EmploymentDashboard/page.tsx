@@ -18,7 +18,7 @@ const getsuverys = async () => {
         }
         return res.json();
     } catch (error) {
-        console.error("❌ Error loading survery:", (error as Error).message);
+        console.error("❌ Error loading suvery:", (error as Error).message);
         return { suverys: [] };
     }
 }
@@ -50,7 +50,7 @@ export default async function EmploymentDashboard() {
                         รายการข้อมูลที่ถูกบันทึก
                     </h2>
                     {suverys.length > 0 ? (
-                        <SuveryList suverys={suverys} />
+                        <SuveryList suverys={suverys} isLoading={false} isError={false} />
                     ) : (
                         <div className="p-12 text-center bg-violet-50/50 border-2 border-dashed border-violet-300 rounded-xl transition duration-500 hover:border-violet-500 shadow-inner">
                             <svg className="mx-auto h-14 w-14 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m-9 1-2 2V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>

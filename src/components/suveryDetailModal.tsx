@@ -1,50 +1,75 @@
+// src/components/SuveryDetailModal.tsx
+
 'use client';
 
 import React from 'react';
 
-// Interface ยังคงเหมือนเดิม
+// -----------------------------------------------------------------
+// 💡 INTERFACE/TYPES ที่ปรับปรุง Type Safety
+// -----------------------------------------------------------------
+
+// 🔥 ปรับปรุง Type: เปลี่ยน 'String' เป็น 'string' (ตัวเล็ก) และเพิ่ม 'null'/'undefined' ให้กับ Field ที่อาจไม่มีข้อมูล
 export interface SuveryItem {
     _id: string;
-    roomId: String | undefined;
+    // ใช้ string | null | undefined สำหรับ Field ที่ไม่ได้บังคับกรอก (หรือลบ [key: string]: any ออกเพื่อ Type Safety สูงสุด)
+    roomId?: string | null;
     studentId: string;
     fullName: string;
-    major: string;
-    employmentStatus: string;
-    companyName: string;
-    salary: number;
-    satisfaction: number;
+    major?: string; // ทำให้เป็น Optional
+    employmentStatus?: string | null; // ทำให้เป็น Optional และรับค่า null ได้
+    companyName?: string | null;
+    salary?: number | null;
+    satisfaction?: number | null;
     createdAt: string;
+    // เพิ่ม Field อื่นๆ ที่ใช้ใน placeholders และอาจจะส่งมาด้วย
+    graduationYear?: number;
+    currentStatus?: '1' | '2'; // 1: ไม่ได้ทำงาน, 2: ทำงานแล้ว
+    age?: number | null;
+    contactTel?: string | null;
+    contactEmail?: string | null;
+
+    // **ใช้ Record<string, any> แทน [key: string]: any เพื่อความปลอดภัย**
     [key: string]: any;
 }
 
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
+    // อนุญาตให้รับ IsuveryItem หรือ null เพื่อให้เข้ากันกับ List Component
     suvery: SuveryItem | null;
 }
 
 const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
+    // Early exit: ตรวจสอบครั้งเดียว
     if (!isOpen || !suvery) return null;
 
-    // *** ลบฟังก์ชัน formatLabel ออกไป เนื่องจากใช้ placeholders แทน ***
-    // const formatLabel = (key: string): string => { ... }; 
-
+    // 💡 ฟังก์ชันจัดการค่าที่แสดงผล
     const formatValue = (key: string, value: any): string => {
-        // จัดรูปแบบวันที่
+        // จัดรูปแบบวันที่ (ใช้ฟิลด์ 'createdAt')
         if (key === 'createdAt' && value) {
-            return new Date(value).toLocaleDateString('th-TH', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-            });
+            try {
+                return new Date(value).toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+            } catch {
+                return String(value);
+            }
         }
         // จัดรูปแบบเงินเดือน
-        if (key === 'salary' && typeof value === 'number') {
-            return value.toLocaleString('th-TH');
+        if (key.toLowerCase().includes('salary') && typeof value === 'number') {
+            return `${value.toLocaleString('th-TH')} บาท`;
         }
-        // จัดรูปแบบค่าอื่นๆ
+        // จัดรูปแบบสถานะการทำงานปัจจุบัน
+        if (key === 'currentStatus') {
+            if (value === '1') return 'ไม่ได้ทำงาน';
+            if (value === '2') return 'ทำงานแล้ว';
+            return String(value);
+        }
+        // จัดรูปแบบค่าอื่นๆ (ข้อความปกติ)
         return String(value);
     };
 
@@ -73,6 +98,8 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         educationLevel: "ระดับการศึกษาที่จบ",
         gender: "เพศ",
         gpa: "เกรดเฉลี่ยสะสม",
+        major: "สาขาวิชา",
+        satisfaction: "ความพึงพอใจในสาขา",
         // 4. สถานการณ์ทำงานปัจจุบัน
         currentStatus: "สถานะการทำงานปัจจุบัน",
         // 4.1 ไม่ได้ทำงาน
@@ -81,9 +108,11 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         unemployedReason: "สาเหตุที่ยังไม่ได้ทำงาน",
         unemployedReasonOther: "โปรดระบุสาเหตุอื่น",
         // 4.2 ทำงานแล้ว
+        employmentStatus: "สถานะงาน (เต็มเวลา/ชั่วคราว)",
         employmentType: "ประเภทหน่วยงาน",
         employmentTypeOther: "โปรดระบุประเภทหน่วยงานอื่น",
         jobTitle: "ตำแหน่งงาน",
+        companyName: "ชื่อสถานที่ทำงาน",
         workplaceName: "ชื่อสถานที่ทำงาน",
         workplaceTel: "เบอร์โทรศัพท์สถานที่ทำงาน",
         // ที่อยู่สถานที่ทำงาน
@@ -96,6 +125,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         workplaceAddrProvince: "จังหวัด (ที่ทำงาน)",
         workplaceAddrZipCode: "รหัสไปรษณีย์ (ที่ทำงาน)",
         // รายได้
+        salary: "เงินเดือน/รายได้ต่อเดือน",
         salaryRange: "ช่วงรายได้",
         salaryRangeOther: "รายได้ (ระบุเอง)",
         // ความสัมพันธ์งาน–สาขา
@@ -116,14 +146,14 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
     // 🔥 ปรับปรุงการกรองข้อมูล: ไม่แสดงฟิลด์ระบบ และฟิลด์ที่ไม่มีค่า
     const displayData = Object.entries(suvery)
         .filter(([key, value]) => {
-            const excludedKeys = ['__v', '_id', 'submittedAt', 'updatedAt'];
+            const excludedKeys = ['__v', '_id', 'submittedAt', 'updatedAt', 'fullName']; // กรอง fullName ออกไป
             if (excludedKeys.includes(key)) return false;
 
             // กรองค่าที่เป็น null, undefined หรือ string ว่าง
             if (value === null || value === undefined) return false;
             if (typeof value === 'string' && value.trim() === '') return false;
-            // กรองค่าที่เป็น 0 หรือ false ออก หากไม่ต้องการแสดง (แต่โดยทั่วไปมักจะแสดงตัวเลข 0)
-            // if (value === 0 || value === false) return false; 
+            // กรองค่าที่เป็น Array/Object ว่าง หากมี
+            if (typeof value === 'object' && Object.keys(value).length === 0) return false;
 
             // แสดงเฉพาะ Field ที่มี Label ใน placeholders
             return placeholders.hasOwnProperty(key);
@@ -136,23 +166,23 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         >
             <div
                 className="
-                    bg-white 
-                    w-full 
-                    max-w-4xl 
-                    rounded-2xl 
-                    shadow-2xl 
-                    border 
-                    border-white/30 
-                    p-6 
-                    transform 
-                    transition-all 
-                    duration-300
-                    max-h-[95vh]
-                    overflow-y-auto
-                    scrollbar-thin 
-                    scrollbar-thumb-gray-300
-                    scrollbar-track-transparent
-                "
+                    bg-white 
+                    w-full 
+                    max-w-4xl 
+                    rounded-2xl 
+                    shadow-2xl 
+                    border 
+                    border-white/30 
+                    p-6 
+                    transform 
+                    transition-all 
+                    duration-300
+                    max-h-[95vh]
+                    overflow-y-auto
+                    scrollbar-thin 
+                    scrollbar-thumb-gray-300
+                    scrollbar-track-transparent
+                "
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -192,14 +222,14 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 </div>
 
                 {/* Data Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {displayData.map(([key, value]) => (
                         <div
                             key={key}
                             className="p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200"
                         >
                             <p className="text-xs font-medium text-violet-700 uppercase tracking-wide">
-                                {/* 🔥 ใช้ placeholders[key] เพื่อแสดง Label ภาษาไทย */}
+                                {/* ใช้ placeholders[key] เพื่อแสดง Label ภาษาไทย */}
                                 {placeholders[key] || key}
                             </p>
                             <p className="text-lg font-semibold text-gray-900 mt-1 break-words">

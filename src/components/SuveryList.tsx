@@ -6,63 +6,35 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { HiPencilAlt, HiOutlineTrash, HiEye } from "react-icons/hi";
 import SuveryDetailModal from './SuveryDetailModal';
-// 💡 การ Import ที่ถูกต้อง (สมมติว่าชื่อไฟล์คือ SuveryDetailModal.tsx และอยู่ในโฟลเดอร์เดียวกัน)
-
-
+import { Isuvery } from './Isuvery';
 
 // -----------------------------------------------------------------
 // 💡 INTERFACES/TYPES
 // -----------------------------------------------------------------
 
-// 💡 Isuvery: กำหนด Type ที่รวมข้อมูลที่ต้องการสำหรับ List และ Modal
-// **หมายเหตุ:** Interface นี้ควรตรงกับ Interface 'SuveryItem' ในไฟล์ SuveryDetailModal.tsx
-export interface Isuvery {
-    _id: string;
-    // ข้อมูลหลักสำหรับ List
-    studentId: string;
-    fullName: string;
-    graduationYear: number;
-    currentStatus: string; // '1' หรือ '2'
-    submittedAt: string; // ISO Date string (สำหรับ List)
-
-    // 🔥 Field ที่จำเป็นสำหรับ SuveryDetailModal (อ้างอิงจาก Modal เดิม)
-    major: string;
-    employmentStatus: string;
-    companyName: string;
-    salary: number; // หากเก็บใน DB เป็น Number
-    satisfaction: number; // หากเก็บใน DB เป็น Number
-    createdAt: string; // วันที่สร้าง/บันทึก (สำหรับ Modal)
-
-    // 🔥 เพิ่ม Field อื่นๆ ที่อาจจะถูกดึงมาทั้งหมดตาม placeholders ใน Modal
-    roomId: string | undefined; // เปลี่ยนเป็น Optional หรือลบออกหากไม่จำเป็น
-    age?: number;
-    contactTel?: string;
-    contactEmail?: string;
-    // ... (เพิ่ม Field อื่นๆ ตามที่ Modal ต้องการแสดง)
-
-    [key: string]: any; // ใช้สำหรับ Field อื่นๆ ที่ไม่ได้ระบุชัดเจนทั้งหมด
-}
-
-// 💡 กำหนด Type สำหรับ Props ของ SurveyListItem
 interface SurveyListItemProps {
     suvery: Isuvery;
     onDetailClick: (suvery: Isuvery) => void;
 }
 
-// 💡 กำหนด Type สำหรับ Props ของ SuveryList หลัก
 interface SuveryListProps {
     suverys: Isuvery[];
+    // 💡 รับสถานะการโหลดและ Error จาก Parent Component
+    isLoading: boolean;
+    isError: boolean;
 }
 
 // -----------------------------------------------------------------
 // --- Component: SurveyListItem (แถวในตาราง) ---
 // -----------------------------------------------------------------
 const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }) => {
-    // ... (formatDate, getStatusText, getStatusColor functions เหมือนเดิม)
+
     const formatDate = (isoString: string | undefined): string => {
         if (!isoString) return 'N/A';
         try {
             const date = new Date(isoString);
+            if (isNaN(date.getTime())) return 'Invalid Date';
+
             return date.toLocaleDateString('th-TH', {
                 year: 'numeric',
                 month: 'long',
@@ -75,13 +47,14 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
         }
     };
 
-    const getStatusText = (status: string | undefined): string => {
+    // ใช้ Isuvery['currentStatus'] เพื่อระบุ Type ที่ชัดเจน
+    const getStatusText = (status: Isuvery['currentStatus'] | undefined): string => {
         if (status === '1') return 'ไม่ได้ทำงาน';
         if (status === '2') return 'ทำงานแล้ว';
         return 'ไม่ระบุ';
     };
 
-    const getStatusColor = (status: string | undefined): string => {
+    const getStatusColor = (status: Isuvery['currentStatus'] | undefined): string => {
         if (status === '1') return 'text-red-600 bg-red-100 border border-red-200';
         if (status === '2') return 'text-green-700 bg-green-100 border border-green-200';
         return 'text-gray-500 bg-gray-100';
@@ -140,8 +113,7 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
 // -----------------------------------------------------------------
 // --- Component: SuveryList หลัก ---
 // -----------------------------------------------------------------
-const SuveryList: React.FC<SuveryListProps> = ({ suverys }) => {
-    // State ไม่ต้องเปลี่ยนเพราะใช้ Isuvery แล้ว
+const SuveryList: React.FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
     const [selectedsuvery, setSelectedsuvery] = useState<Isuvery | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -154,6 +126,28 @@ const SuveryList: React.FC<SuveryListProps> = ({ suverys }) => {
         setIsModalOpen(false);
         setSelectedsuvery(null);
     };
+
+    // 💡 การจัดการ Loading State
+    if (isLoading) {
+        return (
+            <p className="text-center text-violet-600 text-lg p-10 border border-dashed rounded-lg bg-violet-50/50 flex justify-center items-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-violet-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                กำลังโหลดข้อมูล...
+            </p>
+        );
+    }
+
+    // 💡 การจัดการ Error State (รวมถึง 429 Too Many Requests)
+    if (isError) {
+        return (
+            <p className="text-center text-red-600 text-lg p-10 border border-dashed rounded-lg bg-red-50/50">
+                ❌ **Error Loading Data:** ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง หรือตรวจสอบ Rate Limit
+            </p>
+        );
+    }
 
     if (!suverys || suverys.length === 0) {
         return (
@@ -190,7 +184,6 @@ const SuveryList: React.FC<SuveryListProps> = ({ suverys }) => {
             </div>
 
             {isModalOpen && selectedsuvery && (
-                // 💡 Prop `suvery` ตอนนี้มี Field ครบตามที่ SuveryDetailModal คาดหวัง
                 <SuveryDetailModal suvery={selectedsuvery} isOpen={isModalOpen} onClose={handleCloseModal} />
             )}
         </>
