@@ -2,13 +2,14 @@ import SuveryList from '@/components/SuveryList';
 import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-// const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+// const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 const getsuverys = async () => {
     try {
         // *** 2. ใช้ BASE_URL + Relative Path เพื่อให้ทำงานบน Dev ได้ ***
-        const apiUrl = `${BASE_URL}/api/suvery`;
+        // const apiUrl = `${BASE_URL}/api/suvery`;
+        const apiUrl = `${NEXT_PUBLIC_BASE_URL}/api/suvery`;
 
         console.log(`📡 Fetching data from: ${apiUrl}`); // Debug URL
 
