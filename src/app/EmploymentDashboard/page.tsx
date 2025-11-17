@@ -36,7 +36,7 @@ export default async function EmploymentDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-white/50 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-white/50 py-16">
             <div className="max-w-7xl mx-auto space-y-12">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-indigo-100/70">
                     <h1 className="text-3xl sm:text-4xl font-extrabold text-indigo-900 tracking-tight flex items-center mb-4 md:mb-0">

@@ -1,28 +1,32 @@
-// src/components/SuveryList.tsx
+// ✅ เวอร์ชันแก้ไขสมบูรณ์ของไฟล์ SuveryList.tsx
+// ---------------------------------------------------------------
+// เน้นปรับโค้ดให้สะอาดขึ้น, ลบโค้ดที่ซ้ำซ้อน, แก้ State ที่ซ้ำ/ไม่จำเป็น
+// และแก้ปัญหา execution flow ของ view/edit/delete + password
+// ---------------------------------------------------------------
+
 "use client";
 
-import React, { useState, FC } from 'react';
-import Link from 'next/link';
-import { HiPencilAlt, HiOutlineTrash, HiEye } from "react-icons/hi";
-// 💡 ตรวจสอบเส้นทางการนำเข้าสำหรับ SuveryModal และ Isuvery
-import SuveryModal from '@/components/SuveryModal'
-import { Isuvery } from './Isuvery';
-import DeleteBtn from './DeleteBtn';
+import React, { useState, FC, ReactNode } from "react";
+import { HiPencilAlt, HiEye } from "react-icons/hi";
+import SuveryModal from "@/components/SuveryModal";
+import { Isuvery } from "./Isuvery";
+import CustomAlertDialog from "./CustomAlertDialog";
 
-// 💡 กำหนดรหัส Admin และข้อความ Error
-const ADMIN_PASSWORD = 'admin1234';
-const MESSAGE_ACCESS_DENIED = 'รหัสผ่านไม่ถูกต้อง! การดำเนินการถูกยกเลิก.';
+// ---------------------------------------------
+// Admin Password
+// ---------------------------------------------
+const ADMIN_PASSWORD = "admin1234";
 
-
-// -----------------------------------------------------------------
-// --- Interfaces และ Types ---
-// -----------------------------------------------------------------
-
+// ---------------------------------------------
+// Types
+// ---------------------------------------------
 interface PasswordModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
     expectedPassword: string;
+    suveryIdToDelete: string | null;
+    onDeleteConfirmed: (id: string) => void;
 }
 
 interface SuveryListProps {
@@ -33,61 +37,76 @@ interface SuveryListProps {
 
 interface SurveyListItemProps {
     suvery: Isuvery;
-    onDetailClick: (suvery: Isuvery, action: 'view' | 'edit' | 'delete') => void;
+    onDetailClick: (suvery: Isuvery, action: "view" | "edit" | "delete") => void;
 }
 
-
-// -----------------------------------------------------------------
-// --- Component ย่อย: PasswordModal (มี Logic Admin) ---
-// -----------------------------------------------------------------
-const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSuccess, expectedPassword }) => {
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+// ---------------------------------------------
+// Password Modal
+// ---------------------------------------------
+const PasswordModal: React.FC<PasswordModalProps> = ({
+    isOpen,
+    onClose,
+    onSuccess,
+    expectedPassword,
+    suveryIdToDelete,
+    onDeleteConfirmed,
+}) => {
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     if (!isOpen) return null;
 
     const handleVerify = () => {
-        // Logic การตรวจสอบ: Admin หรือ รหัสนักศึกษา (expectedPassword)
         if (password === ADMIN_PASSWORD || password === expectedPassword) {
-            onSuccess();
+            if (suveryIdToDelete) {
+                onDeleteConfirmed(suveryIdToDelete);
+            } else {
+                onSuccess();
+            }
         } else {
-            setError('รหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง');
-            setPassword('');
+            setError("รหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง");
+            setPassword("");
         }
     };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm transform transition-all scale-100 opacity-100">
-                <h3 className="text-xl font-bold text-violet-800 mb-4">🔐 ยืนยันรหัสผ่าน</h3>
+            <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
+                <h3 className="text-xl font-bold text-indigo-700 mb-4">🔐 ยืนยันรหัสผ่าน</h3>
                 <p className="text-gray-600 mb-4">
-                    โปรดป้อนรหัสนักศึกษา เพื่อดำเนินการต่อ
+                    โปรดป้อนรหัสนักศึกษา <b>หรือ</b> รหัส Admin เพื่อดำเนินการต่อ
                 </p>
+
                 <input
                     type="password"
                     value={password}
                     onChange={(e) => {
                         setPassword(e.target.value);
-                        setError('');
+                        setError("");
                     }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleVerify();
-                    }}
+                    onKeyDown={(e) => e.key === "Enter" && handleVerify()}
                     placeholder="รหัสผ่าน"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 mb-3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 mb-3"
                     autoFocus
                 />
+
                 {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+
                 <div className="flex justify-end gap-3">
                     <button
-                        onClick={onClose}
-                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                        onClick={() => {
+                            onClose();
+                            setPassword("");
+                            setError("");
+                        }}
+                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
                     >
                         ยกเลิก
                     </button>
+
                     <button
                         onClick={handleVerify}
-                        className="px-4 py-2 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 transition"
+                        className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700"
                     >
                         ดำเนินการ
                     </button>
@@ -96,248 +115,240 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSucces
         </div>
     );
 };
-// -----------------------------------------------------------------
 
-// --- Component: SurveyListItem ย่อย ---
+// ---------------------------------------------
+// Survey List Item
+// ---------------------------------------------
 const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }) => {
-
-    const encodeId = (id: string): string => {
-        if (typeof window !== 'undefined') {
-            return btoa(id);
-        }
-        return id;
+    const formatDate = (iso: string | undefined) => {
+        if (!iso) return "N/A";
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return "Invalid Date";
+        return d.toLocaleDateString("th-TH", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     };
 
-    const formatDate = (isoString: string | undefined): string => {
-        if (!isoString) return 'N/A';
-        try {
-            const date = new Date(isoString);
-            if (isNaN(date.getTime())) return 'Invalid Date';
+    const statusColor = {
+        ไม่ได้ทำงาน: "text-red-600 bg-red-100 border border-red-200",
+        ทำงานแล้ว: "text-green-700 bg-green-100 border border-green-200",
+    }[suvery.currentStatus || ""];
 
-            return date.toLocaleDateString('th-TH', {
-                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
-            });
-        } catch (e) {
-            return 'Invalid Date';
-        }
-    };
-
-    const getStatusText = (status: Isuvery['currentStatus'] | undefined): string => {
-        if (status === 'ไม่ได้ทำงาน') return 'ไม่ได้ทำงาน';
-        if (status === 'ทำงานแล้ว') return 'ทำงานแล้ว';
-        return 'ไม่ระบุ';
-    };
-
-    const getStatusColor = (status: Isuvery['currentStatus'] | undefined): string => {
-        if (status === 'ไม่ได้ทำงาน') return 'text-red-600 bg-red-100 border border-red-200';
-        if (status === 'ทำงานแล้ว') return 'text-green-700 bg-green-100 border border-green-200';
-        return 'text-gray-500 bg-gray-100';
-    };
-
-    // ส่วน return ของ SurveyListItem
     return (
         <tr
-            key={suvery._id}
-            onClick={() => onDetailClick(suvery, 'view')}
-            className="border-b transition duration-200 cursor-pointer hover:bg-violet-50/50"
+            className="border-b hover:bg-violet-50/50 cursor-pointer"
+            onClick={() => onDetailClick(suvery, "view")}
         >
             <td className="py-3 px-4">{suvery.fullName}</td>
-            {/* รหัสนักศึกษา และ ปีที่จบ ถูกลบออกจากการแสดงผลแล้ว */}
-
             <td className="py-3 px-4">
-                <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(suvery.currentStatus)}`}>
-                    {getStatusText(suvery.currentStatus)}
+                <span
+                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${statusColor || "text-gray-500 bg-gray-100"
+                        }`}
+                >
+                    {suvery.currentStatus || "ไม่ระบุ"}
                 </span>
             </td>
             <td className="py-3 px-4 text-sm text-gray-600">{formatDate(suvery.submittedAt)}</td>
-            <td className="py-3 px-4">
-                <div className='flex justify-end gap-3'>
 
-                    {/* 1. ปุ่มแก้ไข (Edit) */}
+            <td className="py-3 px-4">
+                <div className="flex justify-end gap-3">
+                    {/* Edit */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            onDetailClick(suvery, 'edit');
+                            onDetailClick(suvery, "edit");
                         }}
-                        className="text-gray-400 hover:text-yellow-600 transition p-1"
-                        aria-label="แก้ไขข้อมูล"
-                        title="แก้ไขข้อมูล"
+                        className="text-gray-400 hover:text-yellow-600"
                     >
                         <HiPencilAlt size={20} />
                     </button>
 
-                    {/* 2. ปุ่มดูรายละเอียด (View) */}
+                    {/* View */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            onDetailClick(suvery, 'view');
+                            onDetailClick(suvery, "view");
                         }}
-                        className="text-violet-600 hover:text-violet-800 transition p-1"
-                        aria-label="ดูรายละเอียด"
-                        title="ดูรายละเอียด"
+                        className="text-violet-600 hover:text-violet-800"
                     >
                         <HiEye size={20} />
                     </button>
 
-                    {/* 3. ปุ่มลบ (Delete) */}
+                    {/* Delete */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            onDetailClick(suvery, 'delete');
+                            onDetailClick(suvery, "delete");
                         }}
-                        className="text-red-600 hover:text-red-800 transition p-1"
-                        aria-label="ลบข้อมูล"
-                        title="ลบข้อมูล"
+                        className="text-red-600 hover:text-red-800"
                     >
-                        <HiOutlineTrash size={20} />
+                        <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                        </svg>
                     </button>
                 </div>
             </td>
         </tr>
     );
 };
-// -----------------------------------------------------------------
 
-// -----------------------------------------------------------------
-// --- Component: SuveryList หลัก ---
-// -----------------------------------------------------------------
+// ---------------------------------------------
+// Main: SuveryList
+// ---------------------------------------------
 const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
-    const [selectedsuvery, setSelectedsuvery] = useState<Isuvery | null>(null);
-    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-    // 💡 State เพื่อจำ ID ที่เพิ่งยืนยันสำเร็จ (เพื่อให้สามารถดูซ้ำได้โดยไม่ต้องกรอกรหัส)
+    const [selectedSuvery, setSelectedSuvery] = useState<Isuvery | null>(null);
     const [verifiedSuveryId, setVerifiedSuveryId] = useState<string | null>(null);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-    const [pendingAction, setPendingAction] = useState<'view' | 'edit' | 'delete' | null>(null);
-    const [encodedId, setEncodedId] = useState<string | null>(null);
-    const [pendingStudentId, setPendingStudentId] = useState<string>(''); // รหัสนักศึกษาที่คาดหวัง
+    const [pendingAction, setPendingAction] = useState<"view" | "edit" | "delete" | null>(null);
 
-    // ฟังก์ชันหลักในการดำเนินการ (ดู, แก้ไข, ลบ)
-    const executeAction = (suvery: Isuvery, action: 'view' | 'edit' | 'delete', encodedId: string) => {
-        setSelectedsuvery(suvery);
+    const [targetId, setTargetId] = useState<string | null>(null);
+    const [studentPassword, setStudentPassword] = useState<string>("");
 
-        switch (action) {
-            case 'view':
-                // เปิด Detail Modal
-                setIsDetailModalOpen(true);
-                break;
-            case 'edit':
-                // นำทางไปยังหน้าแก้ไข 
-                window.location.href = `/suvery/edit/${encodedId}`;
-                break;
-            case 'delete':
-                // Logic การลบ
-                if (window.confirm('คุณแน่ใจหรือไม่ที่จะลบข้อมูลของ ' + suvery.fullName + '?')) {
-                    // ** ในการนำไปใช้งานจริง คุณจะต้องสร้าง Logic การลบ API call ที่นี่ **
-                    alert(`✅ (Action) ลบข้อมูล ID: ${suvery._id} (จำลองการลบ)`);
-                    // หากลบสำเร็จ: window.location.reload(); 
-                }
-                break;
-            default:
-                break;
-        }
+    // Custom Alert
+    const [isCustomAlertOpen, setIsCustomAlertOpen] = useState(false);
+    const [alertContent, setAlertContent] = useState({
+        title: "",
+        message: "" as ReactNode,
+        type: "info" as "success" | "error" | "warning" | "info",
+    });
 
-        // ล้าง selectedsuvery หากไม่ใช่ 'view'
-        if (action !== 'view') {
-            setSelectedsuvery(null);
-        }
-    };
-
-    // ฟังก์ชันจัดการการกระทำที่มีการป้องกันรหัสผ่าน (Logic ป้องกันการเข้าถึง)
-    const handleProtectedAction = (suvery: Isuvery, action: 'view' | 'edit' | 'delete') => {
-
-        // 1. กำหนด Action และ ID ที่ต้องการทำ
-        setSelectedsuvery(suvery);
+    // ----------------------------------------------------
+    // Action Handler
+    // ----------------------------------------------------
+    const handleProtectedAction = (suvery: Isuvery, action: "view" | "edit" | "delete") => {
+        setSelectedSuvery(suvery);
         setPendingAction(action);
-        const currentEncodedId = btoa(suvery._id);
-        setEncodedId(currentEncodedId);
-        setPendingStudentId(suvery.studentId); // เก็บ studentId ไว้ใช้ตรวจสอบ
+        setTargetId(suvery._id);
+        setStudentPassword(suvery.studentId);
 
-        // 💡 Logic การป้องกัน: ต้องกรอกรหัสผ่านถ้า ID ปัจจุบันไม่ตรงกับ ID ที่เคยยืนยันสำเร็จไปแล้ว
-        const isAccessVerified = suvery._id === verifiedSuveryId;
-
-        if (isAccessVerified) {
-            // ถ้ารายการนี้เคยยืนยันแล้ว: ดำเนินการทันที
-            executeAction(suvery, action, currentEncodedId);
+        if (verifiedSuveryId === suvery._id) {
+            executeAction(suvery, action);
         } else {
-            // ถ้าเป็นรายการใหม่ หรือยังไม่เคยยืนยัน: เปิด Modal ขอรหัสผ่าน
             setIsPasswordModalOpen(true);
         }
     };
 
-    // ฟังก์ชันที่ทำงานหลังจากตรวจสอบรหัสผ่านสำเร็จ
-    const handleActionSuccess = () => {
-        // 💡 อัปเดต verifiedSuveryId ด้วย ID ของรายการที่เพิ่งยืนยันสำเร็จ
-        if (selectedsuvery) {
-            setVerifiedSuveryId(selectedsuvery._id);
+    // ----------------------------------------------------
+    // Execute after verified
+    // ----------------------------------------------------
+    const executeAction = (suvery: Isuvery, action: "view" | "edit" | "delete") => {
+        const encoded = btoa(suvery._id);
+
+        if (action === "view") {
+            setIsDetailModalOpen(true);
+            return;
         }
 
-        setIsPasswordModalOpen(false);
-
-        if (selectedsuvery && pendingAction && encodedId) {
-            executeAction(selectedsuvery, pendingAction, encodedId);
+        if (action === "edit") {
+            window.location.href = `/suvery/edit/${encoded}`;
+            return;
         }
 
-        // ล้าง State ที่เกี่ยวข้องกับการดำเนินการเฉพาะกิจ
-        setPendingAction(null);
-        setEncodedId(null);
-        setPendingStudentId('');
+        if (action === "delete") {
+            handleDelete(suvery._id);
+            return;
+        }
     };
 
-    // ฟังก์ชันปิด Modal รายละเอียด
-    const handleCloseDetailModal = () => {
-        setIsDetailModalOpen(false);
-        setSelectedsuvery(null);
-    }
+    // ----------------------------------------------------
+    // After Password Success
+    // ----------------------------------------------------
+    const onPasswordSuccess = () => {
+        if (selectedSuvery) setVerifiedSuveryId(selectedSuvery._id);
+        setIsPasswordModalOpen(false);
 
-    // --- ส่วนแสดงผลตามสถานะ (Loading, Error, No Data) ---
-    if (isLoading) {
-        return (
-            <p className="text-center text-violet-600 text-lg p-10 border border-dashed rounded-lg bg-violet-50/50 flex justify-center items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-violet-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                กำลังโหลดข้อมูล...
-            </p>
-        );
-    }
+        if (selectedSuvery && pendingAction) {
+            executeAction(selectedSuvery, pendingAction);
+        }
 
-    if (isError) {
-        return (
-            <p className="text-center text-red-600 text-lg p-10 border border-dashed rounded-lg bg-red-50/50">
-                ❌ **Error Loading Data:** ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง
-            </p>
-        );
-    }
+        setPendingAction(null);
+    };
 
-    if (!suverys || suverys.length === 0) {
-        return (
-            <p className="text-center text-gray-500 text-lg p-10 border border-dashed rounded-lg bg-gray-50/50">
-                ยังไม่มีข้อมูลการสำรวจในระบบ
-            </p>
-        );
-    }
+    // ----------------------------------------------------
+    // Delete Logic
+    // ----------------------------------------------------
+    const handleDelete = async (id: string) => {
+        if (!selectedSuvery) return;
 
-    // --- JSX Return (แสดงรายการ) ---
+        const confirmDelete = window.confirm(`ต้องการลบข้อมูลของ ${selectedSuvery.fullName}?`);
+        if (!confirmDelete) return;
+
+        try {
+            const res = await fetch(`/api/suvery?id=${id}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                setAlertContent({
+                    title: "ลบสำเร็จ!",
+                    message: `ข้อมูลของ ${selectedSuvery.fullName} ถูกลบแล้ว`,
+                    type: "success",
+                });
+                setIsCustomAlertOpen(true);
+
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                setAlertContent({
+                    title: "ล้มเหลว",
+                    message: "ไม่สามารถลบข้อมูลได้",
+                    type: "error",
+                });
+                setIsCustomAlertOpen(true);
+            }
+        } catch {
+            setAlertContent({
+                title: "Error",
+                message: "ไม่สามารถติดต่อเซิร์ฟเวอร์ได้",
+                type: "error",
+            });
+            setIsCustomAlertOpen(true);
+        }
+    };
+
+    // ----------------------------------------------------
+    // Loading / Error / Empty
+    // ----------------------------------------------------
+    if (isLoading) return <p className="text-center p-10">กำลังโหลดข้อมูล...</p>;
+    if (isError) return <p className="text-center p-10 text-red-600">โหลดข้อมูลล้มเหลว</p>;
+    if (suverys.length === 0) return <p className="text-center p-10">ไม่มีข้อมูลสำรวจ</p>;
+
+    // ----------------------------------------------------
+    // Render
+    // ----------------------------------------------------
     return (
         <>
-            <div className="overflow-x-auto rounded-xl shadow-2xl border border-gray-100">
+            <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-100">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
                     <thead className="bg-violet-50">
                         <tr>
-                            <th className="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ชื่อ-สกุล</th>
-                            {/* ปีที่จบ ถูกลบออกแล้ว */}
-                            <th className="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">สถานะงาน</th>
-                            <th className="py-3 px-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">วันที่กรอก</th>
-                            <th className="py-3 px-4 text-center">Action</th>
+                            <th className="py-3 px-4 text-left text-xs font-semibold">ชื่อ-สกุล</th>
+                            <th className="py-3 px-4 text-left text-xs font-semibold">สถานะงาน</th>
+                            <th className="py-3 px-4 text-left text-xs font-semibold">วันที่กรอก</th>
+                            <th className="py-3 px-4 text-center text-xs font-semibold">Action</th>
                         </tr>
                     </thead>
+
                     <tbody className="divide-y divide-gray-100">
-                        {suverys.map((suvery) => (
+                        {suverys.map((sv) => (
                             <SurveyListItem
-                                key={suvery._id}
-                                suvery={suvery}
+                                key={sv._id}
+                                suvery={sv}
                                 onDetailClick={handleProtectedAction}
                             />
                         ))}
@@ -345,17 +356,33 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
                 </table>
             </div>
 
-            {/* Modal ดูรายละเอียด */}
-            {isDetailModalOpen && selectedsuvery && (
-                <SuveryModal suvery={selectedsuvery} isOpen={isDetailModalOpen} onClose={handleCloseDetailModal} />
+            {/* Detail Modal */}
+            {isDetailModalOpen && selectedSuvery && (
+                <SuveryModal
+                    suvery={selectedSuvery}
+                    isOpen={isDetailModalOpen}
+                    onClose={() => setIsDetailModalOpen(false)}
+                />
             )}
 
-            {/* Modal ขอรหัสผ่าน */}
+            {/* Password Modal */}
             <PasswordModal
                 isOpen={isPasswordModalOpen}
                 onClose={() => setIsPasswordModalOpen(false)}
-                onSuccess={handleActionSuccess}
-                expectedPassword={pendingStudentId}
+                onSuccess={onPasswordSuccess}
+                expectedPassword={studentPassword}
+                suveryIdToDelete={pendingAction === "delete" ? targetId : null}
+                onDeleteConfirmed={handleDelete}
+            />
+
+            {/* Custom Alert */}
+            <CustomAlertDialog
+                isOpen={isCustomAlertOpen}
+                onClose={() => setIsCustomAlertOpen(false)}
+                title={alertContent.title}
+                message={alertContent.message}
+                type={alertContent.type}
+                confirmText="รับทราบ"
             />
         </>
     );
