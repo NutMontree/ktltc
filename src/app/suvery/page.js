@@ -196,8 +196,8 @@ export default function GraduatesuveryForm() {
         });
     };
 
-    const isWorking = formData.currentStatus === 'ไม่ได้ทำงาน';
-    const isNotWorking = formData.currentStatus === 'ทำงานแล้ว';
+    const isWorking = formData.currentStatus === 'ทำงานแล้ว';
+    const isNotWorking = formData.currentStatus === 'ไม่ได้ทำงาน';
     const isEmploymentTypeOther = isWorking && formData.employmentType === 'อื่นๆ';
     const isSalaryOther = isWorking && formData.salaryRange === '5';
     const isFurtherStudy = formData.furtherStudyIntention === 'ต้องการศึกษาต่อ';
@@ -487,7 +487,7 @@ export default function GraduatesuveryForm() {
                                     <label className={labelClass}>ลักษณะงานที่ทำ ตรงกับสาขาที่ท่านได้สำเร็จการศึกษาหรือไม่ *</label>
                                     <div className="flex gap-6 mt-1">
                                         <label className="inline-flex items-center cursor-pointer">
-                                            <input type="radio" name="jobMatch" value="ไม่ตรง" checked={formData.jobMatch === 'ไม่ตรง'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
+                                            <input type="radio" name="jobMatch" value="ตรง" checked={formData.jobMatch === 'ตรง'} onChange={handleChange} className="form-radio h-5 w-5 text-green-600 focus:ring-green-500" />
                                             <span className="ml-2 text-gray-700">1 ตรง</span>
                                         </label>
                                         <label className="inline-flex items-center cursor-pointer">

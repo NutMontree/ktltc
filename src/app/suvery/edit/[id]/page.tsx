@@ -54,7 +54,7 @@ export default async function EditSuveryPage({ params }: EditPageProps) {
     noStore();
 
     // ✅ Next.js จะ Resolve params ให้เมื่อเรียกใช้ noStore()
-    const { id } = await params; // ✅ unwrap Promise
+    const { id } = params;
 
     // ✅ ใช้ await เพื่อรอการดึงข้อมูล
     const suvery = await getSuveryById(id);

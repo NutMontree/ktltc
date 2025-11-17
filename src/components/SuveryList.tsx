@@ -1,9 +1,4 @@
-// ✅ เวอร์ชันแก้ไขสมบูรณ์ของไฟล์ SuveryList.tsx
-// ---------------------------------------------------------------
-// เน้นปรับโค้ดให้สะอาดขึ้น, ลบโค้ดที่ซ้ำซ้อน, แก้ State ที่ซ้ำ/ไม่จำเป็น
-// และแก้ปัญหา execution flow ของ view/edit/delete + password
-// ---------------------------------------------------------------
-
+// src/components/SuveryList.tsx
 "use client";
 
 import React, { useState, FC, ReactNode } from "react";
@@ -120,7 +115,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
 // Survey List Item
 // ---------------------------------------------
 const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }) => {
-    const formatDate = (iso: string | undefined) => {
+    const formatDate = (iso?: string) => {
         if (!iso) return "N/A";
         const d = new Date(iso);
         if (isNaN(d.getTime())) return "Invalid Date";
@@ -133,10 +128,14 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
         });
     };
 
-    const statusColor = {
-        ไม่ได้ทำงาน: "text-red-600 bg-red-100 border border-red-200",
-        ทำงานแล้ว: "text-green-700 bg-green-100 border border-green-200",
-    }[suvery.currentStatus || ""];
+    const STATUS_COLOR_MAP: Record<string, string> = {
+        '1': "text-red-600 bg-red-100 border border-red-200",
+        '2': "text-green-700 bg-green-100 border border-green-200",
+        'ไม่ได้ทำงาน': "text-red-600 bg-red-100 border border-red-200",
+        'ทำงานแล้ว': "text-green-700 bg-green-100 border border-green-200",
+    };
+
+    const statusColor = STATUS_COLOR_MAP[suvery.currentStatus || ""] || "text-gray-500 bg-gray-100";
 
     return (
         <tr
@@ -146,10 +145,11 @@ const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }
             <td className="py-3 px-4">{suvery.fullName}</td>
             <td className="py-3 px-4">
                 <span
-                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${statusColor || "text-gray-500 bg-gray-100"
-                        }`}
+                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${statusColor}`}
                 >
-                    {suvery.currentStatus || "ไม่ระบุ"}
+                    {suvery.currentStatus === "1" ? "ไม่ได้ทำงาน" :
+                        suvery.currentStatus === "2" ? "ทำงานแล้ว" :
+                            suvery.currentStatus || "ไม่ระบุ"}
                 </span>
             </td>
             <td className="py-3 px-4 text-sm text-gray-600">{formatDate(suvery.submittedAt)}</td>
