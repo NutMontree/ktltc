@@ -7,11 +7,10 @@ const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localho
 
 const getsuverys = async () => {
     try {
-        // *** 2. ใช้ BASE_URL + Relative Path เพื่อให้ทำงานบน Dev ได้ ***
         // const apiUrl = `${BASE_URL}/api/suvery`;
         const apiUrl = `${NEXT_PUBLIC_BASE_URL}/api/suvery`;
 
-        console.log(`📡 Fetching data from: ${apiUrl}`); // Debug URL
+        console.log(`📡 Fetching data from: ${apiUrl}`);
 
         const res = await fetch(apiUrl, {
             cache: 'no-store'
@@ -32,25 +31,22 @@ export default async function EmploymentDashboard() {
     const suverysData = await getsuverys();
     let suverys = suverysData?.suverys || [];
 
-    // 💡 การแก้ไข: เรียงลำดับข้อมูลจากใหม่ไปเก่า (โดยใช้ reverse)
     if (suverys.length > 0) {
-        // การใช้ .reverse() จะกลับลำดับของ Array ซึ่งถ้า API ดึงข้อมูลเก่ามาใหม่
-        // การ reverse() จะทำให้ข้อมูลใหม่ขึ้นไปอยู่ข้างบนสุด
         suverys = suverys.reverse();
     }
 
     return (
         <div className="min-h-screen bg-white/50 py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-12">
-
-                <div className="flex justify-between items-center pb-6 border-b border-gray-100">
-                    <h1 className="text-4xl font-extrabold text-violet-800 tracking-tight flex items-center">
-                        <svg className="w-9 h-9 mr-3 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19V6l12-3v14M9 19h12M9 19c-1.333 0-2-1.333-2-2 0-1.333 0-2 2-2M21 5c-1.333 0-2-1.333-2-2 0-1.333 0-2 2-2"></path></svg>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-indigo-100/70">
+                    <h1 className="text-3xl sm:text-4xl font-extrabold text-indigo-900 tracking-tight flex items-center mb-4 md:mb-0">
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10 mr-3 text-indigo-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19V6l12-3v14M9 19h12M9 19c-1.333 0-2-1.333-2-2 0-1.333 0-2 2-2M21 5c-1.333 0-2-1.333-2-2 0-1.333 0-2 2-2"></path></svg>
                         Dashboard ข้อมูลแบบสำรวจ
                     </h1>
+
                     <Link
                         href="/suvery"
-                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-semibold rounded-xl shadow-lg text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-violet-500 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] drop-shadow-md"
+                        className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-semibold rounded-xl shadow-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-[1.03] active:scale-[0.98] drop-shadow-md"
                     >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                         กรอกแบบสำรวจใหม่
@@ -62,7 +58,6 @@ export default async function EmploymentDashboard() {
                         รายการข้อมูลที่ถูกบันทึก
                     </h2>
                     {suverys && suverys.length > 0 ? (
-                        // ส่งข้อมูลที่ถูก reverse แล้วไปยัง SuveryList
                         <SuveryList suverys={suverys} isLoading={false} isError={false} />
                     ) : (
                         <div className="p-12 text-center bg-violet-50/50 border-2 border-dashed border-violet-300 rounded-xl transition duration-500 hover:border-violet-500 shadow-inner">
