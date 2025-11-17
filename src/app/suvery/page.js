@@ -196,8 +196,8 @@ export default function GraduatesuveryForm() {
         });
     };
 
-    const isWorking = formData.currentStatus === '2';
-    const isNotWorking = formData.currentStatus === '1';
+    const isWorking = formData.currentStatus === 'ไม่ได้ทำงาน';
+    const isNotWorking = formData.currentStatus === 'ทำงานแล้ว';
     const isEmploymentTypeOther = isWorking && formData.employmentType === 'อื่นๆ';
     const isSalaryOther = isWorking && formData.salaryRange === '5';
     const isFurtherStudy = formData.furtherStudyIntention === 'ต้องการศึกษาต่อ';

@@ -530,6 +530,14 @@ const Footer = () => {
                     ktltcQ&A
                   </LinkPreview>
                 </li>
+                <li>
+                  <LinkPreview
+                    url="https://ktltc.vercel.app/EmploymentDashboard"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    EmploymentDashboard
+                  </LinkPreview>
+                </li>
               </ul>
             </div>
           </div>

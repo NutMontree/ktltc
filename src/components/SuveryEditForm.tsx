@@ -4,97 +4,48 @@
 import React, { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-// นำเข้าไอคอนสำหรับส่วนต่างๆ ของฟอร์ม
 import { User, Briefcase, BookOpen, MessageSquare, GraduationCap, MapPin, X, ChevronRight, Loader2, Check } from 'lucide-react';
 
-// -----------------------------------------------------------------
-// 💡 INTERFACE (กำหนด Interface ที่สมบูรณ์ในไฟล์นี้เพื่อแก้ปัญหา Property Not Found)
-// -----------------------------------------------------------------
 interface Isuvery {
-    _id: string; // ID สำหรับการอัปเดต API
+    _id: string;
     // 1. ข้อมูลส่วนตัว
-    roomId: string;
-    studentId: string;
-    fullName: string;
-    age: string;
+    roomId: string; studentId: string; fullName: string; age: string;
     // 2. ที่อยู่ที่ติดต่อได้
-    addrNumber: string;
-    addrBuilding: string;
-    addrMoo: string;
-    addrSoi: string;
-    addrRoad: string;
-    addrSubDistrict: string;
-    addrDistrict: string;
-    addrProvince: string;
-    addrZipCode: string;
-    contactTel: string;
-    contactEmail: string;
+    addrNumber: string; addrBuilding: string; addrMoo: string; addrSoi: string; addrRoad: string; addrSubDistrict: string; addrDistrict: string; addrProvince: string; addrZipCode: string; contactTel: string; contactEmail: string;
     // 3. ข้อมูลการศึกษา
-    homeProvince: string;
-    graduationYear: string;
-    educationLevel: string; // ปวช./ปวส.
-    gender: string; // ชาย/หญิง
-    gpa: string; // เกรดเฉลี่ยสะสม
+    homeProvince: string; graduationYear: string; educationLevel: string; gender: string; gpa: string;
     // 4. สถานการณ์ทำงานปัจจุบัน
-    currentStatus: string; // '1' ไม่ได้ทำงาน / '2' ทำงานแล้ว
+    currentStatus: string;
     // 4.1 ข้อมูลเมื่อ "ไม่ได้ทำงาน"
-    notWorkingReasonGroup: string; // ศึกษาต่อ, หางานทำไม่ได้, รอฟังคำตอบ, ไม่ประสงค์จะทำงาน
-    notWorkingReasonOther: string; // อื่นๆ (โปรดระบุ)
+    notWorkingReasonGroup: string; notWorkingReasonOther: string;
     // 4.2 ข้อมูลเมื่อ "ทำงานแล้ว"
-    employmentType: string; // ข้าราชการ, รัฐวิสาหกิจ, พนักงานบริษัท, อื่นๆ
-    employmentTypeOther: string; // อื่นๆ (โปรดระบุ)
-    jobTitle: string;
-    workplaceName: string;
-    workplaceAddrNumber: string;
-    workplaceAddrMoo: string;
-    workplaceAddrSoi: string;
-    workplaceAddrRoad: string;
-    workplaceAddrSubDistrict: string;
-    workplaceAddrDistrict: string;
-    workplaceAddrProvince: string;
-    workplaceAddrZipCode: string;
-    workplaceTel: string;
+    employmentType: string; employmentTypeOther: string; jobTitle: string; workplaceName: string; workplaceAddrNumber: string; workplaceAddrMoo: string; workplaceAddrSoi: string; workplaceAddrRoad: string; workplaceAddrSubDistrict: string; workplaceAddrDistrict: string; workplaceAddrProvince: string; workplaceAddrZipCode: string; workplaceTel: string;
     // 5. รายได้และลักษณะงาน
-    salaryRange: string; // '1', '2', '3', '4', '5'
-    salaryRangeOther: string; // อื่นๆ (โปรดระบุ)
-    jobMatch: string; // '1' ตรง / '2' ไม่ตรง
-    jobSatisfaction: string; // '1' พึงพอใจ / '2' ไม่พึงพอใจ
+    salaryRange: string; salaryRangeOther: string; jobMatch: string; jobSatisfaction: string;
     // 6. สาเหตุที่ยังไม่ได้ทำงาน (ใช้เฉพาะในกรณีไม่ได้ทำงานและไม่ใช่ศึกษาต่อ)
-    unemployedReason: string; // '1', '2', '3', '4'
-    unemployedReasonOther: string; // อื่นๆ (โปรดระบุ)
+    unemployedReason: string; unemployedReasonOther: string;
     // 7. การศึกษาต่อ
-    furtherStudyIntention: string; // ต้องการศึกษาต่อ / ไม่ต้องการศึกษาต่อ
-    furtherStudyLevel: string; // ระดับปริญญาตรี, โท, เอก
-    furtherStudyMajor: string; // สาขาเดิม / ระบุสาขา
-    furtherStudyMajorDetail: string; // ระบุสาขา (text input)
-    furtherStudyReason: string; // '1', '2', '3', '4'
-    furtherStudyReasonOther: string; // อื่นๆ (โปรดระบุ)
+    furtherStudyIntention: string; furtherStudyLevel: string; furtherStudyMajor: string; furtherStudyMajorDetail: string; furtherStudyReason: string; furtherStudyReasonOther: string;
     // 8. ปัญหาในการหางาน
-    jobSearchProblem: string; // ไม่มีปัญหา, 1, 2, ...
+    jobSearchProblem: string;
     // 9. ข้อเสนอแนะ
     suggestion: string;
 }
 
-interface SuveryEditFormProps {
-    suvery: Isuvery;
+interface SuveryEditFormProps { suvery: Isuvery; }
+
+interface FormSectionProps {
+    title: string;
+    icon: React.ElementType;
+    children: React.ReactNode;
 }
 
-// -----------------------------------------------------------------
-// --- CONSTANTS & HELPERS ---
-// -----------------------------------------------------------------
 const COLLEGE_NAME = 'วิทยาลัยเทคนิคกันทรลักษ์';
 const COLLEGE_PROVINCE = 'ศรีสะเกษ';
 const inputClass = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-violet-600 focus:border-violet-600 shadow-sm transition duration-150";
 const labelClass = "block text-sm font-medium text-gray-700 mb-1";
 const sectionTitleClass = "text-2xl font-extrabold text-gray-800 mb-6 flex items-center gap-3";
 
-// Component สำหรับ Section Header/Container
-// 💡 แก้ปัญหา Implicit 'any' type โดยการกำหนด Props Type ชัดเจน
-interface FormSectionProps {
-    title: string;
-    icon: React.ElementType;
-    children: React.ReactNode;
-}
 const FormSection: React.FC<FormSectionProps> = ({ title, icon: Icon, children }) => (
     <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-inner mb-8">
         <h2 className={sectionTitleClass}>
@@ -107,24 +58,16 @@ const FormSection: React.FC<FormSectionProps> = ({ title, icon: Icon, children }
     </div>
 );
 
-// -----------------------------------------------------------------
-// --- Component: SuveryEditForm ---
-// -----------------------------------------------------------------
 const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
-    // 💡 แก้ปัญหา Redeclaration (2451) โดยการลบโค้ดซ้ำซ้อน
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // 💡 1. ใช้ useState เพื่อจัดการข้อมูลฟอร์ม และใส่ข้อมูลเดิมเป็นค่าเริ่มต้น
-    // 💡 กำหนด Type เป็น Isuvery ให้ชัดเจน
     const [formData, setFormData] = useState<Isuvery>({ ...suvery });
 
-    // 💡 2. Handler สำหรับการเปลี่ยนแปลงค่าใน Input/Select/TextArea
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
 
-        // สำหรับ Radio buttons/Selects, ใช้ค่าจาก event target
         const newValue = type === 'radio' ? e.target.value : value;
 
         setFormData(prevData => ({
@@ -133,14 +76,12 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
         }));
     };
 
-    // 💡 3. Handler สำหรับการ Submit ฟอร์ม (เรียก API PUT)
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
         try {
-            // 🚀 เรียก API PUT ที่เราสร้างไว้: /api/suvery?id=<ID>
             const res = await fetch(`/api/suvery?id=${formData._id}`, {
                 method: 'PUT',
                 headers: {
@@ -151,7 +92,6 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
 
             if (res.ok) {
                 alert('✅ ข้อมูลแบบสำรวจได้รับการอัปเดตสำเร็จแล้ว');
-                // 💡 รีเฟรชหน้ารายการ (List Page)
                 router.push('/suvery');
                 router.refresh();
             } else {
@@ -162,32 +102,22 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
             }
         } catch (err) {
             console.error("Client update error:", err);
-            // 💡 แก้ปัญหา Implicit 'any' type โดยการกำหนด type ของ err
             setError('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
         } finally {
             setIsLoading(false);
         }
     };
 
-    // --- Conditional Rendering Logic ---
-    // 💡 แก้ไขการเปรียบเทียบ Type จากตัวเลขเป็น String (currentStatus เป็น string: '1', '2')
-    const isWorking = formData.currentStatus === '2'; // 2: ทำงานแล้ว
-    const isNotWorking = formData.currentStatus === '1'; // 1: ไม่ได้ทำงาน
-
-    // ใช้ Optional Chaining (?) เพื่อป้องกัน Error หาก formData ยังไม่สมบูรณ์ (แม้จะตั้งค่าเริ่มต้นแล้วก็ตาม)
+    const isWorking = formData.currentStatus === 'ทำงานแล้ว';
+    const isNotWorking = formData.currentStatus === 'ไม่ได้ทำงาน';
     const isWorkingOther = isWorking && formData.employmentType === 'อื่นๆ';
     const isSalaryOther = isWorking && formData.salaryRange === '5';
-
-    // สำหรับผู้ที่ "ไม่ได้ทำงาน"
     const isUnemployedLookingForJob = isNotWorking && formData.notWorkingReasonGroup === 'หางานทำไม่ได้';
     const isUnemployedReasonOther = isNotWorking && formData.unemployedReason === '4';
-
-    // สำหรับ "การศึกษาต่อ"
     const isFurtherStudyIntention = formData.furtherStudyIntention === 'ต้องการศึกษาต่อ';
     const isFurtherStudyMajorNew = isFurtherStudyIntention && formData.furtherStudyMajor === 'ระบุสาขา';
     const isFurtherStudyReasonOther = isFurtherStudyIntention && formData.furtherStudyReason === '4';
 
-    // --- UI (User Interface) ---
     return (
         <div className="max-w-5xl mx-auto py-12">
             <form onSubmit={handleSubmit} className="bg-white p-8 sm:p-10 rounded-3xl shadow-2xl border border-gray-100">
@@ -201,10 +131,8 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                     </div>
                 )}
 
-                {/* --- 1. ข้อมูลส่วนตัวและที่ติดต่อ --- */}
                 <FormSection title="1. ข้อมูลส่วนตัว" icon={User}>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        {/* studentId, fullName, roomId, age */}
                         <div className="md:col-span-1">
                             <label htmlFor="studentId" className={labelClass}>รหัสนักศึกษา *</label>
                             <input id="studentId" name="studentId" type="text" value={formData.studentId} onChange={handleChange} className={inputClass} required />
@@ -215,7 +143,6 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                         </div>
                         <div className="md:col-span-1">
                             <label htmlFor="roomId" className={labelClass}>ห้องเรียน</label>
-                            {/* 💡 การใช้ value={formData.roomId} หากเป็น string/number จะไม่เกิด error 2322 */}
                             <input id="roomId" name="roomId" type="text" value={formData.roomId} onChange={handleChange} className={inputClass} />
                         </div>
                         <div className="md:col-span-1">
@@ -223,7 +150,6 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                             <input id="age" name="age" type="number" value={formData.age} onChange={handleChange} className={inputClass} />
                         </div>
 
-                        {/* contactTel, contactEmail */}
                         <div className="md:col-span-1">
                             <label htmlFor="contactTel" className={labelClass}>เบอร์โทรศัพท์ติดต่อ</label>
                             <input id="contactTel" name="contactTel" type="tel" value={formData.contactTel} onChange={handleChange} className={inputClass} />
@@ -233,7 +159,6 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                             <input id="contactEmail" name="contactEmail" type="email" value={formData.contactEmail} onChange={handleChange} className={inputClass} />
                         </div>
 
-                        {/* gender */}
                         <div className="flex flex-col md:col-span-4">
                             <label className={labelClass}>เพศ *</label>
                             <div className="flex gap-6 mt-1">
@@ -249,10 +174,8 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                         </div>
                     </div>
 
-                    {/* ที่อยู่ที่ติดต่อได้ */}
                     <h3 className="text-lg font-bold text-gray-700 mt-4 border-t pt-4">ที่อยู่ที่สามารถติดต่อได้ (ปัจจุบัน)</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        {/* 💡 ฟิลด์ที่อยู่: ตรวจสอบให้แน่ใจว่าค่าที่ส่งคือ string (Type ที่กำหนดไว้ใน Interface) */}
                         <input name="addrNumber" value={formData.addrNumber} onChange={handleChange} className={inputClass} type="text" placeholder="เลขที่" />
                         <input name="addrBuilding" value={formData.addrBuilding} onChange={handleChange} className={inputClass} type="text" placeholder="อาคาร/หมู่บ้าน" />
                         <input name="addrMoo" value={formData.addrMoo} onChange={handleChange} className={inputClass} type="text" placeholder="หมู่" />
@@ -265,7 +188,6 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                     </div>
                 </FormSection>
 
-                {/* --- 2. ข้อมูลการศึกษา --- */}
                 <FormSection title="2. ข้อมูลการศึกษา" icon={GraduationCap}>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {/* ข้อมูลวิทยาลัย (ค่าคงที่) */}
@@ -310,8 +232,8 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                         <label htmlFor="currentStatus" className={labelClass}>สถานการณ์ทำงานปัจจุบัน *</label>
                         <select id="currentStatus" name="currentStatus" value={formData.currentStatus} onChange={handleChange} className={inputClass} required>
                             <option value="">-- เลือกสถานะ --</option>
-                            <option value="1">1 ไม่ได้ทำงาน</option>
-                            <option value="2">2 ทำงานแล้ว</option>
+                            <option value="ไม่ได้ทำงาน">1 ไม่ได้ทำงาน</option>
+                            <option value="ทำงานแล้ว">2 ทำงานแล้ว</option>
                         </select>
                     </div>
 
@@ -339,9 +261,9 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                                     <select id="jobSearchProblem" name="jobSearchProblem" value={formData.jobSearchProblem} onChange={handleChange} className={inputClass} required={isUnemployedLookingForJob}>
                                         <option value="">-- เลือกปัญหา --</option>
                                         <option value="ไม่มีปัญหา">ไม่มีปัญหา</option>
-                                        <option value="1">1 ไม่ทราบแหล่งงาน</option>
-                                        <option value="2">2 หางานที่ถูกใจไม่ได้</option>
-                                        <option value="3">3 ความสามารถไม่ตรงกับงาน</option>
+                                        <option value="ไม่ทราบแหล่งงาน">1 ไม่ทราบแหล่งงาน</option>
+                                        <option value="หางานที่ถูกใจไม่ได้">2 หางานที่ถูกใจไม่ได้</option>
+                                        <option value="ความสามารถไม่ตรงกับงาน">3 ความสามารถไม่ตรงกับงาน</option>
                                         {/* ... เพิ่มตัวเลือกอื่น ๆ ... */}
                                     </select>
                                 </div>
@@ -352,9 +274,9 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                                 <label htmlFor="unemployedReason" className={labelClass}>สาเหตุที่ยังไม่ได้ทำงาน (รายละเอียด) *</label>
                                 <select id="unemployedReason" name="unemployedReason" value={formData.unemployedReason} onChange={handleChange} className={inputClass} required={isNotWorking}>
                                     <option value="">-- เลือกสาเหตุ --</option>
-                                    <option value="1">1 ยังไม่ประสงค์ทำงาน</option>
-                                    <option value="2">2 รอฟังคำตอบจากหน่วยงาน</option>
-                                    <option value="3">3 หางานทำไม่ได้</option>
+                                    <option value="ยังไม่ประสงค์ทำงาน">1 ยังไม่ประสงค์ทำงาน</option>
+                                    <option value="รอฟังคำตอบจากหน่วยงาน">2 รอฟังคำตอบจากหน่วยงาน</option>
+                                    <option value="หางานทำไม่ได้">3 หางานทำไม่ได้</option>
                                     <option value="4">4 อื่นๆ (โปรดระบุ)</option>
                                 </select>
                                 {isUnemployedReasonOther && (
@@ -415,10 +337,10 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                                     <label htmlFor="salaryRange" className={labelClass}>ปัจจุบันท่านได้รับเงินค่าจ้าง (เฉลี่ยต่อเดือน) *</label>
                                     <select id="salaryRange" name="salaryRange" value={formData.salaryRange} onChange={handleChange} className={inputClass} required={isWorking}>
                                         <option value="">-- เลือกช่วงรายได้ --</option>
-                                        <option value="1">1 ต่ำกว่า 7,940 บาท</option>
-                                        <option value="2">2 7,941 - 10,000 บาท</option>
-                                        <option value="3">3 10,001 - 15,000 บาท</option>
-                                        <option value="4">4 15,001 - 20,000 บาท</option>
+                                        <option value="ต่ำกว่า 7,940 บาท">1 ต่ำกว่า 7,940 บาท</option>
+                                        <option value="7,941 - 10,000 บาท">2 7,941 - 10,000 บาท</option>
+                                        <option value="10,001 - 15,000 บาท">3 10,001 - 15,000 บาท</option>
+                                        <option value="15,001 - 20,000 บาท">4 15,001 - 20,000 บาท</option>
                                         <option value="5">5 อื่นๆ (โปรดระบุ)</option>
                                     </select>
                                     {isSalaryOther && (
@@ -431,16 +353,16 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                                     <label className={labelClass}>ลักษณะงานตรงกับสาขาที่จบหรือไม่ *</label>
                                     <select name="jobMatch" value={formData.jobMatch} onChange={handleChange} className={inputClass} required={isWorking}>
                                         <option value="">-- เลือก --</option>
-                                        <option value="1">1 ตรงกับสาขาที่จบ</option>
-                                        <option value="2">2 ไม่ตรงกับสาขาที่จบ</option>
+                                        <option value="ตรงกับสาขาที่จบ">1 ตรงกับสาขาที่จบ</option>
+                                        <option value="ไม่ตรงกับสาขาที่จบ">2 ไม่ตรงกับสาขาที่จบ</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label className={labelClass}>ความพึงพอใจต่องานปัจจุบัน *</label>
                                     <select name="jobSatisfaction" value={formData.jobSatisfaction} onChange={handleChange} className={inputClass} required={isWorking}>
                                         <option value="">-- เลือก --</option>
-                                        <option value="1">1 พึงพอใจ</option>
-                                        <option value="2">2 ไม่พึงพอใจ</option>
+                                        <option value="พึงพอใจ">1 พึงพอใจ</option>
+                                        <option value="ไม่พึงพอใจ">2 ไม่พึงพอใจ</option>
                                     </select>
                                 </div>
                             </div>
@@ -494,9 +416,9 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                                     <label htmlFor="furtherStudyReason" className={labelClass}>เหตุผลที่ท่านต้องการศึกษาต่อ *</label>
                                     <select id="furtherStudyReason" name="furtherStudyReason" value={formData.furtherStudyReason} onChange={handleChange} className={inputClass} required={isFurtherStudyIntention}>
                                         <option value="">-- เลือกเหตุผล --</option>
-                                        <option value="1">1 เพื่อเพิ่มพูนความรู้ความสามารถ</option>
-                                        <option value="2">2 เพื่อปรับวุฒิการศึกษา</option>
-                                        <option value="3">3 เพื่อปรับปรุงตำแหน่งหน้าที่การงาน</option>
+                                        <option value="เพื่อเพิ่มพูนความรู้ความสามารถ">1 เพื่อเพิ่มพูนความรู้ความสามารถ</option>
+                                        <option value="เพื่อปรับวุฒิการศึกษา">2 เพื่อปรับวุฒิการศึกษา</option>
+                                        <option value="เพื่อปรับปรุงตำแหน่งหน้าที่การงาน">3 เพื่อปรับปรุงตำแหน่งหน้าที่การงาน</option>
                                         <option value="4">4 อื่นๆ (โปรดระบุ)</option>
                                     </select>
                                     {isFurtherStudyReasonOther && (

@@ -8,11 +8,6 @@ import SuveryModal from '@/components/SuveryModal'
 import { Isuvery } from './Isuvery';
 import DeleteBtn from './DeleteBtn';
 
-
-// -----------------------------------------------------------------
-// 💡 INTERFACES/TYPES
-// -----------------------------------------------------------------
-
 interface SurveyListItemProps {
     suvery: Isuvery;
     onDetailClick: (suvery: Isuvery) => void;
@@ -24,9 +19,6 @@ interface SuveryListProps {
     isError: boolean;
 }
 
-// -----------------------------------------------------------------
-// --- Component: SurveyListItem (แถวในตาราง) ---
-// -----------------------------------------------------------------
 const SurveyListItem: React.FC<SurveyListItemProps> = ({ suvery, onDetailClick }) => {
 
     const formatDate = (isoString: string | undefined): string => {

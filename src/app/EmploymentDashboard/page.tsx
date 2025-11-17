@@ -1,20 +1,24 @@
-
 import SuveryList from '@/components/SuveryList';
 import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
-const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-// const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+// const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 const getsuverys = async () => {
     try {
-        const res = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/suvery`, {
-            // const res = await fetch(`${BASE_URL}/api/suvery`, {
+        // *** 2. ใช้ BASE_URL + Relative Path เพื่อให้ทำงานบน Dev ได้ ***
+        const apiUrl = `${BASE_URL}/api/suvery`;
+
+        console.log(`📡 Fetching data from: ${apiUrl}`); // Debug URL
+
+        const res = await fetch(apiUrl, {
             cache: 'no-store'
         });
 
         if (!res.ok) {
-            throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}. Response body: ${await res.text()}`);
+            const errorBody = await res.text();
+            throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}. Response body: ${errorBody}`);
         }
         return res.json();
     } catch (error) {
@@ -25,7 +29,14 @@ const getsuverys = async () => {
 
 export default async function EmploymentDashboard() {
     const suverysData = await getsuverys();
-    const suverys = suverysData.suverys;
+    let suverys = suverysData?.suverys || [];
+
+    // 💡 การแก้ไข: เรียงลำดับข้อมูลจากใหม่ไปเก่า (โดยใช้ reverse)
+    if (suverys.length > 0) {
+        // การใช้ .reverse() จะกลับลำดับของ Array ซึ่งถ้า API ดึงข้อมูลเก่ามาใหม่
+        // การ reverse() จะทำให้ข้อมูลใหม่ขึ้นไปอยู่ข้างบนสุด
+        suverys = suverys.reverse();
+    }
 
     return (
         <div className="min-h-screen bg-white/50 py-16 px-4 sm:px-6 lg:px-8">
@@ -49,7 +60,8 @@ export default async function EmploymentDashboard() {
                     <h2 className="text-3xl font-bold text-gray-900 mb-8 border-b border-violet-100 pb-4">
                         รายการข้อมูลที่ถูกบันทึก
                     </h2>
-                    {suverys.length > 0 ? (
+                    {suverys && suverys.length > 0 ? (
+                        // ส่งข้อมูลที่ถูก reverse แล้วไปยัง SuveryList
                         <SuveryList suverys={suverys} isLoading={false} isError={false} />
                     ) : (
                         <div className="p-12 text-center bg-violet-50/50 border-2 border-dashed border-violet-300 rounded-xl transition duration-500 hover:border-violet-500 shadow-inner">
