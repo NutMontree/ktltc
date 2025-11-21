@@ -1,7 +1,178 @@
 export const DataPressrelease = {
   navItems: [
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/69/00.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ นางสาววิภาวรรณ สีแดด รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา พร้อมด้วย … See more
+ `,
+      href: "/pressrelease/2568/press6811/press69",
+    },
+    {
+      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/68/00.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ นางสาววิภาวรรณ สีแดด รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา พร้อมด้วย … See more
+ `,
+      href: "/pressrelease/2568/press6811/press68",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/67/7.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press67",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/66/6.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press66",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/65/5.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press65",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/64/4.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press64",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/63/3.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press63",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/62/1.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press62",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/61/11.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press61",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/60/10.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press60",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/59/9.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press59",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/58/8.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press58",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/57/7.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press57",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/56/6.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press56",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/55/5.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press55",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/54/4.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press54",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/53/3.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press53",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/52/2.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press52",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/51/1.webp",
+      date: "19 พฤศจิกายน 2568",
+      description: ` 
+นำโดย นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร … See more
+ `,
+      href: "/pressrelease/2568/press6811/press51",
+    },
+    {
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/50/0.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -10,7 +181,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press50",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/49/0.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -19,7 +190,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press49",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/48/0.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -28,7 +199,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press48",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/47/0.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -37,7 +208,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press47",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/46/0.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -46,7 +217,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press46",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/45/0.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -55,7 +226,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press45",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/44/0.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -64,7 +235,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press44",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์ `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/43/00.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -73,7 +244,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press43",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/42/00.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -82,7 +253,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press42",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/41/00.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -91,7 +262,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press41",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 18 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/40/00.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -100,7 +271,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press40",
     },
     {
-      name: `วันที่ 16 พฤศจิกายน 2568`,
+      name: `วันที่ 17 พฤศจิกายน 2568`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/39/00.webp",
       date: "17 พฤศจิกายน 2568",
       description: ` 
