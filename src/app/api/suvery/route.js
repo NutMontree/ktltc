@@ -144,7 +144,12 @@ export async function PUT(request) {
 
         await connectDB();
 
-        const result = await Suvery.findByIdAndUpdate(id, updatedData, { new: true });
+        const result = await Suvery.findByIdAndUpdate(id,
+            updatedData,
+            {
+                new: true, // คืนค่าข้อมูลใหม่
+                runValidators: true // ✅ บังคับใช้กฎ Validation ใน Schema อีกครั้งตอนอัปเดต
+            });
 
         if (!result) {
             return NextResponse.json({ message: `Suvery with ID ${id} not found.` }, { status: 404 });

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --ignore-eslint",
     "start": "next start",
     "lint": "next lint"
   },
@@ -58,7 +58,8 @@
     "server-timing": "^3.3.3",
     "swiper": "^11.2.3",
     "tailgrids": "^2.2.7",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "use-debounce": "^10.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,83 +1,112 @@
 // src/app/suvery/edit/[id]/page.tsx
 
-import SuveryEditForm from '@/components/SuveryEditForm';
-import { Isuvery } from '@/components/Isuvery';
-import { unstable_noStore as noStore } from 'next/cache'; // 💡 ต้อง Import ตัวนี้กลับมา
-import mongoose from "mongoose";
+import SuveryEditForm from '@/components/SuveryEditForm'; // ต้องมั่นใจว่าไฟล์นี้มีอยู่จริง
+import connectDB from '@/lib/mongodb';
+import Suvery from '@/lib/models/suvery';
+import { Types } from 'mongoose';
+import Link from 'next/link';
 
-// -----------------------------------------------------------------
-// 💡 INTERFACES/TYPES (คงเดิม)
-// -----------------------------------------------------------------
+// 💡 บังคับให้เป็น Dynamic Page (ไม่ Cache)
+export const dynamic = 'force-dynamic';
 
 interface EditPageProps {
     params: {
         id: string;
     };
-    searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-// -----------------------------------------------------------------
-// 🚀 ฟังก์ชันดึงข้อมูลแบบสำรวจเดิมจาก API (ต้องเป็น async)
-// -----------------------------------------------------------------
-async function getSuveryById(id: string): Promise<Isuvery | null> {
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-        console.error("Invalid or missing ID provided.");
-        return null;
-    }
-
-    // ใช้ Path Parameter
-    const apiUrl = `/api/suvery/${id}`;
-
+// 🚀 ฟังก์ชันดึงข้อมูลจาก DB โดยตรง (เร็วกว่า fetch)
+async function getSuveryById(encodedId: string) {
     try {
-        const res = await fetch(apiUrl, {
-            cache: 'no-store', // เพื่อให้ดึงข้อมูลใหม่เสมอ
-        });
+        await connectDB();
 
-        if (!res.ok) {
-            console.error(`Failed to fetch suvery details: ${res.status} for ID: ${id}`);
+        // 1. 🔓 ถอดรหัส Base64 (เพราะ SuveryList ส่งมาแบบ encoded)
+        // ถ้า encodedId ไม่ใช่ Base64 ที่ถูกต้อง อาจจะ error ได้ เลยต้อง try-catch หรือระวังตรงนี้
+        let id = encodedId;
+        try {
+            id = atob(encodedId);
+        } catch (e) {
+            console.warn("ID might not be base64 encoded, using as is.");
+        }
+
+        // 2. ตรวจสอบความถูกต้องของ ObjectId
+        if (!Types.ObjectId.isValid(id)) {
+            console.error("Invalid ObjectId:", id);
             return null;
         }
 
-        const data = await res.json();
-        return data.suvery || null;
+        // 3. Query ข้อมูล
+        const suveryData = await Suvery.findById(id).lean();
+
+        if (!suveryData) return null;
+
+        // 4. แปลง ObjectId และ Date เป็น String เพื่อส่งให้ Client Component
+        return JSON.parse(JSON.stringify(suveryData));
+
     } catch (error) {
         console.error("Error fetching suvery details:", error);
         return null;
     }
 }
 
-// -----------------------------------------------------------------
-// 🔑 Server Component: EditSuveryPage (ต้องมี 'async' เสมอ)
-// -----------------------------------------------------------------
 export default async function EditSuveryPage({ params }: EditPageProps) {
-    // 🛑 ส่วนที่สำคัญที่สุด: บังคับให้รันในโหมด Dynamic
-    noStore();
+    // ✅ Next.js 15 Support: await params ก่อนใช้งาน
+    const { id } = await params;
 
-    // ✅ Next.js จะ Resolve params ให้เมื่อเรียกใช้ noStore()
-    const { id } = params;
-
-    // ✅ ใช้ await เพื่อรอการดึงข้อมูล
+    // ดึงข้อมูล
     const suvery = await getSuveryById(id);
 
+    // ❌ กรณีไม่พบข้อมูล
     if (!suvery) {
         return (
-            <div className="p-8 text-center bg-white min-h-[40vh] shadow-lg rounded-xl flex flex-col justify-center items-center">
-                <h2 className="text-3xl font-extrabold text-red-600 mb-2">ไม่พบข้อมูลแบบสำรวจ 🙁</h2>
-                <p className="text-gray-500">รหัสที่ท่านต้องการแก้ไข: <span className="font-mono bg-gray-100 p-1 rounded text-sm">{id || "N/A"}</span></p>
-                <a
-                    href="/EmploymentDashboard"
-                    className="mt-6 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
-                >
-                    กลับไปหน้าแสดงรายการ
-                </a>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+                <div className="p-8 text-center bg-white dark:bg-gray-800 shadow-xl rounded-2xl max-w-md w-full border border-gray-100 dark:border-gray-700">
+                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">ไม่พบข้อมูลแบบสำรวจ</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mb-6 break-all">
+                        รหัสอ้างอิง: <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-sm text-red-500">{id}</span>
+                    </p>
+                    <Link
+                        href="/EmploymentDashboard"
+                        className="inline-block w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-200"
+                    >
+                        กลับไปหน้า Dashboard
+                    </Link>
+                </div>
             </div>
         );
     }
 
+    // ✅ กรณีพบข้อมูล: แสดงฟอร์มแก้ไข
     return (
-        <div className="container mx-auto p-4 max-w-7xl">
-            <h1 className="text-4xl font-extrabold mb-8 text-violet-800 border-b pb-4">✏️ แก้ไขข้อมูลแบบสำรวจ</h1>
-            <SuveryEditForm suvery={suvery} />
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 transition-colors duration-300">
+            <div className="container mx-auto px-4 max-w-5xl">
+                <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-extrabold text-green-800 dark:text-green-400 flex items-center gap-3">
+                            <span className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </span>
+                            แก้ไขข้อมูลแบบสำรวจ
+                        </h1>
+                        <p className="mt-2 text-gray-600 dark:text-gray-400 ml-1">
+                            แก้ไขข้อมูลของ: <span className="font-semibold text-gray-900 dark:text-white">{suvery.fullName}</span> ({suvery.studentId})
+                        </p>
+                    </div>
+
+                    <Link
+                        href="/EmploymentDashboard"
+                        className="self-start md:self-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm"
+                    >
+                        ← ย้อนกลับ
+                    </Link>
+                </div>
+
+                {/* ส่งข้อมูล suvery prop เข้าไปที่ฟอร์ม */}
+                <SuveryEditForm suvery={suvery} />
+            </div>
         </div>
     );
 }
