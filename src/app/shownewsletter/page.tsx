@@ -78,8 +78,8 @@ export default function ShowNewsletter() {
             sm:grid-cols-1
             lg:grid-cols-3">
 
-          {Data.navItems.slice(0, 3).map((item) => (
-            <SwiperSlide key={item.name}>
+          {Data.navItems.slice(0, 3).map((item, index) => (
+            <SwiperSlide key={index}>
               <NextLink key={item.href} href={item.href}>
                 <div
                   className="

@@ -2,6 +2,24 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วันที่ 19 พฤศจิกายน 2568 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/74/00.webp",
+      date: "24 พฤศจิกายน 2568",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร ครู บุคลากร… See more
+ `,
+      href: "/pressrelease/2568/press6811/press74",
+    },
+    {
+      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/73/00.webp",
+      date: "24 พฤศจิกายน 2568",
+      description: ` 
+นำโดย  นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วย คณะผู้่้บริหา… See more
+ `,
+      href: "/pressrelease/2568/press6811/press73",
+    },
+    {
+      name: `วันที่ 19 พฤศจิกายน 2568 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/72/00.webp",
       date: "24 พฤศจิกายน 2568",
       description: ` 

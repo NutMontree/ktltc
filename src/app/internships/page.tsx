@@ -42,8 +42,8 @@ export default function Internships() {
                         {/*   title title title title title title title title title title title title title title title title title title */}
                         <div className="grid grid-flow-col">
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-                                {DataInternships.navItems.slice(0, 4).map((item) => (
-                                    <div key={item.name} className="hover:bg-orange-300 px-2 py-2 rounded-xl ">
+                                {DataInternships.navItems.slice(0, 4).map((item, index) => (
+                                    <div key={index} className="hover:bg-orange-300 px-2 py-2 rounded-xl ">
                                         <Link key={item.href} href={item.href}>
                                             <div className="
                                     mb-4 relative shadow-lg rounded-xl 
