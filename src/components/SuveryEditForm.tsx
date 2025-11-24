@@ -333,9 +333,6 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
     <div className="font-inter mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <form onSubmit={handleSubmit} className="">
         {/* Header */}
-        <h1 className="mb-10 flex items-center justify-center gap-3 text-center text-4xl font-extrabold text-green-800 dark:text-green-400">
-          <span className="hidden sm:inline">📝</span> แก้ไขข้อมูลแบบสำรวจ
-        </h1>
 
         {/* 1. ข้อมูลส่วนตัว */}
         <FormSection title="1. ข้อมูลส่วนตัว" icon={User}>
