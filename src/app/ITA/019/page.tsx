@@ -1,5 +1,5 @@
 import { LinkPreview } from '@/components/ui/link-preview'
-import { Image } from "@nextui-org/react";
+import Image from 'next/image'
 import React from 'react'
 
 export default function page() {
@@ -14,8 +14,9 @@ export default function page() {
                 <p className='text-xl'>File PDF</p>
                 <div> <LinkPreview url='/images/ita/pdf/ประกาศจัดทำแผน_อุปกรณ์การเรียนของนักเรีย.pdf'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. ประกาศจัดทำแผน อุปกรณ์การเรียนของนักเรีย</p> </LinkPreview> </div>
                 <p className='text-xl pt-4'>Link Wab Page</p>
-                <div> <LinkPreview url='https://www.gprocurement.go.th/new_index.html'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>2. เว็บไซต์ pgrocurement ระบบการจัดซื้อจัดจ้างภาครัฐ</p> </LinkPreview> <Image className='pt-6' src='/images/ita/pdf/o19.jpg' alt={"o19"} /> </div>
-            </div>
+                <div> <LinkPreview url='https://www.gprocurement.go.th/new_index.html'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>2. เว็บไซต์ pgrocurement ระบบการจัดซื้อจัดจ้างภาครัฐ</p> </LinkPreview>
+                </div>
+                <Image className='pt-6' src='/images/ita/pdf/o19.jpg' alt={"o19"} width={500} height={500} /> </div>
         </>
     )
 }

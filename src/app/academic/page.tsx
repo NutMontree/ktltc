@@ -1,6 +1,6 @@
 "use client"; // top to the file
 
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 import Academicing from "./Academic";
 import DVEDS from "./DVEDS";
 import MAEW from "./MAEW";
@@ -12,10 +12,8 @@ export default function page() {
   return (
     <>
       <div>
-        <h1 className="flex justify-center text-xl">
-          ฝ่ายวิชาการ
-        </h1>
-        <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
+        <h1 className="flex justify-center text-xl">ฝ่ายวิชาการ</h1>
+        <h1 className="flex justify-center pb-8 text-xl text-[#DAA520]">
           Academic Affairs
         </h1>
       </div>
@@ -29,7 +27,11 @@ export default function page() {
           >
             <Academicing />
           </AccordionItem>
-          <AccordionItem key="2" aria-label="2" title="งานอาชีวศึกษาระบบทวิภาคี">
+          <AccordionItem
+            key="2"
+            aria-label="2"
+            title="งานอาชีวศึกษาระบบทวิภาคี"
+          >
             <DVEDS />
           </AccordionItem>
           <AccordionItem key="3" aria-label="3" title="งานวัดผลและประเมินผล">
@@ -38,10 +40,18 @@ export default function page() {
           <AccordionItem key="4" aria-label="4" title="งานสื่อการเรียนการสอน">
             <TMW />
           </AccordionItem>
-          <AccordionItem key="5" aria-label="5" title="งานพัฒนาหลักสูตรการเรียนการสอน">
+          <AccordionItem
+            key="5"
+            aria-label="5"
+            title="งานพัฒนาหลักสูตรการเรียนการสอน"
+          >
             <CDW />
           </AccordionItem>
-          <AccordionItem key="6" aria-label="6" title="งานวิทยบริการและห้องสมุด">
+          <AccordionItem
+            key="6"
+            aria-label="6"
+            title="งานวิทยบริการและห้องสมุด"
+          >
             <ARAL />
           </AccordionItem>
         </Accordion>

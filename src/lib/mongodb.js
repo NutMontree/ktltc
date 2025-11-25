@@ -1,21 +1,63 @@
-import mongoose from "mongoose";
+// my-projext/src/lib/mongodb.js
+
+import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+// ตรวจสอบ MONGODB_URI
 if (!MONGODB_URI) {
     throw new Error("⚠️ กรุณาตั้งค่า MONGODB_URI ในไฟล์ .env.local");
 }
 
-let isConnected = false; // ป้องกันการเชื่อมต่อซ้ำ
+// -----------------------------------------------------
+// **ส่วนที่แก้ไข/อัปเดต**
+// ใช้วิธีการแคชการเชื่อมต่อใน Global Scope เพื่อป้องกันการเชื่อมต่อซ้ำ
+// -----------------------------------------------------
 
-export const connectMongoDB = async () => {
-    if (isConnected) return;
+// ประกาศตัวแปร cached ใน Global Scope เพื่อให้ Next.js HMR จัดการการแคชอย่างถูกต้อง
+let cached = global.mongoose;
 
-    try {
-        const db = await mongoose.connect(MONGODB_URI);
-        isConnected = db.connections[0].readyState;
-        console.log("✅ MongoDB connected");
-    } catch (err) {
-        console.error("❌ MongoDB connection error:", err);
+if (!cached) {
+    // หากยังไม่มีการแคช ให้กำหนดค่าเริ่มต้น
+    cached = global.mongoose = { conn: null, promise: null };
+}
+
+// ฟังก์ชันหลักสำหรับเชื่อมต่อฐานข้อมูล
+async function connectDB() {
+    // 1. ถ้ามีการเชื่อมต่ออยู่แล้ว ให้คืนค่าการเชื่อมต่อเดิมที่ถูกแคช
+    if (cached.conn) {
+        console.log("✅ MongoDB (Cached) connected");
+        return cached.conn;
     }
-};
+
+    // 2. ถ้ายังไม่มี Promise ในการเชื่อมต่อ ให้สร้าง Promise ใหม่
+    if (!cached.promise) {
+        const opts = {
+            bufferCommands: false, // ปิดการบัฟเฟอร์คำสั่ง
+            // ไม่จำเป็นต้องกำหนด useNewUrlParser หรือ useUnifiedTopology อีกต่อไปใน Mongoose 6+
+        };
+
+        cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+            console.log("✅ MongoDB connected (New connection)");
+            return mongoose;
+        }).catch((err) => {
+            console.error("❌ MongoDB connection error:", err);
+            // ถ้าเชื่อมต่อล้มเหลว ให้รีเซ็ต promise เพื่อให้สามารถลองเชื่อมต่อใหม่ได้
+            cached.promise = null;
+            throw err;
+        });
+    }
+
+    // 3. รอให้ Promise สำเร็จ และเก็บผลลัพธ์ไว้ใน cached.conn
+    try {
+        cached.conn = await cached.promise;
+    } catch (e) {
+        // ข้อผิดพลาดถูกจัดการและ throw ไปแล้วใน .catch() ด้านบน
+        throw e;
+    }
+
+    return cached.conn;
+}
+
+// 💡 เนื่องจากโปรเจกต์เดิมของคุณใช้ connectDB และ export default ผมจึงคงไว้ตามเดิม
+export default connectDB;

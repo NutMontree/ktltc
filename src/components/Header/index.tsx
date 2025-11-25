@@ -1,6 +1,6 @@
 "use client";
 import { useTheme } from "next-themes";
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import menuData from "./menuData";
 import NavbarModal from "../navbar-modal";
 
 const Header = () => {
-
   const pathUrl = usePathname();
   // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -44,31 +43,30 @@ const Header = () => {
 
   return (
     <>
-
       <header
-        className={`ud-header left-0 top-0 z-40 flex w-full items-center ${sticky
-          ? "shadow-nav fixed z-[999] border-b border-stroke bg-white/80 backdrop-blur-[5px] dark:border-dark-3/20 dark:bg-dark/10"
-          : "absolute bg-transparen"
-          }`}
+        className={`ud-header left-0 top-0 z-40 flex w-full items-center ${
+          sticky
+            ? "shadow-nav fixed z-[999] border-b border-stroke bg-white/80 backdrop-blur-[5px] dark:border-dark-3/20 dark:bg-dark/10"
+            : "bg-transparen absolute"
+        }`}
       >
-
         <div className="container">
           <div className="relative -mx-4 flex items-center justify-between">
             <div className="w-24 max-w-full px-4">
               <Link
                 href="https://ktltc.vercel.app/"
-                className={`navbar-logo block 
-                   ${sticky ? "xs:py-8 md:py-8 lg:py-4" : "py-14 md:py-10"
-                  } `}
+                className={`navbar-logo block ${
+                  sticky ? "xs:py-8 md:py-8 lg:py-4" : "py-14 md:py-10"
+                } `}
               >
                 {pathUrl !== "/" ? (
                   <>
                     <Image
                       src={`/images/logo.webp`}
                       alt="logo"
-                      width='240'
-                      height='30'
-                      className="header-logo w-full hidden lg:block"
+                      width="240"
+                      height="30"
+                      className="header-logo hidden w-full lg:block"
                     />
                     {/* <Image
                       src={`/images/logo.webp`}
@@ -81,20 +79,19 @@ const Header = () => {
                 ) : (
                   <>
                     <Image
-                      src={`${sticky
-                        ? "/images/logo.webp"
-                        : "/images/logo.webp"
-                        }`}
+                      src={`${
+                        sticky ? "/images/logo.webp" : "/images/logo.webp"
+                      }`}
                       alt="logo"
-                      width='240'
-                      height='30'
-                      className="header-logo w-full dark:hidden hidden"
+                      width="240"
+                      height="30"
+                      className="header-logo hidden w-full dark:hidden"
                     />
                     <Image
                       src={"/images/logo.webp"}
                       alt="logo"
-                      width='240'
-                      height='30'
+                      width="240"
+                      height="30"
                       className="header-logo hidden w-full xs:hidden lg:block"
                     />
                   </>
@@ -108,58 +105,66 @@ const Header = () => {
               onClick={navbarToggleHandler}
               id="navbarToggler"
               aria-label="Mobile Menu"
-              className="absolute px-6  rounded-lg   ring-primary lg:hidden "
+              className="absolute rounded-lg px-6 ring-primary lg:hidden"
             >
               <span
-                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? " top-[7px] rotate-45" : " "
-                  } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
+                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${
+                  navbarOpen ? "top-[7px] rotate-45" : " "
+                } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${
+                  pathUrl === "/" && sticky
                     ? "bg-dark dark:bg-white"
                     : "bg-dark dark:bg-white"
-                  }`}
+                }`}
               />
               <span
-                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? "opacity-0 " : " "
-                  } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
+                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${
+                  navbarOpen ? "opacity-0" : " "
+                } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${
+                  pathUrl === "/" && sticky
                     ? "bg-dark dark:bg-white"
                     : "bg-dark dark:bg-white"
-                  }`}
+                }`}
               />
               <span
-                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${navbarOpen ? " top-[-8px] -rotate-45" : " "
-                  } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${pathUrl === "/" && sticky
+                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${
+                  navbarOpen ? "top-[-8px] -rotate-45" : " "
+                } ${pathUrl !== "/" && "!bg-dark dark:!bg-white"} ${
+                  pathUrl === "/" && sticky
                     ? "bg-dark dark:bg-white"
                     : "bg-dark dark:bg-white"
-                  }`}
+                }`}
               />
             </button>
             <div className="hidden lg:block">
               <Link
                 href="https://ktltc.vercel.app/"
-                className="font-bold text-2xl text-inherit">
+                className="text-2xl font-bold text-inherit"
+              >
                 KTLTC
               </Link>
-
             </div>
             <div className="flex w-full justify-center">
               <div>
                 <nav
                   id="navbarCollapse"
-                  className={` navbar absolute right-0  w-full rounded bg-white px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-dark-2 lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 lg:dark:bg-transparent ${navbarOpen
-                    ? "visibility top-full opacity-100 shadow-2xl"
-                    : "invisible top-[120%] opacity-0"
-                    }`}
+                  className={`navbar absolute right-0 w-full rounded bg-white px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-dark-2 lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 lg:dark:bg-transparent ${
+                    navbarOpen
+                      ? "visibility top-full opacity-100 shadow-2xl"
+                      : "invisible top-[120%] opacity-0"
+                  }`}
                 >
-                  <ul className="block lg:ml-8 lg:flex lg:gap-x-4 xl:ml-8 xl:gap-x-8 ">
+                  <ul className="block lg:ml-8 lg:flex lg:gap-x-4 xl:ml-8 xl:gap-x-8">
                     {menuData.map((menuItem, index) =>
                       menuItem.path ? (
-                        <li key={index} className="group relative ">
+                        <li key={index} className="group relative">
                           {pathUrl !== "/" ? (
                             <Link
                               onClick={navbarToggleHandler}
                               scroll={false}
                               href={menuItem.path}
-                              className={`ud-menu-scroll flex py-2 text-xs xl:text-base text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary lg:inline-flex lg:px-0 lg:py-6 ${pathUrl === menuItem?.path && "text-primary"
-                                }`}
+                              className={`ud-menu-scroll flex py-2 text-xs text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary lg:inline-flex lg:px-0 lg:py-6 xl:text-base ${
+                                pathUrl === menuItem?.path && "text-primary"
+                              }`}
                             >
                               {menuItem.title}
                             </Link>
@@ -167,13 +172,15 @@ const Header = () => {
                             <Link
                               scroll={false}
                               href={menuItem.path}
-                              className={`ud-menu-scroll flex py-2 text-xs xl:text-base lg:inline-flex lg:px-0 lg:py-6 ${sticky
-                                ? "text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary "
-                                : "  dark:text-white "
-                                } ${pathUrl === menuItem?.path &&
+                              className={`ud-menu-scroll flex py-2 text-xs lg:inline-flex lg:px-0 lg:py-6 xl:text-base ${
+                                sticky
+                                  ? "text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary"
+                                  : "dark:text-white"
+                              } ${
+                                pathUrl === menuItem?.path &&
                                 sticky &&
-                                "!text-primary "
-                                }`}
+                                "!text-primary"
+                              }`}
                             >
                               {menuItem.title}
                             </Link>
@@ -184,11 +191,11 @@ const Header = () => {
                           {pathUrl !== "/" ? (
                             <button
                               onClick={() => handleSubmenu(index)}
-                              className={` ud-menu-scroll flex items-center justify-between py-[10px] text-xs xl:text-base text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary lg:inline-flex lg:px-0 lg:py-6`}
+                              className={`ud-menu-scroll flex items-center justify-between py-[10px] text-xs text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary lg:inline-flex lg:px-0 lg:py-6 xl:text-base`}
                             >
                               {menuItem.title}
 
-                              <span className="pl-2 ">
+                              <span className="pl-2">
                                 <svg
                                   className={`duration-300 lg:group-hover:rotate-180`}
                                   width="16"
@@ -207,10 +214,11 @@ const Header = () => {
                           ) : (
                             <button
                               onClick={() => handleSubmenu(index)}
-                              className={`ud-menu-scroll flex items-center justify-between py-2 text-xs xl:text-base lg:inline-flex lg:px-0 lg:py-6  ${sticky
-                                ? "text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary "
-                                : " "
-                                }`}
+                              className={`ud-menu-scroll flex items-center justify-between py-2 text-xs lg:inline-flex lg:px-0 lg:py-6 xl:text-base ${
+                                sticky
+                                  ? "text-dark group-hover:text-primary dark:text-white dark:group-hover:text-primary"
+                                  : " "
+                              }`}
                             >
                               {menuItem.title}
 
@@ -233,17 +241,19 @@ const Header = () => {
                           )}
 
                           <div
-                            className={`submenu relative left-0 top-full w-[300px] rounded-sm bg-white pl-6 transition-[top] duration-300 group-hover:opacity-100 dark:bg-dark-2 lg:invisible lg:absolute lg:top-[110%] lg:block lg:opacity-0 lg:shadow-2xl lg:group-hover:visible lg:group-hover:top-full ${openIndex === index ? "!-left-[25px]" : "hidden"
-                              }`}
+                            className={`submenu relative left-0 top-full w-[300px] rounded-sm bg-white pl-6 transition-[top] duration-300 group-hover:opacity-100 dark:bg-dark-2 lg:invisible lg:absolute lg:top-[110%] lg:block lg:opacity-0 lg:shadow-2xl lg:group-hover:visible lg:group-hover:top-full ${
+                              openIndex === index ? "!-left-[25px]" : "hidden"
+                            }`}
                           >
                             {menuItem?.submenu?.map((submenuItem: any, i) => (
                               <Link
                                 href={submenuItem.path}
                                 key={i}
-                                className={`block rounded px-4 py-[8px] text-sm  ${pathUrl === submenuItem.path
-                                  ? "text-primary"
-                                  : "text-body-color hover:text-primary dark:text-dark-6 dark:hover:text-primary "
-                                  }`}
+                                className={`block rounded px-4 py-[8px] text-sm ${
+                                  pathUrl === submenuItem.path
+                                    ? "text-primary"
+                                    : "text-body-color hover:text-primary dark:text-dark-6 dark:hover:text-primary"
+                                }`}
                               >
                                 {submenuItem.title}
                               </Link>
@@ -252,28 +262,32 @@ const Header = () => {
                         </li>
                       ),
                     )}
-
                   </ul>
                 </nav>
               </div>
-              <div className='flex justify-center'>
-                <Link href='/'>
-                  <div className='lg:hidden'>
-                    <p className='text-xl font-bold text-center'>KTLTC</p>
-                    <p className='text-xs'>วิทยาลัยเทคนิคกันทรลักษ์</p>
+              <div className="flex justify-center">
+                <Link href="/">
+                  <div className="lg:hidden">
+                    <p className="text-center text-xl font-bold">KTLTC</p>
+                    <p className="text-xs">วิทยาลัยเทคนิคกันทรลักษ์</p>
                   </div>
                 </Link>
               </div>
             </div>
-            <div>
-            </div>
+            <div></div>
             <div className="">
               <Link
                 aria-label="social link"
                 href="https://www.facebook.com/profile.php?id=100057326985699"
                 target="_blank"
               >
-                <Image src='/images/facebook.webp' alt={"facebook_logo"} width="100" height="100" className="pr-4 w-14"></Image>
+                <Image
+                  src="/images/facebook.webp"
+                  alt={"facebook_logo"}
+                  width="100"
+                  height="100"
+                  className="w-14 pr-4"
+                ></Image>
               </Link>
             </div>
             <div>
@@ -281,7 +295,7 @@ const Header = () => {
               <button
                 aria-label="theme toggler"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="flex h-8 w-8 items-center justify-center text-body-color duration-300 dark:text-white pr-6"
+                className="flex h-8 w-8 items-center justify-center pr-6 text-body-color duration-300 dark:text-white"
               >
                 <span>
                   <svg
@@ -293,8 +307,9 @@ const Header = () => {
 
                   <svg
                     viewBox="0 0 23 23"
-                    className={`h-[30px] w-[30px] fill-current text-dark dark:hidden ${!sticky && pathUrl === "/" && " "
-                      }`}
+                    className={`h-[30px] w-[30px] fill-current text-dark dark:hidden ${
+                      !sticky && pathUrl === "/" && " "
+                    }`}
                   >
                     <g clipPath="url(#clip0_40_125)">
                       <path d="M16.6111 15.855C17.591 15.1394 18.3151 14.1979 18.7723 13.1623C16.4824 13.4065 14.1342 12.4631 12.6795 10.4711C11.2248 8.47905 11.0409 5.95516 11.9705 3.84818C10.8449 3.9685 9.72768 4.37162 8.74781 5.08719C5.7759 7.25747 5.12529 11.4308 7.29558 14.4028C9.46586 17.3747 13.6392 18.0253 16.6111 15.855Z" />
@@ -303,11 +318,9 @@ const Header = () => {
                 </span>
               </button>
             </div>
-
-
           </div>
         </div>
-      </header >
+      </header>
     </>
   );
 };

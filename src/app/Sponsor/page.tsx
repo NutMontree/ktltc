@@ -10,7 +10,7 @@ import {
   Button,
   useDisclosure,
   Avatar,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Link from "next/link";
 
 export default function Sponsor() {
@@ -20,11 +20,11 @@ export default function Sponsor() {
     <>
       <div className="py-72">
         <div>
-          <h1 className="text-xl text-[#DAA520] text-center">No Sponsors</h1>
+          <h1 className="text-center text-xl text-[#DAA520]">No Sponsors</h1>
           <div className="text-center" text-center>
             Will You Be My Sponsor
           </div>
-          <div className=" flex justify-center py-8 gap-2">
+          <div className="flex justify-center gap-2 py-8">
             <div>
               <Button
                 onPress={onOpen}
@@ -51,7 +51,7 @@ export default function Sponsor() {
                       </ModalHeader>
                       <ModalBody>
                         <div>สามารถติดต่อขอเป็น Sponsor ได้ที่</div>
-                        <div className=" justify-center flex">
+                        <div className="flex justify-center">
                           <Link
                             className="text-sky-500"
                             href="https://www.facebook.com/profile.php?id=61553558543619&locale=hi_IN"
@@ -59,15 +59,15 @@ export default function Sponsor() {
                           >
                             <Avatar
                               src="/images/admin1.webp"
-                              className="w-20 h-20 text-large"
+                              className="h-20 w-20 text-large"
                             />
                           </Link>
                         </div>
 
-                        <div className="flex gap-2 justify-center">
+                        <div className="flex justify-center gap-2">
                           <div>All M Min </div>
                           <Link
-                            className="hover:text-sky-700 text-sky-500 "
+                            className="text-sky-500 hover:text-sky-700"
                             href="https://www.facebook.com/messages/t/61553558543619?locale=hi_IN"
                             target="_blank"
                           >
@@ -77,7 +77,7 @@ export default function Sponsor() {
 
                         <div className="flex justify-center">
                           <iframe
-                            className=" h-[250px] w-[142px] "
+                            className="h-[250px] w-[142px]"
                             src="/images/ปก/5.gif"
                           ></iframe>
                         </div>
@@ -86,7 +86,6 @@ export default function Sponsor() {
                           <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fall.m.min.2024&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true&appId=952832906928077" width="340" height="500"
                             scrolling="no" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
                         </div> */}
-
                       </ModalBody>
                       <ModalFooter>
                         <Button

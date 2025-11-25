@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { Image, } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 import { motion } from "framer-motion";
 import { LinkPreview } from "./ui/link-preview";
 
@@ -18,15 +18,31 @@ export default function BackgroundBeamsWithCollisionDemo() {
             <GridItem
               area="md:[grid-area:1/1/2/13] flex items-center justify-center"
               title={<div className="pt-6">๒๔ ตุลาคม ๒๕๖๘</div>}
-              description={<div className="pt-2 pb-6">
-                สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ<br />
-                พระบรมราชชนนีพันปีหลวง เสด็จสวรรคต<br />
-                ธ สถิตในดวงใจไทยนิรันดร์<br />
-                ด้วยเกล้าด้วยกระหม่อมขอเดชะ ข้าพระพุทธเจ้า<br />
-                คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา <br />
-                วิทยาลัยเทคนิคกันทรลักษ์
-              </div>}
-              image={<><Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/63/00.webp"} alt={""}></Image></>}
+              description={
+                <div className="pb-6 pt-2">
+                  สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ
+                  <br />
+                  พระบรมราชชนนีพันปีหลวง เสด็จสวรรคต
+                  <br />
+                  ธ สถิตในดวงใจไทยนิรันดร์
+                  <br />
+                  ด้วยเกล้าด้วยกระหม่อมขอเดชะ ข้าพระพุทธเจ้า
+                  <br />
+                  คณะผู้บริหาร ครู บุคลากรทางการศึกษา เเละนักเรียน นักศึกษา{" "}
+                  <br />
+                  วิทยาลัยเทคนิคกันทรลักษ์
+                </div>
+              }
+              image={
+                <>
+                  <Image
+                    className=""
+                    isBlurred
+                    src={"/63/00.webp"}
+                    alt={""}
+                  ></Image>
+                </>
+              }
             />
           </ul>
         </div>
@@ -45,15 +61,22 @@ export default function BackgroundBeamsWithCollisionDemo() {
 
         <GridItem
           area="md:[grid-area:2/7/2/13] flex items-center justify-center"
-          image={<>
-
-            <LinkPreview
-              url="https://ktltc.vercel.app/pressrelease/2568/press6810/press77">
-              <Image className="" isBlurred src={"/images/ข่าวประชาสัมพันธ์/2568/ตุลาคม/77/00.webp"} alt={""}></Image>.
-            </LinkPreview>
-          </>} title={""} description={undefined}
+          image={
+            <>
+              <LinkPreview url="https://ktltcv2.vercel.app/pressrelease/2568/press6810/press77">
+                <Image
+                  className=""
+                  isBlurred
+                  src={"/77/00.webp"}
+                  alt={""}
+                ></Image>
+                .
+              </LinkPreview>
+            </>
+          }
+          title={""}
+          description={undefined}
         />
-
       </motion.div>
     </>
   );
@@ -68,8 +91,8 @@ interface GridItemProps {
 
 const GridItem = ({ area, image, title, description }: GridItemProps) => {
   return (
-    <li className={`  ${area}`}>
-      <div className="relative h-full rounded-2xl p-2 md:rounded-3xl ">
+    <li className={` ${area}`}>
+      <div className="relative h-full rounded-2xl p-2 md:rounded-3xl">
         <GlowingEffect
           spread={40}
           glow={true}
@@ -82,10 +105,10 @@ const GridItem = ({ area, image, title, description }: GridItemProps) => {
             <div>{image}</div>
 
             <div className="space-y-3 text-center">
-              <h3 className="-tracking-4 pt-0.5 font-sans text-xl/[1.375rem] font-semibold text-balance text-black md:text-2xl/[1.875rem] dark:text-white">
+              <h3 className="-tracking-4 text-balance pt-0.5 font-sans text-xl/[1.375rem] font-semibold text-black dark:text-white md:text-2xl/[1.875rem]">
                 {title}
               </h3>
-              <h2 className="font-sans text-sm/[1.125rem] text-black md:text-base/[1.375rem] dark:text-neutral-400 [&_b]:md:font-semibold [&_strong]:md:font-semibold">
+              <h2 className="font-sans text-sm/[1.125rem] text-black dark:text-neutral-400 md:text-base/[1.375rem] [&_b]:md:font-semibold [&_strong]:md:font-semibold">
                 {description}
               </h2>
             </div>

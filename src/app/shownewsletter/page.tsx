@@ -13,7 +13,7 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
 import NextLink from "next/link";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/image";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
@@ -62,62 +62,41 @@ export default function ShowNewsletter() {
         <div className="grid grid-flow-col py-4">
           <div className="justify-items-start">
             <div className="grid grid-flow-col">
-              <div className="bg-red-500 w-2" />
+              <div className="w-2 bg-red-500" />
               <div className="pl-4">
                 <h1 className="text-xxl font-bold">จดหมายข่าว</h1>
                 <h1 className="text-xxl text-[#DAA520]">Newsletter</h1>
               </div>
             </div>
           </div>
+        </div>
 
-        </div >
-
-        <div className="py-3             
-            grid gap-2
-            grid-cols-1
-            sm:grid-cols-1
-            lg:grid-cols-3">
-
-          {Data.navItems.slice(0, 3).map((item) => (
-            <SwiperSlide key={item.name}>
+        <div className="grid grid-cols-1 gap-2 py-3 sm:grid-cols-1 lg:grid-cols-3">
+          {Data.navItems.slice(0, 3).map((item, index) => (
+            <SwiperSlide key={index}>
               <NextLink key={item.href} href={item.href}>
-                <div
-                  className="
-                mb-6 relative shadow-lg rounded-xl 
-                h-[500px]
-                xs:h-[500px] 
-                sm:h-[750px]
-                lg:h-[450px]
-                xl:h-[600px]
-                lg:w-[full] overflow-hidden 
-                "
-                >
+                <div className="relative mb-6 h-[500px] overflow-hidden rounded-xl shadow-lg xs:h-[500px] sm:h-[750px] lg:h-[450px] lg:w-[full] xl:h-[600px]">
                   <div
-                    className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500"
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat duration-500 hover:scale-110"
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
                   />
                 </div>
                 <div className=" ">
-                  <h1
-                    className="
-                              text-[14px] md:text-[20px] sm:text-sm md:text-base 
-                            text-sky-600  
-                  "
-                  >
+                  <h1 className="text-[14px] text-sky-600 sm:text-sm md:text-[20px] md:text-base">
                     {item.name}
                   </h1>
                   <div>
                     <div className="text-sm">{item.description}</div>
                     <div className="flex gap-1">
-                      <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
-                      <div
-                        className="text-xs text-slate-500
-                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
-                              mb-10 pt-1 md:pt-0
-                              "
-                      >
+                      <Image
+                        src="/images/icons8-calendar.gif"
+                        alt="logo-youtube"
+                        width={20}
+                        height={20}
+                      />
+                      <div className="mb-10 pt-1 text-[12px] text-xs text-slate-500 sm:text-sm md:pt-0 md:text-[14px] md:text-base">
                         {item.date}
                       </div>
                     </div>

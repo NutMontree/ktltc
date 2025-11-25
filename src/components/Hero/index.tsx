@@ -1,11 +1,10 @@
 "use client";
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import Link from "next/link";
 
 const Hero = () => {
   return (
     <>
-
       <section
         id="home"
         className="relative overflow-hidden bg-primary pt-[120px] md:pt-[130px] lg:pt-[160px]"

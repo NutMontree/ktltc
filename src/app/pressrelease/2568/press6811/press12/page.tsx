@@ -1,83 +1,206 @@
 "use client"; // top to the file
 import React from "react";
 import Link from "next/link";
-import { DataDate, DataPressrelease, Description, ImageItem, } from "./data";
+import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
 import { Image } from "@heroui/react";
 import { FootTitle } from "@/components/FootTitle";
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb } from 'antd';
+import { HomeOutlined, UserOutlined } from "@ant-design/icons";
+import { Breadcrumb } from "antd";
 import { TageLink } from "./data";
 import { motion } from "motion/react";
 
 const TageFucntion = () => {
   return (
-    <div className="p-6 md:p-8 bg-white shadow-xl rounded-xl border border-gray-100 transition-transform duration-300 hover:shadow-2xl hover:scale-[1.01]"> <div className="flex items-center mb-4 border-b pb-3 border-sky-100"> <svg className="w-8 h-8 text-sky-600 mr-3 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg> <p className="text-xl font-bold text-sky-800"> <span className="bg-sky-100 px-2 py-1 rounded-md"> ดาวน์โหลดเอกสาร PDF </span> </p> </div>
-      <div className="space-y-4"> <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-sky-50 rounded-lg transition duration-200 hover:bg-sky-100">
-        <div className="flex-1 min-w-0 mb-3 md:mb-0">
-          <p className="text-base text-gray-500 truncate">ชื่อไฟล์:</p>
-          <p className="text-lg font-semibold text-sky-700">
-            รายงานผลการประกันคุณภาพภายนอกด้านการอาชีวศึกษา สมศ<br />
-          </p>
-        </div>
-        <Link
-          href="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
-          className="inline-flex items-center justify-center px-5 py-2 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-300 transition duration-150 transform hover:scale-105" target="_blank" download >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" ></path> </svg> ดาวน์โหลด PDF
-        </Link>
+    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-xl transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl md:p-8">
+      {" "}
+      <div className="mb-4 flex items-center border-b border-sky-100 pb-3">
+        {" "}
+        <svg
+          className="mr-3 h-8 w-8 animate-bounce text-sky-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {" "}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+          ></path>{" "}
+        </svg>{" "}
+        <p className="text-xl font-bold text-sky-800">
+          {" "}
+          <span className="rounded-md bg-sky-100 px-2 py-1">
+            {" "}
+            ดาวน์โหลดเอกสาร PDF{" "}
+          </span>{" "}
+        </p>{" "}
       </div>
+      <div className="space-y-4">
+        {" "}
+        <div className="flex flex-col justify-between rounded-lg bg-sky-50 p-4 transition duration-200 hover:bg-sky-100 md:flex-row md:items-center">
+          <div className="mb-3 min-w-0 flex-1 md:mb-0">
+            <p className="truncate text-base text-gray-500">ชื่อไฟล์:</p>
+            <p className="text-lg font-semibold text-sky-700">
+              รายงานผลการประกันคุณภาพภายนอกด้านการอาชีวศึกษา สมศ
+              <br />
+            </p>
+          </div>
+          <Link
+            href="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
+            className="inline-flex transform items-center justify-center rounded-full border border-transparent bg-sky-500 px-5 py-2 text-base font-medium text-white shadow-lg transition duration-150 hover:scale-105 hover:bg-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-300"
+            target="_blank"
+            download
+          >
+            <svg
+              className="mr-2 h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              ></path>{" "}
+            </svg>{" "}
+            ดาวน์โหลด PDF
+          </Link>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const ImageFunction = () => {
   return (
     <div>
       <div className="flex justify-center">
-        <div className="  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
-          {ImageItem.map((item) => item ? (<div key={item.imgs}><div className="scale-95 hover:scale-100 transition duration-500 rounded-full"><Image isBlurred src={item.imgs} alt={""}></Image></div></div>) : null)}
+        <div className="grid-cols-1 justify-center justify-items-center pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {ImageItem.map((item) =>
+            item ? (
+              <div key={item.imgs}>
+                <div className="scale-95 rounded-full transition duration-500 hover:scale-100">
+                  <Image isBlurred src={item.imgs} alt={""}></Image>
+                </div>
+              </div>
+            ) : null,
+          )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default function Pressrelease() {
   return (
     <>
-      <Breadcrumb items={[{ href: '/', title: <HomeOutlined />, className: 'dark:text-white dark:hover:text-white' }, { href: '/pressrelease/2568/press6809', className: 'dark:text-white dark:hover:text-white', title: (<> <UserOutlined /> <span>Application List</span> </>), }, { title: 'Application', className: 'dark:text-gray-400' },]} />
-      <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80"><div className="absolute top-0 h-32 w-1 bg-gradient-to-b from-transparent via-blue-500 to-transparent" /></div>
-      <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80"> <div className="absolute h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" /> </div>
+      <Breadcrumb
+        items={[
+          {
+            href: "/",
+            title: <HomeOutlined />,
+            className: "dark:text-white dark:hover:text-white",
+          },
+          {
+            href: "/pressrelease/2568/press6809",
+            className: "dark:text-white dark:hover:text-white",
+            title: (
+              <>
+                {" "}
+                <UserOutlined /> <span>Application List</span>{" "}
+              </>
+            ),
+          },
+          { title: "Application", className: "dark:text-gray-400" },
+        ]}
+      />
+      <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
+        <div className="absolute top-0 h-32 w-1 bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
+      </div>
+      <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
+        {" "}
+        <div className="absolute h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" />{" "}
+      </div>
       <div className="px-4 py-10 md:py-20">
-        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
-          {""
-            .split(" ")
-            .map((word, index) => (
-              <motion.span key={index} initial={{ opacity: 0, filter: "blur(4px)", y: 10 }} animate={{ opacity: 1, filter: "blur(0px)", y: 0 }} transition={{ duration: 0.3, delay: index * 0.1, ease: "easeInOut", }} className="mr-2 inline-block" >
-                {word}
-                {DataPressrelease.Item.map((item) => (<div key={item.title}>{item.title}</div>))}
-              </motion.span>
-            ))}
+        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 dark:text-slate-300 md:text-4xl lg:text-7xl">
+          {"".split(" ").map((word, index) => (
+            <motion.span
+              key={index}
+              initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              transition={{
+                duration: 0.3,
+                delay: index * 0.1,
+                ease: "easeInOut",
+              }}
+              className="mr-2 inline-block"
+            >
+              {word}
+              {DataPressrelease.Item.map((item) => (
+                <div key={item.title}>{item.title}</div>
+              ))}
+            </motion.span>
+          ))}
         </h1>
-        <motion.p initial={{ opacity: 0, }} animate={{ opacity: 1, }} transition={{ duration: 0.2, delay: 0.4, }} className="relative z-10 mx-auto py-6 font-normal text-neutral-600 dark:text-neutral-400">
-          <div className='grid gap-2'>
-            {Description.map((item) => (<div key={item?.description ?? "undefined"}> {item?.description && <div >{item.description}</div>} </div>))}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2, delay: 0.4 }}
+          className="relative z-10 mx-auto py-6 font-normal text-neutral-600 dark:text-neutral-400"
+        >
+          <div className="grid gap-2">
+            {Description.map((item) => (
+              <div key={item?.description ?? "undefined"}>
+                {" "}
+                {item?.description && <div>{item.description}</div>}{" "}
+              </div>
+            ))}
           </div>
-        </motion.p>
-        <motion.div initial={{ opacity: 0, y: 10, }} animate={{ opacity: 1, y: 0, }} transition={{ duration: 0.2, delay: 0.6, }}>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, delay: 0.6 }}
+        >
           {TageLink.map((item) => (
             <Link key={item.href} href={item.href} target="_blank">
-              <div className="text-sky-500 hover:text-sky-600 dark:text-sky-400 hover:dark:text-sky-600">{item.tage}</div>
+              <div className="text-sky-500 hover:text-sky-600 dark:text-sky-400 hover:dark:text-sky-600">
+                {item.tage}
+              </div>
             </Link>
           ))}
           <TageFucntion />
           <br />
           <FootTitle />
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 10, }} animate={{ opacity: 1, y: 0, }} transition={{ duration: 0.2, delay: 0.8, }}>
-          <div className="date flex py-2 gap-2">
-            <Image isBlurred src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
-            {DataDate.map((item) => (<div key={item.date}> <div className="text-xs text-slate-500 pt-1">{item.date}</div> </div>))} </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, delay: 0.8 }}
+        >
+          <div className="date flex gap-2 py-2">
+            <Image
+              isBlurred
+              src="/images/icon/time-svgrepo-com.svg"
+              alt="logo-youtube"
+              className="pt-1"
+              width={20}
+              height={20}
+            />
+            {DataDate.map((item) => (
+              <div key={item.date}>
+                {" "}
+                <div className="pt-1 text-xs text-slate-500">
+                  {item.date}
+                </div>{" "}
+              </div>
+            ))}{" "}
+          </div>
           {/* ***************************** Youtube / Image *****************************  */}
           <ImageFunction />
         </motion.div>
@@ -86,7 +209,8 @@ export default function Pressrelease() {
   );
 }
 
-{/*  ***************************** LInk And PDF ***************************** 
+{
+  /*  ***************************** LInk And PDF ***************************** 
           <div className="pt-4">
             <p className="text-sky-800 text-lg">
               รายละเอียดเพิ่มเติม
@@ -106,9 +230,11 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
               src="/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/13/1.pdf"
             ></iframe>
           </div>
-***************************** LInk And PDF ***************************** */}
+***************************** LInk And PDF ***************************** */
+}
 
-{/*  ***************************** Youtube *****************************  
+{
+  /*  ***************************** Youtube *****************************  
 
   <div className="flex justify-center">
   <div className=" py-2  gap-4">
@@ -126,13 +252,17 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
   </div>
 </div> 
 
-***************************** Youtube ***************************** */}
+***************************** Youtube ***************************** */
+}
 
-{/*  ***************************** Image ***************************** 
+{
+  /*  ***************************** Image ***************************** 
 <Image src={'/images/ข่าวประชาสัมพันธ์/2568/กันยายน/13/00.webp'} className=" " /> 
- ***************************** Image ***************************** */ }
+ ***************************** Image ***************************** */
+}
 
-{/* ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************
+{
+  /* ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************
 <div className="justify-center">
   <div >
     <p className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</p>
@@ -167,4 +297,5 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
     </div>
   </div>
 </div>
-  ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************  */ }
+  ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************  */
+}
