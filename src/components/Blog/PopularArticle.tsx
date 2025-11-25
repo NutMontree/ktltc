@@ -10,7 +10,7 @@ const PopularArticle = (props: {
   return (
     <div className="w-full md:w-1/2 lg:w-full">
       <div
-        className="wow fadeInUp mb-5 flex w-full items-center border-b border-stroke pb-5 dark:border-dark-3"
+        className="wow fadeInUp border-stroke dark:border-dark-3 mb-5 flex w-full items-center border-b pb-5"
         data-wow-delay=".1s"
       >
         <div className={`mr-5 overflow-hidden rounded`}>
@@ -27,12 +27,12 @@ const PopularArticle = (props: {
           <h4>
             <Link
               href="/#"
-              className="mb-1 inline-block text-lg font-medium leading-snug text-dark hover:text-primary dark:text-dark-6 dark:hover:text-primary lg:text-base xl:text-lg"
+              className="hover:text-primary dark:text-black-6 dark:hover:text-primary mb-1 inline-block text-lg leading-snug font-medium text-black lg:text-base xl:text-lg"
             >
               {title}
             </Link>
           </h4>
-          <p className="text-sm text-body-color dark:text-dark-6">{name}</p>
+          <p className="text-body-color dark:text-black-6 text-sm">{name}</p>
         </div>
       </div>
     </div>

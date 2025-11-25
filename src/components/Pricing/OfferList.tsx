@@ -1,6 +1,6 @@
 const OfferList = ({ text }: { text: string }) => {
   return (
-    <p className={`mb-1 text-base text-body-color dark:text-dark-6`}>{text}</p>
+    <p className={`text-body-color dark:text-black-6 mb-1 text-base`}>{text}</p>
   );
 };
 

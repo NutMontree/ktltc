@@ -3,11 +3,11 @@ import React from "react";
 const AuthorQuote = () => {
   return (
     <div
-      className="wow fadeInUp relative z-10 mb-10 overflow-hidden rounded bg-primary bg-opacity-5 px-6 py-8 text-center sm:p-10 md:px-[60px]"
+      className="wow fadeInUp bg-primary bg-opacity-5 relative z-10 mb-10 overflow-hidden rounded px-6 py-8 text-center sm:p-10 md:px-[60px]"
       data-wow-delay=".1s"
     >
       <div className="mx-auto max-w-[530px]">
-        <span className="mb-6 flex justify-center text-primary">
+        <span className="text-primary mb-6 flex justify-center">
           <svg
             width="44"
             height="26"
@@ -18,15 +18,15 @@ const AuthorQuote = () => {
             <path d="M42.3267 3.78726C40.6124 1.35856 37.8979 0.00134277 34.612 0.00134277C34.5406 0.00134277 34.5406 0.00134277 34.4692 0.00134277C29.8975 0.00134277 25.7544 3.0015 24.7544 7.00171C24.1829 9.50185 24.6829 12.002 26.183 14.0735C27.7545 16.2165 30.1832 17.5737 32.8977 17.9309L35.3978 24.074C35.6835 24.7169 36.3264 25.1455 37.0407 25.1455C37.7551 25.1455 38.398 24.7169 38.6837 24.074C39.1123 23.0026 39.6123 21.8596 40.1123 20.7882C41.3267 18.0737 42.541 15.2879 43.4696 12.4306C44.4697 9.50184 44.0411 6.21596 42.3267 3.78726ZM41.1124 11.6448C40.1838 14.3592 38.9694 17.1451 37.8265 19.7881C37.6122 20.3596 37.3265 20.8596 37.1122 21.431L34.6835 15.5736L33.8977 15.5022C31.6119 15.3593 29.4689 14.2164 28.2546 12.5734C27.1831 11.1448 26.8259 9.35898 27.2545 7.57317C27.9688 4.64445 31.0404 2.50147 34.5406 2.50147H34.612C37.0407 2.50147 39.0408 3.50153 40.3266 5.2159C41.541 7.00171 41.8267 9.43041 41.1124 11.6448Z" />
           </svg>
         </span>
-        <p className="mb-4 text-base font-medium italic leading-[26px] text-dark">
+        <p className="mb-4 text-base leading-[26px] font-medium text-black italic">
           A spring of truth shall flow from it: like a new star it shall scatter
           the darkness of ignorance, and cause a light heretofore unknown to
           shine amongst men.
         </p>
-        <span className="text-sm italic text-body-color">“Andrio Domeco”</span>
+        <span className="text-body-color text-sm italic">“Andrio Domeco”</span>
       </div>
       <div>
-        <span className="absolute left-0 top-0">
+        <span className="absolute top-0 left-0">
           <svg
             width="103"
             height="109"
@@ -57,7 +57,7 @@ const AuthorQuote = () => {
             </defs>
           </svg>
         </span>
-        <span className="absolute bottom-0 right-0">
+        <span className="absolute right-0 bottom-0">
           <svg
             width="102"
             height="106"
