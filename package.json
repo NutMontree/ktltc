@@ -24,7 +24,6 @@
     "@nextui-org/react": "^2.6.11",
     "@radix-ui/react-hover-card": "^1.1.14",
     "@tabler/icons-react": "^3.30.0",
-    "@tailwindcss/postcss": "^4.0.6",
     "@tsparticles/engine": "^3.8.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
@@ -64,6 +63,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "20.17.28",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "19.0.12",
@@ -73,7 +73,7 @@
     "postcss": "^8.5.2",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.1.17",
     "typescript": "5.8.2"
   }
 }
