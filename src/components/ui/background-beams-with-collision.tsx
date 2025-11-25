@@ -239,7 +239,7 @@
 //         animate={{ opacity: 1 }}
 //         exit={{ opacity: 0 }}
 //         transition={{ duration: 1.5, ease: "easeOut" }}
-//         className="absolute -inset-x-10 top-0 m-auto h-2 w-10 rounded-full bg-gradient-to-r from-transparent via-indigo-500 to-transparent blur-sm"
+//         className="absolute -inset-x-10 top-0 m-auto h-2 w-10 rounded-full bg-linear-to-r from-transparent via-indigo-500 to-transparent blur-sm"
 //       ></motion.div>
 //       {spans.map((span) => (
 //         <motion.span
@@ -251,7 +251,7 @@
 //             opacity: 0,
 //           }}
 //           transition={{ duration: Math.random() * 1.5 + 0.5, ease: "easeOut" }}
-//           className="absolute h-1 w-1 rounded-full bg-gradient-to-b from-indigo-500 to-purple-500"
+//           className="absolute h-1 w-1 rounded-full bg-linear-to-b from-indigo-500 to-purple-500"
 //         />
 //       ))}
 //     </div>

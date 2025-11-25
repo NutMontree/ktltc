@@ -68,17 +68,17 @@ export default function ShowBidding() {
         <div className="grid grid-flow-col py-4">
           <div className="justify-items-start">
             <div className="grid grid-flow-col">
-              <div className="bg-red-500 w-2" />
+              <div className="w-2 bg-red-500" />
               <div className="pl-4">
                 <h1 className="text-xxl font-bold">ข่าวประกวดราคา</h1>
                 <h1 className="text-xxl text-[#DAA520]">Bidding</h1>
               </div>
             </div>
           </div>
-        </div >
+        </div>
 
-        <div className="relative z-20 overflow-hidden  ">
-          <div className=" py-3">
+        <div className="relative z-20 overflow-hidden">
+          <div className="py-3">
             <Swiper
               breakpoints={{
                 0: {
@@ -110,35 +110,19 @@ export default function ShowBidding() {
               {dataBidding.navitems.map((item, index) => (
                 <SwiperSlide key={`${item.name}-${index}`}>
                   <NextLink key={item.href} href={item.href}>
-                    <div
-                      className="
-                  mb-6 relative shadow-lg rounded-xl 
-                  h-[150px]
-                  sm:h-[300px]
-                  overflow-hidden"
-                    >
+                    <div className="relative mb-6 h-[150px] overflow-hidden rounded-xl shadow-lg sm:h-[300px]">
                       <div
-                        className="absolute inset-0 bg-cover bg-no-repeat bg-center hover:scale-110 duration-500   "
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat duration-500 hover:scale-110"
                         style={{
                           backgroundImage: `url(${item.backgroundImage})`,
                         }}
                       />
                     </div>
                     <div className=" ">
-                      <h1
-                        className="
-                              text-[14px] md:text-[20px] sm:text-sm md:text-base 
-                            text-sky-600  
-                  "
-                      >
+                      <h1 className="text-3.5 text-sky-600 sm:text-sm md:text-base md:text-[20px]">
                         {item.name}
                       </h1>
-                      <div
-                        className=" 
-                              text-[12px] md:text-[14px] sm:text-sm md:text-base 
-                              mb-8
-                              "
-                      >
+                      <div className="text-3 md:text-3.5 mb-8 sm:text-sm md:text-base">
                         {item.description}
                       </div>
                     </div>
@@ -146,7 +130,7 @@ export default function ShowBidding() {
                 </SwiperSlide>
               ))}
             </Swiper>
-            <span className="absolute bottom-4 right-4 -z-[1]">
+            <span className="absolute right-4 bottom-4 -z-1">
               <svg
                 width="48"
                 height="134"

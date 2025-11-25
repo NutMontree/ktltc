@@ -50,7 +50,7 @@ const TageFucntion = () => {
           </div>
           <Link
             href="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
-            className="inline-flex transform items-center justify-center rounded-full border border-transparent bg-sky-500 px-5 py-2 text-base font-medium text-white shadow-lg transition duration-150 hover:scale-105 hover:bg-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-300"
+            className="inline-flex transform items-center justify-center rounded-full border border-transparent bg-sky-500 px-5 py-2 text-base font-medium text-white shadow-lg transition duration-150 hover:scale-105 hover:bg-sky-600 focus:ring-4 focus:ring-sky-300 focus:outline-none"
             target="_blank"
             download
           >
@@ -120,14 +120,14 @@ export default function Pressrelease() {
         ]}
       />
       <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        <div className="absolute top-0 h-32 w-1 bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
+        <div className="absolute top-0 h-32 w-1 bg-linear-to-b from-transparent via-blue-500 to-transparent" />
       </div>
       <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
         {" "}
-        <div className="absolute h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" />{" "}
+        <div className="absolute h-40 w-px bg-linear-to-b from-transparent via-blue-500 to-transparent" />{" "}
       </div>
       <div className="px-4 py-10 md:py-20">
-        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 dark:text-slate-300 md:text-4xl lg:text-7xl">
+        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
           {"".split(" ").map((word, index) => (
             <motion.span
               key={index}

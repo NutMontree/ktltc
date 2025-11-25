@@ -7,12 +7,12 @@ export default function TechnicalCollege() {
   return (
     <>
       <div>
-        <div className="text-center text-xl pb-8">
+        <div className="pb-8 text-center text-xl">
           {DataTechnicalCollege.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
         </div>
-        <div className='px-2'>
+        <div className="px-2">
           {Description.map((item) => (
             <div key={item.description}>
               <div>{item.description}</div>
@@ -20,10 +20,10 @@ export default function TechnicalCollege() {
           ))}
         </div>
         {/* ***************************** Foot Title ***************************** */}
-        <div className="text-xs pt-6">
+        <div className="pt-6 text-xs">
           <h1 className="text-base">KTL-TC ONE TEAM </h1>
           <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
-          <p className="border-t pt-[12px] ">
+          <p className="border-t pt-3">
             " วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "
           </p>
           <p>
@@ -32,14 +32,12 @@ export default function TechnicalCollege() {
             มีความร่วมมือกับสถานประกอบการและชุมชน
           </p>
           <br />
-          <p className="border-t pt-[12px]">
-            " ค่านิยม วิทยาลัยเทคนิคกันทรลักษ์ "
-          </p>
+          <p className="border-t pt-3">" ค่านิยม วิทยาลัยเทคนิคกันทรลักษ์ "</p>
           <p className="">
             " ยิ้ม ไหว้ เเต่งกายดี รู้จักสวัสดี ขอบคุณ เเละขอโทษ "
           </p>
           <br />
-          <p className="border-t pt-[12px]">👉 ช่องทางการติดต่อ</p>
+          <p className="border-t pt-3">👉 ช่องทางการติดต่อ</p>
           <p>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
           <p>
             เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ
@@ -50,7 +48,6 @@ export default function TechnicalCollege() {
           <p>Gmail : relationktl@gmail.com</p>
           <p>สอบถามข้อมูลเพิ่มเติม</p>
           <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๐๕๓ </p>
-
         </div>
         {/* ***************************** Foot Title ***************************** */}
 
@@ -58,7 +55,7 @@ export default function TechnicalCollege() {
           <br />
           <div className="flex justify-center">
             <a
-              className="text-lg text-red-500 hover:text-sky-500  "
+              className="text-lg text-red-500 hover:text-sky-500"
               href="\images\คำสั่งวิทยาลัย\2567\พฤศจิกายน\2\1.pdf"
               download="แต่งตั้งคณะกรรมการดำเนินการจัดประกรสิ่งประดิษฐ์ของคนรุ่นใหม่ ประจำปีการศึกษา 2567.pdf"
             >
@@ -85,7 +82,7 @@ export default function TechnicalCollege() {
         <div>
           <div className="text-lg text-sky-500"></div>
           <iframe
-            className="w-full aspect-video ... "
+            className="aspect-video w-full ..."
             src="/images/คำสั่งวิทยาลัย/2567/พฤศจิกายน/2/1.pdf"
           ></iframe>
         </div>

@@ -7,7 +7,7 @@ const Hero = () => {
     <>
       <section
         id="home"
-        className="bg-primary relative overflow-hidden pt-[120px] md:pt-[130px] lg:pt-[160px]"
+        className="bg-primary relative overflow-hidden pt-[120px] md:pt-[130px] lg:pt-40"
       >
         <div className="container">
           <div className="-mx-4 flex flex-wrap items-center">
@@ -26,7 +26,7 @@ const Hero = () => {
                   <li>
                     <Link
                       href="https://nextjstemplates.com/templates/play"
-                      className="shadow-1 hover:bg-gray-2 inline-flex items-center justify-center rounded-md bg-white px-7 py-[14px] text-center text-base font-medium text-black transition duration-300 ease-in-out"
+                      className="shadow-1 hover:bg-gray-2 inline-flex items-center justify-center rounded-md bg-white px-7 py-3.5 text-center text-base font-medium text-black transition duration-300 ease-in-out"
                     >
                       Download Now
                     </Link>
@@ -35,7 +35,7 @@ const Hero = () => {
                     <Link
                       href="https://github.com/nextjsTemplates/play-nextjs"
                       target="_blank"
-                      className="flex items-center gap-4 rounded-md bg-white/[0.12] px-6 py-[14px] text-base font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black"
+                      className="flex items-center gap-4 rounded-md bg-white/12 px-6 py-3.5 text-base font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black"
                     >
                       <svg
                         className="fill-current"

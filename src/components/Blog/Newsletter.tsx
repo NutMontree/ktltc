@@ -4,7 +4,7 @@ const Newsletter = () => {
       className="wow fadeInUp relative mb-12 overflow-hidden rounded-[5px] bg-primary px-11 py-[60px] text-center lg:px-8"
       data-wow-delay=".1s"
     >
-      <h3 className="mb-[6px] text-[28px] font-semibold leading-[40px] text-white">
+      <h3 className="mb-1.5 text-[28px] font-semibold leading-10 text-white">
         Join our newsletter!
       </h3>
       <p className="mb-5 text-base text-white">

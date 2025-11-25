@@ -18,7 +18,7 @@ export default function Showvideo() {
             <path d="M196,128a32,32,0,0,1-32,32H152V96h12A32,32,0,0,1,196,128Zm36-72V200a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56ZM120,88a8,8,0,0,0-16,0v32H64V88a8,8,0,0,0-16,0v80a8,8,0,0,0,16,0V136h40v32a8,8,0,0,0,16,0Zm92,40a48.05,48.05,0,0,0-48-48H144a8,8,0,0,0-8,8v80a8,8,0,0,0,8,8h20A48.05,48.05,0,0,0,212,128Z"></path>
           </svg>
         </div>
-        <h1 className="pb-8 pt-4 text-3xl font-bold">Youtube</h1>
+        <h1 className="pt-4 pb-8 text-3xl font-bold">Youtube</h1>
       </div>
       <div>
         <div>
@@ -30,8 +30,8 @@ export default function Showvideo() {
                 title="Open Button"
                 className="rounded-xl border px-4 py-1 shadow-xl"
               >
-                <div className="flex justify-center px-[24px]">
-                  <div className="grid grid-cols-1 justify-items-center gap-[24px] md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+                <div className="flex justify-center px-6">
+                  <div className="grid grid-cols-1 justify-items-center gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                     <div>
                       <iframe
                         src="https://www.youtube.com/embed/tEqHeRdAiD0?si=q8RHAfYFgNKyCzzB"
@@ -44,7 +44,7 @@ export default function Showvideo() {
                         referrerPolicy="strict-origin-when-cross-origin"
                         allowFullScreen
                       ></iframe>
-                      <div className="mb-2 pt-6 text-[12px] sm:text-sm md:text-[14px] md:text-base">
+                      <div className="text-3 md:text-3.5 mb-2 pt-6 sm:text-sm md:text-base">
                         <p className="text-center">
                           ภาพบรรยากาศ วันที่ 24 กรกฎาคม - 5 สิงหาคม 2568
                         </p>
@@ -99,7 +99,7 @@ export default function Showvideo() {
                         referrerPolicy="strict-origin-when-cross-origin"
                         allowFullScreen
                       ></iframe>
-                      <div className="mb-2 pt-6 text-[12px] sm:text-sm md:text-[14px] md:text-base">
+                      <div className="text-3 md:text-3.5 mb-2 pt-6 sm:text-sm md:text-base">
                         <p className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</p>
                         <p>
                           ขอขอบคุณ คณะผู้บริหาร นำโดย นางสาวทักษิณา ชมจันทร์

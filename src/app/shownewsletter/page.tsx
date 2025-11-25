@@ -75,7 +75,7 @@ export default function ShowNewsletter() {
           {Data.navItems.slice(0, 3).map((item, index) => (
             <SwiperSlide key={index}>
               <NextLink key={item.href} href={item.href}>
-                <div className="relative mb-6 h-[500px] overflow-hidden rounded-xl shadow-lg xs:h-[500px] sm:h-[750px] lg:h-[450px] lg:w-[full] xl:h-[600px]">
+                <div className="xs:h-[500px] relative mb-6 h-[500px] overflow-hidden rounded-xl shadow-lg sm:h-[750px] lg:h-[450px] lg:w-[full] xl:h-[600px]">
                   <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat duration-500 hover:scale-110"
                     style={{
@@ -84,7 +84,7 @@ export default function ShowNewsletter() {
                   />
                 </div>
                 <div className=" ">
-                  <h1 className="text-[14px] text-sky-600 sm:text-sm md:text-[20px] md:text-base">
+                  <h1 className="text-3.5 text-sky-600 sm:text-sm md:text-base md:text-[20px]">
                     {item.name}
                   </h1>
                   <div>
@@ -96,7 +96,7 @@ export default function ShowNewsletter() {
                         width={20}
                         height={20}
                       />
-                      <div className="mb-10 pt-1 text-[12px] text-xs text-slate-500 sm:text-sm md:pt-0 md:text-[14px] md:text-base">
+                      <div className="text-3 md:text-3.5 mb-10 pt-1 text-xs text-slate-500 sm:text-sm md:pt-0 md:text-base">
                         {item.date}
                       </div>
                     </div>

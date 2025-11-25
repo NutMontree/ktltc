@@ -8,17 +8,17 @@ const About = () => {
   return (
     <section
       id="about"
-      className="bg-gray-1 pb-8 pt-20 dark:bg-dark-2 lg:pb-[70px] lg:pt-[120px]"
+      className="bg-gray-1 dark:bg-dark-2 pt-20 pb-8 lg:pt-[120px] lg:pb-[70px]"
     >
       <div className="container">
         <div className="wow fadeInUp" data-wow-delay=".2s">
           <div className="-mx-4 flex flex-wrap items-center">
             <div className="w-full lg:w-1/2">
               <div className="mb-12 max-w-[540px] lg:mb-0">
-                <h2 className="mb-5 text-3xl font-bold leading-tight text-dark dark:text-white sm:text-[40px] sm:leading-[1.2]">
+                <h2 className="text-dark mb-5 text-3xl leading-tight font-bold sm:text-[40px] sm:leading-[1.2] dark:text-white">
                   วิทยาลัยเทคนิคกันทรลักษ์
                 </h2>
-                <div className="mb-10 text-base leading-relaxed text-body-color dark:text-dark-6">
+                <div className="text-body-color dark:text-dark-6 mb-10 text-base leading-relaxed">
                   (ชื่อเดิม วิทยาลัยการอาชีพกันทรลักษ์ แก้ไขเมื่อ 8 เมษายน 2559)
                   <br /> <br />
                   ที่อยู่ : 82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110{" "}
@@ -41,7 +41,7 @@ const About = () => {
                   >
                     <div className="hover:text-sky-500">
                       <div>
-                        <p className="pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                        <p className="text-3.5 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                           ที่ตั้ง/GPS
                         </p>
                       </div>
@@ -51,7 +51,7 @@ const About = () => {
 
                 <Link
                   href="https://ktltc.vercel.app/historyeducational"
-                  className="inline-flex items-center justify-center rounded-md bg-primary px-7 py-3 text-center text-base font-medium text-white duration-300 hover:bg-primary/90"
+                  className="bg-primary hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-7 py-3 text-center text-base font-medium text-white duration-300"
                 >
                   ประวัติสถานศึกษา
                 </Link>
@@ -59,7 +59,7 @@ const About = () => {
                 <br />
                 <Link
                   href="https://ktltc.vercel.app/personnel"
-                  className="inline-flex items-center justify-center rounded-md bg-primary px-7 py-3 text-center text-base font-medium text-white duration-300 hover:bg-primary/90"
+                  className="bg-primary hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-7 py-3 text-center text-base font-medium text-white duration-300"
                 >
                   ข้อมูลบุคลากรทางการศึกษา
                 </Link>
@@ -89,7 +89,7 @@ const About = () => {
                     />
                   </div>
 
-                  <div className="relative z-10 mb-4 flex items-center justify-center overflow-hidden bg-primary px-6 py-12 sm:mb-8 sm:h-[160px] sm:p-5 lg:mb-4 xl:mb-8">
+                  <div className="bg-primary relative z-10 mb-4 flex items-center justify-center overflow-hidden px-6 py-12 sm:mb-8 sm:h-40 sm:p-5 lg:mb-4 xl:mb-8">
                     <div>
                       <span className="block text-5xl font-extrabold text-white">
                         31
@@ -97,12 +97,12 @@ const About = () => {
                       <span className="block text-base font-semibold text-white">
                         Opened for
                       </span>
-                      <span className="block text-base font-medium text-white text-opacity-70">
+                      <span className="text-opacity-70 block text-base font-medium text-white">
                         31 years of experience
                       </span>
                     </div>
                     <div>
-                      <span className="absolute left-0 top-0 -z-10">
+                      <span className="absolute top-0 left-0 -z-10">
                         <svg
                           width="106"
                           height="144"
@@ -138,7 +138,7 @@ const About = () => {
                           </defs>
                         </svg>
                       </span>
-                      <span className="absolute right-0 top-0 -z-10">
+                      <span className="absolute top-0 right-0 -z-10">
                         <svg
                           width="130"
                           height="97"
@@ -174,7 +174,7 @@ const About = () => {
                           </defs>
                         </svg>
                       </span>
-                      <span className="absolute bottom-0 right-0 -z-10">
+                      <span className="absolute right-0 bottom-0 -z-10">
                         <svg
                           width="175"
                           height="104"

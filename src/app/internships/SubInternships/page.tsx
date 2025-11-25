@@ -35,7 +35,7 @@ export default function SubInternships() {
   return (
     <>
       <div className="relative z-10 overflow-hidden pt-[100px] pb-[60px]">
-        <div className="from-stroke/0 via-stroke to-stroke/0 absolute bottom-0 left-0 h-px w-full bg-gradient-to-r"></div>
+        <div className="from-stroke/0 via-stroke to-stroke/0 absolute bottom-0 left-0 h-px w-full bg-linear-to-r"></div>
         <div className="w-full">
           <div className="text-center">
             <h1 className="flex justify-center text-xl">
@@ -44,17 +44,17 @@ export default function SubInternships() {
             <h1 className="flex justify-center pb-8 text-xl text-[#DAA520]">
               Students go on internship
             </h1>
-            <ul className="flex items-center justify-center gap-[10px]">
+            <ul className="flex items-center justify-center gap-2.5">
               <li>
                 <Link
                   href="/"
-                  className="flex items-center gap-[10px] text-base font-medium text-black dark:text-white"
+                  className="flex items-center gap-2.5 text-base font-medium text-black dark:text-white"
                 >
                   Home
                 </Link>
               </li>
               <li>
-                <p className="text-body-color flex items-center gap-[10px] text-base font-medium">
+                <p className="text-body-color flex items-center gap-2.5 text-base font-medium">
                   <span className="text-body-color dark:text-black-6">/</span>
                   Internship
                 </p>

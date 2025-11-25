@@ -27,17 +27,17 @@ export default function ThankYou({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="w-full h-full grid place-items-center p-6 lg:p-0 overflow-hidden absolute top-0 left-0"
+      className="absolute top-0 left-0 grid h-full w-full place-items-center overflow-hidden p-6 lg:p-0"
       style={{ backgroundColor: colors.background }}
     >
       <motion.div
-        className="text-center space-y-6"
+        className="space-y-6 text-center"
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
         <motion.h1
-          className="text-7xl font-bold mb-4"
+          className="mb-4 text-7xl font-bold"
           style={{ color: colors.text }}
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -47,7 +47,7 @@ export default function ThankYou({
         </motion.h1>
 
         <motion.h1
-          className="text-xl lg:text-3xl font-bold mb-4"
+          className="mb-4 text-xl font-bold lg:text-3xl"
           style={{ color: colors.text }}
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -57,7 +57,7 @@ export default function ThankYou({
         </motion.h1>
 
         {callGodMessage && (
-          <motion.p
+          <motion.div
             className="text-lg lg:text-2xl"
             style={{ color: colors.text }}
             initial={{ opacity: 0 }}
@@ -79,11 +79,11 @@ export default function ThankYou({
             damping: 10,
           }}
         >
-          <div className="w-64 h-64 mx-auto relative">
+          <div className="relative mx-auto h-64 w-64">
             {/* Two hearts coming together animation */}
             <motion.svg
               viewBox="0 0 200 100"
-              className="w-full h-full"
+              className="h-full w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
@@ -190,7 +190,7 @@ export default function ThankYou({
             }}
             whileHover={{ rotate: [-2, 2, -2, 2, 0] }}
             transition={{ duration: 0.4, repeat: Infinity, repeatDelay: 0.1 }}
-            className="bg-light-coral text-creamy-white p-5 rounded-md font-semibold text-3xl"
+            className="bg-light-coral text-creamy-white rounded-md p-5 text-3xl font-semibold"
           >
             {"Fix my screen 🥹"}
           </motion.button>
@@ -208,7 +208,7 @@ export default function ThankYou({
             }}
             whileHover={{ rotate: [-2, 2, -2, 2, 0] }}
             transition={{ duration: 0.4, repeat: Infinity, repeatDelay: 0.1 }}
-            className="bg-[#25D366] text-creamy-white p-5 rounded-md font-semibold text-3xl"
+            className="text-creamy-white rounded-md bg-[#25D366] p-5 text-3xl font-semibold"
           >
             {"Call 📞 🥹"}
           </motion.button>

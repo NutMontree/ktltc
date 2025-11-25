@@ -24,7 +24,7 @@ export default function WelcomePage() {
                   className="col-span-12 h-[380px] sm:col-span-6"
                 >
                   <CardContainer className="inter-var">
-                    <CardBody className="group/card relative h-auto w-auto rounded-xl p-6 sm:w-[30rem]">
+                    <CardBody className="group/card relative h-auto w-auto rounded-xl p-6 sm:w-120">
                       <CardItem
                         translateZ="50"
                         className="text-xl font-bold text-neutral-600 dark:text-white"

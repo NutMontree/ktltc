@@ -28,7 +28,7 @@ export default function ScrollToTop() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-20 z-[999]">
+    <div className="fixed bottom-6 right-20 z-999">
       {isVisible && (
         <div
           onClick={scrollToTop}
@@ -36,7 +36,7 @@ export default function ScrollToTop() {
           title="scroll to top"
           className="back-to-top flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-sky-600 text-white shadow-md transition duration-300 ease-in-out hover:bg-dark"
         >
-          <span className="mt-[6px] h-3 w-3 rotate-45 border-l border-t border-white"></span>
+          <span className="mt-1.5 h-3 w-3 rotate-45 border-l border-t border-white"></span>
         </div>
       )}
     </div>

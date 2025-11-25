@@ -1,8 +1,8 @@
 "use client";
 
-import "../styles/index.css";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import "../styles/prism-vsc-dark-plus.css";
+import "../styles/index.css";
 
 import clsx from "clsx";
 import Footer from "@/components/Footer";
@@ -11,9 +11,9 @@ import TopHeader from "@/components/TopHeader";
 import ScrollToTop from "@/components/ScrollToTop";
 import PreLoader from "@/components/Common/PreLoader";
 import FloatingNavDemo from "@/components/FloatingNavDemo";
-import CookieConsentBanner from './cookie/page'
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/next"
+import CookieConsentBanner from "./cookie/page";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { fontSans } from "@/config/fonts";
@@ -48,7 +48,7 @@ export default function RootLayout({
             <div className="pb-20">
               <Header />
             </div>
-            <div >
+            <div>
               {children}
               <Analytics />
               <SpeedInsights />

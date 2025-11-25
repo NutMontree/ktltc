@@ -24,8 +24,8 @@ export default function ShowPressRelease() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
       >
-        <div className="relative z-20 overflow-hidden lg:pt-[40px]">
-          <span className="absolute left-4 top-4 -z-[1]">
+        <div className="relative z-20 overflow-hidden lg:pt-10">
+          <span className="absolute top-4 left-4 -z-1">
             <svg
               width="48"
               height="134"
@@ -348,10 +348,10 @@ export default function ShowPressRelease() {
                         />
                       </div>
                       <div>
-                        <h1 className="text-[14px] text-sky-600 hover:text-sky-400 sm:text-sm md:text-[20px] md:text-base">
+                        <h1 className="text-3.5 text-sky-600 hover:text-sky-400 sm:text-sm md:text-base md:text-[20px]">
                           {item.name}
                         </h1>
-                        <div className="mb-2 flex text-[12px] sm:text-sm md:text-[14px] md:text-base">
+                        <div className="text-3 md:text-3.5 mb-2 flex sm:text-sm md:text-base">
                           <div>{item.description}</div>
                         </div>
                         <div className="flex gap-2">
@@ -361,7 +361,7 @@ export default function ShowPressRelease() {
                             width={20}
                             height={20}
                           />
-                          <div className="text-[12px] text-xs text-slate-500 sm:text-sm md:text-[14px] md:text-base">
+                          <div className="text-3 md:text-3.5 text-xs text-slate-500 sm:text-sm md:text-base">
                             {item.date}
                           </div>
                         </div>

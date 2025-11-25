@@ -27,14 +27,14 @@ export const Cover = ({
       const numberOfBeams = Math.floor(height / 10); // Adjust the divisor to control the spacing
       const positions = Array.from(
         { length: numberOfBeams },
-        (_, i) => (i + 1) * (height / (numberOfBeams + 1))
+        (_, i) => (i + 1) * (height / (numberOfBeams + 1)),
       );
       setBeamPositions(positions);
     }
   }, []);
 
   return (
-    <div ref={ref} className="relative ">
+    <div ref={ref} className="relative">
       <AnimatePresence>
         {hovered && (
           <motion.div
@@ -46,7 +46,7 @@ export const Cover = ({
                 duration: 0.2,
               },
             }}
-            className="  overflow-hidden absolute inset-0"
+            className="absolute inset-0 overflow-hidden"
           >
             <motion.div
               animate={{
@@ -59,14 +59,14 @@ export const Cover = ({
                   repeat: Infinity,
                 },
               }}
-              className="w-[200%] h-full flex"
+              className="flex h-full w-[200%]"
             >
               <SparklesCore
                 background="transparent"
                 minSize={0.4}
                 maxSize={1}
                 particleDensity={500}
-                className="w-full h-full"
+                className="h-full w-full"
                 particleColor="#FFFFFF"
               />
               <SparklesCore
@@ -74,7 +74,7 @@ export const Cover = ({
                 minSize={0.4}
                 maxSize={1}
                 particleDensity={500}
-                className="w-full h-full"
+                className="h-full w-full"
                 particleColor="#FFFFFF"
               />
             </motion.div>
@@ -126,16 +126,16 @@ export const Cover = ({
           },
         }}
         className={cn(
-          "dark:text-white inline-block text-neutral-900 relative z-20 group-hover/cover:text-white transition duration-200",
-          className
+          "relative z-20 inline-block text-neutral-900 transition duration-200 group-hover/cover:text-white dark:text-white",
+          className,
         )}
       >
         {children}
       </motion.span>
-      <CircleIcon className="absolute -right-[2px] -top-[2px]" />
-      <CircleIcon className="absolute -bottom-[2px] -right-[2px]" delay={0.4} />
-      <CircleIcon className="absolute -left-[2px] -top-[2px]" delay={0.8} />
-      <CircleIcon className="absolute -bottom-[2px] -left-[2px]" delay={1.6} />
+      <CircleIcon className="absolute -top-0.5 -right-0.5" />
+      <CircleIcon className="absolute -right-0.5 -bottom-0.5" delay={0.4} />
+      <CircleIcon className="absolute -top-0.5 -left-0.5" delay={0.8} />
+      <CircleIcon className="absolute -bottom-0.5 -left-0.5" delay={1.6} />
     </div>
   );
 };
@@ -189,11 +189,11 @@ export const Beam = ({
             y2: 0,
           }}
           transition={{
-            duration: hovered ? 0.5 : duration ?? 2,
+            duration: hovered ? 0.5 : (duration ?? 2),
             ease: "linear",
             repeat: Infinity,
             delay: hovered ? Math.random() * (1 - 0.2) + 0.2 : 0,
-            repeatDelay: hovered ? Math.random() * (2 - 1) + 1 : delay ?? 1,
+            repeatDelay: hovered ? Math.random() * (2 - 1) + 1 : (delay ?? 1),
           }}
         >
           <stop stopColor="#2EB9DF" stopOpacity="0" />

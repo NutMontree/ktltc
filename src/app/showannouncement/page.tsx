@@ -115,10 +115,10 @@ export default function ShowAnnouncement() {
                     />
                   </div>
                   <div className=" ">
-                    <h1 className="text-[14px] text-sky-600 sm:text-sm md:text-[20px] md:text-base">
+                    <h1 className="text-3.5 text-sky-600 sm:text-sm md:text-base md:text-[20px]">
                       {item.name}
                     </h1>
-                    <div className="text-[12px] sm:text-sm md:text-[14px] md:text-base">
+                    <div className="text-3 md:text-3.5 sm:text-sm md:text-base">
                       {item.description}
                     </div>
                     <div className="flex gap-1">
@@ -128,7 +128,7 @@ export default function ShowAnnouncement() {
                         width={20}
                         height={20}
                       />
-                      <div className="mb-10 pt-1 text-[12px] text-xs text-slate-500 sm:text-sm md:pt-0 md:text-[14px] md:text-base">
+                      <div className="text-3 md:text-3.5 mb-10 pt-1 text-xs text-slate-500 sm:text-sm md:pt-0 md:text-base">
                         {item.date}
                       </div>
                     </div>

@@ -14,15 +14,15 @@ export default function Executive() {
         </h1>
       </div>
 
-      <div className="flex justify-center py-[48px]">
-        <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
+      <div className="flex justify-center py-12">
+        <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 sm:p-4 dark:bg-zinc-900">
           <Image
             src={"/images/ผู้บริหาร/1.webp"}
             alt={"Lazy loaded image"}
             data-src="image.webp"
             loading="lazy"
           />
-          <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-xl">
+          <div className="mt-4 mb-2 text-center text-base text-black sm:text-xl dark:text-neutral-200">
             <div className="hover:text-sky-500">นางสาวทักษิณา ชมจันทร์</div>
           </div>
           <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -32,7 +32,7 @@ export default function Executive() {
             เริ่มปฏิบัติงาน พ.ศ. 2566 จนถึง ปัจุบัน
           </div>
           <div className="flex justify-end">
-            <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
+            <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pr-1 pl-2 text-xs font-bold text-white dark:bg-zinc-800">
               <span>CEO</span>
               <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                 KTLTC
@@ -48,7 +48,7 @@ export default function Executive() {
             {Data.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-100">
-                  <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
+                  <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 sm:p-4 dark:bg-zinc-900">
                     <div className="flex justify-center">
                       <Image
                         src={item.img}
@@ -57,7 +57,7 @@ export default function Executive() {
                         loading="lazy"
                       />
                     </div>
-                    <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-xl">
+                    <div className="mt-4 mb-2 text-center text-base text-black sm:text-xl dark:text-neutral-200">
                       <div className="hover:text-sky-500">{item.title}</div>
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -65,7 +65,7 @@ export default function Executive() {
                       <div>{item.description}</div>
                     </div>
                     <div className="flex justify-end">
-                      <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
+                      <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pr-1 pl-2 text-xs font-bold text-white dark:bg-zinc-800">
                         <span>CEO</span>
                         <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                           KTLTC

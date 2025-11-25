@@ -8,7 +8,7 @@ const NotFound = () => {
       <div className="container mx-auto">
         <div className="-mx-4 flex flex-wrap items-center">
           <div className="w-full md:w-5/12 lg:w-6/12">
-            <div className="relative mx-auto aspect-[129/138] max-w-[357px] text-center">
+            <div className="relative mx-auto aspect-129/138 max-w-[357px] text-center">
               <Image
                 src="/images/404.svg"
                 alt="image"

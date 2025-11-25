@@ -21,7 +21,7 @@ export default function ShowYoutube() {
               height={70}
             />
           </div>
-          <h1 className="pb-8 pt-4 text-3xl font-bold">Youtube</h1>
+          <h1 className="pt-4 pb-8 text-3xl font-bold">Youtube</h1>
         </div>
         <div>
           <div>
@@ -33,8 +33,8 @@ export default function ShowYoutube() {
                   title="Open Button"
                   className="rounded-xl border px-4 py-1 shadow-xl"
                 >
-                  <div className="flex justify-center px-[24px]">
-                    <div className="grid grid-cols-1 justify-items-center gap-[24px] md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+                  <div className="flex justify-center px-16">
+                    <div className="grid grid-cols-1 justify-items-center gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                       <div>
                         <iframe
                           src="https://www.youtube.com/embed/tEqHeRdAiD0?si=q8RHAfYFgNKyCzzB"

@@ -59,7 +59,7 @@
 
 //   // --- 4. ส่วนแสดงผล (Render) ---
 //   return (
-//     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+//     <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100">
 //       <div className="mx-auto max-w-5xl p-6">
 //         {/* Header Section */}
 //         <div className="mb-10 text-center">
@@ -105,7 +105,7 @@
 //         {/* Add New Comment Button */}
 //         <div className="mt-10 flex justify-center">
 //           <Link href="/TicketPage/new">
-//             <button className="flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3 text-white shadow-md transition-transform duration-200 hover:scale-105 hover:shadow-lg">
+//             <button className="flex items-center gap-2 rounded-full bg-linear-to-r from-blue-500 to-blue-600 px-6 py-3 text-white shadow-md transition-transform duration-200 hover:scale-105 hover:shadow-lg">
 //               <span className="text-xl font-bold">＋</span>
 //               <span className="font-medium">เพิ่มความคิดเห็นใหม่</span>
 //             </button>
@@ -182,7 +182,7 @@ export default async function SubQAPage() {
 
   // --- 4. ส่วนแสดงผล (Render) ---
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100">
       <div className="mx-auto max-w-5xl p-6">
         {/* Header Section */}
         <div className="mb-10 text-center">
@@ -228,7 +228,7 @@ export default async function SubQAPage() {
         {/* Add New Comment Button */}
         <div className="mt-10 flex justify-center">
           <Link href="/TicketPage/new">
-            <button className="flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3 text-white shadow-md transition-transform duration-200 hover:scale-105 hover:shadow-lg">
+            <button className="flex items-center gap-2 rounded-full bg-linear-to-r from-blue-500 to-blue-600 px-6 py-3 text-white shadow-md transition-transform duration-200 hover:scale-105 hover:shadow-lg">
               <span className="text-xl font-bold">＋</span>
               <span className="font-medium">เพิ่มความคิดเห็นใหม่</span>
             </button>

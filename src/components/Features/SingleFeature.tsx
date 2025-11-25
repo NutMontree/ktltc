@@ -11,7 +11,7 @@ const SingleFeature = ({ feature }: { feature: Feature }) => {
           className="hover:text-primary dark:hover:text-primary text-base font-medium text-black dark:text-white"
         >
           <div className="bg-primary relative z-10 mb-4 flex h-[70px] w-[70px] items-center justify-center rounded-2xl">
-            <span className="bg-primary bg-opacity-20 absolute top-0 left-0 z-[-1] mb-8 flex h-[70px] w-[70px] rotate-[25deg] items-center justify-center rounded-2xl duration-300 group-hover:rotate-45"></span>
+            <span className="bg-primary bg-opacity-20 absolute top-0 left-0 z-[-1] mb-8 flex h-[70px] w-[70px] rotate-25 items-center justify-center rounded-2xl duration-300 group-hover:rotate-45"></span>
             {icon}
           </div>
           <h3 className="mb-3 text-xl font-bold text-black dark:text-white">

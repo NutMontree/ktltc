@@ -30,10 +30,10 @@ export default function Page() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-[14px] text-sky-600 hover:text-sky-400 sm:text-sm md:text-[20px] md:text-base">
+                  <h1 className="text-3.5 text-sky-600 hover:text-sky-400 sm:text-sm md:text-base md:text-[20px]">
                     {item.name}
                   </h1>
-                  <div className="mb-2 flex text-[12px] sm:text-sm md:text-[14px] md:text-base">
+                  <div className="text-3 md:text-3.5 mb-2 flex sm:text-sm md:text-base">
                     <div>{item.description}</div>
                   </div>
                   <div className="flex gap-2">
@@ -43,7 +43,7 @@ export default function Page() {
                       width={20}
                       height={20}
                     />
-                    <div className="text-[12px] text-xs text-slate-500 sm:text-sm md:text-[14px] md:text-base">
+                    <div className="text-3 md:text-3.5 text-xs text-slate-500 sm:text-sm md:text-base">
                       {item.date}
                     </div>
                   </div>

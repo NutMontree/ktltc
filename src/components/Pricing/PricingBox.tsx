@@ -37,7 +37,7 @@ const PricingBox = ({ product }: { product: Price }) => {
         </span>
         <h2 className="mb-11 text-4xl font-semibold text-black xl:text-[42px] xl:leading-[1.21] dark:text-white">
           <span className="text-xl font-medium">$ </span>
-          <span className="-ml-1 -tracking-[2px]">
+          <span className="-tracking-0.5 -ml-1">
             {(product.unit_amount / 100).toLocaleString("en-US", {
               currency: "USD",
             })}

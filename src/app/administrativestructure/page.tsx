@@ -67,8 +67,8 @@ export default function AdministrativeStructure() {
       {/* ********************* คณะกรรมการบริหารสถานศึกษา ********************* */}
 
       {/* ********************* ฝ่ายพัฒนากิจการนักเรียน นักศึกษา ********************* */}
-      <div className="py-[64px]">
-        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
+      <div className="py-16">
+        <h1 className="flex justify-center py-6 text-xl text-[#DAA520]">
           ฝ่ายพัฒนากิจกรรมนักเรียน
         </h1>
         <div className="flex justify-center pb-4">
@@ -116,8 +116,8 @@ export default function AdministrativeStructure() {
       {/* ********************* ฝ่ายพัฒนากิจกรรมนักเรียน ********************* */}
 
       {/* ********************* ฝ่ายแผนงานและความร่วมมือ ********************* */}
-      <div className="py-[64px]">
-        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
+      <div className="py-16">
+        <h1 className="flex justify-center py-6 text-xl text-[#DAA520]">
           ฝ่ายแผนงานและความร่วมมือ
         </h1>
         <div className="flex justify-center pb-4">
@@ -165,8 +165,8 @@ export default function AdministrativeStructure() {
       {/* ********************* ฝ่ายแผนงานและความร่วมมือ ********************* */}
 
       {/* ********************* ฝ่ายบริหารทรัพยากร ********************* */}
-      <div className="py-[64px]">
-        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
+      <div className="py-16">
+        <h1 className="flex justify-center py-6 text-xl text-[#DAA520]">
           ฝ่ายบริหารทรัพยากร
         </h1>
         <div className="flex justify-center pb-4">
@@ -214,8 +214,8 @@ export default function AdministrativeStructure() {
       {/* ********************* ฝ่ายบริหารทรัพยากร ********************* */}
 
       {/* ********************* ฝ่ายวิชาการ ********************* */}
-      <div className="py-[64px]">
-        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
+      <div className="py-16">
+        <h1 className="flex justify-center py-6 text-xl text-[#DAA520]">
           ฝ่ายวิชาการ
         </h1>
         <div className="flex justify-center pb-4">

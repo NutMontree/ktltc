@@ -1,14 +1,21 @@
-
-import { LinkPreview } from '@/components/ui/link-preview'
-import Link from 'next/link'
+import { LinkPreview } from "@/components/ui/link-preview";
+import Link from "next/link";
 // import SubQAPage from './qa/SubQAPage'
 
 export default function QAPage() {
-    return (
-        <>
-            <p className='text-xl'>Link Wab Page</p>
-            <div className='py-4'> <Link href='/ITA/08/qa'> <p className='hover:text-orange-500 dark:hover:text-orange-400 text-[12px] md:text-[14px] sm:text-sm md:text-base'>1. ระบบ Q&A วิทยาลัยเทคนิคกันทรลักษ์</p> </Link> </div>
-            {/* <div>
+  return (
+    <>
+      <p className="text-xl">Link Wab Page</p>
+      <div className="py-4">
+        {" "}
+        <Link href="/ITA/08/qa">
+          {" "}
+          <p className="text-3 md:text-3.5 hover:text-orange-500 sm:text-sm md:text-base dark:hover:text-orange-400">
+            1. ระบบ Q&A วิทยาลัยเทคนิคกันทรลักษ์
+          </p>{" "}
+        </Link>{" "}
+      </div>
+      {/* <div>
                 <div>
                     <iframe
                         src="https://padlet.com/embed/fpugfje0yejm0bqx"
@@ -35,6 +42,6 @@ export default function QAPage() {
                     </div>
                 </div>
             </div> */}
-        </>
-    )
+    </>
+  );
 }

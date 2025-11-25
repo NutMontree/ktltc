@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="mb-10 w-full">
               <LinkPreview
                 url="https://ktltc.vercel.app/"
-                className="mb-6 inline-block max-w-[160px]"
+                className="mb-6 inline-block max-w-40"
               >
                 <Image
                   src="/images/logo.webp"
@@ -26,7 +26,7 @@ const Footer = () => {
               </LinkPreview>
               <LinkPreview
                 url="https://ktltc.vercel.app/"
-                className="mb-8 inline-block max-w-[160px]"
+                className="mb-8 inline-block max-w-40"
               >
                 <Image
                   src="/images/logo2.webp"
@@ -578,11 +578,11 @@ const Footer = () => {
       </div>
   
       <div>
-        <span className="absolute left-0 top-0 z-[-1] aspect-[95/82] w-full max-w-[570px]">
+        <span className="absolute left-0 top-0 z-[-1] aspect-95/82 w-full max-w-[570px]">
           <Image src="/images/footer/shape-1.svg" alt="shape" />
         </span>
 
-        <span className="absolute bottom-0 right-0 z-[-1] aspect-[31/22] w-full max-w-[372px]">
+        <span className="absolute bottom-0 right-0 z-[-1] aspect-31/22 w-full max-w-[372px]">
           <Image src="/images/footer/shape-3.svg" alt="shape" />
         </span>
 

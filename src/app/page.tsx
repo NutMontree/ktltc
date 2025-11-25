@@ -16,7 +16,7 @@ import ExternalQualityAssurance from "@/components/ExternalQualityAssurance";
 import Features from "@/components/Features";
 import Scrollimage from "@/components/Scrollimage";
 import ScrollVelocity from "@/components/Scrollvelocity";
-import WelcomePage from "@/components/WelcomePage"
+import WelcomePage from "@/components/WelcomePage";
 import ShowPressRelease from "./showpressrelease/page";
 import ShowNewsletter from "./shownewsletter/page";
 import Internships from "./internships/page";
@@ -34,7 +34,6 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-
   return (
     <main className=" ">
       <div className="container">
@@ -50,10 +49,10 @@ export default function Home() {
       <div className="container">
         <Features />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <WelcomePage />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <ScrollVelocity />
       </div>
       <div className="container">
@@ -65,28 +64,28 @@ export default function Home() {
       <div className="container">
         <ShowPressRelease />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <ShowNewsletter />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <Internships />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <ShowAnnouncement />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <ShowBidding />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <ShowTechnicalcollegeorders />
       </div>
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <ShowFacebook />
       </div>
-      {/* <div className="container py-[48px]">
+      {/* <div className="container py-12">
         <Showvideo />
       </div> */}
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <ShowYoutube />
       </div>
       {/* <About />
@@ -98,13 +97,23 @@ export default function Home() {
       <Contact />
       <Clients /> */}
       <CalendarPage />
-      <div className="container py-[48px]">
+      <div className="container py-12">
         <SubQAPage />
       </div>
 
       <div id="fb-root"></div>
-      <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v22.0&appId=952832906928077"></script>
-      <div className="fb-comments" data-href="https://www.facebook.com/permalink.php?story_fbid=pfbid0SoQQJJH18oLEp5Zt4kF9hKXdJGhyXw41Md5hJv9WWpzWzNjGyit4DzyHAoL27BnPl&amp;id=61575575410714" data-width="" data-numposts="5"></div>
+      <script
+        async
+        defer
+        crossOrigin="anonymous"
+        src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v22.0&appId=952832906928077"
+      ></script>
+      <div
+        className="fb-comments"
+        data-href="https://www.facebook.com/permalink.php?story_fbid=pfbid0SoQQJJH18oLEp5Zt4kF9hKXdJGhyXw41Md5hJv9WWpzWzNjGyit4DzyHAoL27BnPl&amp;id=61575575410714"
+        data-width=""
+        data-numposts="5"
+      ></div>
     </main>
   );
 }

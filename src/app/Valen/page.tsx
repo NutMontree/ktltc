@@ -37,7 +37,7 @@ export default function Valen() {
   };
 
   return (
-    <div className="relative w-full h-[100dvh] overflow-hidden">
+    <div className="relative h-dvh w-full overflow-hidden">
       <AnimatePresence mode="wait">
         {!displayYesScreen ? (
           <motion.div
@@ -45,18 +45,18 @@ export default function Valen() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className=" w-full h-full grid place-items-center"
+            className="grid h-full w-full place-items-center"
           >
             <div className="space-y-10 lg:space-y-5">
               <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-3xl lg:text-5xl text-deep-red font-semibold text-center"
+                className="text-deep-red text-center text-3xl font-semibold lg:text-5xl"
               >
                 Will you be my valentine?
               </motion.h1>
 
-              <div className="flex items-center space-x-4 justify-center">
+              <div className="flex items-center justify-center space-x-4">
                 <motion.button
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -65,7 +65,7 @@ export default function Valen() {
                     sessionStorage.setItem("message", getRandomLine());
                     setDisplayYesScreen(true);
                   }}
-                  className="bg-light-coral text-creamy-white p-5 rounded-md font-semibold text-3xl"
+                  className="bg-light-coral text-creamy-white rounded-md p-5 text-3xl font-semibold"
                 >
                   YES
                 </motion.button>
@@ -75,7 +75,7 @@ export default function Valen() {
                   onTouchStart={() => setPosition(getRandomPosition())}
                   animate={position}
                   transition={{ type: "spring", stiffness: 100, damping: 10 }}
-                  className="bg-red-600 text-creamy-white p-5 rounded-md font-semibold text-3xl"
+                  className="text-creamy-white rounded-md bg-red-600 p-5 text-3xl font-semibold"
                 >
                   NO
                 </motion.button>
@@ -103,7 +103,7 @@ export default function Valen() {
       {screenDisabled && (
         <button
           disabled={screenDisabled}
-          className={`absolute inset-0 cursor-wait w-full h-full`}
+          className={`absolute inset-0 h-full w-full cursor-wait`}
         ></button>
       )}
     </div>

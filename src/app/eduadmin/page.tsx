@@ -52,7 +52,7 @@ export default function EDUAdmin() {
         </div>
       </div>
 
-      <div className="flex justify-center py-[48px]">
+      <div className="flex justify-center py-12">
         <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
           <Image
             src={"/images/ผู้บริหาร/1.webp"}

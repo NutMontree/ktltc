@@ -19,7 +19,7 @@ export const MenuItem1 = ({
 }) => {
   return (
     <div onMouseEnter={() => setActive(item)} className=" ">
-      <motion.p>{item}</motion.div>
+      <motion.div>{item}</motion.div>
       {active !== null && (
         <motion.div>
           {active === item && (

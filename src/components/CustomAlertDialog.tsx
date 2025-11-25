@@ -82,7 +82,7 @@ const CustomAlertDialog: FC<CustomAlertDialogProps> = ({
     return (
         // Backdrop: พื้นหลังเบลอ
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 backdrop-filter backdrop-blur-sm bg-black/40"
+            className="fixed inset-0 z-100 flex items-center justify-center p-4 transition-opacity duration-300 backdrop-filter backdrop-blur-sm bg-black/40"
             aria-labelledby="alert-dialog-title"
             role="dialog"
             aria-modal="true"

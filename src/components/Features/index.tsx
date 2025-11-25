@@ -16,7 +16,7 @@ const Features = () => {
       >
         <section className=" ">
           <div>
-            <div className="relative z-20 overflow-hidden pt-[40px] lg:pb-[30px] lg:pt-[100px]">
+            <div className="relative z-20 overflow-hidden pt-[40px] lg:pt-[100px] lg:pb-[30px]">
               <div className="">
                 <Link href="/GECC">
                   <SectionTitle
@@ -26,7 +26,7 @@ const Features = () => {
                   />
                 </Link>
               </div>
-              <span className="absolute bottom-4 right-4 -z-[1]">
+              <span className="absolute right-4 bottom-4 -z-[1]">
                 <svg
                   width="48"
                   height="134"
@@ -338,7 +338,7 @@ const Features = () => {
           ></iframe>
 
           <div className="py-8">
-            <Card className="px-4 pb-2 pt-4">
+            <Card className="px-4 pt-4 pb-2">
               <div className="flex flex-col">
                 <Tabs
                   color="default"
@@ -379,7 +379,7 @@ const Features = () => {
                                 alt="reviewer-male"
                               />{" "}
                             </div>
-                            <div className="pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                            <div className="text-3.5 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                               สมัครเรียนออนไลน์
                             </div>
                           </div>
@@ -397,7 +397,7 @@ const Features = () => {
                                 alt="conclusion-contract"
                               />
                             </div>
-                            <div className="pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                            <div className="text-3.5 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                               เอกสารทะเบียน
                             </div>
                           </div>
@@ -435,7 +435,7 @@ const Features = () => {
                                 src="https://img.icons8.com/external-flatart-icons-outline-flatarticons/64/FA5252/external-phone-call-stay-at-home-flatart-icons-outline-flatarticons.png"
                                 alt="external-phone-call-stay-at-home-flatart-icons-outline-flatarticons"
                               />
-                              <p className="pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                              <p className="text-3.5 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                                 0614122765
                               </p>
                             </div>
@@ -475,7 +475,7 @@ const Features = () => {
                                   </svg>
                                 </div>
                                 <div>
-                                  <p className="pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                                  <p className="text-3.5 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                                     ศูนย์ GECC ร้องทุกข์
                                   </p>
                                 </div>
@@ -495,7 +495,7 @@ const Features = () => {
                                   alt="place-marker--v1"
                                 />
                                 <div>
-                                  <p className="pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                                  <p className="text-3.5 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                                     ที่ตั้ง/GPS
                                   </p>
                                 </div>
@@ -540,7 +540,7 @@ const Features = () => {
                                 alt="qr-code--v1"
                               />
                             </div>
-                            <p className="px-4 pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                            <p className="text-3.5 px-4 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                               แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก
                             </p>
                           </Link>
@@ -558,7 +558,7 @@ const Features = () => {
                                 />
                               </div>
                               <div>
-                                <p className="px-4 pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                                <p className="text-3.5 px-4 pt-2 hover:text-sky-500 sm:text-sm md:text-base md:text-[20px]">
                                   แบบสํารวจความพึงพอใจของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก
                                 </p>
                               </div>

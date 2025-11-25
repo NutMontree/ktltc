@@ -24,9 +24,7 @@ const SingleTestimonial = ({ testimonial }: { testimonial: Testimonial }) => {
         className="shadow-testimonial dark:bg-dark rounded-xl bg-white px-4 py-[30px] sm:px-[30px]"
         data-wow-delay=".1s"
       >
-        <div className="mb-[18px] flex items-center gap-[2px]">
-          {ratingIcons}
-        </div>
+        <div className="mb-[18px] flex items-center gap-0.5">{ratingIcons}</div>
 
         <p className="text-body-color dark:text-black-6 mb-6 text-base">
           “{content}

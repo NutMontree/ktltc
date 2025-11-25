@@ -21,7 +21,7 @@ export default function ShowFacebook() {
               height={60}
             />
           </div>
-          <h1 className="pb-8 pt-3 text-3xl font-bold">Facebook</h1>
+          <h1 className="pt-3 pb-8 text-3xl font-bold">Facebook</h1>
         </div>
         <div>
           <div>
@@ -35,7 +35,7 @@ export default function ShowFacebook() {
                 >
                   <div className="flex justify-center">
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
-                      {/* <div className="justify-items-center pt-[24px]">
+                      {/* <div className="justify-items-center pt-6">
                       <iframe
                         src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61571228871228&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                         width="340"
@@ -45,7 +45,7 @@ export default function ShowFacebook() {
                         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                       ></iframe>
                     </div> */}
-                      <div className="justify-items-center pt-[24px]">
+                      <div className="justify-items-center pt-6">
                         <iframe
                           src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100088379594921&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                           width="340"
@@ -57,7 +57,7 @@ export default function ShowFacebook() {
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         ></iframe>
                       </div>
-                      <div className="justify-items-center pt-[24px]">
+                      <div className="justify-items-center pt-6">
                         <iframe
                           src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61567041267941&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                           width="340"
@@ -67,7 +67,7 @@ export default function ShowFacebook() {
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         ></iframe>
                       </div>
-                      <div className="justify-items-center pt-[24px]">
+                      <div className="justify-items-center pt-6">
                         <iframe
                           src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100065239134417&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                           width="340"
@@ -77,7 +77,7 @@ export default function ShowFacebook() {
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         ></iframe>
                       </div>
-                      <div className="justify-items-center pt-[24px]">
+                      <div className="justify-items-center pt-6">
                         <iframe
                           src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fktltc.ac.th.en&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                           width="340"
@@ -87,7 +87,7 @@ export default function ShowFacebook() {
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         ></iframe>
                       </div>
-                      <div className="justify-items-center pt-[24px]">
+                      <div className="justify-items-center pt-6">
                         <iframe
                           src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100068997166818&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                           width="340"
@@ -98,7 +98,7 @@ export default function ShowFacebook() {
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         ></iframe>
                       </div>
-                      <div className="justify-items-center pt-[24px]">
+                      <div className="justify-items-center pt-6">
                         <iframe
                           src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057195379923%26mibextid%3DZbWKwL&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                           width="340"
@@ -108,7 +108,7 @@ export default function ShowFacebook() {
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         ></iframe>
                       </div>
-                      <div className="justify-items-center pt-[24px]">
+                      <div className="justify-items-center pt-6">
                         <iframe
                           src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100063483313526&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=952832906928077"
                           width="340"

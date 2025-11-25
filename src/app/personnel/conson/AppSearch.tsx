@@ -20,8 +20,8 @@ export const AppSearch = (props: { value: any; onValueChange: any }) => {
   const { value, onValueChange } = props;
   return (
     <>
-      <div className="flex flex-col justify-center items-center ">
-        <h2 className="py-[48px] text-xl text-center sm:text-5xl dark:text-white text-black">
+      <div className="flex flex-col items-center justify-center">
+        <h2 className="py-12 text-center text-xl text-black sm:text-5xl dark:text-white">
           ค้นหารายชื่อ
         </h2>
         <PlaceholdersAndVanishInput

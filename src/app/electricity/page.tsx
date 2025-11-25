@@ -28,9 +28,9 @@ export default function Electricity() {
                 {Data.map((item) => (
                   <div className="" key={item.img}>
                     <div className="scale-100">
-                      <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
+                      <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 sm:p-4 dark:bg-zinc-900">
                         <Image className="" src={item.img} alt={""}></Image>
-                        <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-xl">
+                        <div className="mt-4 mb-2 text-center text-base text-black sm:text-xl dark:text-neutral-200">
                           <div className="hover:text-sky-500">{item.name}</div>
                         </div>
                         <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -40,7 +40,7 @@ export default function Electricity() {
                           <div> {item.description}</div>
                         </div>
                         <div className="flex justify-end">
-                          <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
+                          <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pr-1 pl-2 text-xs font-bold text-white dark:bg-zinc-800">
                             <span>แผนก</span>
                             <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                               ช่างไฟฟ้ากำลัง
@@ -56,7 +56,7 @@ export default function Electricity() {
           </AccordionItem>
         </Accordion>
 
-        <div className="justify-items-center pt-[24px]">
+        <div className="justify-items-center pt-6">
           <iframe
             src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057195379923%26mibextid%3DZbWKwL&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
             width="340"
