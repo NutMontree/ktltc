@@ -21,14 +21,14 @@ const SingleTestimonial = ({ testimonial }: { testimonial: Testimonial }) => {
   return (
     <div className="w-full md:w-1/2 lg:w-1/3">
       <div
-        className="rounded-xl bg-white px-4 py-[30px] shadow-testimonial dark:bg-dark sm:px-[30px]"
+        className="shadow-testimonial dark:bg-dark rounded-xl bg-white px-4 py-[30px] sm:px-[30px]"
         data-wow-delay=".1s"
       >
         <div className="mb-[18px] flex items-center gap-[2px]">
           {ratingIcons}
         </div>
 
-        <p className="mb-6 text-base text-body-color dark:text-dark-6">
+        <p className="text-body-color dark:text-black-6 mb-6 text-base">
           “{content}
         </p>
 
@@ -38,7 +38,7 @@ const SingleTestimonial = ({ testimonial }: { testimonial: Testimonial }) => {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-dark dark:text-white">
+            <h3 className="text-sm font-semibold text-black dark:text-white">
               {name}
             </h3>
             <p className="text-body-secondary text-xs">{designation}</p>

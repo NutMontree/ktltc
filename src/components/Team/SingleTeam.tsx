@@ -7,7 +7,7 @@ const SingleTeam = ({ team }: { team: TeamType }) => {
     team;
   return (
     <div className="w-full sm:w-1/2 lg:w-1/4 xl:w-1/4">
-      <div className="group mb-8 rounded-xl bg-white px-5 pb-10 pt-12 shadow-testimonial dark:bg-dark dark:shadow-none">
+      <div className="group shadow-testimonial dark:bg-dark mb-8 rounded-xl bg-white px-5 pt-12 pb-10 dark:shadow-none">
         <div className="relative z-10 mx-auto mb-5 h-[120px] w-[120px]">
           <Image
             src={image}
@@ -16,8 +16,8 @@ const SingleTeam = ({ team }: { team: TeamType }) => {
             width={120}
             height={120}
           />
-          <span className="absolute bottom-0 left-0 -z-10 h-10 w-10 rounded-full bg-secondary opacity-0 transition-all group-hover:opacity-100"></span>
-          <span className="absolute right-0 top-0 -z-10 opacity-0 transition-all group-hover:opacity-100">
+          <span className="bg-secondary absolute bottom-0 left-0 -z-10 h-10 w-10 rounded-full opacity-0 transition-all group-hover:opacity-100"></span>
+          <span className="absolute top-0 right-0 -z-10 opacity-0 transition-all group-hover:opacity-100">
             <svg
               width="55"
               height="53"
@@ -239,17 +239,17 @@ const SingleTeam = ({ team }: { team: TeamType }) => {
           </span>
         </div>
         <div className="text-center">
-          <h3 className="mb-1 text-lg font-semibold text-dark dark:text-white">
+          <h3 className="mb-1 text-lg font-semibold text-black dark:text-white">
             {name}
           </h3>
-          <p className="mb-5 text-sm text-body-color dark:text-dark-6">
+          <p className="text-body-color dark:text-black-6 mb-5 text-sm">
             {designation}
           </p>
           <div className="flex items-center justify-center gap-5">
             <Link
               aria-label="social link"
               href={facebookLink}
-              className="text-dark-6 hover:text-primary"
+              className="text-black-6 hover:text-primary"
             >
               <svg
                 width="18"
@@ -268,7 +268,7 @@ const SingleTeam = ({ team }: { team: TeamType }) => {
             <Link
               aria-label="social link"
               href={twitterLink}
-              className="text-dark-6 hover:text-primary"
+              className="text-black-6 hover:text-primary"
             >
               <svg
                 width="18"
@@ -287,7 +287,7 @@ const SingleTeam = ({ team }: { team: TeamType }) => {
             <Link
               aria-label="social link"
               href={instagramLink}
-              className="text-dark-6 hover:text-primary"
+              className="text-black-6 hover:text-primary"
             >
               <svg
                 width="18"

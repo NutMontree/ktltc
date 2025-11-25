@@ -8,8 +8,8 @@ export default function PaPage() {
   return (
     <>
       <main>
-        <div className="relative z-10 overflow-hidden pb-[60px] pt-[100px]">
-          <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-stroke/0 via-stroke to-stroke/0"></div>
+        <div className="relative z-10 overflow-hidden pt-[100px] pb-[60px]">
+          <div className="from-stroke/0 via-stroke to-stroke/0 absolute bottom-0 left-0 h-px w-full bg-gradient-to-r"></div>
           <div className="w-full px-4">
             <div className="text-center">
               <h1 className="flex justify-center text-xl">
@@ -22,14 +22,14 @@ export default function PaPage() {
                 <li>
                   <Link
                     href="/"
-                    className="flex items-center gap-[10px] text-base font-medium text-dark dark:text-white"
+                    className="flex items-center gap-[10px] text-base font-medium text-black dark:text-white"
                   >
                     Home
                   </Link>
                 </li>
                 <li>
-                  <p className="flex items-center gap-[10px] text-base font-medium text-body-color">
-                    <span className="text-body-color dark:text-dark-6">/</span>
+                  <p className="text-body-color flex items-center gap-[10px] text-base font-medium">
+                    <span className="text-body-color dark:text-black-6">/</span>
                     Performance Agreement
                   </p>
                 </li>

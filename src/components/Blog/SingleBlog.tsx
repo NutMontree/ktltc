@@ -13,25 +13,25 @@ const SingleBlog = ({ blog }: { blog: Blog }) => {
           <Image
             src={coverImage!}
             alt="image"
-            className="w-full transition group-hover:rotate-6 group-hover:scale-125"
+            className="w-full transition group-hover:scale-125 group-hover:rotate-6"
             width={408}
             height={272}
           />
         </Link>
       </div>
       <div>
-        <span className="mb-5 inline-block rounded bg-primary px-4 py-1 text-center text-xs font-semibold leading-loose text-white">
+        <span className="bg-primary mb-5 inline-block rounded px-4 py-1 text-center text-xs leading-loose font-semibold text-white">
           {format(new Date(date), "dd MMM yyyy")}
         </span>
         <h3>
           <Link
             href={`/blogs/${slug}`}
-            className="mb-4 inline-block text-xl font-semibold text-dark hover:text-primary dark:text-white dark:hover:text-primary sm:text-2xl lg:text-xl xl:text-2xl"
+            className="hover:text-primary dark:hover:text-primary mb-4 inline-block text-xl font-semibold text-black sm:text-2xl lg:text-xl xl:text-2xl dark:text-white"
           >
             {title}
           </Link>
         </h3>
-        <p className="text-base text-body-color dark:text-dark-6">{excerpt}</p>
+        <p className="text-body-color dark:text-black-6 text-base">{excerpt}</p>
       </div>
     </div>
   );
