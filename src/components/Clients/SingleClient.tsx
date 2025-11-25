@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import Link from "next/link";
 import { Client } from "@/types/client";
 

@@ -1,6 +1,6 @@
 "use client"; // top to the file
 import { FlipWords } from "@/components/ui/flip-words";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/image";
 import { ImageItem } from "./data";
 
 export default function HistoryEducational() {
@@ -8,7 +8,7 @@ export default function HistoryEducational() {
   return (
     <>
       <div className="md:px-24">
-        <h1 className="text-center md:text-start text-xxl pt-8 font-bold">
+        <h1 className="text-xxl pt-8 text-center font-bold md:text-start">
           ประวัติสถานศึกษา
         </h1>
 
@@ -16,18 +16,18 @@ export default function HistoryEducational() {
           <Image
             removeWrapper
             alt="Relaxing app background"
-            className="w-60 py-2 flex justify-center"
+            className="flex w-60 justify-center py-2"
             width="auto"
-            height='auto'
+            height="auto"
             src="/images/logo.webp"
           />
         </div>
         <div>
-          <div className="text-xl mx-auto font-normal text-neutral-600 dark:text-neutral-400">
-            <FlipWords words={words} className="text-sky-700 " />
+          <div className="mx-auto text-xl font-normal text-neutral-600 dark:text-neutral-400">
+            <FlipWords words={words} className="text-sky-700" />
             <div className="pl-2">วิทยาลัยเทคนิคกันทรลักษ์</div>
           </div>
-          <p className="pl-4 font-semibold ">
+          <p className="pl-4 font-semibold">
             ประวัติ ความเป็นมาของ วิทยาลัยเทคนิคกันทรลักษ์
           </p>
 
@@ -86,7 +86,7 @@ export default function HistoryEducational() {
           <br />
           <br />
 
-          <p className="pl-4 font-semibold ">ข้อมูลด้านอาคารสถานที่</p>
+          <p className="pl-4 font-semibold">ข้อมูลด้านอาคารสถานที่</p>
           <p className="pl-6">
             วิทยาลัยเทคนิคกันทรลักษ์ มีพื้นที่จัดการศึกษา เนื้อที่ 105 ไร่ 2 งาน
             25 ตารางวา มีจำนวนอาคารสถานที่ดังต่อไปนี้
@@ -101,15 +101,15 @@ export default function HistoryEducational() {
         </div>
         <br />
         <br />
-        <div className="text-xl font-semibold mx-auto text-neutral-600 dark:text-neutral-400">
+        <div className="mx-auto text-xl font-semibold text-neutral-600 dark:text-neutral-400">
           ภาพอาคารสถานที่
         </div>
 
         <div className="flex justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center ">
+          <div className="grid grid-cols-1 justify-center justify-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {ImageItem.map((item) => (
               <div className="" key={item.img}>
-                <div className="scale-90 hover:scale-110 transition duration-500 rounded-full">
+                <div className="scale-90 rounded-full transition duration-500 hover:scale-110">
                   <Image src={item.img} alt={""}></Image>
                 </div>
               </div>

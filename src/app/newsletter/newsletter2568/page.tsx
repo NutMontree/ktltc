@@ -22,7 +22,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6810"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6810"
               >
                 เดือน ตุลาคม 2568
               </Link>
@@ -32,7 +32,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6809"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6809"
               >
                 เดือน กันยายน 2568
               </Link>
@@ -42,7 +42,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6808"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6808"
               >
                 เดือน สิงหาคม 2568
               </Link>
@@ -52,7 +52,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6807"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6807"
               >
                 เดือน กรกฎาคม 2568
               </Link>
@@ -62,7 +62,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6806"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6806"
               >
                 เดือน มิถุนายน 2568
               </Link>
@@ -72,7 +72,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6805"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6805"
               >
                 เดือน พฤษภาคม 2568
               </Link>
@@ -82,7 +82,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6804"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6804"
               >
                 เดือน เมษายน 2568
               </Link>
@@ -92,7 +92,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6803"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6803"
               >
                 เดือน มีนาคม 2568
               </Link>
@@ -102,7 +102,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6802"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6802"
               >
                 เดือน กุมภาพันธ์ 2568
               </Link>
@@ -112,7 +112,7 @@ export default function Newsletter2568() {
             <Button color="primary">
               <Link
                 className="text-lg"
-                href="/newsletter/newsletter2568/newsletter6801"
+                href="https://ktltcv2.vercel.app/newsletter/newsletter2568/newsletter6801"
               >
                 เดือน มกราคม 2568
               </Link>

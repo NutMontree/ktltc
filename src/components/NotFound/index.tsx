@@ -1,5 +1,5 @@
 import React from "react";
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import Link from "next/link";
 
 const NotFound = () => {
@@ -12,13 +12,11 @@ const NotFound = () => {
               <Image
                 src="/images/404.svg"
                 alt="image"
-                fill
                 className="mx-auto max-w-full dark:hidden"
               />
               <Image
                 src="/images/404-dark.svg"
                 alt="image"
-                fill
                 className="mx-auto hidden max-w-full dark:block"
               />
             </div>

@@ -65,7 +65,7 @@ export default function ThankYou({
             transition={{ delay: 0.6, duration: 0.5 }}
           >
             😇
-          </motion.p>
+          </motion.div>
         )}
 
         <motion.div

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import CounterPage from "../counter";
 import { LinkPreview } from "../ui/link-preview";
 
@@ -12,7 +12,10 @@ const Footer = () => {
         <div className="-mx-4 flex flex-wrap">
           <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-4/12 xl:w-3/12">
             <div className="mb-10 w-full">
-              <LinkPreview url="https://ktltc.vercel.app/" className="mb-6 inline-block max-w-[160px]">
+              <LinkPreview
+                url="https://ktltc.vercel.app/"
+                className="mb-6 inline-block max-w-[160px]"
+              >
                 <Image
                   src="/images/logo.webp"
                   alt="logo"
@@ -21,7 +24,10 @@ const Footer = () => {
                   style={{ width: "auto", height: "auto" }}
                 />
               </LinkPreview>
-              <LinkPreview url="https://ktltc.vercel.app/" className="mb-8 inline-block max-w-[160px]">
+              <LinkPreview
+                url="https://ktltc.vercel.app/"
+                className="mb-8 inline-block max-w-[160px]"
+              >
                 <Image
                   src="/images/logo2.webp"
                   alt="logo"
@@ -55,7 +61,6 @@ const Footer = () => {
                   url="#"
                   className="px-3 text-gray-7 hover:text-white"
                 >
-
                   <svg
                     width="22"
                     height="22"
@@ -302,7 +307,8 @@ const Footer = () => {
                   <LinkPreview
                     url="https://ktltc.vercel.app/machine"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
-                  >แผนกวิชาช่างกลโรงงาน
+                  >
+                    แผนกวิชาช่างกลโรงงาน
                   </LinkPreview>
                 </li>
                 <li>
@@ -390,9 +396,7 @@ const Footer = () => {
           </div>
           <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
             <div className="mb-10 w-full">
-              <h4 className="mb-9 text-lg font-semibold text-white">
-                เมนูลัด
-              </h4>
+              <h4 className="mb-9 text-lg font-semibold text-white">เมนูลัด</h4>
               <ul>
                 <li>
                   <LinkPreview
@@ -414,7 +418,8 @@ const Footer = () => {
                   <LinkPreview
                     url="https://std2018.vec.go.th/web/"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
-                  >ตรวจสอบผลการเรียน
+                  >
+                    ตรวจสอบผลการเรียน
                   </LinkPreview>
                 </li>
                 <li>
@@ -483,7 +488,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <LinkPreview
-                    url='/pa'
+                    url="/pa"
                     className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     Performance Agreement: PA
@@ -494,9 +499,7 @@ const Footer = () => {
           </div>
           <div className="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
             <div className="mb-10 w-full">
-              <h4 className="mb-9 text-lg font-semibold text-white">
-                อื่น ๆ
-              </h4>
+              <h4 className="mb-9 text-lg font-semibold text-white">อื่น ๆ</h4>
               <ul>
                 <li>
                   <LinkPreview
@@ -530,6 +533,14 @@ const Footer = () => {
                     ktltcQ&A
                   </LinkPreview>
                 </li>
+                <li>
+                  <LinkPreview
+                    url="https://ktltc.vercel.app/EmploymentDashboard"
+                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                  >
+                    EmploymentDashboard
+                  </LinkPreview>
+                </li>
               </ul>
             </div>
           </div>
@@ -541,23 +552,25 @@ const Footer = () => {
           <div>
             <CounterPage />
           </div>
-          <div className="w-full py-3 ">
-            <div className="flex gap-2 justify-center">
-              <div className="text-gray-7 text-xs">Copyright © 2023.</div>
+          <div className="w-full py-3">
+            <div className="flex justify-center gap-2">
+              <div className="text-xs text-gray-7">Copyright © 2023.</div>
 
               <div className="text-xs text-cyan-500">
                 KTLTC / งานศูนย์ข้อมูลและสารสนเทศ
               </div>
             </div>
-            <div className="flex gap-2 justify-center ">
-              <div className="text-gray-7 text-xs"> Designed </div>
+            <div className="flex justify-center gap-2">
+              <div className="text-xs text-gray-7"> Designed </div>
               <LinkPreview
-                className="flex justify-center gap-1 text-current "
+                className="flex justify-center gap-1 text-current"
                 // url="https://www.facebook.com/profile.php?id=61553558543619"
                 url="https://ktltc.vercel.app/Sponsor"
-              // title="All M Min"
+                // title="All M Min"
               >
-                <div className="text-xs font-medium text-gray-7">By All M Min</div>
+                <div className="text-xs font-medium text-gray-7">
+                  By All M Min
+                </div>
               </LinkPreview>
             </div>
           </div>
@@ -566,11 +579,11 @@ const Footer = () => {
 
       <div>
         <span className="absolute left-0 top-0 z-[-1] aspect-[95/82] w-full max-w-[570px]">
-          <Image src="/images/footer/shape-1.svg" alt="shape" fill />
+          <Image src="/images/footer/shape-1.svg" alt="shape" />
         </span>
 
         <span className="absolute bottom-0 right-0 z-[-1] aspect-[31/22] w-full max-w-[372px]">
-          <Image src="/images/footer/shape-3.svg" alt="shape" fill />
+          <Image src="/images/footer/shape-3.svg" alt="shape" />
         </span>
 
         <span className="absolute right-0 top-0 z-[-1]">

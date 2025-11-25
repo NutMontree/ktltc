@@ -1,5 +1,5 @@
 import { TeamType } from "@/types/team";
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import Link from "next/link";
 
 const SingleTeam = ({ team }: { team: TeamType }) => {

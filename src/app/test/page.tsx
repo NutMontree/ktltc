@@ -27,7 +27,7 @@ export default function page() {
             transition={{ delay: 0.3 }}
           >
             วิทยาลัยเทคนิคกันทรลักษ์
-          </motion.p>
+          </motion.div>
         </motion.section>
 
         {/* Press Release Section */}

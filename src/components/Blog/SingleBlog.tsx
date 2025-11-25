@@ -1,6 +1,6 @@
 import { Blog } from "@/types/blog";
 import { format } from "date-fns";
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import Link from "next/link";
 
 const SingleBlog = ({ blog }: { blog: Blog }) => {

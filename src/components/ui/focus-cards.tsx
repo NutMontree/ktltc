@@ -1,5 +1,5 @@
 // "use client";
-// import { Image } from "@nextui-org/react";
+// import { Image } from "@heroui/image";
 // import React, { useState } from "react";
 // import { cn } from "@/lib/utils";
 

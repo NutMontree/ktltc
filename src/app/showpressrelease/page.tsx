@@ -8,7 +8,7 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
 import { motion } from "framer-motion";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/image";
 
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
@@ -17,7 +17,6 @@ import { DataPressrelease } from "../pressrelease/2568/press6811/data";
 import Link from "next/link";
 
 export default function ShowPressRelease() {
-
   return (
     <>
       <motion.div
@@ -314,52 +313,55 @@ export default function ShowPressRelease() {
                 transform="rotate(180 1.66732 1.66683)"
                 fill="#13C296"
               />
-            </svg></span>
+            </svg>
+          </span>
           <div className="pt-28">
             {/*   title title title title title title title title title title title title title title title title title title */}
             <div className="grid grid-flow-col py-4">
               <div className="justify-items-start">
                 <div className="grid grid-flow-col">
-                  <div className="bg-red-500 w-2" />
+                  <div className="w-2 bg-red-500" />
                   <div className="pl-4">
                     <h1 className="text-xxl font-bold">ข่าวประชาสัมพันธ์</h1>
-                    <h1 className="text-xxl text-[#DAA520]">Press Release Page</h1>
+                    <h1 className="text-xxl text-[#DAA520]">
+                      Press Release Page
+                    </h1>
                   </div>
                 </div>
               </div>
-            </div >
+            </div>
             {/*   title title title title title title title title title title title title title title title title title title */}
             <div className="grid grid-flow-col">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-                {DataPressrelease.navItems.slice(0, 8).map((item) => (
-                  <div key={item.name} className="hover:bg-orange-300 px-2 py-2 rounded-xl ">
+                {DataPressrelease.navItems.slice(0, 8).map((item, index) => (
+                  <div
+                    key={index}
+                    className="rounded-xl px-2 py-2 hover:bg-orange-300"
+                  >
                     <Link key={item.href} href={item.href}>
-                      <div className="
-                                    mb-4 relative shadow-lg rounded-xl 
-                                    h-[180px] xl:h-[250px]
- 
-                                    overflow-hidden
-                                    hover:bg-orange-500
-                                    ">
+                      <div className="relative mb-4 h-[180px] overflow-hidden rounded-xl shadow-lg hover:bg-orange-500 xl:h-[250px]">
                         <div
-                          className="absolute inset-0 bg-cover bg-no-repeat bg-top hover:scale-110 duration-500"
+                          className="absolute inset-0 bg-cover bg-top bg-no-repeat duration-500 hover:scale-110"
                           style={{
                             backgroundImage: `url(${item.backgroundImage})`,
                           }}
                         />
                       </div>
                       <div>
-                        <h1 className="text-[14px] md:text-[20px] sm:text-sm md:text-base text-sky-600 hover:text-sky-400" >
+                        <h1 className="text-[14px] text-sky-600 hover:text-sky-400 sm:text-sm md:text-[20px] md:text-base">
                           {item.name}
                         </h1>
-                        <div className="text-[12px] md:text-[14px] sm:text-sm md:text-base mb-2 flex">
-                          <div>
-                            {item.description}
-                          </div>
+                        <div className="mb-2 flex text-[12px] sm:text-sm md:text-[14px] md:text-base">
+                          <div>{item.description}</div>
                         </div>
                         <div className="flex gap-2">
-                          <Image src='/images/icons8-calendar.gif' alt='logo-youtube' width={20} height={20} />
-                          <div className="text-xs text-slate-500 text-[12px] md:text-[14px] sm:text-sm md:text-base">
+                          <Image
+                            src="/images/icons8-calendar.gif"
+                            alt="logo-youtube"
+                            width={20}
+                            height={20}
+                          />
+                          <div className="text-[12px] text-xs text-slate-500 sm:text-sm md:text-[14px] md:text-base">
                             {item.date}
                           </div>
                         </div>
@@ -371,7 +373,7 @@ export default function ShowPressRelease() {
             </div>
             <div className="justify-items-center pt-6">
               <div className=" ">
-                <ConfigProvider  >
+                <ConfigProvider>
                   <Space>
                     <Button
                       type="primary"
@@ -385,8 +387,8 @@ export default function ShowPressRelease() {
                 </ConfigProvider>
               </div>
             </div>
-          </div >
-        </div >
+          </div>
+        </div>
       </motion.div>
     </>
   );

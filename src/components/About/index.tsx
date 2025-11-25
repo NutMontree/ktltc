@@ -1,5 +1,5 @@
 "use client"; // top to the file
-import Image from "next/image";
+import { Image } from "@heroui/image";
 import Link from "next/link";
 import { FootTitle } from "../FootTitle";
 import Personnel from "@/app/personnel/page";
@@ -21,23 +21,29 @@ const About = () => {
                 <div className="mb-10 text-base leading-relaxed text-body-color dark:text-dark-6">
                   (ชื่อเดิม วิทยาลัยการอาชีพกันทรลักษ์ แก้ไขเมื่อ 8 เมษายน 2559)
                   <br /> <br />
-                  ที่อยู่ : 82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110 <br />
+                  ที่อยู่ : 82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110{" "}
+                  <br />
                   <p>Facebook : งานประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์</p>
                   <p>
-                    เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ วิทยาลัยเทคนิคกันทรลักษ์
-                    Today
+                    เพจ Facebook : วิทยาลัยเทคนิคกันทรลักษ์ เเละ
+                    วิทยาลัยเทคนิคกันทรลักษ์ Today
                   </p>
                   <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
                   <p>Website : ktltc.vercel.app</p>
-                  <p>Gmail : relationktl@gmail.com</p><br />
+                  <p>Gmail : relationktl@gmail.com</p>
+                  <br />
                   <p>สอบถามข้อมูลเพิ่มเติม</p>
                   <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๐๕๓ </p>
                   <br />
-
-                  <Link target="_blank" href="https://maps.app.goo.gl/LSK6jriPzmmQSz846">
-                    <div className=" hover:text-sky-500">
+                  <Link
+                    target="_blank"
+                    href="https://maps.app.goo.gl/LSK6jriPzmmQSz846"
+                  >
+                    <div className="hover:text-sky-500">
                       <div>
-                        <p className="hover:text-sky-500 pt-2 text-[14px] md:text-[20px] sm:text-sm md:text-base">ที่ตั้ง/GPS</p>
+                        <p className="pt-2 text-[14px] hover:text-sky-500 sm:text-sm md:text-[20px] md:text-base">
+                          ที่ตั้ง/GPS
+                        </p>
                       </div>
                     </div>
                   </Link>
@@ -60,18 +66,15 @@ const About = () => {
               </div>
             </div>
 
-
-
             <div className="w-full lg:w-1/2">
               <div className="-mx-2 flex flex-wrap sm:-mx-4 lg:-mx-2 xl:-mx-4">
                 <div className="w-full px-2 sm:w-1/2 sm:px-4 lg:px-2 xl:px-4">
                   <div
-                    className={`relative mb-4 sm:mb-8 sm:h-[400px] md:h-[540px] lg:h-[400px] xl:h-[500px] `}
+                    className={`relative mb-4 sm:mb-8 sm:h-[400px] md:h-[540px] lg:h-[400px] xl:h-[500px]`}
                   >
                     <Image
                       src="/images/ภาพวิลัย/มุมสูง/01.webp"
                       alt="about image"
-                      fill
                       className="h-full w-full object-cover object-center"
                     />
                   </div>
@@ -82,7 +85,6 @@ const About = () => {
                     <Image
                       src="/images/ภาพวิลัย/มุมสูง/21.webp"
                       alt="about image"
-                      fill
                       className="h-full w-full object-cover object-center"
                     />
                   </div>
@@ -214,8 +216,7 @@ const About = () => {
               </div>
             </div>
           </div>
-          <div>
-          </div>
+          <div></div>
         </div>
       </div>
     </section>

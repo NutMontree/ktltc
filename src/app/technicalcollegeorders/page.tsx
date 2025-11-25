@@ -1,6 +1,6 @@
 "use client"; // top to the file
 
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 
 import Technical2566 from "./technical2566/page";
 import Technical2567 from "./Technical2567/page";
@@ -11,7 +11,7 @@ export default function TechnicalcollegeordersPage() {
     <>
       <div>
         <h1 className="flex justify-center text-xl">คำสั่งวิทยาลัยเทคนิค</h1>
-        <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
+        <h1 className="flex justify-center pb-8 text-xl text-[#DAA520]">
           Technical College Page
         </h1>
       </div>

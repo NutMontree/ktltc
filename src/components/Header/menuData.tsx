@@ -305,6 +305,12 @@ const menuData: Menu[] = [
         path: "/pa",
         newTab: false,
       },
+      {
+        id: 615,
+        title: "แบบสำรวจภาวะการมีงานทำ",
+        path: "/EmploymentDashboard",
+        newTab: false,
+      },
     ],
   },
   // {
