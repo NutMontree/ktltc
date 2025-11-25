@@ -68,10 +68,10 @@ export default async function EmploymentDashboard(props: PageProps) {
     <div className="min-h-screen bg-white/50 py-16 transition-colors duration-300 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
         {/* --- HEADER SECTION --- */}
-        <div className="flex flex-col items-start justify-between gap-4 border-b border-orange-200 pb-6 dark:border-orange-800 md:flex-row md:items-center">
-          <h1 className="flex items-center text-3xl font-extrabold tracking-tight text-green-900 dark:text-green-100 sm:text-4xl">
+        <div className="flex flex-col items-start justify-between gap-4 border-b border-orange-200 pb-6 md:flex-row md:items-center dark:border-orange-800">
+          <h1 className="flex items-center text-3xl font-extrabold tracking-tight text-green-900 sm:text-4xl dark:text-green-100">
             <svg
-              className="mr-3 h-8 w-8 text-orange-500 drop-shadow-sm dark:text-orange-400 sm:h-10 sm:w-10"
+              className="mr-3 h-8 w-8 text-orange-500 drop-shadow-sm sm:h-10 sm:w-10 dark:text-orange-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -89,7 +89,7 @@ export default async function EmploymentDashboard(props: PageProps) {
 
           <Link
             href="/suvery"
-            className="inline-flex w-full transform items-center justify-center rounded-xl border border-transparent bg-green-500 px-6 py-3 text-base font-semibold text-white shadow-xl drop-shadow-md transition duration-300 hover:scale-[1.03] hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-orange-400 focus:ring-offset-2 active:scale-[0.98] dark:bg-green-600 dark:hover:bg-green-500 dark:focus:ring-orange-800 md:w-auto"
+            className="inline-flex w-full transform items-center justify-center rounded-xl border border-transparent bg-green-500 px-6 py-3 text-base font-semibold text-white shadow-xl drop-shadow-md transition duration-300 hover:scale-[1.03] hover:bg-green-600 focus:ring-4 focus:ring-orange-400 focus:ring-offset-2 focus:outline-none active:scale-[0.98] md:w-auto dark:bg-green-600 dark:hover:bg-green-500 dark:focus:ring-orange-800"
           >
             <svg
               className="mr-2 h-5 w-5"
@@ -155,7 +155,7 @@ export default async function EmploymentDashboard(props: PageProps) {
                 <div className="mt-8">
                   <Link
                     href="/suvery"
-                    className="inline-flex items-center rounded-full border border-green-500 bg-white px-6 py-3 text-base font-medium text-green-700 shadow-sm transition duration-300 hover:bg-green-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:border-green-400 dark:bg-gray-800 dark:text-green-300 dark:hover:bg-gray-700"
+                    className="inline-flex items-center rounded-full border border-green-500 bg-white px-6 py-3 text-base font-medium text-green-700 shadow-sm transition duration-300 hover:bg-green-50 hover:shadow-md focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none dark:border-green-400 dark:bg-gray-800 dark:text-green-300 dark:hover:bg-gray-700"
                   >
                     กรอกข้อมูลแบบสำรวจ
                   </Link>

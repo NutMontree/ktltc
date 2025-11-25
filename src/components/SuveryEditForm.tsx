@@ -132,7 +132,7 @@ const CustomAlertModal = ({ isOpen, type, title, message, onClose }: any) => {
         <div className="flex justify-center bg-gray-50 px-6 py-4 dark:bg-gray-700/50">
           <button
             onClick={onClose}
-            className={`inline-flex w-full justify-center rounded-xl px-4 py-2 text-base font-medium text-white shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm ${type === "success" ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-red-600 hover:bg-red-700 focus:ring-red-500"}`}
+            className={`inline-flex w-full justify-center rounded-xl px-4 py-2 text-base font-medium text-white shadow-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none sm:text-sm ${type === "success" ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-red-600 hover:bg-red-700 focus:ring-red-500"}`}
           >
             ตกลง
           </button>
@@ -1158,7 +1158,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
         </FormSection>
 
         {/* --- ปุ่มควบคุม --- */}
-        <div className="mt-8 flex flex-col justify-end gap-4 border-t border-gray-200 pt-6 dark:border-gray-700 sm:flex-row">
+        <div className="mt-8 flex flex-col justify-end gap-4 border-t border-gray-200 pt-6 sm:flex-row dark:border-gray-700">
           <Link
             href="/EmploymentDashboard"
             className="flex items-center justify-center gap-1 rounded-xl border border-gray-300 bg-gray-100 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
