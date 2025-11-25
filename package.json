@@ -17,10 +17,13 @@
     "@heroui/calendar": "^2.2.22",
     "@heroui/image": "^2.2.17",
     "@heroui/react": "^2.6.14",
+<<<<<<< HEAD
     "@heroui/system": "^2.4.23",
     "@heroui/theme": "^2.4.23",
+=======
+    "@heroui/system": "^2.4.18",
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
     "@motionone/utils": "^10.18.0",
-    "@nextui-org/react": "^2.6.11",
     "@radix-ui/react-hover-card": "^1.1.14",
     "@tabler/icons-react": "^3.30.0",
     "@tailwindcss/postcss": "^4.0.6",
@@ -38,14 +41,14 @@
     "clsx": "^2.1.1",
     "cookies-next": "^5.1.0",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.20.1",
+    "framer-motion": "^12.23.24",
     "gray-matter": "^4.0.3",
     "import": "^0.0.6",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.544.0",
     "mongoose": "^8.17.1",
     "motion": "^12.23.22",
-    "next": "15.1.7",
+    "next": "^16.0.3",
     "next-themes": "^0.4.4",
     "nodemailer": "^6.10.0",
     "qss": "^3.0.0",
@@ -59,13 +62,14 @@
     "server-timing": "^3.3.3",
     "swiper": "^11.2.3",
     "tailgrids": "^2.2.7",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "use-debounce": "^10.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/node": "20.17.28",
+    "@types/node": "^24.10.1",
     "@types/nodemailer": "^6.4.17",
-    "@types/react": "19.0.12",
+    "@types/react": "^19.2.4",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
@@ -73,6 +77,6 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^3.4.17",
-    "typescript": "5.8.2"
+    "typescript": "^5.9.3"
   }
 }

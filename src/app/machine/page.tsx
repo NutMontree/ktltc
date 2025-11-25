@@ -1,7 +1,11 @@
 "use client"; // top to the file
 // machine
 
+<<<<<<< HEAD
 import { Image } from "@heroui/image";
+=======
+import Image from "next/image";
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 import React from "react";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { Data } from "./data";

@@ -1,7 +1,11 @@
 "use client"; // top to the file
 import React from "react";
 import Link from "next/link";
+<<<<<<< HEAD
 // import { Image } from "@heroui/image";
+=======
+// import Image from "next/image";
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 import { Button, Modal } from "antd";
 import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb } from "antd";
@@ -199,7 +203,11 @@ export default function page() {
               />
               <div className="flex flex-col">
                 <p className="text-md">งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
+<<<<<<< HEAD
                 <p className="text-small text-default-500">
+=======
+                <p className="text-default-500 text-small">
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
                   ฝ่ายบริหารทรัพยากร วิทยาลัยเทคนิคกันทรลักษ์
                 </p>
               </div>
@@ -551,7 +559,11 @@ export default function page() {
                 />
                 <div className="flex flex-col">
                   <p className="text-md">งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
+<<<<<<< HEAD
                   <p className="text-small text-default-500">
+=======
+                  <p className="text-default-500 text-small">
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
                     ฝ่ายวิชาการ วิทยาลัยเทคนิคกันทรลักษ์
                   </p>
                 </div>
@@ -677,7 +689,7 @@ export default function page() {
             />
             <div className="flex flex-col">
               <p className="text-md">งานบริการตามภารกิจที่สอศ.มอบหมาย</p>
-              <p className="text-small text-default-500">เอกสาร</p>
+              <p className="text-default-500 text-small">เอกสาร</p>
             </div>
           </CardHeader>
           <Divider />

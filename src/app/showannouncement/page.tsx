@@ -17,7 +17,11 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
 import NextLink from "next/link";
+<<<<<<< HEAD
 import { Image } from "@heroui/image";
+=======
+import Image from "next/image";
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 import { motion } from "framer-motion";
 
 import { Button, ConfigProvider, Space } from "antd";

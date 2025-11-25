@@ -1,6 +1,10 @@
 "use client"; // top to the file
 import { FlipWords } from "@/components/ui/flip-words";
+<<<<<<< HEAD
 import { Image } from "@heroui/image";
+=======
+import Image from "next/image";
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 import { ImageItem } from "./data";
 
 export default function HistoryEducational() {

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
  
+=======
+import React from "react";
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 import { Tabs, Tab, Card, CardBody } from "@heroui/react";
 
 export default function TabsPage() {

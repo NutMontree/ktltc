@@ -1,7 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+<<<<<<< HEAD
 import { Image } from "@heroui/image";
+=======
+import Image from "next/image";
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 
 import type { Transition } from "framer-motion";
 
@@ -27,7 +31,11 @@ export const MenuItem = ({
 }) => {
   return (
     <div onMouseEnter={() => setActive(item)} className="relative">
+<<<<<<< HEAD
       <motion.div
+=======
+      <motion.p
+>>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
         transition={{ duration: 0.3 }}
         className="cursor-pointer text-black hover:opacity-[0.9] dark:text-white"
       >
