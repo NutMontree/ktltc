@@ -8,10 +8,10 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Link from "next/link";
 import { dataBidding2 } from "./data";
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 
 export default function bidding2() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

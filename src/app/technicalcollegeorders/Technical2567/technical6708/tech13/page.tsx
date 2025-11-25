@@ -1,18 +1,18 @@
 "use client"; // top to the file
 
 import { DataDate, DataTechnicalCollege, Description, ImageItem } from "./data";
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 
 export default function TechnicalCollege() {
   return (
     <>
       <div>
-        <div className="text-center text-xl pb-6 px-2">
+        <div className="px-2 pb-6 text-center text-xl">
           {DataTechnicalCollege.Item.map((item) => (
             <div key={item.title}>{item.title}</div>
           ))}
         </div>
-        <div className='px-2'>
+        <div className="px-2">
           {Description.map((item) => (
             <div key={item.description}>
               <div>{item.description}</div>
@@ -20,10 +20,10 @@ export default function TechnicalCollege() {
           ))}
         </div>
         {/* ***************************** Foot Title ***************************** */}
-        <div className="text-xs pt-6">
+        <div className="pt-6 text-xs">
           <h1 className="text-base">KTL-TC ONE TEAM </h1>
           <p className="text-sky-500">#เรียนดีมีความสุข #เทคนิคกันท์ </p>
-          <p className="border-t pt-[12px] ">
+          <p className="border-t pt-[12px]">
             " วิสัยทัศน์ วิทยาลัยเทคนิคกันทรลักษ์ "
           </p>
           <p>
@@ -50,7 +50,6 @@ export default function TechnicalCollege() {
           <p>Gmail : relationktl@gmail.com</p>
           <p>สอบถามข้อมูลเพิ่มเติม</p>
           <p>โทร : ๐๖๑ - ๔๑๒๒๗๖๕ หรือ ๐๔๕ - ๘๑๑๐๕๓ </p>
-
         </div>
         {/* ***************************** Foot Title ***************************** */}
 
@@ -94,7 +93,7 @@ export default function TechnicalCollege() {
         <div>
           <div className="text-lg text-sky-500"></div>
           <iframe
-            className="w-full aspect-video ... "
+            className="aspect-video w-full ..."
             src="/images/คำสั่งวิทยาลัย/2567/สิงหาคม/2/1.pdf"
           ></iframe>
         </div>

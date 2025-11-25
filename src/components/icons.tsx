@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IconSvgProps } from "@/types";
-import { Avatar } from "@nextui-org/react";
+import { Avatar } from "@heroui/react";
 
 export const Logo: React.FC<IconSvgProps> = ({
   size = 36,

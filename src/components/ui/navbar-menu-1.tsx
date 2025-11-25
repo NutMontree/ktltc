@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 
 const transition = {};
 
@@ -18,7 +18,7 @@ export const MenuItem1 = ({
   children?: React.ReactNode;
 }) => {
   return (
-    <div onMouseEnter={() => setActive(item)} className="  ">
+    <div onMouseEnter={() => setActive(item)} className=" ">
       <motion.p>{item}</motion.p>
       {active !== null && (
         <motion.div>
@@ -87,11 +87,7 @@ export const HoveredLink1 = ({ children, ...rest }: any) => {
   return (
     <Link
       {...rest}
-      className=" text-neutral-700 
-                  dark:text-neutral-200 
-                  hover:text-sky-600 
-                  dark:hover:text-sky-700
-                "
+      className="text-neutral-700 hover:text-sky-600 dark:text-neutral-200 dark:hover:text-sky-700"
     >
       <div className="px-2 py-2">{children}</div>
     </Link>

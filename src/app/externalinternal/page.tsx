@@ -1,6 +1,6 @@
 "use client";
 
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 
 import DocumentsAcademic from "../DocumentsAcademic/page";
 import DocumentsResource from "../DocumentsResource/page";
@@ -9,11 +9,11 @@ export default function ExternalInternal() {
   return (
     <>
       <div>
-        <div className="pt-8 pb-8">
-          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
+        <div className="pb-8 pt-8">
+          <h1 className="flex justify-center pt-8 text-xl text-[#DAA520]">
             แบบฟอร์มหนังสือภายนอก-ภายใน
           </h1>
-          <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
+          <h1 className="flex justify-center pt-8 text-xl text-[#DAA520]">
             External-internal book form
           </h1>
         </div>

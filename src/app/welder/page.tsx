@@ -1,7 +1,7 @@
 "use client"; // top to the file
 
-import { Accordion, AccordionItem } from "@nextui-org/react";
-import { Image } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
+import Image from "next/image";
 import React from "react";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { Data } from "./data";
@@ -10,7 +10,7 @@ export default function Welder() {
   return (
     <>
       <div className="pb-10">
-        <h1 className="flex justify-center text-xl text-[#DAA520] pt-8">
+        <h1 className="flex justify-center pt-8 text-xl text-[#DAA520]">
           แผนกวิชาช่างเชื่อมโลหะ
         </h1>
       </div>
@@ -21,16 +21,16 @@ export default function Welder() {
             key="1"
             aria-label="Accordion 1"
             title="คณะครู แผนกวิชาช่างเชื่อมโลหะ"
-            className=" border rounded-xl px-4 py-1 shadow-2xl "
+            className="rounded-xl border px-4 py-1 shadow-2xl"
           >
             <div className="flex justify-center">
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 ">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
                 {Data.map((item) => (
                   <div className="" key={item.img}>
                     <div className="scale-100">
-                      <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+                      <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
                         <Image className="" src={item.img} alt={""}></Image>
-                        <div className="text-center text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+                        <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-xl">
                           <div className="hover:text-sky-500">{item.name}</div>
                         </div>
                         <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -39,10 +39,10 @@ export default function Welder() {
                           <div> {item.faction}</div>
                           <div> {item.description}</div>
                         </div>
-                        <div className="flex justify-end ">
-                          <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
+                        <div className="flex justify-end">
+                          <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
                             <span>แผนก</span>
-                            <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
+                            <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                               ช่างเชื่อมโลหะ
                             </span>
                           </button>
@@ -61,7 +61,7 @@ export default function Welder() {
             src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100068997166818&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
             width="340"
             height="500"
-            className="border-none overflow-visible justify-items-center"
+            className="justify-items-center overflow-visible border-none"
             scrolling="no"
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"

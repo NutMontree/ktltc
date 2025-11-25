@@ -1,6 +1,6 @@
 "use client"; // top to the file
 
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 import StructureResource from "./StructureResource";
 
 import Finance from "./Finance";
@@ -17,15 +17,19 @@ export default function page() {
   return (
     <>
       <div>
-        <h1 className="flex justify-center text-xl ">ฝ่ายบริหารทรัพยากร</h1>
-        <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
+        <h1 className="flex justify-center text-xl">ฝ่ายบริหารทรัพยากร</h1>
+        <h1 className="flex justify-center pb-8 text-xl text-[#DAA520]">
           resource
         </h1>
       </div>
 
       <div className="py-8">
         <Accordion isCompact>
-          <AccordionItem key="1" aria-label="1" title="แผนภูมิโครงสร้างการบริหารงานสถานศึกษา">
+          <AccordionItem
+            key="1"
+            aria-label="1"
+            title="แผนภูมิโครงสร้างการบริหารงานสถานศึกษา"
+          >
             <StructureResource />
           </AccordionItem>
           <AccordionItem key="2" aria-label="2" title="งานบริหารงานทั่วไป">
@@ -52,7 +56,11 @@ export default function page() {
           <AccordionItem key="9" aria-label="9" title="งานประชาสัมพันธ์">
             <PRW />
           </AccordionItem>
-          <AccordionItem key="10" aria-label="10" title="งานบริหารศูนย์ราชการสะดวก">
+          <AccordionItem
+            key="10"
+            aria-label="10"
+            title="งานบริหารศูนย์ราชการสะดวก"
+          >
             <CGCA />
           </AccordionItem>
         </Accordion>

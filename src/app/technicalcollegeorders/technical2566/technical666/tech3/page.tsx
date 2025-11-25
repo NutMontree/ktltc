@@ -9,10 +9,10 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Link from "next/link";
 import { dataTech3 } from "./data";
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 
 export default function Texh2() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

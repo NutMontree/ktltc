@@ -1,6 +1,6 @@
 "use client"; // top to the file
 
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 import React from "react";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { Data, Data1, Data2, Data3, Data4 } from "./data";
@@ -9,39 +9,39 @@ export default function AdministrativeStructure() {
   return (
     <>
       <div className="pb-10">
-        <h1 className="flex justify-center text-[18px] sm:text-[24px] md:text-[30px] lg:text:[34px] text-[#DAA520] ">
+        <h1 className="lg:text:[34px] flex justify-center text-[18px] text-[#DAA520] sm:text-[24px] md:text-[30px]">
           แผนภูมิโครงสร้างการบริหารงานสถานศึกษา
         </h1>
       </div>
       {/* ********************* คณะกรรมการบริหารสถานศึกษา ********************* */}
       <div>
         <div className="flex justify-center pb-4">
-          <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+          <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
             <Image src={"/images/ผู้บริหาร/1.webp"} alt={""} />
-            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
               นางสาวทักษิณา ชมจันทร์
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
               ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
             </div>
             <div className="flex justify-end">
-              <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
+              <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
                 <span>CEO</span>
-                <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
+                <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                   KTLTC
                 </span>
               </button>
             </div>
           </BackgroundGradient>
         </div>
-        <div className=" flex justify-center   ">
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Data.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-100">
-                  <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+                  <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -50,9 +50,9 @@ export default function AdministrativeStructure() {
                       <div>{item.faction}</div>
                     </div>
                     <div className="flex justify-end">
-                      <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
+                      <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
                         <span>CEO</span>
-                        <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
+                        <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                           KTLTC
                         </span>
                       </button>
@@ -67,37 +67,37 @@ export default function AdministrativeStructure() {
       {/* ********************* คณะกรรมการบริหารสถานศึกษา ********************* */}
 
       {/* ********************* ฝ่ายพัฒนากิจการนักเรียน นักศึกษา ********************* */}
-      <div className=" py-[64px] ">
-        <h1 className="flex justify-center text-xl text-[#DAA520] py-[24px] ">
+      <div className="py-[64px]">
+        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
           ฝ่ายพัฒนากิจกรรมนักเรียน
         </h1>
         <div className="flex justify-center pb-4">
-          <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+          <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
             <Image src={"/images/ผู้บริหาร/2.webp"} alt={""} />
-            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
               นางสาววิภาวรรณ สีแดด
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
               รองผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
             </div>
             <div className="flex justify-end">
-              <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
+              <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
                 <span>CEO</span>
-                <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
+                <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                   KTLTC
                 </span>
               </button>
             </div>
           </BackgroundGradient>
         </div>
-        <div className=" flex justify-center ">
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Data1.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-100">
-                  <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+                  <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -116,37 +116,37 @@ export default function AdministrativeStructure() {
       {/* ********************* ฝ่ายพัฒนากิจกรรมนักเรียน ********************* */}
 
       {/* ********************* ฝ่ายแผนงานและความร่วมมือ ********************* */}
-      <div className=" py-[64px] ">
-        <h1 className="flex justify-center text-xl text-[#DAA520] py-[24px] ">
+      <div className="py-[64px]">
+        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
           ฝ่ายแผนงานและความร่วมมือ
         </h1>
         <div className="flex justify-center pb-4">
-          <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+          <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
             <Image src={"/images/ผู้บริหาร/3.webp"} alt={""} />
-            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
               นายสมศักดิ์ จันทานิตย์
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
               รองผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
             </div>
             <div className="flex justify-end">
-              <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
+              <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
                 <span>CEO</span>
-                <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
+                <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                   KTLTC
                 </span>
               </button>
             </div>
           </BackgroundGradient>
         </div>
-        <div className=" flex justify-center ">
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Data2.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-100">
-                  <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+                  <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -165,37 +165,37 @@ export default function AdministrativeStructure() {
       {/* ********************* ฝ่ายแผนงานและความร่วมมือ ********************* */}
 
       {/* ********************* ฝ่ายบริหารทรัพยากร ********************* */}
-      <div className=" py-[64px] ">
-        <h1 className="flex justify-center text-xl text-[#DAA520] py-[24px] ">
+      <div className="py-[64px]">
+        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
           ฝ่ายบริหารทรัพยากร
         </h1>
         <div className="flex justify-center pb-4">
-          <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+          <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
             <Image src={"/images/ผู้บริหาร/5.webp"} alt={""} />
-            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
               นางสาวภวิกา โพธิ์ขาว
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
               รองผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
             </div>
             <div className="flex justify-end">
-              <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
+              <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
                 <span>CEO</span>
-                <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
+                <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                   KTLTC
                 </span>
               </button>
             </div>
           </BackgroundGradient>
         </div>
-        <div className=" flex justify-center ">
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Data3.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-100">
-                  <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+                  <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
@@ -214,37 +214,37 @@ export default function AdministrativeStructure() {
       {/* ********************* ฝ่ายบริหารทรัพยากร ********************* */}
 
       {/* ********************* ฝ่ายวิชาการ ********************* */}
-      <div className=" py-[64px] ">
-        <h1 className="flex justify-center text-xl text-[#DAA520] py-[24px] ">
+      <div className="py-[64px]">
+        <h1 className="flex justify-center py-[24px] text-xl text-[#DAA520]">
           ฝ่ายวิชาการ
         </h1>
         <div className="flex justify-center pb-4">
-          <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+          <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
             <Image src={"/images/ผู้บริหาร/4.webp"} alt={""} />
-            <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+            <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
               นายอาทร ศรีมะณี
             </div>
             <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
               รองผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
             </div>
             <div className="flex justify-end">
-              <button className="rounded-full pl-2 pr-1 py-1 text-white flex items-center space-x-1 bg-black mt-4 text-xs font-bold dark:bg-zinc-800">
+              <button className="mt-4 flex items-center space-x-1 rounded-full bg-black py-1 pl-2 pr-1 text-xs font-bold text-white dark:bg-zinc-800">
                 <span>CEO</span>
-                <span className="bg-zinc-700 rounded-full text-[0.6rem] px-2 py-0 text-white">
+                <span className="rounded-full bg-zinc-700 px-2 py-0 text-[0.6rem] text-white">
                   KTLTC
                 </span>
               </button>
             </div>
           </BackgroundGradient>
         </div>
-        <div className=" flex justify-center ">
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Data4.map((item) => (
               <div className="" key={item.img}>
                 <div className="scale-100">
-                  <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-4 bg-white dark:bg-zinc-900">
+                  <BackgroundGradient className="max-w-sm rounded-[22px] bg-white p-4 dark:bg-zinc-900 sm:p-4">
                     <Image className="" src={item.img} alt={""}></Image>
-                    <div className="text-center text-base sm:text-lg text-black mt-4 mb-2 dark:text-neutral-200">
+                    <div className="mb-2 mt-4 text-center text-base text-black dark:text-neutral-200 sm:text-lg">
                       {item.title}
                     </div>
                     <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">

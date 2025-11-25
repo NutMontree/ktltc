@@ -1,6 +1,6 @@
 "use client";
 
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 import Mechanic from "../mechanic/page";
 import Machine from "../machine/page";
 import Welder from "../welder/page";
@@ -20,8 +20,8 @@ export default function Personnel() {
   return (
     <>
       <div>
-        <h1 className="flex justify-center text-xl ">ข้อมูลบุคลากร</h1>
-        <h1 className="flex justify-center text-xl text-[#DAA520] pb-8">
+        <h1 className="flex justify-center text-xl">ข้อมูลบุคลากร</h1>
+        <h1 className="flex justify-center pb-8 text-xl text-[#DAA520]">
           Personnel Information
         </h1>
       </div>

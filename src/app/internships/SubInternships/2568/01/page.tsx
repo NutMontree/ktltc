@@ -2,26 +2,25 @@
 
 import React from "react";
 import { DataDate, Title, Description, ImageItem } from "./data";
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 import { FootTitle } from "@/components/FootTitle";
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb } from 'antd';
+import { HomeOutlined, UserOutlined } from "@ant-design/icons";
+import { Breadcrumb } from "antd";
 import Link from "next/link";
 
 export default function page() {
-
   return (
     <>
       <Breadcrumb
         items={[
           {
-            href: '/',
+            href: "/",
             title: <HomeOutlined />,
-            className: 'dark:text-white dark:hover:text-white'
+            className: "dark:text-white dark:hover:text-white",
           },
           {
-            href: '/pressrelease/2568/press6809',
-            className: 'dark:text-white dark:hover:text-white',
+            href: "/pressrelease/2568/press6809",
+            className: "dark:text-white dark:hover:text-white",
             title: (
               <>
                 <UserOutlined />
@@ -30,22 +29,22 @@ export default function page() {
             ),
           },
           {
-            title: 'Application',
-            className: 'dark:text-gray-400'
+            title: "Application",
+            className: "dark:text-gray-400",
           },
         ]}
       />
       <section className="pt-20">
         <div className="">
-          <div className="text-center text-xl pb-6">
+          <div className="pb-6 text-center text-xl">
             {Title.Item.map((item) => (
               <div key={item.title}>{item.title}</div>
             ))}
           </div>
-          <div className='grid gap-2'>
+          <div className="grid gap-2">
             {Description.map((item) => (
               <div key={item?.description ?? "undefined"}>
-                {item?.description && <div >{item.description}</div>}
+                {item?.description && <div>{item.description}</div>}
                 {/* {item?.tage && <div className="text-sky-600 dark:text-sky-300">{item.tage}</div>} */}
               </div>
             ))}
@@ -54,15 +53,21 @@ export default function page() {
 
             {/* ***************************** LInk And PDF ***************************** */}
 
-            <div className=''>
+            <div className="">
               <FootTitle />
             </div>
 
-            <div className="date flex py-2 gap-2">
-              <Image src='/images/icon/time-svgrepo-com.svg' alt='logo-youtube' className="pt-1" width={20} height={20} />
+            <div className="date flex gap-2 py-2">
+              <Image
+                src="/images/icon/time-svgrepo-com.svg"
+                alt="logo-youtube"
+                className="pt-1"
+                width={20}
+                height={20}
+              />
               {DataDate.map((item) => (
                 <div key={item.date}>
-                  <div className="text-xs text-slate-500 pt-1">{item.date}</div>
+                  <div className="pt-1 text-xs text-slate-500">{item.date}</div>
                 </div>
               ))}
             </div>
@@ -70,31 +75,31 @@ export default function page() {
 
             {/* ***************************** Youtube / Image *****************************  */}
 
-
             {/* ***************************** Youtube / Image*****************************  */}
 
             <div className="flex justify-center">
-              <div className="  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center justify-center pb-4">
+              <div className="grid-cols-1 justify-center justify-items-center pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {ImageItem.map((item) =>
                   item ? (
                     <div key={item.imgs}>
-                      <div className="scale-95 hover:scale-100 transition duration-500 rounded-full">
+                      <div className="scale-95 rounded-full transition duration-500 hover:scale-100">
                         <Image src={item.imgs} alt={""}></Image>
                       </div>
                     </div>
-                  ) : null
+                  ) : null,
                 )}
               </div>
             </div>
           </div>
         </div>
-      </section >
+      </section>
     </>
   );
 }
 
 /* ***************************** LInk And PDF ***************************** */
-{/* 
+{
+  /* 
           <div className="pt-4">
             <p className="text-sky-800 text-lg">
               รายละเอียดเพิ่มเติม
@@ -114,12 +119,13 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
               src="/images/ข่าวประชาสัมพันธ์/2568/มีนาคม/13/1.pdf"
             ></iframe>
           </div>
-*/}
+*/
+}
 /* ***************************** LInk And PDF ***************************** */
 
-
 /* ***************************** Youtube ***************************** */
-{/* 
+{
+  /* 
   <div className="flex justify-center">
   <div className=" py-2  gap-4">
     <iframe
@@ -135,19 +141,29 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
     <br />
   </div>
 </div> 
-*/}
+*/
+}
 /* ***************************** Youtube ***************************** */
 
-{/* ***************************** Image *****************************  */ }
+{
+  /* ***************************** Image *****************************  */
+}
 
-{/* 
+{
+  /* 
 <Image src={'/images/ข่าวประชาสัมพันธ์/2568/กันยายน/13/00.webp'} className=" " /> 
-*/ }
+*/
+}
 
-{/* ***************************** Image*****************************  */ }
+{
+  /* ***************************** Image*****************************  */
+}
 
-{/* ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************  */ }
-{/* 
+{
+  /* ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************  */
+}
+{
+  /* 
   <div className="justify-center">
   <div >
     <p className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</p>
@@ -182,5 +198,8 @@ https://drive.google.com/drive/folders/1phgddFFt09qGJcdm9qwCmcfmm3zKMxge?fbclid=
     </div>
   </div>
 </div> 
-*/}
-{/* ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************  */ }
+*/
+}
+{
+  /* ***************************** Video Facabook https://developers.facebook.com/docs/plugins/embedded-video-player/ *****************************  */
+}

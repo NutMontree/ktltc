@@ -1,7 +1,7 @@
 "use client"; // top to the file
 import React from "react";
-import { Accordion, AccordionItem } from "@nextui-org/react";
-import { Image } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 export default function ShowYoutube() {
@@ -14,9 +14,14 @@ export default function ShowYoutube() {
       >
         <div className="flex justify-center gap-4">
           <div className="flex justify-center">
-            <Image src='/images/icon/youtube-svgrepo-com.svg' alt='logo-youtube' width={70} height={70} />
+            <Image
+              src="/images/icon/youtube-svgrepo-com.svg"
+              alt="logo-youtube"
+              width={70}
+              height={70}
+            />
           </div>
-          <h1 className="text-3xl pt-4 font-bold pb-8 ">Youtube</h1>
+          <h1 className="pb-8 pt-4 text-3xl font-bold">Youtube</h1>
         </div>
         <div>
           <div>
@@ -26,91 +31,79 @@ export default function ShowYoutube() {
                   key="1"
                   aria-label="Accordion 1"
                   title="Open Button"
-                  className=" border rounded-xl px-4 py-1 shadow-xl "
+                  className="rounded-xl border px-4 py-1 shadow-xl"
                 >
                   <div className="flex justify-center px-[24px]">
-                    <div className="gap-[24px] grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 justify-items-center">
-                      <div >
+                    <div className="grid grid-cols-1 justify-items-center gap-[24px] md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+                      <div>
                         <iframe
                           src="https://www.youtube.com/embed/tEqHeRdAiD0?si=q8RHAfYFgNKyCzzB"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           width="560"
                           height="315"
                           title="YouTube video player"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                           referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen>
-                        </iframe>
+                          allowFullScreen
+                        ></iframe>
                       </div>
-                      <div >
+                      <div>
                         <iframe
                           src="https://www.youtube.com/embed/k7hgxrwGgrw?si=VWg12pZKYfKEVnUz"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           width="560"
                           height="315"
                           title="YouTube video player"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                           referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen>
-                        </iframe>
+                          allowFullScreen
+                        ></iframe>
                       </div>
-                      <div >
+                      <div>
                         <iframe
                           src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1804472173610242%2F&show_text=true&width=560&t=0"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           width="560"
                           height="315"
                           title="YouTube video player"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                           referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen>
-                        </iframe>
+                          allowFullScreen
+                        ></iframe>
                       </div>
-                      <div >
+                      <div>
                         <iframe
                           src="https://www.youtube.com/embed/tVReYxrSav0?si=HZpppAn8DwMvccUr"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           width="560"
                           height="315"
                           title="YouTube video player"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                           referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen>
-                        </iframe>
+                          allowFullScreen
+                        ></iframe>
                       </div>
-                      <div >
+                      <div>
                         <iframe
                           src="https://www.youtube.com/embed/908PSchHFiU?si=I6XoZHsfF0Ceot7M"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           width="560"
                           height="315"
                           title="YouTube video player"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                           referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen>
-                        </iframe>
+                          allowFullScreen
+                        ></iframe>
                       </div>
                       <div className="">
                         <iframe
                           src="https://www.youtube.com/embed/nj49zojN3FI"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                    w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]  
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           title="สถานศึกษาสีขาว วิทยาลัยเทคนิคกันทรลักษ์ 68"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -121,9 +114,7 @@ export default function ShowYoutube() {
                       <div className="">
                         <iframe
                           src="https://www.youtube.com/embed/TpkZoNBSzNU?si=PDDZY5iQuTTG-TF5"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           title="สถานศึกษาสีขาว วิทยาลัยเทคนิคกันทรลักษ์ 68"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -134,9 +125,7 @@ export default function ShowYoutube() {
                       <div className="">
                         <iframe
                           src="https://www.youtube.com/embed/-3MpH0BXQeY"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]    
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           title='การเเข่งขันกีฬาภายใน "ดอกจานเกมส์" ประจำปีการศึกษา 2567 ณ สนามกีฬาวิทยาลัยเทคนิคกันทรลักษ์'
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -147,9 +136,7 @@ export default function ShowYoutube() {
                       <div>
                         <iframe
                           src="https://www.youtube.com/embed/_2Gnilun9X8"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]   
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           title="การประกวดสิ่งประดิษฐ์ของคนรุ่นใหม่ ประจำปีการศึกษา 2567"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -160,9 +147,7 @@ export default function ShowYoutube() {
                       <div>
                         <iframe
                           src="https://www.youtube.com/embed/1qwOVzMyCQU"
-                          className="h-[200px] sm:h-[300px] lg:h-[300px] xl:h-[300px] 
-                                   w-[300px] sm:w-[500px] lg:w-[400px] xl:w-[300px]   
-                                   rounded-2xl"
+                          className="h-[200px] w-[300px] rounded-2xl sm:h-[300px] sm:w-[500px] lg:h-[300px] lg:w-[400px] xl:h-[300px] xl:w-[300px]"
                           title="กิจกรรมโครงการเดิน วิ่ง ปั่น ป้องกันอัมพาต ครั้งที่ 10 วิทยาลัยเทคนิคกันทรลักษ์ KTLTC"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
