@@ -2,11 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-<<<<<<< HEAD
 import { Image } from "@heroui/image";
-=======
-import Image from "next/image";
->>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 
 const transition = {};
 
@@ -23,11 +19,7 @@ export const MenuItem1 = ({
 }) => {
   return (
     <div onMouseEnter={() => setActive(item)} className=" ">
-<<<<<<< HEAD
-      <motion.div>{item}</motion.div>
-=======
       <motion.p>{item}</motion.p>
->>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
       {active !== null && (
         <motion.div>
           {active === item && (

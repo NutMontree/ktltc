@@ -3,11 +3,7 @@
 import NextLink from "next/link";
 import { DataInternships } from "./data";
 import SubInternships from "../page";
-<<<<<<< HEAD
 import { Image } from "@heroui/image";
-=======
-import Image from "next/image";
->>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 
 export default function Internships2568() {
   return (

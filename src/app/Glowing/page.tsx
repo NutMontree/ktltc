@@ -1,11 +1,7 @@
 "use client";
 import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-<<<<<<< HEAD
 import { Image } from "@heroui/image";
-=======
-import Image from "next/image";
->>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 
 export default function GlowingPage() {
   return (

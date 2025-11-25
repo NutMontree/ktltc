@@ -11,6 +11,7 @@ export async function GET(request, { params }) {
 export async function PUT(req, { params }) {
   try {
     const { id } = params;
+
     const body = await req.json();
     const ticketData = body.formData;
 

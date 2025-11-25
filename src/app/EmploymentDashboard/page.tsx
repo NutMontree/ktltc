@@ -7,9 +7,7 @@ import { Isuvery } from "@/components/Isuvery";
 
 export const dynamic = "force-dynamic";
 
-// const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
-const NEXT_PUBLIC_BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://ktltc.vercel.app";
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 // ✅ 1. กำหนด Interface ให้ searchParams เป็น Promise (Next.js 15 Requirement)
 interface PageProps {
@@ -18,8 +16,7 @@ interface PageProps {
 
 const getsuverys = async () => {
   try {
-    // const apiUrl = `${BASE_URL}/api/suvery`;
-    const apiUrl = `${NEXT_PUBLIC_BASE_URL}/api/suvery`;
+    const apiUrl = `${BASE_URL}/api/suvery`;
     console.log(`📡 Fetching data from: ${apiUrl}`);
 
     const res = await fetch(apiUrl, {

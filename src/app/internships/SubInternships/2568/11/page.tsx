@@ -3,11 +3,7 @@
 import React from "react";
 import { DataDate, Title, Description, ImageItem } from "./data";
 import { TageLink } from "./data";
-<<<<<<< HEAD
 import { Image } from "@heroui/image";
-=======
-import Image from "next/image";
->>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 import { FootTitle } from "@/components/FootTitle";
 import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb } from "antd";

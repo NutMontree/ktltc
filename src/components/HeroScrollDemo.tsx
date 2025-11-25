@@ -3,7 +3,7 @@
 // "use client";
 // import React from "react";
 
-// import { Image } from "@heroui/image";
+// import {Image} from "@heroui/image";
 // import { ContainerScroll } from "./ui/container-scroll-animation";
 // // import { BackgroundBeamsWithCollision } from "./ui/background-beams-with-collision";
 // import Link from "next/link";

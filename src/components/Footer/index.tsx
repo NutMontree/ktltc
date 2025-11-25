@@ -576,7 +576,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-
+  
       <div>
         <span className="absolute left-0 top-0 z-[-1] aspect-[95/82] w-full max-w-[570px]">
           <Image src="/images/footer/shape-1.svg" alt="shape" />

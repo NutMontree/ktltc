@@ -16,7 +16,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
-
+import { fontSans } from "@/config/fonts";
 export default function RootLayout({
   children,
 }: {

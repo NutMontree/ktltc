@@ -12,11 +12,7 @@ import {
 } from "@heroui/react";
 import Link from "next/link";
 import { dataTech3 } from "./data";
-<<<<<<< HEAD
 import { Image } from "@heroui/image";
-=======
-import Image from "next/image";
->>>>>>> 085ced4b3f39ef438bbf48af9752a5595358c88d
 
 export default function Texh2() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

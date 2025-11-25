@@ -75,7 +75,7 @@ const About = () => {
                     <Image
                       src="/images/ภาพวิลัย/มุมสูง/01.webp"
                       alt="about image"
-                      className="h-full w-full object-cover object-center"
+                       className="h-full w-full object-cover object-center"
                     />
                   </div>
                 </div>
@@ -85,7 +85,7 @@ const About = () => {
                     <Image
                       src="/images/ภาพวิลัย/มุมสูง/21.webp"
                       alt="about image"
-                      className="h-full w-full object-cover object-center"
+                       className="h-full w-full object-cover object-center"
                     />
                   </div>
 
