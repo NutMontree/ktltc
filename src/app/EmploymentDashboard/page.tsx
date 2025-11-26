@@ -7,8 +7,8 @@ import { Isuvery } from "@/components/Isuvery";
 
 export const dynamic = "force-dynamic";
 //
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
-// const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+//const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 //
 // ✅ 1. กำหนด Interface ให้ searchParams เป็น Promise (Next.js 15 Requirement)
 interface PageProps {
