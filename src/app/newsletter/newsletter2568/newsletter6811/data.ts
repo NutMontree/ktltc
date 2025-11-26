@@ -2,6 +2,15 @@ export const Data = {
   navItems: [
     {
       name: `วันที่ 19 พฤศจิกายน 2568 `,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/75/0.webp",
+      date: "26 พฤศจิกายน 2568",
+      description: ` 
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ เป็นประธานกล่าวรายงานเปิด โครง… See more
+ `,
+      href: "/pressrelease/2568/press6811/press75",
+    },
+    {
+      name: `วันที่ 19 พฤศจิกายน 2568 `,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/74/0.webp",
       date: "24 พฤศจิกายน 2568",
       description: ` 

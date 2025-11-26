@@ -6,10 +6,10 @@ import Link from "next/link";
 import { Isuvery } from "@/components/Isuvery";
 
 export const dynamic = "force-dynamic";
-
-// const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
+//
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+// const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+//
 // ✅ 1. กำหนด Interface ให้ searchParams เป็น Promise (Next.js 15 Requirement)
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -67,7 +67,7 @@ export default async function EmploymentDashboard(props: PageProps) {
 
   return (
     <div className="min-h-screen bg-white/50 py-16 transition-colors duration-300 dark:bg-gray-900">
-      <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl space-y-8">
         {/* --- HEADER SECTION --- */}
         <div className="flex flex-col items-start justify-between gap-4 border-b border-orange-200 pb-6 md:flex-row md:items-center dark:border-orange-800">
           <h1 className="flex items-center text-3xl font-extrabold tracking-tight text-green-900 sm:text-4xl dark:text-green-100">

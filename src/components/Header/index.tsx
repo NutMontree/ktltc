@@ -98,9 +98,6 @@ const Header = () => {
                 )}
               </Link>
             </div>
-            {/* <div className="lg:hidden">
-              <Link href={'/ITA'}>ITA</Link>
-            </div> */}
             <button
               onClick={navbarToggleHandler}
               id="navbarToggler"
@@ -143,7 +140,7 @@ const Header = () => {
                 KTLTC
               </Link>
             </div>
-            <div className="flex w-full">
+            <div className="flex w-full justify-center">
               <div>
                 <nav
                   id="navbarCollapse"
@@ -275,7 +272,7 @@ const Header = () => {
               </div>
             </div>
             <div></div>
-            <div className="flex shrink-0"> 
+            <div className="flex shrink-0">
               <Link
                 aria-label="social link"
                 href="https://www.facebook.com/profile.php?id=100057326985699"
@@ -287,7 +284,7 @@ const Header = () => {
                   alt="facebook_logo"
                   width={100}
                   height={100}
-                  className="w-14 cursor-pointer object-contain pr-8 md:w-14"
+                  className="w-8 cursor-pointer object-contain pr-2"
                 />
               </Link>
             </div>
