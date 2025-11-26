@@ -1,18 +1,24 @@
-/* นำเข้า Font */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+/* Link ไปยัง HeroUI (ถ้าใช้งาน) */
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+/* Custom Variant */
+@custom-variant dark (&:is(.dark *));
 
 /* =================================================================================
    1. Theme Configuration
    ================================================================================= */
 @theme {
-  /* กำหนดสี (ใช้สีฟ้ามาตรฐานเพื่อให้ดูสดใส และสีดำเข้มสำหรับตัวหนังสือ) */
-  --color-primary: #3b82f6; /* สีฟ้า blue-500 */
-  --color-dark: #111827; /* สีเทาเข้มเกือบดำ gray-900 */
-  --color-dark-6: #1f2937; /* สีเทาเข้ม gray-800 (สำหรับ Dark Mode) */
-  --color-body-color: #6b7280; /* สีเทากลาง gray-500 (สำหรับเนื้อหาทั่วไป) */
+  /* กำหนดสี */
+  --color-primary: #3b82f6; /* blue-500 */
+  --color-dark: #111827; /* gray-900 */
+  --color-dark-6: #171717; /* gray-800 */
+  --color-body-color: #6b7280; /* gray-500 */
   --color-white: #ffffff;
 
+  /* Animation */
   --animate-meteor-effect: meteor 5s linear infinite;
 
   @keyframes meteor {
@@ -31,26 +37,23 @@
 }
 
 /* =================================================================================
-   2. Base Reset (ตั้งค่าพื้นฐานให้เหมือน Tailwind ปกติ)
+   2. Base Reset
    ================================================================================= */
 @layer base {
-  /* ✅ 1. ตั้งค่าสีตัวอักษรหลัก (แก้ปัญหาตัวหนังสือไม่ดำ) */
   body {
     font-family: "Inter", sans-serif !important;
-    color: var(--color-dark) !important; /* บังคับเป็นสีเข้ม */
+    color: var(--color-dark) !important;
     background-color: var(--color-white);
     line-height: 1.5;
     margin: 0;
   }
 
-  /* ตั้งค่าสำหรับ Dark Mode */
   :root[class~="dark"] body {
     color: var(--color-white) !important;
     background-color: var(--color-dark-6) !important;
   }
 
-  /* ✅ 2. แก้ปัญหารูปภาพหาย (สำคัญมาก) */
-  /* ต้องใส่ height: auto เพื่อให้รูปขยายตามสัดส่วน ไม่ยุบเหลือ 0 */
+  /* Fix รูปภาพ Carousel */
   img,
   video {
     display: block;
@@ -58,16 +61,21 @@
     height: auto;
   }
 
-  /* ✅ 3. แก้ปัญหากรอบสีดำที่เกินมา (ใช้มาตรฐาน Tailwind) */
+  /* Fix Ant Design Carousel specifically inside Tailwind v4 */
+  .ant-carousel .slick-slide img {
+    height: 100% !important;
+    object-fit: cover;
+  }
+
+  /* Reset Elements */
   *,
   ::before,
   ::after {
     border-width: 0;
-    border-style: solid; /* ต้องเป็น solid เพื่อให้ component ที่มีขอบทำงานได้ */
-    border-color: #e5e7eb; /* สีขอบจางๆ (gray-200) */
+    border-style: solid;
+    border-color: #e5e7eb;
   }
 
-  /* รีเซ็ตปุ่มและ input */
   button,
   input,
   optgroup,
@@ -75,7 +83,6 @@
   textarea {
     font-family: inherit;
     font-size: 100%;
-    line-height: 1.15;
     margin: 0;
     padding: 0;
     line-height: inherit;
@@ -85,13 +92,10 @@
     background-image: none;
   }
 
-  /* รีเซ็ตลิงก์ */
   a {
     color: inherit;
     text-decoration: inherit;
   }
-
-  /* รีเซ็ตรายการ */
   ul,
   ol {
     list-style: none;
@@ -103,115 +107,107 @@
 /* =================================================================================
    3. Utility Classes
    ================================================================================= */
-/* Container สำหรับจัดกึ่งกลาง */
 @utility container {
   margin-inline: auto;
   padding-inline: 1rem;
   width: 100%;
-}
 
-@media (min-width: 640px) {
-  .container {
+  @media (min-width: 640px) {
     max-width: 640px;
   }
-}
-@media (min-width: 768px) {
-  .container {
+  @media (min-width: 768px) {
     max-width: 768px;
   }
-}
-@media (min-width: 1024px) {
-  .container {
+  @media (min-width: 1024px) {
     max-width: 1024px;
   }
-}
-@media (min-width: 1280px) {
-  .container {
+  @media (min-width: 1280px) {
     max-width: 1280px;
   }
-}
-@media (min-width: 1536px) {
-  .container {
+  @media (min-width: 1536px) {
     max-width: 1536px;
   }
 }
 
 /* =================================================================================
-   4. Component Overrides (ใช้ Hex Code เพื่อป้องกัน Error ตอน Build)
+   4. Component Overrides
    ================================================================================= */
+@layer components {
+  .link:hover {
+    color: dodgerblue;
+  }
+  li {
+    padding-left: 12px;
+  }
 
-.link:hover {
-  color: dodgerblue;
-}
-li {
-  padding-left: 12px;
+  /* Sticky Menu */
+  .sticky-menu .navbar-logo {
+    @apply py-2;
+  }
+  .sticky-menu #navbarToggler span {
+    @apply bg-[#6f7276] dark:bg-white;
+  }
+
+  /* ✅ เปลี่ยน Hex Code เป็น Class จาก Theme เพื่อลด Warning */
+  .sticky-menu #navbarCollapse li > a {
+    @apply text-dark hover:text-primary hover:opacity-100 dark:text-white;
+  }
+
+  #navbarCollapse li .ud-menu-scroll.active {
+    @apply opacity-70;
+  }
+  .sticky-menu #navbarCollapse li .ud-menu-scroll.active {
+    @apply text-primary opacity-100 dark:text-white;
+  }
+  .sticky-menu .loginBtn {
+    @apply text-dark hover:text-primary hover:opacity-100 dark:text-white;
+  }
+  .sticky-menu .signUpBtn {
+    @apply bg-primary text-white hover:bg-[#6f7276] hover:text-white;
+  }
+
+  /* Navbar Toggler */
+  .navbarTogglerActive > span:nth-child(1) {
+    @apply top-[7px] rotate-45 transform;
+  }
+  .navbarTogglerActive > span:nth-child(2) {
+    @apply opacity-0;
+  }
+  .navbarTogglerActive > span:nth-child(3) {
+    @apply -top-2 rotate-135;
+  }
+
+  /* Blog Details */
+  .blog-details,
+  .blog-details p {
+    @apply text-body-color dark:text-dark-6 text-base leading-relaxed;
+  }
+  .blog-details p {
+    @apply mb-8;
+  }
+  .blog-details strong {
+    @apply text-dark font-bold dark:text-white;
+  }
+  .blog-details ul {
+    @apply mb-8 list-inside list-disc space-y-3;
+  }
+  .blog-details ol {
+    @apply mb-8 list-inside list-decimal space-y-3;
+  }
+  .blog-details h1 {
+    @apply text-dark mb-8 text-3xl font-bold sm:text-4xl md:text-[40px] md:leading-[1.28] dark:text-white;
+  }
+  .blog-details h2 {
+    @apply text-dark mb-8 text-2xl font-bold sm:text-3xl md:text-[35px] md:leading-[1.28] dark:text-white;
+  }
+  .blog-details h3 {
+    @apply text-dark mb-6 text-2xl font-bold sm:text-[28px] sm:leading-10 dark:text-white;
+  }
 }
 
-/* Sticky Menu */
-.sticky-menu .navbar-logo {
-  @apply py-2;
-}
-.sticky-menu #navbarToggler span {
-  @apply bg-[#6f7276] dark:bg-white;
-}
-
-/* ใช้ Hex Code แทนชื่อสีใน @apply เพื่อความชัวร์ */
-.sticky-menu #navbarCollapse li > a {
-  @apply text-[#111827] hover:text-[#3b82f6] hover:opacity-100 dark:text-white;
-}
-
-#navbarCollapse li .ud-menu-scroll.active {
-  @apply opacity-70;
-}
-.sticky-menu #navbarCollapse li .ud-menu-scroll.active {
-  @apply text-[#3b82f6] opacity-100 dark:text-white;
-}
-.sticky-menu .loginBtn {
-  @apply text-[#111827] hover:text-[#3b82f6] hover:opacity-100 dark:text-white;
-}
-.sticky-menu .signUpBtn {
-  @apply bg-[#3b82f6] text-white hover:bg-[#6f7276] hover:text-white;
-}
-
-/* Navbar Toggler */
-.navbarTogglerActive > span:nth-child(1) {
-  @apply top-[7px] rotate-45 transform;
-}
-.navbarTogglerActive > span:nth-child(2) {
-  @apply opacity-0;
-}
-.navbarTogglerActive > span:nth-child(3) {
-  @apply top-[-8px] rotate-[135deg];
-}
-
-/* Blog Details */
-.blog-details,
-.blog-details p {
-  @apply text-base leading-relaxed text-[#6b7280] dark:text-[#1f2937];
-}
-.blog-details p {
-  @apply mb-8;
-}
-.blog-details strong {
-  @apply font-bold text-[#111827] dark:text-white;
-}
-.blog-details ul {
-  @apply mb-8 list-inside list-disc space-y-3;
-}
-.blog-details ol {
-  @apply mb-8 list-inside list-decimal space-y-3;
-}
-.blog-details h1 {
-  @apply mb-8 text-3xl font-bold text-[#111827] sm:text-4xl md:text-[40px] md:leading-[1.28] dark:text-white;
-}
-.blog-details h2 {
-  @apply mb-8 text-2xl font-bold text-[#111827] sm:text-3xl md:text-[35px] md:leading-[1.28] dark:text-white;
-}
-.blog-details h3 {
-  @apply mb-6 text-2xl font-bold text-[#111827] sm:text-[28px] sm:leading-[40px] dark:text-white;
-}
-
-/* Parallax & Snow */
+/* =================================================================================
+   5. Standard CSS (Animation)
+   ================================================================================= */
 .parallax {
   overflow: hidden;
   letter-spacing: -2px;
@@ -227,7 +223,6 @@ li {
   font-size: 64px;
   display: flex;
   white-space: nowrap;
-  display: flex;
   flex-wrap: nowrap;
 }
 .parallax span {
@@ -241,12 +236,16 @@ li {
   left: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none; /* เพิ่มเพื่อให้คลิกทะลุได้ */
+  z-index: 50;
 }
 .initial-snow > * {
   font-size: 20px;
   position: fixed;
   top: -1vh;
+  color: white; /* บังคับสีหิมะ */
 }
+
 @keyframes snowfall {
   0% {
     transform: translate3d(var(--left-ini), 0, 0);
@@ -255,6 +254,7 @@ li {
     transform: translate3d(var(--left-end), 100vh, 0);
   }
 }
+
 .snow:nth-child(2n) {
   font-size: 15px;
 }
@@ -264,6 +264,8 @@ li {
 .snow:nth-child(10n) {
   font-size: 12px;
 }
+
+/* Snow Particles (ใส่ครบ 50 ตัว) */
 .snow:nth-child(1) {
   --size: 0.8vw;
   --left-ini: 0vw;

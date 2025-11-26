@@ -58,7 +58,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
   return (
     // Overlay: พื้นหลังเบลอและสีดำจาง
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-opacity">
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-opacity">
       <div className="w-full max-w-sm scale-100 transform overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl transition-all dark:border-gray-700 dark:bg-gray-800">
         <div className="flex flex-col items-center p-6 pb-0 text-center">
           {/* Icon สีแดง */}
@@ -170,7 +170,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
   };
 
   return (
-    <div className="bg-opacity-50 fixed inset-0 z-[70] flex items-center justify-center bg-black backdrop-blur-sm">
+    <div className="bg-opacity-50 fixed inset-0 z-70 flex items-center justify-center bg-black backdrop-blur-sm">
       <div className="w-full max-w-sm rounded-xl border border-gray-100 bg-white p-8 shadow-2xl dark:border-gray-700 dark:bg-gray-800">
         <h3 className="mb-4 text-xl font-bold text-green-700 dark:text-green-400">
           🔐 ยืนยันรหัสผ่าน

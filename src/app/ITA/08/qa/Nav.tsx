@@ -15,14 +15,14 @@ export default function Nav() {
             <li>
               <Link
                 href="/"
-                className="flex items-center gap-2.5 text-base font-medium text-black dark:text-white"
+                className="flex items-center gap-2.5 text-base font-medium"
               >
                 Home
               </Link>
             </li>
             <li>
-              <p className="text-body-color flex items-center gap-2.5 text-base font-medium">
-                <span className="text-body-color dark:text-black-6">/</span>
+              <p className="flex items-center gap-2.5 text-base font-medium">
+                <span className=" ">/</span>
                 Q&A System
               </p>
             </li>

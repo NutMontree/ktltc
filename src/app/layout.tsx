@@ -29,7 +29,7 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html suppressHydrationWarning={true} className="!scroll-smooth" lang="en">
+    <html suppressHydrationWarning={true} className="scroll-smooth!" lang="en">
       <head />
       {/* <body className={clsx("", fontSans.variable)}> */}
       <body className={clsx("")}>

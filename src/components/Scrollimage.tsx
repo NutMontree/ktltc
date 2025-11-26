@@ -3,7 +3,7 @@ import React from "react";
 import { Carousel } from "antd";
 import { Image } from "@heroui/image";
 import { motion } from "framer-motion";
-
+4;
 const Scrollimage: React.FC = () => (
   <>
     <motion.section

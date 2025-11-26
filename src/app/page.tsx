@@ -43,7 +43,7 @@ export default function Home() {
       <div className="container">
         <Scrollimage />
       </div>
-      <div className="container">
+         <div className="container">
         <ExternalQualityAssurance />
       </div>
       <div className="container">
@@ -100,7 +100,6 @@ export default function Home() {
       <div className="container py-12">
         <SubQAPage />
       </div>
-
       <div id="fb-root"></div>
       <script
         async

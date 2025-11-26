@@ -14,9 +14,9 @@ const Features = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
       >
-        <section className=" ">
+        <section className="rounded-2xl">
           <div>
-            <div className="relative z-20 overflow-hidden pt-[40px] lg:pt-[100px] lg:pb-[30px]">
+            <div className="relative z-20 overflow-hidden pt-10 lg:pt-[100px] lg:pb-[30px]">
               <div className="">
                 <Link href="/GECC">
                   <SectionTitle
@@ -26,7 +26,7 @@ const Features = () => {
                   />
                 </Link>
               </div>
-              <span className="absolute right-4 bottom-4 -z-[1]">
+              <span className="absolute right-4 bottom-4 -z-1">
                 <svg
                   width="48"
                   height="134"
@@ -338,7 +338,7 @@ const Features = () => {
           ></iframe>
 
           <div className="py-8">
-            <Card className="px-4 pt-4 pb-2">
+            <Card className="rounded-2xl border border-transparent px-4 pt-4 pb-2 shadow-lg transition-all duration-300">
               <div className="flex flex-col">
                 <Tabs
                   color="default"

@@ -118,7 +118,7 @@ const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center overflow-hidden bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-80 flex items-center justify-center overflow-hidden bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -170,7 +170,7 @@ const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {
             <p className="text-sm font-medium tracking-wide text-orange-600 uppercase dark:text-orange-400">
               ชื่อผู้ตอบแบบสำรวจ
             </p>
-            <p className="mt-1 text-2xl font-bold break-words text-gray-900 dark:text-white">
+            <p className="mt-1 text-2xl font-bold wrap-break-word text-gray-900 dark:text-white">
               {suvery.fullName}
             </p>
           </div>
@@ -185,7 +185,7 @@ const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 <p className="mb-1 text-xs font-semibold tracking-wide text-green-700 uppercase dark:text-green-400">
                   {placeholders[key] || key}
                 </p>
-                <p className="text-base leading-relaxed font-medium break-words text-gray-800 dark:text-gray-200">
+                <p className="text-base leading-relaxed font-medium wrap-break-word text-gray-800 dark:text-gray-200">
                   {formatValue(key, value)}
                 </p>
               </div>

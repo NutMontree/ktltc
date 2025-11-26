@@ -1,4 +1,3 @@
-
 const TicketCard = ({ ticket }) => {
   function formatTimestamp(timestamp) {
     const options = {
@@ -20,12 +19,12 @@ const TicketCard = ({ ticket }) => {
 
   return (
     <>
-      <div className="flex flex-col p-2 m-2 border-b">
+      <div className="m-2 flex flex-col border-b p-2">
         {/* <DeleteBlock id={ticket._id} /> */}
-        <div className="font-bold text-xl">{ticket.title}</div>
+        <div className="text-xl font-bold">{ticket.title}</div>
         <div className="whitespace-pre-wrap">{ticket.description}</div>
         <div className="flex flex-col">
-          <p className="text-xs  my-1">{createdDateTime}</p>
+          <p className="my-1 text-xs">{createdDateTime}</p>
         </div>
       </div>
     </>
