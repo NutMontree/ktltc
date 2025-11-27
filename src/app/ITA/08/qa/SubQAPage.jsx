@@ -1,37 +1,40 @@
 import Link from "next/link";
 import TicketCard from "@/app/(components)/TicketCard";
 // 💡 1. Import ฟังก์ชัน Logic สำหรับดึงข้อมูลโดยตรง
-import { getAllTickets } from "@/lib/data"; // (ปรับแก้ Path นี้ ถ้าจำเป็น)
+import { getAllTickets } from "@/lib/data";
 
 /**
  * 🛠️ แก้ไข: บังคับให้หน้าเว็บโหลดข้อมูลใหม่ทุกครั้ง
  * เพื่อป้องกัน Next.js Cache ทำให้ข้อมูลเป็นปัจจุบันเสมอ
  */
-export const dynamic = "force-dynamic"; // 👈 เพิ่มบรรทัดนี้
+export const dynamic = "force-dynamic";
 
 /**
  * 💡 2. อัปเดตฟังก์ชัน getTickets
  * เปลี่ยนจากการ fetch API มาเป็นการเรียกใช้ฟังก์ชัน Server Logic โดยตรง
- * เพื่อแก้ปัญหา Vercel WAF 403 Forbidden
  */
 const getTickets = async () => {
   try {
-    // นี่คือการเรียกใช้ฟังก์ชันบน Server โดยตรง ไม่ผ่าน Network
     const data = await getAllTickets();
     return data;
   } catch (error) {
     console.error("❌ Error loading topics in Page:", error);
-    // คืนค่าว่างตามโครงสร้างเดิม เพื่อให้ UI ไม่พัง
     return { tickets: [] };
   }
 };
 
 export default async function SubQAPage() {
-  // ดึงข้อมูลด้วยวิธีใหม่
+  // ดึงข้อมูล
   const data = await getTickets();
-  const tickets = data?.tickets || [];
+  let tickets = data?.tickets || [];
 
-  // --- ส่วนจัดการกรณีไม่มีข้อมูล (เหมือนเดิม) ---
+  // ✅ 3. [เพิ่มใหม่] เรียงลำดับข้อมูล: ใหม่ -> เก่า (Newest First)
+  // สมมติว่าในฐานข้อมูลมี field ชื่อ 'createdAt'
+  tickets = tickets.sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  // --- ส่วนจัดการกรณีไม่มีข้อมูล ---
   if (!tickets.length) {
     return (
       <div className="flex h-[60vh] flex-col items-center justify-center">
@@ -45,25 +48,22 @@ export default async function SubQAPage() {
     );
   }
 
-  // --- 💡 3. ส่วนปรับปรุงประสิทธิภาพ (จัดกลุ่มด้วย reduce) ---
+  // --- 4. จัดกลุ่มด้วย reduce (logic เดิม แต่ข้อมูลถูกเรียงมาแล้ว) ---
   const ticketsByCategory = tickets.reduce((acc, ticket) => {
-    // ถ้า category ไม่มีค่า หรือเป็น null/undefined ให้ใช้ค่า default
     const category = ticket.category || "ไม่ระบุหมวดหมู่";
 
-    // ถ้ายังไม่มีหมวดหมู่นี้ใน object ให้สร้างเป็น Array ว่างรอไว้
     if (!acc[category]) {
       acc[category] = [];
     }
 
-    // เพิ่ม ticket เข้าไปใน Array ของหมวดหมู่นั้นๆ
     acc[category].push(ticket);
     return acc;
-  }, {}); // ค่าเริ่มต้นคือ Object ว่าง {}
+  }, {});
 
-  // ดึงชื่อหมวดหมู่ทั้งหมดออกมาจาก Object ที่เราสร้าง
+  // ดึงชื่อหมวดหมู่
   const categories = Object.keys(ticketsByCategory);
 
-  // --- 4. ส่วนแสดงผล (Render) ---
+  // --- 5. ส่วนแสดงผล (Render) ---
   return (
     <div className="min-h-screen rounded-3xl bg-linear-to-b to-gray-100">
       <div className="mx-auto max-w-5xl p-6">
@@ -78,7 +78,7 @@ export default async function SubQAPage() {
           <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-blue-500"></div>
         </div>
 
-        {/* Categories (วนลูปจาก categories ที่จัดกลุ่มแล้ว) */}
+        {/* Categories */}
         {categories.map((category) => (
           <div
             key={`category-${category}`}
@@ -90,13 +90,11 @@ export default async function SubQAPage() {
                 alt="category"
                 className="mr-3 h-12 w-12 rounded-full border"
               />
-              <h2 className="text-lg font-semibold">
-                {category} {/* ใช้ชื่อ category จาก key ได้เลย */}
-              </h2>
+              <h2 className="text-lg font-semibold">{category}</h2>
             </div>
 
             <div className="space-y-3">
-              {/* วนลูป tickets จากหมวดหมู่นั้นๆ (ไม่ต้อง .filter ซ้ำ) */}
+              {/* รายการ Tickets จะถูกเรียงตามเวลาเพราะเรา Sort ตั้งแต่ต้นแล้ว */}
               {ticketsByCategory[category].map((filteredTicket, i) => (
                 <TicketCard
                   key={filteredTicket._id || filteredTicket.id || `ticket-${i}`}
