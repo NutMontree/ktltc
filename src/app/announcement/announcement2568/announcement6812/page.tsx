@@ -12,7 +12,7 @@ export default function Announcement() {
 
       <div>
         <h1 className="flex justify-center pt-8 text-xl text-[#DAA520]">
-          เดือน พฤศจิกายน 2568
+          เดือน ธันวาคม 2568
         </h1>
       </div>
 

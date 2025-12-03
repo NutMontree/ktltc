@@ -13,7 +13,7 @@ import { Image } from "@heroui/image";
 import { Button, ConfigProvider, Space } from "antd";
 import { AntDesignOutlined } from "@ant-design/icons";
 
-import { DataPressrelease } from "../pressrelease/2568/press6811/data";
+import { DataPressrelease } from "../pressrelease/2568/press6812/data";
 import Link from "next/link";
 
 export default function ShowPressRelease() {

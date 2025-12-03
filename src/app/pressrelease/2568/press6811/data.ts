@@ -1,7 +1,7 @@
 export const DataPressrelease = {
   navItems: [
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/88/00.webp",
       date: "30 พฤศจิกายน 2568",
       description: ` 
@@ -10,7 +10,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press88",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/87/00.webp",
       date: "30 พฤศจิกายน 2568",
       description: ` 
@@ -19,7 +19,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press87",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/86/00.webp",
       date: "27 พฤศจิกายน 2568",
       description: ` 
@@ -28,7 +28,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press86",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/85/00.webp",
       date: "27 พฤศจิกายน 2568",
       description: ` 
@@ -37,7 +37,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press85",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/84/00.webp",
       date: "27 พฤศจิกายน 2568",
       description: ` 
@@ -46,7 +46,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press84",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/83/00.webp",
       date: "27 พฤศจิกายน 2568",
       description: ` 
@@ -55,7 +55,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press83",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/82/00.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -64,7 +64,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press82",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/81/00.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -73,7 +73,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press81",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/80/00.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -82,7 +82,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press80",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/79/00.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -91,7 +91,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press79",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/78/00.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -100,7 +100,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6811/press78",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/77/00.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -109,7 +109,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press77",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/76/2.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -118,7 +118,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press76",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/75/00.webp",
       date: "26 พฤศจิกายน 2568",
       description: ` 
@@ -127,7 +127,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press75",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/74/00.webp",
       date: "24 พฤศจิกายน 2568",
       description: ` 
@@ -136,7 +136,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press74",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/73/00.webp",
       date: "24 พฤศจิกายน 2568",
       description: ` 
@@ -145,7 +145,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press73",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/72/00.webp",
       date: "24 พฤศจิกายน 2568",
       description: ` 
@@ -154,7 +154,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press72",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/71/00.webp",
       date: "24 พฤศจิกายน 2568",
       description: ` 
@@ -163,7 +163,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press71",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/70/00.webp",
       date: "24 พฤศจิกายน 2568",
       description: ` 
@@ -172,7 +172,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press70",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/69/00.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
@@ -181,7 +181,7 @@ Who are you? – เธอคือใคร ฉันคือ..... ทีม P
       href: "/pressrelease/2568/press6811/press69",
     },
     {
-      name: `วันที่ 19 พฤศจิกายน 2568 `,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/68/00.webp",
       date: "19 พฤศจิกายน 2568",
       description: ` 
