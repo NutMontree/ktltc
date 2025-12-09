@@ -36,14 +36,14 @@ const Footer = () => {
                   style={{ width: "auto", height: "auto" }}
                 />
               </LinkPreview>
-              <p className="mb-8 max-w-[270px] text-base text-gray-7">
+              <p className="text-gray-7 mb-8 max-w-[270px] text-base">
                 ช่องทางการติดต่อวิทยาลัยเทคนิคกันทรลักษ์
               </p>
               <div className="-mx-3 flex items-center">
                 <LinkPreview
                   aria-label="social LinkPreview"
                   url="https://www.facebook.com/profile.php?id=100057326985699"
-                  className="px-3 text-gray-7 hover:text-white"
+                  className="text-gray-7 px-3 hover:text-white"
                 >
                   <svg
                     width="22"
@@ -59,7 +59,7 @@ const Footer = () => {
                 <LinkPreview
                   aria-label="social LinkPreview"
                   url="#"
-                  className="px-3 text-gray-7 hover:text-white"
+                  className="text-gray-7 px-3 hover:text-white"
                 >
                   <svg
                     width="22"
@@ -75,7 +75,7 @@ const Footer = () => {
                 <LinkPreview
                   aria-label="social LinkPreview"
                   url="#"
-                  className="px-3 text-gray-7 hover:text-white"
+                  className="text-gray-7 px-3 hover:text-white"
                 >
                   <svg
                     width="22"
@@ -93,7 +93,7 @@ const Footer = () => {
                 <LinkPreview
                   aria-label="social LinkPreview"
                   url="#"
-                  className="px-3 text-gray-7 hover:text-white"
+                  className="text-gray-7 px-3 hover:text-white"
                 >
                   <svg
                     width="22"
@@ -118,7 +118,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/historyeducational"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ประวัติสถานศึกษา
                   </LinkPreview>
@@ -126,7 +126,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/philosophy"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ปรัชญา วิสัยทัศน์ เอกลักษ์ อัตลักษณ์
                   </LinkPreview>
@@ -134,7 +134,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/eduadmin"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ทำเนียบผู้บริหาร
                   </LinkPreview>
@@ -142,7 +142,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/administrativestructure"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     โครงสร้างการบริหารงานสถานศึกษา
                   </LinkPreview>
@@ -150,7 +150,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/executiveboard"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     คณะกรรมการบริหารสถานศึกษา
                   </LinkPreview>
@@ -167,7 +167,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/historyeducational"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลสถานศึกษา
                   </LinkPreview>
@@ -175,7 +175,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/personnel"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลบุคลากร
                   </LinkPreview>
@@ -183,7 +183,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/sid"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลนักเรียน นักศึกษา
                   </LinkPreview>
@@ -191,7 +191,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="#"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลหลักสูตร
                   </LinkPreview>
@@ -199,7 +199,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="#"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลครุภัณฑ์
                   </LinkPreview>
@@ -207,7 +207,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="#"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลงบประมาณ
                   </LinkPreview>
@@ -215,7 +215,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/buildings"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลอาคารสถานที่
                   </LinkPreview>
@@ -223,7 +223,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="#"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ข้อมูลตลาดแรงงาน
                   </LinkPreview>
@@ -231,7 +231,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://www.sisaket.go.th/"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                     target="_blank"
                   >
                     ข้อมูลของจังหวัด
@@ -249,7 +249,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/resource"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ฝ่ายบริหารทรัพยากร
                   </LinkPreview>
@@ -257,7 +257,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/plan"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ฝ่ายแผนงานและความร่วมมือ
                   </LinkPreview>
@@ -265,7 +265,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/develop"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ฝ่ายพัฒนากิจการนักเรียน นักศึกษา
                   </LinkPreview>
@@ -273,7 +273,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/academic"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ฝ่ายวิชาการ
                   </LinkPreview>
@@ -290,7 +290,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/executive"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ผู้บริหารสถานศึกษา
                   </LinkPreview>
@@ -298,7 +298,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/mechanic"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาช่างยนต์
                   </LinkPreview>
@@ -306,7 +306,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/machine"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาช่างกลโรงงาน
                   </LinkPreview>
@@ -314,7 +314,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/welder"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาช่างเชื่อมโลหะ
                   </LinkPreview>
@@ -322,7 +322,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/electricity"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาช่างไฟฟ้ากำลัง
                   </LinkPreview>
@@ -330,7 +330,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/electronics"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาช่างอิเล็กทรอนิกส์
                   </LinkPreview>
@@ -338,7 +338,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/technique"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาเทคนิคพื้นฐาน
                   </LinkPreview>
@@ -346,7 +346,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/construct"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาช่างก่อสร้าง
                   </LinkPreview>
@@ -354,7 +354,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/accounting"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาบัญชี
                   </LinkPreview>
@@ -362,7 +362,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/marketing"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาการตลาด
                   </LinkPreview>
@@ -370,7 +370,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/technology"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
                   </LinkPreview>
@@ -378,7 +378,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/hotel"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาการโรงแรม
                   </LinkPreview>
@@ -386,7 +386,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/ordinary"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แผนกวิชาสามัญสัมพันธ์
                   </LinkPreview>
@@ -401,7 +401,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/GECC"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ศูนย์ราชการสะดวก
                   </LinkPreview>
@@ -409,7 +409,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://std2018.vec.go.th/web"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ระบบ ศธ. ออนไลน์
                   </LinkPreview>
@@ -417,7 +417,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://std2018.vec.go.th/web/"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ตรวจสอบผลการเรียน
                   </LinkPreview>
@@ -425,7 +425,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/ "
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     รับงานอิเล็กทรอนิกส์
                   </LinkPreview>
@@ -433,7 +433,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/ "
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     สมัครเรียนออนไลน์
                   </LinkPreview>
@@ -441,7 +441,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/ "
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     บทเรียนออนไลน์
                   </LinkPreview>
@@ -449,7 +449,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/pressrelease"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ
                   </LinkPreview>
@@ -457,7 +457,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://v-cop.go.th/"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ศูนย์กำลังคนอาชีวศึกษา (V-COP)
                   </LinkPreview>
@@ -465,7 +465,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/plan/sar"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     รายงานประจำของสถานศึกษา (SAR)
                   </LinkPreview>
@@ -473,7 +473,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/ "
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ID Plan
                   </LinkPreview>
@@ -481,7 +481,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://forms.gle/Hcwfjvd7S8zTbA3C8"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     แบบประเมินความพึงพอใจของผู้ใช้บริการข้อมูลด้านระบบสารสนเทศ
                   </LinkPreview>
@@ -489,7 +489,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="/pa"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     Performance Agreement: PA
                   </LinkPreview>
@@ -504,7 +504,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltcp.vercel.app/"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     Plan PDCA
                   </LinkPreview>
@@ -512,7 +512,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/minigame"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     Mini Game
                   </LinkPreview>
@@ -520,7 +520,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/qrcode"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     Create QR Code Free
                   </LinkPreview>
@@ -528,7 +528,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/ITA/08/qa"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     ktltcQ&A
                   </LinkPreview>
@@ -536,7 +536,7 @@ const Footer = () => {
                 <li>
                   <LinkPreview
                     url="https://ktltc.vercel.app/EmploymentDashboard"
-                    className="mb-3 inline-block text-base text-gray-7 hover:text-primary"
+                    className="text-gray-7 hover:text-primary mb-3 inline-block text-base"
                   >
                     EmploymentDashboard
                   </LinkPreview>
@@ -547,28 +547,28 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="mt-12 border-t border-[#8890A4] border-opacity-40 py-8 lg:mt-[60px]">
+      <div className="border-opacity-40 mt-12 border-t border-[#8890A4] py-8 lg:mt-[60px]">
         <div className="container">
           <div>
             <CounterPage />
           </div>
           <div className="w-full py-3">
             <div className="flex justify-center gap-2">
-              <div className="text-xs text-gray-7">Copyright © 2023.</div>
+              <div className="text-xs text-gray-50">Copyright © 2023.</div>
 
               <div className="text-xs text-cyan-500">
                 KTLTC / งานศูนย์ข้อมูลและสารสนเทศ
               </div>
             </div>
             <div className="flex justify-center gap-2">
-              <div className="text-xs text-gray-7"> Designed </div>
+              <div className="text-xs text-gray-50"> Designed </div>
               <LinkPreview
                 className="flex justify-center gap-1 text-current"
                 // url="https://www.facebook.com/profile.php?id=61553558543619"
                 url="https://ktltc.vercel.app/Sponsor"
                 // title="All M Min"
               >
-                <div className="text-xs font-medium text-gray-7">
+                <div className="text-xs font-medium text-gray-50">
                   By All M Min
                 </div>
               </LinkPreview>
@@ -576,17 +576,17 @@ const Footer = () => {
           </div>
         </div>
       </div>
-  
+
       <div>
-        <span className="absolute left-0 top-0 z-[-1] aspect-95/82 w-full max-w-[570px]">
+        <span className="absolute top-0 left-0 z-[-1] aspect-95/82 w-full max-w-[570px]">
           <Image src="/images/footer/shape-1.svg" alt="shape" />
         </span>
 
-        <span className="absolute bottom-0 right-0 z-[-1] aspect-31/22 w-full max-w-[372px]">
+        <span className="absolute right-0 bottom-0 z-[-1] aspect-31/22 w-full max-w-[372px]">
           <Image src="/images/footer/shape-3.svg" alt="shape" />
         </span>
 
-        <span className="absolute right-0 top-0 z-[-1]">
+        <span className="absolute top-0 right-0 z-[-1]">
           <svg
             width="102"
             height="102"

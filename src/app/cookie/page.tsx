@@ -32,7 +32,7 @@ const CookieConsentBanner = () => {
     <>
       <section className="container">
         <div className="fixed bottom-0 left-0 z-50 w-full px-4 py-4">
-          <div className="bg-gray-2 dark:bg-dark-2 xs:px-10 border-stroke dark:border-dark-3 grid justify-between gap-4 rounded-lg border px-6 py-8 md:grid-flow-col md:px-8 lg:px-10">
+          <div className="dark:bg-dark-2 xs:px-10 border-stroke dark:border-dark-3 grid justify-between gap-4 rounded-lg border bg-gray-50 px-6 py-8 md:grid-flow-col md:px-8 lg:px-10">
             <div>
               <p>เว็บไซต์นี้ใช้คุกกี้</p>
               <p>
