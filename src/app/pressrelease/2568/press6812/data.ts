@@ -31,7 +31,7 @@ export const DataPressrelease = {
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/22/00.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
-
+10 ธันวาคม วันรัฐธรรมนูญ พระบาทสมเด็จพระปกเกล้าเจ้าอยู่หัวพระราชทานรัฐธรรมนูญฉบับถาวรเเรกอันเห็นกฎหมายสูงสุดของประเทศ… See more
       `,
       href: "/pressrelease/2568/press6812/press22",
     },
