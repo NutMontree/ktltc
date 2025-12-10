@@ -86,7 +86,7 @@ const initialFormData = {
 const inputClass =
   "w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 shadow-sm transition duration-150";
 const labelClass =
-  "text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1";
+  "text-sm font-semibold text-gray-5000 dark:text-gray-300 mb-1";
 const sectionTitleClass =
   "text-2xl font-extrabold text-green-800 dark:text-green-400 mb-6 flex items-center gap-3";
 
@@ -94,9 +94,7 @@ const sectionTitleClass =
 const FormSection = ({ title, icon: Icon, children }) => (
   <section className="mb-8">
     <h2 className={sectionTitleClass}>
-      {Icon && (
-        <Icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-      )}
+      {Icon && <Icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
       {title}
     </h2>
     <div className="space-y-6">{children}</div>
@@ -130,7 +128,7 @@ const CustomAlertModal = ({ isOpen, type, title, message, onClose }) => {
         <div className="flex justify-center bg-gray-50 px-6 py-4 dark:bg-gray-700/50">
           <button
             onClick={onClose}
-            className={`inline-flex w-full justify-center rounded-xl px-4 py-2 text-base font-medium text-white shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm ${
+            className={`inline-flex w-full justify-center rounded-xl px-4 py-2 text-base font-medium text-white shadow-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none sm:text-sm ${
               type === "success"
                 ? "bg-green-600 hover:bg-green-700 focus:ring-green-500"
                 : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
@@ -334,11 +332,11 @@ export default function GraduatesuveryForm() {
   };
 
   return (
-    <div className="font-inter min-h-screen bg-gray-50 px-4 py-12 transition-colors duration-300 dark:bg-gray-900 sm:px-6 lg:px-8">
+    <div className="font-inter min-h-screen bg-gray-50 px-4 py-12 transition-colors duration-300 sm:px-6 lg:px-8 dark:bg-gray-900">
       <div className="container mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-extrabold leading-tight text-green-900 dark:text-green-400">
+          <h1 className="text-4xl leading-tight font-extrabold text-green-900 dark:text-green-400">
             📋 แบบสำรวจภาวะการมีงานทำของศิษย์เก่า
           </h1>
           <p className="mt-2 text-lg text-gray-500 dark:text-gray-400">
@@ -607,7 +605,7 @@ export default function GraduatesuveryForm() {
                       onChange={handleChange}
                       className="form-radio h-5 w-5 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-700"
                     />
-                    <span className="ml-2 text-gray-700 transition group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
+                    <span className="text-gray-5000 ml-2 transition group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
                       {g}
                     </span>
                   </label>
@@ -937,7 +935,7 @@ export default function GraduatesuveryForm() {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-green-600 focus:ring-green-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
                         1 ตรง
                       </span>
                     </label>
@@ -950,7 +948,7 @@ export default function GraduatesuveryForm() {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
                         2 ไม่ตรง
                       </span>
                     </label>
@@ -971,7 +969,7 @@ export default function GraduatesuveryForm() {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-green-600 focus:ring-green-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
                         1 พึงพอใจ
                       </span>
                     </label>
@@ -984,7 +982,7 @@ export default function GraduatesuveryForm() {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
                         2 ไม่พึงพอใจ
                       </span>
                     </label>
@@ -1014,7 +1012,7 @@ export default function GraduatesuveryForm() {
                     className="form-radio h-5 w-5 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-700"
                     disabled={isStudying}
                   />
-                  <span className="ml-2 text-gray-700 group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
+                  <span className="text-gray-5000 ml-2 group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
                     ต้องการศึกษาต่อ
                   </span>
                 </label>
@@ -1034,7 +1032,7 @@ export default function GraduatesuveryForm() {
                     className="form-radio h-5 w-5 border-gray-300 text-gray-600 focus:ring-gray-500 dark:border-gray-500 dark:bg-gray-700"
                     disabled={isStudying}
                   />
-                  <span className="ml-2 text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
+                  <span className="text-gray-5000 ml-2 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
                     ไม่ต้องการศึกษาต่อ
                   </span>
                 </label>
@@ -1152,11 +1150,11 @@ export default function GraduatesuveryForm() {
           </FormSection>
 
           {/* --- ปุ่มส่งข้อมูล --- */}
-          <div className="flex flex-col justify-end gap-4 border-t border-gray-200 pt-6 dark:border-gray-700 sm:flex-row">
+          <div className="flex flex-col justify-end gap-4 border-t border-gray-200 pt-6 sm:flex-row dark:border-gray-700">
             <Link href="/EmploymentDashboard" passHref className="text-center">
               <button
                 type="button"
-                className="w-full rounded-xl border border-gray-300 bg-gray-200 px-6 py-3 font-semibold text-gray-700 shadow-md transition duration-300 hover:bg-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 sm:w-auto"
+                className="text-gray-5000 w-full rounded-xl border border-gray-300 bg-gray-200 px-6 py-3 font-semibold shadow-md transition duration-300 hover:bg-gray-300 sm:w-auto dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
               >
                 <X className="mr-2 inline h-5 w-5" /> ยกเลิก
               </button>

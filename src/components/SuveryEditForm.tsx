@@ -85,7 +85,7 @@ const COLLEGE_PROVINCE = "ศรีสะเกษ";
 const inputClass =
   "w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 shadow-sm transition duration-150";
 const labelClass =
-  "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
+  "block text-sm font-medium text-gray-5000 dark:text-gray-300 mb-1";
 const sectionTitleClass =
   "text-2xl font-extrabold text-green-800 dark:text-green-400 mb-6 flex items-center gap-3";
 
@@ -436,7 +436,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                       className="form-radio h-5 w-5 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-700"
                       required
                     />
-                    <span className="ml-2 text-gray-700 transition group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
+                    <span className="text-gray-5000 ml-2 transition group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
                       {g}
                     </span>
                   </label>
@@ -802,7 +802,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                 </div>
               </div>
 
-              <h3 className="text-md flex items-center gap-1 pt-3 font-bold text-gray-700 dark:text-gray-300">
+              <h3 className="text-md text-gray-5000 flex items-center gap-1 pt-3 font-bold dark:text-gray-300">
                 <MapPin className="h-4 w-4" /> ที่อยู่สถานที่ทำงาน
               </h3>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
@@ -882,7 +882,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                 </div>
               </div>
 
-              <h3 className="text-md flex items-center gap-1 pt-3 font-bold text-gray-700 dark:text-gray-300">
+              <h3 className="text-md text-gray-5000 flex items-center gap-1 pt-3 font-bold dark:text-gray-300">
                 <Check className="h-4 w-4" /> รายได้และความพึงพอใจ
               </h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -938,7 +938,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-green-600 focus:ring-green-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
                         1 ตรง
                       </span>
                     </label>
@@ -951,7 +951,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
                         2 ไม่ตรง
                       </span>
                     </label>
@@ -970,7 +970,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-green-600 focus:ring-green-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-green-600 dark:text-gray-300 dark:group-hover:text-green-400">
                         1 พึงพอใจ
                       </span>
                     </label>
@@ -983,7 +983,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                         onChange={handleChange}
                         className="form-radio h-5 w-5 border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-500 dark:bg-gray-700"
                       />
-                      <span className="ml-2 text-gray-700 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
+                      <span className="text-gray-5000 ml-2 group-hover:text-red-600 dark:text-gray-300 dark:group-hover:text-red-400">
                         2 ไม่พึงพอใจ
                       </span>
                     </label>
@@ -1016,7 +1016,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                   className="form-radio h-5 w-5 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-700"
                   disabled={isStudying}
                 />
-                <span className="ml-2 text-gray-700 group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
+                <span className="text-gray-5000 ml-2 group-hover:text-blue-600 dark:text-gray-300 dark:group-hover:text-blue-400">
                   ต้องการศึกษาต่อ
                 </span>
               </label>
@@ -1036,7 +1036,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                   className="form-radio h-5 w-5 border-gray-300 text-gray-600 focus:ring-gray-500 dark:border-gray-500 dark:bg-gray-700"
                   disabled={isStudying}
                 />
-                <span className="ml-2 text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
+                <span className="text-gray-5000 ml-2 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
                   ไม่ต้องการศึกษาต่อ
                 </span>
               </label>
@@ -1161,7 +1161,7 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
         <div className="mt-8 flex flex-col justify-end gap-4 border-t border-gray-200 pt-6 sm:flex-row dark:border-gray-700">
           <Link
             href="/EmploymentDashboard"
-            className="flex items-center justify-center gap-1 rounded-xl border border-gray-300 bg-gray-100 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            className="text-gray-5000 flex items-center justify-center gap-1 rounded-xl border border-gray-300 bg-gray-100 px-6 py-3 font-medium transition hover:bg-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             <X className="h-5 w-5" /> ยกเลิก
           </Link>

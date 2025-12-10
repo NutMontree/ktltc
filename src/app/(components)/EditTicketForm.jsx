@@ -82,7 +82,7 @@ const EditTicketForm = ({ ticket }) => {
           <div>
             <label
               htmlFor="title"
-              className="mb-1 block font-medium text-gray-700"
+              className="text-gray-5000 mb-1 block font-medium"
             >
               หัวเรื่อง
             </label>
@@ -94,7 +94,7 @@ const EditTicketForm = ({ ticket }) => {
               onChange={handleChange}
               value={formData.title}
               required
-              className="w-full rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
@@ -102,7 +102,7 @@ const EditTicketForm = ({ ticket }) => {
           <div>
             <label
               htmlFor="description"
-              className="mb-1 block font-medium text-gray-700"
+              className="text-gray-5000 mb-1 block font-medium"
             >
               คำอธิบาย
             </label>
@@ -114,7 +114,7 @@ const EditTicketForm = ({ ticket }) => {
               value={formData.description}
               required
               rows="5"
-              className="w-full resize-none rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+              className="w-full resize-none rounded-xl border border-gray-300 px-4 py-2 transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
@@ -122,7 +122,7 @@ const EditTicketForm = ({ ticket }) => {
           <div>
             <label
               htmlFor="category"
-              className="mb-1 block font-medium text-gray-700"
+              className="text-gray-5000 mb-1 block font-medium"
             >
               ชื่อผู้โพสต์
             </label>
@@ -133,7 +133,7 @@ const EditTicketForm = ({ ticket }) => {
               onChange={handleChange}
               value={formData.category}
               required
-              className="w-full rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
           </div>
 

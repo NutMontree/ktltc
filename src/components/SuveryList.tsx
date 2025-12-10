@@ -223,7 +223,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           <button
             onClick={onClose}
             disabled={isDeleting}
-            className="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            className="text-gray-5000 flex-1 rounded-xl bg-gray-100 px-4 py-2.5 font-medium transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             ยกเลิก
           </button>
