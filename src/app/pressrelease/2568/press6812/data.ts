@@ -31,8 +31,8 @@ export const DataPressrelease = {
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/22/00.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
-ประกาศ...วิทยาลัยเทคนิคกันทรลักษ์ ปิดสถานศึกษา (กรณีพิเศษ) วันที่ 11 - 12 ธันวาคม พ.ศ. 2568… See more 
-`,
+
+      `,
       href: "/pressrelease/2568/press6812/press22",
     },
     {
@@ -40,6 +40,7 @@ export const DataPressrelease = {
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/21/00.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
+ประกาศ...วิทยาลัยเทคนิคกันทรลักษ์ ปิดสถานศึกษา (กรณีพิเศษ) วันที่ 11 - 12 ธันวาคม พ.ศ. 2568… See more 
 `,
       href: "/pressrelease/2568/press6812/press21",
     },
