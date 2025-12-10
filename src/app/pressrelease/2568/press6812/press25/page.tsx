@@ -13,7 +13,7 @@ const ImageFunction = () => {
   return (
     <div>
       <div className="flex justify-center">
-        <div className="grid-cols-1 justify-center justify-items-center pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 justify-center justify-items-center pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {ImageItem.map((item) =>
             item ? (
               <div key={item.imgs}>
