@@ -1,7 +1,7 @@
 export const DataPressrelease = {
   navItems: [
     {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/25/00.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
@@ -9,7 +9,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6812/press25",
     },
     {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/24/00.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
@@ -18,7 +18,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6812/press24",
     },
     {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/23/49.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
@@ -27,7 +27,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6812/press23",
     },
     {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/22/00.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
@@ -36,16 +36,15 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6812/press22",
     },
     {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/21/00.webp",
       date: "10 ธันวาคม 2568",
       description: ` 
-ประกาศ...วิทยาลัยเทคนิคกันทรลักษ์ ปิดสถานศึกษา (กรณีพิเศษ) วันที่ 11 - 12 ธันวาคม พ.ศ. 2568… See more 
 `,
       href: "/pressrelease/2568/press6812/press21",
     },
     {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/20/00.webp",
       date: "9 ธันวาคม 2568",
       description: ` 
@@ -54,7 +53,7 @@ export const DataPressrelease = {
       href: "/pressrelease/2568/press6812/press20",
     },
     {
-      name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/19/00.webp",
       date: "9 ธันวาคม 2568",
       description: ` 
