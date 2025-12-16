@@ -15,7 +15,6 @@ const facebookPages = [
   "https://www.facebook.com/profile.php?id=100068997166818",
   "https://www.facebook.com/profile.php?id=100057195379923&mibextid=ZbWKwL",
   "https://www.facebook.com/profile.php?id=100063483313526",
-  // "https://www.facebook.com/profile.php?id=YOUR_NEW_ID", // เพิ่มอันใหม่ตรงนี้
 ];
 
 export default function ShowFacebook() {

@@ -1,3 +1,4 @@
+// ScrollVelocity
 "use client";
 
 import { useRef } from "react";
@@ -13,34 +14,37 @@ import {
 import { wrap } from "@motionone/utils";
 
 interface ParallaxProps {
-  children: React.ReactNode;
+  children: string;
   baseVelocity: number;
-  className?: string;
 }
 
-function ParallaxText({
-  children,
-  baseVelocity = 100,
-  className,
-}: ParallaxProps) {
+function ParallaxText({ children, baseVelocity = 50 }: ParallaxProps) {
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
   const smoothVelocity = useSpring(scrollVelocity, {
     damping: 50,
-    stiffness: 400,
+    stiffness: 500,
   });
-
-  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], {
+  const velocityFactor = useTransform(smoothVelocity, [0, 2000], [0, 5], {
     clamp: false,
   });
 
-  const x = useTransform(baseX, (v) => `${wrap(0, -25, v)}%`);
+  /**
+   * This is a magic wrapping for the length of the text - you
+   * have to replace for wrapping that works for you or dynamically
+   * calculate
+   */
+  const x = useTransform(baseX, (v) => `${wrap(-20, -45, v)}%`);
 
   const directionFactor = useRef<number>(1);
   useAnimationFrame((t, delta) => {
-    let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
+    let moveBy = directionFactor.current * baseVelocity * (delta / 3000);
 
+    /**
+     * This is what changes the direction of the scroll once we
+     * switch scrolling directions.
+     */
     if (velocityFactor.get() < 0) {
       directionFactor.current = -1;
     } else if (velocityFactor.get() > 0) {
@@ -52,18 +56,20 @@ function ParallaxText({
     baseX.set(baseX.get() + moveBy);
   });
 
+  /**
+   * The number of times to repeat the child text should be dynamically calculated
+   * based on the size of the text and viewport. Likewise, the x motion value is
+   * currently wrapped between -20 and -45% - this 25% is derived from the fact
+   * we have four children (100% / 4). This would also want deriving from the
+   * dynamically generated number of children.
+   */
   return (
-    <div className="m-0 flex flex-nowrap overflow-hidden leading-[0.85] whitespace-nowrap">
-      <motion.div
-        // 🛠️ แก้ไข 1: เปลี่ยน tracking-tighter เป็น tracking-wide (เว้นระยะตัวอักษรให้ห่างขึ้น)
-        className={`flex flex-nowrap font-black tracking-wide whitespace-nowrap uppercase ${className}`}
-        style={{ x }}
-      >
-        {/* 🛠️ แก้ไข 2: เพิ่ม mr-8 เป็น mr-24 (เว้นระยะห่างระหว่างชุดข้อความให้มากขึ้น) */}
-        <span className="mr-24 block">{children}</span>
-        <span className="mr-24 block">{children}</span>
-        <span className="mr-24 block">{children}</span>
-        <span className="mr-24 block">{children}</span>
+    <div className="parallax">
+      <motion.div className="scroller" style={{ x }}>
+        <span>{children} </span>
+        <span>{children} </span>
+        <span>{children} </span>
+        <span>{children} </span>
       </motion.div>
     </div>
   );
@@ -71,47 +77,19 @@ function ParallaxText({
 
 export default function ScrollVelocity() {
   return (
-    <section className="relative w-full overflow-hidden">
-      {/* Background Glow */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 h-[400px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-400/20 blur-[120px] dark:bg-indigo-500/10" />
-
-      <div className="relative z-10 flex flex-col gap-6">
-        {" "}
-        {/* เพิ่ม gap เป็น 6 ให้บรรทัดห่างกันหน่อย */}
-        {/* บรรทัดที่ 1: สีน้ำเงินเข้ม */}
-        <ParallaxText
-          baseVelocity={-2}
-          className="text-6xl text-indigo-900 md:text-8xl dark:text-indigo-100"
-        >
-          Kantharalak Technical College • KTLTC •
-        </ParallaxText>
-        {/* บรรทัดที่ 2: เส้นขอบสีม่วง */}
-        <ParallaxText
-          baseVelocity={2}
-          className="text-stroke-violet text-6xl text-transparent md:text-8xl"
-        >
-          Welcome to KTLTC • Vocational Education •
-        </ParallaxText>
-        {/* บรรทัดที่ 3: ภาษาไทย */}
-        {/* 🛠️ แก้ไข 3: เปลี่ยน baseVelocity จาก -3 เป็น 1.5 (เลขบวกคือวิ่งไปอีกทาง และลดเลขลงเพื่อให้วิ่งช้าลง อ่านทัน) */}
-        <ParallaxText
-          baseVelocity={1.5}
-          className="py-2 text-5xl opacity-90 md:text-7xl"
-        >
-          <span className="bg-linear-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
-            วิทยาลัยเทคนิคกันทรลักษ์ • มุ่งมั่นพัฒนาวิชาชีพ • สู่ความเป็นเลิศ •
-          </span>
-        </ParallaxText>
-      </div>
-
-      <style jsx global>{`
-        .text-stroke-violet {
-          -webkit-text-stroke: 1.5px #8b5cf6;
-        }
-        .dark .text-stroke-violet {
-          -webkit-text-stroke: 1.5px #a78bfa;
-        }
-      `}</style>
-    </section>
+    <>
+      <section>
+        <div className="pb-4">
+          <ParallaxText baseVelocity={-5}>
+            วิทยาลัยเทคนิคกันทรลักษ์ KTLTC kantharalak technical college
+          </ParallaxText>
+        </div>
+        <div className="pt-4">
+          <ParallaxText baseVelocity={5}>
+            welcome KTLTC kantharalak technical college
+          </ParallaxText>
+        </div>
+      </section>
+    </>
   );
 }
