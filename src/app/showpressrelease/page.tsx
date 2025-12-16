@@ -36,7 +36,7 @@ const itemVar = {
 
 export default function ShowPressRelease() {
   // ดึงข้อมูล 8 ข่าวล่าสุด
-  const newsItems = DataPressrelease?.navItems?.slice(0, 8) || [];
+  const newsItems = DataPressrelease?.navItems?.slice(0, 4) || [];
 
   return (
     <section className="relative overflow-hidden rounded-3xl bg-slate-50/50 py-16 font-sans dark:bg-neutral-950">
