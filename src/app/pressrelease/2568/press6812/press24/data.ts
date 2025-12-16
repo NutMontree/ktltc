@@ -1,12 +1,20 @@
-// ชื่อข่าว
+/////////////////////////////////////////////////////////////////////////////////////////
 export const DataPressrelease = {
-  Item: [{ title: `ข่าวประชาสัมพันธ์` }, { title: `วิทยาลัยเทคนิคกันทรลักษ์` }],
+  Item: [{ title: `ข่าวประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์` }],
+
+  Pagination: {
+    prev: {
+      href: "/pressrelease/2568/press6812/press23",
+    },
+    next: {
+      href: "/pressrelease/2568/press6812/press25",
+    },
+    // หมายเหตุ: หากไม่มีเรื่องก่อนหน้าหรือถัดไป ให้ใส่ค่าเป็น null เช่น prev: null
+  },
 };
 
-// วันที่ลงข้อมูล
 export const DataDate = [{ date: `10 ธันวาคม 2568` }];
 
-// คำอธิบายข่าว
 export const Description = [
   { description: `วิทยาลัยเทคนิคกันทรลักษ์` },
   {
@@ -21,45 +29,18 @@ export const Description = [
   {
     description: `       ขอแสดงความยินดีและชื่นชมในความสำเร็จครั้งนี้ ซึ่งนับเป็นแบบอย่างที่ดีแก่เพื่อนนักเรียน นักศึกษา และเป็นเกียรติประวัติของวิทยาลัยเทคนิคกันทรลักษ์เป็นอย่างยิ่ง`,
   },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
 ];
 
-// ลิงค์
 export const TageLink = [
-  {
-    tage: ``,
-    href: ``,
-  },
+  // หากยังไม่มีลิงค์ ให้คอมเมนต์ไว้ หรือทำเป็นอาร์เรย์ว่าง [] เพื่อไม่ให้ปุ่มเปล่าแสดงหน้าเว็บ
   // {
-  // tage: ``,
-  // href: ``,
+  //   tage: `ดาวน์โหลดกำหนดการ`,
+  //   href: `https://...`,
   // },
 ];
+
 // รูปภาพ
 export const ImageItem = [
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/24/00.webp" },
 ];
+/////////////////////////////////////////////////////////////////////////////////////////

@@ -45,6 +45,17 @@ export default function PressReleaseModern() {
   const validImages = ImageItem?.filter((item: any) => item?.imgs) || [];
   const isSingleImage = validImages.length === 1;
 
+  const getGridClassName = () => {
+    if (isSingleImage) return "grid-cols-1";
+    const desktopCols =
+      validImages.length === 2
+        ? "lg:grid-cols-2"
+        : validImages.length === 3
+          ? "lg:grid-cols-3"
+          : "lg:grid-cols-4";
+    return `grid-cols-1 sm:grid-cols-2 ${desktopCols}`;
+  };
+
   return (
     <div className="min-h-screen px-4 py-8 font-sans transition-colors duration-300 md:px-8">
       <div className="mx-auto max-w-6xl">
@@ -94,7 +105,7 @@ export default function PressReleaseModern() {
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-100/50 px-3 py-1 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
               <CalendarOutlined /> <span>{date}</span>
             </div>
-            <h1 className="text-3xl leading-tight font-bold tracking-tight text-slate-700 md:text-4xl lg:text-5xl dark:text-slate-300">
+            <h1 className="text-center text-3xl leading-tight font-bold tracking-tight text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
               {title}
             </h1>
           </motion.header>
@@ -109,7 +120,6 @@ export default function PressReleaseModern() {
               ))}
             </article>
 
-            {/* แก้ไข 2: เพิ่ม :any ที่ map function เพื่อแก้ Error: Property 'href' does not exist on type 'never' */}
             {TageLink && TageLink.length > 0 && (
               <div className="mt-8 flex flex-wrap gap-3 border-t border-slate-100 pt-6 dark:border-neutral-800">
                 {TageLink.map((item: any, index: number) => (
@@ -138,13 +148,8 @@ export default function PressReleaseModern() {
                 </h3>
               </div>
               <div
-                className={`grid gap-4 transition-all duration-300 ${
-                  isSingleImage
-                    ? "grid-cols-1"
-                    : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-                }`}
+                className={`grid gap-4 transition-all duration-300 ${getGridClassName()}`}
               >
-                {/* แก้ไข 3: เพิ่ม :any ที่ item เพื่อความชัวร์ */}
                 {validImages.map((item: any, index: number) => (
                   <div
                     key={index}
@@ -156,7 +161,9 @@ export default function PressReleaseModern() {
                       src={item.imgs}
                       alt={`Gallery ${index + 1}`}
                       removeWrapper
-                      className={`h-full w-full object-cover transition-transform duration-700 hover:scale-105 ${isSingleImage ? "object-center" : ""}`}
+                      className={`h-full w-full object-cover transition-transform duration-700 hover:scale-105 ${
+                        isSingleImage ? "object-center" : ""
+                      }`}
                     />
                   </div>
                 ))}
@@ -218,6 +225,7 @@ export default function PressReleaseModern() {
     </div>
   );
 }
+
 {
   /*  ***************************** LInk And PDF ***************************** 
           <div className="pt-4">

@@ -1,12 +1,21 @@
-// ชื่อข่าว
+/////////////////////////////////////////////////////////////////////////////////////////
+
 export const DataPressrelease = {
-  Item: [{ title: `ข่าวประชาสัมพันธ์` }, { title: `วิทยาลัยเทคนิคกันทรลักษ์` }],
+  Item: [{ title: `ข่าวประชาสัมพันธ์ วิทยาลัยเทคนิคกันทรลักษ์` }],
+
+  Pagination: {
+    prev: {
+      href: "/pressrelease/2568/press6812/press25",
+    },
+    next: {
+      href: "/pressrelease/2568/press6812/press27",
+    },
+    // หมายเหตุ: หากไม่มีเรื่องก่อนหน้าหรือถัดไป ให้ใส่ค่าเป็น null เช่น prev: null
+  },
 };
 
-// วันที่ลงข้อมูล
 export const DataDate = [{ date: `15 ธันวาคม 2568` }];
 
-// คำอธิบายข่าว
 export const Description = [
   { description: `วิทยาลัยเทคนิคกันทรลักษ์ ` },
   {
@@ -26,33 +35,24 @@ export const Description = [
   {
     description: `        The sacrifice of one's life to protect the nation's independence and sovereignty from invading enemies is the highest honor deserved.`,
   },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
 ];
 
-// ลิงค์
 export const TageLink = [
-  {
-    tage: ``,
-    href: ``,
-  },
+  // หากยังไม่มีลิงค์ ให้คอมเมนต์ไว้ หรือทำเป็นอาร์เรย์ว่าง [] เพื่อไม่ให้ปุ่มเปล่าแสดงหน้าเว็บ
   // {
-  // tage: ``,
-  // href: ``,
+  //   tage: `ดาวน์โหลดกำหนดการ`,
+  //   href: `https://...`,
   // },
 ];
+
 // รูปภาพ
 export const ImageItem = [
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/26/1.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/26/2.webp" },
 ];
+
+export const ZeroNameImage = [
+  //     { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/25/00.webp" },
+  //     { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/25/0.webp" },
+];
+/////////////////////////////////////////////////////////////////////////////////////////

@@ -1,21 +1,180 @@
 "use client";
+
 import React from "react";
 import Link from "next/link";
-import { DataDate, DataPressrelease, Description, ImageItem } from "./data";
-import { Image } from "@heroui/react";
-import { FootTitle } from "@/components/FootTitle";
-import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb } from "antd";
-import { TageLink } from "./data";
-import { motion } from "motion/react";
+import {
+  HomeOutlined,
+  AppstoreOutlined,
+  CalendarOutlined,
+  LinkOutlined,
+  LeftOutlined,
+  RightOutlined,
+  PictureOutlined,
+} from "@ant-design/icons";
+import { Image } from "@heroui/react";
+import { motion } from "framer-motion";
+import {
+  DataDate,
+  DataPressrelease,
+  Description,
+  ImageItem,
+  TageLink,
+  ZeroNameImage,
+} from "./data";
+import { FootTitle } from "@/components/FootTitle";
 
-const ImageFunction = () => {
+// --- Animation Variants ---
+const containerVar = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+};
+
+const itemVar = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+};
+
+export default function PressReleaseModern() {
+  const title = DataPressrelease?.Item?.[0]?.title || "รายละเอียดผลงาน";
+  const date = DataDate?.[0]?.date || "-";
+
+  const navData: any = DataPressrelease?.Pagination || {
+    prev: null,
+    next: null,
+  };
+  const validImages = ImageItem?.filter((item: any) => item?.imgs) || [];
+  const isSingleImage = validImages.length === 1;
+
+  const getGridClassName = () => {
+    if (isSingleImage) return "grid-cols-1";
+    const desktopCols =
+      validImages.length === 2
+        ? "lg:grid-cols-1"
+        : validImages.length === 3
+          ? "lg:grid-cols-3"
+          : "lg:grid-cols-4";
+    return `grid-cols-1 sm:grid-cols-2 ${desktopCols}`;
+  };
+
   return (
-    <div>
-      <div className="flex justify-center">
-        <div className="grid-cols-1 justify-center justify-items-center pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {ImageItem.map((item) =>
-            item ? (
+    <div className="min-h-screen px-4 py-8 font-sans transition-colors duration-300 md:px-8">
+      <div className="mx-auto max-w-6xl">
+        <nav className="mb-8 pl-1">
+          <Breadcrumb
+            items={[
+              {
+                href: "/",
+                title: (
+                  <span className="flex items-center gap-2 text-slate-600 transition-colors hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-400">
+                    <HomeOutlined />
+                    <span>Home</span>
+                  </span>
+                ),
+              },
+              {
+                href: "/pressrelease/2568/press6812",
+                title: (
+                  <span className="flex items-center gap-1 text-slate-600 transition-colors hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-400">
+                    <AppstoreOutlined />
+                    <span>Projects</span>
+                  </span>
+                ),
+              },
+              {
+                title: (
+                  <span className="font-medium text-slate-500 dark:text-slate-400">
+                    Details
+                  </span>
+                ),
+              },
+            ]}
+          />
+        </nav>
+
+        <motion.main
+          initial="hidden"
+          animate="visible"
+          variants={containerVar}
+          className="space-y-10"
+        >
+          {/* Header */}
+          <motion.header
+            variants={itemVar}
+            className="space-y-4 text-center md:text-left"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full bg-blue-100/50 px-3 py-1 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
+              <CalendarOutlined /> <span>{date}</span>
+            </div>
+            <h1 className="text-center text-3xl leading-tight font-bold tracking-tight text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
+              {title}
+            </h1>
+          </motion.header>
+
+          {/* Description */}
+          <motion.section variants={itemVar}>
+            <article className="prose prose-lg dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
+              {Description.map((item, index) => (
+                <p key={index} className="leading-relaxed">
+                  {item.description}
+                </p>
+              ))}
+            </article>
+
+            {TageLink && TageLink.length > 0 && (
+              <div className="mt-8 flex flex-wrap gap-3 border-t border-slate-100 pt-6 dark:border-neutral-800">
+                {TageLink.map((item: any, index: number) => (
+                  <Link key={index} href={item.href || "#"} target="_blank">
+                    <span className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-700 transition-all hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-slate-300 dark:hover:bg-neutral-700">
+                      <LinkOutlined className="text-slate-400" /> {item.tage}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </motion.section>
+
+          {/* Footer */}
+          <motion.footer variants={itemVar} className="opacity-60">
+            <FootTitle />
+          </motion.footer>
+
+          {/* Gallery */}
+          {validImages.length > 0 && (
+            <motion.section variants={itemVar}>
+              <div className="mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <PictureOutlined />
+                <h3 className="text-lg font-semibold">
+                  {isSingleImage ? "Featured Image" : "Gallery"}
+                </h3>
+              </div>
+              <div
+                className={`grid gap-4 transition-all duration-300 ${getGridClassName()}`}
+              >
+                {validImages.map((item: any, index: number) => (
+                  <div
+                    key={index}
+                    // *** แก้ไขตรงนี้ครับ ***
+                    // เปลี่ยนจากเดิมที่มีการกำหนดความสูง h-[50vh]... เป็น "" (ค่าว่าง) เมื่อมีรูปเดียว
+                    className={`relative overflow-hidden rounded-xl bg-slate-200 shadow-sm ring-1 ring-black/5 dark:bg-neutral-800 ${
+                      isSingleImage ? "" : ""
+                    }`}
+                  >
+                    <Image
+                      src={item.imgs}
+                      alt={`Gallery ${index + 1}`}
+                      removeWrapper
+                      className={`h-full w-full object-cover transition-transform duration-700 hover:scale-105 ${
+                        isSingleImage ? "object-center" : ""
+                      }`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </motion.section>
+          )}
+          {ZeroNameImage.map((item: any) =>
+            item && item.imgs ? (
               <div key={item.imgs}>
                 <div className="scale-95 rounded-full transition duration-500 hover:scale-100">
                   <Image isBlurred src={item.imgs} alt={""}></Image>
@@ -23,144 +182,59 @@ const ImageFunction = () => {
               </div>
             ) : null,
           )}
-        </div>
+
+          {/* Navigation Buttons */}
+          <motion.nav
+            variants={itemVar}
+            className="border-t border-slate-200 pt-8 dark:border-neutral-800"
+          >
+            <div className="flex items-center justify-between gap-4">
+              {navData.prev ? (
+                <Link
+                  href={navData.prev.href}
+                  className="group flex w-1/2 items-center justify-start gap-3 pr-4 transition-all hover:-translate-x-1"
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition-colors group-hover:border-blue-300 group-hover:bg-blue-50 dark:border-neutral-700 dark:bg-neutral-900 dark:group-hover:border-blue-900/50 dark:group-hover:bg-blue-900/20">
+                    <LeftOutlined className="text-slate-400 transition-colors group-hover:text-blue-600" />
+                  </div>
+                  <div className="hidden overflow-hidden text-left sm:block">
+                    <span className="block text-xs font-medium tracking-wide text-slate-400 uppercase">
+                      Previous
+                    </span>
+                    <span className="line-clamp-1 text-sm font-semibold text-slate-700 transition-colors group-hover:text-blue-600 dark:text-slate-200">
+                      {navData.prev.title}
+                    </span>
+                  </div>
+                </Link>
+              ) : (
+                <div className="w-1/2" />
+              )}
+
+              {navData.next ? (
+                <Link
+                  href={navData.next.href}
+                  className="group flex w-1/2 items-center justify-end gap-3 pl-4 transition-all hover:translate-x-1"
+                >
+                  <div className="hidden overflow-hidden text-right sm:block">
+                    <span className="block text-xs font-medium tracking-wide text-slate-400 uppercase">
+                      Next
+                    </span>
+                    <span className="line-clamp-1 text-sm font-semibold text-slate-700 transition-colors group-hover:text-blue-600 dark:text-slate-200">
+                      {navData.next.title}
+                    </span>
+                  </div>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition-colors group-hover:border-blue-300 group-hover:bg-blue-50 dark:border-neutral-700 dark:bg-neutral-900 dark:group-hover:border-blue-900/50 dark:group-hover:bg-blue-900/20">
+                    <RightOutlined className="text-slate-400 transition-colors group-hover:text-blue-600" />
+                  </div>
+                </Link>
+              ) : (
+                <div className="w-1/2" />
+              )}
+            </div>
+          </motion.nav>
+        </motion.main>
       </div>
     </div>
-  );
-};
-
-const TageFucntion = () => {
-  return (
-    <div>
-      {/* <div className="p-6 md:p-8 bg-white shadow-xl rounded-xl border border-gray-100 transition-transform duration-300 hover:shadow-2xl hover:scale-[1.01]"> <div className="flex items-center mb-4 border-b pb-3 border-sky-100"> <svg className="w-8 h-8 text-sky-600 mr-3 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg> <p className="text-xl font-bold text-sky-800"> <span className="bg-sky-100 px-2 py-1 rounded-md"> ดาวน์โหลดเอกสาร PDF </span> </p> </div>
-        <div className="space-y-4"> <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-sky-50 rounded-lg transition duration-200 hover:bg-sky-100">
-          <div className="flex-1 min-w-0 mb-3 md:mb-0">
-            <p className="text-base text-gray-500 truncate">ชื่อไฟล์:</p>
-            <p className="text-lg font-semibold text-sky-700">
-              รายงานผลการประกันคุณภาพภายนอกด้านการอาชีวศึกษา สมศ<br />
-            </p>
-          </div>
-          <Link
-            href="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
-            className="inline-flex items-center justify-center px-5 py-2 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-300 transition duration-150 transform hover:scale-105" target="_blank" download > <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" ></path> </svg> ดาวน์โหลด PDF
-          </Link>
-        </div>
-        </div>
-      </div> */}
-    </div>
-  );
-};
-
-export default function Pressrelease() {
-  return (
-    <>
-      <Breadcrumb
-        items={[
-          {
-            href: "/",
-            title: <HomeOutlined />,
-            className: "dark:text-white dark:hover:text-white",
-          },
-          {
-            href: "/pressrelease/2568/press6809",
-            className: "dark:text-white dark:hover:text-white",
-            title: (
-              <>
-                {" "}
-                <UserOutlined /> <span>Application List</span>{" "}
-              </>
-            ),
-          },
-          { title: "Application", className: "dark:text-gray-400" },
-        ]}
-      />
-      <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        <div className="absolute top-0 h-32 w-1 bg-linear-to-b from-transparent via-blue-500 to-transparent" />
-      </div>
-      <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        {" "}
-        <div className="absolute h-40 w-px bg-linear-to-b from-transparent via-blue-500 to-transparent" />{" "}
-      </div>
-      <div className="px-4 py-10 md:py-20">
-        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
-          {"".split(" ").map((word, index) => (
-            <motion.span
-              key={index}
-              initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
-              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              transition={{
-                duration: 0.3,
-                delay: index * 0.1,
-                ease: "easeInOut",
-              }}
-              className="mr-2 inline-block"
-            >
-              {word}
-              {DataPressrelease.Item.map((item) => (
-                <div key={item.title}>{item.title}</div>
-              ))}
-            </motion.span>
-          ))}
-        </h1>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2, delay: 0.4 }}
-          className="relative z-10 mx-auto py-6 font-normal text-neutral-600 dark:text-neutral-400"
-        >
-          <div className="grid gap-2">
-            {Description.map((item) => (
-              <div key={item?.description ?? "undefined"}>
-                {" "}
-                {item?.description && <div>{item.description}</div>}{" "}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.6 }}
-        >
-          {TageLink.map((item) => (
-            <Link key={item.href} href={item.href} target="_blank">
-              <div className="text-sky-500 hover:text-sky-600 dark:text-sky-400 hover:dark:text-sky-600">
-                {item.tage}
-              </div>
-            </Link>
-          ))}
-          <TageFucntion />
-          <br />
-          <FootTitle />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.8 }}
-        >
-          <div className="date flex gap-2 py-2">
-            <Image
-              isBlurred
-              src="/images/icon/time-svgrepo-com.svg"
-              alt="logo-youtube"
-              className="pt-1"
-              width={20}
-              height={20}
-            />
-            {DataDate.map((item) => (
-              <div key={item.date}>
-                {" "}
-                <div className="pt-1 text-xs text-slate-500">
-                  {item.date}
-                </div>{" "}
-              </div>
-            ))}{" "}
-          </div>
-          {/* ***************************** Youtube / Image *****************************  */}
-          <ImageFunction />
-        </motion.div>
-      </div>
-    </>
   );
 }
 
