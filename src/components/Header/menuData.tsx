@@ -213,7 +213,6 @@ const menuData: Menu[] = [
         path: "/ordinary",
         newTab: false,
       },
-
     ],
   },
   {
@@ -309,6 +308,12 @@ const menuData: Menu[] = [
         id: 615,
         title: "แบบสำรวจภาวะการมีงานทำ",
         path: "/EmploymentDashboard",
+        newTab: false,
+      },
+      {
+        id: 615,
+        title: "ระบบช่วยเหลือผู้เรียน",
+        path: "https://kruboom.com/student/",
         newTab: false,
       },
     ],

@@ -538,7 +538,15 @@ const Footer = () => {
                     url="https://ktltc.vercel.app/EmploymentDashboard"
                     className="hover:text-primary mb-3 inline-block text-base text-gray-50"
                   >
-                    EmploymentDashboard
+                    แบบสำรวจภาวะการมีงานทำ
+                  </LinkPreview>
+                </li>
+                <li>
+                  <LinkPreview
+                    url="https://kruboom.com/student/"
+                    className="hover:text-primary mb-3 inline-block text-base text-gray-50"
+                  >
+                    ระบบช่วยเหลือผู้เรียน
                   </LinkPreview>
                 </li>
               </ul>
