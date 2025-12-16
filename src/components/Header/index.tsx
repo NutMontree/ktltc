@@ -1,324 +1,239 @@
 "use client";
+
 import { useTheme } from "next-themes";
-import { Image } from "@heroui/image";
+import Image from "next/image"; // ใช้ next/image มาตรฐาน
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  SunOutlined,
+  MoonOutlined,
+  DownOutlined,
+  MenuOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 
 import menuData from "./menuData";
-import NavbarModal from "../navbar-modal";
 
 const Header = () => {
   const pathUrl = usePathname();
+  const { theme, setTheme } = useTheme();
+
   // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false);
-  const navbarToggleHandler = () => {
-    setNavbarOpen(!navbarOpen);
-  };
+  const navbarToggleHandler = () => setNavbarOpen(!navbarOpen);
 
   // Sticky Navbar
   const [sticky, setSticky] = useState(false);
   const handleStickyNavbar = () => {
-    if (window.scrollY >= 80) {
+    if (window.scrollY >= 40) {
+      // ลด threshold ให้ sticky เร็วขึ้น
       setSticky(true);
     } else {
       setSticky(false);
     }
   };
+
   useEffect(() => {
     window.addEventListener("scroll", handleStickyNavbar);
-  });
+    return () => window.removeEventListener("scroll", handleStickyNavbar);
+  }, []);
 
-  // submenu handler
+  // Submenu handler
   const [openIndex, setOpenIndex] = useState(-1);
-  const handleSubmenu = (index: any) => {
-    if (openIndex === index) {
-      setOpenIndex(-1);
-    } else {
-      setOpenIndex(index);
-    }
+  const handleSubmenu = (index: number) => {
+    setOpenIndex(openIndex === index ? -1 : index);
   };
-
-  const { theme, setTheme } = useTheme();
 
   return (
     <>
       <header
-        className={`ud-header top-0 left-0 z-40 flex w-full items-center ${
+        className={`fixed top-0 left-0 z-50 flex w-full items-center transition-all duration-300 ${
           sticky
-            ? "shadow-nav border-stroke dark:border-dark-3/20 dark:bg-dark/10 fixed z-999 border-b bg-white/80 backdrop-blur-[5px]"
-            : "bg-transparen absolute"
+            ? "bg-white/80 py-2 shadow-sm backdrop-blur-md dark:bg-neutral-900/80"
+            : "bg-transparent py-8"
         }`}
       >
-        <div className="container">
-          <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-24 max-w-full px-4">
-              <Link
-                href="https://ktltc.vercel.app/"
-                className={`navbar-logo block ${
-                  sticky ? "xs:py-8 md:py-8 lg:py-4" : "py-14 md:py-10"
-                } `}
-              >
-                {pathUrl !== "/" ? (
-                  <>
-                    <Image
-                      src={`/images/logo.webp`}
-                      alt="logo"
-                      width="240"
-                      height="30"
-                      className="header-logo hidden w-full lg:block"
-                    />
-                    {/* <Image
-                      src={`/images/logo.webp`}
-                      alt="logo"
-                      width='240'
-                      height='30'
-                      className="header-logo hidden w-full dark:block "
-                    /> */}
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      src={`${
-                        sticky ? "/images/logo.webp" : "/images/logo.webp"
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between">
+            {/* --- Logo --- */}
+            <Link href="/" className="flex items-center gap-2">
+              <div className="relative h-10 w-36 md:h-12 md:w-44">
+                {/* Logo Light Mode */}
+                <Image
+                  src="/images/logo.webp"
+                  alt="KTLTC Logo"
+                  fill
+                  className={`object-contain transition-opacity duration-300 ${theme === "dark" ? "opacity-0" : "opacity-100"}`}
+                />
+                {/* Logo Dark Mode (ถ้ามีโลโก้สีขาวให้ใส่ตรงนี้) */}
+                <Image
+                  src="/images/logo.webp" // เปลี่ยนเป็น logo-dark.webp ถ้ามี
+                  alt="KTLTC Logo Dark"
+                  fill
+                  className={`absolute top-0 left-0 object-contain transition-opacity duration-300 ${theme === "dark" ? "opacity-100" : "opacity-0"}`}
+                />
+              </div>
+            </Link>
+
+            {/* --- Desktop Menu --- */}
+            <nav className="hidden items-center gap-8 lg:flex">
+              {menuData.map((menuItem, index) => (
+                <div key={index} className="group relative">
+                  {menuItem.path ? (
+                    <Link
+                      href={menuItem.path}
+                      className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
+                        pathUrl === menuItem.path
+                          ? "font-bold text-blue-600 dark:text-blue-400"
+                          : "text-slate-700 dark:text-slate-200"
                       }`}
-                      alt="logo"
-                      width="240"
-                      height="30"
-                      className="header-logo hidden w-full dark:hidden"
-                    />
-                    <Image
-                      src={"/images/logo.webp"}
-                      alt="logo"
-                      width="240"
-                      height="30"
-                      className="header-logo xs:hidden hidden w-full lg:block"
-                    />
-                  </>
-                )}
-              </Link>
-            </div>
-            <button
-              onClick={navbarToggleHandler}
-              id="navbarToggler"
-              aria-label="Mobile Menu"
-              className="ring-primary absolute rounded-lg px-6 lg:hidden"
-            >
-              <span
-                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${
-                  navbarOpen ? "top-[7px] rotate-45" : " "
-                } ${pathUrl !== "/" && "bg-dark! dark:bg-white!"} ${
-                  pathUrl === "/" && sticky
-                    ? "bg-dark dark:bg-white"
-                    : "bg-dark dark:bg-white"
-                }`}
-              />
-              <span
-                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${
-                  navbarOpen ? "opacity-0" : " "
-                } ${pathUrl !== "/" && "bg-dark! dark:bg-white!"} ${
-                  pathUrl === "/" && sticky
-                    ? "bg-dark dark:bg-white"
-                    : "bg-dark dark:bg-white"
-                }`}
-              />
-              <span
-                className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 ${
-                  navbarOpen ? "-top-2 -rotate-45" : " "
-                } ${pathUrl !== "/" && "bg-dark! dark:bg-white!"} ${
-                  pathUrl === "/" && sticky
-                    ? "bg-dark dark:bg-white"
-                    : "bg-dark dark:bg-white"
-                }`}
-              />
-            </button>
-            <div className="hidden lg:block">
-              <Link
-                href="https://ktltc.vercel.app/"
-                className="text-2xl font-bold text-inherit"
-              >
-                KTLTC
-              </Link>
-            </div>
-            <div className="flex w-full justify-center">
-              <div>
-                <nav
-                  id="navbarCollapse"
-                  className={`navbar dark:border-body-color/20 dark:bg-dark-2 absolute right-0 w-full rounded bg-white px-6 py-4 duration-300 lg:visible lg:static lg:w-auto lg:border-none lg:bg-transparent! lg:p-0 lg:opacity-100 lg:dark:bg-transparent ${
-                    navbarOpen
-                      ? "visibility top-full opacity-100 shadow-2xl"
-                      : "invisible top-[120%] opacity-0"
-                  }`}
-                >
-                  <ul className="block lg:ml-8 lg:flex lg:gap-x-4 xl:ml-8 xl:gap-x-8">
-                    {menuData.map((menuItem, index) =>
-                      menuItem.path ? (
-                        <li key={index} className="group relative">
-                          {pathUrl !== "/" ? (
-                            <Link
-                              onClick={navbarToggleHandler}
-                              scroll={false}
-                              href={menuItem.path}
-                              className={`ud-menu-scroll text-dark group-hover:text-primary dark:group-hover:text-primary flex py-2 text-xs lg:inline-flex lg:px-0 lg:py-6 xl:text-base dark:text-white ${
-                                pathUrl === menuItem?.path && "text-primary"
-                              }`}
-                            >
-                              {menuItem.title}
-                            </Link>
-                          ) : (
-                            <Link
-                              scroll={false}
-                              href={menuItem.path}
-                              className={`ud-menu-scroll flex py-2 text-xs lg:inline-flex lg:px-0 lg:py-6 xl:text-base ${
-                                sticky
-                                  ? "text-dark group-hover:text-primary dark:group-hover:text-primary dark:text-white"
-                                  : "dark:text-white"
-                              } ${
-                                pathUrl === menuItem?.path &&
-                                sticky &&
-                                "text-primary!"
-                              }`}
-                            >
-                              {menuItem.title}
-                            </Link>
-                          )}
-                        </li>
-                      ) : (
-                        <li className="submenu-item group relative" key={index}>
-                          {pathUrl !== "/" ? (
-                            <button
-                              onClick={() => handleSubmenu(index)}
-                              className={`ud-menu-scroll text-dark group-hover:text-primary dark:group-hover:text-primary flex items-center justify-between py-2.5 text-xs lg:inline-flex lg:px-0 lg:py-6 xl:text-base dark:text-white`}
-                            >
-                              {menuItem.title}
+                    >
+                      {menuItem.title}
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => handleSubmenu(index)}
+                      className="flex items-center gap-1 text-sm font-medium text-slate-700 transition-colors hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400"
+                    >
+                      {menuItem.title}
+                      <DownOutlined className="text-xs transition-transform group-hover:rotate-180" />
+                    </button>
+                  )}
 
-                              <span className="pl-2">
-                                <svg
-                                  className={`duration-300 lg:group-hover:rotate-180`}
-                                  width="16"
-                                  height="17"
-                                  viewBox="0 0 16 17"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M8.00039 11.9C7.85039 11.9 7.72539 11.85 7.60039 11.75L1.85039 6.10005C1.62539 5.87505 1.62539 5.52505 1.85039 5.30005C2.07539 5.07505 2.42539 5.07505 2.65039 5.30005L8.00039 10.525L13.3504 5.25005C13.5754 5.02505 13.9254 5.02505 14.1504 5.25005C14.3754 5.47505 14.3754 5.82505 14.1504 6.05005L8.40039 11.7C8.27539 11.825 8.15039 11.9 8.00039 11.9Z"
-                                    fill="currentColor"
-                                  />
-                                </svg>
-                              </span>
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleSubmenu(index)}
-                              className={`ud-menu-scroll flex items-center justify-between py-2 text-xs lg:inline-flex lg:px-0 lg:py-6 xl:text-base ${
-                                sticky
-                                  ? "group-hover:text-primary dark:group-hover:text-primary"
-                                  : " "
-                              }`}
-                            >
-                              {menuItem.title}
-
-                              <span className="pl-2">
-                                <svg
-                                  className={`duration-300 lg:group-hover:rotate-180`}
-                                  width="16"
-                                  height="17"
-                                  viewBox="0 0 16 17"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M8.00039 11.9C7.85039 11.9 7.72539 11.85 7.60039 11.75L1.85039 6.10005C1.62539 5.87505 1.62539 5.52505 1.85039 5.30005C2.07539 5.07505 2.42539 5.07505 2.65039 5.30005L8.00039 10.525L13.3504 5.25005C13.5754 5.02505 13.9254 5.02505 14.1504 5.25005C14.3754 5.47505 14.3754 5.82505 14.1504 6.05005L8.40039 11.7C8.27539 11.825 8.15039 11.9 8.00039 11.9Z"
-                                    fill="currentColor"
-                                  />
-                                </svg>
-                              </span>
-                            </button>
-                          )}
-
-                          <div
-                            className={`submenu dark:bg-dark-2 relative top-full left-0 w-[300px] rounded-sm bg-white pl-6 transition-[top] duration-300 group-hover:opacity-100 lg:invisible lg:absolute lg:top-[110%] lg:block lg:opacity-0 lg:shadow-2xl lg:group-hover:visible lg:group-hover:top-full ${
-                              openIndex === index ? "-left-[25px]!" : "hidden"
-                            }`}
+                  {/* Submenu Desktop */}
+                  {menuItem.submenu && (
+                    <div className="invisible absolute top-full left-0 mt-2 w-48 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                      <div className="overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-slate-900/5 dark:bg-neutral-800 dark:ring-white/10">
+                        {menuItem.submenu.map((subItem: any, i: number) => (
+                          <Link
+                            key={i}
+                            href={subItem.path}
+                            className="block px-4 py-3 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-blue-400"
                           >
-                            {menuItem?.submenu?.map((submenuItem: any, i) => (
-                              <Link
-                                href={submenuItem.path}
-                                key={i}
-                                className={`block rounded px-4 py-2 text-sm ${
-                                  pathUrl === submenuItem.path
-                                    ? "text-primary"
-                                    : "text-body-color hover:text-primary dark:text-dark-6 dark:hover:text-primary"
-                                }`}
-                              >
-                                {submenuItem.title}
-                              </Link>
-                            ))}
-                          </div>
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                </nav>
-              </div>
-              <div className="flex justify-center">
-                <Link href="/">
-                  <div className="lg:hidden">
-                    <p className="text-center text-xl font-bold">KTLTC</p>
-                    <p className="text-xs">วิทยาลัยเทคนิคกันทรลักษ์</p>
-                  </div>
-                </Link>
-              </div>
-            </div>
-            <div></div>
-            <div className="flex shrink-0">
+                            {subItem.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            {/* --- Right Actions (Social & Theme) --- */}
+            <div className="flex items-center gap-4">
+              {/* Facebook Icon */}
               <Link
-                aria-label="social link"
                 href="https://www.facebook.com/profile.php?id=100057326985699"
                 target="_blank"
+                className="hidden opacity-80 transition-opacity hover:opacity-100 sm:block"
               >
                 <Image
-                  removeWrapper
                   src="/images/facebook.webp"
-                  alt="facebook_logo"
-                  width={100}
-                  height={100}
-                  className="w-8 cursor-pointer object-contain pr-2"
+                  alt="facebook"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain"
                 />
               </Link>
-            </div>
-            <div>
-              {/* theme toggler */}
-              <button
-                aria-label="theme toggler"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                // ✅ แก้ไข Class: ลบ pr-6 ออก, เพิ่ม h-10 w-10, ใส่สีให้ชัดเจน
-                className="text-dark hover:text-primary dark:hover:text-primary flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-white/10"
-              >
-                <span>
-                  {/* Sun Icon (แสดงตอน Dark Mode) */}
-                  <svg
-                    viewBox="0 0 16 16"
-                    className="hidden h-[22px] w-[22px] fill-current dark:block"
-                  >
-                    <path d="M4.50663 3.2267L3.30663 2.03337L2.36663 2.97337L3.55996 4.1667L4.50663 3.2267ZM2.66663 7.00003H0.666626V8.33337H2.66663V7.00003ZM8.66663 0.366699H7.33329V2.33337H8.66663V0.366699V0.366699ZM13.6333 2.97337L12.6933 2.03337L11.5 3.2267L12.44 4.1667L13.6333 2.97337ZM11.4933 12.1067L12.6866 13.3067L13.6266 12.3667L12.4266 11.1734L11.4933 12.1067ZM13.3333 7.00003V8.33337H15.3333V7.00003H13.3333ZM7.99996 3.6667C5.79329 3.6667 3.99996 5.46003 3.99996 7.6667C3.99996 9.87337 5.79329 11.6667 7.99996 11.6667C10.2066 11.6667 12 9.87337 12 7.6667C12 5.46003 10.2066 3.6667 7.99996 3.6667ZM7.33329 14.9667H8.66663V13H7.33329V14.9667ZM2.36663 12.36L3.30663 13.3L4.49996 12.1L3.55996 11.16L2.36663 12.36Z" />
-                  </svg>
 
-                  {/* Moon Icon (แสดงตอน Light Mode) */}
-                  <svg
-                    viewBox="0 0 23 23"
-                    className="text-dark block h-[30px] w-[30px] fill-current dark:hidden"
-                  >
-                    <g clipPath="url(#clip0_40_125)">
-                      <path d="M16.6111 15.855C17.591 15.1394 18.3151 14.1979 18.7723 13.1623C16.4824 13.4065 14.1342 12.4631 12.6795 10.4711C11.2248 8.47905 11.0409 5.95516 11.9705 3.84818C10.8449 3.9685 9.72768 4.37162 8.74781 5.08719C5.7759 7.25747 5.12529 11.4308 7.29558 14.4028C9.46586 17.3747 13.6392 18.0253 16.6111 15.855Z" />
-                    </g>
-                  </svg>
-                </span>
+              {/* Theme Toggle Button */}
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all hover:bg-slate-200 hover:text-blue-600 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/20 dark:hover:text-yellow-400"
+                aria-label="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <SunOutlined className="text-lg" />
+                ) : (
+                  <MoonOutlined className="text-lg" />
+                )}
+              </button>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={navbarToggleHandler}
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 lg:hidden dark:text-slate-200 dark:hover:bg-white/10"
+              >
+                {navbarOpen ? (
+                  <CloseOutlined className="text-xl" />
+                ) : (
+                  <MenuOutlined className="text-xl" />
+                )}
               </button>
             </div>
           </div>
         </div>
+
+        {/* --- Mobile Menu (Dropdown) --- */}
+        <AnimatePresence>
+          {navbarOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="absolute top-full left-0 w-full overflow-hidden border-t border-slate-100 bg-white shadow-lg lg:hidden dark:border-neutral-800 dark:bg-neutral-900"
+            >
+              <div className="container mx-auto space-y-2 px-4 py-4">
+                {menuData.map((menuItem, index) => (
+                  <div key={index}>
+                    {menuItem.path ? (
+                      <Link
+                        href={menuItem.path}
+                        onClick={navbarToggleHandler}
+                        className={`block py-2 text-base font-medium ${
+                          pathUrl === menuItem.path
+                            ? "text-blue-600"
+                            : "text-slate-700 dark:text-slate-200"
+                        }`}
+                      >
+                        {menuItem.title}
+                      </Link>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleSubmenu(index)}
+                          className="flex w-full items-center justify-between py-2 text-base font-medium text-slate-700 dark:text-slate-200"
+                        >
+                          {menuItem.title}
+                          <DownOutlined
+                            className={`text-xs transition-transform ${openIndex === index ? "rotate-180" : ""}`}
+                          />
+                        </button>
+                        {/* Mobile Submenu */}
+                        <AnimatePresence>
+                          {openIndex === index && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="space-y-1 overflow-hidden pl-4"
+                            >
+                              {menuItem.submenu?.map(
+                                (subItem: any, i: number) => (
+                                  <Link
+                                    key={i}
+                                    href={subItem.path}
+                                    onClick={navbarToggleHandler}
+                                    className="block py-2 text-sm text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+                                  >
+                                    {subItem.title}
+                                  </Link>
+                                ),
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
     </>
   );

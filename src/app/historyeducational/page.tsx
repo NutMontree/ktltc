@@ -1,122 +1,155 @@
-"use client"; // top to the file
-import { FlipWords } from "@/components/ui/flip-words";
+"use client";
+
+import React from "react";
 import { Image } from "@heroui/image";
+import { motion } from "framer-motion";
 import { ImageItem } from "./data";
+import {
+  CalendarOutlined,
+  BankOutlined,
+  HistoryOutlined,
+} from "@ant-design/icons";
 
 export default function HistoryEducational() {
-  const words = ["ประวัติความเป็นมา", "ข้อมูลด้านอาคารสถานที่"];
   return (
-    <>
-      <div className="md:px-24">
-        <h1 className="text-xxl pt-8 text-center font-bold md:text-start">
-          ประวัติสถานศึกษา
-        </h1>
+    <section className="bg-white py-16 font-sans dark:bg-neutral-950">
+      {/* --- Background Decoration --- */}
+      <div className="pointer-events-none absolute top-0 right-0 -mt-20 -mr-20 h-96 w-96 rounded-full bg-blue-100/30 blur-3xl dark:bg-blue-900/10" />
+      <div className="pointer-events-none absolute bottom-0 left-0 -mb-20 -ml-20 h-80 w-80 rounded-full bg-indigo-100/30 blur-3xl dark:bg-indigo-900/10" />
 
-        <div className="flex justify-center">
-          <Image
-            removeWrapper
-            alt="Relaxing app background"
-            className="flex w-60 justify-center py-2"
-            width="auto"
-            height="auto"
-            src="/images/logo.webp"
-          />
-        </div>
-        <div>
-          <div className="mx-auto text-xl font-normal text-neutral-600 dark:text-neutral-400">
-            <FlipWords words={words} className="text-sky-700" />
-            <div className="pl-2">วิทยาลัยเทคนิคกันทรลักษ์</div>
-          </div>
-          <p className="pl-4 font-semibold">
-            ประวัติ ความเป็นมาของ วิทยาลัยเทคนิคกันทรลักษ์
-          </p>
-
-          <div className="pl-6">
-            <p>
-              วิทยาลัยเทคนิคกันทรลักษ์ เดิมเป็น วิทยาลัยการอาชีพกันทรลักษ์
-              ได้จัดตั้งขึ้นตาม
-              นโยบายรัฐบาลเพื่อขยายโอกาสทางการศึกษาวิชาชีพสู่ชนบท
-              จังหวัดศรีสะเกษ ได้ทำหนังสือถึงกรม อาชีวศึกษา เมื่อวันที่ 10
-              มิถุนายน 2534
-              เพื่อขอสนับสนุนในการจัดตั้งวิทยาลัยการอาชีพกันทรลักษ์ ระดับ อำเภอ
-              และในช่วงดังกล่าว นายพิสุทธิ์ บุญเจริญ ศึกษาธิการอำเภอกันทรลักษ์
-              ได้มาตรวจเยี่ยม โรงเรียน
-              บ้านจานทองกวาววิทยาและได้ปรึกษาหารือในการหาที่ดินสำหรับสร้าง
-              วิทยาลัยการอาชีพกันทรลักษ์ โดย นายอำไพ บุญเริ่ม
-              ผู้อำนวยการโรงเรียนบ้านจานทองกวาววิทยา
-              ได้เสนอที่ดินซึ่งอยู่ตรงกันข้ามกับโรงเรียน บ้านจานทองกวาววิทยา
-              เป็นที่ดินสาธารณประโยชน์มีเนื้อที่ประมาณ 105 กว่าไร่
-              มีการคมนาคมสะดวก และประชากรโดยรอบอาศัยอยู่หนาแน่น ต่อมาในวันที่ 22
-              ตุลาคม 2534 นายอำเภอกันทรลักษ์ นายสุรินทร์ พันพฤกษ์ ได้พิจารณาทำ
-              เรื่องเสนอขอใช้ที่ดินสาธารณประโยชน์ดังกล่าวไปยังผู้ว่าราชการ
-              จังหวัดศรีสะเกษพิจารณาอนุมัติ โดยมีสมาชิกสภาผู้แทนราษฎร นายจำนงค์
-              โพธิสาโร ได้มีบทบาทในการ ร่วมติดต่อประสานงานการจัดตั้ง
-              วิทยาลัยการอาชีพกันทรลักษ์ จนได้รับความสำเร็จ ในการนี้อธิบดีกรม
-              อาชีวศึกษา นายบุญเทียม เจริญยิ่ง ให้ความเห็นชอบจึงได้มีคำ
-              สั่งกรมอาชีวศึกษา ที่ 2921/2535 ลงวันที่ 12 ตุลาคม 2535
-              แต่งตั้งให้ นายไพฑูรย์ ธนสีลังกูร ผู้ช่วยผู้อำ
-              นวยการวิทยาลัยเทคนิคบุรีรัมย์เป็นผู้
-              ประสานในการจัดตั้งวิทยาลัยการอาชีพกันทรลักษ์ เมื่อวันที่ 30 มีนาคม
-              2537 กระทรวงศึกษาธิการได้ ประกาศจัดตั้งวิทยาลัยการอาชีพกันทรลักษ์
-              พร้อมจัดสรรงบประมาณจำนวน 28.7 ล้านบาท เพื่อ ดำเนินการก่อสร้าง
-              วิทยาลัยการอาชีพกันทรลักษ์ ได้ทำ
-              การเปิดสอนรับนักเรียนนักศึกษารุ่นแรกปี การศึกษา 2539 ใน 4
-              สาขาวิชาได้แก่ <br /> สาขาวิชาช่างยนต์
-              <br /> สาขาวิชาช่างไฟฟ้า สาขาวิชาอิเล็กทรอนิกส์ <br />
-              สาขาวิชาพณิชยการ <br />
-              ต่อมาเมื่อวันที่ 7 มิถุนายน 2539 วิทยาลัยการอาชีพกันทรลักษ์
-              ได้รับเกียรติจาก ฯพณฯ นายบรรหาร ศิลปอาชา
-              นายกรัฐมนตรีและรัฐมนตรีว่าการกระทรวงมหาดไทย เดินทางมาเป็น
-              ประธานพิธีเปิดวิทยาลัยการอาชีพกันทรลักษ์ อย่างเป็นทางการ
-            </p>
-            <p>
-              เดือนกรกฎาคม พ.ศ. 2555 นายวาสิทธิ์ พวงสวัสดิ์
-              ผู้อำนวยการวิทยาลัยการอาชีพกันทรลักษ์ ได้ดำเนินการทำ
-              หนังสือขออนุมัติเปลี่ยนชื่อสถานศึกษา ต่อมาในเดือนพฤศจิกายน
-              พ.ศ.2555 ได้รับ ประกาศจากกระทรวงศึกษาธิการ
-              เรื่องการเปลี่ยนชื่อสถานศึกษา สำนักงานคณะกรรมการการอาชีวศึกษา
-              วิทยาลัยการอาชีพกันทรลักษ์ เปลี่ยนชื่อเป็นวิทยาลัยเทคนิคกันทรลักษ์
-              ประกาศ ณ วันที่ 21 พฤศจิกายน พ.ศ. 2555 ลงนามโดย นายพงศ์เทพ
-              เทพกาญจนา รัฐมนตรีว่าการกระทรวงศึกษาธิการ และในวันที่ 30 สิงหาคม
-              พ.ศ.2556 นางศิริพร กิจเกื้อกูล รองปลัดกระทรวงศึกษาธิการ
-              ได้เดินทางมาเปิดป้าย วิทยาลัยเทคนิคกันทรลักษ์ อย่างเป็นทางกา
-            </p>
-          </div>
-
-          <br />
-          <br />
-
-          <p className="pl-4 font-semibold">ข้อมูลด้านอาคารสถานที่</p>
-          <p className="pl-6">
-            วิทยาลัยเทคนิคกันทรลักษ์ มีพื้นที่จัดการศึกษา เนื้อที่ 105 ไร่ 2 งาน
-            25 ตารางวา มีจำนวนอาคารสถานที่ดังต่อไปนี้
-          </p>
-          <div className="flex justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true }}
+        className="relative z-10 container mx-auto px-4 md:px-8"
+      >
+        {/* --- Header Section --- */}
+        <div className="mb-16 flex flex-col items-center text-center">
+          <div className="mb-6 rounded-full bg-white p-4 shadow-lg ring-1 ring-slate-100 dark:bg-neutral-800 dark:ring-neutral-700">
             <Image
-              removeWrapper
-              alt="ข้อมูลด้านอาคารสถานที่"
-              src="/images/image/ข้อมูลด้านอาคารสถานที่.webp"
+              src="/images/logo.webp"
+              alt="KTLTC Logo"
+              width={100}
+              height={100}
+              className="h-24 w-auto object-contain"
             />
           </div>
-        </div>
-        <br />
-        <br />
-        <div className="mx-auto text-xl font-semibold text-neutral-600 dark:text-neutral-400">
-          ภาพอาคารสถานที่
+          <h1 className="text-3xl font-extrabold text-slate-800 md:text-5xl dark:text-slate-100">
+            วิทยาลัยเทคนิค<span className="text-blue-600">กันทรลักษ์</span>
+          </h1>
+          <p className="mt-4 text-lg text-slate-500 dark:text-slate-400">
+            Kantharalak Technical College
+          </p>
+          <div className="mt-6 h-1 w-20 rounded-full bg-blue-600/50" />
         </div>
 
-        <div className="flex justify-center">
-          <div className="grid grid-cols-1 justify-center justify-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {ImageItem.map((item) => (
-              <div className="" key={item.img}>
-                <div className="scale-90 rounded-full transition duration-500 hover:scale-110">
-                  <Image src={item.img} alt={""}></Image>
+        {/* --- History Section (Timeline Style) --- */}
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-8 flex items-center gap-3 border-b border-slate-200 pb-4 dark:border-neutral-800">
+            <HistoryOutlined className="text-2xl text-blue-600" />
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+              ประวัติความเป็นมา
+            </h2>
+          </div>
+
+          <article className="prose prose-lg dark:prose-invert max-w-none space-y-6 text-slate-600 dark:text-slate-300">
+            <p className="indent-8 leading-relaxed">
+              วิทยาลัยเทคนิคกันทรลักษ์ เดิมเป็น{" "}
+              <strong>"วิทยาลัยการอาชีพกันทรลักษ์"</strong>{" "}
+              ได้จัดตั้งขึ้นตามนโยบายรัฐบาลเพื่อขยายโอกาสทางการศึกษาวิชาชีพสู่ชนบท
+              จังหวัดศรีสะเกษ ได้ทำหนังสือถึงกรมอาชีวศึกษา เมื่อวันที่ 10
+              มิถุนายน 2534
+              เพื่อขอสนับสนุนในการจัดตั้งวิทยาลัยการอาชีพกันทรลักษ์ ระดับอำเภอ
+            </p>
+            <p className="indent-8 leading-relaxed">
+              ในช่วงดังกล่าว นายพิสุทธิ์ บุญเจริญ ศึกษาธิการอำเภอกันทรลักษ์
+              ได้มาตรวจเยี่ยม
+              โรงเรียนบ้านจานทองกวาววิทยาและได้ปรึกษาหารือในการหาที่ดินสำหรับสร้างวิทยาลัย
+              โดยได้รับความร่วมมือจาก นายอำไพ บุญเริ่ม
+              ผู้อำนวยการโรงเรียนบ้านจานทองกวาววิทยา
+              เสนอที่ดินสาธารณประโยชน์เนื้อที่ประมาณ 105 ไร่
+              ซึ่งมีการคมนาคมสะดวกและชุมชนหนาแน่น
+            </p>
+
+            <div className="my-8 rounded-2xl border-l-4 border-blue-500 bg-blue-50/50 p-6 dark:bg-blue-900/10">
+              <h3 className="mb-2 flex items-center gap-2 text-lg font-bold text-blue-800 dark:text-blue-300">
+                <CalendarOutlined /> เหตุการณ์สำคัญ
+              </h3>
+              <ul className="list-disc space-y-2 pl-5 text-sm md:text-base">
+                <li>
+                  <strong>30 มีนาคม 2537:</strong>{" "}
+                  กระทรวงศึกษาธิการประกาศจัดตั้งวิทยาลัย พร้อมงบประมาณ 28.7
+                  ล้านบาท
+                </li>
+                <li>
+                  <strong>ปีการศึกษา 2539:</strong> เปิดรับนักศึกษารุ่นแรก ใน 4
+                  สาขาวิชา (ช่างยนต์, ช่างไฟฟ้า, อิเล็กทรอนิกส์, พณิชยการ)
+                </li>
+                <li>
+                  <strong>7 มิถุนายน 2539:</strong> พิธีเปิดอย่างเป็นทางการ โดย
+                  ฯพณฯ นายบรรหาร ศิลปอาชา นายกรัฐมนตรี
+                </li>
+                <li>
+                  <strong>21 พฤศจิกายน 2555:</strong> เปลี่ยนชื่อเป็น
+                  "วิทยาลัยเทคนิคกันทรลักษ์"
+                </li>
+              </ul>
+            </div>
+          </article>
+        </div>
+
+        {/* --- Facilities Section --- */}
+        <div className="mx-auto mt-20 max-w-6xl">
+          <div className="mb-8 flex flex-col items-center justify-center text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30">
+              <BankOutlined className="text-2xl" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100">
+              อาคารสถานที่
+            </h2>
+            <p className="mt-2 text-slate-500 dark:text-slate-400">
+              พื้นที่จัดการศึกษา เนื้อที่ 105 ไร่ 2 งาน 25 ตารางวา
+            </p>
+          </div>
+
+          {/* Main Map/Layout Image */}
+          <div className="mb-12 overflow-hidden rounded-3xl bg-slate-100 shadow-sm dark:bg-neutral-900">
+            <Image
+              removeWrapper
+              src="/images/image/ข้อมูลด้านอาคารสถานที่.webp"
+              alt="แผนผังอาคารสถานที่"
+              className="h-auto w-full object-cover"
+            />
+          </div>
+
+          {/* Facilities Grid Gallery */}
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {ImageItem.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                className="group relative overflow-hidden rounded-2xl bg-slate-200 shadow-md transition-all hover:shadow-xl dark:bg-neutral-800"
+              >
+                <div className="aspect-4/3 overflow-hidden">
+                  <Image
+                    src={item.img}
+                    alt={`Facility ${index + 1}`}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    removeWrapper
+                  />
                 </div>
-              </div>
+                {/* Optional: Overlay Text (ถ้ามีชื่ออาคาร) */}
+                {/* <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 pt-10">
+                    <p className="text-white text-sm font-medium">ชื่ออาคาร {index+1}</p>
+                </div> */}
+              </motion.div>
             ))}
           </div>
         </div>
-      </div>
-    </>
+      </motion.div>
+    </section>
   );
 }

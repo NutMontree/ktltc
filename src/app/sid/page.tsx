@@ -1,389 +1,329 @@
-"use client"; // top to the file
+"use client";
+
+import React from "react";
+import { motion } from "framer-motion";
+import { UserOutlined, BookOutlined, TeamOutlined } from "@ant-design/icons";
+
+// Reusable Stat Card
+const StatCard = ({
+  title,
+  value,
+  icon,
+  color,
+}: {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  color: string;
+}) => (
+  <div className="flex items-center rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+    <div className={`rounded-full px-2 py-1 ${color} mr-4 text-xl text-white`}>
+      {icon}
+    </div>
+    <div>
+      <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+      <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+        {value}
+      </h3>
+    </div>
+  </div>
+);
 
 export default function Sid() {
   return (
-    <>
-      <div>
-        <h1 className="flex justify-center text-xl">ข้อมูลนักเรียน นักศึกษา</h1>
-        <h1 className="flex justify-center pb-8 text-xl text-[#DAA520]">
-          Student information
-        </h1>
-      </div>
+    <section className="py-16 font-sans">
+      <div className="container mx-auto max-w-6xl px-4 md:px-8">
+        {/* --- Header --- */}
+        <div className="mb-12 text-center">
+          <div className="mb-4 inline-flex items-center justify-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-semibold text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+            <TeamOutlined className="mr-2" /> สถิติจำนวนผู้เรียน
+          </div>
+          <h1 className="text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
+            ข้อมูล<span className="text-[#DAA520]">นักเรียน นักศึกษา</span>
+          </h1>
+          <p className="mt-2 text-slate-500 dark:text-slate-400">
+            Student Information Statistics
+          </p>
+        </div>
 
-      <div className="rounded-lg pt-6">
-        <div className="grid grid-cols-6 rounded-tl-lg rounded-tr-lg border-slate-100 bg-zinc-100 dark:bg-slate-800">
-          <div className="rounded-tl-lg border-t border-l border-slate-200 pr-1 pl-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            ระดับการศึกษา
-          </div>
-          <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            ชาย
-          </div>
-          <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            หญิง
-          </div>
-          <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            จบ
-          </div>
-          <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            พ้นสภาพ
-          </div>
-          <div className="rounded-tr-lg border-t border-r border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            รวม
-          </div>
-        </div>
-        <div className="grid grid-cols-6 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-          <div className="border-t border-l border-slate-100 pr-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            ระดับ ปวช
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            998
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            650
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-          <div className="border-t border-r border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            1,648
-          </div>
-        </div>
-        <div className="grid grid-cols-6 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-          <div className="border-t border-l border-slate-100 pr-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            ระดับ ปวส
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            496
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            358
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-          <div className="border-t border-r border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            854
-          </div>
-        </div>
-        <div className="grid grid-cols-6 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-          <div className="border-t border-l border-slate-100 pr-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            ระดับ ทล.บ
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            4
-          </div>
-          <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-          <div className="border-t border-r border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            0
-          </div>
-        </div>
-        <div className="grid grid-cols-6 rounded-br-lg rounded-bl-lg border-slate-200 dark:hover:bg-slate-800">
-          <div className="rounded-bl-lg border-t border-b border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base dark:hover:text-white">
-            รวมทั้งหมด
-          </div>
-          <div className="border-t border-b border-l border-slate-100 pr-1 text-end text-[6px] text-sky-600 sm:text-sm md:text-base md:text-[8px] lg:text-base dark:hover:text-white">
-            1,494
-          </div>
-          <div className="border-t border-b border-l border-slate-100 pr-1 text-end text-[6px] text-sky-600 sm:text-sm md:text-base md:text-[8px] lg:text-base dark:hover:text-white">
-            1,008
-          </div>
-          <div className="border-t border-b border-l border-slate-100 pr-1 text-end text-[6px] text-sky-600 sm:text-sm md:text-base md:text-[8px] lg:text-base dark:hover:text-white">
-            0
-          </div>
-          <div className="border-t border-b border-l border-slate-100 pr-1 text-end text-[6px] text-sky-600 sm:text-sm md:text-base md:text-[8px] lg:text-base dark:hover:text-white">
-            0
-          </div>
-          <div className="rounded-br-lg border-t border-r border-b border-l border-slate-100 pr-1 text-end text-[6px] text-sky-600 sm:text-sm md:text-base md:text-[8px] lg:text-base dark:hover:text-white">
-            2,502
-          </div>
-        </div>
-      </div>
+        {/* --- 1. Summary Dashboard (Highlight) --- */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <StatCard
+            title="นักเรียนทั้งหมด"
+            value="2,502"
+            icon={<TeamOutlined />}
+            color="bg-blue-500"
+          />
+          <StatCard
+            title="ระดับ ปวช."
+            value="1,648"
+            icon={<BookOutlined />}
+            color="bg-emerald-500"
+          />
+          <StatCard
+            title="ระดับ ปวส."
+            value="854"
+            icon={<UserOutlined />}
+            color="bg-amber-500"
+          />
+          <StatCard
+            title="ระดับ ทล.บ."
+            value="0"
+            icon={<BookOutlined />}
+            color="bg-rose-500"
+          />
+        </motion.div>
 
-      <div>
-        <h1 className="flex justify-center pt-14 text-xl text-[#DAA520]">
-          สรุปข้อมูลสถิตินักเรียนนักศึกษาจำแนกประเภทวิชา
-        </h1>
-      </div>
+        {/* --- 2. Main Data Table (Overview) --- */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-12 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+        >
+          <div className="border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-neutral-700 dark:bg-neutral-800">
+            <h3 className="font-bold text-slate-700 dark:text-slate-200">
+              ภาพรวมจำแนกตามระดับการศึกษา
+            </h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-500 dark:text-slate-400">
+              <thead className="bg-slate-50 text-xs text-slate-700 uppercase dark:bg-neutral-800 dark:text-slate-300">
+                <tr>
+                  <th className="rounded-tl-lg px-6 py-4">ระดับการศึกษา</th>
+                  <th className="px-6 py-4 text-right">ชาย</th>
+                  <th className="px-6 py-4 text-right">หญิง</th>
+                  <th className="px-6 py-4 text-right">จบการศึกษา</th>
+                  <th className="px-6 py-4 text-right">พ้นสภาพ</th>
+                  <th className="rounded-tr-lg px-6 py-4 text-right">รวม</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b bg-white hover:bg-slate-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800">
+                  <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                    ระดับ ปวช.
+                  </td>
+                  <td className="px-6 py-4 text-right">998</td>
+                  <td className="px-6 py-4 text-right">650</td>
+                  <td className="px-6 py-4 text-right text-green-600">0</td>
+                  <td className="px-6 py-4 text-right text-red-500">0</td>
+                  <td className="px-6 py-4 text-right font-bold text-blue-600">
+                    1,648
+                  </td>
+                </tr>
+                <tr className="border-b bg-white hover:bg-slate-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800">
+                  <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                    ระดับ ปวส.
+                  </td>
+                  <td className="px-6 py-4 text-right">496</td>
+                  <td className="px-6 py-4 text-right">358</td>
+                  <td className="px-6 py-4 text-right text-green-600">0</td>
+                  <td className="px-6 py-4 text-right text-red-500">0</td>
+                  <td className="px-6 py-4 text-right font-bold text-blue-600">
+                    854
+                  </td>
+                </tr>
+                <tr className="border-b bg-white hover:bg-slate-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800">
+                  <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                    ระดับ ทล.บ.
+                  </td>
+                  <td className="px-6 py-4 text-right">0</td>
+                  <td className="px-6 py-4 text-right">0</td>
+                  <td className="px-6 py-4 text-right text-green-600">4</td>
+                  <td className="px-6 py-4 text-right text-red-500">0</td>
+                  <td className="px-6 py-4 text-right font-bold text-blue-600">
+                    0
+                  </td>
+                </tr>
+                {/* Total Row */}
+                <tr className="bg-blue-50/50 font-bold text-slate-800 dark:bg-blue-900/20 dark:text-white">
+                  <td className="px-6 py-4">รวมทั้งหมด</td>
+                  <td className="px-6 py-4 text-right">1,494</td>
+                  <td className="px-6 py-4 text-right">1,008</td>
+                  <td className="px-6 py-4 text-right">0</td>
+                  <td className="px-6 py-4 text-right">0</td>
+                  <td className="px-6 py-4 text-right text-lg text-blue-600">
+                    2,502
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
 
-      <div className="py-14">
-        <div>
-          {/* /////////////////////////////เริ่มต้น/////////////////////////// */}
-          {/* ////////////////////////////บันทัด ที่ 1//////////////////////////// */}
-          <div className="grid grid-cols-3 gap-4 rounded-tl-lg rounded-tr-lg border-slate-100 bg-zinc-100 dark:bg-slate-800">
-            <div className="rounded-tl-lg border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-              แผนกวิชา
-            </div>
+        {/* --- 3. Detailed Table (By Department) --- */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="mb-6 text-center lg:text-left">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+              สถิติจำแนกตามประเภทวิชา
+            </h2>
+          </div>
 
-            <div className="col-span-2">
-              <div className="grid grid-cols-6">
-                <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ปวช 1
-                </div>
-                <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ปวช 2
-                </div>
-                <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ปวช 3
-                </div>
-                <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ปวส 1
-                </div>
-                <div className="border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ปวส 2
-                </div>
-                <div className="rounded-tr-lg border-t border-r border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  รวมทั้งหมด
-                </div>
-              </div>
+          <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm text-slate-500 dark:text-slate-400">
+                <thead className="bg-slate-800 text-xs text-white uppercase dark:bg-neutral-950">
+                  <tr>
+                    <th
+                      rowSpan={2}
+                      className="border-r border-slate-600 px-4 py-3"
+                    >
+                      แผนกวิชา
+                    </th>
+                    <th
+                      colSpan={2}
+                      className="border-r border-slate-600 bg-slate-700 px-2 py-2 text-center"
+                    >
+                      ปวช. 1
+                    </th>
+                    <th
+                      colSpan={2}
+                      className="border-r border-slate-600 bg-slate-700 px-2 py-2 text-center"
+                    >
+                      ปวช. 2
+                    </th>
+                    <th
+                      colSpan={2}
+                      className="border-r border-slate-600 bg-slate-700 px-2 py-2 text-center"
+                    >
+                      ปวช. 3
+                    </th>
+                    <th
+                      colSpan={2}
+                      className="border-r border-slate-600 bg-slate-700 px-2 py-2 text-center"
+                    >
+                      ปวส. 1
+                    </th>
+                    <th
+                      colSpan={2}
+                      className="border-r border-slate-600 bg-slate-700 px-2 py-2 text-center"
+                    >
+                      ปวส. 2
+                    </th>
+                    <th
+                      rowSpan={2}
+                      className="bg-blue-600 px-4 py-3 text-center"
+                    >
+                      รวม
+                    </th>
+                  </tr>
+                  <tr>
+                    {/* Loop generates sub-headers for Male/Female */}
+                    {[...Array(5)].map((_, i) => (
+                      <React.Fragment key={i}>
+                        <th className="border-r border-slate-500 bg-slate-600 px-2 py-1 text-center text-[10px]">
+                          ช
+                        </th>
+                        <th className="border-r border-slate-500 bg-slate-600 px-2 py-1 text-center text-[10px]">
+                          ญ
+                        </th>
+                      </React.Fragment>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-neutral-800">
+                  {/* Row 1: อุตสาหกรรม */}
+                  <tr className="hover:bg-slate-50 dark:hover:bg-neutral-800">
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                      1. อุตสาหกรรม
+                    </td>
+                    <td className="px-2 py-3 text-center">299</td>
+                    <td className="px-2 py-3 text-center text-slate-400">58</td>
+                    <td className="px-2 py-3 text-center">246</td>
+                    <td className="px-2 py-3 text-center text-slate-400">47</td>
+                    <td className="px-2 py-3 text-center">326</td>
+                    <td className="px-2 py-3 text-center text-slate-400">59</td>
+                    <td className="px-2 py-3 text-center">252</td>
+                    <td className="px-2 py-3 text-center text-slate-400">38</td>
+                    <td className="px-2 py-3 text-center">188</td>
+                    <td className="px-2 py-3 text-center text-slate-400">35</td>
+                    <td className="bg-slate-50 px-4 py-3 text-center font-bold text-blue-600 dark:bg-neutral-800">
+                      1,311
+                    </td>
+                  </tr>
+
+                  {/* Row 2: พาณิชยกรรม */}
+                  <tr className="hover:bg-slate-50 dark:hover:bg-neutral-800">
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                      2. พาณิชยกรรม
+                    </td>
+                    <td className="px-2 py-3 text-center">10</td>
+                    <td className="px-2 py-3 text-center text-slate-400">96</td>
+                    <td className="px-2 py-3 text-center">29</td>
+                    <td className="px-2 py-3 text-center text-slate-400">
+                      152
+                    </td>
+                    <td className="px-2 py-3 text-center">50</td>
+                    <td className="px-2 py-3 text-center text-slate-400">
+                      125
+                    </td>
+                    <td className="px-2 py-3 text-center">6</td>
+                    <td className="px-2 py-3 text-center text-slate-400">
+                      100
+                    </td>
+                    <td className="px-2 py-3 text-center">22</td>
+                    <td className="px-2 py-3 text-center text-slate-400">
+                      115
+                    </td>
+                    <td className="bg-slate-50 px-4 py-3 text-center font-bold text-blue-600 dark:bg-neutral-800">
+                      588
+                    </td>
+                  </tr>
+
+                  {/* Row 3: ท่องเที่ยว */}
+                  <tr className="hover:bg-slate-50 dark:hover:bg-neutral-800">
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                      3. ท่องเที่ยว
+                    </td>
+                    <td className="px-2 py-3 text-center">7</td>
+                    <td className="px-2 py-3 text-center text-slate-400">16</td>
+                    <td className="px-2 py-3 text-center">4</td>
+                    <td className="px-2 py-3 text-center text-slate-400">14</td>
+                    <td className="px-2 py-3 text-center">6</td>
+                    <td className="px-2 py-3 text-center text-slate-400">11</td>
+                    <td className="px-2 py-3 text-center">3</td>
+                    <td className="px-2 py-3 text-center text-slate-400">9</td>
+                    <td className="px-2 py-3 text-center">2</td>
+                    <td className="px-2 py-3 text-center text-slate-400">12</td>
+                    <td className="bg-slate-50 px-4 py-3 text-center font-bold text-blue-600 dark:bg-neutral-800">
+                      62
+                    </td>
+                  </tr>
+
+                  {/* Row 4: เทคโนโลยีสารสนเทศ */}
+                  <tr className="hover:bg-slate-50 dark:hover:bg-neutral-800">
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                      4. เทคโนโลยีสารสนเทศ
+                    </td>
+                    <td className="px-2 py-3 text-center">21</td>
+                    <td className="px-2 py-3 text-center text-slate-400">72</td>
+                    <td className="px-2 py-3 text-center">0</td>
+                    <td className="px-2 py-3 text-center text-slate-400">0</td>
+                    <td className="px-2 py-3 text-center">0</td>
+                    <td className="px-2 py-3 text-center text-slate-400">0</td>
+                    <td className="px-2 py-3 text-center">23</td>
+                    <td className="px-2 py-3 text-center text-slate-400">49</td>
+                    <td className="px-2 py-3 text-center">0</td>
+                    <td className="px-2 py-3 text-center text-slate-400">0</td>
+                    <td className="bg-slate-50 px-4 py-3 text-center font-bold text-blue-600 dark:bg-neutral-800">
+                      121
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          {/* ////////////////////////////บันทัด ที่ 2//////////////////////////// */}
-          <div className="grid grid-cols-3 gap-4 border-l border-slate-100 bg-zinc-100 dark:bg-slate-800">
-            <div className="">
-              <div className=""></div>
-            </div>
-            <div className="col-span-2">
-              <div className="grid grid-cols-12">
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ชาย
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  หญิง
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ชาย
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  หญิง
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ชาย
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  หญิง
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ชาย
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  หญิง
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ชาย
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  หญิง
-                </div>
-                <div className="border-t border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  ชาย
-                </div>
-                <div className="border-t border-r border-l border-slate-200 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  หญิง
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* ////////////////////////////บันทัด ที่ 3//////////////////////////// */}
-          <div className="grid grid-cols-3 gap-4 border-b border-l border-slate-200 pl-1 hover:bg-zinc-50 dark:hover:bg-slate-800">
-            <div className="pr-1 text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-              1. อุตสาหกรรม
-            </div>
-            <div className="col-span-2">
-              <div className="grid grid-cols-12">
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  299
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  58
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  246
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  47
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  326
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  59
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  252
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  38
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  188
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  35
-                </div>
-                <div className="border-t border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  1,311
-                </div>
-                <div className="border-t border-r border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  237
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* ////////////////////////////บันทัด ที่ 4//////////////////////////// */}
-          <div className="grid grid-cols-3 gap-4 border-b border-l border-slate-200 pl-1 hover:bg-zinc-50 dark:hover:bg-slate-800">
-            <div className="pr-1 text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-              2. พาณิชยกรรม/บริหารธุรกิจ
-            </div>
-            <div className="col-span-2">
-              <div className="grid grid-cols-12">
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  10
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  96
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  29
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  152
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  50
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  125
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  6
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  100
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  22
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  115
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  117
-                </div>
-                <div className="border-r border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  588
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* ////////////////////////////บันทัด ที่ 4//////////////////////////// */}
-          <div className="grid grid-cols-3 gap-4 border-b border-l border-slate-200 pl-1 hover:bg-zinc-50 dark:hover:bg-slate-800">
-            <div className="pr-1 text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-              3. อุตสาหกรรมท่องเที่ยว
-            </div>
-            <div className="col-span-2">
-              <div className="grid grid-cols-12">
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  7
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  16
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  4
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  14
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  6
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  11
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  3
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  9
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  2
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  12
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  22
-                </div>
-                <div className="border-r border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  62
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* ////////////////////////////บันทัด ที่ 4//////////////////////////// */}
-          <div className="grid grid-cols-3 gap-4 border-b border-l border-slate-200 pl-1 hover:bg-zinc-50 dark:hover:bg-slate-800">
-            <div className="pr-1 text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-              4. เทคโนโลยีสานสนเทศ
-            </div>
-            <div className="col-span-2">
-              <div className="grid grid-cols-12">
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  21
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  72
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  0
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  0
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  0
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  0
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  23
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  49
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  0
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  0
-                </div>
-                <div className="border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  44
-                </div>
-                <div className="border-r border-l border-slate-100 pr-1 text-end text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-                  121
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* ////////////////////////////สิ้นสุด//////////////////////////// */}
-        </div>
+        </motion.div>
       </div>
-    </>
+    </section>
   );
 }

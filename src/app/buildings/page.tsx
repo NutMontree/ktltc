@@ -1,697 +1,333 @@
-"use client"; // top to the file
+"use client";
+
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  BankOutlined,
+  HomeOutlined,
+  BuildOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
+
+// 1. แยกข้อมูลออกมาเพื่อให้จัดการง่าย (Clean Code)
+const buildingsData = [
+  {
+    date: "7 เม.ษ. 2542",
+    code: "1000-001-0003",
+    name: "อาคารโรงฝึกงาน 3 ชั้น 4,000 ตรม.",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 24,
+  },
+  {
+    date: "19 ก.ย. 2545",
+    code: "1000-001-0011",
+    name: "อาคารสำนักงาน",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 6,
+  },
+  {
+    date: "12 ก.ย. 2545",
+    code: "1000-001-0012",
+    name: "กั้นห้องอาคารโรงฝึกงาน",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 2,
+  },
+  {
+    date: "9 ก.ย. 2546",
+    code: "44701/46",
+    name: "โรงอาหารอเนกประสงค์",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "11 ก.พ. 2547",
+    code: "1000-001-0014",
+    name: "ห้องประชุมทองกวาว",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "15 พ.ย. 2547",
+    code: "กช.601/46",
+    name: "อาคารโรงฝึกงานแบบจั่วคู่",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "15 ม.ค. 2547",
+    code: "1000-001-0017",
+    name: "อาคารฝึกอบรมอาชีพระยะสั้น",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "11 ม.ค. 2549",
+    code: "1000-001-0019",
+    name: "อาคารส่งเสริมธุรกิจอาร์แคร์",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "13 มี.ค. 2549",
+    code: "1000-001-0020",
+    name: "อาคาร OTOP",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "23 ก.ย. 2550",
+    code: "อค.7",
+    name: "อาคารเรียนและปฏิบัติการ 4 ชั้น",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 20,
+  },
+  {
+    date: "6 พ.ค. 2551",
+    code: "1000-001-0022",
+    name: "ปรับปรุงต่อเติมอาคารแผนกช่างยนต์",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "-",
+    code: "อค.2",
+    name: "อาคารเรียนและปฏิบัติการ 1,920 ตรม.",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 20,
+  },
+  {
+    date: "-",
+    code: "อค.3",
+    name: "อาคารโรงฝึกงาน 480 ตรม.",
+    amount: 2,
+    unit: "หลัง",
+    rooms: 4,
+  },
+  {
+    date: "-",
+    code: "39402",
+    name: "อาคารสำนักงานหอประชุมเล็ก 960",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 6,
+  },
+  {
+    date: "-",
+    code: "36002",
+    name: "ห้องน้ำ ห้องส้วม 16 ตรม.",
+    amount: 3,
+    unit: "หลัง",
+    rooms: 18,
+  },
+  {
+    date: "-",
+    code: "35402",
+    name: "บ้านพักผู้บริหาร",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "-",
+    code: "36404",
+    name: "บ้านพักครู 6 หน่วย",
+    amount: 2,
+    unit: "หลัง",
+    rooms: 12,
+  },
+  {
+    date: "-",
+    code: "350001",
+    name: "บ้านพักนักการภารโรง",
+    amount: 3,
+    unit: "หลัง",
+    rooms: 6,
+  },
+  {
+    date: "31 ธ.ค. 2557",
+    code: "56201",
+    name: "อาคารโรงฝึกงานแบบจั่วคู่",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 4,
+  },
+  {
+    date: "29 พ.ค. 2558",
+    code: "1000-001-0041",
+    name: "ปรับปรุงห้องน้ำครู",
+    amount: 2,
+    unit: "หลัง",
+    rooms: 7,
+  },
+  {
+    date: "29 พ.ค. 2558",
+    code: "1000-001-0042",
+    name: "ปรับปรุงห้องน้ำนักศึกษา",
+    amount: 2,
+    unit: "หลัง",
+    rooms: 18,
+  },
+  {
+    date: "-",
+    code: "-",
+    name: "อาคารโรงฝึกงานพื้นที่ไม่ต่ำกว่า 4,000 ตรม.",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 16,
+  },
+  {
+    date: "30 พ.ค. 2560",
+    code: "-",
+    name: "ปรับปรุงโรงจอดรถจักรยานยนต์",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 1,
+  },
+  {
+    date: "6 พ.ค. 2560",
+    code: "-",
+    name: "ปรับปรุงโรงอาหาร",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 4,
+  },
+  {
+    date: "1 มี.ค. 2561",
+    code: "-",
+    name: "อาคารอเนกประสงค์ (โดม)",
+    amount: 1,
+    unit: "หลัง",
+    rooms: 0,
+  },
+];
 
 export default function Buildings() {
   return (
-    <>
-      <div>
-        <h1 className="flex justify-center text-xl">ข้อมูลอาคารสถานที่</h1>
-        <h1 className="flex justify-center pb-8 text-xl text-[#DAA520]">
-          Building information
-        </h1>
-      </div>
-      {/* <div>
-        <h1 className="flex justify-center text-xl text-[#DAA520] pt-14">
-          สรุปข้อมูลสถิตินักเรียนนักศึกษาจำแนกประเภทวิชา
-        </h1>
-      </div> */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 rounded-tl-lg rounded-tr-lg border-slate-100 bg-zinc-100 dark:bg-slate-800">
-        <div className="flex justify-center rounded-tl-lg border-t border-l border-slate-200 py-2 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ว/ด/ป/
-        </div>
-        <div className="col-span-2 flex justify-center border-t border-l border-slate-200 py-2 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          เลขที่อาคาร
-        </div>
-
-        <div className="col-span-4 border-t border-l border-slate-200 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="flex justify-center border-slate-200 py-2 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-            รายการ
+    <section className="min-h-screen py-16 font-sans">
+      <div className="container mx-auto max-w-6xl px-4 md:px-8">
+        {/* --- Header Section --- */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12 text-center"
+        >
+          <div className="mb-4 inline-flex items-center justify-center rounded-full bg-amber-50 px-4 py-1.5 text-sm font-semibold text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+            <BankOutlined className="mr-2" /> ทะเบียนสินทรัพย์
           </div>
-        </div>
+          <h1 className="text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
+            ข้อมูล<span className="text-[#DAA520]">อาคารสถานที่</span>
+          </h1>
+          <p className="mt-2 text-slate-500 dark:text-slate-400">
+            Building & Facilities Information
+          </p>
+        </motion.div>
 
-        <div className="flex justify-center border-t border-l border-slate-200 py-2 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          จำนวน
-        </div>
-        <div className="flex justify-center rounded-tr-lg border-t border-r border-l border-slate-200 py-2 pr-1 text-center text-[6px] font-medium sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ห้อง
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+        {/* --- Table Container --- */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px] border-collapse text-left text-sm">
+              <thead className="bg-slate-100 dark:bg-neutral-800">
+                <tr>
+                  <th className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300">
+                    <div className="flex items-center gap-2">
+                      <CalendarOutlined /> ว/ด/ป
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300">
+                    เลขที่อาคาร
+                  </th>
+                  <th className="w-1/3 px-6 py-4 font-semibold text-slate-600 dark:text-slate-300">
+                    <div className="flex items-center gap-2">
+                      <BuildOutlined /> รายการ
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-center font-semibold text-slate-600 dark:text-slate-300">
+                    <div className="flex items-center justify-center gap-2">
+                      <HomeOutlined /> จำนวน
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-right font-semibold text-slate-600 dark:text-slate-300">
+                    ห้อง
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-neutral-800">
+                {buildingsData.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="transition-colors hover:bg-slate-50 dark:hover:bg-neutral-800/50"
+                  >
+                    {/* Date */}
+                    <td className="px-6 py-4 whitespace-nowrap text-slate-500 dark:text-slate-400">
+                      {item.date !== "-" ? (
+                        item.date
+                      ) : (
+                        <span className="text-slate-300">-</span>
+                      )}
+                    </td>
 
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          7 เม.ษ 2542
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0003
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารโรงฝึกงาน 3 ชั้น 4000 ตรม.
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
+                    {/* Code */}
+                    <td className="px-6 py-4 font-mono whitespace-nowrap text-slate-500 dark:text-slate-400">
+                      {item.code !== "-" ? (
+                        <span className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-neutral-800 dark:text-slate-300">
+                          {item.code}
+                        </span>
+                      ) : (
+                        <span className="text-slate-300">-</span>
+                      )}
+                    </td>
+
+                    {/* Name */}
+                    <td className="px-6 py-4 font-medium text-slate-800 dark:text-slate-200">
+                      {item.name}
+                    </td>
+
+                    {/* Amount */}
+                    <td className="px-6 py-4 text-center">
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                        {item.amount} {item.unit}
+                      </span>
+                    </td>
+
+                    {/* Rooms */}
+                    <td className="px-6 py-4 text-right text-slate-600 dark:text-slate-300">
+                      {item.rooms > 0 ? (
+                        <span className="font-semibold">{item.rooms}</span>
+                      ) : (
+                        <span className="text-slate-300">-</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
-        <div className="lg:text-baseborder-slate-100 flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px]">
-          24
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          19 ก.ย 2545
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0011
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารสำนักงาน
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
+          {/* Footer Summary */}
+          <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-4 text-sm text-slate-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-slate-400">
+            <span>รวมรายการทั้งหมด {buildingsData.length} รายการ</span>
+            {/* หากต้องการแสดงผลรวมห้อง สามารถคำนวณและใส่ตรงนี้ได้ */}
           </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          6
-        </div>
+        </motion.div>
       </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          12 ก.ย 2545
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0012
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          กั้นห้องอาคารโรงฝึกงาน
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          2
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          9 ก.ย 2546
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          44701/46
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          โรงอาหารอเนกประสงค์
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          11 ก.พ 2547
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0014
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ห้องประชุมทองกวาว
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          15 พ.ย 2547
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          กช.601/46
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารโรงฝึกงานแบบจั่วคู่
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          15 ม.ค 2547
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0017
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารฝึกอบรมอาชีพระยะสั้น
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          11 ม.ค. 2549
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0019
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารส่งเสริมธุรกิจอารแคร์
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          13 มี.ค 2549
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0020
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคาร OTOP
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          23 ก.ย 2550
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อค.7
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารเรียนและปฏิบัติการ 4 ชั่น
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          20
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          6 พ.ค 2551
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0022
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ปรับปรุงต่อเติมอาคารแผนกช่างยนต์
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อค.2
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารเรียนและปฏิบัติการ 1920 ตรม.
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          20
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อค.3
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารโรงฝึกงาน 480 ตรม.
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">2</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          4
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          39402
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารสำนักงานหอประชุมเล็ก 960
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          6
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          36002
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ห้องน้ำ ห้องส้วม 16 ตรม.
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">3</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          18
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          35402
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          บ้านพักผู้บริหาร
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          36404
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          บ้านพักครู 6 หน่วย
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">2</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          12
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          350001
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          บ้านพักนักการภาโรง
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">3</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          6
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          31 ธ.ค 2557
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          56201
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารโรงฝึกงานแบบจั่วคู่
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          4
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          29 พ.ค 2558
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0041
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ปรับปรุงห้องน้ำครู
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">2</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          7
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          29 พ.ค 2558
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1000-001-0042
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ปรับปรุงห้องน้ำนักศึกษา
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">2</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          18
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารโรงฝึกงานพื้นที่ไม่ต่ำกว่า 4,000 ตรม
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          16
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          30 พ.ค 2560
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ปรับปรุงดรงจอดรถจักยานยนต์
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          6 พ.ค 2560
-        </div>
-        <div className="col-span-2 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-4 border-t border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ปรับปรุงโรงอาหาร
-        </div>
-        <div className="flex justify-center border-t border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center border-t border-r border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          4
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="grid grid-cols-9 border-slate-200 hover:bg-zinc-50 dark:hover:bg-slate-800">
-        <div className="rounded-bl-lg border-t border-b border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          1 มี.ค 2561
-        </div>
-        <div className="col-span-2 border-t border-b border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          -
-        </div>
-        <div className="col-span-4 border-t border-b border-l border-slate-100 py-1 pl-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          อาคารอเนกประสงค์ (โดม)
-        </div>
-        <div className="flex justify-center border-t border-b border-l border-slate-100 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          <div className="grid grid-cols-3">
-            <div className="py-1">1</div>
-            <div className="grid grid-cols-3">
-              <div className="border-r border-slate-100"></div>
-            </div>
-            <div className="py-1 text-start">หลัง</div>
-          </div>
-        </div>
-        <div className="flex justify-center rounded-br-lg border-t border-r border-b border-l border-slate-100 py-1 pr-1 text-[6px] sm:text-sm md:text-base md:text-[8px] lg:text-base">
-          ห้อง
-        </div>
-      </div>
-      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-    </>
+    </section>
   );
 }

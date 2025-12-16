@@ -1,164 +1,167 @@
-"use client"; // top to the file
+"use client";
 
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/pagination";
-// import Swiper core and required modules
-import { Navigation, Scrollbar, A11y, FreeMode } from "swiper/modules";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
-
-import NextLink from "next/link";
-import { Image } from "@heroui/image";
+import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { Button, ConfigProvider } from "antd";
+import {
+  NotificationOutlined,
+  CalendarOutlined,
+  ArrowRightOutlined,
+  SoundOutlined,
+} from "@ant-design/icons";
 
-import { Button, ConfigProvider, Space } from "antd";
-import { AntDesignOutlined } from "@ant-design/icons";
-import { createStyles } from "antd-style";
+// นำเข้าข้อมูล (ตรวจสอบ path ให้ถูกต้อง)
 import { DataAnnouncement } from "../announcement/announcement2568/announcement6812/data";
 
-const useStyle = createStyles(({ prefixCls, css }) => ({
-  linearGradientButton: css`
-    &.${prefixCls}-btn-primary:not([disabled]):not(
-        .${prefixCls}-btn-dangerous
-      ) {
-      border-width: 0;
+// --- Animation Variants ---
+const containerVar = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
 
-      > span {
-        position: relative;
-      }
-
-      &::before {
-        content: "";
-
-        position: absolute;
-        inset: 0;
-        opacity: 1;
-        transition: all 0.3s;
-        border-radius: inherit;
-      }
-
-      &:hover::before {
-        opacity: 0;
-      }
-    }
-  `,
-}));
+const itemVar = {
+  hidden: { y: 30, opacity: 0 },
+  show: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring" as const, stiffness: 50 },
+  },
+};
 
 export default function ShowAnnouncement() {
-  const { styles } = useStyle();
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-      >
-        <div className="grid grid-flow-col py-4">
-          <div className="justify-items-start">
-            <div className="grid grid-flow-col">
-              <div className="w-2 bg-red-500" />
-              <div className="pl-4">
-                <h1 className="text-xxl font-bold">ข่าวประกาศ</h1>
-                <h1 className="text-xxl text-[#DAA520]">Announcement New</h1>
-              </div>
-            </div>
-          </div>
-        </div>
+  // ดึง 3 ประกาศล่าสุด
+  const announcementItems = DataAnnouncement?.navItems?.slice(0, 3) || [];
 
-        <div className="py-3">
-          <Swiper
-            breakpoints={{
-              0: {
-                slidesPerView: 2,
-                spaceBetween: 15,
-              },
-              340: {
-                slidesPerView: 2,
-                spaceBetween: 15,
-              },
-              600: {
-                slidesPerView: 2,
-                spaceBetween: 15,
-              },
-              900: {
-                slidesPerView: 3,
-                spaceBetween: 15,
-              },
-            }}
-            freeMode={true}
-            modules={[Navigation, Scrollbar, A11y, FreeMode]}
-            spaceBetween={24}
-            slidesPerView={3}
-            navigation={true}
-            scrollbar={{ draggable: true }}
-            onSwiper={(swiper) => console.log(swiper)}
-            onSlideChange={() => console.log("slide change")}
-          >
-            {DataAnnouncement.navItems.slice(0, 3).map((item, index) => (
-              <SwiperSlide key={`${item.href}-${index}`}>
-                <NextLink href={item.href} passHref>
-                  <div className="relative mb-6 h-[150px] overflow-hidden rounded-xl shadow-lg sm:h-[300px]">
-                    <div
-                      className="absolute inset-0 bg-cover bg-center bg-no-repeat duration-500 hover:scale-110"
-                      style={{
-                        backgroundImage: `url(${item.backgroundImage})`,
-                      }}
-                    />
-                  </div>
-                  <div className=" ">
-                    <h1 className="text-3.5 text-sky-600 sm:text-sm md:text-base md:text-[20px]">
-                      {item.name}
-                    </h1>
-                    <div className="text-3 md:text-3.5 sm:text-sm md:text-base">
-                      {item.description}
-                    </div>
-                    <div className="flex gap-1">
-                      <Image
-                        src="/images/icons8-calendar.gif"
-                        alt="logo-youtube"
-                        width={20}
-                        height={20}
+  return (
+    <section className="relative overflow-hidden rounded-3xl bg-slate-50 py-16 font-sans dark:bg-neutral-950">
+      {/* Background Decoration */}
+      <div className="absolute top-0 left-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-100/50 blur-3xl dark:bg-rose-900/20" />
+      <div className="absolute right-0 bottom-0 h-80 w-80 translate-x-1/3 translate-y-1/3 rounded-full bg-orange-100/50 blur-3xl dark:bg-orange-900/20" />
+
+      <div className="relative z-10 container mx-auto px-4 md:px-6">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVar}
+          className="space-y-10"
+        >
+          {/* --- Header Section --- */}
+          <div className="flex flex-col items-start gap-4 border-l-4 border-rose-500 pl-6 md:flex-row md:items-end md:justify-between md:gap-0">
+            <div>
+              <motion.div
+                variants={itemVar}
+                className="flex items-center gap-2 text-sm font-bold tracking-wider text-rose-500 uppercase"
+              >
+                <SoundOutlined />
+                <span>Latest Updates</span>
+              </motion.div>
+              <motion.h2
+                variants={itemVar}
+                className="mt-2 text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-slate-100"
+              >
+                ข่าว<span className="text-rose-500">ประกาศ</span>
+              </motion.h2>
+              <motion.p
+                variants={itemVar}
+                className="text-slate-500 dark:text-slate-400"
+              >
+                Announcement & General News
+              </motion.p>
+            </div>
+
+            {/* Desktop Button */}
+            <motion.div variants={itemVar} className="hidden md:block">
+              <ViewAllButton />
+            </motion.div>
+          </div>
+
+          {/* --- Grid Section --- */}
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {announcementItems.map((item, index) => (
+              <motion.div key={index} variants={itemVar} className="h-full">
+                <Link href={item.href} className="group flex h-full flex-col">
+                  <article className="relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl dark:bg-neutral-900 dark:ring-neutral-800">
+                    {/* Image Area */}
+                    <div className="relative aspect-video overflow-hidden bg-slate-200">
+                      <div
+                        className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                        style={{
+                          backgroundImage: `url(${item.backgroundImage})`,
+                        }}
                       />
-                      <div className="text-3 md:text-3.5 mb-10 pt-1 text-xs text-slate-500 sm:text-sm md:pt-0 md:text-base">
+                      {/* Overlay gradient */}
+                      <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                      {/* Date Badge (Floating) */}
+                      <div className="absolute top-3 left-3 flex items-center gap-1 rounded-md bg-white/95 px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm dark:bg-black/80 dark:text-slate-200">
+                        <CalendarOutlined className="text-rose-500" />
                         {item.date}
                       </div>
                     </div>
-                  </div>
-                </NextLink>
-              </SwiperSlide>
+
+                    {/* Content Area */}
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="mb-3 line-clamp-2 text-xl leading-tight font-bold text-slate-800 transition-colors group-hover:text-rose-600 dark:text-slate-100">
+                        {item.name}
+                      </h3>
+                      <p className="mb-4 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
+                        {item.description}
+                      </p>
+
+                      {/* Bottom Link */}
+                      <div className="mt-auto flex items-center gap-2 text-sm font-semibold text-rose-500 transition-all group-hover:gap-3">
+                        อ่านประกาศ <ArrowRightOutlined />
+                      </div>
+                    </div>
+
+                    {/* Decorative bottom bar */}
+                    <div className="h-1 w-0 bg-rose-500 transition-all duration-500 group-hover:w-full" />
+                  </article>
+                </Link>
+              </motion.div>
             ))}
-          </Swiper>
-        </div>
-        <div className="justify-items-center pt-4">
-          <div className=" ">
-            <ConfigProvider
-              button={{
-                className: styles.linearGradientButton,
-              }}
-            >
-              <Space>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<AntDesignOutlined />}
-                  href="/announcement"
-                >
-                  เนื้อหาทั้งหมด
-                </Button>
-              </Space>
-            </ConfigProvider>
           </div>
-        </div>
-      </motion.div>
-    </>
+
+          {/* Mobile Button */}
+          <motion.div
+            variants={itemVar}
+            className="flex justify-center md:hidden"
+          >
+            <ViewAllButton />
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// แยก Component ปุ่ม
+function ViewAllButton() {
+  return (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#f43f5e", // Rose-500
+          borderRadius: 50,
+        },
+      }}
+    >
+      <Button
+        type="primary"
+        size="large"
+        href="/announcement"
+        icon={<NotificationOutlined />}
+        className="h-12 px-8 shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40"
+      >
+        ดูประกาศทั้งหมด
+      </Button>
+    </ConfigProvider>
   );
 }

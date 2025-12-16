@@ -1,448 +1,172 @@
-// showbidding
+"use client";
 
-"use client"; // top to the file
-
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/pagination";
-// import Swiper core and required modules
-import { Navigation, Scrollbar, A11y, FreeMode } from "swiper/modules";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
-
-// import required modules
-import NextLink from "next/link";
+import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { Button, ConfigProvider } from "antd";
+import {
+  FileProtectOutlined,
+  CalendarOutlined,
+  ArrowRightOutlined,
+  ContainerOutlined,
+} from "@ant-design/icons";
 
-import { Button, ConfigProvider, Space } from "antd";
-import { AntDesignOutlined } from "@ant-design/icons";
-import { createStyles } from "antd-style";
-
+// นำเข้าข้อมูล (ตรวจสอบ path ให้ถูกต้อง)
 import { dataBidding } from "../bidding/data/data";
 
-const useStyle = createStyles(({ prefixCls, css }) => ({
-  linearGradientButton: css`
-    &.${prefixCls}-btn-primary:not([disabled]):not(
-        .${prefixCls}-btn-dangerous
-      ) {
-      border-width: 0;
+// --- Animation Variants ---
+const containerVar = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
 
-      > span {
-        position: relative;
-      }
-
-      &::before {
-        content: "";
-
-        position: absolute;
-        inset: 0;
-        opacity: 1;
-        transition: all 0.3s;
-        border-radius: inherit;
-      }
-
-      &:hover::before {
-        opacity: 0;
-      }
-    }
-  `,
-}));
+const itemVar = {
+  hidden: { y: 30, opacity: 0 },
+  show: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring" as const, stiffness: 50 },
+  },
+};
 
 export default function ShowBidding() {
-  const { styles } = useStyle();
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-      >
-        <div className="grid grid-flow-col py-4">
-          <div className="justify-items-start">
-            <div className="grid grid-flow-col">
-              <div className="w-2 bg-red-500" />
-              <div className="pl-4">
-                <h1 className="text-xxl font-bold">ข่าวประกวดราคา</h1>
-                <h1 className="text-xxl text-[#DAA520]">Bidding</h1>
-              </div>
-            </div>
-          </div>
-        </div>
+  // ดึง 3 รายการล่าสุด
+  // ตรวจสอบว่า dataBidding.navitems มีอยู่จริงก่อนเรียกใช้
+  const biddingItems = dataBidding?.navitems?.slice(0, 3) || [];
 
-        <div className="relative z-20 overflow-hidden">
-          <div className="py-3">
-            <Swiper
-              breakpoints={{
-                0: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
-                340: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
-                600: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
-                900: {
-                  slidesPerView: 3,
-                  spaceBetween: 15,
-                },
-              }}
-              freeMode={true}
-              modules={[Navigation, Scrollbar, A11y, FreeMode]}
-              spaceBetween={24}
-              slidesPerView={3}
-              navigation={true}
-              scrollbar={{ draggable: true }}
-              onSwiper={(swiper) => console.log(swiper)}
-              onSlideChange={() => console.log("slide change")}
-            >
-              {dataBidding.navitems.map((item, index) => (
-                <SwiperSlide key={`${item.name}-${index}`}>
-                  <NextLink key={item.href} href={item.href}>
-                    <div className="relative mb-6 h-[150px] overflow-hidden rounded-xl shadow-lg sm:h-[300px]">
+  return (
+    <section className="relative overflow-hidden rounded-3xl bg-white py-16 font-sans dark:bg-neutral-950">
+      {/* Background Decoration (Modern Style) */}
+      <div className="absolute top-1/4 right-0 h-96 w-96 translate-x-1/2 rounded-full bg-blue-50/80 blur-3xl dark:bg-blue-900/10" />
+      <div className="absolute bottom-0 left-0 h-64 w-64 -translate-x-1/4 translate-y-1/4 rounded-full bg-yellow-50/80 blur-3xl dark:bg-yellow-900/10" />
+
+      <div className="relative z-10 container mx-auto px-4 md:px-6">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVar}
+          className="space-y-10"
+        >
+          {/* --- Header Section --- */}
+          <div className="flex flex-col items-start gap-4 border-l-4 border-blue-600 pl-6 md:flex-row md:items-end md:justify-between md:gap-0">
+            <div>
+              <motion.div
+                variants={itemVar}
+                className="flex items-center gap-2 text-sm font-bold tracking-wider text-blue-600 uppercase"
+              >
+                <FileProtectOutlined />
+                <span>Procurement News</span>
+              </motion.div>
+              <motion.h2
+                variants={itemVar}
+                className="mt-2 text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-slate-100"
+              >
+                ข่าว<span className="text-blue-600">ประกวดราคา</span>
+              </motion.h2>
+              <motion.p
+                variants={itemVar}
+                className="text-slate-500 dark:text-slate-400"
+              >
+                Bidding & Purchasing Announcements
+              </motion.p>
+            </div>
+
+            {/* Desktop Button */}
+            <motion.div variants={itemVar} className="hidden md:block">
+              <ViewAllButton />
+            </motion.div>
+          </div>
+
+          {/* --- Grid Section --- */}
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {biddingItems.map((item, index) => (
+              <motion.div key={index} variants={itemVar} className="h-full">
+                <Link href={item.href} className="group flex h-full flex-col">
+                  <article className="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-100 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700">
+                    {/* Image Area */}
+                    <div className="relative aspect-video overflow-hidden bg-slate-100">
                       <div
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat duration-500 hover:scale-110"
+                        className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                         style={{
                           backgroundImage: `url(${item.backgroundImage})`,
                         }}
                       />
-                    </div>
-                    <div className=" ">
-                      <h1 className="text-3.5 text-sky-600 sm:text-sm md:text-base md:text-[20px]">
-                        {item.name}
-                      </h1>
-                      <div className="text-3 md:text-3.5 mb-8 sm:text-sm md:text-base">
-                        {item.description}
+
+                      {/* Date Badge (Floating) */}
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded bg-white/95 px-2 py-1 text-xs font-bold text-slate-600 shadow-sm backdrop-blur-sm dark:bg-neutral-800 dark:text-slate-300">
+                        <CalendarOutlined className="text-blue-600" />
+                        {"ล่าสุด"}
                       </div>
                     </div>
-                  </NextLink>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-            <span className="absolute right-4 bottom-4 -z-1">
-              <svg
-                width="48"
-                height="134"
-                viewBox="0 0 48 134"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="45.6673"
-                  cy="132"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 132)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="117.333"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 117.333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="102.667"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 102.667)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="88.0001"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 88.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="73.3333"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 73.3333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="45.0001"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 45.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="16.0001"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 16.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="59.0001"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 59.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="30.6668"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 30.6668)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="45.6673"
-                  cy="1.66683"
-                  r="1.66667"
-                  transform="rotate(180 45.6673 1.66683)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0006"
-                  cy="132"
-                  r="1.66667"
-                  transform="rotate(180 31.0006 132)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0006"
-                  cy="117.333"
-                  r="1.66667"
-                  transform="rotate(180 31.0006 117.333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0006"
-                  cy="102.667"
-                  r="1.66667"
-                  transform="rotate(180 31.0006 102.667)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0006"
-                  cy="88.0001"
-                  r="1.66667"
-                  transform="rotate(180 31.0006 88.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0008"
-                  cy="73.3333"
-                  r="1.66667"
-                  transform="rotate(180 31.0008 73.3333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0008"
-                  cy="45.0001"
-                  r="1.66667"
-                  transform="rotate(180 31.0008 45.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0008"
-                  cy="16.0001"
-                  r="1.66667"
-                  transform="rotate(180 31.0008 16.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0008"
-                  cy="59.0001"
-                  r="1.66667"
-                  transform="rotate(180 31.0008 59.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0008"
-                  cy="30.6668"
-                  r="1.66667"
-                  transform="rotate(180 31.0008 30.6668)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="31.0008"
-                  cy="1.66683"
-                  r="1.66667"
-                  transform="rotate(180 31.0008 1.66683)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3341"
-                  cy="132"
-                  r="1.66667"
-                  transform="rotate(180 16.3341 132)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3341"
-                  cy="117.333"
-                  r="1.66667"
-                  transform="rotate(180 16.3341 117.333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3341"
-                  cy="102.667"
-                  r="1.66667"
-                  transform="rotate(180 16.3341 102.667)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3341"
-                  cy="88.0001"
-                  r="1.66667"
-                  transform="rotate(180 16.3341 88.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3338"
-                  cy="73.3333"
-                  r="1.66667"
-                  transform="rotate(180 16.3338 73.3333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3338"
-                  cy="45.0001"
-                  r="1.66667"
-                  transform="rotate(180 16.3338 45.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3338"
-                  cy="16.0001"
-                  r="1.66667"
-                  transform="rotate(180 16.3338 16.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3338"
-                  cy="59.0001"
-                  r="1.66667"
-                  transform="rotate(180 16.3338 59.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3338"
-                  cy="30.6668"
-                  r="1.66667"
-                  transform="rotate(180 16.3338 30.6668)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="16.3338"
-                  cy="1.66683"
-                  r="1.66667"
-                  transform="rotate(180 16.3338 1.66683)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="132"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 132)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="117.333"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 117.333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="102.667"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 102.667)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="88.0001"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 88.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="73.3333"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 73.3333)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="45.0001"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 45.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="16.0001"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 16.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="59.0001"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 59.0001)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="30.6668"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 30.6668)"
-                  fill="#3758F9"
-                />
-                <circle
-                  cx="1.66732"
-                  cy="1.66683"
-                  r="1.66667"
-                  transform="rotate(180 1.66732 1.66683)"
-                  fill="#3758F9"
-                />
-              </svg>
-            </span>
+
+                    {/* Content Area */}
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="mb-3 line-clamp-2 text-lg leading-snug font-bold text-slate-800 transition-colors group-hover:text-blue-600 dark:text-slate-100">
+                        {item.name}
+                      </h3>
+
+                      <p className="mb-4 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
+                        {item.description}
+                      </p>
+
+                      {/* Bottom Action */}
+                      <div className="mt-auto flex items-center justify-between border-t border-slate-50 pt-4 dark:border-neutral-800">
+                        <span className="flex items-center gap-2 text-xs font-semibold text-slate-400 transition-colors group-hover:text-blue-500">
+                          <ContainerOutlined /> รายละเอียด
+                        </span>
+                        <div className="transform transition-transform duration-300 group-hover:translate-x-1">
+                          <ArrowRightOutlined className="text-slate-300 group-hover:text-blue-500" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Decorative Bottom Bar */}
+                    <div className="absolute bottom-0 left-0 h-1 w-full scale-x-0 bg-linear-to-r from-blue-600 to-blue-400 transition-transform duration-300 group-hover:scale-x-100" />
+                  </article>
+                </Link>
+              </motion.div>
+            ))}
           </div>
-        </div>
-        <div className="justify-items-center pt-4">
-          <div className=" ">
-            <ConfigProvider
-              button={{
-                className: styles.linearGradientButton,
-              }}
-            >
-              <Space>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<AntDesignOutlined />}
-                  href="/bidding"
-                >
-                  เนื้อหาทั้งหมด
-                </Button>
-              </Space>
-            </ConfigProvider>
-          </div>
-        </div>
-      </motion.div>
-    </>
+
+          {/* Mobile Button */}
+          <motion.div
+            variants={itemVar}
+            className="flex justify-center md:hidden"
+          >
+            <ViewAllButton />
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// Component ปุ่มกดดูทั้งหมด
+function ViewAllButton() {
+  return (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#2563eb", // Blue-600
+          borderRadius: 6, // Square-ish for professional look
+        },
+      }}
+    >
+      <Button
+        type="primary"
+        size="large"
+        href="/bidding"
+        icon={<FileProtectOutlined />}
+        className="h-12 px-8 font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
+      >
+        ดูรายการทั้งหมด
+      </Button>
+    </ConfigProvider>
   );
 }

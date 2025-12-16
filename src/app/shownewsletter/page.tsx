@@ -1,132 +1,145 @@
-"use client"; // top to the file
+"use client";
 
-// Import Swiper React components
-import { SwiperSlide } from "swiper/react";
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/pagination";
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
-
-import NextLink from "next/link";
-import { Image } from "@heroui/image";
-
-import { Button, ConfigProvider, Space } from "antd";
-import { AntDesignOutlined } from "@ant-design/icons";
-import { createStyles } from "antd-style";
+import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { Button, ConfigProvider } from "antd";
+import {
+  ReadOutlined,
+  CalendarOutlined,
+  FileTextOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons";
 
+// นำเข้าข้อมูล (เช็ค path ให้ถูกต้อง)
 import { Data } from "../newsletter/newsletter2568/newsletter6812/data";
 
-const useStyle = createStyles(({ prefixCls, css }) => ({
-  linearGradientButton: css`
-    &.${prefixCls}-btn-primary:not([disabled]):not(
-        .${prefixCls}-btn-dangerous
-      ) {
-      border-width: 0;
+// --- Animation Variants ---
+const containerVar = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
 
-      > span {
-        position: relative;
-      }
-
-      &::before {
-        content: "";
-
-        position: absolute;
-        inset: 0;
-        opacity: 1;
-        transition: all 0.3s;
-        border-radius: inherit;
-      }
-
-      &:hover::before {
-        opacity: 0;
-      }
-    }
-  `,
-}));
+const itemVar = {
+  hidden: { y: 40, opacity: 0 },
+  show: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring" as const, stiffness: 60, damping: 15 },
+    // transition: { type: "spring" as const, stiffness: 50 },
+  },
+};
 
 export default function ShowNewsletter() {
-  const { styles } = useStyle();
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-      >
-        <div className="grid grid-flow-col py-4">
-          <div className="justify-items-start">
-            <div className="grid grid-flow-col">
-              <div className="w-2 bg-red-500" />
-              <div className="pl-4">
-                <h1 className="text-xxl font-bold">จดหมายข่าว</h1>
-                <h1 className="text-xxl text-[#DAA520]">Newsletter</h1>
-              </div>
-            </div>
-          </div>
-        </div>
+  // ดึง 3 ฉบับล่าสุด
+  const newsletters = Data?.navItems?.slice(0, 3) || [];
 
-        <div className="grid grid-cols-1 gap-2 py-3 sm:grid-cols-1 lg:grid-cols-3">
-          {Data.navItems.slice(0, 3).map((item, index) => (
-            <SwiperSlide key={index}>
-              <NextLink key={item.href} href={item.href}>
-                <div className="xs:h-[500px] relative mb-6 h-[500px] overflow-hidden rounded-xl shadow-lg sm:h-[750px] lg:h-[450px] lg:w-[full] xl:h-[600px]">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat duration-500 hover:scale-110"
-                    style={{
-                      backgroundImage: `url(${item.backgroundImage})`,
-                    }}
-                  />
-                </div>
-                <div className=" ">
-                  <h1 className="text-3.5 text-sky-600 sm:text-sm md:text-base md:text-[20px]">
-                    {item.name}
-                  </h1>
-                  <div>
-                    <div className="text-sm">{item.description}</div>
-                    <div className="flex gap-1">
-                      <Image
-                        src="/images/icons8-calendar.gif"
-                        alt="logo-youtube"
-                        width={20}
-                        height={20}
+  return (
+    <section className="rounded-3xl bg-slate-50/30 py-16 font-sans dark:bg-neutral-950">
+      <div className="container mx-auto px-4 lg:px-8">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={containerVar}
+          className="space-y-12"
+        >
+          {/* --- Header Section --- */}
+          <div className="flex flex-col items-center text-center">
+            <motion.div
+              variants={itemVar}
+              className="mb-2 inline-flex items-center gap-2 rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold tracking-wider text-yellow-700 uppercase dark:bg-yellow-900/30 dark:text-yellow-400"
+            ></motion.div>
+            <motion.h2
+              variants={itemVar}
+              className="text-3xl font-extrabold text-slate-800 sm:text-4xl dark:text-slate-100"
+            >
+              จดหมายข่าว <span className="text-yellow-500">ประชาสัมพันธ์</span>
+            </motion.h2>
+            <motion.p
+              variants={itemVar}
+              className="mt-4 max-w-2xl text-slate-500 dark:text-slate-400"
+            >
+              ติดตามวารสารและข่าวสารกิจกรรมต่างๆ
+              ผ่านรูปแบบจดหมายข่าวอิเล็กทรอนิกส์
+            </motion.p>
+          </div>
+
+          {/* --- Grid Section --- */}
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {newsletters.map((item, index) => (
+              <motion.div key={index} variants={itemVar}>
+                <Link href={item.href} className="group block h-full">
+                  <article className="relative h-full overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl dark:bg-neutral-900 dark:ring-neutral-800">
+                    {/* Image Section (Vertical Aspect Ratio for Newsletter) */}
+                    <div className="relative aspect-3/4 overflow-hidden bg-slate-100">
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 z-10 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-40" />
+
+                      {/* Image */}
+                      <div
+                        className="h-full w-full bg-cover bg-top transition-transform duration-700 group-hover:scale-110"
+                        style={{
+                          backgroundImage: `url(${item.backgroundImage})`,
+                        }}
                       />
-                      <div className="text-3 md:text-3.5 mb-10 pt-1 text-xs text-slate-500 sm:text-sm md:pt-0 md:text-base">
+
+                      {/* Floating Category/Date Badge */}
+                      <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm dark:bg-black/80 dark:text-slate-200">
+                        <CalendarOutlined className="text-yellow-500" />
                         {item.date}
                       </div>
+
+                      {/* Content Overlay (Bottom) */}
+                      <div className="absolute bottom-0 left-0 z-20 w-full p-6 text-white">
+                        <h3 className="mb-2 line-clamp-2 text-xl leading-snug font-bold text-white group-hover:text-yellow-400">
+                          {item.name}
+                        </h3>
+                        <p className="line-clamp-2 text-sm text-slate-200 opacity-90">
+                          {item.description}
+                        </p>
+
+                        {/* Read More Indicator */}
+                        <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-yellow-400 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100">
+                          อ่านต่อ <ArrowRightOutlined />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </NextLink>
-            </SwiperSlide>
-          ))}
-        </div>
-        <div className="justify-items-center pt-4">
-          <div className=" ">
+                  </article>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* --- Footer Button --- */}
+          <motion.div variants={itemVar} className="flex justify-center pt-4">
             <ConfigProvider
-              button={{
-                className: styles.linearGradientButton,
+              theme={{
+                token: {
+                  colorPrimary: "#eab308", // Yellow-500
+                  borderRadius: 50,
+                  controlHeightLG: 48,
+                },
               }}
             >
-              <Space>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<AntDesignOutlined />}
-                  href="/newsletter"
-                >
-                  เนื้อหาทั้งหมด
-                </Button>
-              </Space>
+              <Button
+                type="primary"
+                size="large"
+                href="/newsletter"
+                icon={<ReadOutlined />}
+                className="px-10 text-base font-semibold shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40"
+              >
+                ดูจดหมายข่าวทั้งหมด
+              </Button>
             </ConfigProvider>
-          </div>
-        </div>
-      </motion.div>
-    </>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
   );
 }
