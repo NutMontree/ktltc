@@ -89,11 +89,7 @@ export default function ShowYoutube() {
 
         {/* --- Content Area --- */}
         <div className="mx-auto max-w-7xl">
-          <Accordion
-            variant="splitted"
-            defaultExpandedKeys={["1"]}
-            className="px-0"
-          >
+          <Accordion variant="splitted" className="px-0">
             <AccordionItem
               key="1"
               aria-label="Youtube Videos"

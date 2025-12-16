@@ -58,11 +58,7 @@ export default function ShowFacebook() {
 
         {/* --- Content Area --- */}
         <div className="mx-auto max-w-7xl">
-          <Accordion
-            variant="splitted"
-            defaultExpandedKeys={["1"]} // เปิดอัตโนมัติ (ถ้าต้องการปิดให้ลบบรรทัดนี้)
-            className="px-0"
-          >
+          <Accordion variant="splitted" className="px-0">
             <AccordionItem
               key="1"
               aria-label="Facebook Feeds"

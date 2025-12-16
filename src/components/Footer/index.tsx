@@ -572,9 +572,7 @@ const Footer = () => {
               <div className="text-xs text-gray-50"> Designed </div>
               <LinkPreview
                 className="flex justify-center gap-1 text-current"
-                // url="https://www.facebook.com/profile.php?id=61553558543619"
-                url="https://ktltc.vercel.app/Sponsor"
-                // title="All M Min"
+                url="https://allmaster.vercel.app"
               >
                 <div className="text-xs font-medium text-gray-50">
                   By All M Min

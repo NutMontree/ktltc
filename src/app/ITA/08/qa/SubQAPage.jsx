@@ -143,7 +143,7 @@ export default async function SubQAPage() {
         </div>
 
         {/* Floating Action Button (Sticky Bottom on Mobile, Regular on Desktop) */}
-        <div className="fixed right-8 bottom-8 z-50 md:static md:mt-16 md:flex md:justify-center">
+        <div className="flex justify-center pt-24">
           <Link href="/TicketPage/new">
             <button className="group relative flex items-center gap-3 overflow-hidden rounded-full bg-slate-900 px-6 py-4 text-white shadow-2xl shadow-slate-900/30 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-600 hover:shadow-blue-600/40 active:scale-95">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 group-hover:bg-white/30">
