@@ -12,9 +12,7 @@ import { motion } from "motion/react";
 const TageFucntion = () => {
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-xl transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl md:p-8">
-      {" "}
       <div className="mb-4 flex items-center border-b border-sky-100 pb-3">
-        {" "}
         <svg
           className="mr-3 h-8 w-8 animate-bounce text-sky-600"
           fill="none"
@@ -22,24 +20,20 @@ const TageFucntion = () => {
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {" "}
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-          ></path>{" "}
-        </svg>{" "}
+          ></path>
+        </svg>
         <p className="text-xl font-bold text-sky-800">
-          {" "}
           <span className="rounded-md bg-sky-100 px-2 py-1">
-            {" "}
-            ดาวน์โหลดเอกสาร PDF{" "}
-          </span>{" "}
-        </p>{" "}
+            ดาวน์โหลดเอกสาร PDF
+          </span>
+        </p>
       </div>
       <div className="space-y-4">
-        {" "}
         <div className="flex flex-col justify-between rounded-lg bg-sky-50 p-4 transition duration-200 hover:bg-sky-100 md:flex-row md:items-center">
           <div className="mb-3 min-w-0 flex-1 md:mb-0">
             <p className="truncate text-base text-gray-500">ชื่อไฟล์:</p>
@@ -65,8 +59,8 @@ const TageFucntion = () => {
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              ></path>{" "}
-            </svg>{" "}
+              ></path>
+            </svg>
             ดาวน์โหลด PDF
           </Link>
         </div>
@@ -110,8 +104,7 @@ export default function Pressrelease() {
             className: "dark:text-white dark:hover:text-white",
             title: (
               <>
-                {" "}
-                <UserOutlined /> <span>Application List</span>{" "}
+                <UserOutlined /> <span>Application List</span>
               </>
             ),
           },
@@ -122,8 +115,7 @@ export default function Pressrelease() {
         <div className="absolute top-0 h-32 w-1 bg-linear-to-b from-transparent via-blue-500 to-transparent" />
       </div>
       <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        {" "}
-        <div className="absolute h-40 w-px bg-linear-to-b from-transparent via-blue-500 to-transparent" />{" "}
+        <div className="absolute h-40 w-px bg-linear-to-b from-transparent via-blue-500 to-transparent" />
       </div>
       <div className="px-4 py-10 md:py-20">
         <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
@@ -155,8 +147,7 @@ export default function Pressrelease() {
           <div className="grid gap-2">
             {Description.map((item) => (
               <div key={item?.description ?? "undefined"}>
-                {" "}
-                {item?.description && <div>{item.description}</div>}{" "}
+                {item?.description && <div>{item.description}</div>}
               </div>
             ))}
           </div>
@@ -193,12 +184,11 @@ export default function Pressrelease() {
             />
             {DataDate.map((item) => (
               <div key={item.date}>
-                {" "}
                 <div className="pt-1 text-xs text-slate-500">
                   {item.date}
-                </div>{" "}
+                </div>
               </div>
-            ))}{" "}
+            ))}
           </div>
           {/* ***************************** Youtube / Image *****************************  */}
           <ImageFunction />

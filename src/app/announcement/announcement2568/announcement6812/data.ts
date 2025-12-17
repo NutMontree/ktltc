@@ -1,6 +1,15 @@
 export const DataAnnouncement = {
   navItems: [
     {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/32/1.webp",
+      date: "17 ธันวาคม 2568",
+      description: ` 
+ประกาศวิทยาลัยเทคนิคกันทรลักษ์ เรื่อง ปิดเรียนกรณีพิเศษเนื่องในเทศกาลปีใหม่… See more
+`,
+      href: "/pressrelease/2568/press6812/press32",
+    },
+    {
       name: `ประกาศวิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/21/00.webp",
       date: "10 ธันวาคม 2568",

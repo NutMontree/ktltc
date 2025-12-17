@@ -17,17 +17,17 @@ import {
   LinkOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
+import Planning from "../plan/Planning";
+import CW from "../plan/CW";
+import DataCenter from "../plan/DataCenter";
+import FFEE from "../plan/FFEE";
+import KTCVS from "../plan/KTCVS";
+import PAB from "../plan/PAB";
+import QAES from "../plan/QAES";
+import RDIAI from "../plan/RDIAI";
+import TABPW from "../plan/TABPW";
 
 // Import Components
-import Planning from "./Planning";
-import PAB from "./PAB";
-import CW from "./CW";
-import TABPW from "./TABPW";
-import RDIAI from "./RDIAI";
-import QAES from "./QAES";
-import DataCenter from "./DataCenter";
-import KTCVS from "./KTCVS";
-import FFEE from "./FFEE";
 
 // 1. Data Configuration (รวมข้อมูลไว้ที่นี่เพื่อความสะอาดของโค้ด)
 const planningJobs = [
@@ -54,6 +54,11 @@ const planningJobs = [
         label: "แบบฟอร์ม PDCA",
         href: "https://ktltc.vercel.app/pdca",
         icon: <FileTextOutlined />,
+      },
+      {
+        label: "งานวางแผน และงบประมาณหน้าหลัก",
+        href: "/planning",
+        icon: <GlobalOutlined />,
       },
     ],
   },
