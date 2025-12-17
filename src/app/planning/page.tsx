@@ -1,35 +1,13 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { Accordion, AccordionItem, Button } from "@heroui/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 import { motion } from "framer-motion";
-import {
-  ClusterOutlined,
-  ProjectOutlined,
-  DatabaseOutlined,
-  GlobalOutlined,
-  ShopOutlined,
-  ExperimentOutlined,
-  SafetyCertificateOutlined,
-  ShoppingOutlined,
-  HeartOutlined,
-  LinkOutlined,
-  FileTextOutlined,
-} from "@ant-design/icons";
-import Planning from "../plan/Planning";
-import CW from "../plan/CW";
-import DataCenter from "../plan/DataCenter";
-import FFEE from "../plan/FFEE";
-import KTCVS from "../plan/KTCVS";
-import PAB from "../plan/PAB";
-import QAES from "../plan/QAES";
-import RDIAI from "../plan/RDIAI";
-import TABPW from "../plan/TABPW";
-import { Plan2569 } from "./2569/page";
-import { Plan2568 } from "./2568/page";
-import { Plan2567 } from "./2567/page";
-import { Plan2566 } from "./2566/page";
+import { ProjectOutlined, DatabaseOutlined } from "@ant-design/icons";
+import Plan2566 from "./2566/page";
+import Plan2567 from "./2567/page";
+import Plan2568 from "./2568/page";
+import Plan2569 from "./2569/page";
 
 // Import Components
 

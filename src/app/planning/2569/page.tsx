@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export function Plan2569() {
+export default function Plan2569() {
   return (
     <>
       <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-xl transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl md:p-8">
