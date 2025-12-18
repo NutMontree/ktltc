@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import Image from "next/image"; // ใช้ next/image มาตรฐาน
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -28,7 +28,6 @@ const Header = () => {
   const [sticky, setSticky] = useState(false);
   const handleStickyNavbar = () => {
     if (window.scrollY >= 40) {
-      // ลด threshold ให้ sticky เร็วขึ้น
       setSticky(true);
     } else {
       setSticky(false);
@@ -51,33 +50,50 @@ const Header = () => {
       <header
         className={`fixed top-0 left-0 z-50 flex w-full items-center transition-all duration-300 ${
           sticky
-            ? "bg-white/80 py-2 shadow-sm backdrop-blur-md dark:bg-neutral-900/80"
-            : "bg-transparent py-8"
+            ? "bg-white/90 py-3 shadow-sm backdrop-blur-md dark:bg-neutral-900/90" // ปรับ py ให้กระชับขึ้นตอน sticky
+            : "bg-transparent py-6"
         }`}
       >
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex items-center justify-between">
-            {/* --- Logo --- */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="relative h-10 w-36 md:h-12 md:w-44">
-                {/* Logo Light Mode */}
+          {/* เพิ่ม relative เพื่อให้ absolute element (ชื่อโรงเรียน) อ้างอิงจากตรงนี้ */}
+          <div className="relative flex items-center justify-between">
+            {/* --- 1. Logo (Left) --- */}
+            <Link href="/" className="z-20 flex items-center gap-2">
+              {/* z-20 เพื่อให้โลโก้อยู่เหนือข้อความตรงกลางเสมอ */}
+              <div
+                className={`relative transition-all duration-300 ${sticky ? "h-8 w-28 md:h-10 md:w-36" : "h-10 w-36 md:h-12 md:w-44"}`}
+              >
                 <Image
                   src="/images/logo.webp"
                   alt="KTLTC Logo"
                   fill
-                  className={`object-contain transition-opacity duration-300 ${theme === "dark" ? "opacity-0" : "opacity-100"}`}
+                  className={`object-contain object-left transition-opacity duration-300 ${theme === "dark" ? "opacity-0" : "opacity-100"}`}
                 />
-                {/* Logo Dark Mode (ถ้ามีโลโก้สีขาวให้ใส่ตรงนี้) */}
                 <Image
-                  src="/images/logo.webp" // เปลี่ยนเป็น logo-dark.webp ถ้ามี
+                  src="/images/logo.webp" // อย่าลืมเปลี่ยนเป็น logo-dark ถ้ามี
                   alt="KTLTC Logo Dark"
                   fill
-                  className={`absolute top-0 left-0 object-contain transition-opacity duration-300 ${theme === "dark" ? "opacity-100" : "opacity-0"}`}
+                  className={`absolute top-0 left-0 object-contain object-left transition-opacity duration-300 ${theme === "dark" ? "opacity-100" : "opacity-0"}`}
                 />
               </div>
             </Link>
 
-            {/* --- Desktop Menu --- */}
+            {/* --- 2. Center Title (Mobile Only - Shows when Sticky) --- */}
+            <div
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center transition-all duration-500 lg:hidden ${
+                sticky
+                  ? "visible translate-y-[-50%] opacity-100"
+                  : "invisible translate-y-[-20%] opacity-0"
+              }`}
+            >
+              <span className="block pt-2 text-sm font-bold whitespace-nowrap text-slate-800 dark:text-white">
+                วิทยาลัยเทคนิคกันทรลักษ์
+              </span>
+              {/* Optional: ภาษาอังกฤษตัวเล็กๆ ด้านล่าง */}
+              {/* <span className="block text-[10px] font-medium text-slate-500">Kantharalak Technical College</span> */}
+            </div>
+
+            {/* --- 3. Desktop Menu (Center) --- */}
             <nav className="hidden items-center gap-8 lg:flex">
               {menuData.map((menuItem, index) => (
                 <div key={index} className="group relative">
@@ -122,8 +138,8 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* --- Right Actions (Social & Theme) --- */}
-            <div className="flex items-center gap-4">
+            {/* --- 4. Right Actions (Social & Theme & Mobile Toggle) --- */}
+            <div className="z-20 flex items-center gap-4">
               {/* Facebook Icon */}
               <Link
                 href="https://www.facebook.com/profile.php?id=100057326985699"
@@ -142,7 +158,7 @@ const Header = () => {
               {/* Theme Toggle Button */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all hover:bg-slate-200 hover:text-blue-600 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/20 dark:hover:text-yellow-400"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all hover:bg-slate-200 hover:text-blue-600 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/20 dark:hover:text-yellow-400"
                 aria-label="Toggle Theme"
               >
                 {theme === "dark" ? (
@@ -155,7 +171,7 @@ const Header = () => {
               {/* Mobile Menu Button */}
               <button
                 onClick={navbarToggleHandler}
-                className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 lg:hidden dark:text-slate-200 dark:hover:bg-white/10"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 lg:hidden dark:text-slate-200 dark:hover:bg-white/10"
               >
                 {navbarOpen ? (
                   <CloseOutlined className="text-xl" />

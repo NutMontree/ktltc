@@ -1,4 +1,29 @@
 "use client";
+
+import React, { useState, useMemo } from "react";
+import Link from "next/link";
+import {
+  Accordion,
+  AccordionItem,
+  Chip,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+} from "@heroui/react";
+import { Breadcrumb } from "antd";
+import { Image } from "@heroui/react";
+import {
+  HomeOutlined,
+  UserOutlined,
+  FilePdfOutlined,
+  AppstoreOutlined,
+  RightOutlined,
+  SafetyCertificateOutlined,
+} from "@ant-design/icons";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Imports O1 - O37 (Keep existing imports)
 import O1 from "./01/page";
 import O2 from "./02/page";
 import O3 from "./03/page";
@@ -36,706 +61,534 @@ import O34 from "./034/page";
 import O35 from "./035/page";
 import O36 from "./036/page";
 import O37 from "./037/page";
-import Link from "next/link";
-import { Accordion, AccordionItem } from "@heroui/react";
-import { JSX, SVGProps } from "react";
-import { Breadcrumb } from "antd";
-import { Image } from "@heroui/react";
-import { HomeOutlined, UserOutlined } from "@ant-design/icons";
-import { motion } from "motion/react";
-import { TageLink } from "@/app/pressrelease/2568/press6811/press11/data";
+
 import {
+  TageLink,
   DataDate,
-  DataPressrelease,
   Description,
   ImageItem,
 } from "@/app/pressrelease/2568/press6811/press11/data";
 import { FootTitle } from "@/components/FootTitle";
 
-const AnchorIcon = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
-) => {
+// --- Styled Components & Assets ---
+
+const BackgroundDecor = () => (
+  <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+    <div className="absolute top-[-20%] left-[-10%] h-[50vw] w-[50vw] rounded-full bg-blue-600/10 blur-[120px] dark:bg-blue-500/10" />
+    <div className="absolute right-[-10%] bottom-[-20%] h-[60vw] w-[60vw] rounded-full bg-teal-500/10 blur-[150px] dark:bg-teal-400/10" />
+    <div className="absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-[url('/images/grid-pattern.png')] bg-repeat opacity-[0.03] dark:opacity-[0.05]" />
+  </div>
+);
+
+const MainDownloadCard = () => {
   return (
-    // <svg
-    //     aria-hidden="true"
-    //     focusable="false"
-    //     height="24"
-    //     role="presentation"
-    //     viewBox="0 0 24 24"
-    //     width="24"
-    //     {...props}
-    // >
-    //     <path
-    //         d="M8.465,11.293c1.133-1.133,3.109-1.133,4.242,0L13.414,12l1.414-1.414l-0.707-0.707c-0.943-0.944-2.199-1.465-3.535-1.465 S7.994,8.935,7.051,9.879L4.929,12c-1.948,1.949-1.948,5.122,0,7.071c0.975,0.975,2.255,1.462,3.535,1.462 c1.281,0,2.562-0.487,3.536-1.462l0.707-0.707l-1.414-1.414l-0.707,0.707c-1.17,1.167-3.073,1.169-4.243,0 c-1.169-1.17-1.169-3.073,0-4.243L8.465,11.293z"
-    //         fill="currentColor"
-    //     />
-    //     <path
-    //         d="M12,4.929l-0.707,0.707l1.414,1.414l0.707-0.707c1.169-1.167,3.072-1.169,4.243,0c1.169,1.17,1.169,3.073,0,4.243 l-2.122,2.121c-1.133,1.133-3.109,1.133-4.242,0L10.586,12l-1.414,1.414l0.707,0.707c0.943,0.944,2.199,1.465,3.535,1.465 s2.592-0.521,3.535-1.465L19.071,12c1.948-1.949,1.948-5.122,0-7.071C17.121,2.979,13.948,2.98,12,4.929z"
-    //         fill="currentColor"
-    //     />
-    // </svg>
-    <p>คลิก</p>
-  );
-};
-const TageFucntion = () => {
-  return (
-    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-xl transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl md:p-8">
-      {" "}
-      <div className="mb-4 flex items-center border-b border-sky-100 pb-3">
-        {" "}
-        <svg
-          className="mr-3 h-8 w-8 animate-bounce text-sky-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {" "}
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-          ></path>{" "}
-        </svg>{" "}
-        <p className="text-xl font-bold text-sky-800">
-          {" "}
-          <span className="rounded-md bg-sky-100 px-2 py-1">
-            {" "}
-            ดาวน์โหลดเอกสาร PDF{" "}
-          </span>{" "}
-        </p>{" "}
-      </div>
-      <div className="space-y-4">
-        {" "}
-        <div className="flex flex-col justify-between rounded-lg bg-sky-50 p-4 transition duration-200 hover:bg-sky-100 md:flex-row md:items-center">
-          <div className="mb-3 min-w-0 flex-1 md:mb-0">
-            <p className="truncate text-base text-gray-500">ชื่อไฟล์:</p>
-            <p className="text-lg font-semibold text-sky-700">
-              2587 - สอศ แจ้งผลประเมิน ITA ประจำปีงบประมาณ พศ 2568
-            </p>
+    <motion.div
+      whileHover={{ scale: 1.02, y: -5 }}
+      className="group relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-400 via-teal-400 to-blue-600 p-0.5 shadow-xl shadow-blue-500/20 dark:from-blue-600 dark:via-teal-600 dark:to-blue-800"
+    >
+      <div className="absolute inset-0 bg-linear-to-br from-blue-400/30 to-teal-400/30 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100"></div>
+      <div className="relative flex h-full flex-col items-center gap-6 rounded-[22px] bg-white/90 p-6 text-center backdrop-blur-xl md:flex-row md:p-8 md:text-left dark:bg-slate-900/95">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-linear-to-tr from-blue-500 to-teal-400 text-white shadow-lg">
+          <FilePdfOutlined style={{ fontSize: "40px" }} />
+        </div>
+        <div className="grow">
+          <h3 className="mb-2 text-2xl font-bold text-slate-800 dark:text-white">
+            รายงานผลการประเมิน ITA 2568
+          </h3>
+          <p className="mb-4 leading-relaxed text-slate-600 dark:text-slate-300">
+            ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส (ฉบับทางการ)
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+            {TageLink.map((item, idx) => (
+              <Link key={idx} href={item.href} target="_blank">
+                <Chip
+                  size="sm"
+                  variant="flat"
+                  color="primary"
+                  className="cursor-pointer font-medium transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                >
+                  {item.tage}
+                </Chip>
+              </Link>
+            ))}
           </div>
+        </div>
+        <div className="shrink-0">
           <Link
             href="/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf"
-            className="inline-flex transform items-center justify-center rounded-full border border-transparent bg-sky-500 px-5 py-2 text-base font-medium text-white shadow-lg transition duration-150 hover:scale-105 hover:bg-sky-600 focus:ring-4 focus:ring-sky-300 focus:outline-none"
             target="_blank"
             download
           >
-            <svg
-              className="mr-2 h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+            <Button
+              size="lg"
+              className="border-0 bg-linear-to-r from-blue-600 to-teal-500 font-semibold text-white shadow-md hover:from-blue-700 hover:to-teal-600"
+              endContent={
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  ></path>
+                </svg>
+              }
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              ></path>{" "}
-            </svg>{" "}
-            ดาวน์โหลด PDF
+              Download PDF
+            </Button>
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-const ImageFunction = () => {
+// --- Main Content Components ---
+
+const CategorySection = ({ group, index }: { group: any; index: number }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
-    <div>
-      <div className="flex justify-center">
-        <div className="grid-cols-1 justify-center justify-items-center pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {ImageItem.map((item) =>
-            item ? (
-              <div key={item.imgs}>
-                <div className="scale-95 rounded-full transition duration-500 hover:scale-100">
-                  <Image isBlurred src={item.imgs} alt={""}></Image>
-                </div>
-              </div>
-            ) : null,
-          )}
-        </div>
-      </div>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.1, duration: 0.6, type: "spring" }}
+      className="mb-8"
+    >
+      <Card
+        isPressable
+        onPress={() => setIsExpanded(!isExpanded)}
+        className={`group w-full overflow-visible border-0 transition-all duration-300 ${
+          isExpanded
+            ? "z-10 rounded-b-none bg-white shadow-lg ring-2 ring-blue-500/50 dark:bg-slate-800 dark:ring-blue-400/50"
+            : "rounded-2xl bg-white/60 backdrop-blur-md hover:bg-white hover:shadow-md dark:bg-slate-800/60 dark:hover:bg-slate-800"
+        }`}
+      >
+        <CardHeader className="flex items-center gap-4 p-6">
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm transition-all duration-300 group-hover:shadow-md ${isExpanded ? "scale-110 from-blue-500 to-teal-400 text-white" : "from-blue-100 to-teal-50 text-blue-600 dark:from-blue-900/30 dark:to-teal-900/30 dark:text-blue-400"}`}
+          >
+            <AppstoreOutlined style={{ fontSize: "24px" }} />
+          </div>
+          <div className="grow text-left">
+            <div className="mb-1 text-sm font-bold tracking-wider text-blue-600 uppercase dark:text-blue-400">
+              {group.title}
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+              {group.subtitle}
+            </h3>
+          </div>
+          <div
+            className={`transform transition-transform duration-300 ${isExpanded ? "rotate-90" : ""} text-slate-400`}
+          >
+            <RightOutlined style={{ fontSize: "20px" }} />
+          </div>
+        </CardHeader>
+      </Card>
+
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="ring-t-0 relative z-0 overflow-hidden rounded-b-2xl bg-white shadow-lg ring-2 ring-blue-500/50 dark:bg-slate-800 dark:ring-blue-400/50"
+          >
+            <div className="bg-slate-50/50 p-2 md:p-4 dark:bg-slate-900/50">
+              <Accordion
+                selectionMode="multiple"
+                variant="splitted"
+                className="gap-2"
+                itemClasses={{
+                  base: "group rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 px-0 transition-all data-[open=true]:ring-1 data-[open=true]:ring-blue-200 dark:data-[open=true]:ring-blue-800",
+                  title:
+                    "font-semibold text-slate-700 dark:text-slate-200 text-base",
+                  subtitle: "text-slate-400 text-sm",
+                  indicator: "text-blue-500 data-[open=true]:rotate-180",
+                  content: "text-slate-600 dark:text-slate-400 pt-0 pb-4 px-4",
+                  trigger:
+                    "px-4 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
+                }}
+              >
+                {group.items.map((item: any) => (
+                  <AccordionItem
+                    key={item.key}
+                    aria-label={item.title}
+                    startContent={
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-xs font-bold text-blue-600 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-300">
+                        {item.key}
+                      </div>
+                    }
+                    title={
+                      <span>
+                        {item.title.substring(item.title.indexOf(" ") + 1)}
+                      </span>
+                    }
+                    subtitle={item.note}
+                  >
+                    <div className="rounded-xl border border-slate-100/50 bg-slate-50 p-4 dark:border-slate-800/50 dark:bg-slate-900/50">
+                      {item.component}
+                    </div>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
 export default function ITA() {
+  // Grouping Data (Same as before, essential for structure)
+  const topicGroups = useMemo(
+    () => [
+      // ... (Keep the exact same topicGroups data structure from the previous response)
+      {
+        id: "9.1",
+        title: "ตัวชี้วัดย่อยที่ 9.1",
+        subtitle: "ข้อมูลพื้นฐาน (O1 - O6)",
+        items: [
+          { key: "1", title: "O1 โครงสร้าง", component: <O1 /> },
+          { key: "2", title: "O2 ข้อมูลผู้บริหาร", component: <O2 /> },
+          { key: "3", title: "O3 อำนาจหน้าที่", component: <O3 /> },
+          { key: "4", title: "O4 แผนพัฒนาสถานศึกษา", component: <O4 /> },
+          { key: "5", title: "O5 ข้อมูลการติดต่อ", component: <O5 /> },
+          { key: "6", title: "O6 กฎหมายที่เกี่ยวข้อง", component: <O6 /> },
+        ],
+      },
+      {
+        id: "9.2",
+        title: "ตัวชี้วัดย่อยที่ 9.2",
+        subtitle: "การบริหารงาน (O7 - O16)",
+        items: [
+          { key: "7", title: "O7 ข่าวประชาสัมพันธ์", component: <O7 /> },
+          {
+            key: "8",
+            title: "O8 Q&A",
+            component: <O8 />,
+            note: "ช่องทางสื่อสารสองทาง เช่น Web board, Messenger Live Chat",
+          },
+          { key: "9", title: "O9 Social Network", component: <O9 /> },
+          { key: "10", title: "O10 แผนดำเนินงานประจำปี", component: <O10 /> },
+          {
+            key: "11",
+            title: "O11 รายงานผลการดําเนินงานประจําปี",
+            component: <O11 />,
+          },
+          {
+            key: "12",
+            title: "O12 คู่มือหรือมาตรฐานการปฏิบัติงาน",
+            component: <O12 />,
+          },
+          {
+            key: "13",
+            title: "O13 คู่มือหรือมาตรฐานการให้บริการ",
+            component: <O13 />,
+          },
+          {
+            key: "14",
+            title: "O14 ข้อมูลเชิงสถิติการให้บริการ",
+            component: <O14 />,
+          },
+          {
+            key: "15",
+            title: "O15 รายงานผลการสํารวจความพึงพอใจ",
+            component: <O15 />,
+          },
+          { key: "16", title: "O16 E-Service", component: <O16 /> },
+        ],
+      },
+      {
+        id: "9.3",
+        title: "ตัวชี้วัดย่อยที่ 9.3",
+        subtitle: "การบริหารเงินงบประมาณ (O17 - O22)",
+        items: [
+          {
+            key: "17",
+            title: "O17 แผนการใช้จ่ายงบประมาณประจําปี",
+            component: <O17 />,
+          },
+          {
+            key: "18",
+            title: "O18 ผลการใช้จ่ายงบประมาณประจําปี",
+            component: <O18 />,
+          },
+          {
+            key: "19",
+            title: "O19 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ",
+            component: <O19 />,
+          },
+          {
+            key: "20",
+            title: "O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้าง",
+            component: <O20 />,
+          },
+          {
+            key: "21",
+            title: "O21 สรุปผลการจัดซื้อจัดจ้างรายเดือน",
+            component: <O21 />,
+          },
+          {
+            key: "22",
+            title: "O22 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ",
+            component: <O22 />,
+          },
+        ],
+      },
+      {
+        id: "9.4",
+        title: "ตัวชี้วัดย่อยที่ 9.4",
+        subtitle: "การบริหารและพัฒนาทรัพยากรบุคคล (O23 - O25)",
+        items: [
+          { key: "23", title: "O23 การพัฒนาทรัพยากรบุคคล", component: <O23 /> },
+          {
+            key: "24",
+            title: "O24 หลักเกณฑ์การบริหารและพัฒนา",
+            component: <O24 />,
+          },
+          {
+            key: "25",
+            title: "O25 รายงานผลการพัฒนาทรัพยากรบุคคล",
+            component: <O25 />,
+          },
+        ],
+      },
+      {
+        id: "9.5",
+        title: "ตัวชี้วัดย่อยที่ 9.5",
+        subtitle: "การส่งเสริมความโปร่งใสในสถานศึกษา (O26 - O29)",
+        items: [
+          {
+            key: "26",
+            title: "O26 การจัดการร้องเรียนการทุจริต",
+            component: <O26 />,
+          },
+          {
+            key: "27",
+            title: "O27 ช่องทางแจ้งเรื่องร้องเรียนการทุจริต",
+            component: <O27 />,
+          },
+          {
+            key: "28",
+            title: "O28 ข้อมูลเชิงสถิติเรื่องร้องเรียน",
+            component: <O28 />,
+          },
+          {
+            key: "29",
+            title: "O29 การเปิดโอกาสให้เกิดการมีส่วนร่วม",
+            component: <O29 />,
+          },
+        ],
+      },
+      {
+        id: "10.1",
+        title: "ตัวชี้วัดย่อยที่ 10.1",
+        subtitle: "การดำเนินการเพื่อป้องกันทุจริต (O30 - O35)",
+        items: [
+          { key: "30", title: "O30 นโยบาย No Gift Policy", component: <O30 /> },
+          {
+            key: "31",
+            title: "O31 การมีส่วนร่วมของผู้บริหาร",
+            component: <O31 />,
+          },
+          {
+            key: "32",
+            title: "O32 การประเมินผลควบคุมภายใน",
+            component: <O32 />,
+          },
+          {
+            key: "33",
+            title: "O33 การเสริมสร้างวัฒนธรรมองค์กร",
+            component: <O33 />,
+          },
+          {
+            key: "34",
+            title: "O34 โครงการป้องกันการทุจริต",
+            component: <O34 />,
+          },
+          {
+            key: "35",
+            title: "O35 รายงานผลการป้องกันการทุจริต",
+            component: <O35 />,
+          },
+        ],
+      },
+      {
+        id: "10.2",
+        title: "ตัวชี้วัดย่อยที่ 10.2",
+        subtitle: "มาตรการภายในเพื่อป้องกันการทุจริต (O36 - O37)",
+        items: [
+          {
+            key: "36",
+            title: "O36 มาตรการส่งเสริมความโปร่งใส",
+            component: <O36 />,
+          },
+          {
+            key: "37",
+            title: "O37 การดําเนินการตามมาตรการ",
+            component: <O37 />,
+          },
+        ],
+      },
+    ],
+    [],
+  );
+
   return (
-    <>
-      <Breadcrumb
-        items={[
-          {
-            href: "/",
-            title: <HomeOutlined />,
-            className: "dark:text-white dark:hover:text-white",
-          },
-          {
-            href: "/pressrelease/2568/press6809",
-            className: "dark:text-white dark:hover:text-white",
-            title: (
-              <>
-                {" "}
-                <UserOutlined /> <span>Application List</span>{" "}
-              </>
-            ),
-          },
-          { title: "Application", className: "dark:text-gray-400" },
-        ]}
-      />
-      <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        <div className="absolute top-0 h-32 w-1 bg-linear-to-b from-transparent via-blue-500 to-transparent" />
-      </div>
-      <div className="absolute inset-y-0 right-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
-        {" "}
-        <div className="absolute h-40 w-px bg-linear-to-b from-transparent via-blue-500 to-transparent" />{" "}
-      </div>
-      <div className="px-4 py-10 md:py-20">
-        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
-          {"".split(" ").map((word, index) => (
-            <motion.span
-              key={index}
-              initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
-              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              transition={{
-                duration: 0.3,
-                delay: index * 0.1,
-                ease: "easeInOut",
-              }}
-              className="mr-2 inline-block"
-            >
-              {word}
-              {DataPressrelease.Item.map((item) => (
-                <div key={item.title}>{item.title}</div>
-              ))}
-            </motion.span>
-          ))}
-        </h1>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2, delay: 0.4 }}
-          className="relative z-10 mx-auto py-6 font-normal text-neutral-600 dark:text-neutral-400"
-        >
-          <div className="grid gap-2">
-            {Description.map((item) => (
-              <div key={item?.description ?? "undefined"}>
-                {" "}
-                {item?.description && <div>{item.description}</div>}{" "}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.6 }}
-        >
-          {TageLink.map((item) => (
-            <Link key={item.href} href={item.href} target="_blank">
-              <div className="text-sky-500 hover:text-sky-600 dark:text-sky-400 hover:dark:text-sky-600">
-                {item.tage}
-              </div>
-            </Link>
-          ))}
-          <TageFucntion />
-          <br />
-          <FootTitle />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.8 }}
-        >
-          <div className="date flex gap-2 py-2">
-            <Image
-              isBlurred
-              src="/images/icon/time-svgrepo-com.svg"
-              alt="logo-youtube"
-              className="pt-1"
-              width={20}
-              height={20}
-            />
-            {DataDate.map((item) => (
-              <div key={item.date}>
-                {" "}
-                <div className="pt-1 text-xs text-slate-500">
-                  {item.date}
-                </div>{" "}
-              </div>
-            ))}{" "}
-          </div>
-          {/* ***************************** Youtube / Image *****************************  */}
-          <ImageFunction />
-        </motion.div>
+    <div className="relative min-h-screen overflow-x-hidden font-sans">
+      <BackgroundDecor />
+      {/* Header Section */}
+      <div className="relative z-10 border-b backdrop-blur-md">
+        <div className="container mx-auto px-4 py-4">
+          <Breadcrumb
+            items={[
+              {
+                href: "/",
+                title: (
+                  <>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                      <HomeOutlined className="text-blue-500" />
+                    </span>
+                  </>
+                ),
+              },
+              {
+                href: "/pressrelease/2568/press6809",
+                title: (
+                  <>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                      <UserOutlined /> Application List
+                    </span>
+                  </>
+                ),
+              },
+              {
+                title: (
+                  <span className="font-medium text-slate-700 dark:text-slate-300">
+                    ITA Assessment
+                  </span>
+                ),
+              },
+            ]}
+            className="text-sm font-medium"
+          />
+        </div>
       </div>
 
-      <div className="py-[84px]">
-        <p className="text-center text-xl">
-          ประเมินคุณธรรมและความโปร่งใส (ITA)
-        </p>
-        <p className="pt-2 text-center">
-          การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ <br />
-          ( Integrity and Transparency Assessment)
-          <br />
-          ระบบช่วยตรวจสอบข้อมูล สำหรับเจ้าหน้าที่ผู้ปฏิบัติงาน
-          <br />
-          วิทยาลัยเทคนิคกันทรลักษ์
-        </p>
-      </div>
-
-      <div className="pb-12">
-        <Accordion variant="splitted" disabledKeys={["2"]}>
-          <AccordionItem
-            key="1"
-            aria-label="ITA คืออะไร ?"
-            title="ITA คืออะไร ?"
+      {/* Hero Content */}
+      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20">
+        <div className="mx-auto mb-12 max-w-5xl text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-4 py-2 text-sm font-semibold text-blue-600 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-800"
           >
-            <div className="py-4">
-              <div className="grid md:grid-flow-col">
-                <div className="rounded-xl">
+            <SafetyCertificateOutlined /> ITA 2568 : วิทยาลัยเทคนิคกันทรลักษ์
+          </motion.div>
+          <h1 className="mb-6 text-4xl leading-tight font-extrabold tracking-tight text-slate-800 drop-shadow-sm md:text-6xl lg:text-7xl dark:text-white">
+            <span className="bg-linear-to-r from-blue-600 via-teal-500 to-blue-700 bg-clip-text text-transparent dark:from-blue-400 dark:via-teal-300 dark:to-blue-500">
+              Integrity & Transparency
+            </span>
+            <br />
+            Assessment
+          </h1>
+          <p className="mx-auto max-w-3xl text-lg leading-relaxed font-medium text-slate-600 md:text-xl dark:text-slate-300">
+            {Description[0]?.description}
+          </p>
+        </div>
+        {/* Main CTA Card */}
+        <div className="mx-auto mb-16 max-w-4xl">
+          <MainDownloadCard />
+        </div>
+        {/* --- Info Cards Section (Modern Layout) --- */}
+        <div className="mx-auto mb-24 max-w-5xl space-y-8">
+          {/* 1. What is ITA Card (Card แนวนอน เน้น Logo และเนื้อหา) */}
+          <Card className="group overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/80 shadow-xl shadow-blue-900/5 backdrop-blur-xl transition-all hover:shadow-2xl hover:shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-800/80">
+            <CardBody className="relative flex flex-col items-center justify-between gap-8 p-8 md:flex-row md:p-12">
+              {/* Background Decor */}
+
+              {/* Logo Section */}
+              <div className="relative z-10 shrink-0 transform transition-transform duration-700 group-hover:scale-105 group-hover:rotate-2">
+                <div className="">
                   <img
                     src="/images/ita/ita.webp"
-                    alt="ITA Image"
-                    className="mx-auto"
+                    alt="ITA Logo"
+                    className="h-auto w-60 object-contain md:w-60"
                   />
                 </div>
-                <div className="bg-slate-300rounded-xl">
-                  <div className="text-center text-xl font-bold">
-                    <div>ITA คืออะไร ?</div>
-                  </div>
-                  <div className="flex">
-                    <div className="font-bold">I</div>
-                    <div className="pr-1">ntegrity</div>
-                    <div className="pr-1">and</div>
-                    <div className="font-bold">T</div>
-                    <div className="pr-1">ransparency</div>
-                    <div className="font-bold">A</div>
-                    <div className="pr-1">ssessment</div>
-                  </div>
-                  <div>
-                    <div>
-                      การประเมินคุณธรรม
-                      และความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ
-                      แบบตรวจการเปิดเผยข้อมูลสาธารณะ (OIT)
-                      มีวัตถุประสงค์เพื่อเป็นการประเมินระดับการเปิดเผยข้อมูลต่อสาธารณะของหน่วยงาน
-                      เพื่อให้ประชาชนทั่วไปสามารถเข้าถึงได้
-                      ในตัวชี้วัดการเปิดเผยข้อมูล และการป้องกันการทุจริต
-                      สำหรับการประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ
-                    </div>
-                  </div>
-                </div>
               </div>
+
+              {/* Text Section */}
+              <div className="relative z-10 grow text-center md:text-left">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase dark:bg-blue-900/30 dark:text-blue-400">
+                  <span>About ITA</span>
+                </div>
+                <h3 className="mb-4 text-3xl font-extrabold text-slate-800 dark:text-white">
+                  ITA คืออะไร?
+                </h3>
+                <p className="text-lg leading-relaxed font-medium text-slate-600 dark:text-slate-300">
+                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ
+                  (OIT)
+                </p>
+                <p className="mt-2 text-base font-normal text-slate-500 dark:text-slate-400">
+                  เพื่อยกระดับธรรมาภิบาล เปิดเผยข้อมูลสู่สาธารณะ
+                  และสร้างความเชื่อมั่นต่อประชาชนอย่างยั่งยืน
+                </p>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* 2. Date & Gallery Card (Card รูปภาพขนาดใหญ่) */}
+          <Card className=" ">
+            <CardBody className="">
+              {ImageItem.map(
+                (item, idx) =>
+                  item && (
+                    <motion.div key={idx} className=" ">
+                      <Image
+                        isBlurred
+                        removeWrapper
+                        src={item.imgs}
+                        className="rounded-3xl"
+                      />
+                    </motion.div>
+                  ),
+              )}
+            </CardBody>
+          </Card>
+        </div>
+      </div>
+
+      {/* Main Content Content: The List */}
+      <div className="relative z-10 container mx-auto max-w-5xl px-4 pb-20">
+        <div className="mb-12 text-center">
+          <div className="mb-4 inline-block">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 shadow-sm dark:bg-blue-900/30 dark:text-blue-400">
+              <AppstoreOutlined style={{ fontSize: "24px" }} />
             </div>
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div>
-        <div>
-          <p className="py-6 text-xl font-bold text-sky-500">
-            ตัวชี้วัดย่อยที่ 9.1 ข้อมูลพื้นฐาน (o1 - o6)
+          </div>
+          <h2 className="mb-4 text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
+            เอกสารประกอบการประเมิน (OIT)
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg font-medium text-slate-600 dark:text-slate-400">
+            ข้อมูลสาธารณะตามตัวชี้วัด เพื่อความโปร่งใสและตรวจสอบได้
           </p>
         </div>
-        <Accordion
-          selectionMode="multiple"
-          variant="splitted"
-          disabledKeys={[]}
-        >
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="1"
-            aria-label="1"
-            title="O1 โครงสร้าง"
-          >
-            <O1 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="2"
-            aria-label="2"
-            title="O2 ข้อมูลผู้บริหาร"
-          >
-            <O2 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="3"
-            aria-label="3"
-            title="O3 อำนาจหน้าที่"
-          >
-            <O3 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="4"
-            aria-label="4"
-            title="O4 แผนพัฒนา สถานศึกษา"
-          >
-            <O4 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="5"
-            aria-label="5"
-            title="O5 ข้อมูลการติดต่อ"
-          >
-            <O5 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="6"
-            aria-label="6"
-            title="O6 กฎหมายที่เกี่ยวข้อง"
-          >
-            <O6 />
-          </AccordionItem>
-        </Accordion>
-      </div>
 
-      <div>
-        <div>
-          <p className="py-6 text-xl font-bold text-sky-500">
-            ตัวชี้วัดย่อยที่ 9.2 การบริหารงาน (o7 - o16)
-          </p>
+        <div className="space-y-6">
+          {topicGroups.map((group, index) => (
+            <CategorySection key={group.id} group={group} index={index} />
+          ))}
         </div>
-        <Accordion
-          selectionMode="multiple"
-          variant="splitted"
-          disabledKeys={[]}
-        >
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="7"
-            aria-label="7"
-            title="O7 ข่าวประชาสัมพันธ์"
-          >
-            <O7 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="8"
-            aria-label="8"
-            title="O8 Q&A"
-          >
-            <div className="pb-6 text-xs text-blue-500 md:text-sm lg:text-base dark:text-blue-400">
-              – แสดงตำแหน่งบนเว็บไซต์ของสถานศึกษาที่บุคคลภายนอก
-              สามารถสอบถามข้อมูลต่าง ๆ ได้ และหน่วยงานสามารถสื่อสารให้คำตอบกับ
-              ผู้สอบถามได้
-              โดยมีลักษณะเป็นการสื่อสารได้สองทางบนหน้าเว็บไซต์ของสถานศึกษา (Q&A)
-              ยกตัวอย่าง เช่น Web board, กล่องข้อความถาม-ตอบ,Messenger Live
-              Chat, Chatbot เป็นต้น
-            </div>
-            <O8 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="9"
-            aria-label="9"
-            title="O9 Social Network"
-          >
-            <O9 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="10"
-            aria-label="10"
-            title="O10 แผนดำเนินงานประจำปี"
-          >
-            <O10 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="11"
-            aria-label="11"
-            title="O11 รายงานผลการดําเนินงานประจําปี"
-          >
-            <O11 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="12"
-            aria-label="12"
-            title="O12 คู่มือหรือมาตรฐานการปฏิบัติงาน"
-          >
-            <O12 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="13"
-            aria-label="13"
-            title="O13 คู่มือหรือมาตรฐาน การให้บริการ"
-          >
-            <O13 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="14"
-            aria-label="14"
-            title="O14 ข้อมูลเชิงสถิติ การให้บริการ"
-          >
-            <O14 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="15"
-            aria-label="15"
-            title="O15 รายงานผลการ สํารวจความ พึงพอใจการให้บริการ"
-          >
-            <O15 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="16"
-            aria-label="16"
-            title="O16 E-Service"
-          >
-            <O16 />
-          </AccordionItem>
-        </Accordion>
       </div>
-
-      <div>
-        <div>
-          <p className="py-6 text-xl font-bold text-sky-500">
-            ตัวชี้วัดย่อยที่ 9.3 การบริหารเงินงบประมาณ (o17 - o22)
-          </p>
-        </div>
-        <Accordion
-          selectionMode="multiple"
-          variant="splitted"
-          disabledKeys={[]}
-        >
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="17"
-            aria-label="17"
-            title="O17 แผนการใช้จ่าย งบประมาณ ประจําปี"
-          >
-            <O17 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="18"
-            aria-label="18"
-            title="O18 ผลการใช้จ่าย งบประมาณ ประจําปี"
-          >
-            <O18 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="19"
-            aria-label="19"
-            title="O19 แผนการจัดซื้อจัด จ้างหรือแผนการจัดหาพัสดุ"
-          >
-            <O19 />
-          </AccordionItem>
-          {/* <AccordionItem indicator={<AnchorIcon />} subtitle={<span> ทำเอกสารเพิ่มเติม <strong>ข้อมูลไม่ครบ</strong> </span>} key="20" aria-label="20" title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ"> */}
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="20"
-            aria-label="20"
-            title="O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการ จัดหาพัสดุ"
-          >
-            <O20 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="21"
-            aria-label="21"
-            title="O21 สรุปผลการจัดซื้อ จัดจ้างหรือจัดหาพัสดุรายเดือน"
-          >
-            <O21 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="22"
-            aria-label="22"
-            title="O22 แผนการจัดซื้อจัดจ้างหรือแผนการจัดหาพัสดุ"
-          >
-            <O22 />
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div>
-        <div>
-          <p className="py-6 text-xl font-bold text-sky-500">
-            ตัวชี้วัดย่อยที่ 9.4 การบริหารและพัฒนาทรัพยากรบุคคล (o23 - o25)
-          </p>
-        </div>
-        <Accordion
-          selectionMode="multiple"
-          variant="splitted"
-          disabledKeys={[]}
-        >
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="23"
-            aria-label="23"
-            title="O23 การดําเนิน โครงการ/กิจกรรม ที่แสดงถึง การพัฒนา ทรัพยากรบุคคล"
-          >
-            <O23 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="24"
-            aria-label="24"
-            title="O24 หลักเกณฑ์การ บริหารและพัฒนา ทรัพยากรบุคคล"
-          >
-            <O24 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="25"
-            aria-label="25"
-            title="O25 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่แสดงถึง การพัฒนา ทรัพยากรบุคคล"
-          >
-            <O25 />
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div>
-        <div>
-          <p className="py-6 text-xl font-bold text-sky-500">
-            ตัวชี้วัดย่อยที่ 9.5 การส่งเสริมความโปร่งใสในสถานศึกษา (o26 - o29)
-          </p>
-        </div>
-        <Accordion
-          selectionMode="multiple"
-          variant="splitted"
-          disabledKeys={[]}
-        >
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="26"
-            aria-label="26"
-            title="O26 แนวทางปฏิบัติการ จัดการร้องเรียนการทุจริตและ ประพฤติมิชอบ"
-          >
-            <O26 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="27"
-            aria-label="27"
-            title="O27 ช่องทางแจ้งเรื่อง ร้องเรียนการทุจริตและประพฤติ มิชอบ"
-          >
-            <O27 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="28"
-            aria-label="28"
-            title="O28 ข้อมูลเชิงสถิติเรื่อง ร้องเรียนการทุจริตและประพฤติมิชอบ"
-          >
-            <O28 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="29"
-            aria-label="29"
-            title="O29 การเปิดโอกาสให้ เกิดการมีส่วนร่วม"
-          >
-            <O29 />
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div>
-        <div>
-          <p className="py-6 text-xl font-bold text-sky-500">
-            ตัวชี้วัดย่อยที่ 10.1 การดำเนินการ เพื่อป้องกันทุจริต (o30 - o35)
-          </p>
-        </div>
-        <Accordion
-          selectionMode="multiple"
-          variant="splitted"
-          disabledKeys={[]}
-        >
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="30"
-            aria-label="30"
-            title="O30 นโยบายไม่รับ ของขวัญ (No Gift Policy)"
-          >
-            <O30 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="31"
-            aria-label="31"
-            title="O31 การมีส่วนร่วมของ ผู้บริหาร สถานศึกษา"
-          >
-            <O31 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="32"
-            aria-label="32"
-            title="O32 การประเมินผล ควบคุมภายใน"
-          >
-            <O32 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="33"
-            aria-label="33"
-            title="O33 การเสริมสร้าง วัฒนธรรมองค์กร"
-          >
-            <O33 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="34"
-            aria-label="34"
-            title="O34 โครงการ/กิจกรรม ที่เกี่ยวข้องกับ การป้องกัน การทุจริต"
-          >
-            <O34 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="35"
-            aria-label="35"
-            title="O35 รายงานผลการ ดําเนินโครงการ/ กิจกรรมที่เกี่ยวกับ การป้องกัน การ ทุจริตประจําปี"
-          >
-            <O35 />
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div>
-        <div>
-          <p className="py-6 text-xl font-bold text-sky-500">
-            ตัวชี้วัดย่อย 10.2 มาตรการภายในเพื่อป้องกันการทุจริต (o36 - o37)
-          </p>
-        </div>
-        <Accordion
-          selectionMode="multiple"
-          variant="splitted"
-          disabledKeys={[]}
-        >
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="36"
-            aria-label="36"
-            title="O36 มาตรการส่งเสริม คุณธรรมและความโปร่งใส ภายในสถานศึกษา"
-          >
-            <O36 />
-          </AccordionItem>
-          <AccordionItem
-            indicator={<AnchorIcon />}
-            key="37"
-            aria-label="37"
-            title="O37 การดําเนินการ ตามมาตรการ ส่งเสริม คุณธรรมและ ความโปร่งใส ภายในสถานศึกษา"
-          >
-            <O37 />
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </>
+    </div>
   );
 }
