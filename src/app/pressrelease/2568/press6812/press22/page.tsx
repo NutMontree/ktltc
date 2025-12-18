@@ -185,7 +185,7 @@ export default function PressReleaseModern() {
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition-colors group-hover:border-blue-300 group-hover:bg-blue-50 dark:border-neutral-700 dark:bg-neutral-900 dark:group-hover:border-blue-900/50 dark:group-hover:bg-blue-900/20">
                     <LeftOutlined className="text-slate-400 transition-colors group-hover:text-blue-600" />
                   </div>
-                  <div className="hidden overflow-hidden text-left sm:block">
+                  <div className="text-left sm:block">
                     <span className="block text-xs font-medium tracking-wide text-slate-400 uppercase">
                       Previous
                     </span>
@@ -203,7 +203,7 @@ export default function PressReleaseModern() {
                   href={navData.next.href}
                   className="group flex w-1/2 items-center justify-end gap-3 pl-4 transition-all hover:translate-x-1"
                 >
-                  <div className="hidden overflow-hidden text-right sm:block">
+                  <div className="text-right sm:block">
                     <span className="block text-xs font-medium tracking-wide text-slate-400 uppercase">
                       Next
                     </span>

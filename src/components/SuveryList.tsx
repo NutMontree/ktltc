@@ -484,7 +484,7 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
       {/* ------------------------------------------- */}
       {/* VIEW 2: Desktop Table (Hidden on small) */}
       {/* ------------------------------------------- */}
-      <div className="hidden overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg md:block dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-xl border border-gray-100 bg-white shadow-lg md:block dark:border-gray-700 dark:bg-gray-800">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-blue-50 dark:bg-gray-700/50">
