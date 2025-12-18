@@ -5,7 +5,10 @@ export const DataPressrelease = {
     prev: {
       href: "/pressrelease/2568/press6812/press31",
     },
-    next: null,
+    next: {
+      href: "/pressrelease/2568/press6812/press33",
+    },
+    // หมายเหตุ: หากไม่มีเรื่องก่อนหน้าหรือถัดไป ให้ใส่ค่าเป็น null เช่น prev: null
   },
 };
 
