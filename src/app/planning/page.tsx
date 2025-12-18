@@ -85,13 +85,13 @@ export default function PlanNing() {
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 py-16 font-sans dark:bg-neutral-950">
+    <section className="min-h-screen py-16 font-sans">
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="container mx-auto max-w-4xl px-4 md:px-8"
+        className=" "
       >
         {/* --- Header --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">
@@ -109,11 +109,7 @@ export default function PlanNing() {
 
         {/* --- Content (Accordion) --- */}
         <motion.div variants={itemVar}>
-          <Accordion
-            variant="splitted"
-            itemClasses={itemClasses}
-            className="px-0"
-          >
+          <Accordion itemClasses={itemClasses} className="px-0">
             {planningJobs.map((job) => (
               <AccordionItem
                 key={job.key}
@@ -127,26 +123,7 @@ export default function PlanNing() {
                 title={job.title}
               >
                 <div className="animate-in fade-in zoom-in duration-300">
-                  {/* Render Component */}
                   {job.component}
-
-                  {/* Render Action Buttons (ถ้ามี) */}
-                  {/* {job.actions && (
-                    <div className="mt-6 flex flex-wrap gap-4 border-t border-slate-100 pt-4 dark:border-neutral-800">
-                      {job.actions.map((action, idx) => (
-                        <Link key={idx} href={action.href} target="_blank">
-                          <Button
-                            color="primary"
-                            variant="flat"
-                            startContent={action.icon}
-                            className="font-semibold"
-                          >
-                            {action.label}
-                          </Button>
-                        </Link>
-                      ))}
-                    </div>
-                  )} */}
                 </div>
               </AccordionItem>
             ))}
