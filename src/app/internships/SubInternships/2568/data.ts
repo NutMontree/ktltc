@@ -2,6 +2,46 @@ export const DataInternships = {
   navItems: [
     {
       name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/30/1.webp",
+      date: "19 ธันวาคม 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/30",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/29/6.webp",
+      date: "19 ธันวาคม 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/29",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/28/1.webp",
+      date: "19 ธันวาคม 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/28",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/27/1.webp",
+      date: "19 ธันวาคม 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/27",
+    },
+    {
+      name: `นักศึกษา`,
+      backgroundImage: "/images/internships/2568/26/1.webp",
+      date: "19 ธันวาคม 2568",
+      description: `
+      วิทยาลัยเทคนิคกันทรลักษ์ รายงานการฝึกประสบการณ์วิชาชีพ`,
+      href: "/internships/SubInternships/2568/26",
+    },
+    {
+      name: `นักศึกษา`,
       backgroundImage: "/images/internships/2568/25/12.webp",
       date: "1 ตุลาคม 2568",
       description: `
