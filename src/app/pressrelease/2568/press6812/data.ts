@@ -2,6 +2,24 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/37/1.webp",
+      date: "22 ธันวาคม 2568",
+      description: ` 
+วิทยาลัยเทคนิคกันทรลักษ์  เปิดรับสมัครนักเรียน นักศึกษา ประจำปีการศึกษา 2569 (รอบคัดเลือกโดยสาขาวิชา) เปิดรับสมัครตั้งเเต่ว… See more
+`,
+      href: "/pressrelease/2568/press6812/press37",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/36/1.webp",
+      date: "22 ธันวาคม 2568",
+      description: ` 
+ประกาศวิทยาลัยเทคนิคกันทรลักษ์ เรื่อง การจัดการเรียนการสอนรูปแบบออนไลน์ (Online)… See more
+`,
+      href: "/pressrelease/2568/press6812/press36",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/35/00.webp",
       date: "18 ธันวาคม 2568",
       description: ` 
