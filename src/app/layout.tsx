@@ -17,6 +17,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { fontSans } from "@/config/fonts";
+import Snow from "@/components/snow";
 export default function RootLayout({
   children,
 }: {
@@ -49,6 +50,7 @@ export default function RootLayout({
               <Header />
             </div>
             <div>
+              <Snow />
               {children}
               <Analytics />
               <SpeedInsights />
