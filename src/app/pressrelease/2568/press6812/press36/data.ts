@@ -3,10 +3,10 @@ export const DataPressrelease = {
   Item: [{ title: `ข่าวประชาสัมพันธ์` }, { title: `วิทยาลัยเทคนิคกันทรลักษ์` }],
   Pagination: {
     prev: {
-      href: "/pressrelease/2568/press6812/press34",
+      href: "/pressrelease/2568/press6812/press35",
     },
     next: {
-      href: "/pressrelease/2568/press6812/",
+      href: "/pressrelease/2568/press6812/press37",
     },
     // หมายเหตุ: หากไม่มีเรื่องก่อนหน้าหรือถัดไป ให้ใส่ค่าเป็น null เช่น prev: null
   },

@@ -3,10 +3,10 @@ export const DataPressrelease = {
   Item: [{ title: `ข่าวประชาสัมพันธ์` }, { title: `วิทยาลัยเทคนิคกันทรลักษ์` }],
   Pagination: {
     prev: {
-      href: "/pressrelease/2568/press6812/press34",
+      href: "/pressrelease/2568/press6812/press36",
     },
     next: {
-      href: "/pressrelease/2568/press6812/",
+      href: "/pressrelease/2568/press6812/press38",
     },
     // หมายเหตุ: หากไม่มีเรื่องก่อนหน้าหรือถัดไป ให้ใส่ค่าเป็น null เช่น prev: null
   },
@@ -57,8 +57,7 @@ export const ImageItem = [
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/37/1.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/37/2.webp" },
   { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/37/3.webp" },
-  { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/37/3.webp" },
-  { imgs: "/images/ข่าวประชาสัมพันธ์/2568/ธันวาคม/37/3.webp" },
+  ,
 ];
 
 export const ZeroNameImage = [
