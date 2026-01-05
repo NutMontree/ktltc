@@ -13,11 +13,19 @@ import {
 // 1. Data Configuration: รวมข้อมูลปีการศึกษาไว้ที่นี่ แก้ไขง่าย
 const academicYears = [
   {
+    year: "2569",
+    label: "ปีการศึกษา 2569",
+    href: "/pressrelease/2569",
+    isLatest: true, // ใช้สำหรับใส่ Badge "ล่าสุด"
+    icon: <NotificationOutlined />,
+    desc: "ข่าวสารและกิจกรรมล่าสุดประจำปีปัจจุบัน",
+  },
+  {
     year: "2568",
     label: "ปีการศึกษา 2568",
     href: "/pressrelease/2568",
-    isLatest: true, // ใช้สำหรับใส่ Badge "ล่าสุด"
-    icon: <NotificationOutlined />,
+    isLatest: false,
+    icon: <HistoryOutlined />,
     desc: "ข่าวสารและกิจกรรมล่าสุดประจำปีปัจจุบัน",
   },
   {

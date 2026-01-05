@@ -12,7 +12,7 @@ import {
 import { Image } from "@heroui/react"; // หรือใช้ next/image ก็ได้ถ้าต้องการ performance สูงสุด
 
 // นำเข้าข้อมูล (ตรวจสอบ path ให้ถูกต้องตามโครงสร้างโปรเจกต์ของคุณ)
-import { DataPressrelease } from "../pressrelease/2568/press6812/data";
+import { DataPressrelease } from "../pressrelease/2569/press6901/data";
 
 // --- Animation Variants ---
 const containerVar = {

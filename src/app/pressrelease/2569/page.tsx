@@ -1,0 +1,135 @@
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { CalendarOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import PressReleasePage from "../page";
+
+// 1. สร้างข้อมูลเดือน (Data Configuration) เพื่อให้แก้ไขง่าย
+const pressReleases = [
+  // { month: "ธันวาคม", year: "2568", href: "/pressrelease/2568/press6812" },
+  // { month: "พฤศจิกายน", year: "2568", href: "/pressrelease/2568/press6811" },
+  // {
+  //   month: "ตุลาคม",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6810",
+  // },
+  // {
+  //   month: "กันยายน",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6809",
+  // },
+  // {
+  //   month: "สิงหาคม",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6808",
+  // },
+  // {
+  //   month: "กรกฎาคม",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6807",
+  // },
+  // {
+  //   month: "มิถุนายน",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6806",
+  // },
+  // {
+  //   month: "พฤษภาคม",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6805",
+  // },
+  // {
+  //   month: "เมษายน",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6804",
+  // },
+  // {
+  //   month: "มีนาคม",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6803",
+  // },
+  // {
+  //   month: "กุมภาพันธ์",
+  //   year: "2568",
+  //   href: "https://ktltcv2.vercel.app/pressrelease/2568/press6802",
+  // },
+  {
+    month: "มกราคม",
+    year: "2569",
+    href: "/pressrelease/2569/press6901",
+  },
+];
+
+export default function Pressrelease2569() {
+  // Animation Variants
+  const containerVar = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+  };
+
+  const itemVar = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
+
+  return (
+    <section className="">
+      {/* ส่วน Header เดิม */}
+      <PressReleasePage />
+
+      <div className="container mx-auto mt-12 max-w-5xl px-4 md:px-8">
+        {/* หัวข้อหมวดหมู่ */}
+        <div className="mb-8 flex items-center gap-3">
+          <div className="h-8 w-1 rounded-full bg-blue-600"></div>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+            ข่าวประชาสัมพันธ์ประจำเดือน
+          </h2>
+        </div>
+
+        {/* Grid Layout */}
+        <motion.div
+          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          variants={containerVar}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {pressReleases.map((item, index) => (
+            <motion.div key={index} variants={itemVar}>
+              <Link
+                href={item.href}
+                // ตรวจสอบว่าเป็น Link ภายนอกหรือภายในเพื่อจัดการ Target
+                target={item.href.startsWith("http") ? "_blank" : undefined}
+                className="group relative flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-blue-400 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-blue-600"
+              >
+                <div className="flex items-center gap-4">
+                  {/* Icon Box */}
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition-transform group-hover:scale-110 dark:bg-blue-900/20 dark:text-blue-400">
+                    <CalendarOutlined style={{ fontSize: "1.2rem" }} />
+                  </div>
+
+                  {/* Text Content */}
+                  <div className="flex flex-col">
+                    <span className="text-lg font-semibold text-slate-700 transition-colors group-hover:text-blue-600 dark:text-slate-200 dark:group-hover:text-blue-400">
+                      {item.month}
+                    </span>
+                    <span className="text-sm text-slate-400 dark:text-slate-500">
+                      พ.ศ. {item.year}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Arrow Icon */}
+                <div className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500 dark:text-neutral-700">
+                  <ArrowRightOutlined />
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
