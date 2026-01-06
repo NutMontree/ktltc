@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/12/00.webp",
+      date: "6 มกราคม 2569",
+      description: `    
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ นายอาทร ศรีมะณี รองผู้อำน… See more
+`,
+      href: "/pressrelease/2569/press6901/press12",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/11/00.webp",
       date: "6 มกราคม 2569",
       description: ` 
