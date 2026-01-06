@@ -64,6 +64,25 @@ export default function AnnouncementPage() {
       <div className="pt-20">
         <div className="grid gap-4">
           <div>
+            <Link href="/announcement/announcement2569">
+              <ConfigProvider
+                button={{
+                  className: styles.linearGradientButton,
+                }}
+              >
+                <Space>
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<AntDesignOutlined />}
+                  >
+                    ข่าวประกาศ ปีการศึกษา 2569
+                  </Button>
+                </Space>
+              </ConfigProvider>
+            </Link>
+          </div>
+          <div>
             <Link href="/announcement/announcement2568">
               <ConfigProvider
                 button={{
