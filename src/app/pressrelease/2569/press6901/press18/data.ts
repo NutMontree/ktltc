@@ -20,7 +20,7 @@ export const Description = [
   {
     description: `เนื่องในโอกาส วันครู ครั้งที่ 70 พ.ศ. 2569 "พระผู้ทรงเป็นแม่และครูแห่งแผ่นดิน"`,
   },
-  // { description: `` },
+  { description: `ขอเชิญทุกท่าน "น้อมจิตคารวะ และระลึกถึงพระคุณครู" ` },
   // { description: `` },
   // { description: `` },
   // { description: `` },
