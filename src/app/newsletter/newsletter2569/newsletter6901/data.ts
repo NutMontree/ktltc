@@ -2,6 +2,15 @@ export const Data = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/15/0.webp",
+      date: "9 มกราคม 2569",
+      description: `    
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร ครู นักเรียน แล… See more
+`,
+      href: "/pressrelease/2569/press6901/press15",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/12/0.webp",
       date: "6 มกราคม 2569",
       description: ` 
