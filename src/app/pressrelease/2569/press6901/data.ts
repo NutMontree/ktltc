@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/20/01.webp",
+      date: "9 มกราคม 2569",
+      description: `    
+วิทยาลัยเทคนิคกันทรลักษ์ แจ้งเรื่อง : ระเบียบการถ่ายภาพติดใบระเบียนแสดงผลการเรียน (รบ.1)… See more
+`,
+      href: "/pressrelease/2569/press6901/press20",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/19/01.webp",
       date: "9 มกราคม 2569",
       description: `    
