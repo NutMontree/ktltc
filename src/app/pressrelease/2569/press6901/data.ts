@@ -2,11 +2,38 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/28/00.webp",
+      date: "13 มกราคม 2569",
+      description: `    
+“ความน่ารักและความเอาใจใส่ที่เปี่ยมไปด้วยความห่วงใย พร้อมให้การสนับสนุนนักเรียน นักศึกษาอยู่เสมอ”… See more
+`,
+      href: "/pressrelease/2569/press6901/press28",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/27/00.webp",
+      date: "13 มกราคม 2569",
+      description: `    
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ มอบหมายให้ นายอาทร ศรีมะณี รองผู้อำนว… See more
+`,
+      href: "/pressrelease/2569/press6901/press27",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/26/00.webp",
+      date: "13 มกราคม 2569",
+      description: `    
+นางสาวทักษิณา ชมจันทร์ ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์ พร้อมด้วยคณะผู้บริหาร และครูแผนกวิชาส… See more
+`,
+      href: "/pressrelease/2569/press6901/press26",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/25/01.webp",
       date: "13 มกราคม 2569",
       description: `    
 ภาพบรรยากาศ "ดอกจานเกมส์" 2 ภายใต้ โครงการการแข่งขันกีฬาภายใน วิทยาลัยเทคนิคกันทรลักษ์ ประจำปีการศึกษา 2568 ระหว่างวัน… See more
-     `,
+`,
       href: "/pressrelease/2569/press6901/press25",
     },
     {
@@ -60,7 +87,7 @@ export const DataPressrelease = {
       date: "9 มกราคม 2569",
       description: `    
 วันพฤหัสบดีที่ 8 มกราคม 2569  ได้รับเกียรติจากนางสาวทักษิณา ชมจันทร์  ผู้อำนวยการวิทยาลัยเทคนิคกันทรลกษ์ เป็นประธานใ… See more
-     `,
+`,
       href: "/pressrelease/2569/press6901/press19",
     },
     {
@@ -69,7 +96,7 @@ export const DataPressrelease = {
       date: "9 มกราคม 2569",
       description: `    
 เนื่องในโอกาส วันครู ครั้งที่ 70 พ.ศ. 2569 "พระผู้ทรงเป็นแม่และครูแห่งแผ่นดิน"… See more
-     `,
+`,
       href: "/pressrelease/2569/press6901/press18",
     },
     {
@@ -78,7 +105,7 @@ export const DataPressrelease = {
       date: "9 มกราคม 2569",
       description: `    
 วันที่ 8 มกราคม 2569 ภาพบรรยากาศเตรียทความพร้อมที่จะลุย.... "ดอกจานเกมส์" … See more
-     `,
+`,
       href: "/pressrelease/2569/press6901/press17",
     },
     {
