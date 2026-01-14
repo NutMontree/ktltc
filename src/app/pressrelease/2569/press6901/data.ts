@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/29/01.webp",
+      date: "14 มกราคม 2569",
+      description: `    
+ภาพบรรยากาศ "ดอกจานเกมส์" ชุดที่ 3 วันที่ 13 มกราคม 2569 ภายใต้ โครงการการแข่งขันกีฬาภายใน… See more
+`,
+      href: "/pressrelease/2569/press6901/press29",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/28/00.webp",
       date: "13 มกราคม 2569",
       description: `    
