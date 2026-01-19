@@ -16,7 +16,7 @@ export default function Page() {
         </h1>
       </div>
 
-      <div className="">
+      <div>
         <div className="flex justify-center pt-4">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {DataPressrelease.navItems.map((item, index) => (
