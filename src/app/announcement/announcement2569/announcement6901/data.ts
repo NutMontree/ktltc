@@ -2,6 +2,15 @@ export const DataAnnouncement = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/44/00.webp",
+      date: "20 มกราคม 2569",
+      description: `    
+เปิดรับสมัครลูกจ้างชั่วคราว ตำเเหน่ง นักการ - ภารโรง จำนวน 1 อัตรา เปิดรับสมัครตั้งเเต่ วันที่ 20 - 22 มกราคม 2569… See more
+`,
+      href: "/pressrelease/2569/press6901/press44",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/4/00.webp",
       date: "2 มกราคม 2569",
       description: ` 

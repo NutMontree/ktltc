@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 
 // นำเข้าข้อมูล (ตรวจสอบ path ให้ถูกต้อง)
-import { DataAnnouncement } from "../announcement/announcement2568/announcement6812/data";
+import { DataAnnouncement } from "../announcement/announcement2569/announcement6901/data";
 
 // --- Animation Variants ---
 const containerVar = {

@@ -2,52 +2,37 @@
 
 import NextLink from "next/link";
 import { Data } from "./data";
-import { Image } from "@heroui/image";
-import Newsletter2569 from "../page";
+import Newsletter2568 from "../page";
 
 export default function Newsletter() {
   return (
     <>
-      <Newsletter2569 />
+      <Newsletter2568 />
 
       <div>
         <h1 className="flex justify-center pt-8 text-xl text-[#DAA520]">
-          เดือน มกราคม 2569
+          เดือน มกราคม 2568
         </h1>
       </div>
 
-      <div>
+      <div className="2567">
         <div className="flex justify-center pt-4">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 justify-center justify-items-center gap-2 md:grid-cols-3 lg:grid-cols-3">
             {Data.navItems.map((item, index) => (
               <NextLink key={`${item.href}-${index}`} href={item.href}>
-                <div className="group relative mb-2 h-[170px] cursor-pointer overflow-hidden rounded-xl sm:h-[170px] md:h-[210px] lg:h-[210px] xl:h-[300px]">
+                <div className="relative mb-6 h-[250px] overflow-hidden rounded-xl shadow-lg lg:h-[500px] lg:w-[full]">
                   <div
-                    className="absolute inset-0 scale-95 cursor-pointer rounded-xl bg-cover bg-top object-cover transition duration-500 group-hover:scale-100"
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat duration-500 hover:scale-110"
                     style={{
                       backgroundImage: `url(${item.backgroundImage})`,
                     }}
                   />
                 </div>
                 <div>
-                  <h1 className="text-3.5 text-sky-600 hover:text-sky-400 sm:text-sm md:text-base md:text-[20px]">
+                  <h1 className="lg:text-1xl text-lg text-sky-600">
                     {item.name}
                   </h1>
-                  <div className="text-3 md:text-3.5 mb-2 flex sm:text-sm md:text-base">
-                    <div>{item.description}</div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Image
-                      src="/images/icons8-calendar.gif"
-                      alt="calendar-icon"
-                      width={20}
-                      height={20}
-                      className="object-contain"
-                    />
-                    <div className="text-xs text-slate-500 sm:text-sm md:text-base">
-                      {item.date}
-                    </div>
-                  </div>
+                  <div className="text-sm">{item.description}</div>
                 </div>
               </NextLink>
             ))}
