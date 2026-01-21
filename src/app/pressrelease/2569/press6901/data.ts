@@ -2,6 +2,15 @@ export const DataPressrelease = {
   navItems: [
     {
       name: `วิทยาลัยเทคนิคกันทรลักษ์`,
+      backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/49/03.webp",
+      date: "21 มกราคม 2569",
+      description: `    
+กำหนดการกิจกรรมเดินทางไกล เข้าค่ายพักเเรม เเละประดับเเถบสามสี ลูกเสือวิสามัญวิทยาลัยเทคนิคกันทรลักษ์ ประจำปีการศึกษา 2568… See more
+`,
+      href: "/pressrelease/2569/press6901/press49",
+    },
+    {
+      name: `วิทยาลัยเทคนิคกันทรลักษ์`,
       backgroundImage: "/images/ข่าวประชาสัมพันธ์/2569/มกราคม/48/03.webp",
       date: "20 มกราคม 2569",
       description: `    
