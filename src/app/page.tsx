@@ -27,6 +27,7 @@ import ShowFacebook from "@/components/ShowFacebook";
 import ShowYoutube from "./ShowYoutube/page";
 import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
+import StudentSupportSystem from "./StudentSupportSystem/page";
 
 export const metadata: Metadata = {
   title: "ktltc",
@@ -42,6 +43,9 @@ export default function Home() {
       {/* <Hero /> */}
       <div className="container">
         <Scrollimage />
+      </div>
+      <div className="container">
+        <StudentSupportSystem />
       </div>
       <div className="container">
         <ExternalQualityAssurance />
