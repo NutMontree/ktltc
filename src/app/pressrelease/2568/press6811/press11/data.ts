@@ -16,22 +16,6 @@ export const Description = [
   { description: `        สถานศึกษา วิทยาลัยเทคนิคกันทรลักษ์ ได้รับผลการประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (Integrity and Transparency Assessment Online : ITA) ประจำปีงบประมาณ พ.ศ. 2568` },
   { description: `         โดยมีผลคะแนนรวม 90.77 คะแนน ซึ่งอยู่ในเกณฑ์ผลการประเมินระดับ “ผ่านดี”` },
   { description: `          ถือเป็นความภาคภูมิใจของวิทยาลัยฯ และสะท้อนถึงการบริหารจัดการที่โปร่งใส ตรวจสอบได้ รวมถึงความร่วมมือของทุกภาคส่วนในสถานศึกษา` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
-  // { description: `` },
 ];
 
 // ลิงค์
@@ -40,10 +24,6 @@ export const TageLink = [
     tage: ``,
     href: ``,
   },
-  // {
-  // tage: ``,
-  // href: ``,
-  // },
 ]
 
 // รูปภาพ
