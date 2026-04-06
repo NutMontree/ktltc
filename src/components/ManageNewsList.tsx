@@ -481,6 +481,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                         year: "2-digit",
                         hour: "2-digit",
                         minute: "2-digit",
+                        hour12: false,
                       })}
                     </span>
                   </div>
@@ -590,6 +591,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                         year: "2-digit",
                         hour: "2-digit",
                         minute: "2-digit",
+                        hour12: false,
                       })}
                     </span>
                   </div>

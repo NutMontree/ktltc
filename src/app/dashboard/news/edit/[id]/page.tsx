@@ -10,7 +10,6 @@ import { parseYouTubeVideoInput } from "@/lib/youtube";
 import { uploadToCloudinary } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
-
 // --- DND Kit Imports ---
 import {
   DndContext,
@@ -29,46 +28,27 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { FiFacebook } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiCalendar,
+  FiFacebook,
+  FiImage,
+  FiFileText,
+  FiLink,
+  FiYoutube,
+  FiCheckCircle,
+  FiPlus,
+  FiTrash2,
+} from "react-icons/fi";
 
 // --- Config ---
 const CATEGORIES = [
-  {
-    value: "PR",
-    label: "ข่าวประชาสัมพันธ์",
-    color:
-      "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800",
-  },
-  {
-    value: "Newsletter",
-    label: "จดหมายข่าว",
-    color:
-      "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800",
-  },
-  {
-    value: "Internship",
-    label: "ฝึกงาน/ประสบการณ์",
-    color:
-      "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800",
-  },
-  {
-    value: "Announcement",
-    label: "ข่าวประกาศ",
-    color:
-      "bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800",
-  },
-  {
-    value: "Bidding",
-    label: "ประกวดราคา",
-    color:
-      "bg-pink-50 text-pink-600 border-pink-200 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-800",
-  },
-  {
-    value: "Order",
-    label: "คำสั่งวิทยาลัย",
-    color:
-      "bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800",
-  },
+  { value: "PR", label: "ข่าวประชาสัมพันธ์", color: "bg-blue-500" },
+  { value: "Newsletter", label: "จดหมายข่าว", color: "bg-purple-500" },
+  { value: "Internship", label: "ฝึกงาน/ประสบการณ์", color: "bg-emerald-500" },
+  { value: "Announcement", label: "ข่าวประกาศ", color: "bg-orange-500" },
+  { value: "Bidding", label: "ประกวดราคา", color: "bg-pink-500" },
+  { value: "Order", label: "คำสั่งวิทยาลัย", color: "bg-indigo-500" },
 ];
 
 const fontList = [
@@ -109,9 +89,9 @@ function SortableImage({
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative rounded-xl overflow-hidden shadow-sm border-2 group touch-none bg-slate-100 dark:bg-zinc-800 ${
+      className={`relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 group touch-none bg-slate-100 dark:bg-zinc-800 ${
         isVertical ? "aspect-3/4" : "aspect-video"
-      } ${isNew ? "border-blue-400 dark:border-blue-600" : "border-slate-200 dark:border-zinc-700"}`}
+      } ${isNew ? "border-blue-400 dark:border-blue-600" : ""}`}
     >
       <div
         {...attributes}
@@ -126,14 +106,22 @@ function SortableImage({
           className={isVertical ? "object-contain" : "object-cover"}
         />
         {isNew && (
-          <div className="absolute top-1 left-1 bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">
+          <div className="absolute top-1 left-1 bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase z-10 transition-transform">
             New
           </div>
         )}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+          <span className="opacity-0 group-hover:opacity-100 text-white text-[10px] bg-black/40 px-2 py-1 rounded-md">
+            ลากเพื่อย้าย
+          </span>
+        </div>
       </div>
       <button
         type="button"
-        onClick={onRemove}
+        onClick={(e) => {
+          e.preventDefault();
+          onRemove();
+        }}
         className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md z-10 hover:bg-red-600 transition-colors"
       >
         ✕
@@ -158,13 +146,16 @@ export default function EditNewsPage({
 
   const [content, setContent] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
+  const [publishDate, setPublishDate] = useState("");
+  const [currentUser, setCurrentUser] = useState<any>({
+    name: "กำลังโหลด...",
+    image: null,
+  });
 
-  // --- Images State (รวมทั้งเก่าและใหม่ไว้ใน Array เดียวกันเพื่อให้ลากสลับกันได้) ---
-  // รูปทั่วไป
+  // --- Images State ---
   const [allImages, setAllImages] = useState<
     { id: string; src: string; file?: File; isNew: boolean }[]
   >([]);
-  // จดหมายข่าว
   const [allNewsletters, setAllNewsletters] = useState<
     { id: string; src: string; file?: File; isNew: boolean }[]
   >([]);
@@ -190,14 +181,26 @@ export default function EditNewsPage({
     fetch(`/api/news/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        setContent(data.content);
+        setContent(data.content || "");
         setCategories(
           Array.isArray(data.categories)
             ? data.categories
             : [data.category || "PR"],
         );
+        setCurrentUser({
+          name: data.userName || data.author?.name || "งานศูนย์ข้อมูล วิทยาลัยเทคนิคกันทรลักษ์",
+          image: data.userImage || data.author?.image || null,
+        });
 
-        // แปลงข้อมูลรูปเดิมให้อยู่ในรูปแบบที่จัดการง่าย
+        // Date initialization
+        if (data.createdAt) {
+          const d = new Date(data.createdAt);
+          const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+          setPublishDate(localISO);
+        }
+
         setAllImages(
           (data.images || []).map((url: string) => ({
             id: url,
@@ -249,7 +252,6 @@ export default function EditNewsPage({
       : cleanText;
   };
 
-  // --- Handlers: Drag & Drop ---
   const handleDragEnd = (
     event: DragEndEvent,
     type: "general" | "newsletter",
@@ -272,9 +274,9 @@ export default function EditNewsPage({
     }
   };
 
-  // --- Handlers: File Selection ---
-  const handleNewFilesChange = async (
+  const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
+    type: "general" | "newsletter",
   ) => {
     if (e.target.files) {
       setIsCompressing(true);
@@ -286,92 +288,52 @@ export default function EditNewsPage({
         return { id: previewUrl, src: previewUrl, file, isNew: true };
       });
 
-      setAllImages((prev) => [...prev, ...newItems]);
+      if (type === "general") {
+        setAllImages((prev) => [...prev, ...newItems]);
+      } else {
+        setAllNewsletters((prev) => [...prev, ...newItems]);
+      }
       setIsCompressing(false);
     }
   };
 
-  const handleNewNewsletterChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    if (e.target.files) {
-      setIsCompressing(true);
-      const files = Array.from(e.target.files);
-      const compressed = await Promise.all(files.map((f) => compressImage(f)));
-
-      const newItems = compressed.map((file) => {
-        const previewUrl = URL.createObjectURL(file);
-        return { id: previewUrl, src: previewUrl, file, isNew: true };
-      });
-
-      setAllNewsletters((prev) => [...prev, ...newItems]);
-      setIsCompressing(false);
+  const addVideoEmbed = () => {
+    const result = parseYouTubeVideoInput(currentEmbed);
+    if (!result.ok || !result.iframeHtml) {
+      alert(result.error || "ไม่สามารถแปลงลิงก์ YouTube ได้");
+      return;
     }
-  };
-
-  const addEmbed = () => {
-    if (!currentEmbed.trim() || !currentEmbed.includes("<iframe"))
-      return alert("โค้ด Embed ไม่ถูกต้อง");
-    setVideoEmbeds([...videoEmbeds, currentEmbed]);
+    setVideoEmbeds((prev) => [...prev, result.iframeHtml as string]);
     setCurrentEmbed("");
   };
 
   const addFacebookEmbed = () => {
-    if (
-      !currentFacebookEmbed.trim() ||
-      !currentFacebookEmbed.includes("<iframe")
-    ) {
-      return alert("โค้ด Embed ไม่ถูกต้อง");
-    }
-    setVideoEmbeds([...videoEmbeds, currentFacebookEmbed]);
-    setCurrentFacebookEmbed("");
-  };
-
-  const addYouTubeEmbedFromInput = () => {
-    const result = parseYouTubeVideoInput(currentEmbed);
-
-    if (!result.ok || !result.iframeHtml) {
-      return alert(result.error || "ไม่สามารถแปลงลิงก์ YouTube ได้");
-    }
-
-    setVideoEmbeds([...videoEmbeds, result.iframeHtml]);
-    setCurrentEmbed("");
-  };
-
-  const addFacebookEmbedFromInput = () => {
     const result = parseFacebookVideoInput(currentFacebookEmbed);
-
     if (!result.ok || !result.iframeHtml) {
-      return alert(result.error || "ไม่สามารถแปลงลิงก์ Facebook ได้");
+      alert(result.error || "ไม่สามารถแปลงลิงก์ Facebook ได้");
+      return;
     }
-
-    setVideoEmbeds([...videoEmbeds, result.iframeHtml]);
+    setVideoEmbeds((prev) => [...prev, result.iframeHtml as string]);
     setCurrentFacebookEmbed("");
-
-    if (result.warning) {
-      alert(result.warning);
-    }
   };
 
-  // --- Submit Logic ---
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const autoTitle = generateTitleFromContent(content);
-    if (!autoTitle || submitting || isCompressing) return;
+  const handleUpdate = async () => {
+    if (!content.trim() || submitting || isCompressing) {
+      return alert("กรุณากรอกเนื้อหาข่าวสาร");
+    }
     setSubmitting(true);
 
     try {
-      // 1. จัดการรูปภาพทั่วไป: อัปโหลดเฉพาะรูปใหม่ สลับลำดับตามที่ลากไว้
+      // 1. อัปโหลดรูปใหม่
       const finalImages = await Promise.all(
         allImages.map(async (item) => {
           if (item.isNew && item.file) {
             return await uploadToCloudinary(item.file, "ktltc_news");
           }
-          return item.src; // รูปเดิมส่ง URL กลับไป
+          return item.src;
         }),
       );
 
-      // 2. จัดการจดหมายข่าว
       const finalNewsletters = await Promise.all(
         allNewsletters.map(async (item) => {
           if (item.isNew && item.file) {
@@ -381,28 +343,77 @@ export default function EditNewsPage({
         }),
       );
 
+      // DOM-based safe auto-linking for HTML content
+      const autoLinkHtml = (htmlString: string) => {
+        if (typeof window === "undefined") return htmlString;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, "text/html");
+
+        const processNode = (node: Node) => {
+          if (node.nodeType === Node.TEXT_NODE && node.nodeValue) {
+            let parent = node.parentNode;
+            while (parent && parent.nodeName.toLowerCase() !== "body") {
+              if (parent.nodeName.toLowerCase() === "a") return;
+              parent = parent.parentNode;
+            }
+            
+            const text = node.nodeValue;
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            if (urlRegex.test(text)) {
+              const span = document.createElement("span");
+              span.innerHTML = text.replace(
+                urlRegex,
+                '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700 hover:underline break-all">$1</a>'
+              );
+              const parentDiv = node.parentNode;
+              if (parentDiv) {
+                Array.from(span.childNodes).forEach(child => {
+                  parentDiv.insertBefore(child, node);
+                });
+                parentDiv.removeChild(node);
+              }
+            }
+          } else {
+            Array.from(node.childNodes).forEach(processNode);
+          }
+        };
+
+        Array.from(doc.body.childNodes).forEach(processNode);
+        return doc.body.innerHTML;
+      };
+
+      const formattedContent = autoLinkHtml(content);
+
+      const newsTitle =
+        content
+          .replace(/<[^>]*>/g, "")
+          .replace(/&nbsp;/g, " ")
+          .replace(/\n/g, " ")
+          .substring(0, 100)
+          .trim() + (content.length > 100 ? "..." : "");
+
       const res = await fetch(`/api/news/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: autoTitle,
-          content,
+          title: newsTitle,
+          content: formattedContent,
           categories,
           images: finalImages.filter((url) => url !== null),
           announcementImages: finalNewsletters.filter((url) => url !== null),
           links,
           videoEmbeds,
+          createdAt: publishDate ? new Date(publishDate).toISOString() : undefined,
         }),
       });
 
       if (res.ok) {
-        alert("✅ แก้ไขข้อมูลเรียบร้อย");
+        alert("✅ บันทึกการแก้ไขเรียบร้อย");
         router.push("/dashboard/news");
         router.refresh();
       }
     } catch (error) {
-      console.error(error);
-      alert("เกิดข้อผิดพลาด");
+      alert("เกิดข้อผิดพลาดในการบันทึก");
     } finally {
       setSubmitting(false);
     }
@@ -410,115 +421,230 @@ export default function EditNewsPage({
 
   if (loading)
     return (
-      <div className="max-w-[1600px] mx-auto flex items-center justify-center text-slate-400 font-bold dark:bg-black">
-        กำลังโหลด...
+      <div className="max-w-[1600px] mx-auto min-h-screen flex items-center justify-center text-slate-400 font-bold dark:bg-zinc-950">
+        กำลังโหลดข้อมูล...
       </div>
     );
 
   return (
-    <div className="max-w-[1600px] mx-auto bg-slate-50/50 pb-40 text-slate-800 antialiased dark:bg-black dark:text-slate-200">
+    <div className="max-w-[1600px] mx-auto bg-[#F8FAFC] dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 pb-20 font-['Sarabun']">
       <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap");
-        body {
-          font-family: "Sarabun", sans-serif;
-        }
+        @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap");
         .sun-editor-editable {
           font-family: "Sarabun", sans-serif !important;
+          border-radius: 1.5rem !important;
         }
-        .sun-editor {
-          border-radius: 0.75rem;
-          border: 1px solid #e2e8f0 !important;
-          overflow: hidden;
+        /* Force components (like pasted Facebook/LINE emoji images) to be inline and lack borders */
+        .sun-editor-editable figure.se-component,
+        .sun-editor-editable span.se-component,
+        .sun-editor-editable div.se-component {
+          display: inline-block !important;
+          margin: 0 2px !important;
+          border: none !important;
+          outline: none !important;
+          vertical-align: middle !important;
+          float: none !important;
+          background: transparent !important;
+        }
+        /* Make sure their inner images don't block out */
+        .sun-editor-editable figure.se-component img {
+          display: inline-block !important;
+          vertical-align: middle !important;
+        }
+        /* Force links to be blue inside the editor */
+        .sun-editor-editable a {
+          color: #2563eb !important;
+          text-decoration: underline !important;
+          cursor: pointer !important;
         }
       `}</style>
 
-      {/* --- Top Bar --- */}
-      <div className="border-b border-slate-200 sticky top-0 z-30 px-4 py-4 flex items-center justify-between backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/news"
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-zinc-800 dark:text-slate-400"
-          >
-            ←
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold dark:text-white">แก้ไขข่าวสาร</h1>
-            <p className="text-[10px] text-slate-400">
-              ลากเพื่อจัดลำดับรูปภาพเดิมและรูปภาพใหม่ร่วมกันได้
-            </p>
+      {/* Header */}
+      <div className="sticky top-0 z-100 w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-2 py-2">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard/news"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 dark:bg-zinc-800"
+            >
+              <FiArrowLeft />
+            </Link>
+            <div>
+              <h1 className="mb-1 text-xl font-bold leading-none dark:text-white">
+                ย้อนกลับ
+              </h1>
+              <p className="text-[10px] uppercase tracking-tighter text-slate-500">
+                ผู้เขียน:{" "}
+                <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                  {currentUser.name}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleUpdate}
+              disabled={submitting || isCompressing}
+              className={`hidden items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold transition-all sm:flex ${
+                submitting || isCompressing
+                  ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                  : "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 active:scale-95"
+              }`}
+            >
+              {submitting ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              ) : (
+                <>
+                  <FiCheckCircle /> บันทึกการแก้ไข
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleUpdate}
+              disabled={submitting || isCompressing}
+              className={`flex h-10 items-center justify-center gap-2 rounded-full px-4 text-white shadow-lg transition-all sm:hidden ${
+                submitting || isCompressing
+                  ? "bg-slate-200 text-slate-400"
+                  : "bg-indigo-600 active:scale-95"
+              }`}
+            >
+              {submitting ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              ) : (
+                <>
+                  <FiCheckCircle size={18} />
+                  <span className="text-xs font-bold">บันทึก</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
-        {isCompressing && (
-          <span className="text-blue-600 text-xs font-black animate-pulse bg-blue-50 px-3 py-1 rounded-full border border-blue-100 dark:bg-blue-900/30">
-            ⏳ กำลังย่อขนาดรูป...
-          </span>
-        )}
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-4 py-10 space-y-8">
-        {/* --- Card 1: Content --- */}
-        <section className="rounded-3xl space-y-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-2xl text-amber-600 flex items-center justify-center text-xl dark:bg-amber-900/30 dark:text-amber-400">
-              📝
-            </div>
-            <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">
-              รายละเอียดข่าว
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {CATEGORIES.map((cat) => (
-              <div
-                key={cat.value}
-                onClick={() =>
-                  setCategories((prev) =>
-                    prev.includes(cat.value)
-                      ? prev.filter((c) => c !== cat.value)
-                      : [...prev, cat.value],
-                  )
-                }
-                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all text-center font-bold text-sm ${categories.includes(cat.value) ? cat.color : "border-slate-100 text-slate-400 dark:border-zinc-700"}`}
-              >
-                {cat.label}
+      <main className="max-w-[1600px] mx-auto px-2 py-10 space-y-12">
+        {/* Date & Categories */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <div className="space-y-3">
+            <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
+              <FiCalendar className="text-indigo-500" /> วันที่และเวลาลงข่าว (24 ชม.)
+            </label>
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              <input
+                type="date"
+                value={publishDate ? publishDate.split("T")[0] : ""}
+                onChange={(e) => setPublishDate(`${e.target.value}T${publishDate.split("T")[1] || "00:00"}`)}
+                className="w-full sm:flex-1 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 font-bold text-sm outline-none"
+              />
+              <div className="w-full sm:w-auto flex items-center justify-center bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500 px-2">
+                <select
+                  value={publishDate ? (publishDate.split("T")[1]?.split(":")[0] || "00") : "00"}
+                  onChange={(e) => setPublishDate(`${publishDate.split("T")[0]}T${e.target.value}:${publishDate.split("T")[1]?.split(":")[1] || "00"}`)}
+                  className="bg-transparent p-4 font-bold text-lg outline-none cursor-pointer text-center hover:text-indigo-600 transition-colors scrollbar-hide"
+                >
+                  {Array.from({ length: 24 }).map((_, i) => (
+                    <option key={i} value={String(i).padStart(2, "0")} className="text-slate-800 dark:text-white">
+                      {String(i).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <span className="font-black text-slate-400 text-lg">:</span>
+                <select
+                  value={publishDate ? (publishDate.split("T")[1]?.split(":")[1] || "00") : "00"}
+                  onChange={(e) => setPublishDate(`${publishDate.split("T")[0]}T${publishDate.split("T")[1]?.split(":")[0] || "00"}:${e.target.value}`)}
+                  className="bg-transparent p-4 font-bold text-lg outline-none cursor-pointer text-center hover:text-indigo-600 transition-colors scrollbar-hide"
+                >
+                  {Array.from({ length: 60 }).map((_, i) => (
+                    <option key={i} value={String(i).padStart(2, "0")} className="text-slate-800 dark:text-white">
+                      {String(i).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <span className="font-bold text-slate-400 pr-4 text-xs">น.</span>
               </div>
-            ))}
+            </div>
           </div>
-          <div className="rounded-2xl border border-slate-200 overflow-hidden shadow-sm dark:border-zinc-700">
-            {SunEditorComponent && (
+          <div className="space-y-3">
+            <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">
+              เลือกหมวดหมู่
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  type="button"
+                  onClick={() =>
+                    setCategories((prev) =>
+                      prev.includes(cat.value)
+                        ? prev.length > 1
+                          ? prev.filter((c) => c !== cat.value)
+                          : prev
+                        : [...prev, cat.value],
+                    )
+                  }
+                  className={`px-4 py-2 rounded-xl text-[10px] font-extrabold border transition-all ${categories.includes(cat.value) ? `${cat.color} text-white border-transparent` : "text-slate-400 border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"}`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Content Editor */}
+        <section className="space-y-4">
+          <label className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 italic text-indigo-600">
+            <FiFileText /> เนื้อหาข่าวสาร
+          </label>
+          <div className="overflow-hidden rounded-4xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+            {SunEditorComponent ? (
               <SunEditorComponent
                 setContents={content}
                 onChange={setContent}
-                height="400px"
+                height="450px"
                 setOptions={{
                   font: fontList,
                   buttonList: [
                     ["undo", "redo"],
                     ["font", "fontSize", "formatBlock"],
-                    ["bold", "underline", "italic", "strike"],
-                    ["fontColor", "hiliteColor"],
-                    ["table", "link", "image", "video"],
+                    [
+                      "bold",
+                      "underline",
+                      "italic",
+                      "strike",
+                      "fontColor",
+                      "hiliteColor",
+                    ],
+                    ["align", "list", "table", "link", "image", "video"],
                     ["fullScreen", "codeView"],
                   ],
                 }}
               />
+            ) : (
+              <div className="h-[450px] flex items-center justify-center text-slate-400 italic">
+                กำลังโหลด...
+              </div>
             )}
           </div>
         </section>
 
-        {/* --- Card 2: General Images (DND) --- */}
-        <section className="rounded-3xl space-y-6">
-          <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
-            🖼️ รูปภาพทั่วไป (แนวนอน) -{" "}
-            <span className="text-sm font-normal text-slate-400">
-              ลากสลับลำดับได้
+        {/* Image Album */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-extrabold flex items-center gap-2">
+              <FiImage className="text-indigo-500" /> อัลบั้มรูปภาพ
+            </h2>
+            <span className="text-[10px] font-bold text-slate-400">
+              {allImages.length} รูปภาพ
             </span>
-          </h2>
+          </div>
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={(e) => handleDragEnd(e, "general")}
           >
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <SortableContext
                 items={allImages.map((i) => i.id)}
                 strategy={rectSortingStrategy}
@@ -535,34 +661,37 @@ export default function EditNewsPage({
                   />
                 ))}
               </SortableContext>
-              <label className="aspect-video border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 dark:border-zinc-600 dark:hover:bg-blue-900/20">
+              <label className="aspect-video border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50/30 transition-all bg-white dark:bg-zinc-900 group">
                 <input
                   type="file"
                   multiple
                   accept="image/*,.gif"
                   className="hidden"
-                  onChange={handleNewFilesChange}
+                  onChange={(e) => handleFileChange(e, "general")}
                 />
-                <span className="text-xl text-slate-400">+</span>
-                <span className="text-[10px] font-black text-slate-400">
-                  ADD MORE
+                <FiPlus
+                  size={24}
+                  className="text-slate-300 group-hover:text-indigo-500"
+                />
+                <span className="text-[10px] font-bold text-slate-400 mt-2">
+                  เพิ่มรูปภาพ
                 </span>
               </label>
             </div>
           </DndContext>
         </section>
 
-        {/* --- Card 3: Newsletters (DND) --- */}
-        <section className="rounded-3xl space-y-6">
-          <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
-            📜 จดหมายข่าว (แนวตั้ง)
+        {/* Newsletter Album */}
+        <section className="space-y-6">
+          <h2 className="font-extrabold flex items-center gap-2 text-lg">
+            <FiFileText className="text-purple-500" /> จดหมายข่าว (A4)
           </h2>
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={(e) => handleDragEnd(e, "newsletter")}
           >
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <SortableContext
                 items={allNewsletters.map((i) => i.id)}
                 strategy={rectSortingStrategy}
@@ -582,165 +711,184 @@ export default function EditNewsPage({
                   />
                 ))}
               </SortableContext>
-              <label className="aspect-3/4 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 dark:border-zinc-600 dark:hover:bg-purple-900/20">
+              <label className="aspect-3/4 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-all bg-white dark:bg-zinc-900 group">
                 <input
                   type="file"
                   multiple
                   accept="image/*,.gif"
                   className="hidden"
-                  onChange={handleNewNewsletterChange}
+                  onChange={(e) => handleFileChange(e, "newsletter")}
                 />
-                <span className="text-xl text-slate-400">+</span>
-                <span className="text-[10px] font-black text-slate-400">
-                  ADD MORE
+                <FiPlus className="text-slate-300 group-hover:text-purple-500" />
+                <span className="text-[10px] font-bold text-slate-400 mt-2">
+                  เพิ่มแผ่นจดหมาย
                 </span>
               </label>
             </div>
           </DndContext>
         </section>
 
-        {/* --- Card 4: Links --- */}
-        <section className="rounded-3xl space-y-4">
-          <h2 className="font-bold text-slate-700 dark:text-slate-200">
-            🔗 ลิงก์ภายนอก / เอกสารแนบ
-          </h2>
-          <div className="flex flex-col md:flex-row gap-3">
+        {/* Links Section */}
+        <section className="space-y-4">
+          <h3 className="text-lg font-black flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FiLink className="text-blue-500" /> ลิงก์ที่เกี่ยวข้อง
+            </div>
+          </h3>
+          {links.length > 0 && (
+            <div className="flex flex-wrap gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
+              {links.map((l, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 bg-white dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-700 shadow-sm"
+                >
+                  <span className="text-xs font-bold text-blue-600">
+                    {l.label}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setLinks(links.filter((_, idx) => idx !== i))
+                    }
+                    className="text-red-500 hover:scale-110 transition-transform"
+                  >
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input
               placeholder="ชื่อปุ่ม"
               value={currentLink.label}
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, label: e.target.value })
               }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700"
+              className="w-full bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs outline-none"
             />
             <input
-              placeholder="URL"
+              placeholder="URL ลิงก์"
               value={currentLink.url}
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, url: e.target.value })
               }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700"
+              className="w-full bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs outline-none text-blue-500"
             />
-            <button
-              type="button"
-              onClick={() => {
-                if (currentLink.label && currentLink.url) {
-                  setLinks([...links, currentLink]);
-                  setCurrentLink({ label: "", url: "" });
-                }
-              }}
-              className="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold dark:bg-zinc-700"
-            >
-              + เพิ่มลิงก์
-            </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {links.map((l, i) => (
-              <div
-                key={i}
-                className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700"
-              >
-                <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-bold dark:text-slate-200">
-                    {l.label}
-                  </span>
-                  <span className="text-[10px] text-slate-400 truncate">
-                    {l.url}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setLinks(links.filter((_, idx) => idx !== i))}
-                  className="text-red-400 font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* --- Card 5: Videos --- */}
-        <section className="rounded-3xl space-y-4">
-          <h2 className="font-bold text-slate-700 dark:text-slate-200">
-            🎥 วิดีโอ (Embed Code)
-          </h2>
-          <textarea
-            rows={3}
-            placeholder="วางโค้ด Embed ที่นี่..."
-            value={currentEmbed}
-            onChange={(e) => setCurrentEmbed(e.target.value)}
-            className="w-full bg-slate-50 p-4 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
-          />
           <button
             type="button"
-            onClick={addYouTubeEmbedFromInput}
-            className="self-end bg-red-600 text-white px-8 py-3 rounded-2xl font-bold"
+            onClick={() => {
+              if (currentLink.label && currentLink.url) {
+                setLinks([...links, currentLink]);
+                setCurrentLink({ label: "", url: "" });
+              }
+            }}
+            className="w-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 py-4 rounded-2xl text-[11px] font-black hover:bg-blue-100 transition-all"
           >
-            เพิ่มวิดีโอ
+            เพิ่มลิงก์
           </button>
-          <div className="space-y-3">
-            <label className="text-sm font-bold text-blue-600 flex items-center gap-2">
-              <FiFacebook /> Facebook Embed
-            </label>
-            <textarea
-              rows={3}
-              placeholder="วางโค้ด Facebook iframe ที่นี่..."
-              value={currentFacebookEmbed}
-              onChange={(e) => setCurrentFacebookEmbed(e.target.value)}
-              className="w-full bg-slate-50 p-4 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
-            />
-            <button
-              type="button"
-              onClick={addFacebookEmbedFromInput}
-              className="w-full bg-blue-600 text-white px-8 py-3 rounded-2xl font-bold"
-            >
-              เพิ่มวิดีโอ Facebook
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            {videoEmbeds.map((code, i) => (
-              <div
-                key={i}
-                className="relative group border border-slate-200 rounded-xl p-2 bg-white dark:bg-zinc-800 dark:border-zinc-700"
-              >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setVideoEmbeds(videoEmbeds.filter((_, idx) => idx !== i))
-                  }
-                  className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md z-20 hover:scale-110"
-                >
-                  ✕
-                </button>
+        </section>
+
+        {/* Video Section */}
+        <section className="space-y-4">
+          <h3 className="text-lg font-black flex items-center gap-2">
+            <FiYoutube className="text-red-500" /> วิดีโอ YouTube / Facebook
+          </h3>
+          {videoEmbeds.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
+              {videoEmbeds.map((v, i) => (
                 <div
-                  className="aspect-video w-full overflow-hidden rounded-lg bg-black/5 [&>iframe]:w-full [&>iframe]:h-full"
-                  dangerouslySetInnerHTML={{ __html: normalizeEmbedHtml(code) }}
-                />
-              </div>
-            ))}
+                  key={i}
+                  className="relative aspect-video bg-black rounded-lg overflow-hidden group"
+                >
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() =>
+                        setVideoEmbeds(
+                          videoEmbeds.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      className="bg-red-600 text-white p-2 rounded-full"
+                    >
+                      <FiTrash2 size={16} />
+                    </button>
+                  </div>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: normalizeEmbedHtml(v),
+                    }}
+                    className="w-full h-full pointer-events-none"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <label className="text-[11px] font-black uppercase tracking-widest text-red-500 flex items-center gap-2">
+                <FiYoutube /> YouTube Embed
+              </label>
+              <textarea
+                placeholder="วาง <iframe> code จาก YouTube"
+                value={currentEmbed}
+                onChange={(e) => setCurrentEmbed(e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 p-4 rounded-2xl text-xs border border-slate-200 dark:border-zinc-800 h-28 outline-none"
+              />
+              <button
+                type="button"
+                onClick={addVideoEmbed}
+                className="w-full bg-red-50 text-red-600 dark:bg-red-900/20 py-4 rounded-2xl text-[11px] font-black hover:bg-red-100 transition-all"
+              >
+                เพิ่มวิดีโอ YouTube
+              </button>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[11px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-2">
+                <FiFacebook /> Facebook Embed
+              </label>
+              <textarea
+                placeholder="วาง <iframe> code จาก Facebook Video"
+                value={currentFacebookEmbed}
+                onChange={(e) => setCurrentFacebookEmbed(e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 p-4 rounded-2xl text-xs border border-slate-200 dark:border-zinc-800 h-28 outline-none"
+              />
+              <button
+                type="button"
+                onClick={addFacebookEmbed}
+                className="w-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 py-4 rounded-2xl text-[11px] font-black hover:bg-blue-100 transition-all"
+              >
+                เพิ่มวิดีโอ Facebook
+              </button>
+            </div>
           </div>
         </section>
-      </div>
 
-      {/* --- Action Bar --- */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-center z-40 dark:bg-zinc-900/90 dark:border-zinc-800">
-        <div className="max-w-5xl w-full flex gap-4">
-          <Link
-            href="/dashboard/news"
-            className="px-10 py-4 rounded-full border-2 font-bold text-slate-400 dark:border-zinc-700"
-          >
-            ยกเลิก
-          </Link>
+        {/* Submit Button */}
+        <section className="pt-10 border-t border-slate-200 dark:border-zinc-800">
           <button
             onClick={handleUpdate}
             disabled={submitting || isCompressing}
-            className={`flex-1 py-4 rounded-full font-bold text-white transition-all ${submitting || isCompressing ? "bg-slate-300" : "bg-linear-to-r from-amber-500 to-orange-600 shadow-xl"}`}
+            className={`w-full py-6 rounded-[2.5rem] font-black text-xl transition-all flex items-center justify-center gap-4 ${submitting || isCompressing ? "bg-slate-200 text-slate-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl active:scale-[0.98]"}`}
           >
-            {submitting ? "⏳ กำลังบันทึก..." : "💾 บันทึกการแก้ไขข่าวสาร"}
+            {submitting ? (
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                <FiCheckCircle size={28} /> ยืนยันการแก้ไขข่าวสาร
+              </>
+            )}
           </button>
+        </section>
+      </main>
+
+      {/* Floating Status */}
+      {isCompressing && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-60 bg-indigo-600 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce">
+          <span className="text-sm font-black italic">
+            กำลังเตรียมรูปภาพ...
+          </span>
         </div>
-      </div>
+      )}
     </div>
   );
 }

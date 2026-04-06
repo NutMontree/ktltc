@@ -31,6 +31,7 @@ export async function POST(request: Request) {
       videoEmbeds,
       userName,
       userImage,
+      createdAt,
     } = data;
 
     // Validation เบื้องต้น
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
       authorId: (session.user as any).id || null,
       authorEmail: session.user.email || null,
 
-      createdAt: new Date(),
+      createdAt: createdAt ? new Date(createdAt) : new Date(),
       updatedAt: new Date(),
       status: "published",
       views: 0,

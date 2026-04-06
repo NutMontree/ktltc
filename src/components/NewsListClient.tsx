@@ -249,6 +249,7 @@ export default function NewsListClient({
                         year: "2-digit",
                         hour: "2-digit",
                         minute: "2-digit",
+                        hour12: false,
                       })}
                     </span>
                   </div>

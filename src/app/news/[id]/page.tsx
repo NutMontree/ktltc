@@ -319,6 +319,7 @@ export default async function NewsDetailPage({
                       timeZone: "Asia/Bangkok",
                       hour: "2-digit",
                       minute: "2-digit",
+                      hour12: false,
                     })}
                   </time>
                 </div>
@@ -356,10 +357,11 @@ export default async function NewsDetailPage({
             className="prose prose-lg prose-slate dark:prose-invert max-w-none 
             prose-headings:font-bold prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300
             prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-10
-            prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
-            prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-zinc-900 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic"
-            dangerouslySetInnerHTML={{ __html: news.content || "" }}
-          />
+            prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-zinc-900 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+            [&_a]:text-blue-600! [&_a]:underline! [&_a]:break-all! hover:[&_a]:text-blue-800!"
+          >
+            <div dangerouslySetInnerHTML={{ __html: news.content || "" }} />
+          </article>
 
           <div className="py-4">
             <FootTitle />

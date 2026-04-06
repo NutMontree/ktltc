@@ -9,7 +9,6 @@ import { parseYouTubeVideoInput } from "@/lib/youtube";
 import { uploadToCloudinary } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
-
 // --- DND Kit Imports ---
 import {
   DndContext,
@@ -138,9 +137,11 @@ export default function AddNewsPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<string[]>(["PR"]);
   const [content, setContent] = useState("");
-  const [publishDate, setPublishDate] = useState(
-    new Date().toISOString().split("T")[0],
-  );
+  const [publishDate, setPublishDate] = useState(() => {
+    const now = new Date();
+    const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return localNow.toISOString().slice(0, 16);
+  });
   const [currentUser, setCurrentUser] = useState<any>({
     name: "งานศูนย์ข้อมูล...",
     image: null,
@@ -291,8 +292,7 @@ export default function AddNewsPage() {
   };
 
   const handleSubmit = async () => {
-    if (!content || content === "<p><br></p>")
-      return alert("กรุณาใส่เนื้อหาข่าวด้วยครับ");
+    if (!content.trim()) return alert("กรุณาใส่เนื้อหาข่าวด้วยครับ");
     setIsLoading(true);
     try {
       const generalUploads = await Promise.all(
@@ -302,17 +302,62 @@ export default function AddNewsPage() {
         newsletterFiles.map((f) => uploadToCloudinary(f, "ktltc_newsletters")),
       );
 
+      // DOM-based safe auto-linking for HTML content
+      const autoLinkHtml = (htmlString: string) => {
+        if (typeof window === "undefined") return htmlString;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, "text/html");
+
+        const processNode = (node: Node) => {
+          // If node is a text node and not inside an <a> tag
+          if (node.nodeType === Node.TEXT_NODE && node.nodeValue) {
+            let parent = node.parentNode;
+            while (parent && parent.nodeName.toLowerCase() !== "body") {
+              if (parent.nodeName.toLowerCase() === "a") return;
+              parent = parent.parentNode;
+            }
+
+            const text = node.nodeValue;
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            if (urlRegex.test(text)) {
+              const span = document.createElement("span");
+              span.innerHTML = text.replace(
+                urlRegex,
+                '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700 hover:underline break-all">$1</a>',
+              );
+              // Replace the original text node with the processed span's contents
+              const parentDiv = node.parentNode;
+              if (parentDiv) {
+                Array.from(span.childNodes).forEach((child) => {
+                  parentDiv.insertBefore(child, node);
+                });
+                parentDiv.removeChild(node);
+              }
+            }
+          } else {
+            // Need to convert to array because childNodes is live and might be mutated
+            Array.from(node.childNodes).forEach(processNode);
+          }
+        };
+
+        Array.from(doc.body.childNodes).forEach(processNode);
+        return doc.body.innerHTML;
+      };
+
+      const formattedContent = autoLinkHtml(content);
+
       const newsTitle =
         content
           .replace(/<[^>]*>/g, "")
           .replace(/&nbsp;/g, " ")
+          .replace(/\n/g, " ")
           .substring(0, 100)
-          .trim() + "...";
+          .trim() + (content.length > 100 ? "..." : "");
 
       const payload = {
         title: newsTitle,
         categories,
-        content,
+        content: formattedContent,
         images: generalUploads.filter((u) => u !== null),
         announcementImages: newsletterUploads.filter((u) => u !== null),
         links,
@@ -330,14 +375,13 @@ export default function AddNewsPage() {
 
       if (res.ok) {
         const result = await res.json();
-        // ✅ แก้ไข: เช็คหลายรูปแบบเพื่อให้แน่ใจว่า ID ไม่เป็น undefined
         const newsId = result.insertedId || result.id || result._id;
 
         await recordActivity({
           userName: currentUser.name,
           action: "CREATE_POST",
           details: `เพิ่มข่าวประชาสัมพันธ์หัวข้อ: "${newsTitle}"`,
-          link: newsId ? `/news/${newsId}` : undefined, // ถ้าไม่มี ID จะไม่ใส่ path เพื่อกัน Error undefined
+          link: newsId ? `/news/${newsId}` : undefined,
         });
 
         router.push("/dashboard/news");
@@ -357,6 +401,29 @@ export default function AddNewsPage() {
         .sun-editor-editable {
           font-family: "Sarabun", sans-serif !important;
           border-radius: 1.5rem !important;
+        }
+        /* Force components (like pasted Facebook/LINE emoji images) to be inline and lack borders */
+        .sun-editor-editable figure.se-component,
+        .sun-editor-editable span.se-component,
+        .sun-editor-editable div.se-component {
+          display: inline-block !important;
+          margin: 0 2px !important;
+          border: none !important;
+          outline: none !important;
+          vertical-align: middle !important;
+          float: none !important;
+          background: transparent !important;
+        }
+        /* Make sure their inner images don't block out */
+        .sun-editor-editable figure.se-component img {
+          display: inline-block !important;
+          vertical-align: middle !important;
+        }
+        /* Force links to be blue inside the editor */
+        .sun-editor-editable a {
+          color: #2563eb !important;
+          text-decoration: underline !important;
+          cursor: pointer !important;
         }
       `}</style>
 
@@ -386,7 +453,6 @@ export default function AddNewsPage() {
 
           {/* ฝั่งขวา: ปุ่มยืนยัน (เผยแพร่ข่าว) */}
           <div className="flex items-center gap-3">
-            {/* Desktop Version */}
             <button
               onClick={handleSubmit}
               disabled={isLoading || isCompressing}
@@ -405,7 +471,6 @@ export default function AddNewsPage() {
               )}
             </button>
 
-            {/* Mobile Version - ปรับให้ความกว้างยืดหยุ่น (px-4) แทนการ Fix width */}
             <button
               onClick={handleSubmit}
               disabled={isLoading || isCompressing}
@@ -430,17 +495,76 @@ export default function AddNewsPage() {
 
       <main className="max-w-[1600px] mx-auto px-2 py-10 space-y-12">
         {/* Date & Categories */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="space-y-3">
             <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
-              <FiCalendar className="text-indigo-500" /> วันที่ลงข่าว
+              <FiCalendar className="text-indigo-500" /> วันที่และเวลาลงข่าว (24
+              ชม.)
             </label>
-            <input
-              type="date"
-              value={publishDate}
-              onChange={(e) => setPublishDate(e.target.value)}
-              className="w-full bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 font-bold text-sm outline-none"
-            />
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              <input
+                type="date"
+                value={publishDate ? publishDate.split("T")[0] : ""}
+                onChange={(e) =>
+                  setPublishDate(
+                    `${e.target.value}T${publishDate.split("T")[1] || "00:00"}`,
+                  )
+                }
+                className="w-full sm:flex-1 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 font-bold text-sm outline-none"
+              />
+              <div className="w-full sm:w-auto flex items-center justify-center bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500 px-2">
+                <select
+                  value={
+                    publishDate
+                      ? publishDate.split("T")[1]?.split(":")[0] || "00"
+                      : "00"
+                  }
+                  onChange={(e) =>
+                    setPublishDate(
+                      `${publishDate.split("T")[0]}T${e.target.value}:${publishDate.split("T")[1]?.split(":")[1] || "00"}`,
+                    )
+                  }
+                  className="bg-transparent p-4 font-bold text-lg outline-none cursor-pointer text-center hover:text-indigo-600 transition-colors scrollbar-hide"
+                >
+                  {Array.from({ length: 24 }).map((_, i) => (
+                    <option
+                      key={i}
+                      value={String(i).padStart(2, "0")}
+                      className="text-slate-800 dark:text-white"
+                    >
+                      {String(i).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <span className="font-black text-slate-400 text-lg">:</span>
+                <select
+                  value={
+                    publishDate
+                      ? publishDate.split("T")[1]?.split(":")[1] || "00"
+                      : "00"
+                  }
+                  onChange={(e) =>
+                    setPublishDate(
+                      `${publishDate.split("T")[0]}T${publishDate.split("T")[1]?.split(":")[0] || "00"}:${e.target.value}`,
+                    )
+                  }
+                  className="bg-transparent p-4 font-bold text-lg outline-none cursor-pointer text-center hover:text-indigo-600 transition-colors scrollbar-hide"
+                >
+                  {Array.from({ length: 60 }).map((_, i) => (
+                    <option
+                      key={i}
+                      value={String(i).padStart(2, "0")}
+                      className="text-slate-800 dark:text-white"
+                    >
+                      {String(i).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <span className="font-bold text-slate-400 pr-4 text-xs">
+                  น.
+                </span>
+              </div>
+            </div>
           </div>
           <div className="space-y-3">
             <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">
@@ -474,7 +598,7 @@ export default function AddNewsPage() {
           <label className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 italic text-indigo-600">
             <FiFileText /> เนื้อหาข่าวสาร
           </label>
-          <div className="overflow-hidden rounded-4xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
             {SunEditorComponent ? (
               <SunEditorComponent
                 setContents={content}

@@ -113,6 +113,7 @@ export async function PUT(
       announcementImages,
       links,
       videoEmbeds,
+      createdAt,
     } = body;
 
     await db.collection("news").updateOne(
@@ -127,6 +128,7 @@ export async function PUT(
           announcementImages: announcementImages || [],
           links: links || [],
           videoEmbeds: videoEmbeds || [],
+          ...(createdAt && { createdAt: new Date(createdAt) }),
           updatedAt: new Date(),
         },
       },
