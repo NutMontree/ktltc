@@ -50,8 +50,8 @@ export async function POST(req: Request) {
       phone,
       lineId: lineId || "",
       department: department || "ไม่มีสังกัด",
-      role: "user", // ปรับเป็น 'user' เพื่อให้เข้าถึง Profile และ WFH ได้ทันที
-      isActive: true, // ตั้งเป็น true เพื่อให้เข้าใช้งานได้เลยโดยไม่ต้องรออนุมัติ
+      role: "user", // ปรับเป็น 'user'
+      isActive: false, // ตั้งเป็น false เพื่อให้รอ super_admin อนุมัติการใช้งานก่อน
       createdAt: new Date(),
       updatedAt: new Date(),
     };
