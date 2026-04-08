@@ -11,12 +11,14 @@ interface RoleSetting {
   role: string;
   roleName: string;
   checkInLimit?: string; // HH:mm
-  checkOutTime?: string; // HH:mm
+  checkOutStart?: string; // HH:mm
+  checkOutEnd?: string; // HH:mm
+  checkOutTime?: string; // Deprecated fallback
   // Global Fields
   checkInStart?: string;
   lateThreshold?: string;
-  checkOutStart?: string;
-  checkOutEnd?: string;
+  globalCheckOutStart?: string;
+  globalCheckOutEnd?: string;
   systemLockStart?: string;
   systemLockEnd?: string;
   closedDays?: number[];
@@ -375,9 +377,20 @@ export default function AttendanceSettingsPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 w-full sm:w-auto">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full sm:w-auto">
                 <TimeInput
-                  label="เวลาเข้างาน"
+                  label="เริ่มให้ลงเวลาเข้า"
+                  value={item.checkInStart || "05:00"}
+                  onChange={(val) => {
+                    setSettings(
+                      settings.map((s) =>
+                        s.role === item.role ? { ...s, checkInStart: val } : s,
+                      ),
+                    );
+                  }}
+                />
+                <TimeInput
+                  label="เข้างาน (ตัดสาย)"
                   value={item.checkInLimit || "08:00"}
                   onChange={(val) => {
                     setSettings(
@@ -388,12 +401,23 @@ export default function AttendanceSettingsPage() {
                   }}
                 />
                 <TimeInput
-                  label="เวลาออกงาน"
-                  value={item.checkOutTime || "16:30"}
+                  label="เริ่มให้ลงเวลาออก"
+                  value={item.checkOutStart || item.checkOutTime || "16:30"}
                   onChange={(val) => {
                     setSettings(
                       settings.map((s) =>
-                        s.role === item.role ? { ...s, checkOutTime: val } : s,
+                        s.role === item.role ? { ...s, checkOutStart: val } : s,
+                      ),
+                    );
+                  }}
+                />
+                <TimeInput
+                  label="สิ้นสุดการลงออกงาน"
+                  value={item.checkOutEnd || "18:00"}
+                  onChange={(val) => {
+                    setSettings(
+                      settings.map((s) =>
+                        s.role === item.role ? { ...s, checkOutEnd: val } : s,
                       ),
                     );
                   }}

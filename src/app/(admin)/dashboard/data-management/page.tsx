@@ -337,6 +337,43 @@ export default function DataManagementPage() {
     }
   };
 
+  const TimeSelect = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
+    const [h, m] = value ? value.split(":") : ["", ""];
+    return (
+      <div className="flex w-full items-center bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus-within:border-rose-500">
+        <select
+          className="bg-transparent px-4 py-3 text-sm font-bold outline-none cursor-pointer text-slate-700 dark:text-zinc-200"
+          value={h || ""}
+          onChange={(e) => {
+             const newH = e.target.value;
+             if (!newH && !m) onChange("");
+             else onChange(`${newH || "00"}:${m || "00"}`);
+          }}
+        >
+          <option value="">--</option>
+          {Array.from({ length: 24 }).map((_, i) => (
+            <option key={`h-${i}`} value={i.toString().padStart(2, "0")}>{i.toString().padStart(2, "0")}</option>
+          ))}
+        </select>
+        <span className="font-bold text-slate-400">:</span>
+        <select
+          className="bg-transparent px-4 py-3 text-sm font-bold outline-none cursor-pointer text-slate-700 dark:text-zinc-200"
+          value={m || ""}
+          onChange={(e) => {
+             const newM = e.target.value;
+             if (!h && !newM) onChange("");
+             else onChange(`${h || "00"}:${newM || "00"}`);
+          }}
+        >
+          <option value="">--</option>
+          {Array.from({ length: 60 }).map((_, i) => (
+            <option key={`m-${i}`} value={i.toString().padStart(2, "0")}>{i.toString().padStart(2, "0")}</option>
+          ))}
+        </select>
+      </div>
+    );
+  };
+
   // --- ACCESS CHECK ---
   if (status === "loading") {
     return (
@@ -624,32 +661,28 @@ export default function DataManagementPage() {
                                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
                                     เวลาเข้า (TH)
                                   </label>
-                                  <input
-                                    type="time"
+                                  <TimeSelect
                                     value={editFormData.checkInTimeOnly || ""}
-                                    onChange={(e) =>
+                                    onChange={(val) =>
                                       setEditFormData({
                                         ...editFormData,
-                                        checkInTimeOnly: e.target.value,
+                                        checkInTimeOnly: val,
                                       })
                                     }
-                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold appearance-none scheme-light-dark"
                                   />
                                 </div>
                                 <div className="space-y-1">
                                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
                                     เวลาออก (TH)
                                   </label>
-                                  <input
-                                    type="time"
+                                  <TimeSelect
                                     value={editFormData.checkOutTimeOnly || ""}
-                                    onChange={(e) =>
+                                    onChange={(val) =>
                                       setEditFormData({
                                         ...editFormData,
-                                        checkOutTimeOnly: e.target.value,
+                                        checkOutTimeOnly: val,
                                       })
                                     }
-                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold appearance-none scheme-light-dark"
                                   />
                                 </div>
                               </>

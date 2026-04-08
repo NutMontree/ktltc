@@ -27,9 +27,9 @@ export async function GET() {
 
     // กำหนดค่า Default ที่ต้องมีแน่ๆ
     const defaultRequired = [
-      { role: "teacher", roleName: "ครู (Teacher)", checkInLimit: "08:00", checkOutTime: "16:30" },
-      { role: "staff", roleName: "เจ้าหน้าที่ (Staff)", checkInLimit: "07:30", checkOutTime: "16:30" },
-      { role: "janitor", roleName: "แม่บ้าน/นักการ (Maid/Janitor)", checkInLimit: "07:00", checkOutTime: "16:00" },
+      { role: "teacher", roleName: "ครู (Teacher)", checkInStart: "05:00", checkInLimit: "08:00", checkOutStart: "16:30", checkOutEnd: "18:00" },
+      { role: "staff", roleName: "เจ้าหน้าที่ (Staff)", checkInStart: "05:00", checkInLimit: "07:30", checkOutStart: "16:30", checkOutEnd: "18:00" },
+      { role: "janitor", roleName: "แม่บ้าน/นักการ (Maid/Janitor)", checkInStart: "05:00", checkInLimit: "07:00", checkOutStart: "16:00", checkOutEnd: "18:00" },
       { 
         role: "system_global", 
         roleName: "การตั้งค่าระบบภาพรวม", 

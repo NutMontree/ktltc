@@ -127,12 +127,12 @@ function CheckInContent() {
       // 2. กำหนดค่า Config (ลำดับความสำคัญ: Role > Global > Fallback)
       // 🔥 ปรับปรุง: ดึงเวลาเริ่มออกงานตามกฎภาพรวม (12:30) มาใช้เป็นลำดับแรก
       const config = {
-        checkInStart: global?.checkInStart || "05:00",
+        checkInStart: roleSpecific?.checkInStart || global?.checkInStart || "05:00",
         lateLimit:
           roleSpecific?.checkInLimit || global?.lateThreshold || "08:00",
         checkOutStart:
-          global?.checkOutStart || roleSpecific?.checkOutTime || "16:30",
-        checkOutEnd: global?.checkOutEnd || "18:00",
+          roleSpecific?.checkOutStart || roleSpecific?.checkOutTime || global?.checkOutStart || "16:30",
+        checkOutEnd: roleSpecific?.checkOutEnd || global?.checkOutEnd || "18:00",
         lockStart: global?.systemLockStart || "18:01",
         lockEnd: global?.systemLockEnd || "04:59",
       };
@@ -194,13 +194,13 @@ function CheckInContent() {
       // B. Early Check-In
       else if (isCheckIn && val < rules.inStart) {
         locked = true;
-        msg = `ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่ม ${config.checkInStart} น.)`;
+        msg = `ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่มให้ลงเวลาเข้า ${config.checkInStart} น. เป็นต้นไป)`;
         canAction = false;
       }
       // C. Early Check-Out
       else if (!isCheckIn && val < rules.outStart) {
         locked = true;
-        msg = `ยังไม่ถึงเวลาลงเวลาออกงาน (เริ่ม ${config.checkOutStart} น. เป็นต้นไป)`;
+        msg = `ยังไม่ถึงเวลาลงเวลาออกงาน (เริ่มให้ลงเวลาออก ${config.checkOutStart} น. ถึง ${config.checkOutEnd} น.)`;
         canAction = false;
       }
       // D. Late Check-Out (Over limit)

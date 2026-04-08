@@ -249,11 +249,21 @@ export default function WorkReportPage() {
   };
 
   if (fetching) {
-    return <FullPageLoader message="กำลังตรวจสอบข้อมูลเดิมของคุณ..." subtitle="กรุณารอสักครู่ ระบบกำลังดึงผลการบันทึกงานล่าสุด" />;
+    return (
+      <FullPageLoader
+        message="กำลังตรวจสอบข้อมูลเดิมของคุณ..."
+        subtitle="กรุณารอสักครู่ ระบบกำลังดึงผลการบันทึกงานล่าสุด"
+      />
+    );
   }
 
   if (loading) {
-    return <FullPageLoader message="กำลังบันทึกข้อมูลรายงาน..." subtitle="กำลังอัปโหลดรูปภาพและบันทึกข้อมูลของคุณไปยังฐานข้อมูล" />;
+    return (
+      <FullPageLoader
+        message="กำลังบันทึกข้อมูลรายงาน..."
+        subtitle="กำลังอัปโหลดรูปภาพและบันทึกข้อมูลของคุณไปยังฐานข้อมูล"
+      />
+    );
   }
 
   return (
@@ -373,7 +383,7 @@ export default function WorkReportPage() {
                     <div className="flex-1 space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
                         <div className="md:col-span-12 space-y-3">
-                          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                          <label className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest pl-1">
                             ชื่อกิจกรรม (ระบุหากไม่ได้ลงรูปถ่าย)
                           </label>
                           <input
@@ -389,7 +399,7 @@ export default function WorkReportPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                        <label className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest pl-1">
                           สถานะความคืบหน้า
                         </label>
                         <div className="flex flex-wrap items-center gap-3">
@@ -423,7 +433,7 @@ export default function WorkReportPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                        <label className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest pl-1">
                           รายละเอียดเชิงลึก (ถ้ามี)
                         </label>
                         <textarea
