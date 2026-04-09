@@ -383,7 +383,7 @@ export default function AttendanceReportPage() {
 
         {/* Daily Summary Table */}
         {dailySummary.length > 0 && (
-          <div className="bg-white dark:bg-neutral-900 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-sm overflow-hidden mb-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-4xl border border-slate-100 dark:border-neutral-800 shadow-sm overflow-hidden mb-6">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 dark:bg-neutral-800 dark:border-neutral-700">
               <p className="text-xs font-black text-slate-600 dark:text-neutral-300 uppercase tracking-widest flex items-center gap-2">
                 <FileText size={14} /> สรุปการเข้างานรายวัน
@@ -632,14 +632,14 @@ export default function AttendanceReportPage() {
 
       {/* Daily Detail Modal */}
       {showDailyDetailModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
             onClick={() => setShowDailyDetailModal(null)}
           />
 
           <div
-            className="relative w-full max-w-4xl bg-white dark:bg-neutral-900 rounded-[2rem] shadow-2xl overflow-hidden border border-white/20 dark:border-neutral-800 flex flex-col max-h-[85vh]"
+            className="relative w-full max-w-4xl bg-white dark:bg-neutral-900 rounded-4xl shadow-2xl overflow-hidden border border-white/20 dark:border-neutral-800 flex flex-col max-h-[85vh]"
           >
             <div className="p-6 border-b border-slate-100 dark:border-neutral-800 flex justify-between items-center bg-slate-50 dark:bg-neutral-800/50">
               <div>

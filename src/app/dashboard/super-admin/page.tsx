@@ -234,15 +234,19 @@ export default function SuperAdminPage() {
 
       const [usersRes, summaryRes, logsRes] = await Promise.all([
         fetch(`/api/admin/users?page=${p}&search=${q}&_t=${Date.now()}`),
-        p === 1 ? fetch("/api/admin/reports/summary?_t=" + Date.now()) : Promise.resolve(null),
-        p === 1 ? fetch("/api/admin/logs?_t=" + Date.now()) : Promise.resolve(null),
+        p === 1
+          ? fetch("/api/admin/reports/summary?_t=" + Date.now())
+          : Promise.resolve(null),
+        p === 1
+          ? fetch("/api/admin/logs?_t=" + Date.now())
+          : Promise.resolve(null),
       ]);
 
       if (usersRes.ok) {
         const data = await usersRes.json();
         const usersArray = data.users || [];
-        
-        setUsers(prev => p === 1 ? usersArray : [...prev, ...usersArray]);
+
+        setUsers((prev) => (p === 1 ? usersArray : [...prev, ...usersArray]));
         setTotal(data.total || 0);
         setHasMore(data.hasMore || false);
         setPage(p);
@@ -281,11 +285,11 @@ export default function SuperAdminPage() {
   ) => {
     let currentProfile = adminProfile;
     if (!currentProfile && !isProfileLoading) {
-        currentProfile = await fetchAdminProfile();
+      currentProfile = await fetchAdminProfile();
     }
-    
+
     if (!currentProfile) {
-        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+      return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
     }
 
     try {
@@ -313,11 +317,11 @@ export default function SuperAdminPage() {
   ) => {
     let currentProfile = adminProfile;
     if (!currentProfile && !isProfileLoading) {
-        currentProfile = await fetchAdminProfile();
+      currentProfile = await fetchAdminProfile();
     }
-    
+
     if (!currentProfile) {
-        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+      return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
     }
 
     try {
@@ -339,17 +343,17 @@ export default function SuperAdminPage() {
   };
 
   const toggleActive = async (
-    targetId: string, 
+    targetId: string,
     currentStatus: boolean,
-    targetName: string
+    targetName: string,
   ) => {
     let currentProfile = adminProfile;
     if (!currentProfile && !isProfileLoading) {
-        currentProfile = await fetchAdminProfile();
+      currentProfile = await fetchAdminProfile();
     }
-    
+
     if (!currentProfile) {
-        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+      return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
     }
 
     try {
@@ -377,11 +381,11 @@ export default function SuperAdminPage() {
   const deleteUser = async (targetId: string, targetName: string) => {
     let currentProfile = adminProfile;
     if (!currentProfile && !isProfileLoading) {
-        currentProfile = await fetchAdminProfile();
+      currentProfile = await fetchAdminProfile();
     }
-    
+
     if (!currentProfile) {
-        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+      return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
     }
 
     if (
@@ -733,7 +737,9 @@ export default function SuperAdminPage() {
                           <option value="teacher">ครู (TEACHER)</option>
                           <option value="hr">ฝ่ายบุคคล (HR)</option>
                           <option value="staff">เจ้าหน้าที่ (STAFF)</option>
-                          <option value="janitor">แม่บ้าน/นักการ (JANITOR)</option>
+                          <option value="janitor">
+                            แม่บ้าน/นักการ (JANITOR)
+                          </option>
                           <option value="user">ผู้ใช้ทั่วไป (USER)</option>
                         </select>
                       </td>
@@ -763,7 +769,9 @@ export default function SuperAdminPage() {
                             <option value="งานการเงิน">งานการเงิน</option>
                             <option value="งานการบัญชี">งานการบัญชี</option>
                             <option value="งานพัสดุ">งานพัสดุ</option>
-                            <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
+                            <option value="งานอาคารสถานที่">
+                              งานอาคารสถานที่
+                            </option>
                             <option value="งานทะเบียน">งานทะเบียน</option>
                             <option value="งานแม่บ้าน/นักการ">
                               งานแม่บ้าน/นักการ
@@ -826,102 +834,31 @@ export default function SuperAdminPage() {
                               งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
                             </option>
                           </optgroup>
-                          <optgroup label="5. ระดับชั้นประกาศนียบัตรวิชาชีพ (ปวช.)">
-                            <option value="ปวช. สาขาวิชาการบัญชี">
-                              สาขาวิชาการบัญชี (ปวช.)
+                          <optgroup label="5. แผนกวิชา">
+                            <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
+                            <option value="การบัญชี">การบัญชี</option>
+                            <option value="การตลาด">การตลาด</option>
+                            <option value="การตลาด/โลจิสติก์">
+                              การตลาด/โลจิสติก์
                             </option>
-                            <option value="ปวช. สาขาวิชาการตลาด">
-                              สาขาวิชาการตลาด (ปวช.)
+                            <option value="เทคโนโลยีธุรกิจดิจิทัล">
+                              เทคโนโลยีธุรกิจดิจิทัล
                             </option>
-                            <option value="ปวช. สาขาวิชาการโรงเเรม">
-                              สาขาวิชาการโรงเเรม (ปวช.)
+                            <option value="การโรงแรม">การโรงแรม</option>
+                            <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
+                            <option value="ช่างอิเล็กทรอนิกส์">
+                              ช่างอิเล็กทรอนิกส์
                             </option>
-                            <option value="ปวช. สาขาวิชาตัวถังเเละสีรถยนต์">
-                              สาขาวิชาตัวถังเเละสีรถยนต์ (ปวช.)
+                            <option value="ช่างยนต์">ช่างยนต์</option>
+                            <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
+                            <option value="ช่างไฟฟ้ากำลัง">
+                              ช่างไฟฟ้ากำลัง
                             </option>
-                            <option value="ปวช. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
-                              สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวช.)
+                            <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
+                            <option value="ช่างเชื่อมโลหะ">
+                              ช่างเชื่อมโลหะ
                             </option>
-                            <option value="ปวช. สาขาวิชาช่างยนต์">
-                              สาขาวิชาช่างยนต์ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาช่างกลโรงงาน">
-                              สาขาวิชาช่างกลโรงงาน (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาช่างเชื่อมโลหะ">
-                              สาขาวิชาช่างเชื่อมโลหะ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาช่างไฟฟ้า">
-                              สาขาวิชาช่างไฟฟ้า (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาอิเล็กทรอนิกส์">
-                              สาขาวิชาอิเล็กทรอนิกส์ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชายานยนต์ไฟฟ้า">
-                              สาขาวิชายานยนต์ไฟฟ้า (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาโยธา">
-                              สาขาวิชาโยธา (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาโลจิสติกส์">
-                              สาขาวิชาโลจิสติกส์ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาการจัดการสำนักงานดิจิทัล">
-                              สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
-                              สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวช.)
-                            </option>
-                          </optgroup>
-                          <optgroup label="6. ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)">
-                            <option value="ปวส. สาขาวิชาเทคนิคเครื่องกล">
-                              สาขาวิชาเทคนิคเครื่องกล (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคนิคการผลิต">
-                              สาขาวิชาเทคนิคการผลิต (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคนิคโลหะ">
-                              สาขาวิชาเทคนิคโลหะ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาไฟฟ้า">
-                              สาขาวิชาไฟฟ้า (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาโยธา">
-                              สาขาวิชาโยธา (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการบัญชี">
-                              สาขาวิชาการบัญชี (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์">
-                              สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคนิคยานยนต์ไฟฟ้า">
-                              สาขาวิชาเทคนิคยานยนต์ไฟฟ้า (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
-                              สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการตลาด">
-                              สาขาวิชาการตลาด (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการโรงเเรม">
-                              สาขาวิชาการโรงเเรม (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
-                              สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์">
-                              สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน">
-                              สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการจัดการสำนักงานดิจิทัล">
-                              สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น">
-                              สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น (ปวส.)
-                            </option>
+                            <option value="ช่างก่อสร้าง">ช่างก่อสร้าง</option>
                           </optgroup>
                         </select>
                       </td>
@@ -990,7 +927,8 @@ export default function SuperAdminPage() {
 
             {!hasMore && !loading && users.length > 0 && (
               <div className="px-6 py-3 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-2xl text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2 shadow-sm">
-                <Database size={14} /> รายชื่อทั้งหมดที่แสดง: {users.length} / {total} ราย
+                <Database size={14} /> รายชื่อทั้งหมดที่แสดง: {users.length} /{" "}
+                {total} ราย
               </div>
             )}
           </div>
