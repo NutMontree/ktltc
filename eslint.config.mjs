@@ -16,7 +16,7 @@ const eslintConfig = defineConfig([
       "@next/next/no-img-element": "off", // ✅ ปิดการแจ้งเตือนเรื่องการใช้แท็ก img ปกติ
       "react-hooks/purity": "off", // ✅ ปิดการแจ้งเตือนเรื่อง Hook Purity ( Side Effects ใน Render )
       "react-hooks/immutability": "off", // ✅ ปิดการแจ้งเตือนเรื่อง Immutability (การแก้ไขค่าตัวแปรโดยตรงใน Hooks)
-      "@typescript-eslint/no-unsafe-function-type": "off ",
+      "@typescript-eslint/no-unsafe-function-type": "off",
     },
   },
 

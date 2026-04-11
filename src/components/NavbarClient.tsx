@@ -8,9 +8,16 @@ import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import { signOut } from "next-auth/react";
-import { FileText, Clock, UserCog } from "lucide-react";
+import {
+  FileText,
+  Clock,
+  UserCog,
+  ChevronDown,
+  LogOut,
+  Command,
+  Shield,
+} from "lucide-react";
 
-// กำหนด Type ให้รองรับ _id ที่บังคับใช้ใน MobileMenu
 type MenuItem = NavItem & {
   _id: string;
   children?: MenuItem[];
@@ -31,32 +38,72 @@ export default function NavbarClient({
 }: NavbarClientProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const pathname = usePathname();
 
-  // จัดการรูปแบบชื่อ Role ให้สวยงาม
-  // จัดการรูปแบบชื่อ Role ให้สวยงาม
-  const displayRole =
-    role?.toLowerCase() === "super_admin"
-      ? "ผู้ดูแลระบบสูงสุด"
-      : role?.toLowerCase() === "admin"
-        ? "ผู้ดูแลระบบ"
-        : role?.toLowerCase() === "editor"
-          ? "บรรณาธิการ"
-          : role?.toLowerCase() === "hr"
-            ? "บุคลากร"
-            : role?.toLowerCase() === "director"
-              ? "ผู้อำนวยการ"
-              : role?.toLowerCase() === "staff"
-                ? "เจ้าหน้าที่"
-                : "สมาชิก";
+  const getRoleDisplayName = (r: string) => {
+    switch (r) {
+      case "super_admin":
+        return "ผู้ดูแลระบบสูงสุด";
+      case "admin":
+        return "ผู้ดูแลระบบ";
+      case "editor":
+        return "บรรณาธิการ";
+      case "hr":
+        return "บุคลากร";
+      case "director":
+        return "ผู้อำนวยการ";
+      case "staff":
+        return "เจ้าหน้าที่";
+      case "user":
+        return "สมาชิก";
+      default:
+        return r ? r.replace("_", " ") : "Member";
+    }
+  };
+
+  const displayRole = getRoleDisplayName(role?.toLowerCase() || "");
   const isAdmin =
-    role?.toLowerCase() === "admin" || role?.toLowerCase() === "super_admin";
+    role?.toLowerCase() === "admin" ||
+    role?.toLowerCase() === "editor" ||
+    role?.toLowerCase() === "super_admin";
   const isSuperAdmin = role?.toLowerCase() === "super_admin";
+  const isHR =
+    role?.toLowerCase() === "hr" || role?.toLowerCase() === "deputy_resource";
+  const isExecutive =
+    role?.toLowerCase() === "director" ||
+    [
+      "deputy_resource",
+      "deputy_strategy",
+      "deputy_academic",
+      "deputy_student_affairs",
+    ].includes(role?.toLowerCase() || "");
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        !target.closest(".desktop-menu-container") &&
+        !target.closest(".user-dropdown-container")
+      ) {
+        setActiveMenuId(null);
+        setIsUserDropdownOpen(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -70,7 +117,7 @@ export default function NavbarClient({
       path.startsWith("http") ||
       path.startsWith("#")
     )
-      return path;
+      return path || "#";
     return `/${path}`;
   };
 
@@ -89,457 +136,345 @@ export default function NavbarClient({
   });
 
   return (
-    <nav
-      className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
-        isScrolled
-          ? "py-1 bg-white/90 dark:bg-zinc-950/90 shadow-sm border-zinc-200 dark:border-zinc-800 backdrop-blur-md"
-          : "py-3 bg-white dark:bg-zinc-950 border-transparent"
-      }`}
+    <div
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-2 sm:pt-3 px-2 sm:px-4 lg:px-6" : ""}`}
     >
-      <div className="max-w-[1600px] mx-auto px-4 flex items-center justify-between gap-2">
-        {/* --- 1. LOGO --- */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <Image
-            src="/images/favicon.ico"
-            alt="KTL Logo"
-            width={38}
-            height={38}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // ✅ เพิ่มบรรทัดนี้
-            priority
-          />
-          <span className="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase italic ">
-            KTL<span className="text-blue-600">TC</span>
-          </span>
-        </Link>
-
-        {/* --- 2. DESKTOP MENU --- */}
-        <div className="hidden xl:flex items-center gap-0.5">
-          {filteredMenuTree.map((item) => (
-            <div key={item._id} className="relative group">
-              <Link
-                href={ensureAbsolute(item.path) || "#"}
-                className={`px-2.5 py-2 flex items-center gap-1 text-[16px] font-bold transition-all whitespace-nowrap ${
-                  pathname === item.path
-                    ? "text-blue-600"
-                    : "text-zinc-600 dark:text-zinc-400 group-hover:text-blue-600"
-                }`}
-              >
-                {item.label}
-                {item.children && item.children.length > 0 && (
-                  <svg
-                    className="w-3.5 h-3.5 opacity-40 group-hover:rotate-180 transition-transform"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                )}
-              </Link>
-
-              {item.children && item.children.length > 0 && (
-                <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200">
-                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl min-w-[220px] p-1.5 backdrop-blur-xl">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child._id}
-                        href={ensureAbsolute(child.path) || "#"}
-                        className="block px-4 py-2.5 text-[14px] font-medium text-zinc-600 dark:text-zinc-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 rounded-lg transition-colors"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+      <nav
+        className={`w-full max-w-[1600px] mx-auto transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isScrolled
+            ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-3xl border border-white/40 dark:border-zinc-800/50 py-2.5 px-4 lg:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
+            : "py-4 px-4 lg:px-6 bg-transparent border-transparent"
+        }`}
+      >
+        <div className="flex items-center justify-between gap-4">
+          {/* --- 1. LOGO --- */}
+          <Link
+            href="/"
+            className="flex items-center gap-3 shrink-0 group outline-none"
+          >
+            <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
+              <Image
+                src="/images/favicon.ico"
+                alt="KTL Logo"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                priority
+                className="object-contain"
+              />
             </div>
-          ))}
-        </div>
+            <span className="text-zinc-900 dark:text-white font-black text-[22px] tracking-tighter uppercase italic drop-shadow-sm hidden sm:block">
+              KTL<span className="text-blue-600 dark:text-blue-500">TC</span>
+            </span>
+          </Link>
 
-        {/* --- 3. RIGHT ACTIONS --- */}
-        <div className="flex items-center gap-3 shrink-0">
-          <ThemeToggle />
+          {/* --- 2. DESKTOP MENU --- */}
+          <div className="hidden xl:flex items-center gap-1.5 desktop-menu-container">
+            {filteredMenuTree.map((item) => {
+              const hasChildren = item.children && item.children.length > 0;
+              const isActiveNode =
+                pathname === ensureAbsolute(item.path) ||
+                activeMenuId === item._id;
 
-          <div className="hidden xl:block w-px h-8 bg-zinc-200 dark:bg-zinc-800" />
+              return (
+                <div
+                  key={item._id}
+                  className="relative"
+                  onMouseEnter={() => setActiveMenuId(item._id)}
+                  onMouseLeave={() => setActiveMenuId(null)}
+                >
+                  <Link
+                    href={ensureAbsolute(item.path) || "#"}
+                    onClick={(e) => {
+                      if (hasChildren) {
+                        if (activeMenuId !== item._id) {
+                          e.preventDefault();
+                          setActiveMenuId(item._id);
+                          setIsUserDropdownOpen(false);
+                        }
+                      } else {
+                        setActiveMenuId(null);
+                      }
+                    }}
+                    className={`px-4 py-2.5 rounded-full flex items-center gap-1.5 text-[15px] font-bold transition-all whitespace-nowrap outline-none ${
+                      isActiveNode
+                        ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
+                        : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
+                    }`}
+                  >
+                    {item.label}
+                    {hasChildren && (
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
+                      />
+                    )}
+                  </Link>
 
-          {username ? (
-            <div
-              className="relative"
-              onMouseEnter={() => setIsUserDropdownOpen(true)}
-              onMouseLeave={() => setIsUserDropdownOpen(false)}
-            >
-              {/* User Profile Button */}
-              <button className="flex items-center gap-2.5 p-1.5 pr-4 rounded-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500/40 hover:bg-white dark:hover:bg-zinc-900 transition-all duration-300 shadow-sm">
-                <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-zinc-800 shadow-sm">
-                  {image ? (
-                    <Image
-                      src={image}
-                      alt={username}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // ✅ เพิ่มบรรทัดนี้
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
-                      {username.charAt(0)}
+                  {/* Mega Menu / Dropdown */}
+                  {hasChildren && (
+                    <div
+                      className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${
+                        activeMenuId === item._id
+                          ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-50"
+                          : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                      }`}
+                    >
+                      <div className="bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] min-w-[240px] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5">
+                        {item.children!.map((child) => (
+                          <Link
+                            key={child._id}
+                            href={ensureAbsolute(child.path) || "#"}
+                            onClick={() => setActiveMenuId(null)}
+                            className="block px-4 py-3 text-[14px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-                <div className="text-left hidden lg:block overflow-hidden">
-                  <p
-                    className={`text-[10px] font-black uppercase leading-none mb-1 tracking-widest ${
-                      isAdmin
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-emerald-600"
-                    }`}
-                  >
-                    {displayRole}
-                  </p>
-                  <p className="text-[14px] font-bold text-zinc-800 dark:text-zinc-200 truncate max-w-[110px]">
-                    {username}
-                  </p>
-                </div>
-                <svg
-                  className={`w-4 h-4 text-zinc-400 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+              );
+            })}
+          </div>
 
-              {/* Enhanced Dropdown Menu */}
-              {isUserDropdownOpen && (
-                <div className="absolute right-0 top-full pt-2 w-56 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200 z-60">
-                  <div className="bg-white/80 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl overflow-y-auto max-h-[80vh] p-1.5 custom-scrollbar-thin">
-                    <div className="px-3 py-2 mb-1 border-b border-zinc-100 dark:border-zinc-800/50">
-                      <p className="text-[11px] text-zinc-400 font-medium">
+          {/* --- 3. RIGHT ACTIONS --- */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="p-0.5 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-800/50 hidden sm:block">
+              <ThemeToggle />
+            </div>
+
+            <div className="hidden xl:block w-px h-8 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+
+            {username ? (
+              <div
+                className="relative user-dropdown-container"
+                onMouseEnter={() => setIsUserDropdownOpen(true)}
+                onMouseLeave={() => setIsUserDropdownOpen(false)}
+              >
+                {/* User Profile Button */}
+                <button
+                  onClick={() => {
+                    setIsUserDropdownOpen(!isUserDropdownOpen);
+                    setActiveMenuId(null);
+                  }}
+                  className={`flex items-center gap-3 p-1.5 pr-4 rounded-full border transition-all duration-300 outline-none ${
+                    isUserDropdownOpen
+                      ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
+                      : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
+                  }`}
+                >
+                  <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
+                    {image ? (
+                      <Image
+                        src={image}
+                        alt={username}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
+                        {username.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-left hidden lg:block overflow-hidden">
+                    <p
+                      className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${
+                        isSuperAdmin
+                          ? "text-sky-600 dark:text-sky-400"
+                          : isAdmin
+                            ? "text-blue-600 dark:text-blue-400"
+                            : "text-emerald-600 dark:text-emerald-400"
+                      }`}
+                    >
+                      {displayRole}
+                    </p>
+                    <p className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px]">
+                      {username}
+                    </p>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 hidden lg:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
+                  />
+                </button>
+
+                {/* Glassmorphism Dropdown Menu */}
+                <div
+                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${
+                    isUserDropdownOpen
+                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
+                      : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                  }`}
+                >
+                  <div className="bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] backdrop-blur-3xl overflow-hidden w-64 ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
+                    {/* Header profile area inside dropdown */}
+                    <div className="p-4 bg-zinc-50/50 dark:bg-zinc-950/30 border-b border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-zinc-400 tracking-wider uppercase">
                         จัดการบัญชี
-                      </p>
+                      </span>
+                      <Link
+                        href="/dashboard/profile"
+                        className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-500/20"
+                      >
+                        <UserCog className="w-3.5 h-3.5" /> ตั้งค่า
+                      </Link>
                     </div>
 
-                    {/* WFH Link - Refined Executive Style */}
-                    <Link
-                      href="/wfh"
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-xl transition-all group"
-                    >
-                      <div className="p-1.5 rounded-lg bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 transition-colors">
-                        <FileText size={16} />
-                      </div>
-                      รายงานการปฏิบัติงาน (WFH)
-                    </Link>
-
-                    {(isSuperAdmin ||
-                      role?.toLowerCase() === "admin" ||
-                      role?.toLowerCase() === "editor") && (
+                    <div className="p-2 space-y-1 overflow-y-auto">
+                      {/* WFH Link - Refined Executive Style */}
                       <Link
-                        href="/dashboard"
-                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all group"
+                        href="/wfh"
+                        className="flex items-center gap-3 px-3 py-3 text-[13px] font-bold text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-2xl transition-all group"
                       >
-                        <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                            />
-                          </svg>
+                        <div className="p-1.5 rounded-xl bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50 transition-colors shadow-sm">
+                          <FileText size={16} />
                         </div>
-                        Dashboard
+                        รายงานปฏิบัติงาน (WFH)
                       </Link>
-                    )}
 
-                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
-                    <Link
-                      href="/dashboard/profile"
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all group"
-                    >
-                      <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      </div>
-                      โปรไฟล์ส่วนตัว
-                    </Link>
-
-                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
-
-                    {/* ✅ เมนูเฉพาะ Super Admin */}
-                    {isSuperAdmin && (
-                      <>
+                      {isAdmin && (
                         <Link
-                          href="/dashboard/super-admin"
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all group"
+                          href="/dashboard"
+                          className="flex items-center gap-3 px-3 py-3 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
                         >
-                          <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 transition-colors">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                              />
-                            </svg>
+                          <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
+                            <Command size={16} />
                           </div>
-                          ระบบจัดการ Super Admin
+                          เข้าสู่ระบบ Dashboard
                         </Link>
-                        <Link
-                          href="/dashboard/data-management"
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-all group"
-                        >
-                          <div className="p-1.5 rounded-lg bg-rose-100 dark:bg-rose-900/30 group-hover:bg-rose-200 transition-colors">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
-                              />
-                            </svg>
-                          </div>
-                          ระบบจัดการข้อมูลเรคคอร์ดทั้งหมด
-                        </Link>
-                        <Link
-                          href="/work-reports-management"
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all group"
-                        >
-                          <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 transition-colors">
-                            <FileText size={16} />
-                          </div>
-                          จัดการรายงานการทำงาน (Admin)
-                        </Link>
+                      )}
 
-                        <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50"></div>
-                      </>
-                    )}
-
-                    {/* ✅ เมนูเฉพาะ Super Admin / Admin / Director / HR / Deputy */}
-                    {(isSuperAdmin ||
-                      role?.toLowerCase() === "admin" ||
-                      role?.toLowerCase() === "hr" ||
-                      role?.toLowerCase() === "director" ||
-                      [
-                        "deputy_resource",
-                        "deputy_strategy",
-                        "deputy_academic",
-                        "deputy_student_affairs",
-                      ].includes(role?.toLowerCase() || "")) && (
-                      <>
-                        <div className="px-3 py-1">
-                          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest pl-1 mt-1 mb-1">
-                            ระบบลงเวลาและบุคลากร
-                          </p>
-                        </div>
-                        {/* ทุกรองฝ่ายสามารถดูภาพรวมได้ */}
-                        <Link
-                          href="/attendance-dashboard"
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group"
-                        >
-                          <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                              />
-                            </svg>
+                      {/* --- ADMIN & EXECUTIVE LINKS --- */}
+                      {(isSuperAdmin || isAdmin || isHR || isExecutive) && (
+                        <>
+                          <div className="px-3 pt-3 pb-2 border-t border-zinc-100 dark:border-zinc-800/60 mt-2 mb-1">
+                            <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest flex items-center gap-1.5">
+                              <Shield size={12} /> ระบบจัดการบุคลากร
+                            </p>
                           </div>
-                          เมนูภาพรวมการลงเวลา
-                        </Link>
 
-                        {/* เฉพาะรองบริหารทรัพยากร (และผู้บริหารหลัก) ที่เห็นรายงานและการทำงาน */}
-                        {(isSuperAdmin ||
-                          role?.toLowerCase() === "hr" ||
-                          role?.toLowerCase() === "director" ||
-                          role?.toLowerCase() === "deputy_resource") && (
-                          <>
-                            <Link
-                              href="/attendance-report"
-                              className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                  />
-                                </svg>
-                              </div>
-                              ระบบรายงานการเข้างาน
-                            </Link>
-                            <Link
-                              href="/work-reports"
-                              className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
-                                <FileText size={16} />
-                              </div>
-                              ระบบรายงานการทำงาน
-                            </Link>
-                            <Link
-                              href="/manage-roles"
-                              className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 transition-colors">
-                                <UserCog size={16} />
-                              </div>
-                              จัดการสิทธิ์บุคลากร
-                            </Link>
-                          </>
-                        )}
-                        {(isSuperAdmin ||
-                          role?.toLowerCase() === "hr" ||
-                          role?.toLowerCase() === "director" ||
-                          role?.toLowerCase() === "deputy_resource") && (
-                          <Link
-                            href="/leave-approvals"
-                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group"
-                          >
-                            <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 transition-colors">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                          {isSuperAdmin && (
+                            <div className="bg-sky-50/50 dark:bg-sky-500/5 rounded-2xl p-1.5 mb-2 border border-sky-100 dark:border-sky-500/10">
+                              <Link
+                                href="/dashboard/super-admin"
+                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
+                                ส่วนกลาง Super Admin
+                              </Link>
+                              <Link
+                                href="/dashboard/data-management"
+                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
+                              >
+                                จัดการข้อมูล Records
+                              </Link>
                             </div>
-                            จัดการอนุมัติใบลา
-                          </Link>
-                        )}
-                        {(isSuperAdmin ||
-                          role?.toLowerCase() === "hr" ||
-                          role?.toLowerCase() === "deputy_resource") && (
+                          )}
+
                           <Link
-                            href="/attendance-settings"
-                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group mb-1 border-b border-zinc-100 dark:border-zinc-800/50 pb-3"
+                            href="/attendance-dashboard"
+                            className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
                           >
-                            <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 transition-colors">
-                              <Clock size={16} />
-                            </div>
-                            ตั้งค่าเวลาเข้างานตามตำแหน่ง
+                            ภาพรวมลงเวลาบุคลากร
                           </Link>
-                        )}
-                      </>
-                    )}
 
-                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50"></div>
+                          {(isSuperAdmin ||
+                            isHR ||
+                            role?.toLowerCase() === "director") && (
+                            <>
+                              <Link
+                                href="/attendance-report"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200 rounded-xl transition-all"
+                              >
+                                ระบบรายงานการเข้างาน
+                              </Link>
+                              <Link
+                                href="/work-reports"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200 rounded-xl transition-all"
+                              >
+                                ระบบรายงานปฏิบัติงาน
+                              </Link>
+                              <Link
+                                href="/leave-approvals"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200 rounded-xl transition-all"
+                              >
+                                จัดการอนุมัติใบลา
+                              </Link>
+                            </>
+                          )}
 
-                    <button
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all group"
-                    >
-                      <div className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 group-hover:bg-red-100 dark:group-hover:bg-red-900/40 transition-colors">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                          />
-                        </svg>
-                      </div>
-                      ออกจากระบบ
-                    </button>
+                          {(isSuperAdmin || isHR) && (
+                            <>
+                              <div className="my-2 border-t border-zinc-100 dark:border-zinc-800/60" />
+                              <Link
+                                href="/manage-roles"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200 rounded-xl transition-all"
+                              >
+                                <span>จัดการสิทธิ์บุคลากร</span>
+                              </Link>
+                              <Link
+                                href="/attendance-settings"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200 rounded-xl transition-all"
+                              >
+                                <span>ตั้งค่าเวลาเข้างาน</span>
+                              </Link>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <div className="p-2 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/30">
+                      <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center justify-center gap-2 px-3 py-3 text-[13px] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all btn-press"
+                      >
+                        <LogOut size={16} />
+                        ออกจากระบบ
+                      </button>
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
-          ) : (
-            /* Sign In Button */
-            <Link
-              href="/login"
-              className="relative overflow-hidden px-6 py-2 rounded-full bg-blue-600 text-white text-sm font-bold transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 group"
-            >
-              <span className="relative z-10">เข้าสู่ระบบ</span>
-              <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-            </Link>
-          )}
+              </div>
+            ) : (
+              /* Sign In Button */
+              <Link
+                href="/login"
+                className="relative overflow-hidden px-6 py-2.5 rounded-full bg-linear-to-b from-blue-500 to-blue-600 text-white text-[15px] font-bold transition-all hover:shadow-[0_4px_20px_-4px_rgba(59,130,246,0.5)] active:scale-95 border border-blue-400/20 shadow-sm"
+              >
+                เข้าสู่ระบบ
+              </Link>
+            )}
 
-          <div className="xl:hidden">
-            <MobileMenu menuTree={filteredMenuTree} image={image} />
+            <div className="xl:hidden sm:pl-2">
+              <MobileMenu menuTree={filteredMenuTree} image={image} />
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
 
-// ✅ Add custom styles for thin scrollbar in the dropdown
 const customScrollbarStyles = `
   .custom-scrollbar-thin::-webkit-scrollbar {
-    width: 5px;
+    width: 6px;
   }
   .custom-scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: rgba(156, 163, 175, 0.4);
     border-radius: 10px;
   }
   .dark .custom-scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #3f3f46;
+    background: rgba(82, 82, 91, 0.5);
+  }
+  .btn-press {
+     transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-press:active {
+     transform: scale(0.96);
   }
 `;
 

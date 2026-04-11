@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font */
 // นำเข้า CSS สำหรับ Ant Design patch, Syntax Highlight, และ Global Styles
 import "@ant-design/v5-patch-for-react-19";
 import "../styles/prism-vsc-dark-plus.css";
@@ -93,7 +94,7 @@ export default function RootLayout({
               {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
               <Navbar />
               {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
-              {children}
+              <div className="pt-20">{children}</div>
 
               {/* ปิดการใช้งาน Vercel Analytics & Speed Insights ชั่วคราว */}
               {/* <SpeedInsights /> */}
