@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import FullPageLoader from "@/components/FullPageLoader";
 import {
@@ -36,6 +36,9 @@ export default function ProfilePage() {
     lineId: "",
     role: "",
     department: "",
+    position: "",
+    faction: "",
+    description: "",
     program: "", // Added program
     image: "",
     coverImage: "",
@@ -57,6 +60,9 @@ export default function ProfilePage() {
             lineId: data.lineId || "",
             role: data.role || "",
             department: data.department || "ไม่มีสังกัด",
+            position: data.position || "",
+            faction: data.faction || "",
+            description: data.description || "",
             program: data.program || "", // Added program
             image: data.image || "",
             coverImage: data.coverImage || "",
@@ -125,7 +131,7 @@ export default function ProfilePage() {
       } else {
         alert("❌ เกิดข้อผิดพลาด");
       }
-    } catch (error) {
+    } catch (_error) {
       alert("❌ เชื่อมต่อ Server ไม่ได้");
     } finally {
       setSaving(false);
@@ -456,11 +462,17 @@ export default function ProfilePage() {
                       <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
                       <option value="การบัญชี">การบัญชี</option>
                       <option value="การตลาด">การตลาด</option>
-                      <option value="การตลาด/โลจิสติก์">การตลาด/โลจิสติก์</option>
-                      <option value="เทคโนโลยีธุรกิจดิจิทัล">เทคโนโลยีธุรกิจดิจิทัล</option>
+                      <option value="การตลาด/โลจิสติก์">
+                        การตลาด/โลจิสติก์
+                      </option>
+                      <option value="เทคโนโลยีธุรกิจดิจิทัล">
+                        เทคโนโลยีธุรกิจดิจิทัล
+                      </option>
                       <option value="การโรงแรม">การโรงแรม</option>
                       <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
-                      <option value="ช่างอิเล็กทรอนิกส์">ช่างอิเล็กทรอนิกส์</option>
+                      <option value="ช่างอิเล็กทรอนิกส์">
+                        ช่างอิเล็กทรอนิกส์
+                      </option>
                       <option value="ช่างยนต์">ช่างยนต์</option>
                       <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
                       <option value="ช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
@@ -470,6 +482,60 @@ export default function ProfilePage() {
                     </optgroup>
                   </select>
                 </div>
+              </div>
+
+              <div className="group">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+                  ตำแหน่งหลัก{" "}
+                  <span className="font-normal lowercase text-zinc-400">
+                    (เช่น หัวหน้าแผนกวิชา, ครู คศ.3)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.position}
+                  onChange={(e) =>
+                    setFormData({ ...formData, position: e.target.value })
+                  }
+                  className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl px-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+                  placeholder="กรอกตำแหน่งของท่าน"
+                />
+              </div>
+
+              <div className="group">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+                  ฝ่ายงานย่อย{" "}
+                  <span className="font-normal lowercase text-zinc-400">
+                    (เช่น งานวิทยบริการและห้องสมุด)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.faction}
+                  onChange={(e) =>
+                    setFormData({ ...formData, faction: e.target.value })
+                  }
+                  className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl px-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+                  placeholder="กรอกฝ่ายงานย่อย (ถ้ามี)"
+                />
+              </div>
+
+              <div className="md:col-span-2 group">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+                  รายละเอียดเพิ่มเติม / วิทยฐานะ{" "}
+                  <span className="font-normal lowercase text-zinc-400">
+                    (เช่น พนักงานราชการ ครู, ครูพิเศษสอน)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl px-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+                  placeholder="รายละเอียดเพิ่มเติมของท่าน"
+                />
               </div>
 
               <div className="group">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
@@ -32,7 +33,7 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     return NextResponse.json(user);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Error" }, { status: 500 });
   }
 }
@@ -49,7 +50,7 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, username, email, phone, lineId, department, password, image, coverImage } = body;
+    const { name, username, email, phone, lineId, department, position, faction, description, password, image, coverImage } = body;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -64,6 +65,9 @@ export async function PATCH(req: Request) {
       phone,
       lineId,
       department,
+      position,
+      faction,
+      description,
       updatedAt: new Date(),
     };
 

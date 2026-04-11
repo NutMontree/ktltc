@@ -1,31 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SearchOutlined, TeamOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined, LoadingOutlined } from "@ant-design/icons";
 import { AppSearch } from "./conson/AppSearch";
 import { ImgItem } from "./conson/ImgItem";
 import { ImgPost } from "./conson/ImgPost";
-import { imgs } from "./data";
 
 // --- Types ---
-// กำหนด Type คร่าวๆ เพื่อลด Error (ถ้าคุณมี interface อยู่แล้วให้ใช้ของเดิม)
 interface ImgData {
   title: string;
   [key: string]: any;
 }
 
 export const Personnel1 = () => {
+  const [dbUsers, setDbUsers] = useState<ImgData[]>([]);
   const [selectedImg, setSelectedImg] = useState<ImgData | null>(null);
   const [searchText, setSearchText] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      try {
+        const res = await fetch("/api/users/all");
+        if (res.ok) {
+          const data = await res.json();
+          const mappedUsers = (data.users || []).map((u: any) => ({
+            title: u.name,
+            secondary: u.role === "director" || String(u.role).startsWith("deputy") ? "ผู้บริหาร" : "",
+            position: u.position || "",
+            department: u.department || "",
+            faction: u.faction || "",
+            description: u.description || "",
+            img: u.image || "",
+            fullUrl: u.coverImage || u.image || "" 
+          }));
+          setDbUsers(mappedUsers);
+        }
+      } catch (error) {
+        console.error("Failed to fetch all users", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllUsers();
+  }, []);
 
   const onImgOpenClick = (img: any) => setSelectedImg(img);
   const onImgCloseClick = () => setSelectedImg(null);
 
-  // Filter Logic
-  const filteredImgs = imgs.filter((img) =>
+  const filteredImgs = dbUsers.filter((img) =>
     img.title.toLowerCase().includes(searchText.toLowerCase()),
   );
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 min-h-[300px]">
+        <LoadingOutlined className="text-4xl text-[#DAA520] mb-4 animate-spin" />
+        <p className="text-slate-500 font-medium animate-pulse">กำลังโหลดข้อมูลบุคลากรทั้งหมด...</p>
+      </div>
+    );
+  }
 
   return (
     <section className="max:w-7xl mx-auto ">

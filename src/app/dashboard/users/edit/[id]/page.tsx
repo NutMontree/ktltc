@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -41,6 +42,9 @@ interface UserFormData {
     | "teacher"
     | "janitor";
   department: string;
+  position?: string;
+  faction?: string;
+  description?: string;
   phone: string;
   lineId: string;
   isActive: boolean;
@@ -60,6 +64,9 @@ export default function EditUserPage() {
     email: "",
     role: "editor",
     department: "ไม่มีสังกัด",
+    position: "",
+    faction: "",
+    description: "",
     phone: "",
     lineId: "",
     isActive: true,
@@ -98,6 +105,9 @@ export default function EditUserPage() {
             email: data.email || "",
             role: data.role || "editor",
             department: data.department || "ไม่มีสังกัด",
+            position: data.position || "",
+            faction: data.faction || "",
+            description: data.description || "",
             phone: data.phone || "",
             lineId: data.lineId || "",
             isActive: data.isActive ?? true,
@@ -109,7 +119,7 @@ export default function EditUserPage() {
           toast.error("ไม่พบข้อมูลผู้ใช้ในระบบ");
           router.push("/dashboard/super-admin");
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("เกิดข้อผิดพลาดในการดึงข้อมูล");
       } finally {
         setLoading(false);
@@ -172,7 +182,7 @@ export default function EditUserPage() {
         const err = await res.json();
         toast.error(err.error || "บันทึกล้มเหลว");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
     } finally {
       setSaving(false);
@@ -433,6 +443,69 @@ export default function EditUserPage() {
                     />
                   </div>
                 </div>
+
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">
+                    ตำแหน่งหลัก{" "}
+                    <span className="font-normal text-slate-400">
+                      (เช่น หัวหน้าแผนกวิชา, ครู คศ.3)
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={formData.position}
+                      onChange={(e) =>
+                        setFormData({ ...formData, position: e.target.value })
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      placeholder="กรอกตำแหน่ง"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">
+                    ฝ่ายงานย่อย{" "}
+                    <span className="font-normal text-slate-400">
+                      (เช่น งานวิทยบริการฯ)
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <FiActivity className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={formData.faction}
+                      onChange={(e) =>
+                        setFormData({ ...formData, faction: e.target.value })
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      placeholder="กรอกฝ่ายงานย่อย"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">
+                    คำอธิบาย / วิทยฐานะ
+                  </label>
+                  <div className="relative">
+                    <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      placeholder="เช่น พนักงานราชการ ครู"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -509,9 +582,11 @@ export default function EditUserPage() {
                     <option value="hr">ฝ่ายบุคคล (HR)</option>
                     <option value="staff">เจ้าหน้าที่ (Staff)</option>
                     <option value="teacher">ครู (Teacher)</option>
-                    <option value="janitor">แม่บ้าน/นักการ (Maid/Janitor)</option>
+                    <option value="janitor">
+                      แม่บ้าน/นักการ (Maid/Janitor)
+                    </option>
                     <option value="director">ผู้บริหาร (Director)</option>
-                     <option value="deputy_resource">
+                    <option value="deputy_resource">
                       รอง ผอ (บริหารทรัพยากร)
                     </option>
                     <option value="deputy_strategy">รอง ผอ (ยุทธศาสตร์)</option>
@@ -553,7 +628,9 @@ export default function EditUserPage() {
                       <option value="งานการบัญชี">งานการบัญชี</option>
                       <option value="งานพัสดุ">งานพัสดุ</option>
                       <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
-                      <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
+                      <option value="งานแม่บ้าน/นักการ">
+                        งานแม่บ้าน/นักการ
+                      </option>
                       <option value="งานทะเบียน">งานทะเบียน</option>
                     </optgroup>
 
@@ -600,11 +677,17 @@ export default function EditUserPage() {
                       <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
                       <option value="การบัญชี">การบัญชี</option>
                       <option value="การตลาด">การตลาด</option>
-                      <option value="การตลาด/โลจิสติก์">การตลาด/โลจิสติก์</option>
-                      <option value="เทคโนโลยีธุรกิจดิจิทัล">เทคโนโลยีธุรกิจดิจิทัล</option>
+                      <option value="การตลาด/โลจิสติก์">
+                        การตลาด/โลจิสติก์
+                      </option>
+                      <option value="เทคโนโลยีธุรกิจดิจิทัล">
+                        เทคโนโลยีธุรกิจดิจิทัล
+                      </option>
                       <option value="การโรงแรม">การโรงแรม</option>
                       <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
-                      <option value="ช่างอิเล็กทรอนิกส์">ช่างอิเล็กทรอนิกส์</option>
+                      <option value="ช่างอิเล็กทรอนิกส์">
+                        ช่างอิเล็กทรอนิกส์
+                      </option>
                       <option value="ช่างยนต์">ช่างยนต์</option>
                       <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
                       <option value="ช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
