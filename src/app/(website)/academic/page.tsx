@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import PersonnelList from "../(components)/PersonnelList";
 import Link from "next/link";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import { motion } from "framer-motion";
@@ -21,7 +22,6 @@ import MAEW from "./MAEW";
 import TMW from "./TMW";
 import CDW from "./CDW";
 import ARAL from "./ARAL";
-import CourseInformation from "../CourseInformation/page";
 
 // 1. Data Configuration (ปรับสี Theme ให้เป็นโทนฟ้า-น้ำเงิน สบายตาและดูฉลาด)
 const academicJobs = [
@@ -171,10 +171,8 @@ export default function AcademicAffairsPage() {
               >
                 <div className="animate-in fade-in slide-in-from-top-4 duration-500 ease-out">
                   {/* Action Buttons Toolbar */}
-                  {/* @ts-ignore: Check if actions exist */}
                   {job.actions && (
                     <div className="mb-8 flex flex-wrap gap-3 p-4 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-700/50">
-                      {/* @ts-ignore */}
                       {job.actions.map((action, idx) => (
                         <Link
                           key={idx}
@@ -203,7 +201,17 @@ export default function AcademicAffairsPage() {
                   <div className="relative">
                     {/* Decorative line: สี Sky */}
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-sky-500/20 to-transparent rounded-full" />
-                    <div className="pl-6">{job.component}</div>
+                    <div className="pl-6">
+                      {job.component}
+                      {job.key !== "1" /* Skip Structure */ && (
+                        <div className="pt-8 mt-8 border-t border-slate-200 dark:border-zinc-800">
+                          <PersonnelList
+                            departmentName={job.title}
+                            departmentCode="ฝ่ายวิชาการ"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </AccordionItem>

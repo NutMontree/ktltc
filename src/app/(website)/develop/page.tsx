@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import React from "react";
+import PersonnelList from "../(components)/PersonnelList";
 import Link from "next/link";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import { motion } from "framer-motion";
@@ -14,7 +16,6 @@ import {
   SmileOutlined,
   StarOutlined,
   SafetyCertificateOutlined,
-  TeamOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
 
@@ -229,7 +230,17 @@ export default function StudentActivitiesPage() {
                   <div className="relative">
                     {/* Decorative line: สี Teal */}
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-teal-500/20 to-transparent rounded-full" />
-                    <div className="pl-6">{job.component}</div>
+                    <div className="pl-6">
+                      {job.component}
+                      {job.key !== "1" /* Skip Structure */ && (
+                        <div className="pt-8 mt-8 border-t border-slate-200 dark:border-zinc-800">
+                          <PersonnelList
+                            departmentName={job.title}
+                            departmentCode="ฝ่ายพัฒนากิจการนักเรียน นักศึกษา"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </AccordionItem>

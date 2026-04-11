@@ -3,15 +3,8 @@ import React from "react";
 export default function CDW() {
   return (
     <>
-      <h1 className="py-2 text-center text-xl">คณะผู้รับผิดชอบงาน</h1>
-      <div className="flex justify-center pb-4">
-        <div className="rounded-[22px] pt-4">
-          <img
-            src="/images/บุคลากร/วิชาการ/งานพัฒนาหลักสูตรการเรียนการสอน.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
-      </div>
+      
+
       <div className="py-6 text-base sm:text-lg">
         <p className="text-xl">มีหน้าที่และความรับผิดชอบ ดังต่อไปนี้</p>
         <p>
@@ -63,12 +56,6 @@ export default function CDW() {
           13. ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย
         </p>
       </div>
-      <div className="grid gap-4 md:grid-flow-col">
-        <div className="flex justify-center rounded-[22px] pt-4">
-          <img src="/images/error.webp" alt="Image description ทรัพยากร" />
-        </div>
-      </div>
-      <p className="text-center">นางสาวฑนาภรณ์ ม่วงชาติ</p>
-    </>
+      </>
   );
 }

@@ -1,18 +1,6 @@
-import React from "react";
-import { Image } from "@heroui/image";
-
 export default function DVEDS() {
   return (
     <>
-      <h1 className="py-2 text-center text-xl">คณะผู้รับผิดชอบงาน</h1>
-      <div className="flex justify-center pb-4">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/วิชาการ/งานอาชีวศึกษาระบบทวิภาคี.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
-      </div>
       <div className="py-6 text-base sm:text-lg">
         <p className="text-xl">มีหน้าที่และความรับผิดชอบ ดังต่อไปนี้</p>
         <p>
@@ -24,12 +12,10 @@ export default function DVEDS() {
           จัดทำแผนและคู่มือการฝึกตามโครงสร้างของหลักสูตรร่วมกับสถานประกอบการในการวิเคราะห์จุดประสงค์รายวิชาและมาตรฐานรายวิชาที่จะฝึกอาชีพ
         </p>
         <p>
-          3. วางแผนร่วมกับสถานประกอบการในการนิเทศ ติดตาม การฝึกปฏิบัติในสถาน
+          3. วางแผนร่วมกับสถานประกอบการในการนิเทศ ติดตาม การฝึกปฏิบัติในสถานประกอบการ และมีการวัดผลประเมินผล
         </p>
         <p>
-          4. ประกอบการและมีการวัดผลประเมินผล ควบคุม กำกับดูแล
-          และการแก้ปัญหาต่างๆ ประชุม สัมมนา ครูฝึก ครูนิเทศ
-          เพื่อร่วมกันวางแผนพัฒนาการจัดการเรียนการสอนอาชีวศึกษาระบบทวิภาคี
+          4. ควบคุม กำกับดูแล และการแก้ปัญหาต่างๆ ประชุม สัมมนา ครูฝึก ครูนิเทศ เพื่อร่วมกันวางแผนพัฒนาการจัดการเรียนการสอนอาชีวศึกษาระบบทวิภาคี
         </p>
         <p>
           5.
@@ -43,17 +29,6 @@ export default function DVEDS() {
         <p>
           7. ดูแล บำรุง รักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย
         </p>
-      </div>
-      <div className="grid gap-4 md:grid-flow-col">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/วิชาการ/1.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
-        {/* <div className='rounded-[22px] pt-4'>
-                                <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                            </div> */}
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import React from "react";
+import PersonnelList from "../(components)/PersonnelList";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import { motion } from "framer-motion";
 import {
@@ -28,6 +29,7 @@ import PAB from "../plan/PAB";
 import QAES from "../plan/QAES";
 import RDIAI from "../plan/RDIAI";
 import TABPW from "../plan/TABPW";
+import Link from "next/link";
 
 // 1. Data Configuration (เพิ่มสี Theme ให้แต่ละหัวข้อ)
 const planningJobs = [
@@ -244,7 +246,14 @@ export default function PlanningPage() {
                   <div className="relative">
                     {/* Decorative line */}
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-indigo-500/20 to-transparent rounded-full" />
-                    <div className="pl-6">{job.component}</div>
+                    <div className="pl-6">
+                      {job.component}
+                      {job.key !== "1" && ( /* Skip Structure */
+                        <div className="pt-8 mt-8 border-t border-slate-200 dark:border-zinc-800">
+                          <PersonnelList departmentName={job.title} departmentCode="ฝ่ายยุทธศาสตร์และแผนงาน" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </AccordionItem>

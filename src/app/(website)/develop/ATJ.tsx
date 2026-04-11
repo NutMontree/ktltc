@@ -1,60 +1,59 @@
 import React from "react";
-import { Image } from "@heroui/image";
+import { motion } from "framer-motion";
+import { CheckCircleFilled, UserOutlined } from "@ant-design/icons";
 
 export default function ATJ() {
+  const responsibilities = [
+    "เสนอแต่งตั้งครูที่ปรึกษาเพื่อรับผิดชอบดูแลนักเรียนนักศึกษาในแต่ละกลุ่ม",
+    "ควบคุมดูแล ส่งเสริม การจัดทำ จัดเก็บ รวบรวมข้อมูลประวัติ ข้อมูลการเรียน และพฤติกรรม",
+    "ส่งเสริม ประสานงานครูที่ปรึกษาให้คำปรึกษาแนะนำเกี่ยวกับการเข้าร่วมกิจกรรมต่างๆ",
+    "ประสานงานการลงทะเบียนเรียน การเทียบโอน ความรู้และประสบการณ์ และการถอนรายวิชา",
+    "ติดตาม แนะนำ ให้คำปรึกษาเกี่ยวกับการเรียน และการคำนวณค่าระดับคะแนนเฉลี่ย",
+    "ประสานกับครู แผนกวิชา และงานที่เกี่ยวข้องในการแก้ปัญหาต่างๆ ของนักเรียนนักศึกษา",
+    "ติดตามและประเมินผลการปฏิบัติงานของครูที่ปรึกษา และสรุปผลเสนอฝ่ายบริหาร",
+    "จัดทำปฏิทินปฏิบัติงาน และเครื่องมือแบบฟอร์มที่เกี่ยวข้องกับระบบครูที่ปรึกษา",
+    "ดูแล บำรุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย",
+    "ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย",
+  ];
+
+  const containerVar = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+  };
+
   return (
-    <>
-      <h1 className="py-2 text-center text-xl">
-        คณะผู้รับผิดชอบงานครูที่ปรึกษา
-      </h1>
-      <div className="flex justify-center pb-4">
-        <div className="rounded-[22px] pt-4">
-          <Image src="/images/error.webp" alt="Image description ทรัพยากร" />
+    <div className="py-6 text-base sm:text-lg">
+      <motion.div
+        variants={containerVar}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="max-w-3xl"
+      >
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+            <UserOutlined className="text-2xl" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">ขอบข่ายหน้าที่และความรับผิดชอบ</h2>
         </div>
-      </div>
-      <div className="py-6 text-base sm:text-lg">
-        <p className="text-xl">มีหน้าที่และความรับผิดชอบ ดังต่อไปนี้</p>
-        1. เสนอแต่งตั้งครูที่ปรึกษา
-        <br />
-        2. ควบคุมดูแล ส่งเสริม การจัดทํา จัดเก็บ รวบรวมข้อมูลประวัติ
-        ข้อมูลการเรียน และ พฤติกรรมของนักเรียนนักศึกษา
-        <br />
-        3. ส่งเสริม
-        ประสานงานครูที่ปรึกษาให้คําปรึกษาแนะนํานักเรียนนักศึกษาเกี่ยวกับการเข้าร่วม
-        กิจกรรมต่างๆ
-        <br />
-        4. ส่งเสริม ประสานงาน
-        ครูที่ปรึกษาให้ความคิดเห็นและข้อมูลเกี่ยวกับการกําหนดรายวิชา
-        ในการลงทะเบียนเรียนให้ความเห็นชอบ แก่นักเรียน นักศึกษา
-        ในการลงทะเบียนรายวิชา การลงทะเบียนเทียบโอน ความรู้และประสบการณ์
-        การขอเปลี่ยน ขอเพิ่ม และขอถอนรายวิชา การขอพักการเรียน การโอนย้าย
-        การลาออก การขอผ่อนผัน หรือยกเว้นการชําระเงินค่าลงทะเบียนรายวิชา ติดตาม
-        แนะนํา ให้คําปรึกษาเกี่ยวกับการเรียน
-        การคํานวณหาค่าระดับคะแนนเฉลี่ยแก่นักเรียน นักศึกษา
-        <br />
-        5. ประสานกับครู แผนกวิชา และงานที่เกี่ยวข้องในการแก้ปัญหาต่างๆ
-        ของนักเรียน นักศึกษา และผู้เข้ารับการอบรมในสถานศึกษา
-        <br />
-        6. ติดตามและประเมินผลการปฏิบัติงานของครูที่ปรึกษา
-        สรุปผลการประเมินและนําผลการ ประเมินเสนอฝ่ายบริหารและสํานักงาน
-        คณะกรรมการการอาชีวศึกษา
-        <br />
-        7.
-        จัดทําปฏิทินปฏิบัติงานเป็นข้อมูลในการเครื่องมือแบบฟอร์มที่เกี่ยวข้องกับระบบครูที่ปรึกษา
-        เสนอโครงการและรายงาน การปฏิบัติงานตามลําดับขั้น
-        <br />
-        8. ดูแล บํารุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย
-        <br />
-        9. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย
-      </div>
-      <div className="grid gap-4 md:grid-flow-col">
-        <div className="flex items-center justify-center rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/เจ้าหน้าที่/ฝ่ายพัฒนากิจการ/2.webp"
-            alt="Image description ทรัพยากร"
-          />
+
+        <div className="space-y-4">
+          {responsibilities.map((text, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ x: 5 }}
+              className="flex gap-4 rounded-xl border border-slate-50 bg-slate-50/50 p-4 transition-colors hover:border-teal-100 hover:bg-teal-50/30 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:border-teal-900"
+            >
+              <div className="shrink-0 pt-1">
+                <CheckCircleFilled className="text-lg text-teal-500" />
+              </div>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                {text}
+              </p>
+            </motion.div>
+          ))}
         </div>
-      </div>
-    </>
+      </motion.div>
+    </div>
   );
 }

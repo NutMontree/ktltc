@@ -15,7 +15,6 @@ import {
   IdcardOutlined,
   SoundOutlined,
   CustomerServiceOutlined,
-  BankOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
 
@@ -30,6 +29,7 @@ import BASW from "./BASW";
 import PRW from "./PRW";
 import RW from "./RW";
 import CGCA from "./CGCA";
+import PersonnelList from "../(components)/PersonnelList";
 
 // 1. Data Config (เพิ่มสี Theme ให้แต่ละงาน เพื่อความสวยงามตามต้นแบบ)
 const resourceJobs = [
@@ -215,10 +215,8 @@ export default function ResourceAdministrationPage() {
               >
                 <div className="animate-in fade-in slide-in-from-top-4 duration-500 ease-out">
                   {/* Action Buttons Toolbar (ถ้ามีในอนาคต โค้ดนี้รองรับไว้แล้ว) */}
-                  {/* @ts-ignore: Check if actions exist */}
                   {job.actions && (
                     <div className="mb-8 flex flex-wrap gap-3 p-4 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-700/50">
-                      {/* @ts-ignore */}
                       {job.actions.map((action, idx) => (
                         <Link
                           key={idx}
@@ -247,7 +245,17 @@ export default function ResourceAdministrationPage() {
                   <div className="relative">
                     {/* Decorative line: เปลี่ยนเป็นสี Amber */}
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-amber-500/20 to-transparent rounded-full" />
-                    <div className="pl-6">{job.component}</div>
+                    <div className="pl-6">
+                      {job.component}
+                      {job.key !== "1" /* Skip Structure */ && (
+                        <div className="pt-8 mt-8 border-t border-slate-200 dark:border-zinc-800">
+                          <PersonnelList
+                            departmentName={job.title}
+                            departmentCode="ฝ่ายบริหารทรัพยากร"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </AccordionItem>

@@ -1,14 +1,10 @@
 "use client";
 
-import React from "react";
-import { Image } from "@heroui/image";
 import { motion } from "framer-motion";
 import {
   FundProjectionScreenOutlined,
   ContainerFilled,
-  FileTextOutlined,
   CheckCircleFilled,
-  TeamOutlined,
 } from "@ant-design/icons";
 
 export default function PAB() {
@@ -21,10 +17,10 @@ export default function PAB() {
     },
   };
 
-  const itemVar = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
-  };
+  // const itemVar = {
+  //   hidden: { y: 20, opacity: 0 },
+  //   visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+  // };
 
   const responsibilities = [
     "จัดทำแผนปฏิบัติราชการ แผนพัฒนาสถานศึกษา และแผนปฏิบัติการประจำปีตามนโยบายให้สอดคล้องกับแผนระดับชาติและนโยบายต้นสังกัด",
@@ -60,80 +56,41 @@ export default function PAB() {
           </h1>
         </motion.div>
 
-        {/* --- Main Content Grid --- */}
+        {/* --- Main Content --- */}
         <motion.div
           variants={containerVar}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid gap-12 lg:grid-cols-12"
+          className="max-w-3xl mx-auto"
         >
-          {/* Left Column: Images (4 Columns) */}
-          <motion.div variants={itemVar} className="space-y-8 lg:col-span-5">
-            {/* หัวหน้างาน */}
-            <div className=" ">
-              <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl">
-                <Image
-                  src="/images/บุคลากร/แผน/งานวางแผนและงบประมาณ.webp"
-                  alt="หัวหน้างานวางแผน"
-                  className="h-full w-full object-cover"
-                  removeWrapper
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-6">
-                  <h3 className="text-xl font-bold text-white">
-                    หัวหน้างานวางแผนฯ
-                  </h3>
-                </div>
+          <div className="">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+                <ContainerFilled className="text-2xl" />
               </div>
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                ขอบข่ายหน้าที่และความรับผิดชอบ
+              </h2>
             </div>
 
-            {/* บุคลากร */}
-            <div className=" ">
-              <div className="mb-4 flex items-center gap-2 px-2 text-teal-600 dark:text-teal-400">
-                <TeamOutlined className="text-xl" />
-                <span className="font-bold">บุคลากรในสังกัด</span>
-              </div>
-              <div className="overflow-hidden rounded-2xl bg-slate-100">
-                <Image
-                  src="/images/บุคลากร/แผน/1.webp"
-                  alt="บุคลากรงานวางแผน"
-                  className=" "
-                  removeWrapper
-                />
-              </div>
+            <div className="space-y-4">
+              {responsibilities.map((text, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ x: 5 }}
+                  className="flex gap-4 rounded-xl border border-slate-50 bg-slate-50/50 p-4 transition-colors hover:border-teal-100 hover:bg-teal-50/30 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:border-teal-900"
+                >
+                  <div className="shrink-0 pt-1">
+                    <CheckCircleFilled className="text-lg text-teal-500" />
+                  </div>
+                  <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:text-base">
+                    {text}
+                  </p>
+                </motion.div>
+              ))}
             </div>
-          </motion.div>
-
-          {/* Right Column: Responsibilities (8 Columns) */}
-          <motion.div variants={itemVar} className="lg:col-span-7">
-            <div className=" ">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
-                  <ContainerFilled className="text-2xl" />
-                </div>
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                  ขอบข่ายหน้าที่และความรับผิดชอบ
-                </h2>
-              </div>
-
-              <div className="space-y-4">
-                {responsibilities.map((text, index) => (
-                  <motion.div
-                    key={index}
-                    whileHover={{ x: 5 }}
-                    className="flex gap-4 rounded-xl border border-slate-50 bg-slate-50/50 p-4 transition-colors hover:border-teal-100 hover:bg-teal-50/30 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:border-teal-900"
-                  >
-                    <div className="shrink-0 pt-1">
-                      <CheckCircleFilled className="text-lg text-teal-500" />
-                    </div>
-                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:text-base">
-                      {text}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
