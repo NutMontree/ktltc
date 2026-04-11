@@ -1,5 +1,5 @@
 import Features from "./Features";
-import dynamic from "next/dynamic";
+
 import clientPromise from "@/lib/db";
 import TenderPage from "./tender/page";
 import CommandPage from "./command/page";
@@ -16,16 +16,13 @@ import ExternalQualityAssurance from "./ExternalQualityAssurance";
 export const revalidate = 0; // บังคับให้หน้าเว็บดึงข้อมูลสดใหม่ตลอด (หลีกเลี่ยงชื่อตัวแปรซ้ำกับ dynamic import)
 
 // ✅ 1. เอา "use client" ออก และเปลี่ยนการเรียกใช้ dynamic ให้เหมาะสม
-const BackgroundBeamsWithCollisionDemo = dynamic(
-  () => import("@/components/BackgroundBeamsWithCollisionDemo"),
-);
-const SocialFeedDisplay = dynamic(
-  () => import("@/components/home/SocialFeedDisplay"),
-);
+import {
+  DynamicBackgroundBeams as BackgroundBeamsWithCollisionDemo,
+  DynamicSocialFeedDisplay as SocialFeedDisplay,
+  DynamicCalendarPage as CalendarPage,
+  DynamicQAPage as QAPage,
+} from "@/components/home/DynamicClientSections";
 import ShowFacebookClient from "@/components/ShowFacebookClient";
-import ShowYoutube from "./ShowYoutube/page";
-const CalendarPage = dynamic(() => import("@/components/Calendar"));
-const QAPage = dynamic(() => import("./q-and-a/page"));
 
 // ดึงข้อมูลผ่าน Server Side เหมือนเดิม (รันบนเครื่องเซิร์ฟเวอร์เท่านั้น ปลอดภัยกว่า)
 async function getHomeData() {

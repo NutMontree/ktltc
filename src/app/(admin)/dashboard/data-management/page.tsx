@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -103,30 +104,33 @@ export default function DataManagementPage() {
     }
   };
 
-  // ดึงเวลาสำหรับ Input "time" (HH:mm) ในเขตเวลาไทย (UTC+7)
+  // ดึงเวลาสำหรับ Input "time" (HH:mm) — ใช้ local time ตรงๆ เหมือน formatTime
   const getTHTime = (dateStr: any) => {
     if (!dateStr) return "";
     try {
-      const d = new Date(dateStr);
-      // ปรับเป็นเวลาไทย (UTC+7)
-      const thTime = new Date(d.getTime() + 7 * 60 * 60 * 1000);
-      return format(thTime, "HH:mm");
+      return format(new Date(dateStr), "HH:mm");
     } catch (e) {
       return "";
     }
   };
 
-  // รวมเวลา HH:mm กับวันที่เดิม (Date) เพื่อบันทึกกลับเป็น UTC
-  const mergeTimeWithDate = (originalDateStr: any, thTimeStr: string) => {
-    if (!thTimeStr || !originalDateStr) return null;
+  // รวมเวลา HH:mm กับวันที่เดิม เพื่อบันทึกกลับ (ใช้ local time string เพื่อหลีกเลี่ยง UTC drift)
+  const mergeTimeWithDate = (originalDateStr: any, localTimeStr: string) => {
+    if (!localTimeStr || !originalDateStr) return null;
     try {
       const d = new Date(originalDateStr);
-      const [hours, minutes] = thTimeStr.split(":").map(Number);
-
-      // ตั้งเวลาในเขตเวลาไทย (เราหักลบ 7 ชม. เพื่อเป็น UTC)
-      const utcDate = new Date(d.getTime());
-      utcDate.setUTCHours(hours - 7, minutes, 0, 0);
-      return utcDate.toISOString();
+      const [hours, minutes] = localTimeStr.split(":").map(Number);
+      // สร้าง Date ใหม่จากวันที่เดิม + เวลาที่แก้ไข (ใช้ local timezone)
+      const merged = new Date(
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate(),
+        hours,
+        minutes,
+        0,
+        0,
+      );
+      return merged.toISOString();
     } catch (e) {
       return null;
     }
@@ -282,7 +286,9 @@ export default function DataManagementPage() {
 
       if (activeTab === "attendance") {
         if (finalUpdates.dateOnly) {
-          finalUpdates.date = new Date(finalUpdates.dateOnly);
+          // \u0e2a\u0e23\u0e49\u0e32\u0e07\u0e27\u0e31\u0e19\u0e17\u0e35\u0e48\u0e08\u0e32\u0e01 local parts \u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e2b\u0e25\u0e35\u0e01 UTC midnight shift
+          const [y, m, dd] = finalUpdates.dateOnly.split("-").map(Number);
+          finalUpdates.date = new Date(y, m - 1, dd);
         }
         if (finalUpdates.checkInTimeOnly) {
           finalUpdates.checkIn = {
@@ -337,7 +343,13 @@ export default function DataManagementPage() {
     }
   };
 
-  const TimeSelect = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
+  const TimeSelect = ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (val: string) => void;
+  }) => {
     const [h, m] = value ? value.split(":") : ["", ""];
     return (
       <div className="flex w-full items-center bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus-within:border-rose-500">
@@ -345,14 +357,16 @@ export default function DataManagementPage() {
           className="bg-transparent px-4 py-3 text-sm font-bold outline-none cursor-pointer text-slate-700 dark:text-zinc-200"
           value={h || ""}
           onChange={(e) => {
-             const newH = e.target.value;
-             if (!newH && !m) onChange("");
-             else onChange(`${newH || "00"}:${m || "00"}`);
+            const newH = e.target.value;
+            if (!newH && !m) onChange("");
+            else onChange(`${newH || "00"}:${m || "00"}`);
           }}
         >
           <option value="">--</option>
           {Array.from({ length: 24 }).map((_, i) => (
-            <option key={`h-${i}`} value={i.toString().padStart(2, "0")}>{i.toString().padStart(2, "0")}</option>
+            <option key={`h-${i}`} value={i.toString().padStart(2, "0")}>
+              {i.toString().padStart(2, "0")}
+            </option>
           ))}
         </select>
         <span className="font-bold text-slate-400">:</span>
@@ -360,14 +374,16 @@ export default function DataManagementPage() {
           className="bg-transparent px-4 py-3 text-sm font-bold outline-none cursor-pointer text-slate-700 dark:text-zinc-200"
           value={m || ""}
           onChange={(e) => {
-             const newM = e.target.value;
-             if (!h && !newM) onChange("");
-             else onChange(`${h || "00"}:${newM || "00"}`);
+            const newM = e.target.value;
+            if (!h && !newM) onChange("");
+            else onChange(`${h || "00"}:${newM || "00"}`);
           }}
         >
           <option value="">--</option>
           {Array.from({ length: 60 }).map((_, i) => (
-            <option key={`m-${i}`} value={i.toString().padStart(2, "0")}>{i.toString().padStart(2, "0")}</option>
+            <option key={`m-${i}`} value={i.toString().padStart(2, "0")}>
+              {i.toString().padStart(2, "0")}
+            </option>
           ))}
         </select>
       </div>
@@ -813,12 +829,16 @@ export default function DataManagementPage() {
                                       className="w-12 h-12 rounded-[1.25rem] object-cover ring-2 ring-white dark:ring-zinc-800 shadow-lg group-hover/avatar:scale-110 transition-all"
                                     />
                                   ) : (
-                                    <div className={`w-12 h-12 rounded-[1.25rem] ${getAvatarBg(record.user?.name || "")} flex items-center justify-center text-white text-base font-black ring-2 ring-white dark:ring-zinc-800 shadow-lg group-hover/avatar:scale-110 transition-all`}>
+                                    <div
+                                      className={`w-12 h-12 rounded-[1.25rem] ${getAvatarBg(record.user?.name || "")} flex items-center justify-center text-white text-base font-black ring-2 ring-white dark:ring-zinc-800 shadow-lg group-hover/avatar:scale-110 transition-all`}
+                                    >
                                       {getInitials(record.user?.name || "")}
                                     </div>
                                   )}
                                   <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center shadow-sm">
-                                    <div className={`w-3 h-3 rounded-full ${record.status === "Present" || record.status === "approved" ? "bg-emerald-500" : "bg-rose-500"}`} />
+                                    <div
+                                      className={`w-3 h-3 rounded-full ${record.status === "Present" || record.status === "approved" ? "bg-emerald-500" : "bg-rose-500"}`}
+                                    />
                                   </div>
                                 </div>
                               )}

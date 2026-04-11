@@ -10,12 +10,12 @@ import ThemeToggle from "./ThemeToggle";
 import { signOut } from "next-auth/react";
 import {
   FileText,
-  Clock,
   UserCog,
   ChevronDown,
   LogOut,
   Command,
   Shield,
+  Download,
 } from "lucide-react";
 
 type MenuItem = NavItem & {
@@ -39,6 +39,7 @@ export default function NavbarClient({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const pathname = usePathname();
 
   const getRoleDisplayName = (r: string) => {
@@ -93,7 +94,18 @@ export default function NavbarClient({
       }
     };
 
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
     document.addEventListener("click", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside, {
       passive: true,
@@ -101,10 +113,25 @@ export default function NavbarClient({
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
       document.removeEventListener("click", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      setDeferredPrompt(null);
+    }
+    setActiveMenuId(null);
+  };
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/login" });
@@ -229,6 +256,19 @@ export default function NavbarClient({
                             {child.label}
                           </Link>
                         ))}
+                        {item.label === "อื่นๆ" && deferredPrompt && (
+                          <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+                            <button
+                              onClick={handleInstallClick}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                            >
+                              <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                                <Download size={16} />
+                              </div>
+                              ติดตั้งแอพพลิเคชั่น
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -356,17 +396,24 @@ export default function NavbarClient({
 
                           {isSuperAdmin && (
                             <div className="bg-sky-50/50 dark:bg-sky-500/5 rounded-2xl p-1.5 mb-2 border border-sky-100 dark:border-sky-500/10">
+                              <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1">เฉพาะ Super Admin</p>
                               <Link
                                 href="/dashboard/super-admin"
                                 className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                               >
-                                ส่วนกลาง Super Admin
+                                ศูนย์ควบคุมจัดการระบบ
                               </Link>
                               <Link
                                 href="/dashboard/data-management"
-                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
                               >
-                                จัดการข้อมูล Records
+                                แก้ไขข้อมูลการเข้างาน / ลา
+                              </Link>
+                              <Link
+                                href="/work-reports-management"
+                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                              >
+                                รายงานปฏิบัติงานทุกแผนก
                               </Link>
                             </div>
                           )}
@@ -447,7 +494,12 @@ export default function NavbarClient({
             )}
 
             <div className="xl:hidden sm:pl-2">
-              <MobileMenu menuTree={filteredMenuTree} image={image} />
+              <MobileMenu
+                menuTree={filteredMenuTree}
+                image={image}
+                deferredPrompt={deferredPrompt}
+                onInstall={handleInstallClick}
+              />
             </div>
           </div>
         </div>
