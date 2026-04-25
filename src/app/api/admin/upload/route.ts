@@ -1,19 +1,18 @@
 // src\app\api\admin\upload\route.ts
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { v4 as uuidv4 } from "uuid";
-import sharp from "sharp";
+import { v2 as cloudinary } from "cloudinary";
 
-// หมายเหตุ: ไม่ต้องใส่ export const config ในไฟล์นี้สำหรับ App Router
+// ✅ Config Cloudinary
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req: Request) {
   try {
-    // 1. ตรวจสอบสิทธิ์การเข้าถึง
     const session = await auth();
-
-    // ตรวจสอบว่า Login หรือไม่ และมี Role ที่อนุญาตหรือไม่
     if (
       !session ||
       !(session.user as any).role ||
@@ -22,59 +21,65 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. รับข้อมูลไฟล์จาก FormData
-    // (จะทำงานได้เกิน 1MB ต้องตั้งค่า serverActions.bodySizeLimit ใน next.config.js แล้วเท่านั้น)
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const contentType = req.headers.get("content-type") || "";
+    let imageToUpload: string | Buffer | undefined;
+    let folder = "uploads";
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    if (contentType.includes("application/json")) {
+      const { image, folder: targetFolder } = await req.json();
+      imageToUpload = image;
+      if (targetFolder) folder = targetFolder;
+    } else {
+      const formData = await req.formData();
+      const file = formData.get("file") as File;
+      if (file) {
+        const bytes = await file.arrayBuffer();
+        imageToUpload = Buffer.from(bytes);
+      }
+      const targetFolder = formData.get("folder") as string;
+      if (targetFolder) folder = targetFolder;
     }
 
-    // 3. แปลงไฟล์เป็น Buffer เพื่อส่งให้ Sharp ประมวลผล
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // 4. เตรียมเส้นทางจัดเก็บไฟล์
-    const filename = `${uuidv4()}.webp`;
-    const uploadDir = join(process.cwd(), "public", "uploads");
-
-    // สร้างโฟลเดอร์ถ้ายังไม่มี
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      // โฟลเดอร์อาจจะมีอยู่แล้ว ไม่ต้องทำอะไร
+    if (!imageToUpload) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const path = join(uploadDir, filename);
+    // ✅ Upload to Cloudinary
+    const uploadResponse = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: `ktltc/${folder}`,
+          resource_type: "auto",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
 
-    // 5. ประมวลผลรูปภาพด้วย Sharp 🚀
-    // - ปรับขนาดเป็น 1920x820 (สัดส่วนแบนเนอร์)
-    // - ตัดขอบแบบ Cover และเน้นตรงกลาง
-    // - แปลงเป็น .webp คุณภาพ 80% เพื่อลดขนาดไฟล์
-    const optimizedBuffer = await sharp(buffer)
-      .resize(1920, null, {
-        // null คือปล่อยให้ความสูงปรับตามสัดส่วนอัตโนมัติ
-        withoutEnlargement: true, // ถ้ารูปเล็กกว่า 1920px จะไม่ขยายให้แตก
-      })
-      .webp({ quality: 80 })
-      .toBuffer();
+      if (Buffer.isBuffer(imageToUpload)) {
+        uploadStream.end(imageToUpload);
+      } else {
+        // If it's a base64 string
+        cloudinary.uploader.upload(imageToUpload as string, {
+          folder: `ktltc/${folder}`,
+          resource_type: "auto",
+        }).then(resolve).catch(reject);
+      }
+    });
 
-    // 6. บันทึกไฟล์ที่ประมวลผลแล้วลงในระบบ
-    await writeFile(path, optimizedBuffer);
+    const result = uploadResponse as any;
 
-    // 7. ส่ง URL กลับไปยัง Client
     return NextResponse.json({
       success: true,
-      imageUrl: `/uploads/${filename}`,
-      message: "อัปโหลดและลดขนาดภาพเรียบร้อยแล้ว",
+      url: result.secure_url,
+      imageUrl: result.secure_url, // for backward compatibility
+      message: "อัปโหลดเรียบร้อยแล้ว",
     });
   } catch (error: any) {
     console.error("Upload Error:", error);
-
-    // จัดการกรณี Error ทั่วไป
     return NextResponse.json(
-      { error: "การประมวลผลรูปภาพล้มเหลว หรือไฟล์มีขนาดใหญ่เกินไป" },
+      { error: "การอัปโหลดล้มเหลว" },
       { status: 500 },
     );
   }

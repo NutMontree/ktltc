@@ -50,7 +50,8 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, username, email, phone, lineId, department, position, faction, description, password, image, coverImage } = body;
+    console.log("Profile Update Request Body:", body);
+    const { name, username, email, phone, lineId, department, position, faction, description, password, image, coverImage, work, education, currentCity, hometown, relationship } = body;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -60,16 +61,23 @@ export async function PATCH(req: Request) {
     const isSuperAdmin = currentUser?.role === "super_admin";
 
     const updateData: any = {
-      name,
-      email,
-      phone,
-      lineId,
-      department,
-      position,
-      faction,
-      description,
       updatedAt: new Date(),
     };
+
+    // Only update fields that are present in the body
+    const fields = [
+      'name', 'email', 'phone', 'lineId', 'department', 'position', 
+      'faction', 'description', 'work', 'education', 'currentCity', 
+      'hometown', 'relationship', 'program'
+    ];
+
+    fields.forEach(field => {
+      if (body[field] !== undefined) {
+        updateData[field] = body[field];
+      }
+    });
+
+    console.log("Final Update Data:", updateData);
 
     if (isSuperAdmin && username) {
       const trimmedUsername = username.trim();

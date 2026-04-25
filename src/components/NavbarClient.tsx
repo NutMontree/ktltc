@@ -164,12 +164,12 @@ export default function NavbarClient({
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-2 sm:pt-3 px-2 sm:px-4 lg:px-6" : ""}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 lg:px-2" : ""}`}
     >
       <nav
         className={`w-full max-w-[1600px] mx-auto transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isScrolled
-            ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-3xl border border-white/40 dark:border-zinc-800/50 py-2.5 px-4 lg:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
+            ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-3xl border border-white/40 dark:border-zinc-800/50 py-0.5 px-4 lg:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
             : "py-4 px-4 lg:px-6 bg-transparent border-transparent"
         }`}
       >
@@ -396,7 +396,9 @@ export default function NavbarClient({
 
                           {isSuperAdmin && (
                             <div className="bg-sky-50/50 dark:bg-sky-500/5 rounded-2xl p-1.5 mb-2 border border-sky-100 dark:border-sky-500/10">
-                              <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1">เฉพาะ Super Admin</p>
+                              <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1">
+                                เฉพาะ Super Admin
+                              </p>
                               <Link
                                 href="/dashboard/super-admin"
                                 className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
