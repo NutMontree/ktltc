@@ -29,7 +29,7 @@ async function getHomeData() {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const [visibilityData, siteData, postersData, feeds] = await Promise.all([
+    const [visibilityData, siteData, postersData, feeds, banners] = await Promise.all([
       db.collection("home_settings").find().toArray(),
       db.collection("site_settings").find().toArray(),
       db
@@ -38,6 +38,7 @@ async function getHomeData() {
         .sort({ createdAt: -1 })
         .toArray(),
       db.collection("social_feeds").find({}).sort({ createdAt: -1 }).toArray(),
+      db.collection("banners").find({ isActive: true }).toArray(),
     ]);
 
     const isShow = visibilityData.reduce((acc: any, item: any) => {
@@ -55,22 +56,23 @@ async function getHomeData() {
       settings,
       activePosters: JSON.parse(JSON.stringify(postersData)),
       feeds: JSON.parse(JSON.stringify(feeds)),
+      banners: JSON.parse(JSON.stringify(banners)),
     };
   } catch (error) {
     console.error("Fetch Data Error:", error);
-    return { isShow: {}, settings: {}, activePosters: [], feeds: [] };
+    return { isShow: {}, settings: {}, activePosters: [], feeds: [], banners: [] };
   }
 }
 
 export default async function Home() {
-  const { isShow, settings, activePosters, feeds } = await getHomeData();
+  const { isShow, settings, activePosters, feeds, banners } = await getHomeData();
 
   return (
     <div className="flex flex-col min-h-screen">
       <main className="grow">
         {isShow.banner !== false && (
           <section className="w-full mb-8">
-            <HomeBannerSwiper />
+            <HomeBannerSwiper initialBanners={banners} />
           </section>
         )}
 

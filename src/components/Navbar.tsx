@@ -4,6 +4,10 @@ import NavbarClient from "./NavbarClient";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
+// บังคับให้ Navbar เป็น Dynamic Component และดึงข้อมูลใหม่เสมอ
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // ปรับ Type ให้ _id เป็น string เสมอเพื่อให้เข้ากับ NavbarClient
 export type MenuItem = NavItem & {
   _id: string;
@@ -20,6 +24,11 @@ async function getNavItems() {
       .sort({ order: 1 })
       .toArray();
 
+    if (!items || items.length === 0) {
+      console.warn("⚠️ [Navbar] No nav items found in database");
+      return [];
+    }
+
     // บังคับ Type cast ให้ _id เป็น string และกรองข้อมูล
     const allItems = JSON.parse(JSON.stringify(items)) as (NavItem & {
       _id: string;
@@ -35,22 +44,23 @@ async function getNavItems() {
 
     return menuTree;
   } catch (error) {
-    console.error("Failed to fetch nav items:", error);
+    console.error("❌ Failed to fetch nav items:", error);
     return [];
   }
 }
 
 export default async function Navbar() {
-  const menuTree = await getNavItems();
-  const session = await auth();
+  const [menuTree, session] = await Promise.all([
+    getNavItems(),
+    auth()
+  ]);
 
   let userImage = "";
   let username = session?.user?.name || (session?.user as any)?.username || "";
-  let role = "";
+  let role = (session?.user as any)?.role || "";
 
   if (session?.user) {
     try {
-      // ดึง userId จากหลายแหล่งที่อาจเป็นไปได้ใน Session
       const userId = (session.user as any).id || (session as any).userId;
 
       if (userId && ObjectId.isValid(userId)) {
@@ -63,8 +73,7 @@ export default async function Navbar() {
         if (userData) {
           userImage = userData.image || "";
           username = userData.name || userData.username || username;
-          // ล้างค่าว่างและทำให้เป็นตัวพิมพ์เล็กเพื่อความแม่นยำในการเช็ค Role
-          role = (userData.role || "member").trim().toLowerCase();
+          role = (userData.role || "user").trim().toLowerCase();
         }
       }
     } catch (error) {

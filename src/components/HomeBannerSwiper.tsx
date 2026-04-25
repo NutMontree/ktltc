@@ -1,7 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
 
@@ -10,35 +10,51 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
-export default function HomeBannerSwiper() {
-  const [banners, setBanners] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function HomeBannerSwiper({
+  initialBanners,
+}: {
+  initialBanners?: any[];
+}) {
+  const [banners, setBanners] = useState<any[]>(initialBanners || []);
+  const [loading, setLoading] = useState(!initialBanners);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    fetch("/api/banners?isActive=true")
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        setBanners(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Banner fetch error:", err);
-        setBanners([]);
-        setLoading(false);
-      });
-  }, []);
+    // ถ้ามีข้อมูลตั้งต้นมาแล้ว ไม่ต้อง fetch ใหม่ในแวบแรก
+    if (!initialBanners || initialBanners.length === 0) {
+      fetch("/api/banners?isActive=true")
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data) => {
+          setBanners(Array.isArray(data) ? data : []);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Banner fetch error:", err);
+          setBanners([]);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [initialBanners]);
 
-  if (!mounted || loading) {
+  if (!mounted)
     return (
-      <div className="w-full max-w-[1920px] mx-auto my-4 px-0 md:px-4">
-        <div className="relative aspect-1920/820 overflow-hidden bg-slate-200 animate-pulse rounded-lg md:rounded-[2.5rem]" />
+      <div className="w-full max-w-[1600px] mx-auto my-4 px-2">
+        <div className="relative aspect-21/9 md:aspect-1920/820 overflow-hidden bg-slate-200 dark:bg-zinc-800 animate-pulse rounded-4xl" />
+      </div>
+    );
+
+  if (banners.length === 0 && !loading) return null;
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-[1600px] mx-auto my-4 px-2">
+        <div className="relative aspect-21/9 md:aspect-1920/820 overflow-hidden bg-slate-200 dark:bg-zinc-800 animate-pulse rounded-4xl" />
       </div>
     );
   }
-
-  if (banners.length === 0) return null;
 
   return (
     // ปรับให้กว้างเต็มจอ (w-full) และจำกัดความกว้างสูงสุดตามขนาดรูป (max-w-[1920px])
@@ -87,8 +103,10 @@ export default function HomeBannerSwiper() {
         {/* Navigation Buttons */}
         {/* Navigation Buttons */}
         {(() => {
-          const prevBtn = "swiper-button-prev !after:content-['prev'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
-          const nextBtn = "swiper-button-next !after:content-['next'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
+          const prevBtn =
+            "swiper-button-prev !after:content-['prev'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
+          const nextBtn =
+            "swiper-button-next !after:content-['next'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
           return (
             <>
               <div className={`${prevBtn} ml-6`}></div>
