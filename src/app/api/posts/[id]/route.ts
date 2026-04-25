@@ -48,7 +48,7 @@ export async function PUT(
 
     const { id } = await params;
     console.log("รหัสโพสต์:", id);
-    const { title, content, image } = await req.json();
+    const { title, content, image, images } = await req.json();
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
@@ -59,6 +59,7 @@ export async function PUT(
           title,
           content,
           image,
+          images: images || (image ? [image] : []),
           updatedAt: new Date(),
         },
       },
@@ -90,7 +91,8 @@ export async function POST(
     const userId = (session.user as any).id;
     const userName = session.user.name;
     const { id } = await params;
-    const { type, text } = await req.json();
+    const body = await req.json();
+    const { type, text, commentId, parentId, newText } = body;
 
     console.log(`SOCIAL Action: ${type} on ID: ${id} by User: ${userName}`);
 
@@ -121,9 +123,13 @@ export async function POST(
       }
     } else if (type === "COMMENT") {
       const comment = {
+        id: new ObjectId().toString(),
         userId: new ObjectId(userId),
         userName,
+        userImage: session.user.image,
         text,
+        image: body.image || null,
+        parentId: parentId || null,
         createdAt: new Date(),
       };
       await db
@@ -132,6 +138,64 @@ export async function POST(
           { _id: new ObjectId(id) },
           { $push: { comments: comment } as any },
         );
+    } else if (type === "DELETE_COMMENT") {
+      await db.collection("posts").updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $pull: {
+            comments: {
+              id: commentId,
+              $or: [
+                { userId: new ObjectId(userId) },
+                { userId: userId }
+              ]
+            },
+          } as any,
+        },
+      );
+    } else if (type === "UPDATE_COMMENT") {
+      await db.collection("posts").updateOne(
+        {
+          _id: new ObjectId(id),
+          comments: {
+            $elemMatch: {
+              id: commentId,
+              $or: [
+                { userId: new ObjectId(userId) },
+                { userId: userId }
+              ]
+            }
+          }
+        },
+        {
+          $set: {
+            "comments.$.text": newText,
+            "comments.$.updatedAt": new Date(),
+          },
+        },
+      );
+    } else if (type === "LIKE_COMMENT") {
+      const post = await db
+        .collection("posts")
+        .findOne({ _id: new ObjectId(id), "comments.id": commentId });
+
+      if (post) {
+        const comment = post.comments.find((c: any) => c.id === commentId);
+        const commentLikes = comment.likes || [];
+        const hasLiked = commentLikes.includes(userId);
+
+        if (hasLiked) {
+          await db.collection("posts").updateOne(
+            { _id: new ObjectId(id), "comments.id": commentId },
+            { $pull: { "comments.$.likes": userId } as any },
+          );
+        } else {
+          await db.collection("posts").updateOne(
+            { _id: new ObjectId(id), "comments.id": commentId },
+            { $addToSet: { "comments.$.likes": userId } as any },
+          );
+        }
+      }
     }
 
     return NextResponse.json({ success: true });

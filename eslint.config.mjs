@@ -17,6 +17,9 @@ const eslintConfig = defineConfig([
       "react-hooks/purity": "off", // ✅ ปิดการแจ้งเตือนเรื่อง Hook Purity ( Side Effects ใน Render )
       "react-hooks/immutability": "off", // ✅ ปิดการแจ้งเตือนเรื่อง Immutability (การแก้ไขค่าตัวแปรโดยตรงใน Hooks)
       "@typescript-eslint/no-unsafe-function-type": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-unused-vars": "err",
     },
   },
 

@@ -3,19 +3,38 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 
-// 1. ดึงโพสต์ทั้งหมด
-export async function GET() {
+// 1. ดึงโพสต์ (รองรับการกรองตาม userId หรือ authorId)
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+    const authorId = searchParams.get("authorId");
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    
+    let query = {};
+    if (userId) {
+      // ค้นหาทั้งโพสต์ที่เป็นเจ้าของวอลล์ หรือโพสต์ที่เขียนเองบนวอลล์นี้
+      query = { 
+        $or: [
+          { userId: new ObjectId(userId) },
+          { authorId: new ObjectId(userId) }
+        ]
+      };
+    } else if (authorId) {
+      query = { authorId: new ObjectId(authorId) };
+    }
+
     const posts = await db
       .collection("posts")
-      .find({})
+      .find(query)
       .sort({ createdAt: -1 })
       .toArray();
 
     return NextResponse.json(posts);
   } catch (error) {
+    console.error("Fetch Posts Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch posts" },
       { status: 500 },
@@ -35,18 +54,20 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { title, content, image } = body;
-
+    const { title, content, image, images, targetUserId } = body;
+    
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
     // บันทึกข้อมูลโพสต์ลง Collection posts
     const newPost = {
-      userId: new ObjectId(userId),
+      userId: targetUserId ? new ObjectId(targetUserId) : new ObjectId(userId), // วอลล์ที่เป็นเจ้าของ
+      authorId: new ObjectId(userId), // ผู้โพสต์
       author: userName,
       title,
       content,
-      image,
+      image, // สำหรับรองรับข้อมูลเก่า
+      images: images || (image ? [image] : []), // รองรับหลายรูป
       createdAt: new Date(),
     };
 

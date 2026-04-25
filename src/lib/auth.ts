@@ -61,6 +61,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           username: user.username,
           email: user.email || null,
           role: (user.role || "user").toLowerCase(), // ✅ บังคับเป็นพิมพ์เล็กเสมอกัน
+          image: user.image || null,
           sessionId, // ส่งต่อไปให้ jwt callback
         };
       },
@@ -73,6 +74,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.role = (user as any).role;
         token.username = (user as any).username;
+        token.image = (user as any).image;
         token.sessionId = (user as any).sessionId;
         token.loginTimestamp = Date.now();
       }
@@ -93,6 +95,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
         (session.user as any).username = token.username;
+        (session.user as any).image = token.image;
       }
       return session;
     },

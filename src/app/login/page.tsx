@@ -49,14 +49,14 @@ export default function LoginPage() {
           action: "LOGIN_FAILED",
           details: `เข้าสู่ระบบไม่สำเร็จ: ${result.error}`,
         });
-        
+
         let errorMessage = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
         if (result.error.toLowerCase().includes("ยังรอการอนุมัติ")) {
           errorMessage = "บัญชีของคุณยังรอการอนุมัติจาก Super Admin";
         } else if (result.error.toLowerCase().includes("ไม่พบผู้ใช้งาน")) {
           errorMessage = "ไม่พบชื่อผู้ใช้นี้ในระบบ";
         }
-        
+
         setError(errorMessage);
         setLoading(false);
       } else {
@@ -67,12 +67,12 @@ export default function LoginPage() {
         });
         setSuccess(true);
         router.refresh();
-        
+
         const session = await getSession();
         const role = (session?.user as any)?.role?.toLowerCase();
 
         if (role === "super_admin") {
-          router.push("/dashboard");
+          router.push("/");
         } else {
           router.push("/");
         }
