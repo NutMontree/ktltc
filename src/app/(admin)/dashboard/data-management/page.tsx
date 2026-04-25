@@ -399,8 +399,10 @@ export default function DataManagementPage() {
     );
   }
 
-  const role = (session?.user as any)?.role;
-  if (role !== "super_admin") {
+  const rawRole = (session?.user as any)?.role || "";
+  const role = rawRole.toLowerCase().replace(/[\s_]/g, "");
+
+  if (role !== "superadmin") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
         <div className="p-6 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full mb-4">

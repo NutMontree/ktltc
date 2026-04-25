@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { v2 as cloudinary } from "cloudinary";
 import { useSession } from "next-auth/react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Newspaper,
   Image as ImageIcon,
@@ -83,10 +82,10 @@ export default function DashboardLoader() {
         </div>
         <div>
           <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-            Unauthorized Access
+            การเข้าถึงโดยไม่ได้รับอนุญาต
           </h2>
           <p className="text-zinc-500 mt-2 font-medium">
-            Please log in to access the administrative command center.
+            กรุณาเข้าสู่ระบบเพื่อเข้าถึงศูนย์บัญชาการผู้บริหาร
           </p>
         </div>
         <Link
@@ -110,7 +109,7 @@ export default function DashboardLoader() {
           onClick={() => window.location.reload()}
           className="text-blue-500 font-black uppercase text-xs hover:underline"
         >
-          Refresh System
+          ระบบรีเฟรช
         </button>
       </div>
     );

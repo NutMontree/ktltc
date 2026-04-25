@@ -8,7 +8,8 @@ export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
   const hasAuthError = !!(req.auth as any)?.error;
-  const userRole = (req.auth?.user as any)?.role?.toLowerCase();
+  const userRoleRaw = (req.auth?.user as any)?.role || "";
+  const userRole = userRoleRaw.toLowerCase().replace(/[\s_]/g, ""); // ลบช่องว่างและขีดล่าง เพื่อความแม่นยำในการเช็ค (เช่น super admin -> superadmin)
   const pathname = nextUrl.pathname;
 
   const isDashboardPage = pathname.startsWith("/dashboard");
@@ -45,22 +46,23 @@ export default auth((req) => {
   if (isLoggedIn) {
     // 3.1 สิทธิ์เข้าหน้า Dashboard (เฉพาะ Admin/Director/Staff/Deputy/HR)
     if (isAttendanceDashboard) {
-      const allowedDashboardRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "editor", "staff"];
-      if (!allowedDashboardRoles.includes(userRole)) {
+      const allowedDashboardRoles = ["super_admin", "superadmin", "super admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "editor", "staff"];
+      if (!allowedDashboardRoles.includes(userRoleRaw.toLowerCase())) {
         return NextResponse.redirect(new URL("/wfh", nextUrl.origin));
       }
     }
 
     // 3.2 สิทธิ์เข้าหน้าจัดการเต็มรูปแบบ (Report, Approvals, Settings, Work Reports, Manage Roles)
     if (isFullAdminAttendance) {
-      const allowedFullAdminRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"];
-      if (!allowedFullAdminRoles.includes(userRole)) {
+      const allowedFullAdminRoles = ["super_admin", "superadmin", "super admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"];
+      if (!allowedFullAdminRoles.includes(userRoleRaw.toLowerCase())) {
         return NextResponse.redirect(new URL("/attendance-dashboard", nextUrl.origin));
       }
 
       // 3.2b เฉพาะ super_admin เท่านั้นสำหรับฟีเจอร์ "จัดการรายงานลูกน้องทุกแผนก"
       if (pathname.startsWith("/work-reports-management")) {
-        if (userRole !== "super_admin") {
+        const superAdminRoles = ["super_admin", "superadmin", "super admin"];
+        if (!superAdminRoles.includes(userRoleRaw.toLowerCase())) {
           return NextResponse.redirect(new URL("/attendance-dashboard", nextUrl.origin));
         }
       }
@@ -73,10 +75,10 @@ export default auth((req) => {
         return NextResponse.next();
       }
 
-      const allowedDashboardRoles = ["super_admin", "admin", "editor"];
-      if (!allowedDashboardRoles.includes(userRole)) {
+      const allowedDashboardRoles = ["super_admin", "superadmin", "super admin", "admin", "editor"];
+      if (!allowedDashboardRoles.includes(userRoleRaw.toLowerCase())) {
         // ถ้าเป็นกลุ่มบริหาร/อาจารย์ ให้ไปหน้า Attendance Dashboard แทน
-        const isStaffGroup = ["hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "staff", "teacher"].includes(userRole);
+        const isStaffGroup = ["hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "staff", "teacher"].includes(userRoleRaw.toLowerCase());
         return NextResponse.redirect(new URL(isStaffGroup ? "/attendance-dashboard" : "/wfh", nextUrl.origin));
       }
 
@@ -84,7 +86,7 @@ export default auth((req) => {
       if (pathname.startsWith("/dashboard/users") || 
           pathname.startsWith("/dashboard/settings") ||
           pathname.startsWith("/dashboard/data-management")) {
-        if (userRole !== "super_admin") {
+        if (userRole !== "superadmin") {
           return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
         }
       }

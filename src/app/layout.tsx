@@ -17,7 +17,7 @@ import CookieConsent from "@/components/CookieConsent";
 import SessionWatcher from "@/components/SessionWatcher";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { auth } from "@/lib/auth";
+// import { auth } from "@/lib/auth";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
@@ -67,7 +67,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
 
   return (
     // suppressHydrationWarning ใส่ไว้เพื่อแก้ Error ที่เกิดจาก ThemeProvider (Dark Mode)
@@ -85,7 +84,6 @@ export default async function RootLayout({
       <body className={`${prompt.className} ${prompt.variable} antialiased`}>
         <AntdRegistry>
           <SessionProvider
-            session={session}
             refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
             refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
           >
