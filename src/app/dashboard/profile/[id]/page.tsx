@@ -31,7 +31,12 @@ import {
   DownOutlined,
   MenuOutlined,
   LockOutlined,
-  SearchOutlined
+  SearchOutlined,
+  LikeFilled,
+  LikeOutlined,
+  CommentOutlined,
+  LeftOutlined,
+  RightOutlined
 } from "@ant-design/icons";
 import { Dropdown, Popover, message, Popconfirm } from "antd";
 import { useSession, signIn } from "next-auth/react";
