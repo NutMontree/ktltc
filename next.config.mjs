@@ -58,8 +58,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/(.*)",
-        destination: "https://ktltc.site/$1",
+        source: "/:path*",
+        destination: "https://ktltc.site/:path*",
         permanent: true,
       },
     ];
