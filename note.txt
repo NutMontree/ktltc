@@ -9,3 +9,19 @@ https://www.svgrepo.com/
 https://padlet.com/datacenterdepartment/q-a-fpugfje0yejm0bqx
 https://console.cloudinary.com/app/c-a8079b40d30d0074dc19c625167848/image/getting-started
 
+ในอาคต เมื่อเช่าโดเมน .ac.th แล้ว ให้เข้าไปแก้ไขข้อมูลที่ไฟล์
+
+cd /home/ktltc/ktltc
+sudo tee vercel.json << 'EOF'
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://ktltc.sit/$1",
+      "permanent": true
+    }
+  ]
+}
+EOF  
+
+https://ktltc.site แก้เป็น https://ktltc..ac.th หรือ ชื่อ ที่เช่ามา
