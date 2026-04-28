@@ -61,6 +61,12 @@ const nextConfig = {
         source: "/:path*",
         destination: "https://ktltc.site/:path*",
         permanent: true,
+        has: [
+          {
+            type: "host",
+            value: "ktltc.vercel.app",
+          },
+        ],
       },
     ];
   },
