@@ -48,12 +48,21 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Fix Turbopack vs Webpack conflict for PWA plugin
   turbopack: {},
 
   compress: true,
   devIndicators: {
     appIsrStatus: false,
+  },
+
+  async redirects() {
+    return [
+      {
+        source: "/(.*)",
+        destination: "https://ktltc.site/$1",
+        permanent: true,
+      },
+    ];
   },
 };
 
