@@ -68,7 +68,7 @@ function BackgroundBeamsWithCollisionDemo() {
           { className: "relative w-full rounded-xl overflow-hidden shadow-lg" },
           react_1["default"].createElement(
             link_preview_1.LinkPreview,
-            { url: "https://ktltc.vercel.app/news/69892ed2e016a8b49ffc9974" },
+            { url: "https://ktltc.site/news/69892ed2e016a8b49ffc9974" },
             react_1["default"].createElement(image_1["default"], {
               src: "/wallpaper/2.webp",
               alt: "\u0E02\u0E48\u0E32\u0E27\u0E1B\u0E23\u0E30\u0E0A\u0E32\u0E2A\u0E31\u0E21\u0E1E\u0E31\u0E19\u0E18\u0E4C",

@@ -48,8 +48,8 @@ export function FootTitle() {
         >
           <p>Youtube : วิทยาลัยเทคนิคกันทรลักษ์ Today </p>
         </Link>
-        <Link className="hover:text-sky-600" href={"https://ktltc.vercel.app"}>
-          <p>Website : https://ktltc.vercel.app</p>
+        <Link className="hover:text-sky-600" href={"https://ktltc.site"}>
+          <p>Website : https://ktltc.site</p>
         </Link>
         <Link
           className="hover:text-sky-600"

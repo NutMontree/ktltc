@@ -152,7 +152,7 @@ const downloadStylizedQRCode = (
     displayTitle.length > 35
       ? displayTitle.substring(0, 35) + "..."
       : displayTitle;
-  if (!finalDisplay) finalDisplay = "https://ktltc.vercel.app";
+  if (!finalDisplay) finalDisplay = "https://ktltc.site";
   ctx.fillText(finalDisplay, width / 2, height - 25);
 
   // 5. Download
@@ -383,7 +383,7 @@ export default function CreateQRCode() {
 
                     <QRCode
                       type={renderType}
-                      value={text || "https://ktltc.vercel.app"}
+                      value={text || "https://ktltc.site"}
                       size={240}
                       iconSize={60}
                       color="#000"
@@ -401,7 +401,7 @@ export default function CreateQRCode() {
                       {/* แสดง Title แทน Text ถ้ายาวไปก็จุดๆๆ */}
                       {isFetchingTitle
                         ? "ดึงข้อมูล..."
-                        : linkTitle || text || "https://ktltc.vercel.app"}
+                        : linkTitle || text || "https://ktltc.site"}
                     </p>
                   </div>
                 </div>

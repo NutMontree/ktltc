@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -15,7 +15,7 @@ export async function POST(
 
     const userId = (session.user as any).id;
     const userName = session.user.name;
-    const { id } = params;
+    const { id } = await params;
     const { type, text } = await req.json();
 
     console.log(`SOCIAL Action: ${type} on ID: ${id} by User: ${userName}`);

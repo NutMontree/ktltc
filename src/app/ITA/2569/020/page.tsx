@@ -16,7 +16,7 @@ export default function page() {
       <div className="grid gap-4">
         <p className="pt-4 text-xl">Link Wab Page</p>
         <div className="color hover:text-blue-500 dark:hover:text-blue-400">
-          <LinkPreview url="https://ktltc.vercel.app/bidding">
+          <LinkPreview url="https://ktltc.site/bidding">
             <p className="text-3 md:text-3.5 hover:text-orange-500 sm:text-sm md:text-base dark:hover:text-orange-400">
               ข่าวประกวดราคา
             </p>

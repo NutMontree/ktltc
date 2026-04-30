@@ -42,7 +42,7 @@ const planningJobs = [
     //   },
     //   {
     //     label: "แบบฟอร์ม PDCA",
-    //     href: "https://ktltc.vercel.app/pdca",
+    //     href: "https://ktltc.site/pdca",
     //     icon: <FileTextOutlined />,
     //   },
     //   {

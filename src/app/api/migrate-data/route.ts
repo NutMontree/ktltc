@@ -51,7 +51,7 @@ export async function GET(req: Request) {
 
         const existingUser = await usersCollection.findOne({ name: cleanName });
 
-        const updateDoc = {
+        const updateDoc: { $set: any } = {
           $set: {
             position: person.position?.trim(),
             department: person.department?.trim(),

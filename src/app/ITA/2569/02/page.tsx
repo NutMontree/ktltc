@@ -17,7 +17,7 @@ export default function page() {
 
       <p className="text-xl">Link Web Page</p>
       <div className="py-4 hover:text-blue-500 dark:hover:text-blue-400">
-        <LinkPreview url="https://ktltc.vercel.app/executiveboard">
+        <LinkPreview url="https://ktltc.site/executiveboard">
           <p className="text-3 md:text-3.5 hover:text-orange-500 sm:text-sm md:text-base dark:hover:text-orange-400">
             1. ข้อมูลโครงสร้างวิทยาลัยฯ
           </p>
