@@ -22,6 +22,8 @@ interface RoleSetting {
   systemLockStart?: string;
   systemLockEnd?: string;
   closedDays?: number[];
+  inSiteDistance?: number;
+  wfhMaxDistance?: number;
 }
 
 export default function AttendanceSettingsPage() {
@@ -330,6 +332,74 @@ export default function AttendanceSettingsPage() {
                       </button>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* การตั้งค่าระยะทาง */}
+              <div className="md:col-span-2 space-y-6 pt-8 border-t border-zinc-100 dark:border-zinc-800">
+                <h3 className="text-sm font-black text-violet-600 uppercase tracking-widest bg-violet-50 dark:bg-violet-900/20 px-3 py-1 rounded-lg inline-block">
+                  การตั้งค่าระยะทาง (Distance Settings)
+                </h3>
+                <p className="text-xs font-bold text-zinc-400 -mt-4 ml-1">
+                  กำหนดระยะทางสำหรับตรวจสอบและประเมินสถานะการลงเวลา (ระบบอนุญาตให้ลงเวลาจากที่ใดก็ได้ในโลก)
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
+                    <label className="block text-xs font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-2">
+                      ระยะทางในพื้นที่ (เมตร)
+                    </label>
+                    <p className="text-[10px] text-emerald-600 dark:text-emerald-500 mb-3">
+                      ระยะทางสูงสุดจากวิทยาลัยที่ถือว่า "อยู่ในพื้นที่ (In-Site)"
+                    </p>
+                    <input
+                      type="number"
+                      min="1"
+                      max="10000"
+                      value={globalSetting.inSiteDistance || 200}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 200;
+                        setSettings(
+                          settings.map((s) =>
+                            s.role === "system_global"
+                              ? { ...s, inSiteDistance: val }
+                              : s,
+                          ),
+                        );
+                      }}
+                      className="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-emerald-200 dark:border-emerald-700 text-lg font-black text-emerald-800 dark:text-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <p className="text-[10px] text-emerald-500 mt-2">
+                      ค่าเริ่มต้น: 200 เมตร
+                    </p>
+                  </div>
+                  <div className="bg-violet-50 dark:bg-violet-900/10 p-4 rounded-2xl border border-violet-100 dark:border-violet-800/30">
+                    <label className="block text-xs font-black text-violet-700 dark:text-violet-400 uppercase tracking-widest mb-2">
+                      ระยะทาง WFH/Remote (กิโลเมตร)
+                    </label>
+                    <p className="text-[10px] text-violet-600 dark:text-violet-500 mb-3">
+                      หากระยะทางเกินกว่าที่กำหนด ระบบจะติดแท็ก "อยู่นอกพื้นที่"
+                    </p>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20000"
+                      value={globalSetting.wfhMaxDistance || 200}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 200;
+                        setSettings(
+                          settings.map((s) =>
+                            s.role === "system_global"
+                              ? { ...s, wfhMaxDistance: val }
+                              : s,
+                          ),
+                        );
+                      }}
+                      className="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-violet-200 dark:border-violet-700 text-lg font-black text-violet-800 dark:text-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    />
+                    <p className="text-[10px] text-violet-500 mt-2">
+                      ค่าเริ่มต้น: 200 กิโลเมตร (สามารถเข้าสู่ระบบจากที่ใดก็ได้)
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

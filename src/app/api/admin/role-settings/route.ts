@@ -38,7 +38,10 @@ export async function GET() {
         checkOutStart: "16:30", 
         checkOutEnd: "18:00", 
         systemLockStart: "18:01", 
-        systemLockEnd: "04:59" 
+        systemLockEnd: "04:59",
+        // การตั้งค่าระยะทาง
+        inSiteDistance: 200, // เมตร (ในพื้นที่)
+        wfhMaxDistance: 200, // กิโลเมตร (นอกพื้นที่ / WFH)
       },
     ];
 

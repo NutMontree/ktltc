@@ -11,8 +11,9 @@ import { ObjectId } from 'mongodb';
 
 // พิกัดวิทยาลัย KTLTC (82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ)
 const COLLEGE_LOCATION = { lat: 14.754043, lng: 104.65807 };
-const IN_SITE_THRESHOLD = 200; // 200 Meters
-const MAX_ALLOWED_DISTANCE = 200000; // 200 Kilometers (WFH/Remote Limit)
+// ค่า Default จะถูก override โดยค่าจาก DB
+const DEFAULT_IN_SITE_DISTANCE = 200; // 200 Meters
+const DEFAULT_WFH_MAX_DISTANCE = 200000; // 200 Kilometers (WFH/Remote Limit)
 
 export async function POST(req: Request) {
   try {
@@ -28,20 +29,6 @@ export async function POST(req: Request) {
 
     const serverTime = new Date();
     
-    // Geofencing
-    let statusTag = 'Remote';
-    let distance = -1;
-    if (lat && lng) {
-      distance = calculateDistance(COLLEGE_LOCATION.lat, COLLEGE_LOCATION.lng, lat, lng);
-      // ในระยะ 200 กิโลเมตร ระบุเป็น อยู่ในพื้นที่
-      // อยู่นอกระยะ 200 กิโลเมตร ให้ระบุว่า อยู่นอกพื้นที่
-      if (distance <= MAX_ALLOWED_DISTANCE) {
-        statusTag = 'อยู่ในพื้นที่';
-      } else {
-        statusTag = 'อยู่นอกพื้นที่';
-      }
-    }
-
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
@@ -61,9 +48,28 @@ export async function POST(req: Request) {
       lateThreshold: roleSetting?.checkInLimit || globalSetting?.lateThreshold || "08:00",
       systemLockStart: globalSetting?.systemLockStart || "18:01",
       systemLockEnd: globalSetting?.systemLockEnd || "04:59",
+      // ค่าระยะทางจาก DB หรือค่า Default
+      inSiteDistance: globalSetting?.inSiteDistance || DEFAULT_IN_SITE_DISTANCE,
+      wfhMaxDistance: (globalSetting?.wfhMaxDistance || 200) * 1000, // แปลง กม. เป็น เมตร
     };
 
-    // Thailand is UTC+7
+    // Geofencing - ใช้ค่าระยะทางจาก DB
+    let statusTag = 'Remote';
+    let distance = -1;
+    if (lat && lng) {
+      distance = calculateDistance(COLLEGE_LOCATION.lat, COLLEGE_LOCATION.lng, lat, lng);
+      // ตรวจสอบระยะทางจาก DB
+      const inSiteThreshold = config.inSiteDistance; // เมตร
+      const maxAllowedDistance = config.wfhMaxDistance; // เมตร (จาก กม. * 1000)
+      
+      if (distance <= inSiteThreshold) {
+        statusTag = 'อยู่ในพื้นที่ (In-Site)';
+      } else if (distance <= maxAllowedDistance) {
+        statusTag = 'นอกพื้นที่ (Remote/WFH)';
+      } else {
+        statusTag = 'อยู่นอกพื้นที่';
+      }
+    }
     const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
     const thHours = thTime.getUTCHours();
     const thMinutes = thTime.getUTCMinutes();
