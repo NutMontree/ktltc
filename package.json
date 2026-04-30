@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:setup": "node scripts/ensure-indexes.js",
     "db:check": "node scripts/test-db.js",
-    "models:download": "node scripts/download-models.js"
+    "models:download": "node scripts/download-models.js",
+    "migrate:images": "node scripts/migrate-images-js.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -47,7 +48,6 @@
     "bcryptjs": "^3.0.3",
     "browser-image-compression": "^2.0.2",
     "build": "^0.1.4",
-    "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "cookies-next": "^5.1.0",
     "date-fns": "^4.1.0",
@@ -94,13 +94,14 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.19.30",
+    "@types/node": "^20.19.39",
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
