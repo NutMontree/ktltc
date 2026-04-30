@@ -295,7 +295,7 @@ export default function LoginPage() {
                   className="inline-flex items-center gap-2 px-4 py-2 bg-[#06C755]/10 hover:bg-[#06C755]/20 text-[#06C755] rounded-full text-xs font-bold transition-all border border-[#06C755]/20"
                 >
                   <span className="w-2 h-2 bg-[#06C755] rounded-full animate-pulse" />
-                  ติดต่อ Super Admin (LINE ID: allmmin)
+                  ติดต่อ ผู้ดูแลระบบ (Line ID: allmmin)
                 </Link>
               </div>
             </div>
