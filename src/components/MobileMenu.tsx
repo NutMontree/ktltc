@@ -128,7 +128,7 @@ export default function MobileMenu({
   };
 
   return (
-    <div className="xl:hidden">
+    <div className="lg:hidden">
       {/* 1. Hamburger Button (Glass UI) */}
       <button
         onClick={() => setIsOpen(true)}

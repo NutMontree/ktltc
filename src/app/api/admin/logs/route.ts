@@ -85,6 +85,8 @@ export async function DELETE() {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    await db.collection("logs").deleteMany({});
+
     await db.collection("logs").insertOne({
       userName: session.user?.name,
       action: "WIPE_ALL_LOGS",
@@ -92,10 +94,6 @@ export async function DELETE() {
       timestamp: new Date(),
       ip: "INTERNAL",
     });
-
-    await db
-      .collection("logs")
-      .deleteMany({ action: { $ne: "WIPE_ALL_LOGS" } });
 
     return NextResponse.json({ success: true, message: "Logs cleared" });
   } catch (error) {

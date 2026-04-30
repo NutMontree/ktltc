@@ -204,7 +204,7 @@ export default function NavbarClient({
           </Link>
 
           {/* --- 2. DESKTOP MENU --- */}
-          <div className="hidden 2xl:flex items-center gap-1.5 desktop-menu-container">
+          <div className="hidden lg:flex items-center gap-1.5 desktop-menu-container">
             {filteredMenuTree.map((item) => {
               const hasChildren = item.children && item.children.length > 0;
               const isActiveNode =
@@ -294,7 +294,7 @@ export default function NavbarClient({
               <ThemeToggle />
             </div>
 
-            <div className="hidden 2xl:block w-px h-8 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+            <div className="hidden lg:block w-px h-8 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
 
             {username ? (
               <div
@@ -506,7 +506,7 @@ export default function NavbarClient({
               </Link>
             )}
 
-            <div className="2xl:hidden sm:pl-2">
+            <div className="lg:hidden sm:pl-2">
               <MobileMenu
                 menuTree={filteredMenuTree}
                 image={image}
