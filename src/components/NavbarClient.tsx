@@ -32,6 +32,7 @@ interface NavbarClientProps {
   username?: string;
   role?: string;
   image?: string;
+  userId?: string;
 }
 
 export default function NavbarClient({
@@ -39,7 +40,9 @@ export default function NavbarClient({
   username,
   role,
   image,
+  userId,
 }: NavbarClientProps) {
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -233,7 +236,7 @@ export default function NavbarClient({
           </Link>
 
           {/* --- 2. DESKTOP MENU --- */}
-          <div className="hidden xl:flex items-center gap-1.5 desktop-menu-container">
+          <div className="hidden 2xl:flex items-center gap-1.5 desktop-menu-container">
             {filteredMenuTree.map((item) => {
               const hasChildren = item.children && item.children.length > 0;
               const isActiveNode =
@@ -248,11 +251,11 @@ export default function NavbarClient({
                   onMouseLeave={() => setActiveMenuId(null)}
                 >
                   <Link
-                    href={ensureAbsolute(item.path) || "#"}
+                    href={hasChildren ? "#" : (ensureAbsolute(item.path) || "#")}
                     onClick={(e) => {
                       if (hasChildren) {
+                        e.preventDefault();
                         if (activeMenuId !== item._id) {
-                          e.preventDefault();
                           setActiveMenuId(item._id);
                           setIsUserDropdownOpen(false);
                         }
@@ -260,13 +263,13 @@ export default function NavbarClient({
                         setActiveMenuId(null);
                       }
                     }}
-                    className={`px-4 py-2.5 rounded-full flex items-center gap-1.5 text-[15px] font-bold transition-all whitespace-nowrap outline-none ${
+                    className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${
                       isActiveNode
                         ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
                         : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
                     }`}
                   >
-                    {item.label}
+                    <span className="px-1">{item.label}</span>
                     {hasChildren && (
                       <ChevronDown
                         className={`w-3.5 h-3.5 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
@@ -417,7 +420,7 @@ export default function NavbarClient({
               <ThemeToggle />
             </div>
 
-            <div className="hidden xl:block w-px h-8 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+            <div className="hidden 2xl:block w-px h-8 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
 
             {username ? (
               <div
@@ -488,7 +491,7 @@ export default function NavbarClient({
                         จัดการบัญชี
                       </span>
                       <Link
-                        href="/dashboard/profile"
+                        href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
                         className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-500/20"
                       >
                         <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
@@ -510,7 +513,7 @@ export default function NavbarClient({
                       {isAdmin && (
                         <Link
                           href="/dashboard"
-                          className="flex items-center gap-3 px-3 py-3 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                          className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
                         >
                           <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
                             <Command size={16} />
@@ -629,7 +632,7 @@ export default function NavbarClient({
               </Link>
             )}
 
-            <div className="xl:hidden sm:pl-2">
+            <div className="2xl:hidden sm:pl-2">
               <MobileMenu
                 menuTree={filteredMenuTree}
                 image={image}

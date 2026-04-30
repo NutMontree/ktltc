@@ -59,9 +59,10 @@ export default async function Navbar() {
   let username = session?.user?.name || (session?.user as any)?.username || "";
   let role = (session?.user as any)?.role || "";
 
+  let userId = "";
   if (session?.user) {
     try {
-      const userId = (session.user as any).id || (session as any).userId;
+      userId = (session.user as any).id || (session as any).userId || "";
 
       if (userId && ObjectId.isValid(userId)) {
         const client = await clientPromise;
@@ -87,6 +88,7 @@ export default async function Navbar() {
       username={username}
       role={role}
       image={userImage}
+      userId={userId}
     />
   );
 }

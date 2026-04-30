@@ -9,12 +9,20 @@ export default function ProfileRedirect() {
   const router = useRouter();
 
   useEffect(() => {
+    // ถ้าสถานะคือ authenticated และมี id ให้พาไปที่หน้าโปรไฟล์ทันที
     if (status === "authenticated" && (session?.user as any)?.id) {
       router.replace(`/dashboard/profile/${(session.user as any).id}`);
-    } else if (status === "unauthenticated") {
-      router.replace("/login");
+      return;
     }
-  }, [status, session, router]);
+
+    // ถ้าสถานะคือ unauthenticated ให้รอสักครู่ก่อน redirect (เผื่อเป็นสถานะชั่วคราวขณะโหลด)
+    if (status === "unauthenticated") {
+      const timer = setTimeout(() => {
+        router.replace("/login");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [session, status, router]);
 
   return <FullPageLoader message="กำลังไปที่โปรไฟล์ของคุณ..." />;
 }

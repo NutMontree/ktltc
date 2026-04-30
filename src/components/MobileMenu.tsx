@@ -34,11 +34,13 @@ export default function MobileMenu({
   image,
   deferredPrompt,
   onInstall,
+  userId,
 }: {
   menuTree?: MenuItem[];
   image?: string;
   deferredPrompt?: any;
   onInstall?: () => void;
+  userId?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openSubMenuId, setOpenSubMenuId] = useState<string | null>(null);
@@ -197,7 +199,7 @@ export default function MobileMenu({
                     {/* User Info Actions */}
                     <div className="mt-5 grid grid-cols-2 gap-2.5">
                       <Link
-                        href="/dashboard/profile"
+                        href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
                         onClick={closeMenu}
                         className="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_15px_-3px_rgba(0,0,0,0.1)] transition-all group"
                       >

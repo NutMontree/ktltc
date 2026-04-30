@@ -26,9 +26,9 @@ export default function SessionWatcher() {
       }
 
       // Forcefully log them out and clear memory
-      setTimeout(() => {
-        signOut({ callbackUrl: "/login" });
-      }, 1000);
+      // setTimeout(() => {
+      //   signOut({ callbackUrl: "/login" });
+      // }, 1000);
     }
   }, [session]);
 
