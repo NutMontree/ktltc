@@ -9,6 +9,17 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'ktltc.vercel.app' }],
+        destination: 'https://ktltc.site/:path*',
+        permanent: true,
+      },
+    ]
+  },
+
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
