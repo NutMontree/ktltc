@@ -34,7 +34,7 @@ type FaceStatus =
   | "error";
 
 import imageCompression from "browser-image-compression";
-import { uploadToCloudinary } from "@/lib/upload";
+import { uploadFile } from "@/lib/upload";
 
 // --- Types ---
 interface RoleSetting {
@@ -436,7 +436,7 @@ function CheckInContent() {
               useWebWorker: true,
             };
             const compressedFile = await imageCompression(imageFile, options);
-            const uploadedUrl = await uploadToCloudinary(
+            const uploadedUrl = await uploadFile(
               compressedFile,
               "attendance_photos",
             );

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { parseFacebookVideoInput } from "@/lib/facebook";
 import { parseYouTubeVideoInput } from "@/lib/youtube";
-import { uploadToCloudinary } from "@/lib/upload";
+import { uploadFile } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
 // --- DND Kit Imports ---
@@ -296,10 +296,10 @@ export default function AddNewsPage() {
     setIsLoading(true);
     try {
       const generalUploads = await Promise.all(
-        imageFiles.map((f) => uploadToCloudinary(f, "ktltc_news")),
+        imageFiles.map((f) => uploadFile(f, "ktltc_news")),
       );
       const newsletterUploads = await Promise.all(
-        newsletterFiles.map((f) => uploadToCloudinary(f, "ktltc_newsletters")),
+        newsletterFiles.map((f) => uploadFile(f, "ktltc_newsletters")),
       );
 
       // DOM-based safe auto-linking for HTML content

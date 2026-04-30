@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation"; // 1. เพิ่ม useRouter
 import Image from "next/image";
-import { CldUploadWidget } from "next-cloudinary";
 import {
   Plus,
   ImageIcon,
@@ -13,7 +12,7 @@ import {
   X,
   Loader2,
 } from "lucide-react";
-import { uploadToCloudinary } from "@/lib/upload";
+import { uploadFile } from "@/lib/upload";
 
 interface PostersFormProps {
   initialData?: any;
@@ -42,7 +41,7 @@ export default function PostersForm({
 
     setUploading(true);
     try {
-      const url = await uploadToCloudinary(file, "ktltc_posters");
+      const url = await uploadFile(file, "ktltc_posters");
       if (url) {
         setFormData({ ...formData, imageUrl: url });
       }

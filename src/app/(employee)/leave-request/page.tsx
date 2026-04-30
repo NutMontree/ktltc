@@ -80,6 +80,8 @@ const compressImage = async (file: File): Promise<Blob | File> => {
   });
 };
 
+import { uploadFile } from "@/lib/upload";
+
 const LEAVE_TYPES = [
   {
     id: "sick",
@@ -166,32 +168,6 @@ export default function LeaveRequestPage() {
     }
   };
 
-  const uploadToCloudinary = async (file: File) => {
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-    if (!cloudName || !uploadPreset)
-      throw new Error("Cloudinary config missing");
-
-    // Robust compression with Safari fallback
-    const compressedBlob = await compressImage(file);
-    
-    const formData = new FormData();
-    formData.append("file", compressedBlob);
-    formData.append("upload_preset", uploadPreset);
-
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-
-    if (!res.ok) throw new Error("อัปโหลดไฟล์ไม่สำเร็จ");
-    const data = await res.json();
-    return data.secure_url;
-  };
-
   const requestedDays = useMemo(() => {
     if (!formData.startDate || !formData.endDate) return 0;
     const start = new Date(formData.startDate);
@@ -211,7 +187,7 @@ export default function LeaveRequestPage() {
     setLoading(true);
     try {
       let attachmentUrl = null;
-      if (file) attachmentUrl = await uploadToCloudinary(file);
+      if (file) attachmentUrl = await uploadFile(file, "leave_attachments");
       const res = await fetch("/api/attendance/leave", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

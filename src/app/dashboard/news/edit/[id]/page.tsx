@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { parseFacebookVideoInput } from "@/lib/facebook";
 import { parseYouTubeVideoInput } from "@/lib/youtube";
-import { uploadToCloudinary } from "@/lib/upload";
+import { uploadFile } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
 // --- DND Kit Imports ---
@@ -328,7 +328,7 @@ export default function EditNewsPage({
       const finalImages = await Promise.all(
         allImages.map(async (item) => {
           if (item.isNew && item.file) {
-            return await uploadToCloudinary(item.file, "ktltc_news");
+            return await uploadFile(item.file, "ktltc_news");
           }
           return item.src;
         }),
@@ -337,7 +337,7 @@ export default function EditNewsPage({
       const finalNewsletters = await Promise.all(
         allNewsletters.map(async (item) => {
           if (item.isNew && item.file) {
-            return await uploadToCloudinary(item.file, "ktltc_newsletters");
+            return await uploadFile(item.file, "ktltc_newsletters");
           }
           return item.src;
         }),
