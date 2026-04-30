@@ -108,6 +108,20 @@ export async function POST(req: Request) {
       );
     }
 
+    // ⛔ 0.1 ตรวจสอบวันหยุด (Holidays)
+    const today = new Date(thTime);
+    today.setUTCHours(0, 0, 0, 0);
+    const holiday = await db.collection("holidays").findOne({ date: today });
+    if (holiday) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `วันนี้เป็นวันหยุด: ${holiday.name} ไม่ต้องลงเวลาเข้างาน`,
+        },
+        { status: 403 },
+      );
+    }
+
     // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (System Lockout)
     // กรณีข้ามคืน (เช่น 18:01 ถึง 04:59)
     const isLocked = lockStart > lockEnd 
@@ -134,8 +148,7 @@ export async function POST(req: Request) {
     const status = isLate ? 'Late' : 'Present';
 
     // วันที่ของวันนี้ (เวลาประเทศไทย)
-    const today = new Date(thTime);
-    today.setUTCHours(0, 0, 0, 0);
+    // today is already defined above
 
     const userObjId = new ObjectId(userId);
 

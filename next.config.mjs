@@ -14,6 +14,9 @@ const nextConfig = {
       bodySizeLimit: "10mb",
     },
   },
+  outputFileTracingExcludes: {
+    "*": ["public/images/**/*", "public/pdf/**/*", "public/uploads/**/*"],
+  },
 
   serverExternalPackages: ["sharp", "mongodb"],
 

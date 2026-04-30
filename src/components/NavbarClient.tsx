@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { th } from "date-fns/locale";
+import NotificationBell from "./NotificationBell";
 
 type MenuItem = NavItem & {
   _id: string;
@@ -45,43 +46,10 @@ export default function NavbarClient({
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const pathname = usePathname();
 
-  const fetchNotifications = async () => {
-    if (!username) return;
-    try {
-      const res = await fetch("/api/notifications");
-      const data = await res.json();
-      setNotifications(data);
-      setUnreadCount(data.filter((n: any) => !n.read).length);
-    } catch (error) {
-      console.error("Fetch notifications error:", error);
-    }
-  };
-
-  const markAsRead = async (id?: string, markAll = false) => {
-    try {
-      await fetch("/api/notifications", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notificationId: id, markAll }),
-      });
-      fetchNotifications();
-    } catch (error) {
-      console.error("Mark as read error:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
-    return () => clearInterval(interval);
-  }, [username]);
 
   const getRoleDisplayName = (r: string) => {
     switch (r) {
@@ -320,101 +288,7 @@ export default function NavbarClient({
 
           {/* --- 3. RIGHT ACTIONS --- */}
           <div className="flex items-center gap-2.5 shrink-0">
-            {username && (
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setIsNotificationOpen(!isNotificationOpen);
-                    setIsUserDropdownOpen(false);
-                    setActiveMenuId(null);
-                  }}
-                  className={`relative p-2 rounded-full transition-all duration-300 outline-none ${
-                    isNotificationOpen
-                      ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                      : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  }`}
-                >
-                  <Bell size={22} strokeWidth={2.5} />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 w-4.5 h-4.5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-zinc-950 animate-bounce">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-
-                {/* Notifications Dropdown */}
-                <div
-                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${
-                    isNotificationOpen
-                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
-                      : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-                  }`}
-                >
-                  <div className="bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-2xl backdrop-blur-3xl overflow-hidden w-80 ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh]">
-                    <div className="p-4 bg-zinc-50/50 dark:bg-zinc-950/30 border-b border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
-                      <span className="text-[11px] font-black text-zinc-400 tracking-wider uppercase">การแจ้งเตือน</span>
-                      {unreadCount > 0 && (
-                        <button
-                          onClick={() => markAsRead(undefined, true)}
-                          className="text-[10px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors flex items-center gap-1"
-                        >
-                          <Check size={12} /> อ่านทั้งหมด
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="overflow-y-auto max-h-[400px] custom-scrollbar-thin">
-                      {notifications.length > 0 ? (
-                        notifications.map((n) => (
-                          <div
-                            key={n._id}
-                            onClick={() => {
-                              markAsRead(n._id);
-                              setIsNotificationOpen(false);
-                              if (n.from) {
-                                window.location.href = `/dashboard/profile/${n.from}`;
-                              }
-                            }}
-                            className={`p-4 flex gap-3 cursor-pointer transition-colors border-b border-zinc-50 dark:border-zinc-800/50 last:border-none ${
-                              n.read ? "opacity-60" : "bg-blue-50/30 dark:bg-blue-500/5 hover:bg-blue-50/50 dark:hover:bg-blue-500/10"
-                            }`}
-                          >
-                            <div className="relative w-10 h-10 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-800 shrink-0">
-                              {n.fromImage ? (
-                                <Image src={n.fromImage} alt={n.fromName} fill className="object-cover" />
-                              ) : (
-                                <div className="w-full h-full bg-linear-to-tr from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-700 flex items-center justify-center text-zinc-400 text-xs font-bold">
-                                  {n.fromName?.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-[13px] text-zinc-900 dark:text-zinc-100 leading-snug">
-                                <span className="font-black">{n.fromName}</span>{" "}
-                                {n.type === "friend_request" ? "ส่งคำขอเป็นเพื่อนกับคุณ" : "ยอมรับคำขอเป็นเพื่อนของคุณแล้ว"}
-                              </p>
-                              <p className="text-[10px] text-zinc-400 font-bold mt-1 uppercase tracking-tighter">
-                                {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true, locale: th })}
-                              </p>
-                            </div>
-                            {!n.read && (
-                              <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-                            )}
-                          </div>
-                        ))
-                      ) : (
-                        <div className="py-12 px-6 text-center">
-                          <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Bell className="text-zinc-300" size={24} />
-                          </div>
-                          <p className="text-sm font-bold text-zinc-500">ไม่มีการแจ้งเตือนใหม่</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {username && <NotificationBell />}
 
             <div className="p-0.5 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-800/50 hidden sm:block">
               <ThemeToggle />

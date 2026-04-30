@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { User, Activity, LayoutDashboard, ExternalLink } from "lucide-react";
+import NotificationBell from "../NotificationBell";
 
 interface DashboardHeaderProps {
   user: {
@@ -67,8 +68,11 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
           </motion.div>
         </div>
 
-        {/* Right Section: User Profile Card */}
-        <motion.div variants={itemVariants} className="w-full lg:w-auto">
+        {/* Right Section: User Profile Card & Notifications */}
+        <motion.div variants={itemVariants} className="w-full lg:w-auto flex items-center gap-4">
+          <div className="hidden sm:block">
+            <NotificationBell />
+          </div>
           <div className="group relative p-px rounded-4xl bg-linear-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700 hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-xl shadow-zinc-200/50 dark:shadow-none">
             <div className="relative flex items-center gap-5 p-5 rounded-[1.95rem] bg-white dark:bg-zinc-950 group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95 transition-colors">
               {/* Profile Image */}

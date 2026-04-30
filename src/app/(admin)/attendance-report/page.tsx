@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, Search, FileText, Loader2, X, Camera } from "lucide-react";
+import { Download, Search, FileText, Loader2, X, Camera, Calendar } from "lucide-react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const STATUS_TH: Record<string, string> = {
   Present: "มาทำงาน",
   Late: "มาสาย",
   Absent: "ขาดงาน",
   Leave: "ลางาน",
+  Holiday: "วันหยุด",
 };
 
 const ROLE_TH: Record<string, string> = {
@@ -104,105 +107,43 @@ export default function AttendanceReportPage() {
     fetchRecords();
   }, [startDate, endDate, roleFilter]);
 
-  const exportToCSV = () => {
+  const exportToExcel = () => {
     if (filteredRecords.length === 0) {
-      alert("ไม่พบข้อมูลที่จะส่งออกครับ (เนื่องจากตารางบันทึกเวลานี้ว่างเปล่าในช่วงวันที่คุณเลือก)");
+      alert("ไม่พบข้อมูลที่จะส่งออกครับ");
       return;
     }
 
-    const summaryRows = [
-      ["รายงานการเข้างาน (Attendance Report)"],
-      [`ช่วงวันที่`, `${startDate} ถึง ${endDate}`],
-      [`หมวดหมู่พนักงาน`, `${ROLE_TH[roleFilter] || roleFilter}`],
-      [`จำนวนรายการทั้งหมด`, `${filteredRecords.length} รายการ`],
-      [`วันที่ส่งออกไฟล์`, `${new Date().toLocaleString("th-TH")}`],
-      [], // Empty row for spacing
-    ];
+    const data = filteredRecords.map((r) => {
+      const inDate = r.checkInTime ? new Date(r.checkInTime) : null;
+      const outDate = r.checkOutTime ? new Date(r.checkOutTime) : null;
+      
+      let duration = "-";
+      if (inDate && outDate) {
+        const diffMs = outDate.getTime() - inDate.getTime();
+        if (diffMs > 0) duration = (diffMs / (1000 * 60 * 60)).toFixed(2);
+      }
 
-    const headers = [
-      "วันที่",
-      "ชื่อ-สกุล",
-      "ตำแหน่ง",
-      "สังกัด/แผนก",
-      "อีเมล",
-      "เข้างาน",
-      "ออกงาน",
-      "เวลาทำงาน (ชม.)",
-      "OT (ชม.)",
-      "สถานะ",
-      "รูปภาพหลักฐาน",
-    ];
-
-    const escape = (val: any) => `"${String(val).replace(/"/g, '""')}"`;
-
-    const csvContent = [
-      ...summaryRows.map(row => row.map(escape).join(",")),
-      headers.map(escape).join(","),
-      ...filteredRecords.map((r) => {
-        const d = new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
-        const inDate = r.checkInTime ? new Date(r.checkInTime) : null;
-        const outDate = r.checkOutTime ? new Date(r.checkOutTime) : null;
-        
-        const inTimeStr = inDate
-          ? inDate.toLocaleTimeString("th-TH", { 
-              timeZone: "Asia/Bangkok",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false
-            })
-          : "-";
-        
-        const outTimeStr = outDate
-          ? outDate.toLocaleTimeString("th-TH", { 
-              timeZone: "Asia/Bangkok",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false
-            })
-          : "-";
-
-        // Calculate Work Duration
-        let duration = "-";
-        if (inDate && outDate) {
-          const diffMs = outDate.getTime() - inDate.getTime();
-          if (diffMs > 0) {
-            duration = (diffMs / (1000 * 60 * 60)).toFixed(2);
-          }
-        }
-
-        const roleName = ROLE_TH[r.user?.role] || r.user?.role || "-";
-        const statusThai = STATUS_TH[r.status] || r.status;
-        const photoLinks = [r.photoUrl, r.checkOutPhotoUrl].filter(Boolean).join(" | ");
-
-        return [
-          d,
-          r.user?.name || "-",
-          roleName,
-          r.user?.department || "-",
-          r.user?.email || "-",
-          inTimeStr,
-          outTimeStr,
-          duration,
-          r.otHours || 0,
-          statusThai,
-          photoLinks || "ไม่มีรูป"
-        ].map(escape).join(",");
-      }),
-    ].join("\n");
-
-    const blob = new Blob(["\uFEFF" + csvContent], {
-      type: "text/csv;charset=utf-8;",
+      return {
+        "วันที่": new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" }),
+        "ชื่อ-นามสกุล": r.user?.name || "-",
+        "ตำแหน่ง": ROLE_TH[r.user?.role] || r.user?.role || "-",
+        "แผนก/สังกัด": r.user?.department || "-",
+        "เวลาเข้า": inDate ? inDate.toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok", hour: '2-digit', minute: '2-digit', hour12: false }) : "-",
+        "เวลาออก": outDate ? outDate.toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok", hour: '2-digit', minute: '2-digit', hour12: false }) : "-",
+        "ชั่วโมงทำงาน": duration,
+        "OT (ชม.)": r.otHours || 0,
+        "สถานะ": STATUS_TH[r.status] || r.status,
+        "หมายเหตุ": r.status === "Holiday" ? (r.holidayName || "วันหยุดนักขัตฤกษ์") : ""
+      };
     });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute(
-      "download",
-      `report_${startDate}_to_${endDate}_${roleFilter}.csv`,
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance Report");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const finalData = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+    saveAs(finalData, `Attendance_Report_${startDate}_to_${endDate}.xlsx`);
   };
 
   const filteredRecords = records.filter((r) =>
@@ -287,15 +228,11 @@ export default function AttendanceReportPage() {
           </div>
 
           <button
-            onClick={exportToCSV}
-            className="group relative flex items-center gap-3 bg-linear-to-br from-slate-800 to-slate-900 hover:from-black hover:to-slate-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-slate-700/50 dark:border-slate-200"
+            onClick={exportToExcel}
+            className="group relative flex items-center gap-3 bg-linear-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-emerald-500/50"
           >
-            <div className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
-            </div>
             <Download size={22} className="group-hover:translate-y-0.5 transition-transform" /> 
-            <span className="tracking-tight text-lg">ออกแบบรายงาน (CSV)</span>
+            <span className="tracking-tight text-lg">ดาวน์โหลดรายงาน (Excel)</span>
           </button>
         </div>
 
@@ -574,7 +511,9 @@ export default function AttendanceReportPage() {
                               ? "bg-green-50 text-green-700 border-green-100"
                               : r.status === "Late"
                                 ? "bg-yellow-50 text-yellow-700 border-yellow-100"
-                                : "bg-red-50 text-red-700 border-red-100"
+                                : r.status === "Holiday"
+                                  ? "bg-blue-50 text-blue-700 border-blue-100"
+                                  : "bg-red-50 text-red-700 border-red-100"
                           }`}
                         >
                           {STATUS_TH[r.status] || r.status}

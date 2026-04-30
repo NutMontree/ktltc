@@ -271,17 +271,35 @@ export default function LoginPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mt-10 text-center space-y-4"
+            className="mt-10 text-center space-y-6"
           >
-            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
-              ยังไม่มีบัญชีใช่หรือไม่?{" "}
-              <Link
-                href="/register"
-                className="text-blue-600 dark:text-blue-400 font-bold hover:underline underline-offset-4 ml-1 transition-all"
-              >
-                สมัครสมาชิก
-              </Link>
-            </p>
+            <div className="space-y-3">
+              <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
+                ยังไม่มีบัญชีใช่หรือไม่?{" "}
+                <Link
+                  href="/register"
+                  className="text-blue-600 dark:text-blue-400 font-bold hover:underline underline-offset-4 ml-1 transition-all"
+                >
+                  สมัครสมาชิก
+                </Link>
+              </p>
+              
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-900/50">
+                <p className="text-slate-400 dark:text-zinc-500 text-xs font-bold uppercase tracking-widest mb-3">
+                  ต้องการความช่วยเหลือ?
+                </p>
+                <Link
+                  href="https://line.me/ti/p/p-xwfjMXJM"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#06C755]/10 hover:bg-[#06C755]/20 text-[#06C755] rounded-full text-xs font-bold transition-all border border-[#06C755]/20"
+                >
+                  <span className="w-2 h-2 bg-[#06C755] rounded-full animate-pulse" />
+                  ติดต่อ Super Admin (LINE ID: allmmin)
+                </Link>
+              </div>
+            </div>
+
             <div className="md:hidden">
               <Link
                 href="/"

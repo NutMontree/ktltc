@@ -83,7 +83,6 @@ export default async function RootLayout({
             refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
             refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
           >
-            <SessionWatcher />
             {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
             <ThemeProvider
               attribute="class"

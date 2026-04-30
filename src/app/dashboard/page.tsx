@@ -205,11 +205,11 @@ export default function DashboardLoader() {
                   variants={item}
                 />
                 <UsageCard
-                  title="cloudinary"
+                  title="Local Storage"
                   value={stats.cloudUsageMB}
                   max={stats.cloudLimitMB}
                   unit="MB"
-                  icon={Cloud}
+                  icon={Database}
                   color="blue"
                   variants={item}
                 />

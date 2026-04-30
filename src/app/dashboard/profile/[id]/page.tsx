@@ -36,13 +36,15 @@ import {
   LikeOutlined,
   CommentOutlined,
   LeftOutlined,
-  RightOutlined
+  RightOutlined,
+  FileImageOutlined
 } from "@ant-design/icons";
-import { Dropdown, Popover, message, Popconfirm } from "antd";
+import { Dropdown, Popover, message, Popconfirm, Modal } from "antd";
 import { useSession, signIn } from "next-auth/react";
 import imageCompression from "browser-image-compression";
 import { formatDistanceToNow } from "date-fns";
 import { th } from "date-fns/locale";
+import { DEPARTMENTS, FACTIONS, POSITIONS } from "@/lib/constants";
 
 import {
   DndContext,
@@ -219,6 +221,11 @@ export default function FriendProfilePage({
   const [activeModal, setActiveModal] = useState<
     "profile" | "intro" | "security" | "post" | "share" | null
   >(null);
+  const [profileOptions, setProfileOptions] = useState<{
+    positions: string[];
+    departments: string[];
+    factions: string[];
+  }>({ positions: [], departments: [], factions: [] });
 
   const [activeTab, setActiveTab] = useState("โพสต์");
   const [activeAboutTab, setActiveAboutTab] = useState("ข้อมูลภาพรวม");
@@ -515,9 +522,9 @@ export default function FriendProfilePage({
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const [profileRes, postsRes, allUsersRes] = await Promise.all([
         fetch(`/api/users/${id}`),
         fetch(`/api/posts?userId=${id}`),
@@ -546,7 +553,7 @@ export default function FriendProfilePage({
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -555,6 +562,27 @@ export default function FriendProfilePage({
       fetchData();
     }
   }, [id]);
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const res = await fetch("/api/admin/profile-options");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setProfileOptions({
+              positions: data.positions,
+              departments: data.departments,
+              factions: data.factions,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Fetch options error:", error);
+      }
+    };
+    fetchOptions();
+  }, []);
 
   useEffect(() => {
     if (!loading) {
@@ -608,7 +636,7 @@ export default function FriendProfilePage({
         body: JSON.stringify({ type: "LIKE" }),
       });
       if (res.ok) {
-        fetchData(); // Refresh posts
+        fetchData(true); // Refresh posts silently
       }
     } catch (error) {
       console.error("Like error:", error);
@@ -642,7 +670,7 @@ export default function FriendProfilePage({
         setCommentImage(null);
         setCommentingPostId(null);
         setReplyingTo(null);
-        fetchData(); // Refresh posts
+        fetchData(true); // Refresh posts silently
       }
     } catch (error) {
       console.error("Comment error:", error);
@@ -666,7 +694,7 @@ export default function FriendProfilePage({
         }),
       });
       if (res.ok) {
-        fetchData(); // Refresh posts
+        fetchData(true); // Refresh posts silently
       }
     } catch (error) {
       console.error("Like comment error:", error);
@@ -682,7 +710,7 @@ export default function FriendProfilePage({
         body: JSON.stringify({ type: "DELETE_COMMENT", commentId }),
       });
       if (res.ok) {
-        fetchData();
+        fetchData(true);
       }
     } catch (error) {
       console.error("Delete comment error:", error);
@@ -703,7 +731,7 @@ export default function FriendProfilePage({
       });
       if (res.ok) {
         setEditingCommentId(null);
-        fetchData();
+        fetchData(true);
       }
     } catch (error) {
       console.error("Update comment error:", error);
@@ -773,7 +801,7 @@ export default function FriendProfilePage({
         setPostImagePreviews([]);
         setEditingPostId(null);
         setActiveModal(null);
-        fetchData();
+        fetchData(true);
       }
     } catch (error) {
       console.error("Post error:", error);
@@ -787,7 +815,7 @@ export default function FriendProfilePage({
     try {
       const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
       if (res.ok) {
-        fetchData();
+        fetchData(true);
       }
     } catch (error) {
       console.error("Delete post error:", error);
@@ -825,12 +853,20 @@ export default function FriendProfilePage({
                     &quot;
                   </p>
                   {isMyProfile && (
-                    <button
-                      onClick={() => setActiveModal("intro")}
-                      className="w-full py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg font-bold text-sm hover:bg-zinc-200"
-                    >
-                      แก้ไขคำแนะนำตัว
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => setActiveModal("intro")}
+                        className="w-full py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg font-bold text-sm hover:bg-zinc-200 transition-all active:scale-95"
+                      >
+                        แก้ไขคำแนะนำตัว
+                      </button>
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="w-full py-2 bg-blue-600 text-white rounded-lg font-black text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20"
+                      >
+                        แก้ไขข้อมูลส่วนตัวทั้งหมด
+                      </button>
+                    </div>
                   )}
 
                   <div className="space-y-3 py-2 border-t dark:border-zinc-800 mt-2 pt-4">
@@ -889,21 +925,23 @@ export default function FriendProfilePage({
                 </div>
                 <div className="grid grid-cols-3 gap-1 rounded-xl overflow-hidden border dark:border-zinc-700">
                   {userPosts
-                    .filter((p) => p.image)
+                    .flatMap((p) => p.images || (p.image ? [p.image] : []))
+                    .filter((img) => img)
                     .slice(0, 9)
-                    .map((post: any) => (
+                    .map((imgSrc: string, idx: number) => (
                       <div
-                        key={post._id}
+                        key={`photo-${idx}`}
+                        onClick={() => setSelectedImage({ images: [imgSrc], index: 0 })}
                         className="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 cursor-pointer transition-all overflow-hidden"
                       >
                         <img
-                          src={post.image}
+                          src={imgSrc}
                           className="w-full h-full object-cover"
                           alt="Post thumbnail"
                         />
                       </div>
                     ))}
-                  {userPosts.filter((p) => p.image).length === 0 && (
+                  {userPosts.filter((p) => (p.images && p.images.length > 0) || p.image).length === 0 && (
                     <div className="col-span-3 py-10 text-center text-zinc-400 text-xs italic">
                       ยังไม่มีรูปภาพ
                     </div>
@@ -917,7 +955,7 @@ export default function FriendProfilePage({
                   <div>
                     <h2 className="text-xl font-black mb-0">เพื่อน</h2>
                     <p className="text-xs text-zinc-400 font-bold">
-                      {allUsers.length > 0 ? allUsers.length - 1 : 0} คน
+                      {(formData?.friends || []).length} คน
                     </p>
                   </div>
                   <span
@@ -931,7 +969,7 @@ export default function FriendProfilePage({
                   {allUsers
                     .filter(
                       (u) =>
-                        String(u._id) !== String((session?.user as any)?.id),
+                        (formData?.friends || []).some(fId => String(fId) === String(u._id))
                     )
                     .slice(0, 9)
                     .map((u) => (
@@ -947,7 +985,7 @@ export default function FriendProfilePage({
                           {u.image ? (
                             <img
                               src={u.image}
-                              className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                              className="w-full h-full object-cover object-top transition-transform group-hover:scale-110"
                               alt={u.name}
                             />
                           ) : (
@@ -1037,11 +1075,11 @@ export default function FriendProfilePage({
                           onClick={() => router.push(`/dashboard/profile/${String(u._id)}`)}
                           className="min-w-[200px] w-[200px] bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border dark:border-zinc-700/50 overflow-hidden flex flex-col snap-start group cursor-pointer hover:shadow-md transition-all"
                         >
-                          <div className="relative aspect-square">
+                          <div className="relative w-full aspect-square bg-zinc-200 dark:bg-zinc-700">
                             {u.image ? (
-                              <img src={u.image} className="w-full h-full object-cover" alt={u.name} />
+                              <img src={u.image} className="w-full h-full object-cover object-top" alt={u.name} />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-zinc-200 dark:bg-zinc-700">
+                              <div className="w-full h-full flex items-center justify-center">
                                 <UserOutlined className="text-4xl text-zinc-400" />
                               </div>
                             )}
@@ -1866,48 +1904,92 @@ export default function FriendProfilePage({
             case "ข้อมูลภาพรวม":
               return (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
-                    <SafetyCertificateOutlined className="text-xl text-zinc-400" />
-                    <span>
-                      ทำงานที่{" "}
-                      <b className="text-zinc-900 dark:text-white">
-                        {formData.position || "-"}
-                      </b>{" "}
-                      ฝ่าย{" "}
-                      <b className="text-zinc-900 dark:text-white">
-                        {formData.faction || "-"}
-                      </b>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
-                    <UserOutlined className="text-xl text-zinc-400" />
-                    <span>
-                      สังกัด{" "}
-                      <b className="text-zinc-900 dark:text-white">
-                        {formData.department || "-"}
-                      </b>
-                    </span>
-                  </div>
-                  {formData.work && (
+                  <div className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
-                      <DatabaseOutlined className="text-xl text-zinc-400" />
+                      <SafetyCertificateOutlined className="text-xl text-zinc-400" />
                       <span>
-                        เคยทำงานที่{" "}
+                        ทำงานที่{" "}
                         <b className="text-zinc-900 dark:text-white">
-                          {formData.work}
+                          {formData.position || "-"}
+                        </b>{" "}
+                        ฝ่าย{" "}
+                        <b className="text-zinc-900 dark:text-white">
+                          {formData.faction || "-"}
                         </b>
                       </span>
                     </div>
-                  )}
-                  {formData.currentCity && (
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
+                  </div>
+                  <div className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
-                      <GlobalOutlined className="text-xl text-zinc-400" />
+                      <UserOutlined className="text-xl text-zinc-400" />
                       <span>
-                        อาศัยอยู่ที่{" "}
+                        สังกัด{" "}
                         <b className="text-zinc-900 dark:text-white">
-                          {formData.currentCity}
+                          {formData.department || "-"}
                         </b>
                       </span>
+                    </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
+                  </div>
+                  {formData.work && (
+                    <div className="flex items-center justify-between group/item">
+                      <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                        <DatabaseOutlined className="text-xl text-zinc-400" />
+                        <span>
+                          เคยทำงานที่{" "}
+                          <b className="text-zinc-900 dark:text-white">
+                            {formData.work}
+                          </b>
+                        </span>
+                      </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  {formData.currentCity && (
+                    <div className="flex items-center justify-between group/item">
+                      <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                        <GlobalOutlined className="text-xl text-zinc-400" />
+                        <span>
+                          อาศัยอยู่ที่{" "}
+                          <b className="text-zinc-900 dark:text-white">
+                            {formData.currentCity}
+                          </b>
+                        </span>
+                      </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1915,10 +1997,7 @@ export default function FriendProfilePage({
             case "การทำงานและวุฒิการศึกษา":
               return (
                 <div className="space-y-8">
-                  <div>
-                    <h3 className="text-zinc-500 text-xs font-bold uppercase mb-4">
-                      การทำงาน
-                    </h3>
+                  <div className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                         <DatabaseOutlined />
@@ -1930,11 +2009,17 @@ export default function FriendProfilePage({
                         <p className="text-xs text-zinc-400">สถานที่ทำงาน</p>
                       </div>
                     </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                   </div>
-                  <div>
-                    <h3 className="text-zinc-500 text-xs font-bold uppercase mb-4">
-                      วุฒิการศึกษา
-                    </h3>
+                  <div className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                         <SafetyCertificateOutlined />
@@ -1949,33 +2034,64 @@ export default function FriendProfilePage({
                         </p>
                       </div>
                     </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                   </div>
                 </div>
               );
             case "สถานที่ที่เคยอาศัย":
               return (
                 <div className="space-y-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                      <GlobalOutlined />
+                  <div className="flex items-center justify-between group/item">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <GlobalOutlined />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold">
+                          {formData.currentCity || "ยังไม่ได้เพิ่มเมืองปัจจุบัน"}
+                        </p>
+                        <p className="text-xs text-zinc-400">เมืองปัจจุบัน</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-bold">
-                        {formData.currentCity || "ยังไม่ได้เพิ่มเมืองปัจจุบัน"}
-                      </p>
-                      <p className="text-xs text-zinc-400">เมืองปัจจุบัน</p>
-                    </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                      <GlobalOutlined />
+                  <div className="flex items-center justify-between group/item">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <GlobalOutlined />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold">
+                          {formData.hometown || "ยังไม่ได้เพิ่มบ้านเกิด"}
+                        </p>
+                        <p className="text-xs text-zinc-400">บ้านเกิด</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-bold">
-                        {formData.hometown || "ยังไม่ได้เพิ่มบ้านเกิด"}
-                      </p>
-                      <p className="text-xs text-zinc-400">บ้านเกิด</p>
-                    </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                   </div>
                 </div>
               );
@@ -1986,33 +2102,52 @@ export default function FriendProfilePage({
                     <h3 className="text-zinc-500 text-xs font-bold uppercase">
                       ข้อมูลการติดต่อ
                     </h3>
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <PhoneOutlined />
+                    <div className="flex items-center justify-between group/item">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                          <PhoneOutlined />
+                        </div>
+                        <div>
+                          <a
+                            href={`tel:${formData.phone}`}
+                            className="text-sm font-bold text-blue-600 hover:underline"
+                          >
+                            {formData.phone || "-"}
+                          </a>
+                          <p className="text-xs text-zinc-400">โทรศัพท์</p>
+                        </div>
                       </div>
-                      <div>
-                        <a
-                          href={`tel:${formData.phone}`}
-                          className="text-sm font-bold text-blue-600 hover:underline"
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
                         >
-                          {formData.phone || "-"}
-                        </a>
-                        <p className="text-xs text-zinc-400">โทรศัพท์</p>
-                      </div>
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <MailOutlined />
+                    <div className="flex items-center justify-between group/item">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                          <MailOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold truncate">
+                            {formData.email || "-"}
+                          </p>
+                          <p className="text-xs text-zinc-400">อีเมล</p>
+                        </div>
                       </div>
-                      <div>
-                        <a
-                          href={`mailto:${formData.email}`}
-                          className="text-sm font-bold text-blue-600 hover:underline"
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
                         >
-                          {formData.email || "-"}
-                        </a>
-                        <p className="text-xs text-zinc-400">อีเมล</p>
-                      </div>
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                   <hr className="dark:border-zinc-800" />
@@ -2020,18 +2155,29 @@ export default function FriendProfilePage({
                     <h3 className="text-zinc-500 text-xs font-bold uppercase">
                       ข้อมูลพื้นฐาน
                     </h3>
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <UserOutlined />
+                    <div className="flex items-center justify-between group/item">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                          <UserOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">
+                            {formData.relationship || "ไม่ระบุ"}
+                          </p>
+                          <p className="text-xs text-zinc-400">
+                            สถานะความสัมพันธ์
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-bold">
-                          {formData.relationship || "ไม่ระบุ"}
-                        </p>
-                        <p className="text-xs text-zinc-400">
-                          สถานะความสัมพันธ์
-                        </p>
-                      </div>
+                      {isMyProfile && (
+                        <button 
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -2145,22 +2291,28 @@ export default function FriendProfilePage({
             <h2 className="text-2xl font-black mb-6">รูปภาพ</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
               {userPosts
-                .filter((p) => p.image)
-                .map((post: any) => (
+                .flatMap((p) => p.images || (p.image ? [p.image] : []))
+                .filter((img) => img)
+                .map((imgSrc, idx) => (
                   <div
-                    key={post._id}
-                    className="aspect-square rounded-lg bg-zinc-100 dark:bg-zinc-800 border dark:border-zinc-700 hover:scale-[1.02] transition-transform cursor-pointer overflow-hidden"
+                    key={`gallery-photo-${idx}`}
+                    onClick={() => setSelectedImage({ images: [imgSrc], index: 0 })}
+                    className="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 cursor-pointer transition-all overflow-hidden rounded-xl group relative"
                   >
                     <img
-                      src={post.image}
-                      className="w-full h-full object-cover"
-                      alt="User gallery"
+                      src={imgSrc}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500"
+                      alt={`Gallery ${idx}`}
                     />
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 ))}
-              {userPosts.filter((p) => p.image).length === 0 && (
-                <div className="col-span-full py-20 text-center text-zinc-400 font-bold italic">
-                  ไม่พบรูปภาพที่จะแสดง
+              {userPosts.flatMap(p => p.images || (p.image ? [p.image] : [])).length === 0 && (
+                <div className="col-span-full py-20 text-center">
+                  <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileImageOutlined className="text-zinc-300 text-2xl" />
+                  </div>
+                  <p className="text-zinc-500 font-bold">ยังไม่มีรูปภาพที่โพสต์</p>
                 </div>
               )}
             </div>
@@ -2309,7 +2461,25 @@ export default function FriendProfilePage({
                         </button>
                       </Popconfirm>
                     )}
-                    <button className="px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 font-black flex items-center gap-2 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95">
+                    <button 
+                      onClick={() => Modal.info({
+                        title: <div className="text-3xl font-black text-blue-600 mb-2">อยู่ในระหว่างการพัฒนา</div>,
+                        content: (
+                          <div className="text-xl font-bold text-zinc-500 py-6">
+                            ขออภัยในความไม่สะดวก ระบบข้อความแชท (Chat System) 
+                            กำลังอยู่ในขั้นตอนการพัฒนาเพื่อยกระดับการสื่อสารให้ดียิ่งขึ้นสำหรับคุณ
+                          </div>
+                        ),
+                        centered: true,
+                        width: 600,
+                        okText: "รับทราบ",
+                        okButtonProps: { 
+                          className: "bg-blue-600 hover:bg-blue-700 text-white font-black px-8 py-3 rounded-xl h-auto" 
+                        },
+                        icon: <MessageOutlined className="text-blue-500 text-4xl mb-4" />
+                      })}
+                      className="px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 font-black flex items-center gap-2 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95"
+                    >
                       <MessageOutlined /> ข้อความ
                     </button>
                   </>
@@ -2446,23 +2616,109 @@ export default function FriendProfilePage({
               <div className="space-y-1">
                 <label className="text-xs font-black text-zinc-500 uppercase">ตำแหน่ง</label>
                 <input
+                  list="positions-list"
                   value={formData.position}
                   onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                  placeholder="พิมพ์หรือเลือกตำแหน่ง..."
                   className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                 />
+                <datalist id="positions-list">
+                  {POSITIONS.map((opt) => (
+                    <option key={opt} value={opt} />
+                  ))}
+                  {profileOptions.positions.map((opt) => (
+                    <option key={`db-${opt}`} value={opt} />
+                  ))}
+                </datalist>
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">แผนก</label>
+                <label className="text-xs font-black text-zinc-500 uppercase">แผนก / สังกัด</label>
                 <input
+                  list="departments-list"
                   value={formData.department}
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  placeholder="พิมพ์หรือเลือกแผนก..."
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+                <datalist id="departments-list">
+                  <option value="ไม่มีสังกัด" />
+                  <option value="ผู้บริหารสถานศึกษา" />
+                  <option value="งานบริหารงานทั่วไป" />
+                  <option value="งานบริหารและพัฒนาทรัพยากรบุคคล" />
+                  <option value="งานการเงิน" />
+                  <option value="งานการบัญชี" />
+                  <option value="งานพัสดุ" />
+                  <option value="งานอาคารสถานที่" />
+                  <option value="งานทะเบียน" />
+                  <option value="งานแม่บ้าน/นักการ" />
+                  <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ" />
+                  <option value="งานมาตรฐานและการประกันคุณภาพ" />
+                  <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร" />
+                  <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์" />
+                  <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ" />
+                  <option value="งานติดตามและประเมินผล" />
+                  <option value="งานกิจกรรมนักเรียนนักศึกษา" />
+                  <option value="งานครูที่ปรึกษาและการแนะแนว" />
+                  <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา" />
+                  <option value="งานสวัสดิการนักเรียนนักศึกษา" />
+                  <option value="งานโครงการพิเศษและการบริการ" />
+                  <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้" />
+                  <option value="งานวัดผลและประเมินผล" />
+                  <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ" />
+                  <option value="งานวิทยบริการและเทคโนโลยีการศึกษา" />
+                  <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา" />
+                  <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ" />
+                  <option value="สามัญสัมพันธ์" />
+                  <option value="การบัญชี" />
+                  <option value="การตลาด" />
+                  <option value="การตลาด/โลจิสติก์" />
+                  <option value="เทคโนโลยีธุรกิจดิจิทัล" />
+                  <option value="การโรงแรม" />
+                  <option value="เทคนิคพื้นฐาน" />
+                  <option value="ช่างอิเล็กทรอนิกส์" />
+                  <option value="ช่างยนต์" />
+                  <option value="ยานยนต์ไฟฟ้า" />
+                  <option value="ช่างไฟฟ้ากำลัง" />
+                  <option value="ช่างกลโรงงาน" />
+                  <option value="ช่างเชื่อมโลหะ" />
+                  <option value="ช่างก่อสร้าง" />
+                  {profileOptions.departments.map((opt) => (
+                    <option key={`db-${opt}`} value={opt} />
+                  ))}
+                </datalist>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">ฝ่าย</label>
+                <input
+                  list="factions-list"
+                  value={formData.faction}
+                  onChange={(e) => setFormData({ ...formData, faction: e.target.value })}
+                  placeholder="พิมพ์หรือเลือกฝ่าย..."
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+                <datalist id="factions-list">
+                  {FACTIONS.map((opt) => (
+                    <option key={opt} value={opt} />
+                  ))}
+                  {profileOptions.factions.map((opt) => (
+                    <option key={`db-${opt}`} value={opt} />
+                  ))}
+                </datalist>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">อีเมล</label>
+                <input
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">การทำงาน</label>
+                <label className="text-xs font-black text-zinc-500 uppercase">ที่ทำงาน (เดิม/ปัจจุบัน)</label>
                 <input
                   value={formData.work}
                   onChange={(e) => setFormData({ ...formData, work: e.target.value })}
@@ -2477,6 +2733,39 @@ export default function FriendProfilePage({
                   className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">เมืองปัจจุบัน</label>
+                <input
+                  value={formData.currentCity}
+                  onChange={(e) => setFormData({ ...formData, currentCity: e.target.value })}
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">บ้านเกิด</label>
+                <input
+                  value={formData.hometown}
+                  onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-black text-zinc-500 uppercase">สถานะความสัมพันธ์</label>
+              <select
+                value={formData.relationship}
+                onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">ไม่ระบุ</option>
+                <option value="โสด">โสด</option>
+                <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
+                <option value="หมั้นแล้ว">หมั้นแล้ว</option>
+                <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
+                <option value="หย่าร้าง">หย่าร้าง</option>
+              </select>
             </div>
           </div>
         </div>

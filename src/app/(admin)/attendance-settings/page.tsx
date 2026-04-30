@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
-import { Save, Clock, ShieldCheck, Loader2 } from "lucide-react";
+import { Save, Clock, ShieldCheck, Loader2, Calendar, Trash2, Plus } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 
@@ -26,11 +26,20 @@ interface RoleSetting {
   wfhMaxDistance?: number;
 }
 
+interface Holiday {
+  _id?: string;
+  date: string;
+  name: string;
+  type: string;
+}
+
 export default function AttendanceSettingsPage() {
   const { data: session } = useSession();
   const [settings, setSettings] = useState<RoleSetting[]>([]);
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [newHoliday, setNewHoliday] = useState({ date: "", name: "" });
 
   const fetchSettings = async () => {
     try {
@@ -53,8 +62,21 @@ export default function AttendanceSettingsPage() {
     }
   };
 
+  const fetchHolidays = async () => {
+    try {
+      const res = await fetch("/api/admin/holidays");
+      if (res.ok) {
+        const data = await res.json();
+        setHolidays(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchSettings();
+    fetchHolidays();
   }, []);
 
   const handleUpdate = async (item: RoleSetting) => {
@@ -421,6 +443,99 @@ export default function AttendanceSettingsPage() {
           </div>
         </div>
       )}
+
+      {/* 1.1 Holiday Management Section */}
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-6 ml-2">
+          <div className="w-2 h-8 bg-emerald-600 rounded-full" />
+          <h2 className="text-2xl font-black text-zinc-800 dark:text-white uppercase tracking-tight">
+            จัดการวันหยุดนักขัตฤกษ์ (Holidays)
+          </h2>
+        </div>
+
+        <div className="bg-white dark:bg-zinc-900 p-6 rounded-[2.5rem] border border-emerald-100 dark:border-emerald-900/30 shadow-sm overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+            {/* Add Holiday Form */}
+            <div className="md:col-span-4 space-y-4">
+              <h3 className="text-xs font-black text-emerald-600 uppercase tracking-[0.2em] mb-4">เพิ่มวันหยุดใหม่</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">วันที่</label>
+                  <input 
+                    type="date"
+                    value={newHoliday.date}
+                    onChange={(e) => setNewHoliday({...newHoliday, date: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-none outline-none font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">ชื่อวันหยุด</label>
+                  <input 
+                    type="text"
+                    placeholder="เช่น วันขึ้นปีใหม่"
+                    value={newHoliday.name}
+                    onChange={(e) => setNewHoliday({...newHoliday, name: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-none outline-none font-bold"
+                  />
+                </div>
+                <button 
+                  onClick={async () => {
+                    if (!newHoliday.date || !newHoliday.name) return toast.error("กรุณากรอกข้อมูลให้ครบ");
+                    setSaving(true);
+                    try {
+                      const res = await fetch("/api/admin/holidays", {
+                        method: "POST",
+                        body: JSON.stringify(newHoliday)
+                      });
+                      if (res.ok) {
+                        toast.success("เพิ่มวันหยุดเรียบร้อย");
+                        setNewHoliday({ date: "", name: "" });
+                        fetchHolidays();
+                      }
+                    } catch (e) { toast.error("เกิดข้อผิดพลาด"); }
+                    finally { setSaving(false); }
+                  }}
+                  className="w-full py-3 bg-emerald-600 text-white rounded-xl font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+                >
+                  <Plus size={16} /> เพิ่มวันหยุด
+                </button>
+              </div>
+            </div>
+
+            {/* Holiday List */}
+            <div className="md:col-span-8">
+              <h3 className="text-xs font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">รายการวันหยุดทั้งหมด</h3>
+              <div className="max-h-[300px] overflow-y-auto custom-scrollbar space-y-2 pr-2">
+                {holidays.length === 0 ? (
+                  <div className="py-10 text-center text-zinc-400 font-bold italic text-sm">ไม่มีข้อมูลวันหยุด</div>
+                ) : (
+                  holidays.map((h) => (
+                    <div key={h._id} className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border dark:border-zinc-800">
+                      <div>
+                        <p className="font-black text-zinc-800 dark:text-zinc-100">{h.name}</p>
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5">
+                          {new Date(h.date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <button 
+                        onClick={async () => {
+                          if (!confirm("ลบวันหยุดนี้ใช่หรือไม่?")) return;
+                          await fetch(`/api/admin/holidays?id=${h._id}`, { method: 'DELETE' });
+                          fetchHolidays();
+                          toast.success("ลบวันหยุดเรียบร้อย");
+                        }}
+                        className="p-2 text-rose-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* 2. Role-Specific Settings Section */}
       <div className="mb-6 ml-2 flex items-center gap-3">

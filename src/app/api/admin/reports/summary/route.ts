@@ -1,17 +1,26 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 
-export const dynamic = "force-dynamic"; // ป้องกันการทำ Static Cache
+export const dynamic = "force-dynamic";
+
+// Simple in-memory cache
+let cachedSummary: any = null;
+let lastFetch = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export async function GET() {
   try {
+    const now = Date.now();
+    if (cachedSummary && now - lastFetch < CACHE_DURATION) {
+      return NextResponse.json(cachedSummary);
+    }
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // ✅ ใช้ Aggregation Pipeline เพื่อความเร็วระดับมิลลิวินาที
     const stats = await db
       .collection("logs")
       .aggregate([
@@ -76,13 +85,19 @@ export async function GET() {
       updates: 0,
     };
 
-    return NextResponse.json({
+    const finalResult = {
       totalActions: result.totalActions,
       approvals: result.approvals,
       roleChanges: result.roleChanges,
       newMembers: result.newMembers,
       updates: result.updates,
-    });
+    };
+
+    // Update cache
+    cachedSummary = finalResult;
+    lastFetch = now;
+
+    return NextResponse.json(finalResult);
   } catch (error) {
     console.error("Summary Report Error:", error);
     return NextResponse.json(

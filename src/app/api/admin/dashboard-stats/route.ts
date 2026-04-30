@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { v2 as cloudinary } from "cloudinary";
 import { auth } from "@/lib/auth";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { execSync } from "child_process";
+import path from "path";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +34,7 @@ export async function GET() {
       db.collection("questions").countDocuments({ status: "pending" }),
     ]);
 
-    // 2. Media Stats
+    // 2. Media Stats (Image Count)
     const imageStats = await db
       .collection("news")
       .aggregate([
@@ -71,20 +66,22 @@ export async function GET() {
 
     const totalImagesCount = imageStats.length > 0 ? imageStats[0].totalImages : 0;
 
-    // 3. Infrastructure Usage
+    // 3. Infrastructure Usage (MongoDB)
     const dbStats = await db.stats();
     const dbSizeMB = (dbStats.storageSize / (1024 * 1024)).toFixed(2);
     
-    let cloudUsageMB = "0.00";
-    let cloudLimitMB = 15000;
+    // 4. Local Storage Usage (Instead of Cloudinary)
+    let storageUsageMB = "0.00";
+    let storageLimitMB = 20000; // Example 20GB limit for local storage display
+    
     try {
-      const cloudResult = await cloudinary.api.usage();
-      cloudUsageMB = (cloudResult.storage.usage / (1024 * 1024)).toFixed(2);
-      if (cloudResult.storage.limit) {
-        cloudLimitMB = Math.round(cloudResult.storage.limit / (1024 * 1024));
-      }
+      // Calculate size of public/uploads, public/images, public/pdf
+      const publicDir = path.join(process.cwd(), "public");
+      const cmd = `du -sm ${publicDir}/uploads ${publicDir}/images ${publicDir}/pdf 2>/dev/null | awk '{sum += $1} END {print sum}'`;
+      const sizeStr = execSync(cmd).toString().trim();
+      storageUsageMB = (parseFloat(sizeStr) || 0).toFixed(2);
     } catch (err) {
-      console.error("Cloudinary Usage API Error:", err);
+      console.error("Local Storage Usage Calculation Error:", err);
     }
 
     return NextResponse.json({
@@ -94,8 +91,8 @@ export async function GET() {
       totalBanners,
       totalImagesCount,
       dbSizeMB,
-      cloudUsageMB,
-      cloudLimitMB,
+      cloudUsageMB: storageUsageMB, // Keeping same key for frontend compatibility
+      cloudLimitMB: storageLimitMB,
       totalPendingQA,
       totalUsers,
     });

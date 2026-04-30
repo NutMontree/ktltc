@@ -85,6 +85,16 @@ export async function GET(req: Request) {
       userQuery.role = roleParam;
     }
     const allUsers = await db.collection("users").find(userQuery).toArray();
+    
+    // ✅ Get Holidays in range
+    const holidays = await db.collection("holidays").find({
+      date: { $gte: startD, $lte: endD }
+    }).toArray();
+    const holidaysByDate: Record<string, any> = {};
+    holidays.forEach(h => {
+      const dStr = new Date(h.date).toISOString().split('T')[0];
+      holidaysByDate[dStr] = h;
+    });
 
     // Create full list including Absent
     const finalData: any[] = [];
@@ -112,11 +122,12 @@ export async function GET(req: Request) {
       })));
 
       // 2. Find and add those missing
+      const holiday = holidaysByDate[dStr];
       allUsers.forEach(u => {
         const uIdStr = u._id.toString();
         if (!presentUserIds.has(uIdStr)) {
           finalData.push({
-            id: `absent-${dStr}-${uIdStr}`,
+            id: `${holiday ? 'holiday' : 'absent'}-${dStr}-${uIdStr}`,
             date: new Date(dStr + "T00:00:00.000Z").toISOString(),
             user: {
               name: u.name || u.username || "Unknown",
@@ -126,11 +137,12 @@ export async function GET(req: Request) {
             },
             checkInTime: null,
             checkOutTime: null,
-            status: "Absent",
+            status: holiday ? "Holiday" : "Absent",
+            holidayName: holiday ? holiday.name : null,
             otHours: 0,
             photoUrl: null,
             checkOutPhotoUrl: null,
-            group: 2 // Bottom group
+            group: holiday ? 1 : 2 // Holiday group with Present
           });
         }
       });

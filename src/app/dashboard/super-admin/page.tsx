@@ -67,17 +67,7 @@ export default function SuperAdminPage() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Show loading screen while initializing
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-zinc-950 font-sans gap-4">
-        <RefreshCcw className="w-10 h-10 text-blue-500 animate-spin" />
-        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">
-          กำลังเตรียมระบบ...
-        </span>
-      </div>
-    );
-  }
+  // Initial loading handled within components
   const [adminProfile, setAdminProfile] = useState<{
     _id: string;
     name: string;
@@ -539,18 +529,6 @@ export default function SuperAdminPage() {
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 group">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                <Search size={18} />
-              </div>
-              <input
-                type="text"
-                placeholder="ค้นหาชื่อผู้ใช้หรือชื่อจริง..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full md:w-[400px] pl-14 pr-6 py-5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-slate-200 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-black/2"
-              />
-            </div>
             <button
               onClick={handleExportCSV}
               disabled={isExporting}
@@ -624,29 +602,49 @@ export default function SuperAdminPage() {
               <p className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                 {item.label}
               </p>
-              <h3
-                className={`text-2xl sm:text-3xl lg:text-4xl font-black ${item.color} tracking-tighter tabular-nums`}
-              >
-                {item.val || 0}
-              </h3>
+              {loading ? (
+                <div className="h-9 w-20 bg-slate-200 dark:bg-zinc-800 animate-pulse rounded-lg" />
+              ) : (
+                <h3
+                  className={`text-2xl sm:text-3xl lg:text-4xl font-black ${item.color} tracking-tighter tabular-nums`}
+                >
+                  {item.val || 0}
+                </h3>
+              )}
             </motion.div>
           ))}
         </div>
 
         {/* Users Management Grid */}
         <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl rounded-4xl border border-slate-100 dark:border-zinc-800 shadow-3xl overflow-hidden">
-          <div className="p-4 border-b border-slate-50 dark:border-zinc-800/50 flex justify-between items-center">
+          <div className="p-4 border-b border-slate-50 dark:border-zinc-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="w-2 h-8 bg-rose-600 rounded-full" />
               <h2 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
                 จัดการรายชื่อผู้ใช้ในระบบ
               </h2>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-zinc-950 rounded-2xl border border-slate-100 dark:border-zinc-800">
-              <Users size={16} className="text-slate-400" />
-              <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white uppercase tabular-nums">
-                รายชื่อทั้งหมด {total} คน
-              </span>
+            
+            <div className="flex flex-1 items-center gap-4 w-full justify-center md:justify-end">
+              <div className="relative flex-1 max-w-[400px] group">
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                  <Search size={16} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="ค้นหาชื่อ หรือชื่อผู้ใช้..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full pl-12 pr-6 py-3 bg-slate-100 dark:bg-zinc-950 border border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-blue-500 rounded-2xl focus:outline-none text-slate-800 dark:text-white font-bold text-xs uppercase tracking-widest transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-zinc-950 rounded-2xl border border-slate-100 dark:border-zinc-800 shrink-0">
+                <Users size={16} className="text-slate-400" />
+                <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white uppercase tabular-nums">
+                  ทั้งหมด {total} คน
+                </span>
+              </div>
             </div>
           </div>
 
@@ -663,247 +661,265 @@ export default function SuperAdminPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-zinc-800/50">
-                <AnimatePresence mode="popLayout">
-                  {users.map((user, index) => (
-                    <motion.tr
-                      key={user._id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      layout
-                      className="hover:bg-blue-50/30 dark:hover:bg-blue-500/2 transition-colors group"
-                    >
-                      <td className="p-4">
-                        <div className="flex flex-col items-center gap-1">
-                          <button
-                            onClick={() =>
-                              moveOrder(user._id, user.orderIndex || 0, "up")
-                            }
-                            className="text-slate-300 dark:text-zinc-700 hover:text-blue-500 transition-colors"
-                          >
-                            <ChevronUp size={16} />
-                          </button>
-                          <span className="font-black text-slate-800 dark:text-white text-xl italic tabular-nums leading-none">
-                            {(index + 1).toString().padStart(2, "0")}
-                          </span>
-                          <button
-                            onClick={() =>
-                              moveOrder(user._id, user.orderIndex || 0, "down")
-                            }
-                            className="text-slate-300 dark:text-zinc-700 hover:text-rose-500 transition-colors"
-                          >
-                            <ChevronDown size={16} />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <div className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors leading-tight">
-                              {user.name}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
-                                @{user.username}
-                              </span>
-                              {!user.isActive && (
-                                <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
-                                  รอนุมัติ
+                {loading && users.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <RefreshCcw className="w-8 h-8 text-blue-500 animate-spin" />
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">กำลังโหลดข้อมูลบุคลากร...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <AnimatePresence mode="popLayout">
+                    {users.map((user, index) => (
+                      <motion.tr
+                        key={user._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        layout
+                        className="hover:bg-blue-50/30 dark:hover:bg-blue-500/2 transition-colors group"
+                      >
+                        <td className="p-4">
+                          <div className="flex flex-col items-center gap-1">
+                            <button
+                              onClick={() =>
+                                moveOrder(user._id, user.orderIndex || 0, "up")
+                              }
+                              className="text-slate-300 dark:text-zinc-700 hover:text-blue-500 transition-colors"
+                            >
+                              <ChevronUp size={16} />
+                            </button>
+                            <span className="font-black text-slate-800 dark:text-white text-xl italic tabular-nums leading-none">
+                              {(index + 1).toString().padStart(2, "0")}
+                            </span>
+                            <button
+                              onClick={() =>
+                                moveOrder(user._id, user.orderIndex || 0, "down")
+                              }
+                              className="text-slate-300 dark:text-zinc-700 hover:text-rose-500 transition-colors"
+                            >
+                              <ChevronDown size={16} />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <div className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors leading-tight">
+                                {user.name}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
+                                  @{user.username}
                                 </span>
-                              )}
+                                {!user.isActive && (
+                                  <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
+                                    รอนุมัติ
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-4 text-center">
-                        <select
-                          value={user.role || "user"}
-                          onChange={(e) =>
-                            changeRole(user._id, e.target.value, user.name)
-                          }
-                          className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
-                        >
-                          <option value="super_admin">
-                            SUPER_ADMIN (สูงสุด)
-                          </option>
-                          <option value="editor">EDITOR (ดูแลเนื้อหา)</option>
-                          <option value="admin">ADMIN (แอดมิน)</option>
-                          <option value="director">ผอ. (DIRECTOR)</option>
-                          <option value="deputy_resource">
-                            รอง ผอ. (ทรัพยากร)
-                          </option>
-                          <option value="deputy_strategy">
-                            รอง ผอ. (แผนงาน)
-                          </option>
-                          <option value="deputy_academic">
-                            รอง ผอ. (วิชาการ)
-                          </option>
-                          <option value="deputy_student_affairs">
-                            รอง ผอ. (กิจการนักเรียน)
-                          </option>
-                          <option value="teacher">ครู (TEACHER)</option>
-                          <option value="hr">ฝ่ายบุคคล (HR)</option>
-                          <option value="staff">เจ้าหน้าที่ (STAFF)</option>
-                          <option value="janitor">
-                            แม่บ้าน/นักการ (JANITOR)
-                          </option>
-                          <option value="user">ผู้ใช้ทั่วไป (USER)</option>
-                        </select>
-                      </td>
-                      <td className="p-4 text-center">
-                        <select
-                          value={user.department || "ไม่มีสังกัด"}
-                          onChange={(e) =>
-                            changeDepartment(
-                              user._id,
-                              e.target.value,
-                              user.name,
-                            )
-                          }
-                          className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
-                        >
-                          <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                          <option value="ผู้บริหารสถานศึกษา">
-                            ผู้บริหารสถานศึกษา
-                          </option>
-                          <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                            <option value="งานบริหารงานทั่วไป">
-                              งานบริหารงานทั่วไป
+                        </td>
+                        <td className="p-4 text-center">
+                          <select
+                            value={user.role || "user"}
+                            onChange={(e) =>
+                              changeRole(user._id, e.target.value, user.name)
+                            }
+                            className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                          >
+                            <option value="super_admin">
+                              SUPER_ADMIN (สูงสุด)
                             </option>
-                            <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
-                              งานบริหารและพัฒนาทรัพยากรบุคคล
+                            <option value="editor">EDITOR (ดูแลเนื้อหา)</option>
+                            <option value="admin">ADMIN (แอดมิน)</option>
+                            <option value="director">ผอ. (DIRECTOR)</option>
+                            <option value="deputy_resource">
+                              รอง ผอ. (ทรัพยากร)
                             </option>
-                            <option value="งานการเงิน">งานการเงิน</option>
-                            <option value="งานการบัญชี">งานการบัญชี</option>
-                            <option value="งานพัสดุ">งานพัสดุ</option>
-                            <option value="งานอาคารสถานที่">
-                              งานอาคารสถานที่
+                            <option value="deputy_strategy">
+                              รอง ผอ. (แผนงาน)
                             </option>
-                            <option value="งานทะเบียน">งานทะเบียน</option>
-                            <option value="งานแม่บ้าน/นักการ">
-                              งานแม่บ้าน/นักการ
+                            <option value="deputy_academic">
+                              รอง ผอ. (วิชาการ)
                             </option>
-                          </optgroup>
-                          <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
-                            <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
-                              งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
+                            <option value="deputy_student_affairs">
+                              รอง ผอ. (กิจการนักเรียน)
                             </option>
-                            <option value="งานมาตรฐานและการประกันคุณภาพ">
-                              งานมาตรฐานและการประกันคุณภาพ
+                            <option value="teacher">ครู (TEACHER)</option>
+                            <option value="hr">ฝ่ายบุคคล (HR)</option>
+                            <option value="staff">เจ้าหน้าที่ (STAFF)</option>
+                            <option value="janitor">
+                              แม่บ้าน/นักการ (JANITOR)
                             </option>
-                            <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
-                              งานศูนย์ดิจิทัลและสื่อสารองค์กร
+                            <option value="user">ผู้ใช้ทั่วไป (USER)</option>
+                          </select>
+                        </td>
+                        <td className="p-4 text-center">
+                          <select
+                            value={user.department || "ไม่มีสังกัด"}
+                            onChange={(e) =>
+                              changeDepartment(
+                                user._id,
+                                e.target.value,
+                                user.name,
+                              )
+                            }
+                            className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
+                          >
+                            <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                            <option value="ผู้บริหารสถานศึกษา">
+                              ผู้บริหารสถานศึกษา
                             </option>
-                            <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
-                              งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
-                            </option>
-                            <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
-                              งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
-                            </option>
-                            <option value="งานติดตามและประเมินผล">
-                              งานติดตามและประเมินผล
-                            </option>
-                          </optgroup>
-                          <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
-                            <option value="งานกิจกรรมนักเรียนนักศึกษา">
-                              งานกิจกรรมนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานครูที่ปรึกษาและการแนะแนว">
-                              งานครูที่ปรึกษาและการแนะแนว
-                            </option>
-                            <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
-                              งานปกครองและความปลอดภัยนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานสวัสดิการนักเรียนนักศึกษา">
-                              งานสวัสดิการนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานโครงการพิเศษและการบริการ">
-                              งานโครงการพิเศษและการบริการ
-                            </option>
-                          </optgroup>
-                          <optgroup label="4. ฝ่ายวิชาการ">
-                            <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
-                              งานพัฒนาหลักสูตรและการจัดการเรียนรู้
-                            </option>
-                            <option value="งานวัดผลและประเมินผล">
-                              งานวัดผลและประเมินผล
-                            </option>
-                            <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
-                              งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
-                            </option>
-                            <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
-                              งานวิทยบริการและเทคโนโลยีการศึกษา
-                            </option>
-                            <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
-                              งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
-                            </option>
-                            <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
-                              งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
-                            </option>
-                          </optgroup>
-                          <optgroup label="5. แผนกวิชา">
-                            <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
-                            <option value="การบัญชี">การบัญชี</option>
-                            <option value="การตลาด">การตลาด</option>
-                            <option value="การตลาด/โลจิสติก์">
-                              การตลาด/โลจิสติก์
-                            </option>
-                            <option value="เทคโนโลยีธุรกิจดิจิทัล">
-                              เทคโนโลยีธุรกิจดิจิทัล
-                            </option>
-                            <option value="การโรงแรม">การโรงแรม</option>
-                            <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
-                            <option value="ช่างอิเล็กทรอนิกส์">
-                              ช่างอิเล็กทรอนิกส์
-                            </option>
-                            <option value="ช่างยนต์">ช่างยนต์</option>
-                            <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
-                            <option value="ช่างไฟฟ้ากำลัง">
-                              ช่างไฟฟ้ากำลัง
-                            </option>
-                            <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
-                            <option value="ช่างเชื่อมโลหะ">
-                              ช่างเชื่อมโลหะ
-                            </option>
-                            <option value="ช่างก่อสร้าง">ช่างก่อสร้าง</option>
-                          </optgroup>
-                        </select>
-                      </td>
-                      <td className="p-4 text-center">
-                        <button
-                          onClick={() =>
-                            toggleActive(user._id, user.isActive, user.name)
-                          }
-                          className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
-                        >
-                          <div
-                            className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
-                          />
-                        </button>
-                      </td>
-                      <td className="p-4 text-right">
-                        <div className="flex items-center justify-end gap-3  ">
+                            <optgroup label="1. ฝ่ายบริหารทรัพยากร">
+                              <option value="งานบริหารงานทั่วไป">
+                                งานบริหารงานทั่วไป
+                              </option>
+                              <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
+                                งานบริหารและพัฒนาทรัพยากรบุคคล
+                              </option>
+                              <option value="งานการเงิน">งานการเงิน</option>
+                              <option value="งานการบัญชี">งานการบัญชี</option>
+                              <option value="งานพัสดุ">งานพัสดุ</option>
+                              <option value="งานอาคารสถานที่">
+                                งานอาคารสถานที่
+                              </option>
+                              <option value="งานทะเบียน">งานทะเบียน</option>
+                              <option value="งานแม่บ้าน/นักการ">
+                                งานแม่บ้าน/นักการ
+                              </option>
+                            </optgroup>
+                            <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
+                              <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
+                                งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
+                              </option>
+                              <option value="งานมาตรฐานและการประกันคุณภาพ">
+                                งานมาตรฐานและการประกันคุณภาพ
+                              </option>
+                              <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
+                                งานศูนย์ดิจิทัลและสื่อสารองค์กร
+                              </option>
+                              <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
+                                งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
+                              </option>
+                              <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
+                                งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
+                              </option>
+                              <option value="งานติดตามและประเมินผล">
+                                งานติดตามและประเมินผล
+                              </option>
+                            </optgroup>
+                            <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
+                              <option value="งานกิจกรรมนักเรียนนักศึกษา">
+                                งานกิจกรรมนักเรียนนักศึกษา
+                              </option>
+                              <option value="งานครูที่ปรึกษาและการแนะแนว">
+                                งานครูที่ปรึกษาและการแนะแนว
+                              </option>
+                              <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
+                                งานปกครองและความปลอดภัยนักเรียนนักศึกษา
+                              </option>
+                              <option value="งานสวัสดิการนักเรียนนักศึกษา">
+                                งานสวัสดิการนักเรียนนักศึกษา
+                              </option>
+                              <option value="งานโครงการพิเศษและการบริการ">
+                                งานโครงการพิเศษและการบริการ
+                              </option>
+                            </optgroup>
+                            <optgroup label="4. ฝ่ายวิชาการ">
+                              <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
+                                งานพัฒนาหลักสูตรและการจัดการเรียนรู้
+                              </option>
+                              <option value="งานวัดผลและประเมินผล">
+                                งานวัดผลและประเมินผล
+                              </option>
+                              <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
+                                งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
+                              </option>
+                              <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
+                                งานวิทยบริการและเทคโนโลยีการศึกษา
+                              </option>
+                              <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
+                                งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
+                              </option>
+                              <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
+                                งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
+                              </option>
+                            </optgroup>
+                            <optgroup label="5. แผนกวิชา">
+                              <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
+                              <option value="การบัญชี">การบัญชี</option>
+                              <option value="การตลาด">การตลาด</option>
+                              <option value="การตลาด/โลจิสติก์">
+                                การตลาด/โลจิสติก์
+                              </option>
+                              <option value="เทคโนโลยีธุรกิจดิจิทัล">
+                                เทคโนโลยีธุรกิจดิจิทัล
+                              </option>
+                              <option value="การโรงแรม">การโรงแรม</option>
+                              <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
+                              <option value="ช่างอิเล็กทรอนิกส์">
+                                ช่างอิเล็กทรอนิกส์
+                              </option>
+                              <option value="ช่างยนต์">ช่างยนต์</option>
+                              <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
+                              <option value="ช่างไฟฟ้ากำลัง">
+                                ช่างไฟฟ้ากำลัง
+                              </option>
+                              <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
+                              <option value="ช่างเชื่อมโลหะ">
+                                ช่างเชื่อมโลหะ
+                              </option>
+                              <option value="ช่างก่อสร้าง">ช่างก่อสร้าง</option>
+                            </optgroup>
+                          </select>
+                        </td>
+                        <td className="p-4 text-center">
                           <button
                             onClick={() =>
-                              router.push(`/dashboard/users/edit/${user._id}`)
+                              toggleActive(user._id, user.isActive, user.name)
                             }
-                            className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
-                            title="แก้ไขข้อมูล"
+                            className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
                           >
-                            <Edit3 size={16} />
+                            <div
+                              className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
+                            />
                           </button>
-                          <button
-                            onClick={() => deleteUser(user._id, user.name)}
-                            className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm"
-                            title="ลบผู้ใช้ออกจากระบบ"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
+                        </td>
+                        <td className="p-4 text-right">
+                          <div className="flex items-center justify-end gap-3  ">
+                            <button
+                              onClick={() =>
+                                router.push(`/dashboard/users/edit/${user._id}`)
+                              }
+                              className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
+                              title="แก้ไขข้อมูล"
+                            >
+                              <Edit3 size={16} />
+                            </button>
+                            <button
+                              onClick={() => deleteUser(user._id, user.name)}
+                              className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm"
+                              title="ลบผู้ใช้ออกจากระบบ"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                )}
+                {!loading && users.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-12 text-center">
+                       <span className="text-slate-400 font-bold italic">ไม่พบข้อมูลที่ค้นหา</span>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

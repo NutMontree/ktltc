@@ -26,6 +26,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import FullPageLoader from "@/components/FullPageLoader";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 interface Activity {
   id: string;
@@ -233,6 +235,32 @@ export default function WorkReportsManagementPage() {
     }
   };
 
+  const exportToExcel = () => {
+    if (filteredReports.length === 0) {
+      alert("ไม่พบข้อมูลที่จะส่งออกครับ");
+      return;
+    }
+
+    const data = filteredReports.map((r) => ({
+      "วันที่": new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" }),
+      "ชื่อ-นามสกุล": r.user?.name || "-",
+      "ตำแหน่ง": ROLE_TH[r.user?.role] || r.user?.role || "-",
+      "แผนก/สังกัด": r.user?.department || "-",
+      "สรุปงาน": r.summary || "-",
+      "ปัญหาที่พบ": r.problems || "-",
+      "แผนงานวันถัดไป": r.plansNextDay || "-",
+      "จำนวนกิจกรรม": r.activities?.length || 0,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Work Reports");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const finalData = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+    saveAs(finalData, `Work_Reports_${startDate}_to_${endDate}.xlsx`);
+  };
+
   const addActivity = () => {
     setEditActivities([
       {
@@ -296,6 +324,13 @@ export default function WorkReportsManagementPage() {
             >
               <Clock size={18} className={loading ? "animate-spin" : ""} />{" "}
               รีเฟรชข้อมูล
+            </button>
+
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl shadow-lg shadow-emerald-600/20 text-sm font-black transition-all active:scale-95"
+            >
+              <FileText size={18} /> ดาวน์โหลดรายงาน (Excel)
             </button>
 
             <button
