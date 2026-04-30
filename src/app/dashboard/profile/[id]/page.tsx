@@ -742,13 +742,19 @@ export default function FriendProfilePage({
       const imageUrls: string[] = [];
       for (const item of postImagePreviews) {
         if (item.src.startsWith("http")) { imageUrls.push(item.src); continue; }
-        const uploadRes = await fetch("/api/admin/upload", {
+        const formData = new FormData();
+        // Convert base64 to Blob
+        const fetchRes = await fetch(item.src);
+        const blob = await fetchRes.blob();
+        formData.append("file", blob, `post-${Date.now()}.jpg`);
+        formData.append("folder", "posts");
+
+        const uploadRes = await fetch("/api/upload", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: item.src, folder: "posts" }),
+          body: formData,
         });
         const uploadData = await uploadRes.json();
-        imageUrls.push(uploadData.url);
+        imageUrls.push(uploadData.secure_url);
       }
       const method = editingPostId ? "PUT" : "POST";
       const url = editingPostId ? `/api/posts/${editingPostId}` : "/api/posts";

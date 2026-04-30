@@ -1,79 +1,54 @@
 // src\app\api\admin\upload\route.ts
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { v2 as cloudinary } from "cloudinary";
-
-// ✅ Config Cloudinary
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { saveFileLocally } from "@/lib/upload-server";
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+    
     if (
       !session ||
-      !(session.user as any).role ||
-      !["super_admin", "admin", "editor"].includes((session.user as any).role)
+      !["super_admin", "admin", "editor"].includes(userRole)
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const contentType = req.headers.get("content-type") || "";
-    let imageToUpload: string | Buffer | undefined;
+    let dataToUpload: string | Buffer | undefined;
     let folder = "uploads";
 
     if (contentType.includes("application/json")) {
       const { image, folder: targetFolder } = await req.json();
-      imageToUpload = image;
+      dataToUpload = image;
       if (targetFolder) folder = targetFolder;
     } else {
       const formData = await req.formData();
       const file = formData.get("file") as File;
       if (file) {
         const bytes = await file.arrayBuffer();
-        imageToUpload = Buffer.from(bytes);
+        dataToUpload = Buffer.from(bytes);
       }
       const targetFolder = formData.get("folder") as string;
       if (targetFolder) folder = targetFolder;
     }
 
-    if (!imageToUpload) {
+    if (!dataToUpload) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // ✅ Upload to Cloudinary
-    const uploadResponse = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: `ktltc/${folder}`,
-          resource_type: "auto",
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
+    // ✅ Save to Local Storage
+    const secure_url = await saveFileLocally(dataToUpload, folder, "admin-upload");
 
-      if (Buffer.isBuffer(imageToUpload)) {
-        uploadStream.end(imageToUpload);
-      } else {
-        // If it's a base64 string
-        cloudinary.uploader.upload(imageToUpload as string, {
-          folder: `ktltc/${folder}`,
-          resource_type: "auto",
-        }).then(resolve).catch(reject);
-      }
-    });
-
-    const result = uploadResponse as any;
+    if (!secure_url) {
+      throw new Error("Failed to save file locally");
+    }
 
     return NextResponse.json({
       success: true,
-      url: result.secure_url,
-      imageUrl: result.secure_url, // for backward compatibility
+      url: secure_url,
+      imageUrl: secure_url, // for backward compatibility
       message: "อัปโหลดเรียบร้อยแล้ว",
     });
   } catch (error: any) {

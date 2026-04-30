@@ -50,14 +50,14 @@ export default function AddBannerPage() {
       const uploadFormData = new FormData();
       uploadFormData.append("file", selectedFile);
 
-      const uploadRes = await fetch("/api/admin/upload", {
+      const uploadRes = await fetch("/api/upload", {
         method: "POST",
         body: uploadFormData,
-        // ไม่ต้องใส่ headers นะครับ ปล่อยให้เบราว์เซอร์จัดการ Boundary เอง
       });
 
       if (!uploadRes.ok) throw new Error("Upload failed");
-      const { imageUrl } = await uploadRes.json();
+      const { secure_url } = await uploadRes.json();
+      const imageUrl = secure_url;
 
       // Logic: ใช้ชื่อไฟล์ถ้าไม่ได้ระบุหัวข้อ
       let finalTitle = formData.title.trim();

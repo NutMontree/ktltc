@@ -3,14 +3,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs"; // อย่าลืม npm install bcryptjs
 import { auth } from "@/lib/auth";
-import { v2 as cloudinary } from "cloudinary";
-
-// ✅ Config Cloudinary
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { saveFileLocally } from "@/lib/upload-server";
 
 export async function GET(
   req: Request,
@@ -78,37 +71,22 @@ export async function PATCH(
     // เตรียมข้อมูลสำหรับอัปเดต
     const updatePayload: any = { ...updateData, updatedAt: new Date() };
 
-    // ✅ Manage Profile Image (Cloudinary)
+    // ✅ Manage Profile Image (Local)
     if (updateData.image && updateData.image.startsWith("data:image")) {
-      try {
-        const uploadResponse = await cloudinary.uploader.upload(updateData.image, {
-          folder: "user_profiles",
-          transformation: [
-            { width: 200, height: 200, crop: "fill", gravity: "face" },
-          ],
-        });
-        updatePayload.image = uploadResponse.secure_url;
-      } catch (error) {
-        console.error("Cloudinary upload error:", error);
+      const imageUrl = await saveFileLocally(updateData.image, "user_profiles", "profile");
+      if (imageUrl) {
+        updatePayload.image = imageUrl;
       }
     }
 
-    // ✅ Manage Cover Image (Cloudinary)
+    // ✅ Manage Cover Image (Local)
     if (
       updateData.coverImage &&
       updateData.coverImage.startsWith("data:image")
     ) {
-      try {
-        const coverUploadResponse = await cloudinary.uploader.upload(
-          updateData.coverImage,
-          {
-            folder: "user_covers",
-            transformation: [{ width: 1200, height: 400, crop: "fill" }],
-          },
-        );
-        updatePayload.coverImage = coverUploadResponse.secure_url;
-      } catch (error) {
-        console.error("Cloudinary cover upload error:", error);
+      const coverUrl = await saveFileLocally(updateData.coverImage, "user_covers", "cover");
+      if (coverUrl) {
+        updatePayload.coverImage = coverUrl;
       }
     }
 

@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
+    // Dynamic import เพื่อไม่ให้ Vercel bundle fs เข้าไปใน client chunk
+    const { writeFile, mkdir } = await import('fs/promises');
+    const { join } = await import('path');
+
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const folder = formData.get('folder') as string || 'uploads';

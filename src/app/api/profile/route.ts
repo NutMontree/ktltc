@@ -4,14 +4,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
-import { v2 as cloudinary } from "cloudinary";
-
-// ✅ Config Cloudinary
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { saveFileLocally } from "@/lib/upload-server";
 
 export async function GET() {
   const session = await auth();
@@ -94,34 +87,19 @@ export async function PATCH(req: Request) {
 
     // ✅ 1. Manage Profile Image
     if (image && image.startsWith("data:image")) {
-      try {
-        const uploadResponse = await cloudinary.uploader.upload(image, {
-          folder: "user_profiles",
-          transformation: [
-            { width: 200, height: 200, crop: "fill", gravity: "face" },
-          ], 
-        });
-        updateData.image = uploadResponse.secure_url;
+      const imageUrl = await saveFileLocally(image, "user_profiles", "profile");
+      if (imageUrl) {
+        updateData.image = imageUrl;
         logDetail = "อัปเดตโปรไฟล์และเปลี่ยนรูปภาพใหม่";
-      } catch (uploadError) {
-        console.error("Cloudinary profile upload error:", uploadError);
       }
     }
 
     // ✅ 2. Manage Cover Image
     if (coverImage && coverImage.startsWith("data:image")) {
-      try {
-        const coverUploadResponse = await cloudinary.uploader.upload(coverImage, {
-          folder: "user_covers",
-          // Optimization for banner aspect ratio
-          transformation: [
-            { width: 1200, height: 400, crop: "fill" },
-          ],
-        });
-        updateData.coverImage = coverUploadResponse.secure_url;
+      const coverUrl = await saveFileLocally(coverImage, "user_covers", "cover");
+      if (coverUrl) {
+        updateData.coverImage = coverUrl;
         logDetail += (logDetail.includes("อัปเดต") ? " และ" : "อัปเดต") + "ภาพหน้าปกใหม่";
-      } catch (coverError) {
-        console.error("Cloudinary cover upload error:", coverError);
       }
     }
 

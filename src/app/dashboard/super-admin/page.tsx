@@ -66,6 +66,18 @@ export default function SuperAdminPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Show loading screen while initializing
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-zinc-950 font-sans gap-4">
+        <RefreshCcw className="w-10 h-10 text-blue-500 animate-spin" />
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">
+          กำลังเตรียมระบบ...
+        </span>
+      </div>
+    );
+  }
   const [adminProfile, setAdminProfile] = useState<{
     _id: string;
     name: string;
@@ -496,12 +508,7 @@ export default function SuperAdminPage() {
     return "border-slate-500/50 bg-slate-500/10 text-slate-600 dark:text-slate-400 font-bold";
   };
 
-  <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-zinc-950 font-sans gap-4">
-    <RefreshCcw className="w-10 h-10 text-blue-500 animate-spin" />
-    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">
-      กำลังเตรียมระบบ...
-    </span>
-  </div>;
+  
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-2 md:p-4 font-sans selection:bg-blue-500/30 relative overflow-hidden">

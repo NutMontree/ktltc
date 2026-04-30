@@ -2,14 +2,7 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
-import { v2 as cloudinary } from "cloudinary";
-
-// ✅ Cloudinary Config
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { saveFileLocally } from "@/lib/upload-server";
 
 export const dynamic = "force-dynamic";
 
@@ -194,25 +187,15 @@ export async function POST(req: Request) {
     const data = await req.json();
     const { date, activities, summary, problems, plansNextDay, images } = data;
 
-    // Handle Cloudinary Uploads if images are provided
+    // Handle Local Uploads if images are provided
     let imageUrls: string[] = [];
     if (images && Array.isArray(images) && images.length > 0) {
       for (const img of images) {
         if (img.startsWith("data:image")) {
-          try {
-            const uploadResponse = await cloudinary.uploader.upload(img, {
-              folder: "work_reports",
-              width: 1000,
-              crop: "limit",
-              quality: "auto",
-              fetch_format: "auto",
-            });
-            imageUrls.push(uploadResponse.secure_url);
-          } catch (error) {
-            console.error("Cloudinary upload error in Work Report:", error);
-          }
-        } else if (img.startsWith("http")) {
-          // Keep existing URLs
+          const imageUrl = await saveFileLocally(img, "work_reports", "report");
+          if (imageUrl) imageUrls.push(imageUrl);
+        } else if (img.startsWith("http") || img.startsWith("/")) {
+          // Keep existing URLs (Cloudinary or local)
           imageUrls.push(img);
         }
       }
