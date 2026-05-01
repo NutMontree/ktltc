@@ -10,15 +10,14 @@ import { auth } from "@/lib/auth";
 export async function GET() {
   try {
     const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const role = (session?.user as any)?.role?.toLowerCase();
     
-    // Consistent with middleware's admin roles
-    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "editor", "staff"];
-
-    if (!role || !allowedRoles.includes(role)) {
-      console.error(`[API/role-settings] Unauthorized Access: role=${role}`);
-      return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
-    }
+    // We allow all authenticated users to GET the settings so they can see their check-in rules.
+    // The allowedRoles restriction will only apply to the PATCH method.
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
