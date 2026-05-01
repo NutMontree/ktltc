@@ -7,7 +7,7 @@ const Nav = () => {
   return (
     <nav className="flex justify-between bg-nav p-4">
       <div className="flex items-center space-x-4">
-        <Link href="https://ktltc.site/">
+        <Link href="https://ktltc.ac.th/">
           <img src="/logo.webp" alt="logo" className="h-10" />
         </Link>
         <Link href="/">

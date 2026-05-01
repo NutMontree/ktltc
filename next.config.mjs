@@ -17,6 +17,12 @@ const nextConfig = {
         destination: 'https://ktltc.ac.th/:path*',
         permanent: true,
       },
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'ktltc.site' }],
+        destination: 'https://ktltc.ac.th/:path*',
+        permanent: true,
+      },
     ]
   },
 
