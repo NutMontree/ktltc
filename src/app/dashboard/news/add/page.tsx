@@ -295,11 +295,15 @@ export default function AddNewsPage() {
     if (!content.trim()) return alert("กรุณาใส่เนื้อหาข่าวด้วยครับ");
     setIsLoading(true);
     try {
+      const now = new Date();
+      const datePath = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
+      const mainCategory = categories[0] || "General";
+
       const generalUploads = await Promise.all(
-        imageFiles.map((f) => uploadFile(f, "ktltc_news")),
+        imageFiles.map((f) => uploadFile(f, `ktltc_news/${mainCategory}/${datePath}`)),
       );
       const newsletterUploads = await Promise.all(
-        newsletterFiles.map((f) => uploadFile(f, "ktltc_newsletters")),
+        newsletterFiles.map((f) => uploadFile(f, `ktltc_newsletters/${mainCategory}/${datePath}`)),
       );
 
       // DOM-based safe auto-linking for HTML content

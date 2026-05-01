@@ -324,11 +324,15 @@ export default function EditNewsPage({
     setSubmitting(true);
 
     try {
+      const now = new Date();
+      const datePath = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
+      const mainCategory = categories[0] || "General";
+
       // 1. อัปโหลดรูปใหม่
       const finalImages = await Promise.all(
         allImages.map(async (item) => {
           if (item.isNew && item.file) {
-            return await uploadFile(item.file, "ktltc_news");
+            return await uploadFile(item.file, `ktltc_news/${mainCategory}/${datePath}`);
           }
           return item.src;
         }),
@@ -337,7 +341,7 @@ export default function EditNewsPage({
       const finalNewsletters = await Promise.all(
         allNewsletters.map(async (item) => {
           if (item.isNew && item.file) {
-            return await uploadFile(item.file, "ktltc_newsletters");
+            return await uploadFile(item.file, `ktltc_newsletters/${mainCategory}/${datePath}`);
           }
           return item.src;
         }),

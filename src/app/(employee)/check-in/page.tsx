@@ -510,7 +510,7 @@ function CheckInContent() {
           setTimeout(() => router.push("/work-report"), 3000);
         }
       } else {
-        alert("ทำรายการไม่สำเร็จ: " + data.message);
+        alert("ทำรายการไม่สำเร็จ กรุณาเข้าสู่ระบบก่อนใช้งาน");
       }
     } catch (e) {
       console.error(e);
