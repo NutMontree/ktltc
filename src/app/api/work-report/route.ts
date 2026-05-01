@@ -3,6 +3,7 @@ import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 import { saveFileLocally } from "@/lib/upload-server";
+import { deleteFileFromUrl } from "@/lib/file-utils";
 
 export const dynamic = "force-dynamic";
 
@@ -289,6 +290,16 @@ export async function PATCH(req: Request) {
       { $set: updates }
     );
 
+    // --- ลบรูปภาพที่ถูกเอาออก ---
+    if (images && existingReport.images) {
+      const oldImages = existingReport.images || [];
+      const newImages = images || [];
+      const toDelete = oldImages.filter((img: string) => !newImages.includes(img));
+      for (const imgUrl of toDelete) {
+        await deleteFileFromUrl(imgUrl);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: "Report updated successfully",
@@ -330,12 +341,21 @@ export async function DELETE(req: Request) {
     if (!id)
       return NextResponse.json({ error: "Missing report ID" }, { status: 400 });
 
+    const reportToDelete = await db.collection("work_reports").findOne({ _id: new ObjectId(id) });
+    
     result = await db
       .collection("work_reports")
       .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
+    }
+
+    // --- ลบไฟล์รูปภาพออกจากเครื่อง Lenovo ---
+    if (reportToDelete && reportToDelete.images) {
+      for (const imgUrl of reportToDelete.images) {
+        await deleteFileFromUrl(imgUrl);
+      }
     }
 
     return NextResponse.json({

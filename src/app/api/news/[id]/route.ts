@@ -2,6 +2,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { deleteFileFromUrl } from "@/lib/file-utils";
 
 function getAuthorId(news: any): string {
   if (!news || typeof news !== "object") return "";
@@ -134,6 +135,18 @@ export async function PUT(
       },
     );
 
+    // --- ลบไฟล์รูปภาพที่ถูกนำออกจากการแก้ไข ---
+    const oldImages = [
+      ...(existingNews.images || []),
+      ...(existingNews.announcementImages || []),
+    ];
+    const newImages = [...(images || []), ...(announcementImages || [])];
+
+    const imagesToDelete = oldImages.filter((img) => !newImages.includes(img));
+    for (const imageUrl of imagesToDelete) {
+      await deleteFileFromUrl(imageUrl);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("PUT Error:", error);
@@ -188,6 +201,16 @@ export async function DELETE(
       .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 1) {
+      // --- ลบไฟล์รูปภาพออกจากเครื่อง Lenovo ---
+      const imagesToDelete = [
+        ...(existingNews.images || []),
+        ...(existingNews.announcementImages || []),
+      ];
+
+      for (const imageUrl of imagesToDelete) {
+        await deleteFileFromUrl(imageUrl);
+      }
+
       return NextResponse.json({ message: "ลบสำเร็จ" });
     }
 

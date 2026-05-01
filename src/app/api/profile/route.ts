@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { saveFileLocally } from "@/lib/upload-server";
+import { deleteFileFromUrl } from "@/lib/file-utils";
 
 export async function GET() {
   const session = await auth();
@@ -89,6 +90,10 @@ export async function PATCH(req: Request) {
     if (image && image.startsWith("data:image")) {
       const imageUrl = await saveFileLocally(image, "user_profiles", "profile");
       if (imageUrl) {
+        // ลบรูปเดิมถ้ามี
+        if (currentUser?.image) {
+          await deleteFileFromUrl(currentUser.image);
+        }
         updateData.image = imageUrl;
         logDetail = "อัปเดตโปรไฟล์และเปลี่ยนรูปภาพใหม่";
       }
@@ -98,6 +103,10 @@ export async function PATCH(req: Request) {
     if (coverImage && coverImage.startsWith("data:image")) {
       const coverUrl = await saveFileLocally(coverImage, "user_covers", "cover");
       if (coverUrl) {
+        // ลบรูปเดิมถ้ามี
+        if (currentUser?.coverImage) {
+          await deleteFileFromUrl(currentUser.coverImage);
+        }
         updateData.coverImage = coverUrl;
         logDetail += (logDetail.includes("อัปเดต") ? " และ" : "อัปเดต") + "ภาพหน้าปกใหม่";
       }
