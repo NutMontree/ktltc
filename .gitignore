@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# media & uploads
+/public/uploads/
+/public/user_profiles/
+/public/user_covers/
+/public/attendance_photos/
+/public/ktltc_news/
+/public/ktltc_newsletters/
+/public/ktltc_posters/
+/public/banners/
+/public/wallpaper/
+
