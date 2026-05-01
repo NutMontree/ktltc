@@ -213,6 +213,7 @@ export default function NotificationBell() {
 const popoverStyles = `
   .notification-popover {
     max-width: calc(100vw - 24px) !important;
+    z-index: 1000 !important;
   }
   .notification-popover .ant-popover-content {
     max-width: calc(100vw - 24px) !important;
@@ -221,12 +222,17 @@ const popoverStyles = `
     padding: 0 !important;
     overflow: hidden !important;
     border-radius: 1.5rem !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
   }
   @media (max-width: 640px) {
     .notification-popover {
       left: 12px !important;
       right: 12px !important;
-      width: calc(100vw - 24px) !important;
+      width: auto !important;
+      transform: none !important;
+    }
+    .notification-popover .ant-popover-inner {
+      max-width: 100% !important;
     }
   }
 `;

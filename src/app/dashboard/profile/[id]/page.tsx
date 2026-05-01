@@ -753,7 +753,9 @@ export default function FriendProfilePage({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "SHARE",
-          targetId: shareTargetId || id 
+          shareText,
+          targetId: shareTargetId || userId,
+          audience: postAudience
         }),
       });
       if (res.ok) {
@@ -957,14 +959,14 @@ export default function FriendProfilePage({
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1 rounded-xl overflow-hidden border dark:border-zinc-700">
-                  {(() => {
-                    const allPhotos = userPosts
-                      .flatMap((p) => p.images || (p.image ? [p.image] : []))
-                      .filter((img) => img);
-                    return allPhotos.slice(0, 9).map((imgSrc: string, idx: number) => (
+                  {userPosts
+                    .flatMap((p) => p.images || (p.image ? [p.image] : []))
+                    .filter((img) => img)
+                    .slice(0, 9)
+                    .map((imgSrc: string, idx: number) => (
                       <div
                         key={`photo-${idx}`}
-                        onClick={() => setSelectedImage({ images: allPhotos, index: idx })}
+                        onClick={() => setSelectedImage({ images: [imgSrc], index: 0 })}
                         className="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 cursor-pointer transition-all overflow-hidden"
                       >
                         <img
@@ -973,8 +975,7 @@ export default function FriendProfilePage({
                           alt="Post thumbnail"
                         />
                       </div>
-                    ));
-                  })()}
+                    ))}
                   {userPosts.filter((p) => (p.images && p.images.length > 0) || p.image).length === 0 && (
                     <div className="col-span-3 py-10 text-center text-zinc-400 text-xs italic">
                       ยังไม่มีรูปภาพ
@@ -1183,9 +1184,15 @@ export default function FriendProfilePage({
                           <h4 className="font-black text-sm text-zinc-900 dark:text-white hover:underline cursor-pointer" onClick={() => router.push(`/dashboard/profile/${post.authorId?.$oid || post.authorId || id}`)}>
                             {post.authorName || post.userName || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.name : "สมาชิก")}
                           </h4>
-                          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
+                          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider flex items-center gap-1">
                             {new Date(post.createdAt).toLocaleString("th-TH")} •
-                            โลก
+                            {post.audience === "friends" ? (
+                              <><TeamOutlined className="text-[8px]" /> เพื่อน</>
+                            ) : post.audience === "private" ? (
+                              <><LockOutlined className="text-[8px]" /> เฉพาะฉัน</>
+                            ) : (
+                              <><GlobalOutlined className="text-[8px]" /> สาธารณะ</>
+                            )}
                           </p>
                         </div>
                       </div>
@@ -2431,14 +2438,13 @@ export default function FriendProfilePage({
           <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border dark:border-zinc-800 p-6">
             <h2 className="text-2xl font-black mb-6">รูปภาพ</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-              {(() => {
-                const allPhotos = userPosts
-                  .flatMap((p) => p.images || (p.image ? [p.image] : []))
-                  .filter((img) => img);
-                return allPhotos.map((imgSrc, idx) => (
+              {userPosts
+                .flatMap((p) => p.images || (p.image ? [p.image] : []))
+                .filter((img) => img)
+                .map((imgSrc, idx) => (
                   <div
                     key={`gallery-photo-${idx}`}
-                    onClick={() => setSelectedImage({ images: allPhotos, index: idx })}
+                    onClick={() => setSelectedImage({ images: [imgSrc], index: 0 })}
                     className="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 cursor-pointer transition-all overflow-hidden rounded-xl group relative"
                   >
                     <img
@@ -2448,8 +2454,7 @@ export default function FriendProfilePage({
                     />
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                ));
-              })()}
+                ))}
               {userPosts.flatMap(p => p.images || (p.image ? [p.image] : [])).length === 0 && (
                 <div className="col-span-full py-20 text-center">
                   <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -2509,6 +2514,15 @@ export default function FriendProfilePage({
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white tracking-tight truncate">
                   {formData.name}
                 </h1>
+                <p className="text-zinc-500 dark:text-zinc-400 font-bold text-lg mt-1 mb-4 flex items-center justify-center sm:justify-start gap-2 truncate">
+                  <span className="text-blue-600 dark:text-blue-400">
+                    @{formData.username}
+                  </span>
+                  <span className="w-1 h-1 rounded-full bg-zinc-300" />
+                  <span className="opacity-80">
+                    {formData.position || "สมาชิก"}
+                  </span>
+                </p>
                 <div className="flex items-center justify-center sm:justify-start -space-x-2">
                   {allUsers
                     .filter(
@@ -2678,10 +2692,47 @@ export default function FriendProfilePage({
               </div>
               <div className="flex-1">
                 <p className="font-black text-sm text-zinc-900 dark:text-white">{(session?.user as any)?.name}</p>
-                <div className="flex items-center gap-2 mt-1">
-                   <div className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-500 flex items-center gap-1">
-                      <GlobalOutlined className="text-[8px]" /> สาธารณะ
-                   </div>
+                <div className="relative mt-1">
+                   <button 
+                    onClick={(e) => { e.preventDefault(); setShowAudienceMenu(!showAudienceMenu); }}
+                    className="flex items-center gap-1.5 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-500 hover:bg-zinc-200 transition-colors"
+                  >
+                    {postAudience === "public" ? <GlobalOutlined /> : postAudience === "friends" ? <TeamOutlined /> : <LockOutlined />}
+                    {postAudience === "public" ? "สาธารณะ" : postAudience === "friends" ? "เพื่อน" : "เฉพาะฉัน"} 
+                    <DownOutlined className="text-[8px]" />
+                  </button>
+
+                  <AnimatePresence>
+                    {showAudienceMenu && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setShowAudienceMenu(false)} />
+                        <motion.div 
+                          initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                          className="absolute left-0 mt-1 w-40 bg-white dark:bg-zinc-800 border dark:border-zinc-700 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden"
+                        >
+                          {[
+                            { id: "public", label: "สาธารณะ", desc: "ทุกคนเห็นได้", icon: <GlobalOutlined className="text-blue-500" /> },
+                            { id: "friends", label: "เพื่อน", desc: "เห็นได้เฉพาะเพื่อน", icon: <TeamOutlined className="text-green-500" /> },
+                            { id: "private", label: "เฉพาะฉัน", desc: "เห็นได้เฉพาะคุณ", icon: <LockOutlined className="text-zinc-500" /> },
+                          ].map((opt) => (
+                            <div 
+                              key={opt.id}
+                              onClick={() => { setPostAudience(opt.id as any); setShowAudienceMenu(false); }}
+                              className={`px-3 py-2 flex items-start gap-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors ${postAudience === opt.id ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
+                            >
+                              <div className="mt-0.5">{opt.icon}</div>
+                              <div className="flex flex-col">
+                                <span className={`text-[11px] font-black ${postAudience === opt.id ? "text-blue-600" : "text-zinc-700 dark:text-zinc-300"}`}>{opt.label}</span>
+                                <span className="text-[9px] text-zinc-400 font-bold">{opt.desc}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>

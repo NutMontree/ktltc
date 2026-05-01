@@ -204,10 +204,10 @@ export async function POST(
         return NextResponse.json({ error: "ไม่พบโพสต์ต้นฉบับ" }, { status: 404 });
 
       const sharedPost = {
-        authorId: new ObjectId(userId),
+        userId: body.targetId ? new ObjectId(body.targetId) : new ObjectId(userId), // วอลล์ที่เป็นเจ้าของ
+        authorId: new ObjectId(userId), // ผู้แชร์
         authorName: userName,
         authorImage: session.user.image,
-        targetId: body.targetId ? new ObjectId(body.targetId) : new ObjectId(userId),
         content: body.shareText || "",
         sharedPostId: new ObjectId(id),
         sharedPostData: {
@@ -218,6 +218,7 @@ export async function POST(
           authorImage: originalPost.authorImage || originalPost.userImage,
           createdAt: originalPost.createdAt,
         },
+        audience: body.audience || "public",
         likes: [],
         comments: [],
         createdAt: new Date(),
