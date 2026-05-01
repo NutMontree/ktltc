@@ -83,7 +83,7 @@ export default function NotificationBell() {
   const unreadCount = notifications.filter(n => (n.isRead ?? n.read ?? false) === false).length;
 
   const content = (
-    <div className="w-[350px] sm:w-[400px]">
+    <div className="w-[calc(100vw-24px)] sm:w-[400px] max-w-[400px]">
       <div className="flex items-center justify-between p-4 border-b dark:border-zinc-800">
         <h3 className="font-black text-lg text-zinc-800 dark:text-zinc-100 uppercase tracking-tight">การแจ้งเตือน</h3>
         {unreadCount > 0 && (
@@ -98,7 +98,7 @@ export default function NotificationBell() {
         )}
       </div>
 
-      <div className="max-h-[450px] overflow-y-auto custom-scrollbar">
+      <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
         {loading && notifications.length === 0 ? (
           <div className="p-10 flex flex-col items-center justify-center gap-3">
             <Loader2 className="animate-spin text-zinc-300" size={32} />
@@ -113,7 +113,7 @@ export default function NotificationBell() {
           </div>
         ) : (
           <div className="divide-y dark:divide-zinc-800">
-            {notifications.map((n) => {
+            {notifications.slice(0, 5).map((n) => {
               const isRead = n.isRead ?? n.read ?? false;
               const title = n.title || (n.type === 'friend_request' ? 'คำขอเป็นเพื่อน' : n.type === 'friend_accept' ? 'ยอมรับเป็นเพื่อน' : 'การแจ้งเตือน');
               const message = n.message || (n.type === 'friend_request' ? `${n.fromName} ส่งคำขอเป็นเพื่อนกับคุณ` : n.type === 'friend_accept' ? `${n.fromName} ยอมรับคำขอเป็นเพื่อนของคุณแล้ว` : '');
@@ -149,7 +149,7 @@ export default function NotificationBell() {
                       <p className={`text-sm font-black ${!isRead ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500'}`}>
                         {title}
                       </p>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed break-words">
                         {message}
                       </p>
                       <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest pt-1">
@@ -168,12 +168,24 @@ export default function NotificationBell() {
       </div>
 
       <div className="p-3 border-t dark:border-zinc-800 text-center">
-        <button 
-          className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] hover:text-zinc-600 dark:hover:text-zinc-200 transition-all"
-          onClick={() => setOpen(false)}
-        >
-          ปิดหน้านี้
-        </button>
+        {notifications.length > 5 ? (
+          <button 
+            className="w-full text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] hover:text-blue-700 dark:hover:text-blue-300 transition-all py-1"
+            onClick={() => {
+              router.push("/dashboard/notifications");
+              setOpen(false);
+            }}
+          >
+            ดูการแจ้งเตือนทั้งหมด ({notifications.length})
+          </button>
+        ) : (
+          <button 
+            className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] hover:text-zinc-600 dark:hover:text-zinc-200 transition-all"
+            onClick={() => setOpen(false)}
+          >
+            ปิดหน้านี้
+          </button>
+        )}
       </div>
     </div>
   );
@@ -186,6 +198,7 @@ export default function NotificationBell() {
       onOpenChange={setOpen}
       placement="bottomRight"
       overlayClassName="notification-popover"
+      overlayStyle={{ maxWidth: 'calc(100vw - 24px)' }}
       arrow={false}
     >
       <button className="relative p-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 group">
@@ -195,4 +208,32 @@ export default function NotificationBell() {
       </button>
     </Popover>
   );
+}
+
+const popoverStyles = `
+  .notification-popover {
+    max-width: calc(100vw - 24px) !important;
+  }
+  .notification-popover .ant-popover-content {
+    max-width: calc(100vw - 24px) !important;
+  }
+  .notification-popover .ant-popover-inner {
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 1.5rem !important;
+  }
+  @media (max-width: 640px) {
+    .notification-popover {
+      left: 12px !important;
+      right: 12px !important;
+      width: calc(100vw - 24px) !important;
+    }
+  }
+`;
+
+if (typeof document !== 'undefined' && !document.getElementById('notification-popover-styles')) {
+  const style = document.createElement('style');
+  style.id = 'notification-popover-styles';
+  style.innerHTML = popoverStyles;
+  document.head.appendChild(style);
 }

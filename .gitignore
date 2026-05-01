@@ -45,9 +45,12 @@ next-env.d.ts
 /public/user_profiles/
 /public/user_covers/
 /public/attendance_photos/
+/public/banners/
+/public/wallpaper/
+/public/images/
+/public/pdf/
+/public/work_reports/
 /public/ktltc_news/
 /public/ktltc_newsletters/
 /public/ktltc_posters/
-/public/banners/
-/public/wallpaper/
 
