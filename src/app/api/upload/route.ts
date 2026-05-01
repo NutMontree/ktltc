@@ -17,7 +17,18 @@ export async function POST(req: Request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const ext = file.name.split('.').pop() || 'jpg';
+    // Detect extension from mime type if file name is generic "blob"
+    let ext = file.name.split('.').pop() || 'jpg';
+    if (ext === 'blob') {
+      const mimeToExt: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/gif': 'gif',
+        'image/webp': 'webp'
+      };
+      ext = mimeToExt[file.type] || 'jpg';
+    }
+    
     const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${ext}`;
     
     // Ensure we are saving in public directory
@@ -29,8 +40,8 @@ export async function POST(req: Request) {
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
 
-    // Return the relative path which is accessible from public
-    const secure_url = `/${folder}/${filename}`;
+    // Return the URL pointing to our media API route
+    const secure_url = `/api/media/${folder}/${filename}`;
 
     return NextResponse.json({ 
       success: true, 

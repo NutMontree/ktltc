@@ -3,18 +3,8 @@ import clientPromise from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-// Simple in-memory cache
-let cachedSummary: any = null;
-let lastFetch = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
 export async function GET() {
   try {
-    const now = Date.now();
-    if (cachedSummary && now - lastFetch < CACHE_DURATION) {
-      return NextResponse.json(cachedSummary);
-    }
-
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
@@ -92,10 +82,6 @@ export async function GET() {
       newMembers: result.newMembers,
       updates: result.updates,
     };
-
-    // Update cache
-    cachedSummary = finalResult;
-    lastFetch = now;
 
     return NextResponse.json(finalResult);
   } catch (error) {

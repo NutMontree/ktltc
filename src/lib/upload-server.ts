@@ -36,8 +36,8 @@ export async function saveFileLocally(
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
 
-    // Return the relative path which is accessible from public
-    return `/${folder}/${filename}`;
+    // Return the URL pointing to our media API route
+    return `/api/media/${folder}/${filename}`;
   } catch (error) {
     console.error("❌ saveFileLocally Error:", error);
     return null;
