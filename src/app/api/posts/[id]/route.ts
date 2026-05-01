@@ -196,6 +196,34 @@ export async function POST(
           );
         }
       }
+    } else if (type === "SHARE") {
+      const originalPost = await db
+        .collection("posts")
+        .findOne({ _id: new ObjectId(id) });
+      if (!originalPost)
+        return NextResponse.json({ error: "ไม่พบโพสต์ต้นฉบับ" }, { status: 404 });
+
+      const sharedPost = {
+        authorId: new ObjectId(userId),
+        authorName: userName,
+        authorImage: session.user.image,
+        targetId: body.targetId ? new ObjectId(body.targetId) : new ObjectId(userId),
+        content: body.shareText || "",
+        sharedPostId: new ObjectId(id),
+        sharedPostData: {
+          content: originalPost.content,
+          image: originalPost.image,
+          images: originalPost.images,
+          authorName: originalPost.authorName || originalPost.userName,
+          authorImage: originalPost.authorImage || originalPost.userImage,
+          createdAt: originalPost.createdAt,
+        },
+        likes: [],
+        comments: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await db.collection("posts").insertOne(sharedPost);
     }
 
     return NextResponse.json({ success: true });

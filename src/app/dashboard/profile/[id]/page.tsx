@@ -37,7 +37,8 @@ import {
   CommentOutlined,
   LeftOutlined,
   RightOutlined,
-  FileImageOutlined
+  FileImageOutlined,
+  BookOutlined
 } from "@ant-design/icons";
 import { Dropdown, Popover, message, Popconfirm, Modal } from "antd";
 import { useSession, signIn } from "next-auth/react";
@@ -278,7 +279,7 @@ export default function FriendProfilePage({
     education: "",
     currentCity: "",
     hometown: "",
-    relationship: "ไม่ระบุ",
+    relationship: "",
   });
 
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -288,6 +289,11 @@ export default function FriendProfilePage({
     index: number;
   } | null>(null);
   const [dismissedUsers, setDismissedUsers] = useState<string[]>([]);
+  const [showLikersModal, setShowLikersModal] = useState(false);
+  const [likersList, setLikersList] = useState<any[]>([]);
+  const [sharingPost, setSharingPost] = useState<any>(null);
+  const [shareText, setShareText] = useState("");
+  const [shareTargetId, setShareTargetId] = useState<string | null>(null);
 
   const [friendStatus, setFriendStatus] = useState<"none" | "request_sent" | "request_received" | "friends" | "me">("none");
   const [friendRequestId, setFriendRequestId] = useState<string | null>(null);
@@ -738,6 +744,33 @@ export default function FriendProfilePage({
     }
   };
 
+  const handleSharePost = async () => {
+    if (!sharingPost) return;
+    try {
+      setSaving(true);
+      const res = await fetch(`/api/posts/${sharingPost._id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "SHARE",
+          shareText,
+          targetId: shareTargetId || userId 
+        }),
+      });
+      if (res.ok) {
+        setSharingPost(null);
+        setShareText("");
+        message.success("แชร์โพสต์เรียบร้อยแล้ว");
+        fetchData(true);
+      }
+    } catch (error) {
+      console.error("Share post error:", error);
+      message.error("ไม่สามารถแชร์โพสต์ได้");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handlePostImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -794,6 +827,7 @@ export default function FriendProfilePage({
           content: postText,
           images: imageUrls,
           targetUserId: id, // Posting on this user's profile
+          audience: postAudience,
         }),
       });
       if (res.ok) {
@@ -981,7 +1015,7 @@ export default function FriendProfilePage({
                         }}
                         className="cursor-pointer group"
                       >
-                        <div className="aspect-square rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden mb-1 border dark:border-zinc-800">
+                        <div className="aspect-square rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden mb-1 border dark:border-zinc-800">
                           {u.image ? (
                             <img
                               src={u.image}
@@ -1047,7 +1081,7 @@ export default function FriendProfilePage({
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-2">
                     <TeamOutlined className="text-zinc-500" />
-                    <h3 className="text-sm font-black text-zinc-900 dark:text-white">People you may know</h3>
+                    <h3 className="text-sm font-black text-zinc-900 dark:text-white">คนที่คุณอาจจะรู้จัก</h3>
                   </div>
                   <button className="text-zinc-400 hover:text-zinc-600 transition-colors">
                     <EllipsisOutlined />
@@ -1063,6 +1097,7 @@ export default function FriendProfilePage({
                       const isDismissed = dismissedUsers.includes(String(u._id));
                       return !isMe && !isAlreadyFriend && !isDismissed;
                     })
+                    .sort(() => 0.5 - Math.random())
                     .slice(0, 10)
                     .map((u) => {
                       const myFriendsIds = (formData?.friends || []).map((fId: any) => String(fId));
@@ -1075,9 +1110,9 @@ export default function FriendProfilePage({
                           onClick={() => router.push(`/dashboard/profile/${String(u._id)}`)}
                           className="min-w-[200px] w-[200px] bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border dark:border-zinc-700/50 overflow-hidden flex flex-col snap-start group cursor-pointer hover:shadow-md transition-all"
                         >
-                          <div className="relative w-full aspect-square bg-zinc-200 dark:bg-zinc-700">
+                          <div className="relative w-full aspect-square bg-zinc-200 dark:bg-zinc-700 rounded-none">
                             {u.image ? (
-                              <img src={u.image} className="w-full h-full object-cover object-top" alt={u.name} />
+                              <img src={u.image} className="w-full h-full object-cover object-top rounded-none" alt={u.name} />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
                                 <UserOutlined className="text-4xl text-zinc-400" />
@@ -1116,8 +1151,11 @@ export default function FriendProfilePage({
                 </div>
                 
                 <div className="mt-2 text-center">
-                  <button className="text-blue-600 font-black text-xs hover:underline">
-                    See all
+                  <button 
+                    onClick={() => router.push("/dashboard/members")}
+                    className="text-blue-600 font-black text-xs hover:underline"
+                  >
+                    ดูสมาชิกทั้งหมด
                   </button>
                 </div>
               </div>
@@ -1131,10 +1169,10 @@ export default function FriendProfilePage({
                   >
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center">
-                          {formData.image ? (
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center border dark:border-zinc-700">
+                          {(post.authorImage || post.userImage || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.image : null)) ? (
                             <img
-                              src={formData.image}
+                              src={post.authorImage || post.userImage || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.image : "")}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -1142,8 +1180,8 @@ export default function FriendProfilePage({
                           )}
                         </div>
                         <div>
-                          <h4 className="font-black text-sm text-zinc-900 dark:text-white">
-                            {formData.name}
+                          <h4 className="font-black text-sm text-zinc-900 dark:text-white hover:underline cursor-pointer" onClick={() => router.push(`/dashboard/profile/${post.authorId?.$oid || post.authorId || id}`)}>
+                            {post.authorName || post.userName || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.name : "สมาชิก")}
                           </h4>
                           <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
                             {new Date(post.createdAt).toLocaleString("th-TH")} •
@@ -1152,13 +1190,15 @@ export default function FriendProfilePage({
                         </div>
                       </div>
 
-                      {(String(post.authorId || post.userId) === String((session?.user as any)?.id) || isMyProfile) && (
+                      {(String(post.authorId?.$oid || post.authorId || "") === String((session?.user as any)?.id) || 
+                        String(post.userId?.$oid || post.userId || "") === String((session?.user as any)?.id) || 
+                        isMyProfile) && (
                         <div className="relative">
                           <button
                             onClick={() => setOpenPostMenuId(openPostMenuId === post._id ? null : post._id)}
-                            className="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-all"
+                            className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-all text-zinc-600 dark:text-zinc-300 border-2 border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 z-10"
                           >
-                            <EllipsisOutlined className="text-xl text-zinc-500" />
+                            <EllipsisOutlined className="text-2xl" />
                           </button>
 
                           <AnimatePresence>
@@ -1169,30 +1209,30 @@ export default function FriendProfilePage({
                                 exit={{ opacity: 0, y: 5 }}
                                 className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl shadow-2xl z-40 py-2 overflow-hidden"
                               >
-                                {String(post.authorId || post.userId) === String((session?.user as any)?.id) && (
+                                  {(String(post.authorId?.$oid || post.authorId || "") === String((session?.user as any)?.id)) && (
+                                    <div
+                                      onClick={() => {
+                                        setEditingPostId(post._id);
+                                        setPostText(post.content);
+                                        const images = post.images || (post.image ? [post.image] : []);
+                                        setPostImagePreviews(images.map((src: string, idx: number) => ({ id: `img-${idx}`, preview: src, src })));
+                                        setActiveModal("post");
+                                        setOpenPostMenuId(null);
+                                      }}
+                                      className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
+                                    >
+                                      <EditOutlined /> <span className="text-sm font-bold">แก้ไขโพสต์</span>
+                                    </div>
+                                  )}
                                   <div
                                     onClick={() => {
-                                      setEditingPostId(post._id);
-                                      setPostText(post.content);
-                                      const images = post.images || (post.image ? [post.image] : []);
-                                      setPostImagePreviews(images.map((src: string) => ({ id: Math.random().toString(36).substring(7), src })));
-                                      setActiveModal("post" as any);
+                                      handleDeletePost(post._id);
                                       setOpenPostMenuId(null);
                                     }}
-                                    className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
+                                    className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
                                   >
-                                    <EditOutlined /> <span className="text-sm font-bold">แก้ไขโพสต์</span>
+                                    <DeleteOutlined /> <span className="text-sm font-bold">ลบโพสต์</span>
                                   </div>
-                                )}
-                                <div
-                                  onClick={() => {
-                                    handleDeletePost(post._id);
-                                    setOpenPostMenuId(null);
-                                  }}
-                                  className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
-                                >
-                                  <DeleteOutlined /> <span className="text-sm font-bold">ลบโพสต์</span>
-                                </div>
                               </motion.div>
                             )}
                           </AnimatePresence>
@@ -1218,6 +1258,33 @@ export default function FriendProfilePage({
                         </>
                       )}
                     </div>
+
+                    {/* Shared Post Content */}
+                    {post.sharedPostData && (
+                      <div className="border dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-800/30 p-4 mb-4">
+                         <div className="flex items-center gap-2 mb-3">
+                            <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden border dark:border-zinc-600">
+                               {(post.sharedPostData.authorImage) && (
+                                 <img src={post.sharedPostData.authorImage} className="w-full h-full object-cover" />
+                               )}
+                            </div>
+                            <div>
+                               <span className="font-black text-xs text-zinc-900 dark:text-white block hover:underline cursor-pointer">
+                                 {post.sharedPostData.authorName}
+                               </span>
+                               <span className="text-[10px] text-zinc-400 font-bold">
+                                 {post.sharedPostData.createdAt ? new Date(post.sharedPostData.createdAt).toLocaleDateString("th-TH") : "เมื่อสักครู่"}
+                               </span>
+                            </div>
+                         </div>
+                         <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-3">{post.sharedPostData.content}</p>
+                         {(post.sharedPostData.image || post.sharedPostData.images?.length > 0) && (
+                            <div className="rounded-lg overflow-hidden border dark:border-zinc-700 max-h-[400px] bg-zinc-200 dark:bg-zinc-800">
+                               <img src={post.sharedPostData.image || post.sharedPostData.images[0]} className="w-full h-full object-cover" />
+                            </div>
+                         )}
+                      </div>
+                    )}
                     {/* Image Grid */}
                     {(post.images || post.image) && (
                       <div
@@ -1279,21 +1346,32 @@ export default function FriendProfilePage({
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between px-2 py-1 mb-2">
-                      <div className="flex items-center gap-1.5 text-zinc-500 text-sm">
-                        {(post.likes?.length || 0) > 0 && (
-                          <>
-                            <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                              <LikeFilled className="text-white text-[10px]" />
+                    <div className="flex items-center justify-between px-2 py-1 mb-2 min-h-[32px]">
+                      {(post.likes?.length || 0) > 0 ? (
+                        <button 
+                          onClick={() => {
+                            if (post.likes?.length > 0) {
+                              const likedUsers = allUsers.filter(u => post.likes.includes(String(u._id?.$oid || u._id)));
+                              setLikersList(likedUsers);
+                              setShowLikersModal(true);
+                            }
+                          }}
+                          className="flex items-center gap-1.5 hover:underline transition-all group"
+                        >
+                          <div className="flex -space-x-1 items-center">
+                            <div className="w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 shadow-sm z-10">
+                              <LikeFilled style={{ color: 'white' }} className="text-[10px]" />
                             </div>
-                            <span className="font-bold">
-                              {post.likes.length}
-                            </span>
-                          </>
-                        )}
-                      </div>
+                          </div>
+                          <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
+                            {post.likes?.length || 0}
+                          </span>
+                        </button>
+                      ) : <div />}
                       <div className="flex items-center gap-4 text-zinc-500 text-sm font-bold">
-                        <span>{post.comments?.length || 0} ความคิดเห็น</span>
+                        {(post.comments?.length || 0) > 0 && (
+                          <span>{post.comments?.length} ความคิดเห็น</span>
+                        )}
                       </div>
                     </div>
 
@@ -1302,14 +1380,14 @@ export default function FriendProfilePage({
                     <div className="flex items-center justify-around gap-1">
                       <button
                         onClick={() => handleLikePost(post._id)}
-                        className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800 ${post.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : "text-zinc-500"}`}
+                        className={`flex-1 py-1.5 rounded-md flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800 ${post.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : "text-zinc-600 dark:text-zinc-400"}`}
                       >
                         {post.likes?.includes((session?.user as any)?.id) ? (
-                          <LikeFilled className="text-lg" />
+                          <LikeFilled className="text-xl" />
                         ) : (
-                          <LikeOutlined className="text-lg" />
+                          <LikeOutlined className="text-xl" />
                         )}
-                        ถูกใจ
+                        <span>ถูกใจ</span>
                       </button>
                       <button
                         onClick={() =>
@@ -1322,7 +1400,10 @@ export default function FriendProfilePage({
                         <CommentOutlined className="text-lg" /> แสดงความคิดเห็น
                       </button>
                       <button
-                        onClick={() => setActiveModal("share")}
+                        onClick={() => {
+                          setSharingPost(post);
+                          setShareText("");
+                        }}
                         className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 font-bold text-sm text-zinc-500 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
                       >
                         <ShareAltOutlined className="text-lg" /> แชร์
@@ -1431,7 +1512,7 @@ export default function FriendProfilePage({
                                                 <div className="absolute -bottom-1.5 -right-2 flex items-center bg-white dark:bg-zinc-800 rounded-full shadow-md border dark:border-zinc-700 px-1 py-0.5 scale-75 origin-left">
                                                   <div className="flex -space-x-1">
                                                     <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center ring-1 ring-white dark:ring-zinc-800">
-                                                      <LikeFilled className="text-white text-[8px]" />
+                                                      <LikeFilled style={{ color: 'white' }} className="text-[8px]" />
                                                     </div>
                                                   </div>
                                                   <span className="text-[10px] font-bold text-zinc-500 ml-1">
@@ -1477,8 +1558,8 @@ export default function FriendProfilePage({
                                                   trigger={["click"]}
                                                   placement="bottomRight"
                                                 >
-                                                  <button className="w-7 h-7 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center">
-                                                    <EllipsisOutlined className="text-zinc-400" />
+                                                  <button className="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-all border dark:border-zinc-800 shadow-sm">
+                                                    <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400 text-lg" />
                                                   </button>
                                                 </Dropdown>
                                               </div>
@@ -1558,22 +1639,58 @@ export default function FriendProfilePage({
                                                   <p className="text-[10px] font-black text-zinc-900 dark:text-white mb-0.5">
                                                     {reply.userName}
                                                   </p>
-                                                  <p className="text-[12px] text-zinc-700 dark:text-zinc-300 leading-tight">
-                                                    {reply.text}
-                                                  </p>
-                                                  {reply.image && (
-                                                    <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
-                                                      <img
-                                                        src={reply.image}
-                                                        className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
-                                                        onClick={() =>
-                                                          setSelectedImage({
-                                                            images: [reply.image],
-                                                            index: 0,
-                                                          })
-                                                        }
+                                                  {editingCommentId === (reply.id || reply._id) ? (
+                                                    <div className="flex-1 flex flex-col gap-2 min-w-[200px] py-1">
+                                                      <textarea
+                                                        autoFocus
+                                                        value={editingCommentText}
+                                                        onChange={(e) => setEditingCommentText(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                          if (e.key === "Enter" && !e.shiftKey) {
+                                                            e.preventDefault();
+                                                            handleUpdateComment(post._id, reply.id || reply._id);
+                                                          } else if (e.key === "Escape") {
+                                                            setEditingCommentId(null);
+                                                          }
+                                                        }}
+                                                        className="w-full bg-white dark:bg-zinc-900 rounded-lg px-3 py-1.5 outline-none text-xs resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
+                                                        rows={2}
                                                       />
+                                                      <div className="flex gap-2">
+                                                        <button
+                                                          onClick={() => handleUpdateComment(post._id, reply.id || reply._id)}
+                                                          className="px-3 py-1 bg-blue-600 text-white rounded-full text-[10px] font-bold hover:bg-blue-700"
+                                                        >
+                                                          บันทึก
+                                                        </button>
+                                                        <button
+                                                          onClick={() => setEditingCommentId(null)}
+                                                          className="px-3 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-full text-[10px] font-bold"
+                                                        >
+                                                          ยกเลิก
+                                                        </button>
+                                                      </div>
                                                     </div>
+                                                  ) : (
+                                                    <>
+                                                      <p className="text-[12px] text-zinc-700 dark:text-zinc-300 leading-tight">
+                                                        {reply.text}
+                                                      </p>
+                                                      {reply.image && (
+                                                        <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
+                                                          <img
+                                                            src={reply.image}
+                                                            className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
+                                                            onClick={() =>
+                                                              setSelectedImage({
+                                                                images: [reply.image],
+                                                                index: 0,
+                                                              })
+                                                            }
+                                                          />
+                                                        </div>
+                                                      )}
+                                                    </>
                                                   )}
                                                 </div>
                                                 {(String(reply.userId) === String((session?.user as any)?.id) || 
@@ -1601,8 +1718,8 @@ export default function FriendProfilePage({
                                                     }}
                                                     trigger={['click']}
                                                   >
-                                                    <button className="opacity-0 group-hover/reply:opacity-100 transition-opacity w-6 h-6 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center">
-                                                      <EllipsisOutlined className="text-zinc-400 text-xs" />
+                                                    <button className="w-7 h-7 rounded-full bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700 flex items-center justify-center transition-all shadow-sm">
+                                                      <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400" />
                                                     </button>
                                                   </Dropdown>
                                                 )}
@@ -2044,6 +2161,30 @@ export default function FriendProfilePage({
                         </button>
                       )}
                   </div>
+                  {formData.program && (
+                    <div className="flex items-center justify-between group/item">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                          <BookOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">
+                            {formData.program}
+                          </p>
+                          <p className="text-xs text-zinc-400">สาขาวิชา / หลักสูตร</p>
+                        </div>
+                      </div>
+                        {isMyProfile && (
+                          <button 
+                            onClick={() => setActiveModal("profile")}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          >
+                            <EditOutlined />
+                            <span>แก้ไข</span>
+                          </button>
+                        )}
+                    </div>
+                  )}
                 </div>
               );
             case "สถานที่ที่เคยอาศัย":
@@ -2525,26 +2666,128 @@ export default function FriendProfilePage({
 
         {/* Share Modal */}
         <ProfileModal
-          isOpen={activeModal === "share"}
-          onClose={() => setActiveModal(null)}
-          title="แชร์โปรไฟล์"
-          saving={false}
-          onSubmit={() => setActiveModal(null)}
+          isOpen={!!sharingPost}
+          onClose={() => setSharingPost(null)}
+          title="แชร์โพสต์"
+          saving={saving}
+          onSubmit={handleSharePost}
         >
-          <div className="py-8 text-center space-y-4">
-            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto">
-              <ShareAltOutlined className="text-3xl text-blue-500" />
+          <div className="space-y-4 py-2">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                {(session?.user as any)?.image ? (
+                  <img src={(session?.user as any).image} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <UserOutlined className="text-zinc-300" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="font-black text-sm text-zinc-900 dark:text-white">{(session?.user as any)?.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                   <div className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-500 flex items-center gap-1">
+                      <GlobalOutlined className="text-[8px]" /> สาธารณะ
+                   </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h4 className="text-lg font-black dark:text-white">
-                ฟีเจอร์แชร์โปรไฟล์
-              </h4>
-              <p className="text-zinc-500">
-                กําลังพัฒนาระบบการแชร์ลิงก์และคิวอาร์โค้ด...
-              </p>
-            </div>
+
+            <textarea
+              placeholder="เขียนข้อความประกอบการแชร์..."
+              value={shareText}
+              onChange={(e) => setShareText(e.target.value)}
+              className="w-full bg-zinc-50 dark:bg-zinc-900/50 rounded-xl p-3 outline-none text-sm resize-none border dark:border-zinc-800 focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+            />
+
+            {sharingPost && (
+              <div className="border dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-800/30 p-3">
+                 <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
+                       {(sharingPost.authorImage || sharingPost.userImage) && (
+                         <img src={sharingPost.authorImage || sharingPost.userImage} className="w-full h-full object-cover" />
+                       )}
+                    </div>
+                    <span className="font-black text-xs text-zinc-900 dark:text-white">{sharingPost.authorName || sharingPost.userName}</span>
+                 </div>
+                 <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-2">{sharingPost.content}</p>
+                 {(sharingPost.image || sharingPost.images?.length > 0) && (
+                   <div className="aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-700">
+                      <img src={sharingPost.image || sharingPost.images[0]} className="w-full h-full object-cover" />
+                   </div>
+                 )}
+              </div>
+            )}
           </div>
         </ProfileModal>
+
+        {/* Likers Modal */}
+        <Modal
+          title={
+            <div className="flex items-center gap-3 p-1">
+              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <LikeFilled style={{ color: 'white' }} className="text-xs" />
+              </div>
+              <span className="font-black text-lg tracking-tight">คนที่ถูกใจโพสต์นี้</span>
+            </div>
+          }
+          open={showLikersModal}
+          onCancel={() => setShowLikersModal(false)}
+          footer={null}
+          centered
+          className="dark-modal"
+          styles={{ body: { padding: 0 } }}
+          width={450}
+        >
+          <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-2">
+            {likersList.length > 0 ? (
+              <div className="space-y-1">
+                {likersList.map((u) => (
+                  <div 
+                    key={String(u._id)}
+                    onClick={() => {
+                      setShowLikersModal(false);
+                      router.push(`/dashboard/profile/${String(u._id?.$oid || u._id)}`);
+                    }}
+                    className="p-3 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-zinc-100 dark:hover:border-zinc-700/50 group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border-2 border-white dark:border-zinc-700 shadow-sm transition-transform group-hover:scale-105">
+                          {u.image ? (
+                            <img src={u.image} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <UserOutlined className="text-zinc-300 text-lg" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 border-2 border-white dark:border-zinc-800 flex items-center justify-center shadow-sm">
+                          <LikeFilled style={{ color: 'white' }} className="text-[8px]" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-black text-[15px] text-zinc-900 dark:text-white mb-0 group-hover:text-blue-600 transition-colors">{u.name}</p>
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">{u.position || u.role || "สมาชิก"}</p>
+                      </div>
+                    </div>
+                    
+                    <button className="px-4 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-xs font-black text-zinc-600 dark:text-zinc-300 transition-all hover:bg-blue-600 hover:text-white border dark:border-zinc-700">
+                      ดูโปรไฟล์
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-20 text-center space-y-4">
+                <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mx-auto border-2 border-dashed border-zinc-200 dark:border-zinc-700">
+                   <UserOutlined className="text-3xl text-zinc-300" />
+                </div>
+                <p className="text-zinc-400 font-bold uppercase tracking-[0.2em] text-[10px]">ไม่มีข้อมูลผู้ถูกใจ</p>
+              </div>
+            )}
+          </div>
+        </Modal>
 
       <ProfileModal
         isOpen={activeModal === "profile"}
@@ -2686,6 +2929,15 @@ export default function FriendProfilePage({
                     <option key={`db-${opt}`} value={opt} />
                   ))}
                 </datalist>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">สาขาวิชา / หลักสูตร</label>
+                <input
+                  value={formData.program}
+                  onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                  placeholder="เช่น สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล"
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -2837,14 +3089,48 @@ export default function FriendProfilePage({
             <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
               {previewImage && <img src={previewImage} className="w-full h-full object-cover" />}
             </div>
-            <div>
+            <div className="relative">
               <p className="font-black text-zinc-900 dark:text-white">{formData.name}</p>
               <button 
                 onClick={(e) => { e.preventDefault(); setShowAudienceMenu(!showAudienceMenu); }}
-                className="flex items-center gap-1.5 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md text-[10px] font-bold text-zinc-500"
+                className="flex items-center gap-1.5 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md text-[10px] font-bold text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
               >
-                <GlobalOutlined /> {postAudience === "public" ? "สาธารณะ" : postAudience === "friends" ? "เพื่อน" : "เฉพาะฉัน"} <DownOutlined className="text-[8px]" />
+                {postAudience === "public" ? <GlobalOutlined /> : postAudience === "friends" ? <TeamOutlined /> : <LockOutlined />}
+                {postAudience === "public" ? "สาธารณะ" : postAudience === "friends" ? "เพื่อน" : "เฉพาะฉัน"} 
+                <DownOutlined className="text-[8px]" />
               </button>
+
+              <AnimatePresence>
+                {showAudienceMenu && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShowAudienceMenu(false)} />
+                    <motion.div 
+                      initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                      className="absolute left-0 mt-1 w-40 bg-white dark:bg-zinc-800 border dark:border-zinc-700 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden"
+                    >
+                      {[
+                        { id: "public", label: "สาธารณะ", desc: "ทุกคนเห็นได้", icon: <GlobalOutlined className="text-blue-500" /> },
+                        { id: "friends", label: "เพื่อน", desc: "เห็นได้เฉพาะเพื่อน", icon: <TeamOutlined className="text-green-500" /> },
+                        { id: "private", label: "เฉพาะฉัน", desc: "เห็นได้เฉพาะคุณ", icon: <LockOutlined className="text-zinc-500" /> },
+                      ].map((opt) => (
+                        <div 
+                          key={opt.id}
+                          onClick={() => { setPostAudience(opt.id as any); setShowAudienceMenu(false); }}
+                          className={`px-3 py-2 flex items-start gap-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors ${postAudience === opt.id ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
+                        >
+                          <div className="mt-0.5">{opt.icon}</div>
+                          <div className="flex flex-col">
+                            <span className={`text-[11px] font-black ${postAudience === opt.id ? "text-blue-600" : "text-zinc-700 dark:text-zinc-300"}`}>{opt.label}</span>
+                            <span className="text-[9px] text-zinc-400 font-bold">{opt.desc}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
           </div>
           
@@ -2856,22 +3142,28 @@ export default function FriendProfilePage({
             className="w-full min-h-[150px] bg-transparent border-none text-lg placeholder:text-zinc-400 focus:ring-0 resize-none dark:text-white"
           />
 
-          <div className="grid grid-cols-3 gap-2">
-            <SortableContext items={postImagePreviews.map(i => i.id)} strategy={rectSortingStrategy}>
-              {postImagePreviews.map((item, idx) => (
-                <SortableItem key={item.id} item={item} idx={idx} onRemove={removeImage} />
-              ))}
-            </SortableContext>
-            
-            <button
-              onClick={() => postImageInputRef.current?.click()}
-              className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all text-zinc-400"
-            >
-              <PictureOutlined className="text-2xl mb-1" />
-              <span className="text-[10px] font-black uppercase">เพิ่มรูป</span>
-              <input type="file" ref={postImageInputRef} onChange={handlePostImageChange} multiple hidden accept="image/*" />
-            </button>
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="grid grid-cols-3 gap-2">
+              <SortableContext items={postImagePreviews.map(i => i.id)} strategy={rectSortingStrategy}>
+                {postImagePreviews.map((item, idx) => (
+                  <SortableItem key={item.id} item={item} idx={idx} onRemove={removeImage} />
+                ))}
+              </SortableContext>
+              
+              <button
+                onClick={() => postImageInputRef.current?.click()}
+                className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all text-zinc-400"
+              >
+                <PictureOutlined className="text-2xl mb-1" />
+                <span className="text-[10px] font-black uppercase">เพิ่มรูป</span>
+                <input type="file" ref={postImageInputRef} onChange={handlePostImageChange} multiple hidden accept="image/*" />
+              </button>
+            </div>
+          </DndContext>
         </div>
       </ProfileModal>
       </motion.div>

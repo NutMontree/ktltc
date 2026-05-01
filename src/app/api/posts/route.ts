@@ -3,9 +3,11 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 
-// 1. ดึงโพสต์ (รองรับการกรองตาม userId หรือ authorId)
+// 1. ดึงโพสต์ (รองรับการกรองตาม userId หรือ authorId และตรวจสอบสถานะความเป็นส่วนตัว)
 export async function GET(req: Request) {
   try {
+    const session = await auth();
+    const currentUserId = (session?.user as any)?.id;
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     const authorId = searchParams.get("authorId");
@@ -13,13 +15,37 @@ export async function GET(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     
-    let query = {};
+    let query: any = {};
+    
     if (userId) {
-      // ค้นหาทั้งโพสต์ที่เป็นเจ้าของวอลล์ หรือโพสต์ที่เขียนเองบนวอลล์นี้
-      query = { 
-        $or: [
-          { userId: new ObjectId(userId) },
-          { authorId: new ObjectId(userId) }
+      // ตรวจสอบว่าเป็นเพื่อนกันหรือไม่
+      let isFriend = false;
+      const isMe = currentUserId === userId;
+      
+      if (currentUserId && !isMe) {
+        const currentUser = await db.collection("users").findOne({ _id: new ObjectId(currentUserId) });
+        if (currentUser?.friends?.map((f: any) => String(f)).includes(userId)) {
+          isFriend = true;
+        }
+      }
+
+      query = {
+        $and: [
+          {
+            $or: [
+              { userId: new ObjectId(userId) },
+              { authorId: new ObjectId(userId) }
+            ]
+          },
+          {
+            $or: [
+              { audience: "public" },
+              { audience: { $exists: false } }, // สำหรับโพสต์เก่าที่ไม่มี audience
+              { authorId: currentUserId ? new ObjectId(currentUserId) : null }, // ผู้โพสต์เห็นเองเสมอ
+              ...(isMe ? [{ audience: { $in: ["friends", "private"] } }] : []), // เจ้าของวอลล์เห็นโพสต์ตัวเอง
+              ...(isFriend ? [{ audience: "friends" }] : []) // เพื่อนเห็นโพสต์ที่เป็น friends
+            ]
+          }
         ]
       };
     } else if (authorId) {
@@ -54,7 +80,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { title, content, image, images, targetUserId } = body;
+    const { title, content, image, images, targetUserId, audience } = body;
     
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -63,23 +89,26 @@ export async function POST(req: Request) {
     const newPost = {
       userId: targetUserId ? new ObjectId(targetUserId) : new ObjectId(userId), // วอลล์ที่เป็นเจ้าของ
       authorId: new ObjectId(userId), // ผู้โพสต์
-      author: userName,
+      authorName: userName,
+      authorImage: session?.user?.image,
       title,
       content,
-      image, // สำหรับรองรับข้อมูลเก่า
-      images: images || (image ? [image] : []), // รองรับหลายรูป
+      image, 
+      images: images || (image ? [image] : []),
+      audience: audience || "public", // ค่าเริ่มต้นเป็นสาธารณะ
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const result = await db.collection("posts").insertOne(newPost);
 
-    // ✅ ส่วนสำคัญ: บันทึก Log กิจกรรมเพื่อให้ไปโชว์ในหน้า Admin
+    // ✅ บันทึก Log กิจกรรม
     await db.collection("logs").insertOne({
-      userId: new ObjectId(userId), // ID ของผู้ใช้งานที่โพสต์
-      userName: userName || "User", // ชื่อผู้ใช้งาน
-      action: "CREATE_POST", // ประเภทกิจกรรม
-      details: `สร้างโพสต์ใหม่หัวข้อ: ${title}`, // รายละเอียด/route.ts]
-      targetId: result.insertedId, // ID ของโพสต์ที่ถูกสร้าง
+      userId: new ObjectId(userId),
+      userName: userName || "User",
+      action: "CREATE_POST",
+      details: `สร้างโพสต์ใหม่: ${content?.slice(0, 50)}... (ความเป็นส่วนตัว: ${audience || 'public'})`,
+      targetId: result.insertedId,
       timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
     });
