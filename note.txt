@@ -17,11 +17,11 @@ sudo tee vercel.json << 'EOF'
   "redirects": [
     {
       "source": "/(.*)",
-      "destination": "https://ktltc.sit/$1",
+      "destination": "https://ktltc.ac.th/$1",
       "permanent": true
     }
   ]
 }
 EOF  
 
-https://ktltc.site แก้เป็น https://ktltc..ac.th หรือ ชื่อ ที่เช่ามา
+https://ktltc.ac.th แก้เป็น https://ktltc.ac.th หรือ ชื่อ ที่เช่ามา

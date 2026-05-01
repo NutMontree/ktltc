@@ -42,7 +42,7 @@ const planningJobs = [
     //   },
     //   {
     //     label: "แบบฟอร์ม PDCA",
-    //     href: "https://ktltc.site/pdca",
+    //     href: "https://ktltc.ac.th/pdca",
     //     icon: <FileTextOutlined />,
     //   },
     //   {

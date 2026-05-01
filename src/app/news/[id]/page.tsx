@@ -129,7 +129,7 @@ export async function generateMetadata({
   const baseUrl =
     process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://ktltc.site";
+    "https://ktltc.ac.th";
   const pageUrl = `${baseUrl}/news/${id}`;
   const plainTextContent = news?.content?.replace(/<[^>]+>/g, "").trim() || "";
   const description =
@@ -258,7 +258,7 @@ export default async function NewsDetailPage({
   const baseUrl =
     process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://ktltc.site";
+    "https://ktltc.ac.th";
   const pageUrl = `${baseUrl}/news/${id}`;
 
   return (

@@ -492,7 +492,7 @@ export default function SpeedTest() {
             <p className="text-gray-600">
               เรียกใช้งานผ่าน Web Browser โดยไปที่
               <span className="text-[#83697b] font-bold underline">
-                ktltc.vercel.app/speedtest
+                ktltc.ac.th/speedtest
               </span>
               หรือใช้งานผ่านช่องทางบริการของวิทยาลัย
             </p>

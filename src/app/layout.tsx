@@ -31,7 +31,7 @@ const prompt = Prompt({
 
 // 2. กำหนด Metadata สำหรับ SEO และการแชร์ลง Social Media (Open Graph)
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ktltc.site"),
+  metadataBase: new URL("https://ktltc.ac.th"),
   title: "KTLTC - วิทยาลัยเทคนิคกันทรลักษ์", // ชื่อที่จะขึ้นบน Tab Browser
   description: "ระบบบริหารจัดการข่าวสารและข้อมูลวิทยาลัย", // คำอธิบายเว็บสำหรับ Search Engine
 
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "วิทยาลัยเทคนิคกันทรลักษ์ | KTLTC",
     description: "ระบบบริหารจัดการข่าวสารและข้อมูลวิทยาลัยเทคนิคกันทรลักษ์",
-    url: "https://ktltc.site", // ลิงก์เว็บไซต์จริง
+    url: "https://ktltc.ac.th", // ลิงก์เว็บไซต์จริง
     siteName: "KTLTC",
     images: [
       {
