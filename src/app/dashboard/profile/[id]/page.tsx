@@ -192,6 +192,7 @@ export default function FriendProfilePage({
   const { id } = use(params);
   const router = useRouter();
   const { data: session } = useSession();
+  const userId = (session?.user as any)?.id || (session?.user as any)?.sub || null;
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {

@@ -7,11 +7,33 @@ export const uploadFile = async (
   file: File,
   folder: string = "uploads", // ค่า Default ถ้าไม่ระบุโฟลเดอร์
 ): Promise<string | null> => {
+  // Client-side pre-checks using public env vars (NEXT_PUBLIC_*)
+  const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
+  const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 50 * 1024 * 1024;
   // ✅ บีบอัดรูปภาพก่อนอัปโหลด (ยกเว้น GIF)
   let fileToUpload = file;
   const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
+  const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
 
-  if (!isGif) {
+  const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
+
+  if (!isImage && !isVideo) {
+    console.error("Unsupported file type:", file.type, file.name);
+    return null;
+  }
+
+  if (isImage && file.size > MAX_IMAGE_SIZE) {
+    console.error("Image file too large:", file.name, file.size);
+    return null;
+  }
+
+  if (isVideo && file.size > MAX_VIDEO_SIZE) {
+    console.error("Video file too large:", file.name, file.size);
+    return null;
+  }
+
+  // Skip image compression for GIFs and videos
+  if (!isGif && !isVideo) {
     try {
       const options = {
         maxSizeMB: 0.8,

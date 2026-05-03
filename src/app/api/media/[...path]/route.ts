@@ -32,7 +32,12 @@ export async function GET(
       'webp': 'image/webp',
       'svg': 'image/svg+xml',
       'pdf': 'application/pdf',
-      'blob': 'image/jpeg' // Fallback for the .blob files I saw
+      'blob': 'image/jpeg', // Fallback for the .blob files I saw
+      // Video types
+      'mp4': 'video/mp4',
+      'webm': 'video/webm',
+      'mov': 'video/quicktime',
+      'm4v': 'video/x-m4v',
     };
 
     if (ext && mimeMap[ext]) {

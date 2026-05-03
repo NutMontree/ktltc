@@ -136,8 +136,9 @@ export async function generateMetadata({
     plainTextContent.slice(0, 160) ||
     "ข่าวสารและกิจกรรมจากวิทยาลัยเทคนิคกันทรลักษ์";
   const imageUrl =
-    news?.images?.[0] ||
-    news?.announcementImages?.[0] ||
+    // Prefer an image (not video) for Open Graph. If first item is a video, try to find a non-video image.
+    (news?.images || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
+    (news?.announcementImages || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
     `${baseUrl}/og-image.png`;
   return {
     title: news ? news.title : "News Detail",
@@ -444,15 +445,24 @@ export default async function NewsDetailPage({
                     key={idx}
                     className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800"
                   >
-                    <Image
-                      src={img}
-                      alt="Announcement"
-                      width={1200}
-                      height={1600}
-                      unoptimized
-                      className="w-full h-auto"
-                      priority={idx === 0}
-                    />
+                    {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (
+                      <video
+                        src={img}
+                        className="w-full h-auto"
+                        controls
+                        playsInline
+                      />
+                    ) : (
+                      <Image
+                        src={img}
+                        alt="Announcement"
+                        width={1200}
+                        height={1600}
+                        unoptimized
+                        className="w-full h-auto"
+                        priority={idx === 0}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -479,14 +489,25 @@ export default async function NewsDetailPage({
                     key={idx}
                     className="break-inside-avoid relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group"
                   >
-                    <Image
-                      src={img}
-                      alt={`Gallery ${idx + 1}`}
-                      width={800}
-                      height={600}
-                      unoptimized
-                      className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
-                    />
+                    {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (
+                      <video
+                        src={img}
+                        width={800}
+                        height={600}
+                        className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
+                        controls
+                        playsInline
+                      />
+                    ) : (
+                      <Image
+                        src={img}
+                        alt={`Gallery ${idx + 1}`}
+                        width={800}
+                        height={600}
+                        unoptimized
+                        className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
+                      />
+                    )}
                   </div>
                 ))}
               </div>

@@ -16,6 +16,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'No file received.' }, { status: 400 });
     }
 
+    // Basic server-side validation
+    // Read limits from environment variables (bytes). Fallback to sensible defaults.
+    const MAX_IMAGE_SIZE = Number(process.env.MAX_IMAGE_SIZE_BYTES) || 10 * 1024 * 1024; // 10 MB
+    const MAX_VIDEO_SIZE = Number(process.env.MAX_VIDEO_SIZE_BYTES) || 50 * 1024 * 1024; // 50 MB
+
+    const allowedImageTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/svg+xml',
+    ];
+    const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
+
+    const fileSize = (file as any).size || 0;
+    const fileType = file.type || '';
+
+    // Folder sanitization: reject attempts to traverse out of public folder
+    const rawFolder = folder || 'uploads';
+    if (typeof rawFolder !== 'string' || rawFolder.includes('..') || rawFolder.startsWith('/')) {
+      return NextResponse.json({ success: false, message: 'Invalid folder' }, { status: 400 });
+    }
+    const sanitizedFolder = rawFolder.replace(/[^a-zA-Z0-9_\-/]/g, '');
+
+    // Validate MIME and size
+    const isImage = allowedImageTypes.includes(fileType) || fileType.startsWith('image/');
+    const isVideo = allowedVideoTypes.includes(fileType) || fileType.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      return NextResponse.json({ success: false, message: 'Unsupported file type' }, { status: 415 });
+    }
+
+    if (isImage && fileSize > MAX_IMAGE_SIZE) {
+      return NextResponse.json({ success: false, message: `Image exceeds size limit (${MAX_IMAGE_SIZE} bytes)` }, { status: 413 });
+    }
+
+    if (isVideo && fileSize > MAX_VIDEO_SIZE) {
+      return NextResponse.json({ success: false, message: `Video exceeds size limit (${MAX_VIDEO_SIZE} bytes)` }, { status: 413 });
+    }
+
     const buffer = Buffer.from(await file.arrayBuffer());
     // Detect extension from mime type if file name is generic "blob"
     let ext = file.name.split('.').pop() || 'jpg';
@@ -32,7 +72,7 @@ export async function POST(req: Request) {
     const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${ext}`;
     
     // Ensure we are saving in public directory
-    const uploadDir = join(process.cwd(), 'public', folder);
+    const uploadDir = join(process.cwd(), 'public', sanitizedFolder);
     
     // Create directory if it doesn't exist
     await mkdir(uploadDir, { recursive: true });
@@ -40,12 +80,40 @@ export async function POST(req: Request) {
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
 
+    // Optionally generate a thumbnail for videos if ENABLE_VIDEO_THUMBNAIL=1 and ffmpeg is available
+    let thumbnail_url: string | null = null;
+    try {
+      const shouldGenThumb = (process.env.ENABLE_VIDEO_THUMBNAIL || '0') === '1';
+      if (isVideo && shouldGenThumb) {
+        try {
+          const { spawn } = await import('child_process');
+          const thumbName = `${filename}.thumb.jpg`;
+          const thumbPath = join(uploadDir, thumbName);
+
+          // Run ffmpeg to capture a frame at 1 second
+          await new Promise<void>((resolve, reject) => {
+            const ff = spawn('ffmpeg', ['-ss', '00:00:01', '-i', filepath, '-frames:v', '1', '-q:v', '2', thumbPath]);
+            ff.on('error', (err) => reject(err));
+            ff.on('close', (code) => {
+              if (code === 0) resolve(); else reject(new Error(`ffmpeg exited with ${code}`));
+            });
+          });
+          thumbnail_url = `/api/media/${sanitizedFolder}/${thumbName}`;
+        } catch (fferr) {
+          console.warn('Thumbnail generation failed (ffmpeg not available or error):', fferr);
+        }
+      }
+    } catch (thumbErr) {
+      console.warn('Thumbnail generation skipped:', thumbErr);
+    }
+
     // Return the URL pointing to our media API route
     const secure_url = `/api/media/${folder}/${filename}`;
 
     return NextResponse.json({ 
       success: true, 
       secure_url: secure_url,
+      thumbnail_url: thumbnail_url,
       message: 'File uploaded successfully' 
     });
   } catch (error: any) {

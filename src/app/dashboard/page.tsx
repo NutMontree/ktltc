@@ -163,7 +163,7 @@ export default function DashboardLoader() {
                   variants={item}
                 />
                 <StatCard
-                  label="บุคลากรในระบบ"
+                  label="User ในระบบ"
                   value={stats.totalUsers}
                   icon={Users}
                   color="emerald"

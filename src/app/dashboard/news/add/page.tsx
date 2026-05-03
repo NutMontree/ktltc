@@ -79,7 +79,7 @@ async function recordActivity(data: {
 }
 
 // --- Sub-Component: Sortable Image Item ---
-function SortableImage({ id, src, onRemove, isVertical = false }: any) {
+function SortableImage({ id, src, onRemove, isVertical = false, isVideo = false }: any) {
   const {
     attributes,
     listeners,
@@ -106,13 +106,22 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
         {...listeners}
         className="w-full h-full cursor-grab active:cursor-grabbing"
       >
-        <Image
-          src={src}
-          alt="preview"
-          fill
-          unoptimized
-          className={isVertical ? "object-contain" : "object-cover"}
-        />
+        {isVideo ? (
+          <video
+            src={src}
+            className={isVertical ? "object-contain w-full h-full" : "object-cover w-full h-full"}
+            controls
+            playsInline
+          />
+        ) : (
+          <Image
+            src={src}
+            alt="preview"
+            fill
+            unoptimized
+            className={isVertical ? "object-contain" : "object-cover"}
+          />
+        )}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
           <span className="opacity-0 group-hover:opacity-100 text-white text-[10px] bg-black/40 px-2 py-1 rounded-md">
             ลากเพื่อย้าย
@@ -158,6 +167,10 @@ export default function AddNewsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
 
+  // Client-side limits (can be controlled via NEXT_PUBLIC_* env vars)
+  const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
+  const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 50 * 1024 * 1024;
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -196,9 +209,11 @@ export default function AddNewsPage() {
   }, []);
 
   const compressImage = async (file: File) => {
-    const isGif =
-      file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
-    if (isGif) return file;
+    const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
+    const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
+
+    // Don't attempt image compression for GIFs or videos
+    if (isGif || isVideo) return file;
 
     const options = {
       maxSizeMB: 0.8,
@@ -254,8 +269,33 @@ export default function AddNewsPage() {
     if (e.target.files && e.target.files.length > 0) {
       setIsCompressing(true);
       const originalFiles = Array.from(e.target.files);
+
+      // Client-side validation: check type and size before compressing/adding
+      const acceptedFiles: File[] = [];
+      for (const file of originalFiles) {
+        const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
+        const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
+
+        if (!isImage && !isVideo) {
+          alert(`ข้ามไฟล์ '${file.name}' — ชนิดไฟล์ไม่รองรับ`);
+          continue;
+        }
+
+        if (isImage && file.size > MAX_IMAGE_SIZE) {
+          alert(`ข้ามไฟล์ '${file.name}' — ขนาดรูปเกิน ${MAX_IMAGE_SIZE} bytes`);
+          continue;
+        }
+
+        if (isVideo && file.size > MAX_VIDEO_SIZE) {
+          alert(`ข้ามไฟล์ '${file.name}' — ขนาดวิดีโอเกิน ${MAX_VIDEO_SIZE} bytes`);
+          continue;
+        }
+
+        acceptedFiles.push(file);
+      }
+
       const compressedFiles = await Promise.all(
-        originalFiles.map((file) => compressImage(file)),
+        acceptedFiles.map((file) => compressImage(file)),
       );
       const newPreviews = compressedFiles.map((f) => URL.createObjectURL(f));
 
@@ -659,6 +699,7 @@ export default function AddNewsPage() {
                     key={src}
                     id={src}
                     src={src}
+                    isVideo={imageFiles[i]?.type?.startsWith("video/")}
                     onRemove={() => {
                       URL.revokeObjectURL(src);
                       setImageFiles((prev) =>
@@ -675,7 +716,7 @@ export default function AddNewsPage() {
                 <input
                   type="file"
                   multiple
-                  accept="image/*,.gif"
+                  accept="image/*,video/*,.gif"
                   className="hidden"
                   onChange={(e) => handleFileChange(e, "general")}
                 />
@@ -711,6 +752,7 @@ export default function AddNewsPage() {
                     id={src}
                     src={src}
                     isVertical
+                    isVideo={newsletterFiles[i]?.type?.startsWith("video/")}
                     onRemove={() => {
                       URL.revokeObjectURL(src);
                       setNewsletterFiles((prev) =>
@@ -727,7 +769,7 @@ export default function AddNewsPage() {
                 <input
                   type="file"
                   multiple
-                  accept="image/*,.gif"
+                  accept="image/*,video/*,.gif"
                   className="hidden"
                   onChange={(e) => handleFileChange(e, "newsletter")}
                 />

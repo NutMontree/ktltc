@@ -1,4 +1,4 @@
-import clientPromise from "./src/lib/db";
+import clientPromise from "@/lib/db";
 
 async function check() {
   const client = await clientPromise;

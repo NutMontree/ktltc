@@ -189,13 +189,22 @@ export default function NewsListClient({
               >
                 {/* Thumbnail */}
                 <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                  <Image
-                    src={coverImage}
-                    alt={news.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    unoptimized
-                  />
+                  {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(coverImage) ? (
+                    <video
+                      src={coverImage}
+                      className="w-full h-full object-cover"
+                      controls
+                      playsInline
+                    />
+                  ) : (
+                    <Image
+                      src={coverImage}
+                      alt={news.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
+                    />
+                  )}
                   {/* Gradient overlay on hover */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   {/* Categories */}

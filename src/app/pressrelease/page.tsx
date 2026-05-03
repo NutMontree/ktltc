@@ -86,7 +86,7 @@ export default async function PressRelease() {
         {latestNews.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {latestNews.map((news) => (
-              <Link
+              <Link 
                 href={`/news/${news._id}`}
                 key={news._id}
                 className="group flex flex-col rounded-2xl overflow-hidden border border-zinc-100 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full dark:bg-zinc-900 dark:border-zinc-800"
