@@ -9,7 +9,7 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async redirects() {
+ /**  async redirects() {
     return [
       {
         source: '/:path*',
@@ -24,7 +24,7 @@ const nextConfig = {
         permanent: true,
       },
     ]
-  },
+  },*/
 
   experimental: {
     serverActions: {
