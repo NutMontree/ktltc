@@ -144,6 +144,17 @@ export default function EditNewsPage({
   const [SunEditorComponent, setSunEditorComponent] =
     useState<React.ComponentType<any> | null>(null);
   
+  const [uploadStatus, setUploadStatus] = useState<{
+    fileName: string;
+    percent: number;
+    loaded: number;
+    total: number;
+    startTime: number;
+    currentIndex: number;
+    totalCount: number;
+  } | null>(null);
+
+  
   // Client-side limits
   const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
   const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 200 * 1024 * 1024;
@@ -359,11 +370,27 @@ export default function EditNewsPage({
       const datePath = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
       const mainCategory = categories[0] || "General";
 
-      // 1. อัปโหลดรูปใหม่
+      // 1. อัปโหลดรูปใหม่ (พร้อมคำนวณ Progress)
+      const totalToUpload =
+        allImages.filter((i) => i.isNew).length +
+        allNewsletters.filter((i) => i.isNew).length;
+      let uploadedCount = 0;
+
       const finalImages = await Promise.all(
         allImages.map(async (item) => {
           if (item.isNew && item.file) {
-            return await uploadFile(item.file, `ktltc_news/${mainCategory}/${datePath}`);
+            uploadedCount++;
+            return await uploadFile(item.file, `ktltc_news/${mainCategory}/${datePath}`, (percent, loaded, total) => {
+              setUploadStatus({
+                fileName: item.file!.name,
+                percent,
+                loaded,
+                total,
+                startTime: Date.now(),
+                currentIndex: uploadedCount,
+                totalCount: totalToUpload,
+              });
+            });
           }
           return item.src;
         }),
@@ -372,11 +399,24 @@ export default function EditNewsPage({
       const finalNewsletters = await Promise.all(
         allNewsletters.map(async (item) => {
           if (item.isNew && item.file) {
-            return await uploadFile(item.file, `ktltc_newsletters/${mainCategory}/${datePath}`);
+            uploadedCount++;
+            return await uploadFile(item.file, `ktltc_newsletters/${mainCategory}/${datePath}`, (percent, loaded, total) => {
+              setUploadStatus({
+                fileName: item.file!.name,
+                percent,
+                loaded,
+                total,
+                startTime: Date.now(),
+                currentIndex: uploadedCount,
+                totalCount: totalToUpload,
+              });
+            });
           }
           return item.src;
         }),
       );
+
+      setUploadStatus(null);
 
       // DOM-based safe auto-linking for HTML content
       const autoLinkHtml = (htmlString: string) => {
@@ -495,7 +535,7 @@ export default function EditNewsPage({
       `}</style>
 
       {/* Header */}
-      <div className="sticky top-0 z-100 w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+      <div className="sticky top-20 z-40 w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-2 py-2">
           <div className="flex items-center gap-4">
             <Link

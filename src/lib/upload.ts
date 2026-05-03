@@ -3,18 +3,21 @@ import imageCompression from "browser-image-compression";
 /**
  * ฟังก์ชันสำหรับอัปโหลดรูปภาพ (เปลี่ยนมาใช้ Local Storage บน Lenovo Server)
  */
+/**
+ * ฟังก์ชันสำหรับอัปโหลดรูปภาพ/วิดีโอ (รองรับ Progress)
+ */
 export const uploadFile = async (
   file: File,
-  folder: string = "uploads", // ค่า Default ถ้าไม่ระบุโฟลเดอร์
+  folder: string = "uploads",
+  onProgress?: (percent: number, loaded: number, total: number) => void
 ): Promise<string | null> => {
   // Client-side pre-checks using public env vars (NEXT_PUBLIC_*)
   const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
   const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 200 * 1024 * 1024;
-  // ✅ บีบอัดรูปภาพก่อนอัปโหลด (ยกเว้น GIF)
+  
   let fileToUpload = file;
   const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
   const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
-
   const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
 
   if (!isImage && !isVideo) {
@@ -46,31 +49,52 @@ export const uploadFile = async (
     }
   }
 
-  // เตรียมข้อมูลสำหรับส่งไป API ของเราเอง
+  // เตรียมข้อมูลสำหรับส่งไป API
   const formData = new FormData();
   formData.append("file", fileToUpload);
   formData.append("folder", folder);
 
-  try {
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+    
+    xhr.open("POST", "/api/upload", true);
 
-    const data = await response.json();
-
-    if (!data.success) {
-      console.error("❌ Local Upload Error:", data.message);
-      return null;
+    // ติดตามสถานะการอัปโหลด
+    if (xhr.upload && onProgress) {
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          onProgress(percent, e.loaded, e.total);
+        }
+      };
     }
 
-    // ส่งคืน URL ของรูปภาพ (ซึ่งจะเป็นพาธในเครื่อง เช่น /uploads/xxx.jpg)
-    return data.secure_url;
-  } catch (error) {
-    console.error("❌ Network/Upload error:", error);
-    return null;
-  }
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if (data.success) {
+            resolve(data.secure_url);
+          } else {
+            console.error("❌ Local Upload Error:", data.message);
+            resolve(null);
+          }
+        } catch (e) {
+          resolve(null);
+        }
+      } else {
+        resolve(null);
+      }
+    };
+
+    xhr.onerror = () => {
+      console.error("❌ Network/Upload error");
+      resolve(null);
+    };
+
+    xhr.send(formData);
+  });
 };
 
-// Alias สำหรับโค้ดเก่าที่ยังเรียกใช้ชื่อเดิม
+// Alias สำหรับโค้ดเก่า
 export const uploadToCloudinary = uploadFile;

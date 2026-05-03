@@ -96,7 +96,7 @@ export default function MembersPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-zinc-900 border-b dark:border-zinc-800 sticky top-0 z-30 px-4 py-4 sm:px-6">
+      <div className="bg-white dark:bg-zinc-900 border-b dark:border-zinc-800 sticky top-20 z-30 px-4 py-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <button 

@@ -166,6 +166,16 @@ export default function AddNewsPage() {
   const [currentFacebookEmbed, setCurrentFacebookEmbed] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<{
+    fileName: string;
+    percent: number;
+    loaded: number;
+    total: number;
+    startTime: number;
+    currentIndex: number;
+    totalCount: number;
+  } | null>(null);
+
 
   // Client-side limits (can be controlled via NEXT_PUBLIC_* env vars)
   const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
@@ -472,7 +482,7 @@ export default function AddNewsPage() {
       `}</style>
 
       {/* Header */}
-      <div className="sticky top-0 z-100 w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+      <div className="sticky top-20 z-40 w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-2 py-2">
           {/* ฝั่งซ้าย: ปุ่มย้อนกลับและข้อมูลผู้เขียน */}
           <div className="flex items-center gap-4">
