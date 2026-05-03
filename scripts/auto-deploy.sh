@@ -5,11 +5,10 @@ PROJECT_DIR="/home/ktltc/ktltc"
 export PATH=$PATH:/usr/bin:/usr/local/bin
 cd $PROJECT_DIR || exit
 
-# 1. Fetch latest changes from GitHub
-echo "[$(date)] Checking for updates..."
+# 1. Update remote info (fetch only, no pull)
 git fetch origin main
 
-# 2. Compare local HEAD with the last built commit
+# 2. Compare hashes
 LOCAL_HEAD=$(git rev-parse HEAD)
 REMOTE_HEAD=$(git rev-parse origin/main)
 LAST_BUILT_COMMIT=""
@@ -18,26 +17,13 @@ if [ -f ".last_built_commit" ]; then
     LAST_BUILT_COMMIT=$(cat .last_built_commit)
 fi
 
-if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ] || [ "$LOCAL_HEAD" != "$LAST_BUILT_COMMIT" ]; then
-    echo "[$(date)] Update detected! (Local: $LOCAL_HEAD, Remote: $REMOTE_HEAD, Last Built: $LAST_BUILT_COMMIT)"
+# TRIGGER: Build only if we are in sync with GitHub AND this commit hasn't been built
+if [ "$LOCAL_HEAD" == "$REMOTE_HEAD" ] && [ "$LOCAL_HEAD" != "$LAST_BUILT_COMMIT" ]; then
+    echo "[$(date)] In sync with GitHub. Starting build for commit: $LOCAL_HEAD"
     
-    # 3. Pull latest code if remote is ahead
-    if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ]; then
-        echo "[$(date)] Pulling latest changes..."
-        git pull origin main
-        LOCAL_HEAD=$(git rev-parse HEAD)
-    fi
-    
-    # 4. Install dependencies if package.json changed
-    # if git diff --name-only $LAST_BUILT_COMMIT $LOCAL_HEAD | grep -q "package.json"; then
-    #     echo "[$(date)] package.json changed. Installing dependencies..."
-    #     npm install
-    # fi
-    
-    # 5. Build the project
-    echo "[$(date)] Building project..."
+    # 3. Build the project
     if npm run build; then
-        # 6. Restart PM2 service
+        # 4. Restart PM2 service
         echo "[$(date)] Restarting PM2 service..."
         pm2 restart ktltc
         
@@ -49,5 +35,10 @@ if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ] || [ "$LOCAL_HEAD" != "$LAST_BUILT_COMMIT
         exit 1
     fi
 else
-    echo "[$(date)] No changes detected. Already up to date."
+    # Optional: Log if we are waiting for a push
+    if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ]; then
+        echo "[$(date)] Local is different from GitHub. Waiting for push/pull before building."
+    else
+        echo "[$(date)] Already up to date and built."
+    fi
 fi
