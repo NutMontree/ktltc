@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     // Basic server-side validation
     // Read limits from environment variables (bytes). Fallback to sensible defaults.
     const MAX_IMAGE_SIZE = Number(process.env.MAX_IMAGE_SIZE_BYTES) || 10 * 1024 * 1024; // 10 MB
-    const MAX_VIDEO_SIZE = Number(process.env.MAX_VIDEO_SIZE_BYTES) || 50 * 1024 * 1024; // 50 MB
+    const MAX_VIDEO_SIZE = Number(process.env.MAX_VIDEO_SIZE_BYTES) || 200 * 1024 * 1024; // 200 MB
 
     const allowedImageTypes = [
       'image/jpeg',

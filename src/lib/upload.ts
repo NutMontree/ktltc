@@ -9,7 +9,7 @@ export const uploadFile = async (
 ): Promise<string | null> => {
   // Client-side pre-checks using public env vars (NEXT_PUBLIC_*)
   const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
-  const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 50 * 1024 * 1024;
+  const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 200 * 1024 * 1024;
   // ✅ บีบอัดรูปภาพก่อนอัปโหลด (ยกเว้น GIF)
   let fileToUpload = file;
   const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");

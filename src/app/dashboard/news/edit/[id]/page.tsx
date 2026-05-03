@@ -143,6 +143,11 @@ export default function EditNewsPage({
   const [isCompressing, setIsCompressing] = useState(false);
   const [SunEditorComponent, setSunEditorComponent] =
     useState<React.ComponentType<any> | null>(null);
+  
+  // Client-side limits
+  const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
+  const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 200 * 1024 * 1024;
+
 
   const [content, setContent] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
@@ -280,8 +285,34 @@ export default function EditNewsPage({
   ) => {
     if (e.target.files) {
       setIsCompressing(true);
-      const files = Array.from(e.target.files);
-      const compressed = await Promise.all(files.map((f) => compressImage(f)));
+      const originalFiles = Array.from(e.target.files);
+
+      // Client-side validation: check type and size before compressing/adding
+      const acceptedFiles: File[] = [];
+      for (const file of originalFiles) {
+        const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
+        const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
+
+        if (!isImage && !isVideo) {
+          alert(`ข้ามไฟล์ '${file.name}' — ชนิดไฟล์ไม่รองรับ`);
+          continue;
+        }
+
+        if (isImage && file.size > MAX_IMAGE_SIZE) {
+          alert(`ข้ามไฟล์ '${file.name}' — ขนาดรูปเกิน ${MAX_IMAGE_SIZE} bytes`);
+          continue;
+        }
+
+        if (isVideo && file.size > MAX_VIDEO_SIZE) {
+          alert(`ข้ามไฟล์ '${file.name}' — ขนาดวิดีโอเกิน ${MAX_VIDEO_SIZE} bytes`);
+          continue;
+        }
+
+        acceptedFiles.push(file);
+      }
+
+      const compressed = await Promise.all(acceptedFiles.map((f) => compressImage(f)));
+
 
       const newItems = compressed.map((file) => {
         const previewUrl = URL.createObjectURL(file);
