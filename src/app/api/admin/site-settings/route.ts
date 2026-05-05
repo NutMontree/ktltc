@@ -37,9 +37,16 @@ export async function POST(req: Request) {
     const session = await auth();
     const userRole = (session?.user as any)?.role?.toLowerCase();
 
-    if (!session || userRole !== "super_admin") {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
+
+    if (!session || !canManageSystem) {
       return NextResponse.json(
-        { error: "เฉพาะ Super Admin เท่านั้นที่สามารถเปลี่ยนค่าระบบได้" },
+        { error: "คุณไม่มีสิทธิ์ในการเปลี่ยนค่าระบบ" },
         { status: 403 },
       );
     }
@@ -53,9 +60,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // ใช้ updateOne พร้อม upsert: true (ถ้าไม่มีให้สร้างใหม่ ถ้ามีให้ทับค่าเดิม)
     const result = await db.collection("site_settings").updateOne(

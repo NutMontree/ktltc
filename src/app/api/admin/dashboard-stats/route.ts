@@ -9,13 +9,25 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
-    if (!session || !["super_admin", "admin", "editor"].includes(userRole)) {
+    if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const hasAccess = rolePerms?.permissions?.access_dashboard || userRole === "super_admin";
+
+    if (!hasAccess) {
+      // Fallback for legacy roles if role_permissions not set up
+      const legacyRoles = ["admin", "editor"];
+      if (!legacyRoles.includes(userRole)) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
+    }
 
     // 1. Fetch counts from MongoDB
     const [

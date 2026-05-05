@@ -7,8 +7,7 @@ export async function GET(req: Request) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role;
-    
-    if (!["super_admin", "hr", "director", "staff"].includes(userRole)) {
+    if (!session || userRole !== "super_admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -67,7 +66,7 @@ export async function PATCH(req: Request) {
     const userRole = (session?.user as any)?.role;
     const adminId = (session?.user as any)?.id;
     
-    if (!["super_admin", "hr", "director", "staff"].includes(userRole)) {
+    if (!session || userRole !== "super_admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

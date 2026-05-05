@@ -14,9 +14,21 @@ function generateSlug(title: string) {
 // --- POST: สร้างข่าวใหม่ ---
 export async function POST(request: Request) {
   try {
-    const session = await auth(); // เช็ค session ที่นี่เลย
+    const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
+
+    if (!canManageNews && !["admin", "editor"].includes(userRole)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const data = await request.json();
@@ -41,9 +53,6 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     const newNews = {
       title,

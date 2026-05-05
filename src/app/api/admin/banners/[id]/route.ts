@@ -54,19 +54,25 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role;
-    const allowedRoles = ["super_admin", "admin", "editor"];
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!session || !allowedRoles.includes(userRole)) {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
+
+    if (!canManageNews && !["admin", "editor"].includes(userRole)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
     const body = await req.json();
     const { _id, ...updateData } = body;
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // 1. ดึงข้อมูลเดิมก่อนอัปเดต เพื่อเอาชื่อมาบันทึก Log
     const oldBanner = await db
@@ -105,12 +111,26 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    if (!session)
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    const { id } = await params;
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
+
+    const { id } = await params;
+
+    if (!canManageNews && !["admin", "editor"].includes(userRole)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
+    const client_unused = clientPromise; // already initialized above
+    const db_unused = client.db("ktltc_db"); // already initialized above
 
     // 1. ดึงข้อมูลก่อนลบ (ต้องทำ ไม่งั้น Log จะไม่รู้ว่าลบแบนเนอร์ชื่ออะไร)
     const bannerToDelete = await db

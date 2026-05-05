@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
-import bcrypt from "bcryptjs"; // อย่าลืม npm install bcryptjs
+import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { saveFileLocally } from "@/lib/upload-server";
 
@@ -11,14 +11,20 @@ export async function GET(
 ) {
   try {
     const session = await auth();
-    if (!session || (session.user as any).role !== "super_admin") {
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageUsers = rolePerms?.permissions?.manage_users || userRole === "super_admin";
+
+    if (!session || (!canManageUsers && userRole !== "admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
-
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
@@ -40,7 +46,16 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    if (!session || (session.user as any).role !== "super_admin") {
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageUsers = rolePerms?.permissions?.manage_users || userRole === "super_admin";
+
+    if (!session || (!canManageUsers && userRole !== "admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -51,9 +66,6 @@ export async function PATCH(
       username,
       ...updateData
     } = body;
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // ✅ ตรวจสอบความเป็นสากลของ Username (ป้องกันการซ้ำ)
     if (username) {
@@ -123,13 +135,13 @@ export async function PATCH(
 
     await db.collection("logs").insertOne({
       adminId: adminId ? new ObjectId(adminId as string) : null,
-      userName: adminName, // Fixed from adminName to userName for consistency
+      userName: adminName,
       action: "UPDATE_USER",
       details: `${actionDesc} (Target ID: ${id})`,
       targetId: new ObjectId(id),
       timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
-      role: "super_admin"
+      role: userRole
     });
 
     return NextResponse.json({ success: true });
@@ -145,13 +157,20 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    if (!session || (session.user as any).role !== "super_admin") {
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageUsers = rolePerms?.permissions?.manage_users || userRole === "super_admin";
+
+    if (!session || (!canManageUsers && userRole !== "admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // หาชื่อผู้ใช้ก่อนลบ
     const targetUser = await db
@@ -177,7 +196,7 @@ export async function DELETE(
       targetId: new ObjectId(id),
       timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
-      role: "super_admin"
+      role: userRole
     });
 
     return NextResponse.json({ success: true });

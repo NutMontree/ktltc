@@ -24,11 +24,13 @@ export async function GET(req: Request) {
 
     // กรณีดึงไปใช้หลังบ้าน (Admin) ต้องเช็คสิทธิ์
     const session = await auth();
-    const isAdmin =
-      session &&
-      ["super_admin", "admin", "editor"].includes((session.user as any).role);
+    const userRole = (session?.user as any)?.role?.toLowerCase();
 
-    if (!isAdmin) {
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
+
+    if (!session || (!canManageNews && !["admin", "editor"].includes(userRole))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -48,10 +50,19 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role;
-    const allowedRoles = ["super_admin", "admin", "editor"];
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!session || !allowedRoles.includes(userRole)) {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
+
+    if (!canManageNews && !["admin", "editor"].includes(userRole)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -64,9 +75,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     const newBanner = {
       title,

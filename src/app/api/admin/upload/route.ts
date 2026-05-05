@@ -8,11 +8,19 @@ export async function POST(req: Request) {
     const session = await auth();
     const userRole = (session?.user as any)?.role?.toLowerCase();
     
-    if (
-      !session ||
-      !["super_admin", "admin", "editor"].includes(userRole)
-    ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const client = await (await import("@/lib/db")).default;
+    const db = client.db("ktltc_db");
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const p = rolePerms?.permissions;
+    const hasUploadPermission = p?.manage_news || p?.manage_pages || p?.manage_users || p?.manage_system || userRole === "super_admin";
+
+    if (!session || !hasUploadPermission) {
+      // Legacy fallback
+      if (!["admin", "editor"].includes(userRole)) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
 
     const contentType = req.headers.get("content-type") || "";

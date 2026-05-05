@@ -71,12 +71,15 @@ export async function PATCH(req: Request) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role?.toLowerCase();
-    
-    // Consistent with middleware's admin roles
-    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "editor", "staff"];
 
-    if (!userRole || !allowedRoles.includes(userRole)) {
-      console.error(`[API/role-settings] Update Unauthorized: role=${userRole}`);
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageAttendance = rolePerms?.permissions?.manage_attendance || userRole === "super_admin";
+
+    if (!session || userRole !== "super_admin") {
       return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
     }
 
@@ -86,9 +89,6 @@ export async function PATCH(req: Request) {
     if (!role) {
       return NextResponse.json({ error: "Missing role parameter" }, { status: 400 });
     }
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // สร้างก้อนข้อมูลที่จะ Update (กรองเอาเฉพาะที่มีค่าส่งมา)
     const updateData: any = { ...body, updatedAt: new Date() };

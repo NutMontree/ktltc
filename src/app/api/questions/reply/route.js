@@ -7,9 +7,19 @@ export async function PATCH(req) {
   try {
     const session = await auth();
 
-    // 1. เช็คสิทธิ์: ถ้าไม่มี Session หรือไม่ใช่แอดมิน ให้ไล่ไปสัส
-    if (!session || !session.user || !session.user.name) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const userRole = session?.user?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageQA = rolePerms?.permissions?.manage_qa || userRole === "super_admin";
+
+    if (!session || !canManageQA) {
+      // Legacy fallback
+      if (userRole !== "admin" && userRole !== "super_admin") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
 
     const { questionId, answerText, isEditing } = await req.json();
@@ -19,8 +29,6 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "Missing data" }, { status: 400 });
     }
 
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // 2. ค้นหาคำถามเดิมก่อนอัปเดต (เอามาใช้เขียน Log)
     const originalQuestion = await db.collection("questions").findOne({
@@ -76,8 +84,15 @@ export async function PATCH(req) {
 export async function PUT(req) {
   try {
     const session = await auth();
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const userRole = session?.user?.role?.toLowerCase();
 
-    if (!session || !session.user || session.user.role !== "super_admin") {
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageQA = rolePerms?.permissions?.manage_qa || userRole === "super_admin";
+
+    if (!session || !canManageQA) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -96,8 +111,6 @@ export async function PUT(req) {
       );
     }
 
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
     const targetId = new ObjectId(questionId);
 
     const originalQuestion = await db
@@ -152,16 +165,23 @@ export async function PUT(req) {
 export async function DELETE(req) {
   try {
     const session = await auth();
-    if (!session || !session.user)
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const userRole = session?.user?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageQA = rolePerms?.permissions?.manage_qa || userRole === "super_admin";
+
+    if (!session || !canManageQA) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
     if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
 
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // เก็บข้อมูลก่อนลบไว้ลง Log
     const target = await db

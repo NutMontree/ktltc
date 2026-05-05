@@ -3,6 +3,13 @@ import clientPromise from "@/lib/db";
 
 export async function GET(req) {
   try {
+    const session = await (await import("@/lib/auth")).auth();
+    const userRole = session?.user?.role?.toLowerCase();
+
+    if (!session || userRole !== "super_admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 

@@ -5,6 +5,13 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const session = await (await import("@/lib/auth")).auth();
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    if (!session || userRole !== "super_admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
