@@ -309,7 +309,7 @@ export default function NavbarClient({
 
           {/* --- 3. RIGHT ACTIONS --- */}
           <div className="flex items-center gap-3 shrink-0 h-10">
-            {username && (
+            {userId && (
               <div className="flex items-center justify-center w-10 h-10">
                 <NotificationBell />
               </div>
@@ -320,7 +320,7 @@ export default function NavbarClient({
 
             <div className="hidden lg:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
 
-            {username ? (
+            {userId ? (
               <div
                 className="relative user-dropdown-container"
                 onMouseEnter={() => setIsUserDropdownOpen(true)}
@@ -342,7 +342,7 @@ export default function NavbarClient({
                     {image ? (
                       <Image
                         src={image}
-                        alt={username}
+                        alt={username || "User"}
                         fill
                         sizes="36px"
                         priority
@@ -350,7 +350,7 @@ export default function NavbarClient({
                       />
                     ) : (
                       <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
-                        {username.charAt(0)}
+                        {(username || "U").charAt(0)}
                       </div>
                     )}
                   </div>
@@ -543,6 +543,9 @@ export default function NavbarClient({
                 image={image}
                 deferredPrompt={deferredPrompt}
                 onInstall={handleInstallClick}
+                username={username}
+                role={role}
+                userId={userId}
               />
             </div>
           </div>

@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 /**
  * GET: ดึงข้อมูลการตั้งค่าข้อความทั้งหมด (Site Settings)
  */
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
@@ -28,6 +34,16 @@ export async function GET() {
  */
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    if (!session || userRole !== "super_admin") {
+      return NextResponse.json(
+        { error: "เฉพาะ Super Admin เท่านั้นที่สามารถเปลี่ยนค่าระบบได้" },
+        { status: 403 },
+      );
+    }
+
     const body = await req.json();
     const { key, value } = body;
 

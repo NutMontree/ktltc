@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Newspaper,
   Image as ImageIcon,
@@ -18,6 +18,7 @@ import {
   ShieldAlert,
   Loader2,
   Layers,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -43,7 +44,10 @@ export default function DashboardLoader() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [permissions, setPermissions] = useState<any>(null);
+   const [permissions, setPermissions] = useState<any>(null);
+   const [isEditingQuota, setIsEditingQuota] = useState(false);
+   const [tempQuota, setTempQuota] = useState("");
+   const [isSavingQuota, setIsSavingQuota] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -72,6 +76,45 @@ export default function DashboardLoader() {
     }
     fetchData();
   }, [status]);
+
+  const handleSaveQuota = async () => {
+    if (!tempQuota || isNaN(parseFloat(tempQuota))) {
+      alert("กรุณาระบุตัวเลขที่ถูกต้อง");
+      return;
+    }
+
+    // Convert GB input to MB for database storage
+    const quotaInMB = Math.round(parseFloat(tempQuota) * 1024);
+
+    try {
+      setIsSavingQuota(true);
+      const res = await fetch("/api/admin/site-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: "storage_limit_mb",
+          value: tempQuota === "0" ? "0" : quotaInMB.toString()
+        })
+      });
+
+      if (res.ok) {
+        // Refresh stats
+        const statsRes = await fetch("/api/admin/dashboard-stats?_t=" + Date.now());
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData);
+        }
+        setIsEditingQuota(false);
+      } else {
+        alert("บันทึกไม่สำเร็จ");
+      }
+    } catch (err) {
+      console.error("Save Quota Error:", err);
+      alert("เกิดข้อผิดพลาด");
+    } finally {
+      setIsSavingQuota(false);
+    }
+  };
 
   if (status === "loading" || (status === "authenticated" && loading)) {
     return (
@@ -223,6 +266,14 @@ export default function DashboardLoader() {
                     icon={Database}
                     color="blue"
                     variants={item}
+                    isSuperAdmin={session?.user?.role === "super_admin"}
+                    serverTotalMB={stats.serverTotalMB}
+                    onEdit={() => {
+                      // Convert MB to GB for display in modal
+                      const currentGB = stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
+                      setTempQuota(currentGB);
+                      setIsEditingQuota(true);
+                    }}
                   />
                 </div>
               </div>
@@ -311,6 +362,95 @@ export default function DashboardLoader() {
           </p>
         </motion.div>
       </div>
+
+      {/* --- Quota Edit Modal --- */}
+      <AnimatePresence>
+        {isEditingQuota && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsEditingQuota(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-8">
+                <Database className="w-12 h-12 text-blue-500/10" />
+              </div>
+              
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
+                Storage Quota
+              </h3>
+              <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">
+                กำหนดขีดจำกัดพื้นที่จัดเก็บข้อมูล (GB)
+              </p>
+
+              <div className="space-y-6">
+                <div className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700">
+                  <div>
+                    <p className="text-sm font-bold text-zinc-900 dark:text-white">ไม่จำกัดพื้นที่ (Unlimited)</p>
+                    <p className="text-[10px] text-zinc-500">เปิดการใช้งานพื้นที่ทั้งหมดของเซิร์ฟเวอร์</p>
+                  </div>
+                  <button
+                    onClick={() => setTempQuota(tempQuota === "0" ? "20" : "0")}
+                    className={`w-12 h-6 rounded-full transition-all relative ${tempQuota === "0" ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${tempQuota === "0" ? "left-7" : "left-1"}`} />
+                  </button>
+                </div>
+
+                {tempQuota !== "0" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                  >
+                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 block">
+                      ความจุสูงสุด (GigaBytes - GB)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={tempQuota}
+                      onChange={(e) => setTempQuota(e.target.value)}
+                      placeholder="ระบุจำนวน GB เช่น 20"
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                    />
+                    <p className="mt-2 text-[10px] text-zinc-400 font-medium">
+                      * ระบุเป็นหน่วย GB (เช่น 20 หมายถึง 20GB)
+                    </p>
+                  </motion.div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsEditingQuota(false)}
+                    className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                  >
+                     ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleSaveQuota}
+                    disabled={isSavingQuota}
+                    className="flex-[2] py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    {isSavingQuota ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "บันทึกการตั้งค่า"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -382,8 +522,13 @@ function UsageCard({
   icon: Icon,
   color,
   variants,
+  isSuperAdmin,
+  onEdit,
+  serverTotalMB = 0,
 }: any) {
-  const percentage = Math.min((parseFloat(value) / max) * 100, 100);
+   const isUnlimited = max <= 0;
+   const effectiveMax = isUnlimited ? (serverTotalMB || 1) : max;
+   const percentage = Math.min((parseFloat(value) / effectiveMax) * 100, 100);
   const colorClass =
     color === "emerald"
       ? "bg-emerald-500 shadow-emerald-500/40"
@@ -406,9 +551,20 @@ function UsageCard({
               {title}
             </span>
           </div>
-          <span className={`text-sm font-black ${iconColor}`}>
-            {percentage.toFixed(1)}%
-          </span>
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && onEdit && (
+              <button
+                onClick={onEdit}
+                className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-blue-500 transition-all"
+                title="ตั้งค่าพื้นที่"
+              >
+                <Settings className="w-3.5 h-3.5" />
+              </button>
+            )}
+             <span className={`text-sm font-black ${iconColor}`}>
+               {percentage.toFixed(1)}%
+             </span>
+          </div>
         </div>
 
         <div className="mb-4">
@@ -418,9 +574,11 @@ function UsageCard({
               {unit}
             </span>
           </p>
-          <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 mt-2 uppercase tracking-wide">
-            ที่เหลืออยู่: {(max - parseFloat(value)).toFixed(2)} {unit}
-          </p>
+           <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 mt-2 uppercase tracking-wide">
+             {isUnlimited 
+               ? `ใช้ไป ${percentage.toFixed(1)}% ของความจุเซิร์ฟเวอร์ (${(serverTotalMB/1024).toFixed(1)} GB)` 
+               : `ที่เหลืออยู่: ${(max - parseFloat(value)).toFixed(2)} ${unit}`}
+           </p>
         </div>
 
         <div className="h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden p-[2px]">

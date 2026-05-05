@@ -72,14 +72,32 @@ export async function GET() {
     
     // 4. Local Storage Usage (Instead of Cloudinary)
     let storageUsageMB = "0.00";
-    let storageLimitMB = 20000; // Example 20GB limit for local storage display
+    let storageLimitMB = 20000; // Default fallback
+    let serverTotalMB = 0; // Real disk capacity
     
     try {
+      // Fetch custom limit from database if exists
+      const limitSetting = await db.collection("site_settings").findOne({ key: "storage_limit_mb" });
+      if (limitSetting) {
+        // Allow 0 to represent unlimited
+        storageLimitMB = parseFloat(limitSetting.value);
+        if (isNaN(storageLimitMB)) storageLimitMB = 20000;
+      }
+
       // Calculate size of public/uploads, public/images, public/pdf
       const publicDir = path.join(process.cwd(), "public");
       const cmd = `du -sm ${publicDir}/uploads ${publicDir}/images ${publicDir}/pdf 2>/dev/null | awk '{sum += $1} END {print sum}'`;
       const sizeStr = execSync(cmd).toString().trim();
       storageUsageMB = (parseFloat(sizeStr) || 0).toFixed(2);
+
+      // Get real disk capacity
+      try {
+        const diskCmd = `df -m ${process.cwd()} | tail -1 | awk '{print $2}'`;
+        const diskTotalStr = execSync(diskCmd).toString().trim();
+        serverTotalMB = parseInt(diskTotalStr) || 0;
+      } catch (diskErr) {
+        console.error("Disk Capacity Check Error:", diskErr);
+      }
     } catch (err) {
       console.error("Local Storage Usage Calculation Error:", err);
     }
@@ -93,6 +111,7 @@ export async function GET() {
       dbSizeMB,
       cloudUsageMB: storageUsageMB, // Keeping same key for frontend compatibility
       cloudLimitMB: storageLimitMB,
+      serverTotalMB: serverTotalMB,
       totalPendingQA,
       totalUsers,
     });

@@ -172,7 +172,7 @@ export default function MobileMenu({
               {/* Scrollable Content */}
               <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar-thin pb-12">
                 {/* User Profile Section (Premium Glass Card) */}
-                {username ? (
+                {userId ? (
                   <div className="px-5 py-6 bg-linear-to-b from-blue-50/80 to-white dark:from-blue-950/20 dark:to-zinc-950 border-b border-zinc-100 dark:border-zinc-800/60">
                     <div className="flex items-center gap-4">
                       <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-zinc-800 shadow-xl shrink-0">
@@ -345,8 +345,34 @@ export default function MobileMenu({
                   })}
                 </div>
 
+                {/* EMPLOYEE SERVICES */}
+                {userId && (
+                  <div className="px-4 pt-2 pb-1 space-y-1">
+                    <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest px-2 mb-3 flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5" />
+                      บริการบุคลากร
+                    </p>
+                    <Link
+                      href="/wfh"
+                      onClick={closeMenu}
+                      className={`flex items-center gap-3 px-3 py-3.5 rounded-xl font-bold text-[15px] transition-all group ${
+                        pathname === "/wfh"
+                          ? "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400"
+                          : "text-zinc-700 dark:text-zinc-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10"
+                      }`}
+                    >
+                      <div
+                        className={`p-1.5 rounded-lg transition-colors ${pathname === "/wfh" ? "bg-orange-100 dark:bg-orange-900/30" : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-orange-200 dark:group-hover:bg-zinc-700"}`}
+                      >
+                        <FileText className="w-4 h-4 text-orange-600" />
+                      </div>
+                      รายงานปฏิบัติงาน (WFH)
+                    </Link>
+                  </div>
+                )}
+
                 {/* ADMIN / SYSTEM CONTROLS (Restored and Designed) */}
-                {username && (isSuperAdmin || isAdmin || isHR || isExecutive) && (
+                {userId && (isSuperAdmin || isAdmin || isHR || isExecutive) && (
                   <div className="px-4 py-6 border-t border-zinc-100 dark:border-zinc-800/60 space-y-1 bg-zinc-50/30 dark:bg-zinc-900/10">
                     <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest px-2 mb-4 flex items-center gap-1.5">
                       <Shield className="w-3.5 h-3.5" />
