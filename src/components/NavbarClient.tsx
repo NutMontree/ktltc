@@ -197,7 +197,7 @@ export default function NavbarClient({
                 src="/images/favicon.ico"
                 alt="KTL Logo"
                 fill
-                sizes="(max-width: 768px) 100vw, 33vw"
+                sizes="40px"
                 priority
                 className="object-contain"
               />
@@ -324,7 +324,8 @@ export default function NavbarClient({
                         src={image}
                         alt={username}
                         fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="36px"
+                        priority
                         className="object-cover"
                       />
                     ) : (

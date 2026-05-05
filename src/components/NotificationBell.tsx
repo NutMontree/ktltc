@@ -7,6 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { th } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 interface Notification {
   _id: string;
@@ -154,9 +155,16 @@ export default function NotificationBell() {
 
                   <div className="flex gap-5">
                     <div className="relative shrink-0 mt-1">
-                      <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-lg bg-white dark:bg-zinc-900 flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                      <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-lg bg-white dark:bg-zinc-900 flex items-center justify-center transition-transform group-hover:scale-110 duration-300 relative">
                         {n.fromImage ? (
-                          <img src={n.fromImage} className="w-full h-full object-cover" alt={n.fromName} />
+                          <Image 
+                            src={n.fromImage} 
+                            fill
+                            sizes="56px"
+                            unoptimized
+                            className="object-cover" 
+                            alt={n.fromName || "User"} 
+                          />
                         ) : (
                           <div className="w-full h-full bg-linear-to-br from-slate-100 to-slate-200 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center">
                             <User className="text-zinc-400 dark:text-zinc-600" size={28} />
@@ -240,15 +248,17 @@ export default function NotificationBell() {
       placement="bottomRight"
       overlayClassName="notification-popover"
       overlayStyle={{ maxWidth: 'calc(100vw - 24px)' }}
-      overlayInnerStyle={{
-        backgroundColor: isDark ? '#18181b' : '#ffffff',
-        border: `1px solid ${isDark ? '#27272a' : '#e2e8f0'}`,
-        padding: 0,
-        borderRadius: '2rem',
-        overflow: 'hidden',
-        boxShadow: isDark 
-          ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' 
-          : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+      styles={{
+        container: {
+          backgroundColor: isDark ? '#18181b' : '#ffffff',
+          border: `1px solid ${isDark ? '#27272a' : '#e2e8f0'}`,
+          padding: 0,
+          borderRadius: '2rem',
+          overflow: 'hidden',
+          boxShadow: isDark 
+            ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' 
+            : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+        }
       }}
       arrow={false}
     >

@@ -381,6 +381,7 @@ export default async function NewsDetailPage({
                           src={authorImage}
                           alt={authorName}
                           fill
+                          sizes="44px"
                           unoptimized
                           className="object-cover"
                         />
