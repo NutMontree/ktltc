@@ -19,8 +19,6 @@ import {
   Bell,
   Check,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { th } from "date-fns/locale";
 import NotificationBell from "./NotificationBell";
 
 type MenuItem = NavItem & {

@@ -8,7 +8,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
-import { useSession, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { signOut } from "next-auth/react";
 import {
   Clock,
   UserCog,
@@ -35,12 +36,16 @@ export default function MobileMenu({
   deferredPrompt,
   onInstall,
   userId,
+  username,
+  role,
 }: {
   menuTree?: MenuItem[];
   image?: string;
   deferredPrompt?: any;
   onInstall?: () => void;
   userId?: string;
+  username?: string;
+  role?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openSubMenuId, setOpenSubMenuId] = useState<string | null>(null);
@@ -50,11 +55,8 @@ export default function MobileMenu({
     setMounted(true);
   }, []);
 
-  const { data: session, status } = useSession();
-  const user = session?.user;
-  const userRole = (user as any)?.role?.toLowerCase() || "";
-  const username = user?.name || (user as any)?.username || "ผู้ใช้งาน";
-
+  const userRole = role?.toLowerCase() || "";
+  const displayUsername = username || "ผู้ใช้งาน";
   const pathname = usePathname();
 
   const handleLogout = async () => {
@@ -170,27 +172,27 @@ export default function MobileMenu({
               {/* Scrollable Content */}
               <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar-thin pb-12">
                 {/* User Profile Section (Premium Glass Card) */}
-                {status !== "loading" && user ? (
+                {username ? (
                   <div className="px-5 py-6 bg-linear-to-b from-blue-50/80 to-white dark:from-blue-950/20 dark:to-zinc-950 border-b border-zinc-100 dark:border-zinc-800/60">
                     <div className="flex items-center gap-4">
                       <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-zinc-800 shadow-xl shrink-0">
                         {image ? (
                           <Image
                             src={image}
-                            alt={username}
+                            alt={displayUsername}
                             fill
                             sizes="56px"
                             className="object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-xl font-bold uppercase">
-                            {username.charAt(0)}
+                            {displayUsername.charAt(0)}
                           </div>
                         )}
                       </div>
                       <div className="flex flex-col flex-1 min-w-0">
                         <span className="font-extrabold text-zinc-900 dark:text-white text-lg truncate tracking-tight">
-                          {username}
+                          {displayUsername}
                         </span>
                         <span className="text-[11px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-0.5">
                           {getRoleDisplayName(userRole)}
@@ -221,7 +223,7 @@ export default function MobileMenu({
                       </button>
                     </div>
                   </div>
-                ) : status !== "loading" && !user ? (
+                ) : (
                   <div className="p-5 border-b border-zinc-100 dark:border-zinc-800/60">
                     <Link
                       href="/login"
@@ -231,7 +233,7 @@ export default function MobileMenu({
                       เข้าสู่ระบบ
                     </Link>
                   </div>
-                ) : null}
+                )}
 
                 {/* MAIN NAVIGATION */}
                 <div className="px-4 py-5 space-y-1">
@@ -344,7 +346,7 @@ export default function MobileMenu({
                 </div>
 
                 {/* ADMIN / SYSTEM CONTROLS (Restored and Designed) */}
-                {user && (isSuperAdmin || isAdmin || isHR || isExecutive) && (
+                {username && (isSuperAdmin || isAdmin || isHR || isExecutive) && (
                   <div className="px-4 py-6 border-t border-zinc-100 dark:border-zinc-800/60 space-y-1 bg-zinc-50/30 dark:bg-zinc-900/10">
                     <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest px-2 mb-4 flex items-center gap-1.5">
                       <Shield className="w-3.5 h-3.5" />

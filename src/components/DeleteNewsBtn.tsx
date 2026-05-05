@@ -34,6 +34,7 @@ export default function DeleteNewsBtn({
     setIsDeleting(true);
     try {
       const res = await fetch(`/api/news/${id}`, { method: "DELETE" });
+      const data = await res.json();
 
       if (res.ok) {
         // ✅ 2. ส่งข้อมูลไป Log (ต้องสะกดให้ตรงกับ API Route)
@@ -49,9 +50,12 @@ export default function DeleteNewsBtn({
         });
 
         router.refresh();
+      } else {
+        // หากลบไม่สำเร็จ (เช่น ไม่ใช่เจ้าของ) ให้แจ้งเตือนด้วยข้อความจาก API
+        alert(`ไม่สามารถลบได้: ${data.error || "เกิดข้อผิดพลาด"}`);
       }
     } catch (error) {
-      alert("เกิดข้อผิดพลาด");
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     } finally {
       setIsDeleting(false);
     }
