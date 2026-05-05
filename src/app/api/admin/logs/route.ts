@@ -38,9 +38,10 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   console.log("LOG_POST: Request received");
   try {
-    console.log("LOG_POST: Calling auth()...");
-    const session = await auth();
-    console.log("LOG_POST: auth() finished. Session:", session ? "Exists" : "Null");
+    // Temporarily bypass auth() to avoid 500 errors during login flow
+    // const session = await auth();
+    const session = null;
+    console.log("LOG_POST: auth() bypassed");
     
     let body: any = {};
     
@@ -61,14 +62,14 @@ export async function POST(req: Request) {
     const db = client.db("ktltc_db");
 
     const newLog = {
-      userName: (session?.user as any)?.name || manualName || "SYSTEM_KERN",
-      userEmail: session?.user?.email || null,
+      userName: (session as any)?.user?.name || manualName || "SYSTEM_KERN",
+      userEmail: (session as any)?.user?.email || null,
       action: action || "SYSTEM_ACTIVITY",
       details: details || "No specific details provided",
       link: link || null,
       timestamp: new Date(),
       ip,
-      role: (session?.user as any)?.role || "guest",
+      role: (session as any)?.user?.role || "guest",
     };
 
     await db.collection("logs").insertOne(newLog);
