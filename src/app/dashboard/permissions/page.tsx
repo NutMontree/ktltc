@@ -155,18 +155,18 @@ export default function PermissionsPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <div className="xl:col-span-12">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[1000px]">
-                <thead className="sticky top-[80px] z-40 bg-white dark:bg-zinc-900">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl overflow-hidden">
+            <div className="overflow-auto max-h-[75vh] rounded-[2.5rem]">
+              <table className="w-full text-left border-separate border-spacing-0 min-w-[1000px]">
+                <thead>
                   <tr className="bg-slate-50/95 dark:bg-zinc-800/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
-                    <th className="p-6 text-xs font-black text-slate-400 uppercase tracking-widest min-w-[200px] sticky left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-r border-zinc-100 dark:border-zinc-800">
-                      Role / ระดับผู้ใช้
+                    <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest min-w-[140px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
+                      Role / ระดับ
                     </th>
                     {Object.keys(FEATURE_LABELS).map((key) => (
                       <th
                         key={key}
-                        className="p-6 text-xs font-black text-slate-400 uppercase tracking-widest text-center min-w-[150px]"
+                        className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
                       >
                         <div className="flex flex-col items-center gap-2">
                           <div
@@ -193,12 +193,12 @@ export default function PermissionsPage() {
                       animate={{ opacity: 1 }}
                       className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors group ${role === "super_admin" ? "bg-blue-50/20 dark:bg-blue-900/10" : ""}`}
                     >
-                      <td className="p-6">
+                      <td className="p-4 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-2 h-8 rounded-full ${
+                            className={`w-1.5 h-6 rounded-full ${
                               role === "super_admin"
-                                ? "bg-rose-500"
+                                ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.3)]"
                                 : role === "admin"
                                   ? "bg-amber-500"
                                   : role === "student"
@@ -207,10 +207,10 @@ export default function PermissionsPage() {
                             }`}
                           ></div>
                           <div>
-                            <div className="font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                            <div className="font-black text-slate-800 dark:text-white uppercase tracking-tight text-xs">
                               {role}
                             </div>
-                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">
                               {ROLE_LABELS[role] || "บทบาททั่วไป"}
                             </div>
                           </div>
@@ -218,7 +218,7 @@ export default function PermissionsPage() {
                       </td>
 
                       {Object.keys(FEATURE_LABELS).map((feature) => (
-                        <td key={feature} className="p-6 text-center">
+                        <td key={feature} className="p-2 text-center border-b border-zinc-50 dark:border-zinc-800/50">
                           {role === "super_admin" ? (
                             <div className="flex justify-center">
                               <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-500 border border-emerald-100 dark:border-emerald-800/50">
