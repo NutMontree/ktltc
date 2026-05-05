@@ -353,55 +353,61 @@ export default function MobileMenu({
 
                     {/* Super Admin Area */}
                     {isSuperAdmin && (
-                      <div className="mb-4 space-y-1 bg-purple-50 dark:bg-purple-500/5 rounded-2xl p-2 border border-purple-100 dark:border-purple-500/10">
-                        <p className="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest px-2 py-1">
+                      <div className="mb-4 space-y-1 bg-sky-50 dark:bg-sky-500/5 rounded-2xl p-2 border border-sky-100 dark:border-sky-500/10">
+                        <p className="text-[9px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-widest px-2 py-1">
                           เฉพาะ Super Admin
                         </p>
                         <Link
                           href="/dashboard/super-admin"
                           onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-3 rounded-xl font-bold text-[14px] text-purple-700 hover:bg-white dark:text-purple-300 dark:hover:bg-purple-900/40 transition-colors shadow-sm"
+                          className="flex items-center gap-3 px-3 py-3 rounded-xl font-bold text-[14px] text-sky-700 hover:bg-white dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors shadow-sm"
                         >
                           <Shield className="w-4 h-4" /> ศูนย์ควบคุมจัดการระบบ
                         </Link>
                         <Link
+                          href="/dashboard/data-management"
+                          onClick={closeMenu}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-bold text-rose-700 dark:text-rose-400 hover:bg-white transition-colors"
+                        >
+                          <FileText className="w-3.5 h-3.5" /> แก้ไขข้อมูลการเข้างาน / ลา
+                        </Link>
+                        <Link
                           href="/work-reports-management"
                           onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-white dark:hover:bg-purple-900/20 transition-colors"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-white transition-colors"
                         >
-                          <FileText className="w-3.5 h-3.5" />{" "}
-                          รายงานปฏิบัติงานทุกแผนก
+                          <FileText className="w-3.5 h-3.5" /> รายงานปฏิบัติงานทุกแผนก
+                        </Link>
+                        <Link
+                          href="/dashboard/permissions"
+                          onClick={closeMenu}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-bold text-blue-700 dark:text-blue-400 hover:bg-white transition-colors"
+                        >
+                          <Shield className="w-3.5 h-3.5" /> จัดการสิทธิ์แต่ละระดับ
                         </Link>
                       </div>
                     )}
 
-                    {/* Admin / Editor */}
+                    {/* Admin / Editor Dashboard */}
                     {(isSuperAdmin || isAdmin) && (
                       <Link
                         href="/dashboard"
                         onClick={closeMenu}
-                        className="flex items-center gap-3 px-3 py-3.5 rounded-xl font-bold text-[14px] text-blue-700 bg-blue-50/80 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
+                        className="flex items-center gap-3 px-3 py-3.5 rounded-xl font-black text-[14px] text-blue-700 bg-blue-50/80 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-all active:scale-95 border border-blue-100 dark:border-blue-800/30"
                       >
-                        <Command className="w-4 h-4" /> ไปที่ระบบ Dashboard
+                        <Command className="w-4 h-4" /> เข้าสู่ระบบ Dashboard
                       </Link>
                     )}
 
                     {/* HR / Executive Area */}
                     {(isSuperAdmin || isHR || isExecutive) && (
-                      <div className="pt-2 space-y-1 text-[14px] font-semibold text-zinc-600 dark:text-zinc-400">
-                        <Link
-                          href="/wfh"
-                          onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                        >
-                          รายงานปฏิบัติงาน (WFH)
-                        </Link>
+                      <div className="pt-2 space-y-1">
                         <Link
                           href="/attendance-dashboard"
                           onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          className="flex items-center gap-3 px-3 py-3 rounded-xl font-bold text-[14px] text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
                         >
-                          ภาพรวมการลงเวลา
+                          ภาพรวมลงเวลาบุคลากร
                         </Link>
 
                         {(isSuperAdmin || isHR || userRole === "director") && (
@@ -409,21 +415,21 @@ export default function MobileMenu({
                             <Link
                               href="/attendance-report"
                               onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400 transition-colors"
+                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                             >
                               ระบบรายงานการเข้างาน
                             </Link>
                             <Link
                               href="/work-reports"
                               onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400 transition-colors"
+                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                             >
-                              ระบบรายงานการปฏิบัติงาน
+                              ระบบรายงานปฏิบัติงาน
                             </Link>
                             <Link
                               href="/leave-approvals"
                               onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
+                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                             >
                               จัดการอนุมัติใบลา
                             </Link>
@@ -431,19 +437,18 @@ export default function MobileMenu({
                         )}
 
                         {(isSuperAdmin || isHR) && (
-                          <div className="pt-2 mt-2 border-t border-zinc-200/50 dark:border-zinc-800/50 space-y-1">
+                          <div className="pt-2 mt-2 border-t border-zinc-100 dark:border-zinc-800/60 space-y-1">
                             <Link
                               href="/manage-roles"
                               onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-700 dark:text-zinc-300"
+                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                             >
-                              <UserCog className="w-4 h-4" />{" "}
-                              จัดการสิทธิ์บุคลากร
+                              <UserCog className="w-4 h-4" /> จัดการสิทธิ์บุคลากร
                             </Link>
                             <Link
                               href="/attendance-settings"
                               onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-700 dark:text-zinc-300"
+                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                             >
                               <Clock className="w-4 h-4" /> ตั้งค่าเวลาเข้างาน
                             </Link>
