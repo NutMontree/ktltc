@@ -17,7 +17,7 @@ const videoList = [
     title: "Video 1",
   },
   {
-    src: "https://www.youtube.com/embed/k7hgxrwGgrw?si=VWg12pZKYfKEVnUz",
+    src: "https://www.youtube-nocookie.com/embed/k7hgxrwGgrw?si=VWg12pZKYfKEVnUz",
     title: "Video 2",
   },
   // หมายเหตุ: คลิปนี้เป็น Facebook Reel ถ้าเป็นไปได้ควรแยก Section หรือใช้ Embed ของ Youtube ทั้งหมดจะดีกว่าครับ แต่ใส่ไว้ให้ตามเดิม
@@ -26,31 +26,31 @@ const videoList = [
     title: "Facebook Reel",
   },
   {
-    src: "https://www.youtube.com/embed/tVReYxrSav0?si=HZpppAn8DwMvccUr",
+    src: "https://www.youtube-nocookie.com/embed/tVReYxrSav0?si=HZpppAn8DwMvccUr",
     title: "Video 4",
   },
   {
-    src: "https://www.youtube.com/embed/908PSchHFiU?si=I6XoZHsfF0Ceot7M",
+    src: "https://www.youtube-nocookie.com/embed/908PSchHFiU?si=I6XoZHsfF0Ceot7M",
     title: "Video 5",
   },
   {
-    src: "https://www.youtube.com/embed/nj49zojN3FI",
+    src: "https://www.youtube-nocookie.com/embed/nj49zojN3FI",
     title: "สถานศึกษาสีขาว 68",
   },
   {
-    src: "https://www.youtube.com/embed/TpkZoNBSzNU?si=PDDZY5iQuTTG-TF5",
+    src: "https://www.youtube-nocookie.com/embed/TpkZoNBSzNU?si=PDDZY5iQuTTG-TF5",
     title: "กิจกรรมสถานศึกษา",
   },
   {
-    src: "https://www.youtube.com/embed/-3MpH0BXQeY",
+    src: "https://www.youtube-nocookie.com/embed/-3MpH0BXQeY",
     title: "ดอกจานเกมส์ 2567",
   },
   {
-    src: "https://www.youtube.com/embed/_2Gnilun9X8",
+    src: "https://www.youtube-nocookie.com/embed/_2Gnilun9X8",
     title: "สิ่งประดิษฐ์คนรุ่นใหม่",
   },
   {
-    src: "https://www.youtube.com/embed/1qwOVzMyCQU",
+    src: "https://www.youtube-nocookie.com/embed/1qwOVzMyCQU",
     title: "เดิน วิ่ง ปั่น ป้องกันอัมพาต",
   },
 ];

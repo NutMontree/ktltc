@@ -79,7 +79,7 @@ export default function SocialFeedDisplay({
                   {feed.embedId ? (
                     <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-inner border border-zinc-200 dark:border-zinc-700">
                       <iframe
-                        src={`https://www.youtube.com/embed/${feed.embedId}`}
+                        src={`https://www.youtube-nocookie.com/embed/${feed.embedId}`}
                         title={feed.title}
                         className="w-full h-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

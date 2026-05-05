@@ -12,6 +12,7 @@ interface NewsItem {
   categories?: string[];
   images?: string[];
   announcementImages?: string[];
+  thumbnails?: string[];
   createdAt: string;
   userName?: string;
   userImage?: string;
@@ -421,14 +422,25 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
               >
                 {/* Thumbnail */}
                 <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                  <Image
-                    src={displayImage}
-                    alt={news.title}
-                    fill
-                    priority={index < 4}
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  />
+                  {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video')) || (!/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(displayImage) && displayImage !== "/no-image.png")) ? (
+                    <video
+                      src={displayImage}
+                      className="w-full h-full object-cover"
+                      muted
+                      playsInline
+                      loop
+                      autoPlay
+                      onMouseOver={(e) => e.currentTarget.play()}
+                    />
+                  ) : (
+                    <Image
+                      src={displayImage}
+                      alt={news.title}
+                      fill
+                      priority={index < 4}
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  )}
                   {/* Gradient overlay */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   {/* Categories */}
@@ -539,14 +551,24 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
               >
                 {/* Thumbnail */}
                 <div className="relative w-20 h-14 rounded-xl overflow-hidden shrink-0 bg-zinc-100 dark:bg-zinc-800">
-                  <Image
-                    src={displayImage}
-                    alt={news.title}
-                    fill
-                    priority={index < 4}
-                    className="object-cover"
-                    sizes="80px"
-                  />
+                  {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video')) || (!/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(displayImage) && displayImage !== "/no-image.png")) ? (
+                    <video
+                      src={displayImage}
+                      className="w-full h-full object-cover"
+                      muted
+                      playsInline
+                      autoPlay
+                      loop
+                    />
+                  ) : (
+                    <Image
+                      src={displayImage}
+                      alt={news.title}
+                      fill
+                      priority={index < 4}
+                      className="object-cover"
+                    />
+                  )}
                 </div>
 
                 {/* Content */}

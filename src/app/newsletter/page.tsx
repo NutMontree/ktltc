@@ -93,14 +93,25 @@ export default async function NewsletterPage() {
                   >
                     {/* Image Area */}
                     <div className="absolute inset-0 w-full h-full bg-slate-100 dark:bg-slate-800">
-                      <Image
-                        src={coverImage}
-                        alt={news.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        priority={index === 0}
-                        className="object-cover object-top transition-transform duration-1000 group-hover:scale-110"
-                      />
+                      {/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(coverImage) || coverImage.includes('video') ? (
+                        <video
+                          src={coverImage}
+                          className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-110"
+                          muted
+                          playsInline
+                          autoPlay
+                          loop
+                        />
+                      ) : (
+                        <Image
+                          src={coverImage}
+                          alt={news.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={index === 0}
+                          className="object-cover object-top transition-transform duration-1000 group-hover:scale-110"
+                        />
+                      )}
                       {/* Gradient Overlay */}
                       <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent"></div>
                     </div>

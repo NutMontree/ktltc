@@ -10,7 +10,7 @@ export const uploadFile = async (
   file: File,
   folder: string = "uploads",
   onProgress?: (percent: number, loaded: number, total: number) => void
-): Promise<string | null> => {
+): Promise<{ secure_url: string | null; thumbnail_url: string | null }> => {
   // Client-side pre-checks using public env vars (NEXT_PUBLIC_*)
   const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
   const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 200 * 1024 * 1024;
@@ -22,17 +22,17 @@ export const uploadFile = async (
 
   if (!isImage && !isVideo) {
     console.error("Unsupported file type:", file.type, file.name);
-    return null;
+    return { secure_url: null, thumbnail_url: null };
   }
 
   if (isImage && file.size > MAX_IMAGE_SIZE) {
     console.error("Image file too large:", file.name, file.size);
-    return null;
+    return { secure_url: null, thumbnail_url: null };
   }
 
   if (isVideo && file.size > MAX_VIDEO_SIZE) {
     console.error("Video file too large:", file.name, file.size);
-    return null;
+    return { secure_url: null, thumbnail_url: null };
   }
 
   // Skip image compression for GIFs and videos
@@ -74,22 +74,22 @@ export const uploadFile = async (
         try {
           const data = JSON.parse(xhr.responseText);
           if (data.success) {
-            resolve(data.secure_url);
+            resolve({ secure_url: data.secure_url, thumbnail_url: data.thumbnail_url });
           } else {
             console.error("❌ Local Upload Error:", data.message);
-            resolve(null);
+            resolve({ secure_url: null, thumbnail_url: null });
           }
         } catch (e) {
-          resolve(null);
+          resolve({ secure_url: null, thumbnail_url: null });
         }
       } else {
-        resolve(null);
+        resolve({ secure_url: null, thumbnail_url: null });
       }
     };
 
     xhr.onerror = () => {
       console.error("❌ Network/Upload error");
-      resolve(null);
+      resolve({ secure_url: null, thumbnail_url: null });
     };
 
     xhr.send(formData);

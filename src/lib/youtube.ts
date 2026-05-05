@@ -6,7 +6,7 @@ const YOUTUBE_HOSTS = new Set([
   "www.youtu.be",
 ]);
 
-const YOUTUBE_EMBED_BASE_URL = "https://www.youtube.com/embed/";
+const YOUTUBE_EMBED_BASE_URL = "https://www.youtube-nocookie.com/embed/";
 
 export type YouTubeEmbedResult = {
   ok: boolean;

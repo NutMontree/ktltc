@@ -145,13 +145,24 @@ export default async function AnnouncementPage() {
                       {formatDateTime(news.createdAt)}
                     </div>
 
-                    <Image
-                      src={coverImage}
-                      alt={news.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
+                    {/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(coverImage) || coverImage.includes('video') ? (
+                      <video
+                        src={coverImage}
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        muted
+                        playsInline
+                        autoPlay
+                        loop
+                      />
+                    ) : (
+                      <Image
+                        src={coverImage}
+                        alt={news.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                      />
+                    )}
                   </div>
 
                   {/* Content Area */}

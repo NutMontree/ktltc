@@ -189,12 +189,14 @@ export default function NewsListClient({
               >
                 {/* Thumbnail */}
                 <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                  {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(coverImage) ? (
+                  {/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(coverImage) || coverImage.includes('video') ? (
                     <video
                       src={coverImage}
                       className="w-full h-full object-cover"
-                      controls
+                      muted
                       playsInline
+                      autoPlay
+                      loop
                     />
                   ) : (
                     <Image

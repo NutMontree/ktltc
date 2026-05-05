@@ -349,12 +349,65 @@ export default function AddNewsPage() {
       const datePath = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
       const mainCategory = categories[0] || "General";
 
+      // 1. อัปโหลดรูปภาพ (พร้อม Progress Bar)
+      const totalToUpload = imageFiles.length + newsletterFiles.length;
+      let uploadedCount = 0;
+
       const generalUploads = await Promise.all(
-        imageFiles.map((f) => uploadFile(f, `ktltc_news/${mainCategory}/${datePath}`)),
+        imageFiles.map(async (f) => {
+          uploadedCount++;
+          // ตั้งค่าเริ่มต้นทันทีเพื่อให้ Modal เด้งขึ้นมา
+          setUploadStatus({
+            fileName: f.name,
+            percent: 0,
+            loaded: 0,
+            total: f.size,
+            startTime: Date.now(),
+            currentIndex: uploadedCount,
+            totalCount: totalToUpload,
+          });
+          return await uploadFile(f, `ktltc_news/${mainCategory}/${datePath}`, (percent, loaded, total) => {
+            setUploadStatus({
+              fileName: f.name,
+              percent,
+              loaded,
+              total,
+              startTime: Date.now(),
+              currentIndex: uploadedCount,
+              totalCount: totalToUpload,
+            });
+          });
+        }),
       );
+
       const newsletterUploads = await Promise.all(
-        newsletterFiles.map((f) => uploadFile(f, `ktltc_newsletters/${mainCategory}/${datePath}`)),
+        newsletterFiles.map(async (f) => {
+          uploadedCount++;
+          // ตั้งค่าเริ่มต้นทันทีเพื่อให้ Modal เด้งขึ้นมา
+          setUploadStatus({
+            fileName: f.name,
+            percent: 0,
+            loaded: 0,
+            total: f.size,
+            startTime: Date.now(),
+            currentIndex: uploadedCount,
+            totalCount: totalToUpload,
+          });
+          return await uploadFile(f, `ktltc_newsletters/${mainCategory}/${datePath}`, (percent, loaded, total) => {
+            setUploadStatus({
+              fileName: f.name,
+              percent,
+              loaded,
+              total,
+              startTime: Date.now(),
+              currentIndex: uploadedCount,
+              totalCount: totalToUpload,
+            });
+          });
+        }),
       );
+
+      setUploadStatus(null); // เมื่อเสร็จแล้วให้ปิด Modal
 
       // DOM-based safe auto-linking for HTML content
       const autoLinkHtml = (htmlString: string) => {
@@ -412,8 +465,9 @@ export default function AddNewsPage() {
         title: newsTitle,
         categories,
         content: formattedContent,
-        images: generalUploads.filter((u) => u !== null),
-        announcementImages: newsletterUploads.filter((u) => u !== null),
+        images: generalUploads.map((u) => u.secure_url).filter((u) => u !== null),
+        thumbnails: generalUploads.map((u) => u.thumbnail_url).filter((u) => u !== null),
+        announcementImages: newsletterUploads.map((u) => u.secure_url).filter((u) => u !== null),
         links,
         videoEmbeds,
         createdAt: new Date(publishDate).toISOString(),
@@ -945,12 +999,83 @@ export default function AddNewsPage() {
         </section>
       </main>
 
-      {/* Floating Status */}
-      {isCompressing && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-60 bg-indigo-600 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce">
-          <span className="text-sm font-black italic">
-            กำลังเตรียมรูปภาพ...
-          </span>
+      {/* Upload Progress Modal */}
+      {uploadStatus && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-zinc-800 animate-in fade-in zoom-in duration-300">
+            <div className="flex flex-col items-center text-center">
+              {/* Progress Circle */}
+              <div className="relative w-24 h-24 mb-6">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="transparent"
+                    className="text-slate-100 dark:text-zinc-800"
+                  />
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="transparent"
+                    strokeDasharray={251.2}
+                    strokeDashoffset={251.2 - (251.2 * uploadStatus.percent) / 100}
+                    className="text-indigo-600 transition-all duration-300 ease-out"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xl font-black text-indigo-600">
+                    {uploadStatus.percent}%
+                  </span>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-black mb-2 dark:text-white">
+                กำลังอัปโหลดไฟล์ที่ {uploadStatus.currentIndex}/{uploadStatus.totalCount}
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-zinc-400 mb-6 font-medium truncate w-full px-4">
+                {uploadStatus.fileName}
+              </p>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-4 w-full mb-8">
+                <div className="bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl border border-slate-100 dark:border-zinc-800">
+                  <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1">
+                    ขนาดไฟล์
+                  </p>
+                  <p className="text-sm font-bold text-slate-700 dark:text-zinc-200">
+                    {(uploadStatus.loaded / (1024 * 1024)).toFixed(1)} / {(uploadStatus.total / (1024 * 1024)).toFixed(1)} MB
+                  </p>
+                </div>
+                <div className="bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl border border-slate-100 dark:border-zinc-800">
+                  <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1">
+                    ความคืบหน้า
+                  </p>
+                  <p className="text-sm font-bold text-indigo-600">
+                    {uploadStatus.percent}%
+                  </p>
+                </div>
+              </div>
+
+              {/* Animated Progress Bar */}
+              <div className="w-full h-3 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-4 shadow-inner">
+                <div 
+                  className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-indigo-600 transition-all duration-300 ease-out shadow-[0_0_12px_rgba(79,70,229,0.4)]"
+                  style={{ width: `${uploadStatus.percent}%` }}
+                />
+              </div>
+              
+              <p className="text-[11px] font-bold text-slate-400 animate-pulse italic">
+                กรุณาอย่าปิดหน้านี้จนกว่าการอัปโหลดจะเสร็จสิ้น...
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

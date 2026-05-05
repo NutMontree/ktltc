@@ -91,16 +91,26 @@ export default async function PressRelease() {
                 key={news._id}
                 className="group flex flex-col rounded-2xl overflow-hidden border border-zinc-100 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full dark:bg-zinc-900 dark:border-zinc-800"
               >
-                {/* 1. รูปภาพ */}
                 <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  <Image
-                    src={news.images?.[0] || "/no-image.png"}
-                    alt={news.title}
-                    unoptimized
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover object-top w-full h-full group-hover:scale-105 transition-transform duration-500"
-                  />
+                  {((news.images?.[0] && (/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(news.images[0]) || news.images[0].includes('video'))) || (news.images?.[0] && !/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(news.images[0]))) ? (
+                    <video
+                      src={news.images[0]}
+                      className="w-full h-full object-cover object-top"
+                      muted
+                      playsInline
+                      autoPlay
+                      loop
+                    />
+                  ) : (
+                    <Image
+                      src={news.images?.[0] || "/no-image.png"}
+                      alt={news.title}
+                      unoptimized
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover object-top w-full h-full group-hover:scale-105 transition-transform duration-500"
+                    />
+                  )}
                 </div>
 
                 {/* 2. เนื้อหาการ์ด */}

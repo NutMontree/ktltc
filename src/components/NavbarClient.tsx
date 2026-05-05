@@ -104,8 +104,12 @@ export default function NavbarClient({
     };
 
     const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      setDeferredPrompt(e);
+      // Stash the event so it can be triggered later.
+      if (!deferredPrompt) {
+        setDeferredPrompt(e);
+      }
     };
 
     const handleAppInstalled = () => {

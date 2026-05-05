@@ -380,7 +380,7 @@ export default function EditNewsPage({
         allImages.map(async (item) => {
           if (item.isNew && item.file) {
             uploadedCount++;
-            return await uploadFile(item.file, `ktltc_news/${mainCategory}/${datePath}`, (percent, loaded, total) => {
+            const result = await uploadFile(item.file, `ktltc_news/${mainCategory}/${datePath}`, (percent, loaded, total) => {
               setUploadStatus({
                 fileName: item.file!.name,
                 percent,
@@ -391,8 +391,9 @@ export default function EditNewsPage({
                 totalCount: totalToUpload,
               });
             });
+            return result;
           }
-          return item.src;
+          return { secure_url: item.src, thumbnail_url: null };
         }),
       );
 
@@ -400,7 +401,7 @@ export default function EditNewsPage({
         allNewsletters.map(async (item) => {
           if (item.isNew && item.file) {
             uploadedCount++;
-            return await uploadFile(item.file, `ktltc_newsletters/${mainCategory}/${datePath}`, (percent, loaded, total) => {
+            const result = await uploadFile(item.file, `ktltc_newsletters/${mainCategory}/${datePath}`, (percent, loaded, total) => {
               setUploadStatus({
                 fileName: item.file!.name,
                 percent,
@@ -411,8 +412,9 @@ export default function EditNewsPage({
                 totalCount: totalToUpload,
               });
             });
+            return result;
           }
-          return item.src;
+          return { secure_url: item.src, thumbnail_url: null };
         }),
       );
 
@@ -474,8 +476,9 @@ export default function EditNewsPage({
           title: newsTitle,
           content: formattedContent,
           categories,
-          images: finalImages.filter((url) => url !== null),
-          announcementImages: finalNewsletters.filter((url) => url !== null),
+          images: finalImages.map((u) => u.secure_url).filter((url) => url !== null),
+          thumbnails: finalImages.map((u) => u.thumbnail_url).filter((url) => url !== null),
+          announcementImages: finalNewsletters.map((u) => u.secure_url).filter((url) => url !== null),
           links,
           videoEmbeds,
           createdAt: publishDate ? new Date(publishDate).toISOString() : undefined,

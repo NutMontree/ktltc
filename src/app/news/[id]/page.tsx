@@ -494,7 +494,7 @@ export default async function NewsDetailPage({
                         src={img}
                         width={800}
                         height={600}
-                        className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-auto transition-transform duration-700"
                         controls
                         playsInline
                       />

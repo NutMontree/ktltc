@@ -83,7 +83,7 @@ export async function POST(req: Request) {
     // Optionally generate a thumbnail for videos if ENABLE_VIDEO_THUMBNAIL=1 and ffmpeg is available
     let thumbnail_url: string | null = null;
     try {
-      const shouldGenThumb = (process.env.ENABLE_VIDEO_THUMBNAIL || '0') === '1';
+      const shouldGenThumb = (process.env.ENABLE_VIDEO_THUMBNAIL || '1') === '1';
       if (isVideo && shouldGenThumb) {
         try {
           const { spawn } = await import('child_process');
