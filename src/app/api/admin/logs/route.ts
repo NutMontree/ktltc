@@ -36,12 +36,17 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  console.log("LOG_POST: Request received");
   try {
+    console.log("LOG_POST: Calling auth()...");
     const session = await auth();
+    console.log("LOG_POST: auth() finished. Session:", session ? "Exists" : "Null");
+    
     let body: any = {};
     
     try {
       body = await req.json();
+      console.log("LOG_POST: Body parsed. Action:", body.action);
     } catch (e) {
       // If body is missing or invalid, we still want to log that something happened
       console.warn("LOG_POST: Missing or invalid body");
@@ -67,10 +72,15 @@ export async function POST(req: Request) {
     };
 
     await db.collection("logs").insertOne(newLog);
+    console.log("LOG_POST: Log inserted successfully");
 
     return NextResponse.json({ success: true }, { status: 201 });
-  } catch (error) {
-    console.error("LOG_POST_ERROR:", error);
+  } catch (error: any) {
+    console.error("LOG_POST_ERROR_CRITICAL:", {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
     return NextResponse.json({ error: "Internal Server Error during logging" }, { status: 500 });
   }
 }

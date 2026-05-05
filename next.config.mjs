@@ -29,6 +29,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
+      allowedOrigins: ["ktltc.ac.th", "ktltc.site", "localhost:3000"],
     },
   },
   outputFileTracingExcludes: {
