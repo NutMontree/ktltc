@@ -133,7 +133,7 @@ export default function ManagePostersPage() {
 
   return (
     <div className="max-w-[1600px] mx-auto p-2 space-y-10 animate-in fade-in duration-700">
-      <Toaster position="bottom-right" />
+      {/* <Toaster position="bottom-right" /> */}
 
       {/* Header Section */}
       <header className="relative flex flex-col md:flex-row md:items-end justify-between gap-6 overflow-hidden p-6 rounded-[3rem] bg-zinc-900 text-white shadow-2xl">

@@ -81,7 +81,7 @@ export default function NewsShareBar({ title, url }: NewsShareBarProps) {
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="">
       <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
         <IconShare />
         แชร์ข่าวนี้

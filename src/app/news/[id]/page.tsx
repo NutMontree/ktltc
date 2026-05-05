@@ -22,6 +22,40 @@ const IconUser = () => (
   </svg>
 );
 
+const IconCalendar = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+
+const IconClock = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
 const IconChevronLeft = () => (
   <svg
     width="20"
@@ -278,80 +312,98 @@ export default async function NewsDetailPage({
               ย้อนกลับหน้าข่าวสาร
             </Link>
 
-            <div className="space-y-6">
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-4">
+              {/* --- Modern Categories --- */}
+              <div className="flex flex-wrap gap-2.5">
                 {displayCategories.map((cat, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider rounded-full border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/30"
+                    className="px-4 py-1.5 bg-blue-600/5 text-blue-600 text-[11px] font-black uppercase tracking-widest rounded-full border border-blue-600/10 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-400/20 shadow-xs"
                   >
                     {cat}
                   </span>
                 ))}
               </div>
 
-              {/* ✅ แสดงชื่อข่าวจริง (เอา Comment ออกแล้ว) */}
-              <h1 className="text-3xl text-center md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
-                {/* {news.title} */}
-                <p>วิทยาลัยเทคนิคกันทรลักษ์</p>
-              </h1>
-
-              {/* ✅ ส่วนข้อมูล Meta: วันที่ + ผู้โพสต์ */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-zinc-800 pt-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  <span className="font-medium">เผยแพร่เมื่อ:</span>
-                  <time className="text-slate-700 dark:text-slate-300">
-                    {new Date(news.createdAt).toLocaleDateString("th-TH", {
-                      timeZone: "Asia/Bangkok",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </time>
-                </div>
-
-                {/* แสดงชื่อผู้โพสต์ข่าว */}
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-400 dark:bg-green-600"></div>
-                  <span className="font-medium">เวลา:</span>
-                  <time className="text-slate-700 dark:text-slate-300">
-                    {new Date(news.createdAt).toLocaleTimeString("th-TH", {
-                      timeZone: "Asia/Bangkok",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </time>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {authorImage ? (
-                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-zinc-700 dark:bg-zinc-800">
-                      <Image
-                        src={authorImage}
-                        alt={authorName}
-                        fill
-                        unoptimized
-                        className="object-cover"
-                      />
+              {/* --- Premium Meta Bar --- */}
+              <div className="relative group/meta">
+                {/* Decorative border bottom */}
+                <div className="absolute -bottom-4 left-0 w-24 h-1 bg-blue-600 rounded-full transition-all duration-500 group-hover/meta:w-32"></div>
+                
+                <div className="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
+                  {/* Date Item */}
+                  <div className="flex items-center gap-3 group transition-colors">
+                    <div className="p-2.5 rounded-xl bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                      <IconCalendar />
                     </div>
-                  ) : (
-                    <div className="p-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-400">
-                      <IconUser />
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">วันที่เผยแพร่</span>
+                      <time className="text-slate-800 dark:text-zinc-200 font-semibold leading-tight">
+                        {new Date(news.createdAt).toLocaleDateString("th-TH", {
+                          timeZone: "Asia/Bangkok",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </time>
                     </div>
-                  )}
-                  <span className="font-medium">ผู้เขียน:</span>
-                  <span className="text-slate-700 dark:text-slate-300">
-                    {authorName}
-                  </span>
+                  </div>
+
+                  {/* Divider (Desktop Only) */}
+                  <div className="hidden md:block w-px h-10 bg-slate-200 dark:bg-zinc-800"></div>
+
+                  {/* Time Item */}
+                  <div className="flex items-center gap-3 group transition-colors">
+                    <div className="p-2.5 rounded-xl bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                      <IconClock />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">เวลาโพสต์</span>
+                      <time className="text-slate-800 dark:text-zinc-200 font-semibold leading-tight">
+                        {new Date(news.createdAt).toLocaleTimeString("th-TH", {
+                          timeZone: "Asia/Bangkok",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })} น.
+                      </time>
+                    </div>
+                  </div>
+
+                  {/* Divider (Desktop Only) */}
+                  <div className="hidden lg:block w-px h-10 bg-slate-200 dark:bg-zinc-800"></div>
+
+                  {/* Author Item */}
+                  <div className="flex items-center gap-3 group transition-colors ml-auto lg:ml-0">
+                    {authorImage ? (
+                      <div className="relative h-11 w-11 overflow-hidden rounded-2xl border-2 border-white bg-slate-100 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 group-hover:border-blue-500 transition-colors duration-300">
+                        <Image
+                          src={authorImage}
+                          alt={authorName}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="p-2.5 rounded-xl bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+                        <IconUser />
+                      </div>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">เขียนโดย</span>
+                      <span className="text-slate-800 dark:text-zinc-200 font-bold leading-tight group-hover:text-blue-600 transition-colors">
+                        {authorName}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 mt-10 space-y-12">
+        <div className="max-w-7xl mx-auto px-2 mt-10 space-y-12">
           <NewsShareBar title={news.title} url={pageUrl} />
           {/* --- Content Body --- */}
           <article

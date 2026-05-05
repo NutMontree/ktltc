@@ -255,7 +255,7 @@ export default function QuestionsPage() {
 
   return (
     <div className="mx-auto max-w-[1600px] px-3 py-8 md:px-4 md:py-10">
-      <Toaster position="top-right" />
+      {/* <Toaster position="top-right" /> */}
 
       <section className="relative overflow-hidden rounded-4xl border border-slate-200 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_28%),linear-gradient(135deg,#0f172a_0%,#111827_45%,#f8fafc_45%,#ffffff_100%)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] md:p-8">
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(180deg,rgba(34,211,238,0.10),transparent)] md:block" />

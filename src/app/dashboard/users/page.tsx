@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { toast, Toaster } from "react-hot-toast"; // แนะนำให้ใช้ toast เพื่อความสวยงาม
+import { toast } from "react-hot-toast"; // แนะนำให้ใช้ toast เพื่อความสวยงาม
 
 interface User {
   _id: string;
@@ -115,7 +115,7 @@ export default function UsersPage() {
 
   return (
     <div className="max-w-[1600px] mx-auto p-6 md:p-10">
-      <Toaster position="top-right" />
+      {/* <Toaster position="top-right" /> */}
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>

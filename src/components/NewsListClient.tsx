@@ -165,7 +165,7 @@ export default function NewsListClient({
 
       {/* --- News Grid --- */}
       {paginatedNews.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
           {paginatedNews.map((news) => {
             const coverImage =
               news.images?.[0] ||
@@ -176,7 +176,7 @@ export default function NewsListClient({
               : news.category
                 ? [news.category]
                 : [];
-            const authorName = (news.author?.name || "งานศูนย์ข้อมูล").split(
+            const authorName = (news.author?.name || "ไม่ได้ระบุชื่อผู้โพสต์").split(
               " ",
             )[0];
             const authorAvatar = news.userImage || news.author?.image || null;
@@ -192,7 +192,7 @@ export default function NewsListClient({
                   {/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(coverImage) || coverImage.includes('video') ? (
                     <video
                       src={coverImage}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       muted
                       playsInline
                       autoPlay
@@ -203,7 +203,7 @@ export default function NewsListClient({
                       src={coverImage}
                       alt={news.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       unoptimized
                     />
                   )}

@@ -392,14 +392,14 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
             }}
             className="text-sm text-blue-500 hover:underline"
           >
-            รีเซ็ตตัวกรอง
+            รีเซ็ตตัวกรองค้นหา  
           </button>
         </div>
       )}
 
       {/* Grid View */}
       {viewMode === "grid" && filteredNews.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
           {displayedNews.map((news, index) => {
             const displayImage =
               news.images?.[0] ||
@@ -409,9 +409,9 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
               ? news.categories
               : news.category
                 ? [news.category]
-                : ["ไม่ระบุ"];
+                : ["ไม่ได้ระบุหมวดหมู่"];
             const rawAuthorName =
-              news.userName || news.author?.name || "งานศูนย์ข้อมูล";
+              news.userName || news.author?.name || "ไม่ได้ระบุชื่อผู้โพสต์";
             const authorName = rawAuthorName.split(" ")[0];
             const authorAvatar = news.userImage || news.author?.image || null;
 
@@ -425,7 +425,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                   {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video')) || (!/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(displayImage) && displayImage !== "/no-image.png")) ? (
                     <video
                       src={displayImage}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       muted
                       playsInline
                       loop
@@ -438,7 +438,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                       alt={news.title}
                       fill
                       priority={index < 4}
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                   )}
                   {/* Gradient overlay */}
@@ -554,7 +554,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                   {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video')) || (!/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(displayImage) && displayImage !== "/no-image.png")) ? (
                     <video
                       src={displayImage}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       muted
                       playsInline
                       autoPlay
@@ -566,7 +566,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                       alt={news.title}
                       fill
                       priority={index < 4}
-                      className="object-cover"
+                      className="object-cover object-top"
                     />
                   )}
                 </div>

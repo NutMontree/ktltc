@@ -66,7 +66,7 @@ export default function ManageMarqueePage() {
 
   return (
     <div className="max-w-[1600px] mx-auto p-2 space-y-8 animate-in fade-in duration-500">
-      <Toaster position="bottom-right" />
+      {/* <Toaster position="bottom-right" /> */}
 
       {/* Navigation & Header */}
       <div className="flex items-center gap-6 mb-4">

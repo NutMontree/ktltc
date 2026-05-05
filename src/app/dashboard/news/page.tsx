@@ -52,7 +52,7 @@ export default async function ManageNewsPage() {
   const newsList = await getNews();
 
   return (
-    <div className="max-w-[1600px] py-10 mx-auto w-full px-4 text-zinc-800 dark:text-zinc-200">
+    <div className="max-w-[1600px] py-10 mx-auto w-full px-2 text-zinc-800 dark:text-zinc-200">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div className="flex items-start gap-4">

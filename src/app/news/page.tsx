@@ -93,7 +93,7 @@ export default async function AllNewsPage() {
 
       <div className="py-12 md:py-20 relative">
         <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-slate-200 dark:via-zinc-800 to-transparent"></div>
-        <div className="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="max-w-[1600px] mx-auto px-2">
           <div className="mb-12 flex items-center justify-between gap-6">
             <div className="flex items-center gap-4 w-full">
               <div className="h-px flex-1 bg-linear-to-r from-slate-200 to-transparent dark:from-zinc-800"></div>

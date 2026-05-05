@@ -141,7 +141,7 @@ export default function FeedManagementPage() {
 
   return (
     <div className="p-6 md:p-10 bg-slate-50 max-w-[1600px] mx-auto">
-      <Toaster position="bottom-right" />
+      {/* <Toaster position="bottom-right" /> */}
 
       <div className="max-w-6xl mx-auto">
         <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

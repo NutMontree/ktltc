@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -502,7 +502,6 @@ export default function SuperAdminPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-2 md:p-4 font-sans selection:bg-blue-500/30 relative overflow-hidden">
-      <Toaster position="top-right" />
 
       {/* Background Depth */}
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />
