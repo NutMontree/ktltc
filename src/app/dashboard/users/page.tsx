@@ -180,6 +180,7 @@ export default function UsersPage() {
                         backgroundSize: "1.5em",
                       }}
                     >
+                      <option value="student">STUDENT (นักเรียน)</option>
                       <option value="user">USER (พนักงาน)</option>
                       <option value="editor">EDITOR (บรรณาธิการ)</option>
                       <option value="hr">HR (ฝ่ายบุคคล)</option>

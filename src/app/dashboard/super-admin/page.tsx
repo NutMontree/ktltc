@@ -463,6 +463,8 @@ export default function SuperAdminPage() {
         return "border-orange-500 bg-orange-500/10 text-orange-700 dark:text-orange-400 font-bold";
       case "janitor":
         return "border-stone-500 bg-stone-500/10 text-stone-700 dark:text-stone-400 font-bold";
+      case "student":
+        return "border-cyan-500 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 font-bold";
       default:
         return "border-slate-400 bg-slate-500/10 text-slate-600 dark:text-slate-400 font-bold";
     }
@@ -754,6 +756,7 @@ export default function SuperAdminPage() {
                             <option value="janitor">
                               แม่บ้าน/นักการ (JANITOR)
                             </option>
+                            <option value="student">นักเรียน (STUDENT)</option>
                             <option value="user">ผู้ใช้ทั่วไป (USER)</option>
                           </select>
                         </td>

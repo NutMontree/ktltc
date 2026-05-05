@@ -67,6 +67,8 @@ export default function NavbarClient({
         return "เจ้าหน้าที่";
       case "user":
         return "สมาชิก";
+      case "student":
+        return "นักเรียน";
       default:
         return r ? r.replace("_", " ") : "Member";
     }
@@ -163,7 +165,7 @@ export default function NavbarClient({
 
   const filteredMenuTree = menuTree.filter((item) => {
     const r = role?.toLowerCase();
-    if (r === "user" || r === "teacher" || r === "janitor") {
+    if (r === "user" || r === "teacher" || r === "janitor" || r === "student") {
       const restrictedPaths = [
         "/dashboard",
         "/attendance-dashboard",
@@ -431,6 +433,12 @@ export default function NavbarClient({
                                 className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                               >
                                 รายงานปฏิบัติงานทุกแผนก
+                              </Link>
+                              <Link
+                                href="/dashboard/permissions"
+                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                              >
+                                จัดการสิทธิ์แต่ละระดับ
                               </Link>
                             </div>
                           )}

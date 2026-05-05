@@ -122,6 +122,8 @@ export default function MobileMenu({
         return "เจ้าหน้าที่";
       case "user":
         return "สมาชิก";
+      case "student":
+        return "นักเรียน";
       default:
         return r.replace("_", " ");
     }

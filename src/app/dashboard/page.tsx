@@ -43,24 +43,34 @@ export default function DashboardLoader() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [permissions, setPermissions] = useState<any>(null);
 
   useEffect(() => {
-    async function fetchStats() {
+    async function fetchData() {
       if (status !== "authenticated") return;
       try {
         setLoading(true);
-        const res = await fetch("/api/admin/dashboard-stats?_t=" + Date.now());
-        if (!res.ok) throw new Error("Failed to fetch dashboard statistics");
-        const data = await res.json();
-        setStats(data);
+        const [statsRes, permRes] = await Promise.all([
+          fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
+          fetch("/api/auth/permissions")
+        ]);
+
+        if (!statsRes.ok) throw new Error("Failed to fetch dashboard statistics");
+        const statsData = await statsRes.json();
+        setStats(statsData);
+
+        if (permRes.ok) {
+          const permData = await permRes.json();
+          setPermissions(permData);
+        }
       } catch (err: any) {
-        console.error("Dashboard Stats Error:", err);
+        console.error("Dashboard Fetch Error:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     }
-    fetchStats();
+    fetchData();
   }, [status]);
 
   if (status === "loading" || (status === "authenticated" && loading)) {
@@ -134,88 +144,90 @@ export default function DashboardLoader() {
           className="space-y-12"
         >
           {/* --- Statistics Section --- */}
-          <div>
-            <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">
-                Core Infrastructure Telemetry
-                <span className="h-px bg-blue-500/10 flex-1" />
-              </h2>
-              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                การตรวจสอบความพร้อมของระบบและฐานข้อมูล
-              </span>
-            </motion.div>
+          {((session?.user as any)?.role === "super_admin" || permissions?.manage_users) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">
+                  Core Infrastructure Telemetry
+                  <span className="h-px bg-blue-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  การตรวจสอบความพร้อมของระบบและฐานข้อมูล
+                </span>
+              </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              {/* Stat Grid */}
-              <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-3 gap-4">
-                <StatCard
-                  label="ข่าวสารทั้งหมด"
-                  value={stats.totalNews}
-                  icon={Newspaper}
-                  color="blue"
-                  variants={item}
-                />
-                <StatCard
-                  label="แบนเนอร์ประชาสัมพันธ์"
-                  value={stats.totalBanners}
-                  icon={ImageIcon}
-                  color="pink"
-                  variants={item}
-                />
-                <StatCard
-                  label="User ในระบบ"
-                  value={stats.totalUsers}
-                  icon={Users}
-                  color="emerald"
-                  variants={item}
-                />
-                <StatCard
-                  label="โครงสร้างเมนู"
-                  value={stats.totalNav}
-                  icon={Navigation}
-                  color="purple"
-                  variants={item}
-                />
-                <StatCard
-                  label="หน้าเนื้อเมนู"
-                  value={stats.totalPages}
-                  icon={FileText}
-                  color="amber"
-                  variants={item}
-                />
-                <StatCard
-                  label="จำนวนรูปภาพในระบบ"
-                  value={stats.totalImagesCount}
-                  icon={Layers}
-                  color="indigo"
-                  unit=" ไฟล์"
-                  variants={item}
-                />
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                {/* Stat Grid */}
+                <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-3 gap-4">
+                  <StatCard
+                    label="ข่าวสารทั้งหมด"
+                    value={stats.totalNews}
+                    icon={Newspaper}
+                    color="blue"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="แบนเนอร์ประชาสัมพันธ์"
+                    value={stats.totalBanners}
+                    icon={ImageIcon}
+                    color="pink"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="User ในระบบ"
+                    value={stats.totalUsers}
+                    icon={Users}
+                    color="emerald"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="โครงสร้างเมนู"
+                    value={stats.totalNav}
+                    icon={Navigation}
+                    color="purple"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="หน้าเนื้อเมนู"
+                    value={stats.totalPages}
+                    icon={FileText}
+                    color="amber"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="จำนวนรูปภาพในระบบ"
+                    value={stats.totalImagesCount}
+                    icon={Layers}
+                    color="indigo"
+                    unit=" ไฟล์"
+                    variants={item}
+                  />
+                </div>
 
-              {/* Usage Cards */}
-              <div className="md:col-span-4 flex flex-col gap-4">
-                <UsageCard
-                  title="MongoDB"
-                  value={stats.dbSizeMB}
-                  max={512}
-                  unit="MB"
-                  icon={Database}
-                  color="emerald"
-                  variants={item}
-                />
-                <UsageCard
-                  title="Local Storage"
-                  value={stats.cloudUsageMB}
-                  max={stats.cloudLimitMB}
-                  unit="MB"
-                  icon={Database}
-                  color="blue"
-                  variants={item}
-                />
+                {/* Usage Cards */}
+                <div className="md:col-span-4 flex flex-col gap-4">
+                  <UsageCard
+                    title="MongoDB"
+                    value={stats.dbSizeMB}
+                    max={512}
+                    unit="MB"
+                    icon={Database}
+                    color="emerald"
+                    variants={item}
+                  />
+                  <UsageCard
+                    title="Local Storage"
+                    value={stats.cloudUsageMB}
+                    max={stats.cloudLimitMB}
+                    unit="MB"
+                    icon={Database}
+                    color="blue"
+                    variants={item}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* --- Quick Actions Section --- */}
           <div>
@@ -230,42 +242,52 @@ export default function DashboardLoader() {
             </motion.div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-              <ActionCard
-                href="/dashboard/news"
-                title="จัดการส่วนข่าว"
-                icon={Newspaper}
-                desc="Manage all news & activities"
-                variants={item}
-              />
-              <ActionCard
-                href="/dashboard/manage-home"
-                title="จัดการหน้าแรก"
-                icon={Globe}
-                desc="Hero sections & Visibility"
-                variants={item}
-              />
-              <ActionCard
-                href="/dashboard/navbar"
-                title="จัดการเมนูหลัก"
-                icon={Navigation}
-                desc="Website navigation tree"
-                variants={item}
-              />
-              <ActionCard
-                href="/dashboard/pages"
-                title="จัดการเนื้อหาหน้า"
-                icon={FileText}
-                desc="Independent page builder"
-                variants={item}
-              />
-              <ActionCard
-                href="/dashboard/questions"
-                title="ระบบถาม-ตอบ"
-                icon={MessageSquare}
-                desc="User Q&A & Support"
-                badge={stats.totalPendingQA > 0 ? stats.totalPendingQA : null}
-                variants={item}
-              />
+              {permissions?.manage_news && (
+                <ActionCard
+                  href="/dashboard/news"
+                  title="จัดการส่วนข่าว"
+                  icon={Newspaper}
+                  desc="Manage all news & activities"
+                  variants={item}
+                />
+              )}
+              {(session?.user as any)?.role === "super_admin" && (
+                <ActionCard
+                  href="/dashboard/manage-home"
+                  title="จัดการหน้าแรก"
+                  icon={Globe}
+                  desc="Hero sections & Visibility"
+                  variants={item}
+                />
+              )}
+              {(session?.user as any)?.role === "super_admin" && (
+                <ActionCard
+                  href="/dashboard/navbar"
+                  title="จัดการเมนูหลัก"
+                  icon={Navigation}
+                  desc="Website navigation tree"
+                  variants={item}
+                />
+              )}
+              {permissions?.manage_pages && (
+                <ActionCard
+                  href="/dashboard/pages"
+                  title="จัดการเนื้อหาหน้า"
+                  icon={FileText}
+                  desc="Independent page builder"
+                  variants={item}
+                />
+              )}
+              {permissions?.manage_qa && (
+                <ActionCard
+                  href="/dashboard/questions"
+                  title="ระบบถาม-ตอบ"
+                  icon={MessageSquare}
+                  desc="User Q&A & Support"
+                  badge={stats.totalPendingQA > 0 ? stats.totalPendingQA : null}
+                  variants={item}
+                />
+              )}
               <ActionCard
                 href="/"
                 title="เข้าสู่หน้าหลัก"

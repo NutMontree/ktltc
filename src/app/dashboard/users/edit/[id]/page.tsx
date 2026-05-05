@@ -40,7 +40,8 @@ interface UserFormData {
     | "user"
     | "staff"
     | "teacher"
-    | "janitor";
+    | "janitor"
+    | "student";
   department: string;
   position?: string;
   faction?: string;
@@ -577,6 +578,7 @@ export default function EditUserPage() {
                     }
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-bold text-slate-700 outline-none focus:border-blue-500 transition-all cursor-pointer appearance-none"
                   >
+                    <option value="student">นักเรียน (Student)</option>
                     <option value="user">พนักงานทั่วไป (User)</option>
                     <option value="editor">บรรณาธิการ (Editor)</option>
                     <option value="hr">ฝ่ายบุคคล (HR)</option>

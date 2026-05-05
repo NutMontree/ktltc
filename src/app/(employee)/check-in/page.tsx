@@ -330,60 +330,99 @@ function CheckInContent() {
     }, 1500);
   };
 
-  const getLocation = () => {
+  const getLocation = (silent = false) => {
     if (!navigator.geolocation) {
-      setLocationStatus("error");
-      setLocationError("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง GPS");
+      if (!silent) {
+        setLocationStatus("error");
+        setLocationError("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง GPS");
+      }
       return;
     }
     setLocationStatus("searching");
     setLocationError("");
+    
+    const options = { 
+      enableHighAccuracy: true, 
+      timeout: 15000, 
+      maximumAge: 0 
+    };
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocationStatus("found");
       },
       (err) => {
+        console.error("GPS Error:", err);
         setLocationStatus("error");
         if (err.code === 1)
           setLocationError(
-            "กรุณาอนุญาตการเข้าถึงตำแหน่ง (Location Permission)",
+            "กรุณาอนุญาตการเข้าถึงตำแหน่ง (Location Permission) ในเมนูตั้งค่าของเบราว์เซอร์",
           );
         else if (err.code === 2)
-          setLocationError("ไม่สามารถระบุพิกัดได้ (อาจไม่มีสัญญาณ GPS)");
+          setLocationError("ไม่สามารถระบุพิกัดได้ (ลองออกมาในที่โล่งแจ้ง)");
         else if (err.code === 3)
-          setLocationError("ขอพิกัด GPS หมดเวลา (Timeout)");
+          setLocationError("ขอพิกัด GPS หมดเวลา (Timeout) กรุณากดลองใหม่อีกครั้ง");
         else setLocationError("เกิดข้อผิดพลาดในการโหลด GPS");
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+      options
     );
   };
 
-  const openCameraForAction = async () => {
+  // Improved Camera Initialization using useEffect to ensure video element is ready
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+
+    const startCamera = async () => {
+      if (isCameraOpen && videoRef.current) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { 
+              facingMode: "user",
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            },
+          });
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            // Explicitly call play to handle some browser restrictions
+            await videoRef.current.play().catch(e => console.error("Play error:", e));
+          }
+          
+          // Trigger GPS after camera is confirmed working
+          getLocation(true);
+        } catch (err: any) {
+          console.error("Camera Error:", err);
+          let errorMsg = "ไม่พบกล้องหรือไม่สามารถเข้าถึงได้";
+          
+          if (err.name === "NotReadableError" || err.name === "TrackStartError") {
+            errorMsg = "กล้องถูกใช้งานโดยแอปอื่นอยู่ กรุณาปิดแอปอื่นแล้วลองใหม่ หรือรีเฟรชหน้าจอ";
+          } else if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+            errorMsg = "คุณบล็อกการเข้าถึงกล้อง กรุณาปลดล็อกในตั้งค่าเบราว์เซอร์";
+          }
+          
+          alert(errorMsg);
+          setIsCameraOpen(false);
+        }
+      }
+    };
+
+    if (isCameraOpen) {
+      startCamera();
+    }
+
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [isCameraOpen]);
+
+  const openCameraForAction = () => {
     setIsCameraOpen(true);
     setStatusMsg("");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-      });
-      if (videoRef.current) videoRef.current.srcObject = stream;
-      getLocation();
-      {
-        /* await loadFaceApiAndProfile(); */
-      }
-      setFaceStatus("idle"); // Disable face check logic
-    } catch (err: any) {
-      if (err.name === "NotReadableError") {
-        alert(
-          "กล้องถูกใช้งานโดยแอปอื่นอยู่ กรุณาปิดการใช้งานกล้องในแอปเหล่านั้นก่อน",
-        );
-      } else if (err.name === "NotAllowedError") {
-        alert("คุณบล็อกการอนุญาตเข้าถึงกล้อง กรุณาอนุญาตกล้องในเบราว์เซอร์");
-      } else {
-        alert("ไม่พบกล้องหรือไม่สามารถเข้าถึงได้");
-      }
-      setIsCameraOpen(false);
-    }
+    // Camera and GPS logic moved to useEffect for reliability
   };
 
   const cancelAction = () => {
@@ -440,7 +479,7 @@ function CheckInContent() {
               compressedFile,
               "attendance_photos",
             );
-            if (uploadedUrl) cloudinaryUrl = uploadedUrl;
+            if (uploadedUrl?.secure_url) cloudinaryUrl = uploadedUrl.secure_url;
           }
         }
       }
@@ -824,7 +863,7 @@ function CheckInContent() {
                     <ShieldCheck size={20} className="text-emerald-500" />
                   ) : (
                     <button
-                      onClick={getLocation}
+                      onClick={() => getLocation(false)}
                       className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-all"
                     >
                       <Navigation size={18} />
