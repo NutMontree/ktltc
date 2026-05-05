@@ -244,7 +244,7 @@ export default function NavbarClient({
                     <span className="px-1">{item.label}</span>
                     {hasChildren && (
                       <ChevronDown
-                        className={`w-3.5 h-3.5 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
+                        className={`w-4 h-4 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
                       />
                     )}
                   </Link>
@@ -276,7 +276,7 @@ export default function NavbarClient({
                               className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
                             >
                               <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
-                                <Download size={16} />
+                                <Download size={18} />
                               </div>
                               ติดตั้งแอพพลิเคชั่น
                             </button>
@@ -293,8 +293,7 @@ export default function NavbarClient({
           {/* --- 3. RIGHT ACTIONS --- */}
           <div className="flex items-center gap-2.5 shrink-0">
             {username && <NotificationBell />}
-
-            <div className="p-0.5 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-800/50 hidden sm:block">
+            <div className="hidden sm:block">
               <ThemeToggle />
             </div>
 
@@ -373,7 +372,7 @@ export default function NavbarClient({
                         href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
                         className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-500/20"
                       >
-                        <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
+                        <UserCog className="w-4 h-4" /> โปรไฟล์
                       </Link>
                     </div>
 
@@ -384,7 +383,7 @@ export default function NavbarClient({
                         className="flex items-center gap-3 px-3 py-3 text-[13px] font-bold text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-2xl transition-all group"
                       >
                         <div className="p-1.5 rounded-xl bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50 transition-colors shadow-sm">
-                          <FileText size={16} />
+                          <FileText size={18} />
                         </div>
                         รายงานปฏิบัติงาน (WFH)
                       </Link>
@@ -395,7 +394,7 @@ export default function NavbarClient({
                           className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
                         >
                           <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
-                            <Command size={16} />
+                            <Command size={18} />
                           </div>
                           เข้าสู่ระบบ Dashboard
                         </Link>
@@ -406,7 +405,7 @@ export default function NavbarClient({
                         <>
                           <div className="px-3 pt-3 pb-2 border-t border-zinc-100 dark:border-zinc-800/60 mt-2 mb-1">
                             <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest flex items-center gap-1.5">
-                              <Shield size={12} /> ระบบจัดการบุคลากร
+                              <Shield size={16} /> ระบบจัดการบุคลากร
                             </p>
                           </div>
 
@@ -494,7 +493,7 @@ export default function NavbarClient({
                         onClick={handleLogout}
                         className="flex w-full items-center justify-center gap-2 px-3 py-3 text-[13px] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all btn-press"
                       >
-                        <LogOut size={16} />
+                        <LogOut size={18} />
                         ออกจากระบบ
                       </button>
                     </div>

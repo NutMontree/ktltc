@@ -262,9 +262,9 @@ export default function NotificationBell() {
       }}
       arrow={false}
     >
-      <button className="relative p-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 group">
+      <button className="relative w-10 h-10 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 group">
         <Badge count={unreadCount} overflowCount={99} size="small" offset={[-2, 2]} className="notification-badge">
-          <Bell size={22} className="group-hover:rotate-12 transition-transform" />
+          <Bell size={20} className="group-hover:rotate-12 transition-transform" />
         </Badge>
       </button>
     </Popover>
