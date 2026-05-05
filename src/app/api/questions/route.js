@@ -29,6 +29,39 @@ export async function POST(req) {
       targetId: newQuestion.insertedId,
     });
 
+    // ✅ แจ้งเตือนไปยังผู้ดูแล Q&A
+    try {
+      const qaRoles = await db.collection("role_permissions")
+        .find({ "permissions.manage_qa": true })
+        .toArray();
+      const roleNames = qaRoles.map(r => r.role);
+      if (!roleNames.includes("super_admin")) roleNames.push("super_admin");
+
+      const qaAdmins = await db.collection("users")
+        .find({ role: { $in: roleNames } })
+        .project({ _id: 1 })
+        .toArray();
+
+      if (qaAdmins.length > 0) {
+        const displayName = customerName || "GUEST";
+        await db.collection("notifications").insertMany(
+          qaAdmins.map(admin => ({
+            userId: admin._id,
+            title: `❓ คำถามใหม่จาก ${displayName}`,
+            message: subject,
+            type: "info",
+            fromName: displayName,
+            targetUrl: "/dashboard/questions",
+            isRead: false,
+            read: false,
+            createdAt: new Date(),
+          }))
+        );
+      }
+    } catch (notifErr) {
+      console.error("⚠️ Q&A notification error:", notifErr);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Failed" }, { status: 500 });

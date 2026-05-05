@@ -19,6 +19,12 @@ import {
   Loader2,
   Layers,
   Settings,
+  HardDrive,
+  Shield,
+  Clock,
+  ClipboardList,
+  UserCog,
+  CalendarCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -359,6 +365,109 @@ export default function DashboardLoader() {
               />
             </div>
           </div>
+
+          {/* --- Super Admin Management Section --- */}
+          {(session?.user as any)?.role === "super_admin" && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 flex items-center gap-4">
+                  <Shield className="w-4 h-4" /> ระบบจัดการ (Super Admin)
+                  <span className="h-px bg-sky-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  เครื่องมือบริหารจัดการระบบและบุคลากร
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <ActionCard
+                  href="/dashboard/permissions"
+                  title="จัดการสิทธิ์แต่ละระดับ"
+                  icon={Shield}
+                  desc="Role-based permission control"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/data-management"
+                  title="แก้ไขข้อมูลเข้า/ออกงาน"
+                  icon={ClipboardList}
+                  desc="Attendance data correction"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/work-reports-management"
+                  title="แก้ไขรายงานปฏิบัติงาน"
+                  icon={FileText}
+                  desc="Work report management"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/attendance-dashboard"
+                  title="ภาพรวมลงเวลาบุคลากร"
+                  icon={CalendarCheck}
+                  desc="Personnel attendance overview"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/attendance-report"
+                  title="ระบบรายงานการเข้างาน"
+                  icon={Clock}
+                  desc="Attendance reporting system"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/work-reports"
+                  title="ระบบรายงานปฏิบัติงาน"
+                  icon={FileText}
+                  desc="Work performance reports"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/leave-approvals"
+                  title="จัดการอนุมัติใบลา"
+                  icon={CalendarCheck}
+                  desc="Leave request approvals"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/manage-roles"
+                  title="จัดการสิทธิ์บุคลากร"
+                  icon={UserCog}
+                  desc="Personnel role settings"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/attendance-settings"
+                  title="ตั้งค่าเวลาเข้างาน"
+                  icon={Settings}
+                  desc="Working hours configuration"
+                  variants={item}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* --- Drive Section --- */}
+          {!(["user", "student"].includes(((session?.user as any)?.role || "").toLowerCase())) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 flex items-center gap-4">
+                  <HardDrive className="w-4 h-4" /> คลังไฟล์งาน
+                  <span className="h-px bg-amber-500/10 flex-1" />
+                </h2>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                <ActionCard
+                  href="/dashboard/drive"
+                  title="คลังไฟล์งาน (Drive)"
+                  icon={HardDrive}
+                  desc="File storage & management"
+                  variants={item}
+                />
+              </div>
+            </div>
+          )}
         </motion.div>
 
         <motion.div

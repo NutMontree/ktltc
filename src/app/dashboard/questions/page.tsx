@@ -12,6 +12,11 @@ interface Question {
   status: "pending" | "answered";
   createdAt: string;
   posterIp?: string;
+  userId?: string;
+  userName?: string;
+  userImage?: string;
+  userRole?: string;
+  isRegistered?: boolean;
 }
 
 interface QuestionEditForm {
@@ -362,16 +367,46 @@ export default function QuestionsPage() {
                     </div>
 
                     <div className="mt-5 flex flex-wrap items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-sm font-black uppercase text-white">
-                        {(question.guestName || "G").slice(0, 1)}
+                      <div className="relative">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl overflow-hidden border-2 border-white shadow-md">
+                          {question.userImage ? (
+                            <img src={question.userImage} alt={question.guestName} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className={`w-full h-full flex items-center justify-center text-sm font-black uppercase text-white ${
+                              question.isRegistered ? 'bg-blue-600' : 'bg-slate-900'
+                            }`}>
+                              {(question.guestName || "G").slice(0, 1)}
+                            </div>
+                          )}
+                        </div>
+                        {question.isRegistered && (
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
                           ผู้ส่งคำถาม
                         </p>
-                        <p className="text-base font-black text-slate-900">
-                          {question.guestName}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-base font-black text-slate-900">
+                            {question.guestName}
+                          </p>
+                          {question.isRegistered && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[10px] font-black text-blue-600 uppercase tracking-wider">
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                              {question.userRole === 'student' ? 'นักศึกษา' : 'สมาชิก'}
+                            </span>
+                          )}
+                          {!question.isRegistered && (
+                            <span className="inline-flex px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                              บุคคลทั่วไป
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {role === "super_admin" && question.posterIp && (
                         <div className="rounded-full border border-cyan-100 bg-cyan-50 px-3 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-cyan-700">

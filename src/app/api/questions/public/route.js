@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
+import { auth } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -29,7 +30,16 @@ export async function POST(req) {
     const forwarded = req.headers.get("x-forwarded-for");
     const posterIp = forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
 
-    const displayName = guestName || "บุคคลทั่วไป";
+    // ตรวจสอบว่า login อยู่หรือไม่
+    let session = null;
+    try {
+      session = await auth();
+    } catch (_) {
+      // ไม่ได้ login — ถือว่าเป็น guest
+    }
+
+    const isLoggedIn = !!session?.user;
+    const displayName = isLoggedIn ? (session.user.name || "User") : (guestName || "บุคคลทั่วไป");
 
     const newQuestion = {
       guestName: displayName,
@@ -40,6 +50,17 @@ export async function POST(req) {
       repliedBy: null,
       createdAt: new Date(),
       posterIp,
+      // ข้อมูลผู้ใช้ที่ล็อกอิน
+      ...(isLoggedIn && {
+        userId: new ObjectId(session.user.id),
+        userName: session.user.name,
+        userImage: session.user.image || null,
+        userRole: session.user.role || "user",
+        isRegistered: true,
+      }),
+      ...(!isLoggedIn && {
+        isRegistered: false,
+      }),
     };
 
     const result = await db.collection("questions").insertOne(newQuestion);
@@ -55,6 +76,40 @@ export async function POST(req) {
       timestamp: new Date(),
       ip: posterIp,
     });
+
+    // ✅ แจ้งเตือนไปยังผู้ดูแล Q&A ทุกคน
+    try {
+      // หา role ที่มีสิทธิ์ manage_qa
+      const qaRoles = await db.collection("role_permissions")
+        .find({ "permissions.manage_qa": true })
+        .toArray();
+      const roleNames = qaRoles.map(r => r.role);
+      // เพิ่ม super_admin เสมอ
+      if (!roleNames.includes("super_admin")) roleNames.push("super_admin");
+
+      // หา users ที่มี role ตรง
+      const qaAdmins = await db.collection("users")
+        .find({ role: { $in: roleNames } })
+        .project({ _id: 1, name: 1 })
+        .toArray();
+
+      if (qaAdmins.length > 0) {
+        const notifications = qaAdmins.map(admin => ({
+          userId: admin._id,
+          title: `❓ คำถามใหม่จาก ${displayName}`,
+          message: subject,
+          type: "info",
+          fromName: displayName,
+          targetUrl: `/dashboard/questions`,
+          isRead: false,
+          read: false,
+          createdAt: new Date(),
+        }));
+        await db.collection("notifications").insertMany(notifications);
+      }
+    } catch (notifErr) {
+      console.error("⚠️ Failed to send Q&A notifications:", notifErr);
+    }
 
     return NextResponse.json({ success: true, id: result.insertedId });
   } catch (error) {
