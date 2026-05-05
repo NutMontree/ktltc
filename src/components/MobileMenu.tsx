@@ -182,9 +182,6 @@ export default function MobileMenu({
                     <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">
                       KTLTC
                     </h2>
-                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
-                      Management v2
-                    </p>
                   </div>
                 </div>
                 <button
