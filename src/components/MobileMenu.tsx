@@ -17,6 +17,7 @@ import {
   User,
   LogOut,
   ChevronRight,
+  ChevronDown,
   ArrowRight,
   Bell,
   Settings,
@@ -50,6 +51,7 @@ export default function MobileMenu({
   permissions,
 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
@@ -69,6 +71,77 @@ export default function MobileMenu({
   const canAccessDashboard = permissions?.access_dashboard || isAdmin || isHR || isExecutive;
 
   const closeMenu = () => setIsOpen(false);
+
+  const toggleMenu = (id: string) => {
+    setExpandedMenus((prev) => (prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]));
+  };
+
+  const ensureAbsolute = (path: string) => {
+    if (!path || path.startsWith("/") || path.startsWith("http") || path.startsWith("#"))
+      return path || "#";
+    return `/${path}`;
+  };
+
+  const RecursiveMenuItem = ({ item, level = 0 }: { item: any; level?: number }) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const isExpanded = expandedMenus.includes(item._id);
+    const isActive = pathname === ensureAbsolute(item.path);
+
+    return (
+      <div className="mb-0.5">
+        {hasChildren ? (
+          <button
+            onClick={() => toggleMenu(item._id)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+              isExpanded
+                ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+            }`}
+          >
+            <span className="flex items-center gap-3">
+              <div
+                className={`w-1.5 h-1.5 rounded-full ${isExpanded ? "bg-blue-500" : "bg-zinc-300 dark:bg-zinc-700"}`}
+              />
+              {item.label}
+            </span>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : "opacity-40"}`}
+            />
+          </button>
+        ) : (
+          <Link
+            href={ensureAbsolute(item.path)}
+            onClick={closeMenu}
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+              isActive
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+            }`}
+          >
+            <div
+              className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-white" : "bg-zinc-300 dark:bg-zinc-700"}`}
+            />
+            {item.label}
+          </Link>
+        )}
+
+        <AnimatePresence>
+          {hasChildren && isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden ml-5 pl-4 border-l-2 border-blue-500/20 mt-1 space-y-0.5"
+            >
+              {item.children.map((child: any) => (
+                <RecursiveMenuItem key={child._id} item={child} level={level + 1} />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -106,8 +179,12 @@ export default function MobileMenu({
                     K
                   </div>
                   <div>
-                    <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">KTLTC</h2>
-                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">Management v2</p>
+                    <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+                      KTLTC
+                    </h2>
+                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
+                      Management v2
+                    </p>
                   </div>
                 </div>
                 <button
@@ -172,7 +249,7 @@ export default function MobileMenu({
                 <div className="space-y-6">
                   <div>
                     <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
-                      <Activity className="w-3 h-3" /> Main Modules
+                      <Activity className="w-3 h-3" /> เมนูหลัก
                     </h4>
                     <div className="space-y-1">
                       <Link
@@ -186,7 +263,7 @@ export default function MobileMenu({
                       >
                         <Home className="w-5 h-5" /> หน้าแรก
                       </Link>
-                      
+
                       {canAccessDashboard && (
                         <Link
                           href="/dashboard"
@@ -219,27 +296,35 @@ export default function MobileMenu({
                       {isSuperAdmin && (
                         <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
                           <Link
-                            href="/dashboard/permissions"
+                            href="/dashboard/super-admin"
                             onClick={closeMenu}
-                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[14px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
                           >
                             <Shield className="w-4 h-4" /> ศูนย์ควบคุมจัดการระบบ
                           </Link>
-                          
+
+                          <Link
+                            href="/dashboard/permissions"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
+                          >
+                            <Settings className="w-3.5 h-3.5" /> จัดการสิทธิ์แต่ละระดับ
+                          </Link>
+
                           <Link
                             href="/dashboard/data-management"
                             onClick={closeMenu}
                             className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-50 transition-colors"
                           >
-                            <FileText className="w-3.5 h-3.5" /> แก้ไขข้อมูลการเข้างาน / ลา
+                            <FileText className="w-3.5 h-3.5" /> แก้ไขข้อมูลการเข้างาน / ออกงาน
                           </Link>
 
                           <Link
                             href="/work-reports-management"
                             onClick={closeMenu}
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 transition-colors"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-50 transition-colors"
                           >
-                            <FileText className="w-3.5 h-3.5" /> รายงานปฏิบัติงานทุกแผนก
+                            <FileText className="w-3.5 h-3.5" /> แก้ไขรายงานปฏิบัติงาน
                           </Link>
 
                           <Link
@@ -279,6 +364,13 @@ export default function MobileMenu({
                             onClick={closeMenu}
                             className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 transition-colors"
                           >
+                            <Settings className="w-3.5 h-3.5" /> จัดการ สิทธิ์บุคลากร
+                          </Link>
+                          <Link
+                            href="/attendance-settings"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 transition-colors"
+                          >
                             <Settings className="w-3.5 h-3.5" /> ตั้งค่าเวลาเข้างาน
                           </Link>
                         </div>
@@ -289,7 +381,7 @@ export default function MobileMenu({
                   {/* News & Activity Group */}
                   <div>
                     <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
-                      <Newspaper className="w-3 h-3" /> Content Management
+                      <Newspaper className="w-3 h-3" /> จัดการเนื้อหา
                     </h4>
                     <div className="space-y-1">
                       {permissions?.manage_news && (
@@ -312,6 +404,20 @@ export default function MobileMenu({
                       )}
                     </div>
                   </div>
+
+                  {/* Dynamic Menu Tree from Database */}
+                  {menuTree && menuTree.length > 0 && (
+                    <div>
+                      <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
+                        <Globe className="w-3 h-3" /> เมนูเว็บไซต์
+                      </h4>
+                      <div className="space-y-0.5">
+                        {menuTree.map((item: any) => (
+                          <RecursiveMenuItem key={item._id} item={item} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
