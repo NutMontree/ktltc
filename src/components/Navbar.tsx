@@ -59,6 +59,7 @@ export default async function Navbar() {
   let username = session?.user?.name || (session?.user as any)?.username || "";
   let role = (session?.user as any)?.role || "";
 
+  let permissions = null;
   let userId = "";
   if (session?.user) {
     try {
@@ -76,6 +77,26 @@ export default async function Navbar() {
           username = userData.name || userData.username || username;
           role = (userData.role || "user").trim().toLowerCase();
         }
+
+        // Fetch permissions for the role
+        const rolePermissions = await db
+          .collection("role_permissions")
+          .findOne({ role: role });
+
+        if (rolePermissions) {
+          permissions = rolePermissions.permissions;
+        } else if (role === "super_admin") {
+          // Fallback for super_admin if not in DB
+          permissions = {
+            access_dashboard: true,
+            manage_users: true,
+            manage_news: true,
+            manage_attendance: true,
+            manage_system: true,
+            manage_qa: true,
+            manage_pages: true,
+          };
+        }
       }
     } catch (error) {
       console.error("Fetch latest user data error:", error);
@@ -89,6 +110,7 @@ export default async function Navbar() {
       role={role}
       image={userImage}
       userId={userId}
+      permissions={permissions}
     />
   );
 }

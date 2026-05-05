@@ -32,6 +32,15 @@ interface NavbarClientProps {
   role?: string;
   image?: string;
   userId?: string;
+  permissions?: {
+    access_dashboard?: boolean;
+    manage_users?: boolean;
+    manage_news?: boolean;
+    manage_attendance?: boolean;
+    manage_system?: boolean;
+    manage_qa?: boolean;
+    manage_pages?: boolean;
+  } | null;
 }
 
 export default function NavbarClient({
@@ -40,6 +49,7 @@ export default function NavbarClient({
   role,
   image,
   userId,
+  permissions,
 }: NavbarClientProps) {
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -73,21 +83,31 @@ export default function NavbarClient({
   };
 
   const displayRole = getRoleDisplayName(role?.toLowerCase() || "");
-  const isAdmin =
+  
+  // Use permissions from DB if available, otherwise fallback to basic role checks
+  const canAccessDashboard = permissions?.access_dashboard ?? (
     role?.toLowerCase() === "admin" ||
     role?.toLowerCase() === "editor" ||
-    role?.toLowerCase() === "super_admin";
-  const isSuperAdmin = role?.toLowerCase() === "super_admin";
-  const isHR =
-    role?.toLowerCase() === "hr" || role?.toLowerCase() === "deputy_resource";
-  const isExecutive =
+    role?.toLowerCase() === "super_admin" ||
+    role?.toLowerCase() === "hr" ||
     role?.toLowerCase() === "director" ||
-    [
-      "deputy_resource",
-      "deputy_strategy",
-      "deputy_academic",
-      "deputy_student_affairs",
-    ].includes(role?.toLowerCase() || "");
+    role?.toLowerCase() === "deputy_resource" ||
+    role?.toLowerCase() === "deputy_strategy" ||
+    role?.toLowerCase() === "deputy_academic" ||
+    role?.toLowerCase() === "deputy_student_affairs"
+  );
+
+  const canManageUsers = permissions?.manage_users ?? (role?.toLowerCase() === "super_admin");
+  const canManageNews = permissions?.manage_news ?? (role?.toLowerCase() === "super_admin" || role?.toLowerCase() === "admin" || role?.toLowerCase() === "editor");
+  const canManageAttendance = permissions?.manage_attendance ?? (role?.toLowerCase() === "super_admin" || role?.toLowerCase() === "hr" || role?.toLowerCase() === "director");
+  const canManageSystem = permissions?.manage_system ?? (role?.toLowerCase() === "super_admin");
+  const canManageQA = permissions?.manage_qa ?? (role?.toLowerCase() === "super_admin" || role?.toLowerCase() === "admin");
+  const canManagePages = permissions?.manage_pages ?? (role?.toLowerCase() === "super_admin" || role?.toLowerCase() === "editor" || role?.toLowerCase() === "teacher" || role?.toLowerCase() === "janitor" || role?.toLowerCase() === "staff");
+
+  const isSuperAdmin = role?.toLowerCase() === "super_admin";
+  const isAdmin = role?.toLowerCase() === "admin";
+  const isHR = role?.toLowerCase() === "hr";
+  const isExecutive = ["director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role?.toLowerCase() || "");
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -179,16 +199,12 @@ export default function NavbarClient({
   };
 
   const filteredMenuTree = menuTree.filter((item) => {
-    const r = role?.toLowerCase();
-    if (r === "user" || r === "teacher" || r === "janitor" || r === "student") {
-      const restrictedPaths = [
-        "/dashboard",
-        "/attendance-dashboard",
-        "/attendance-report",
-        "/leave-approvals",
-      ];
-      return !restrictedPaths.some((p) => item.path?.startsWith(p));
-    }
+    const path = item.path || "";
+    if (path.startsWith("/dashboard") && !canAccessDashboard) return false;
+    if (path.startsWith("/attendance-dashboard") && !canManageAttendance) return false;
+    if (path.startsWith("/attendance-report") && !canManageAttendance) return false;
+    if (path.startsWith("/leave-approvals") && !canManageAttendance) return false;
+    if (path.startsWith("/work-reports") && !canManageAttendance) return false;
     return true;
   });
 
@@ -409,7 +425,7 @@ export default function NavbarClient({
                         รายงานปฏิบัติงาน (WFH)
                       </Link>
 
-                      {isAdmin && (
+                      {canAccessDashboard && (
                         <Link
                           href="/dashboard"
                           className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
@@ -422,11 +438,11 @@ export default function NavbarClient({
                       )}
 
                       {/* --- ADMIN & EXECUTIVE LINKS --- */}
-                      {(isSuperAdmin || isAdmin || isHR || isExecutive) && (
+                      {(canManageAttendance || canManageUsers || canManageSystem || canManageNews || canManageQA) && (
                         <>
                           <div className="px-3 pt-3 pb-2 border-t border-zinc-100 dark:border-zinc-800/60 mt-2 mb-1">
                             <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest flex items-center gap-1.5">
-                              <Shield size={16} /> ระบบจัดการบุคลากร
+                              <Shield size={16} /> ระบบจัดการ
                             </p>
                           </div>
 
@@ -441,18 +457,22 @@ export default function NavbarClient({
                               >
                                 ศูนย์ควบคุมจัดการระบบ
                               </Link>
-                              <Link
-                                href="/dashboard/data-management"
-                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
-                              >
-                                แก้ไขข้อมูลการเข้างาน / ลา
-                              </Link>
-                              <Link
-                                href="/work-reports-management"
-                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
-                              >
-                                รายงานปฏิบัติงานทุกแผนก
-                              </Link>
+                              {canManageAttendance && (
+                                <Link
+                                  href="/dashboard/data-management"
+                                  className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
+                                >
+                                  แก้ไขข้อมูลการเข้างาน / ลา
+                                </Link>
+                              )}
+                              {canManageAttendance && (
+                                <Link
+                                  href="/work-reports-management"
+                                  className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                >
+                                  รายงานปฏิบัติงานทุกแผนก
+                                </Link>
+                              )}
                               <Link
                                 href="/dashboard/permissions"
                                 className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
@@ -469,9 +489,7 @@ export default function NavbarClient({
                             ภาพรวมลงเวลาบุคลากร
                           </Link>
 
-                          {(isSuperAdmin ||
-                            isHR ||
-                            role?.toLowerCase() === "director") && (
+                          {canManageAttendance && (
                             <>
                               <Link
                                 href="/attendance-report"
@@ -494,7 +512,7 @@ export default function NavbarClient({
                             </>
                           )}
 
-                          {(isSuperAdmin || isHR) && (
+                          {canManageUsers && (
                             <>
                               <div className="my-2 border-t border-zinc-100 dark:border-zinc-800/60" />
                               <Link

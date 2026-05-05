@@ -10,7 +10,8 @@
     "db:setup": "node scripts/ensure-indexes.js",
     "db:check": "node scripts/test-db.js",
     "models:download": "node scripts/download-models.js",
-    "migrate:images": "node scripts/migrate-images-js.js"
+    "migrate:images": "node scripts/migrate-images-js.js",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
