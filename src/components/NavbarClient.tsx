@@ -535,21 +535,21 @@ export default function NavbarClient({
 
                               <Link
                                 href="/dashboard/permissions"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
                               >
                                 <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
                               </Link>
 
                               <Link
                                 href="/dashboard/data-management"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
                               >
                                 <FileText size={14} /> แก้ไขข้อมูลการเข้างาน / ออกงาน
                               </Link>
-                              
+
                               <Link
                                 href="/work-reports-management"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                               >
                                 <FileText size={14} /> แก้ไขรายงานปฏิบัติงาน
                               </Link>
@@ -561,7 +561,7 @@ export default function NavbarClient({
                             <div className="space-y-0.5">
                               <Link
                                 href="/attendance-dashboard"
-                                className="flex items-center gap-3 px-3 py-2.5 text-[12px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
                               >
                                 <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
                                   <Bell size={14} />
@@ -570,32 +570,32 @@ export default function NavbarClient({
                               </Link>
                               <Link
                                 href="/attendance-report"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                               >
                                 <FileText size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
                               </Link>
                               <Link
                                 href="/work-reports"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                               >
                                 <FileText size={14} className="opacity-40" /> ระบบรายงานปฏิบัติงาน
                               </Link>
                               <Link
                                 href="/leave-approvals"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                               >
                                 <FileText size={14} className="opacity-40" /> จัดการอนุมัติใบลา
                               </Link>
                               <div className="my-1.5 border-t border-zinc-100 dark:border-zinc-800/60" />
                               <Link
                                 href="/manage-roles"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                               >
                                 <UserCog size={14} className="opacity-40" /> จัดการสิทธิ์บุคลากร
                               </Link>
                               <Link
                                 href="/attendance-settings"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                               >
                                 <Bell size={14} className="opacity-40" /> ตั้งค่าเวลาเข้างาน
                               </Link>
@@ -612,7 +612,7 @@ export default function NavbarClient({
                                 {canManageNews && (
                                   <Link
                                     href="/dashboard/news"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-[12px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
                                   >
                                     <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
                                       <FileText size={14} />
@@ -623,7 +623,7 @@ export default function NavbarClient({
                                 {canManageQA && (
                                   <Link
                                     href="/dashboard/questions"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-[12px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-all"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-all"
                                   >
                                     <div className="p-1 rounded-lg bg-rose-100 dark:bg-rose-900/30 shadow-sm">
                                       <FileText size={14} />
