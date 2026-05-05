@@ -1,496 +1,316 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { NavItem } from "@/types/nav";
-import ThemeToggle from "./ThemeToggle";
-import { useTheme } from "next-themes";
-import { signOut } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Clock,
-  UserCog,
-  ChevronRight,
-  CheckCircle,
-  FileText,
-  Command,
-  Shield,
-  Home,
-  Menu,
   X,
+  Home,
+  Newspaper,
+  Calendar,
+  Users,
+  MessageSquare,
+  LayoutDashboard,
+  Shield,
+  FileText,
+  User,
   LogOut,
-  Download,
+  ChevronRight,
+  ArrowRight,
+  Bell,
+  Settings,
+  Command,
+  Activity,
+  Globe,
+  Menu,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 
-type MenuItem = NavItem & {
-  children?: MenuItem[];
-  _id: string;
-};
-
-export default function MobileMenu({
-  menuTree = [],
-  image,
-  deferredPrompt,
-  onInstall,
-  userId,
-  username,
-  role,
-}: {
-  menuTree?: MenuItem[];
+interface MobileMenuProps {
+  menuTree: any[];
   image?: string;
   deferredPrompt?: any;
   onInstall?: () => void;
-  userId?: string;
   username?: string;
   role?: string;
-}) {
+  userId?: string;
+  permissions?: any;
+}
+
+export default function MobileMenu({
+  menuTree,
+  image,
+  deferredPrompt,
+  onInstall,
+  username,
+  role,
+  userId,
+  permissions,
+}: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [openSubMenuId, setOpenSubMenuId] = useState<string | null>(null);
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const userRole = role?.toLowerCase() || "";
-  const displayUsername = username || "ผู้ใช้งาน";
-  const pathname = usePathname();
+  if (!mounted) return null;
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" });
-  };
+  const roleLower = role?.toLowerCase() || "user";
+  const userRole = roleLower;
+  const isSuperAdmin = roleLower === "super_admin";
+  const isAdmin = roleLower === "admin" || isSuperAdmin;
+  const isHR = roleLower === "hr" || roleLower === "director" || isSuperAdmin;
+  const isExecutive = roleLower === "director" || roleLower?.startsWith("deputy_") || isSuperAdmin;
 
-  const ensureAbsolute = (path?: string) => {
-    if (
-      !path ||
-      path.startsWith("/") ||
-      path.startsWith("http") ||
-      path.startsWith("#")
-    )
-      return path || "#";
-    return `/${path}`;
-  };
+  const canAccessDashboard = permissions?.access_dashboard || isAdmin || isHR || isExecutive;
 
-  const closeMenu = () => {
-    setIsOpen(false);
-    setTimeout(() => setOpenSubMenuId(null), 300);
-  };
-
-  const toggleSubMenu = (id: string) => {
-    setOpenSubMenuId(openSubMenuId === id ? null : id);
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
-
-  const safeMenuTree = menuTree || [];
-
-  const isSuperAdmin = userRole === "super_admin";
-  const isAdmin = userRole === "admin" || userRole === "editor";
-  const isHR = userRole === "hr" || userRole === "deputy_resource";
-  const isExecutive =
-    userRole === "director" ||
-    [
-      "deputy_resource",
-      "deputy_strategy",
-      "deputy_academic",
-      "deputy_student_affairs",
-    ].includes(userRole);
-
-  const getRoleDisplayName = (r: string) => {
-    switch (r) {
-      case "super_admin":
-        return "ผู้ดูแลระบบสูงสุด";
-      case "admin":
-        return "ผู้ดูแลระบบ";
-      case "editor":
-        return "บรรณาธิการ";
-      case "hr":
-        return "บุคลากร";
-      case "director":
-        return "ผู้อำนวยการ";
-      case "staff":
-        return "เจ้าหน้าที่";
-      case "user":
-        return "สมาชิก";
-      case "student":
-        return "นักเรียน";
-      default:
-        return r.replace("_", " ");
-    }
-  };
+  const closeMenu = () => setIsOpen(false);
 
   return (
-    <div className="lg:hidden">
-      {/* 1. Hamburger Button (Glass UI) */}
+    <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shadow-sm active:scale-95"
+        className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 shadow-sm"
       >
         <Menu className="w-5 h-5" />
       </button>
 
-      {mounted &&
-        createPortal(
-          <div className="relative z-99999">
-            {/* 2. Backdrop Overlay */}
-            {isOpen && (
-              <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300"
-                onClick={closeMenu}
-              />
-            )}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeMenu}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[998]"
+            />
 
-            {/* 3. Sliding Drawer */}
-            <div
-              className={`fixed inset-y-0 right-0 w-[85%] max-w-[340px] bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl shadow-2xl transform transition-transform duration-500 cubic-bezier(0.3, 0, 0, 1) flex flex-col ${
-                isOpen ? "translate-x-0" : "translate-x-full"
-              }`}
+            {/* Menu Drawer */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-zinc-950 z-[999] shadow-2xl flex flex-col"
             >
-              {/* Header - Close Button & Theme Toggle */}
-              <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800/60 shadow-sm z-10 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-xl">
-                <ThemeToggle />
+              {/* Header */}
+              <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl italic shadow-lg shadow-blue-600/20">
+                    K
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">KTLTC</h2>
+                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">Management v2</p>
+                  </div>
+                </div>
                 <button
                   onClick={closeMenu}
-                  className="p-2 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors hover:scale-105 active:scale-95"
+                  className="w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
-              {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar-thin pb-12">
-                {/* User Profile Section (Premium Glass Card) */}
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                {/* User Section */}
                 {userId ? (
-                  <div className="px-5 py-6 bg-linear-to-b from-blue-50/80 to-white dark:from-blue-950/20 dark:to-zinc-950 border-b border-zinc-100 dark:border-zinc-800/60">
-                    <div className="flex items-center gap-4">
-                      <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-zinc-800 shadow-xl shrink-0">
+                  <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
+                    <div className="flex items-center gap-4 mb-5">
+                      <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md">
                         {image ? (
-                          <Image
-                            src={image}
-                            alt={displayUsername}
-                            fill
-                            sizes="56px"
-                            className="object-cover"
-                          />
+                          <img src={image} alt="" className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-xl font-bold uppercase">
-                            {displayUsername.charAt(0)}
+                          <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-xl font-black">
+                            {username?.charAt(0)}
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="font-extrabold text-zinc-900 dark:text-white text-lg truncate tracking-tight">
-                          {displayUsername}
+                      <div>
+                        <span className="px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 inline-block">
+                          {role}
                         </span>
-                        <span className="text-[11px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-0.5">
-                          {getRoleDisplayName(userRole)}
-                        </span>
+                        <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-none truncate max-w-[150px]">
+                          {username}
+                        </h3>
                       </div>
                     </div>
-
-                    {/* User Info Actions */}
-                    <div className="mt-5 grid grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-2 gap-2">
                       <Link
-                        href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
+                        href="/dashboard/profile"
                         onClick={closeMenu}
-                        className="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_15px_-3px_rgba(0,0,0,0.1)] transition-all group"
+                        className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm"
                       >
-                        <UserCog className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                        <span className="text-[10px] font-bold mt-1.5 text-zinc-600 dark:text-zinc-400">
-                          โปรไฟล์
-                        </span>
+                        <User className="w-3.5 h-3.5" /> โปรไฟล์
                       </Link>
                       <button
-                        onClick={handleLogout}
-                        className="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_15px_-3px_rgba(0,0,0,0.1)] transition-all group"
+                        onClick={() => signOut()}
+                        className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm"
                       >
-                        <LogOut className="w-4 h-4 text-red-500/70 group-hover:text-red-500 transition-colors" />
-                        <span className="text-[10px] font-bold mt-1.5 text-zinc-600 dark:text-zinc-400">
-                          ออกจากระบบ
-                        </span>
+                        <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-5 border-b border-zinc-100 dark:border-zinc-800/60">
-                    <Link
-                      href="/login"
-                      onClick={closeMenu}
-                      className="flex items-center justify-center w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 active:scale-95 transition-transform"
-                    >
-                      เข้าสู่ระบบ
-                    </Link>
-                  </div>
-                )}
-
-                {/* MAIN NAVIGATION */}
-                <div className="px-4 py-5 space-y-1">
-                  <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest px-2 mb-3">
-                    เมนูหลัก
-                  </p>
-
                   <Link
-                    href="/"
+                    href="/login"
                     onClick={closeMenu}
-                    className={`flex items-center gap-3 px-3 py-3.5 rounded-xl font-bold text-[15px] transition-all group ${
-                      pathname === "/"
-                        ? "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400"
-                        : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                    }`}
+                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-sm shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3"
                   >
-                    <div
-                      className={`p-1.5 rounded-lg transition-colors ${pathname === "/" ? "bg-blue-100 dark:bg-blue-900/30" : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700"}`}
-                    >
-                      <Home className="w-4 h-4" />
-                    </div>
-                    หน้าแรก
+                    <User className="w-5 h-5" /> Sign In to System
                   </Link>
-
-                  {safeMenuTree.map((item) => {
-                    const hasChildren =
-                      item.children && item.children.length > 0;
-                    const isSubMenuOpen = openSubMenuId === item._id;
-
-                    return (
-                      <div key={item._id} className="relative">
-                        {hasChildren ? (
-                          <>
-                            <button
-                              onClick={() => toggleSubMenu(item._id)}
-                              className={`flex items-center justify-between px-3 py-3.5 w-full rounded-xl font-bold text-[15px] transition-all group ${
-                                isSubMenuOpen
-                                  ? "bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white"
-                                  : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                              }`}
-                            >
-                              <span className="flex items-center gap-3">
-                                <span className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 transition-colors group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700">
-                                  <Command className="w-4 h-4 opacity-70" />
-                                </span>
-                                {item.label}
-                              </span>
-                              <ChevronRight
-                                className={`w-4 h-4 opacity-50 transition-transform duration-300 ${isSubMenuOpen ? "rotate-90" : ""}`}
-                              />
-                            </button>
-
-                            <div
-                              className={`grid transition-all duration-300 ease-in-out ${
-                                isSubMenuOpen
-                                  ? "grid-rows-[1fr] opacity-100"
-                                  : "grid-rows-[0fr] opacity-0"
-                              }`}
-                            >
-                              <div className="overflow-hidden flex flex-col pl-11 pr-2 pt-1 pb-2 space-y-1">
-                                {item.children!.map((subItem) => (
-                                  <Link
-                                    key={subItem._id}
-                                    href={ensureAbsolute(subItem.path)}
-                                    onClick={closeMenu}
-                                    className="px-4 py-3 rounded-lg text-[14px] font-semibold text-zinc-500 hover:text-blue-600 hover:bg-blue-50 dark:text-zinc-400 dark:hover:text-blue-400 dark:hover:bg-zinc-800 transition-colors relative before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-1 before:rounded-full before:bg-zinc-300 dark:before:bg-zinc-700"
-                                  >
-                                    {subItem.label}
-                                  </Link>
-                                ))}
-                                {item.label === "อื่นๆ" && deferredPrompt && (
-                                  <button
-                                    onClick={() => {
-                                      if (onInstall) onInstall();
-                                      closeMenu();
-                                    }}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors relative before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-1 before:rounded-full before:bg-blue-300 dark:before:bg-blue-700"
-                                  >
-                                    <Download
-                                      size={14}
-                                      className="opacity-70"
-                                    />
-                                    ติดตั้งแอพพลิเคชั่น
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <Link
-                            href={ensureAbsolute(item.path)}
-                            onClick={closeMenu}
-                            className={`flex items-center gap-3 px-3 py-3.5 w-full rounded-xl font-bold text-[15px] transition-all group ${
-                              pathname === ensureAbsolute(item.path)
-                                ? "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400"
-                                : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                            }`}
-                          >
-                            <span
-                              className={`p-1.5 rounded-lg transition-colors ${pathname === ensureAbsolute(item.path) ? "bg-blue-100 dark:bg-blue-900/30" : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700"}`}
-                            >
-                              <CheckCircle className="w-4 h-4 opacity-70" />
-                            </span>
-                            {item.label}
-                          </Link>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* EMPLOYEE SERVICES */}
-                {userId && (
-                  <div className="px-4 pt-2 pb-1 space-y-1">
-                    <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest px-2 mb-3 flex items-center gap-1.5">
-                      <FileText className="w-3.5 h-3.5" />
-                      บริการบุคลากร
-                    </p>
-                    <Link
-                      href="/wfh"
-                      onClick={closeMenu}
-                      className={`flex items-center gap-3 px-3 py-3.5 rounded-xl font-bold text-[15px] transition-all group ${
-                        pathname === "/wfh"
-                          ? "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400"
-                          : "text-zinc-700 dark:text-zinc-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10"
-                      }`}
-                    >
-                      <div
-                        className={`p-1.5 rounded-lg transition-colors ${pathname === "/wfh" ? "bg-orange-100 dark:bg-orange-900/30" : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-orange-200 dark:group-hover:bg-zinc-700"}`}
-                      >
-                        <FileText className="w-4 h-4 text-orange-600" />
-                      </div>
-                      รายงานปฏิบัติงาน (WFH)
-                    </Link>
-                  </div>
                 )}
 
-                {/* ADMIN / SYSTEM CONTROLS (Restored and Designed) */}
-                {userId && (isSuperAdmin || isAdmin || isHR || isExecutive) && (
-                  <div className="px-4 py-6 border-t border-zinc-100 dark:border-zinc-800/60 space-y-1 bg-zinc-50/30 dark:bg-zinc-900/10">
-                    <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest px-2 mb-4 flex items-center gap-1.5">
-                      <Shield className="w-3.5 h-3.5" />
-                      ระบบจัดการองค์กรเฉพาะเจ้าหน้าที่
-                    </p>
-
-                    {/* Super Admin Area */}
-                    {isSuperAdmin && (
-                      <div className="mb-4 space-y-1 bg-sky-50 dark:bg-sky-500/5 rounded-2xl p-2 border border-sky-100 dark:border-sky-500/10">
-                        <p className="text-[9px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-widest px-2 py-1">
-                          เฉพาะ Super Admin
-                        </p>
-                        <Link
-                          href="/dashboard/super-admin"
-                          onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-3 rounded-xl font-bold text-[14px] text-sky-700 hover:bg-white dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors shadow-sm"
-                        >
-                          <Shield className="w-4 h-4" /> ศูนย์ควบคุมจัดการระบบ
-                        </Link>
-                        <Link
-                          href="/dashboard/data-management"
-                          onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-bold text-rose-700 dark:text-rose-400 hover:bg-white transition-colors"
-                        >
-                          <FileText className="w-3.5 h-3.5" /> แก้ไขข้อมูลการเข้างาน / ลา
-                        </Link>
-                        <Link
-                          href="/work-reports-management"
-                          onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-white transition-colors"
-                        >
-                          <FileText className="w-3.5 h-3.5" /> รายงานปฏิบัติงานทุกแผนก
-                        </Link>
-                        <Link
-                          href="/dashboard/permissions"
-                          onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-bold text-blue-700 dark:text-blue-400 hover:bg-white transition-colors"
-                        >
-                          <Shield className="w-3.5 h-3.5" /> จัดการสิทธิ์แต่ละระดับ
-                        </Link>
-                      </div>
-                    )}
-
-                    {/* Admin / Editor Dashboard */}
-                    {(isSuperAdmin || isAdmin) && (
+                {/* Navigation Group */}
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
+                      <Activity className="w-3 h-3" /> Main Modules
+                    </h4>
+                    <div className="space-y-1">
                       <Link
-                        href="/dashboard"
+                        href="/"
                         onClick={closeMenu}
-                        className="flex items-center gap-3 px-3 py-3.5 rounded-xl font-black text-[14px] text-blue-700 bg-blue-50/80 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-all active:scale-95 border border-blue-100 dark:border-blue-800/30"
+                        className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+                          pathname === "/"
+                            ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                            : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                        }`}
                       >
-                        <Command className="w-4 h-4" /> เข้าสู่ระบบ Dashboard
+                        <Home className="w-5 h-5" /> หน้าแรก
                       </Link>
-                    )}
-
-                    {/* HR / Executive Area */}
-                    {(isSuperAdmin || isHR || isExecutive) && (
-                      <div className="pt-2 space-y-1">
+                      
+                      {canAccessDashboard && (
                         <Link
-                          href="/attendance-dashboard"
+                          href="/dashboard"
                           onClick={closeMenu}
-                          className="flex items-center gap-3 px-3 py-3 rounded-xl font-bold text-[14px] text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+                            pathname === "/dashboard"
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                              : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                          }`}
                         >
-                          ภาพรวมลงเวลาบุคลากร
+                          <LayoutDashboard className="w-5 h-5" /> Dashboard
                         </Link>
+                      )}
 
-                        {(isSuperAdmin || isHR || userRole === "director") && (
-                          <>
-                            <Link
-                              href="/attendance-report"
-                              onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            >
-                              ระบบรายงานการเข้างาน
-                            </Link>
-                            <Link
-                              href="/work-reports"
-                              onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            >
-                              ระบบรายงานปฏิบัติงาน
-                            </Link>
-                            <Link
-                              href="/leave-approvals"
-                              onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            >
-                              จัดการอนุมัติใบลา
-                            </Link>
-                          </>
-                        )}
+                      {/* Super Admin Restricted Area */}
+                      {isSuperAdmin && (
+                        <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
+                          <Link
+                            href="/dashboard/permissions"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[14px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
+                          >
+                            <Shield className="w-4 h-4" /> ศูนย์ควบคุมจัดการระบบ
+                          </Link>
+                          
+                          <Link
+                            href="/dashboard/data-management"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-50 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5" /> แก้ไขข้อมูลการเข้างาน / ลา
+                          </Link>
 
-                        {(isSuperAdmin || isHR) && (
-                          <div className="pt-2 mt-2 border-t border-zinc-100 dark:border-zinc-800/60 space-y-1">
-                            <Link
-                              href="/manage-roles"
-                              onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            >
-                              <UserCog className="w-4 h-4" /> จัดการสิทธิ์บุคลากร
-                            </Link>
-                            <Link
-                              href="/attendance-settings"
-                              onClick={closeMenu}
-                              className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            >
-                              <Clock className="w-4 h-4" /> ตั้งค่าเวลาเข้างาน
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                          <Link
+                            href="/work-reports-management"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5" /> รายงานปฏิบัติงานทุกแผนก
+                          </Link>
+
+                          <Link
+                            href="/attendance-dashboard"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[14px] text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 transition-colors"
+                          >
+                            <Activity className="w-4 h-4" /> ภาพรวมลงเวลาบุคลากร
+                          </Link>
+
+                          <Link
+                            href="/attendance-report"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5" /> ระบบรายงานการเข้างาน
+                          </Link>
+
+                          <Link
+                            href="/work-reports"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5" /> ระบบรายงานปฏิบัติงาน
+                          </Link>
+
+                          <Link
+                            href="/leave-approvals"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5" /> จัดการอนุมัติใบลา
+                          </Link>
+
+                          <Link
+                            href="/manage-roles"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-[13px] font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 transition-colors"
+                          >
+                            <Settings className="w-3.5 h-3.5" /> ตั้งค่าเวลาเข้างาน
+                          </Link>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
+
+                  {/* News & Activity Group */}
+                  <div>
+                    <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
+                      <Newspaper className="w-3 h-3" /> Content Management
+                    </h4>
+                    <div className="space-y-1">
+                      {permissions?.manage_news && (
+                        <Link
+                          href="/dashboard/news"
+                          onClick={closeMenu}
+                          className="flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all"
+                        >
+                          <Newspaper className="w-5 h-5 text-emerald-500" /> จัดการส่วนข่าว
+                        </Link>
+                      )}
+                      {permissions?.manage_qa && (
+                        <Link
+                          href="/dashboard/questions"
+                          onClick={closeMenu}
+                          className="flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all"
+                        >
+                          <MessageSquare className="w-5 h-5 text-rose-500" /> ระบบถาม-ตอบ
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>,
-          document.body,
+
+              {/* Footer */}
+              <div className="p-6 border-t border-zinc-100 dark:border-zinc-800">
+                <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest">
+                  <span>KTL Management</span>
+                  <span>v2.0.26</span>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
-    </div>
+      </AnimatePresence>
+    </>
   );
 }

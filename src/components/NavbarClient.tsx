@@ -457,39 +457,41 @@ export default function NavbarClient({
                               >
                                 ศูนย์ควบคุมจัดการระบบ
                               </Link>
-                              {canManageAttendance && (
-                                <Link
-                                  href="/dashboard/data-management"
-                                  className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
-                                >
-                                  แก้ไขข้อมูลการเข้างาน / ลา
-                                </Link>
+                              {isSuperAdmin && (
+                                <>
+                                  <Link
+                                    href="/dashboard/data-management"
+                                    className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
+                                  >
+                                    แก้ไขข้อมูลการเข้างาน / ลา
+                                  </Link>
+                                  <Link
+                                    href="/work-reports-management"
+                                    className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                  >
+                                    รายงานปฏิบัติงานทุกแผนก
+                                  </Link>
+                                  <Link
+                                    href="/dashboard/permissions"
+                                    className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                                  >
+                                    จัดการสิทธิ์แต่ละระดับ
+                                  </Link>
+                                </>
                               )}
-                              {canManageAttendance && (
-                                <Link
-                                  href="/work-reports-management"
-                                  className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
-                                >
-                                  รายงานปฏิบัติงานทุกแผนก
-                                </Link>
-                              )}
-                              <Link
-                                href="/dashboard/permissions"
-                                className="flex items-center gap-3 px-3 py-2 text-[12.5px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-                              >
-                                จัดการสิทธิ์แต่ละระดับ
-                              </Link>
                             </div>
                           )}
 
-                          <Link
-                            href="/attendance-dashboard"
-                            className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
-                          >
-                            ภาพรวมลงเวลาบุคลากร
-                          </Link>
+                          {isSuperAdmin && (
+                            <Link
+                              href="/attendance-dashboard"
+                              className="flex items-center gap-3 px-3 py-2.5 text-[12.5px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
+                            >
+                              ภาพรวมลงเวลาบุคลากร
+                            </Link>
+                          )}
 
-                          {canManageAttendance && (
+                          {isSuperAdmin && (
                             <>
                               <Link
                                 href="/attendance-report"
@@ -512,7 +514,7 @@ export default function NavbarClient({
                             </>
                           )}
 
-                          {canManageUsers && (
+                          {isSuperAdmin && (
                             <>
                               <div className="my-2 border-t border-zinc-100 dark:border-zinc-800/60" />
                               <Link
@@ -564,6 +566,7 @@ export default function NavbarClient({
                 username={username}
                 role={role}
                 userId={userId}
+                permissions={permissions}
               />
             </div>
           </div>

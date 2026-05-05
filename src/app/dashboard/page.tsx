@@ -312,7 +312,7 @@ export default function DashboardLoader() {
                   variants={item}
                 />
               )}
-              {((session?.user as any)?.role === "super_admin" || permissions?.manage_system) && (
+              {(session?.user as any)?.role === "super_admin" && (
                 <ActionCard
                   href="/dashboard/manage-home"
                   title="จัดการหน้าแรก"
@@ -321,7 +321,7 @@ export default function DashboardLoader() {
                   variants={item}
                 />
               )}
-              {((session?.user as any)?.role === "super_admin" || permissions?.manage_system) && (
+              {(session?.user as any)?.role === "super_admin" && (
                 <ActionCard
                   href="/dashboard/navbar"
                   title="จัดการเมนูหลัก"

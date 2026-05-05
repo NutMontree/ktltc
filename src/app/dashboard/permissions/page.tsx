@@ -16,16 +16,18 @@ import {
   FiCalendar,
   FiSettings,
   FiMessageSquare,
+  FiLayers,
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 
-const FEATURE_LABELS: { [key: string]: { label: string; icon: any; color: string } } = {
-  access_dashboard: { label: "เข้าถึง Dashboard", icon: FiLayout, color: "text-blue-500" },
-  manage_users: { label: "จัดการผู้ใช้งาน", icon: FiUsers, color: "text-indigo-500" },
-  manage_news: { label: "จัดการส่วนข่าว", icon: FiFileText, color: "text-emerald-500" },
-  manage_pages: { label: "จัดการเนื้อหาหน้า", icon: FiLayout, color: "text-sky-500" },
-  manage_attendance: { label: "จัดการการลงเวลา/รายงาน", icon: FiCalendar, color: "text-amber-500" },
+const FEATURE_LABELS: { [key: string]: { label: string; icon: any; color: string; isSuperAdminOnly?: boolean } } = {
+  access_dashboard: { label: "เข้าสู่ระบบ Dashboard", icon: FiLayout, color: "text-blue-500" },
+  manage_users: { label: "จัดการบัญชี / โปรไฟล์", icon: FiUsers, color: "text-indigo-500" },
+  manage_news: { label: "จัดการข่าว / ประชาสัมพันธ์", icon: FiFileText, color: "text-emerald-500" },
+  manage_pages: { label: "จัดการเนื้อหาหน้าเว็บ", icon: FiLayers, color: "text-sky-500" },
+  manage_attendance: { label: "รายงานปฏิบัติงาน (WFH)", icon: FiCalendar, color: "text-amber-500" },
   manage_qa: { label: "จัดการคำถาม Q&A", icon: FiMessageSquare, color: "text-rose-500" },
+  manage_system: { label: "ระบบจัดการ / สิทธิ์ (SA Only)", icon: FiShield, color: "text-red-500", isSuperAdminOnly: true },
 };
 
 const ROLE_LABELS: { [key: string]: string } = {
@@ -227,14 +229,17 @@ export default function PermissionsPage() {
                             </div>
                           ) : (
                             <button
-                              onClick={() => handleToggle(role, feature)}
+                              disabled={FEATURE_LABELS[feature].isSuperAdminOnly}
+                              onClick={() => !FEATURE_LABELS[feature].isSuperAdminOnly && handleToggle(role, feature)}
                               className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
-                                permissions[role][feature]
-                                  ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                                  : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-emerald-300"
+                                FEATURE_LABELS[feature].isSuperAdminOnly
+                                  ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
+                                  : permissions[role][feature]
+                                    ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                                    : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-emerald-300"
                               }`}
                             >
-                              {permissions[role][feature] ? (
+                              {permissions[role][feature] && !FEATURE_LABELS[feature].isSuperAdminOnly ? (
                                 <FiCheckCircle size={20} />
                               ) : (
                                 <FiXCircle size={20} />
