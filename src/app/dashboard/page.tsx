@@ -46,6 +46,7 @@ export default function DashboardLoader() {
   const [error, setError] = useState<string | null>(null);
    const [permissions, setPermissions] = useState<any>(null);
    const [isEditingQuota, setIsEditingQuota] = useState(false);
+   const [editingQuotaKey, setEditingQuotaKey] = useState<"storage_limit_mb" | "db_limit_mb">("storage_limit_mb");
    const [tempQuota, setTempQuota] = useState("");
    const [isSavingQuota, setIsSavingQuota] = useState(false);
 
@@ -92,7 +93,7 @@ export default function DashboardLoader() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          key: "storage_limit_mb",
+          key: editingQuotaKey,
           value: tempQuota === "0" ? "0" : quotaInMB.toString()
         })
       });
@@ -252,11 +253,19 @@ export default function DashboardLoader() {
                   <UsageCard
                     title="MongoDB"
                     value={stats.dbSizeMB}
-                    max={512}
+                    max={stats.dbLimitMB}
                     unit="MB"
                     icon={Database}
                     color="emerald"
                     variants={item}
+                    isSuperAdmin={session?.user?.role === "super_admin"}
+                    serverTotalMB={stats.serverTotalMB}
+                    onEdit={() => {
+                      const currentGB = stats.dbLimitMB === 0 ? "0" : (stats.dbLimitMB / 1024).toFixed(1);
+                      setEditingQuotaKey("db_limit_mb");
+                      setTempQuota(currentGB);
+                      setIsEditingQuota(true);
+                    }}
                   />
                   <UsageCard
                     title="Local Storage"
@@ -271,6 +280,7 @@ export default function DashboardLoader() {
                     onEdit={() => {
                       // Convert MB to GB for display in modal
                       const currentGB = stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
+                      setEditingQuotaKey("storage_limit_mb");
                       setTempQuota(currentGB);
                       setIsEditingQuota(true);
                     }}
@@ -385,17 +395,21 @@ export default function DashboardLoader() {
               </div>
               
               <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
-                Storage Quota
+                {editingQuotaKey === "db_limit_mb" ? "Database Quota" : "Storage Quota"}
               </h3>
               <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">
-                กำหนดขีดจำกัดพื้นที่จัดเก็บข้อมูล (GB)
+                {editingQuotaKey === "db_limit_mb" ? "กำหนดขีดจำกัดฐานข้อมูล (GB)" : "กำหนดขีดจำกัดพื้นที่จัดเก็บข้อมูล (GB)"}
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700">
                   <div>
-                    <p className="text-sm font-bold text-zinc-900 dark:text-white">ไม่จำกัดพื้นที่ (Unlimited)</p>
-                    <p className="text-[10px] text-zinc-500">เปิดการใช้งานพื้นที่ทั้งหมดของเซิร์ฟเวอร์</p>
+                    <p className="text-sm font-bold text-zinc-900 dark:text-white">
+                      ไม่จำกัด{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"} (Unlimited)
+                    </p>
+                    <p className="text-[10px] text-zinc-500">
+                      เปิดการใช้งาน{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}ทั้งหมดของเซิร์ฟเวอร์
+                    </p>
                   </div>
                   <button
                     onClick={() => setTempQuota(tempQuota === "0" ? "20" : "0")}

@@ -70,18 +70,27 @@ export async function GET() {
     const dbStats = await db.stats();
     const dbSizeMB = (dbStats.storageSize / (1024 * 1024)).toFixed(2);
     
-    // 4. Local Storage Usage (Instead of Cloudinary)
+    // 4. Local Storage & DB Quotas
     let storageUsageMB = "0.00";
     let storageLimitMB = 20000; // Default fallback
+    let dbLimitMB = 0; // Default unlimited for DB
     let serverTotalMB = 0; // Real disk capacity
     
     try {
-      // Fetch custom limit from database if exists
-      const limitSetting = await db.collection("site_settings").findOne({ key: "storage_limit_mb" });
-      if (limitSetting) {
-        // Allow 0 to represent unlimited
-        storageLimitMB = parseFloat(limitSetting.value);
+      // Fetch custom limits from database
+      const [storageLimit, dbLimit] = await Promise.all([
+        db.collection("site_settings").findOne({ key: "storage_limit_mb" }),
+        db.collection("site_settings").findOne({ key: "db_limit_mb" })
+      ]);
+
+      if (storageLimit) {
+        storageLimitMB = parseFloat(storageLimit.value);
         if (isNaN(storageLimitMB)) storageLimitMB = 20000;
+      }
+
+      if (dbLimit) {
+        dbLimitMB = parseFloat(dbLimit.value);
+        if (isNaN(dbLimitMB)) dbLimitMB = 0;
       }
 
       // Calculate size of public/uploads, public/images, public/pdf
@@ -109,6 +118,7 @@ export async function GET() {
       totalBanners,
       totalImagesCount,
       dbSizeMB,
+      dbLimitMB: dbLimitMB,
       cloudUsageMB: storageUsageMB, // Keeping same key for frontend compatibility
       cloudLimitMB: storageLimitMB,
       serverTotalMB: serverTotalMB,
