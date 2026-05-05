@@ -94,6 +94,23 @@ export default function NavbarClient({
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
 
+    // Dynamic Style Injection for custom scrollbars
+    const customScrollbarStyles = `
+      .custom-scrollbar-thin::-webkit-scrollbar { width: 6px; }
+      .custom-scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 10px; }
+      .dark .custom-scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(82, 82, 91, 0.5); }
+      .btn-press { transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
+      .btn-press:active { transform: scale(0.96); }
+    `;
+
+    if (!document.getElementById("navbar-custom-styles")) {
+      const style = document.createElement("style");
+      style.id = "navbar-custom-styles";
+      style.innerHTML = customScrollbarStyles;
+      document.head.appendChild(style);
+    }
+
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement;
       if (
@@ -293,13 +310,17 @@ export default function NavbarClient({
           </div>
 
           {/* --- 3. RIGHT ACTIONS --- */}
-          <div className="flex items-center gap-2.5 shrink-0">
-            {username && <NotificationBell />}
-            <div className="hidden sm:block">
+          <div className="flex items-center gap-3 shrink-0 h-10">
+            {username && (
+              <div className="flex items-center justify-center w-10 h-10">
+                <NotificationBell />
+              </div>
+            )}
+            <div className="hidden sm:flex items-center justify-center w-10 h-10">
               <ThemeToggle />
             </div>
 
-            <div className="hidden lg:block w-px h-8 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+            <div className="hidden lg:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
 
             {username ? (
               <div
@@ -531,36 +552,4 @@ export default function NavbarClient({
       </nav>
     </div>
   );
-}
-
-const customScrollbarStyles = `
-  .custom-scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-  .custom-scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .custom-scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(156, 163, 175, 0.4);
-    border-radius: 10px;
-  }
-  .dark .custom-scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(82, 82, 91, 0.5);
-  }
-  .btn-press {
-     transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .btn-press:active {
-     transform: scale(0.96);
-  }
-`;
-
-if (
-  typeof document !== "undefined" &&
-  !document.getElementById("navbar-custom-styles")
-) {
-  const style = document.createElement("style");
-  style.id = "navbar-custom-styles";
-  style.innerHTML = customScrollbarStyles;
-  document.head.appendChild(style);
 }
