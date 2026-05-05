@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
 
     const fileSize = (file as any).size || 0;
-    const fileType = file.type || '';
+    const fileType = file.type || 'application/octet-stream';
 
     // Folder sanitization: reject attempts to traverse out of public folder
     const rawFolder = folder || 'uploads';
@@ -41,21 +41,13 @@ export async function POST(req: Request) {
     }
     const sanitizedFolder = rawFolder.replace(/[^a-zA-Z0-9_\-/]/g, '');
 
-    // Validate size based on type
-    const isImage = allowedImageTypes.includes(fileType) || fileType.startsWith('image/');
-    const isVideo = allowedVideoTypes.includes(fileType) || fileType.startsWith('video/');
-
-    if (isImage && fileSize > MAX_IMAGE_SIZE) {
-      return NextResponse.json({ success: false, message: `Image exceeds size limit (${MAX_IMAGE_SIZE} bytes)` }, { status: 413 });
-    }
-
-    if (isVideo && fileSize > MAX_VIDEO_SIZE) {
-      return NextResponse.json({ success: false, message: `Video exceeds size limit (${MAX_VIDEO_SIZE} bytes)` }, { status: 413 });
-    }
-
-    if (!isImage && !isVideo && fileSize > MAX_FILE_SIZE) {
+    // Validate size only (Allow everything else)
+    if (fileSize > MAX_FILE_SIZE) {
       return NextResponse.json({ success: false, message: `File exceeds size limit (${MAX_FILE_SIZE} bytes)` }, { status: 413 });
     }
+
+    const isImage = fileType.startsWith('image/');
+    const isVideo = fileType.startsWith('video/');
 
     const buffer = Buffer.from(await file.arrayBuffer());
     // Detect extension from mime type if file name is generic "blob"

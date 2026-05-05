@@ -21,16 +21,6 @@ export const uploadFile = async (
   const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
   const isCompressibleImage = isImage && !isGif && !file.type?.includes("svg");
 
-  if (isImage && file.size > MAX_IMAGE_SIZE) {
-    console.error("Image file too large:", file.name, file.size);
-    return { secure_url: null, thumbnail_url: null };
-  }
-
-  if (isVideo && file.size > MAX_VIDEO_SIZE) {
-    console.error("Video file too large:", file.name, file.size);
-    return { secure_url: null, thumbnail_url: null };
-  }
-
   // Only compress images that are not GIFs or SVGs
   if (isCompressibleImage) {
     try {
