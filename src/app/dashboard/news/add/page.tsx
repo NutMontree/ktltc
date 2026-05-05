@@ -9,6 +9,7 @@ import { parseYouTubeVideoInput } from "@/lib/youtube";
 import { uploadFile } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
+import { motion, AnimatePresence } from "framer-motion";
 // --- DND Kit Imports ---
 import {
   DndContext,
@@ -38,6 +39,9 @@ import {
   FiCheckCircle,
   FiPlus,
   FiTrash2,
+  FiMaximize2,
+  FiSearch,
+  FiX,
 } from "react-icons/fi";
 
 // --- Config ---
@@ -79,7 +83,7 @@ async function recordActivity(data: {
 }
 
 // --- Sub-Component: Sortable Image Item ---
-function SortableImage({ id, src, onRemove, isVertical = false, isVideo = false }: any) {
+function SortableImage({ id, src, onRemove, onZoom, isVertical = false, isVideo = false }: any) {
   const {
     attributes,
     listeners,
@@ -99,45 +103,72 @@ function SortableImage({ id, src, onRemove, isVertical = false, isVideo = false 
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 group touch-none bg-slate-100 dark:bg-zinc-800 ${isVertical ? "aspect-3/4" : "aspect-video"}`}
+      className={`relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 group touch-none bg-black ${isVertical ? "aspect-3/4" : "aspect-video"}`}
     >
       <div
         {...attributes}
         {...listeners}
-        className="w-full h-full cursor-grab active:cursor-grabbing"
+        className="w-full h-full cursor-grab active:cursor-grabbing relative flex items-center justify-center"
       >
         {isVideo ? (
           <video
             src={src}
-            className={isVertical ? "object-contain w-full h-full" : "object-cover w-full h-full"}
+            className="object-contain w-full h-full"
             controls
             playsInline
           />
         ) : (
-          <Image
-            src={src}
-            alt="preview"
-            fill
-            unoptimized
-            className={isVertical ? "object-contain" : "object-cover"}
-          />
+          <div className="relative w-full h-full">
+            <Image
+              src={src}
+              alt="preview"
+              fill
+              unoptimized
+              className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          </div>
         )}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-          <span className="opacity-0 group-hover:opacity-100 text-white text-[10px] bg-black/40 px-2 py-1 rounded-md">
-            ลากเพื่อย้าย
-          </span>
+        
+        {/* Overlay for drag instruction - only visible on hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center pointer-events-none">
+          <div className="opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+            <span className="text-[10px] font-black uppercase tracking-widest text-white bg-indigo-600/90 px-3 py-1.5 rounded-full shadow-lg border border-white/20">
+              Drag to Reorder
+            </span>
+          </div>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          onRemove();
-        }}
-        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md z-10 hover:bg-red-600 transition-colors"
-      >
-        ✕
-      </button>
+
+      {/* Remove Button */}
+      <div className="absolute top-2 right-2 flex flex-col gap-2 z-20">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            onRemove();
+          }}
+          className="w-8 h-8 bg-white/90 dark:bg-zinc-900/90 text-rose-500 rounded-full flex items-center justify-center shadow-xl hover:bg-rose-500 hover:text-white transition-all transform hover:scale-110 active:scale-95 border border-slate-200 dark:border-zinc-700"
+          title="ลบออก"
+        >
+          <FiTrash2 size={14} />
+        </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            onZoom(src);
+          }}
+          className="w-8 h-8 bg-white/90 dark:bg-zinc-900/90 text-blue-500 rounded-full flex items-center justify-center shadow-xl hover:bg-blue-500 hover:text-white transition-all transform hover:scale-110 active:scale-95 border border-slate-200 dark:border-zinc-700"
+          title="ขยายดู"
+        >
+          <FiMaximize2 size={14} />
+        </button>
+      </div>
+
+      {/* Index Badge */}
+      <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/40 backdrop-blur-md rounded-md text-[9px] font-black text-white/80 border border-white/10 pointer-events-none z-10">
+        #{id.split('/').pop()?.substring(0, 4) || 'IMG'}
+      </div>
     </div>
   );
 }
@@ -164,6 +195,7 @@ export default function AddNewsPage() {
   const [videoEmbeds, setVideoEmbeds] = useState<string[]>([]);
   const [currentEmbed, setCurrentEmbed] = useState("");
   const [currentFacebookEmbed, setCurrentFacebookEmbed] = useState("");
+  const [selectedZoomImage, setSelectedZoomImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<{
@@ -753,7 +785,7 @@ export default function AddNewsPage() {
             collisionDetection={closestCenter}
             onDragEnd={(e) => handleDragEnd(e, "general")}
           >
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <SortableContext
                 items={imagePreviews}
                 strategy={rectSortingStrategy}
@@ -764,6 +796,7 @@ export default function AddNewsPage() {
                     id={src}
                     src={src}
                     isVideo={imageFiles[i]?.type?.startsWith("video/")}
+                    onZoom={setSelectedZoomImage}
                     onRemove={() => {
                       URL.revokeObjectURL(src);
                       setImageFiles((prev) =>
@@ -805,7 +838,7 @@ export default function AddNewsPage() {
             sensors={sensors}
             onDragEnd={(e) => handleDragEnd(e, "newsletter")}
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <SortableContext
                 items={newsletterPreviews}
                 strategy={rectSortingStrategy}
@@ -817,6 +850,7 @@ export default function AddNewsPage() {
                     src={src}
                     isVertical
                     isVideo={newsletterFiles[i]?.type?.startsWith("video/")}
+                    onZoom={setSelectedZoomImage}
                     onRemove={() => {
                       URL.revokeObjectURL(src);
                       setNewsletterFiles((prev) =>
@@ -998,6 +1032,44 @@ export default function AddNewsPage() {
           </button>
         </section>
       </main>
+
+      {/* Zoom Modal (Lightbox) */}
+      <AnimatePresence>
+        {selectedZoomImage && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-10">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedZoomImage(null)}
+              className="absolute inset-0 cursor-zoom-out"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full h-full flex items-center justify-center pointer-events-none"
+            >
+              <div className="relative w-full h-full max-w-[90vw] max-h-[90vh]">
+                <Image
+                  src={selectedZoomImage}
+                  alt="Full Zoom"
+                  fill
+                  unoptimized
+                  className="object-contain"
+                />
+              </div>
+              
+              <button
+                onClick={() => setSelectedZoomImage(null)}
+                className="absolute top-[-20px] right-[-20px] md:top-0 md:right-0 w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-all pointer-events-auto border border-white/20 shadow-2xl"
+              >
+                <FiX size={24} />
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Upload Progress Modal */}
       {uploadStatus && (

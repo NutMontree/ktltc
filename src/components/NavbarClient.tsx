@@ -18,6 +18,7 @@ import {
   Download,
   Bell,
   Check,
+  HardDrive,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
@@ -434,6 +435,18 @@ export default function NavbarClient({
                             <Command size={18} />
                           </div>
                           เข้าสู่ระบบ Dashboard
+                        </Link>
+                      )}
+
+                      {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                        <Link
+                          href="/dashboard/drive"
+                          className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
+                        >
+                          <div className="p-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors shadow-sm">
+                            <HardDrive size={18} />
+                          </div>
+                          คลังไฟล์งาน (Drive)
                         </Link>
                       )}
 

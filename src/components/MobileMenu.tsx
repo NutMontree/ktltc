@@ -23,6 +23,7 @@ import {
   Command,
   Activity,
   Globe,
+  HardDrive,
   Menu,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -197,6 +198,20 @@ export default function MobileMenu({
                           }`}
                         >
                           <LayoutDashboard className="w-5 h-5" /> Dashboard
+                        </Link>
+                      )}
+
+                      {!["user", "student"].includes(roleLower) && (
+                        <Link
+                          href="/dashboard/drive"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+                            pathname === "/dashboard/drive"
+                              ? "bg-amber-600 text-white shadow-lg shadow-amber-600/20"
+                              : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                          }`}
+                        >
+                          <HardDrive className="w-5 h-5" /> คลังไฟล์งาน (Drive)
                         </Link>
                       )}
 

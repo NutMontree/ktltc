@@ -96,14 +96,7 @@ export default function SuperAdminPage() {
         return;
       }
 
-      const headers = [
-        "ลำดับ",
-        "วันที่-เวลา",
-        "ผู้ใช้งาน",
-        "กิจกรรม",
-        "รายละเอียด",
-        "IP Address",
-      ];
+      const headers = ["ลำดับ", "วันที่-เวลา", "ผู้ใช้งาน", "กิจกรรม", "รายละเอียด", "IP Address"];
       const rows = allLogs.map((log, index) => [
         index + 1,
         new Date(log.timestamp).toLocaleString("th-TH", {
@@ -117,9 +110,7 @@ export default function SuperAdminPage() {
 
       const csvContent = [
         headers.join(","),
-        ...rows.map((row) =>
-          row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-        ),
+        ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")),
       ].join("\n");
 
       const blob = new Blob(["\uFEFF" + csvContent], {
@@ -148,9 +139,7 @@ export default function SuperAdminPage() {
   const handleExportCSV = async () => {
     try {
       setIsExporting(true);
-      const res = await fetch(
-        `/api/admin/users?all=true&search=${searchQuery}&_t=${Date.now()}`,
-      );
+      const res = await fetch(`/api/admin/users?all=true&search=${searchQuery}&_t=${Date.now()}`);
       if (!res.ok) throw new Error("Export failed");
 
       const data = await res.json();
@@ -182,9 +171,7 @@ export default function SuperAdminPage() {
 
       const csvContent = [
         headers.join(","),
-        ...rows.map((row) =>
-          row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-        ),
+        ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")),
       ].join("\n");
 
       // BOM for Thai characters in Excel
@@ -236,12 +223,8 @@ export default function SuperAdminPage() {
 
       const [usersRes, summaryRes, logsRes] = await Promise.all([
         fetch(`/api/admin/users?page=${p}&search=${q}&_t=${Date.now()}`),
-        p === 1
-          ? fetch("/api/admin/reports/summary?_t=" + Date.now())
-          : Promise.resolve(null),
-        p === 1
-          ? fetch("/api/admin/logs?_t=" + Date.now())
-          : Promise.resolve(null),
+        p === 1 ? fetch("/api/admin/reports/summary?_t=" + Date.now()) : Promise.resolve(null),
+        p === 1 ? fetch("/api/admin/logs?_t=" + Date.now()) : Promise.resolve(null),
       ]);
 
       if (usersRes.ok) {
@@ -280,11 +263,7 @@ export default function SuperAdminPage() {
     fetchData();
   }, []);
 
-  const changeDepartment = async (
-    targetId: string,
-    newDept: string,
-    targetName: string,
-  ) => {
+  const changeDepartment = async (targetId: string, newDept: string, targetName: string) => {
     let currentProfile = adminProfile;
     if (!currentProfile && !isProfileLoading) {
       currentProfile = await fetchAdminProfile();
@@ -312,11 +291,7 @@ export default function SuperAdminPage() {
     }
   };
 
-  const changeRole = async (
-    targetId: string,
-    newRole: string,
-    targetName: string,
-  ) => {
+  const changeRole = async (targetId: string, newRole: string, targetName: string) => {
     let currentProfile = adminProfile;
     if (!currentProfile && !isProfileLoading) {
       currentProfile = await fetchAdminProfile();
@@ -344,11 +319,7 @@ export default function SuperAdminPage() {
     }
   };
 
-  const toggleActive = async (
-    targetId: string,
-    currentStatus: boolean,
-    targetName: string,
-  ) => {
+  const toggleActive = async (targetId: string, currentStatus: boolean, targetName: string) => {
     let currentProfile = adminProfile;
     if (!currentProfile && !isProfileLoading) {
       currentProfile = await fetchAdminProfile();
@@ -390,11 +361,7 @@ export default function SuperAdminPage() {
       return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
     }
 
-    if (
-      !confirm(
-        `⚠️ ต้องการลบสมาชิก "${targetName}" ออกจากระบบใช่หรือไม่? ไม่สามารถย้อนกลับได้`,
-      )
-    )
+    if (!confirm(`⚠️ ต้องการลบสมาชิก "${targetName}" ออกจากระบบใช่หรือไม่? ไม่สามารถย้อนกลับได้`))
       return;
     try {
       const res = await fetch(`/api/users/${targetId}/status`, {
@@ -412,11 +379,7 @@ export default function SuperAdminPage() {
     }
   };
 
-  const moveOrder = async (
-    id: string,
-    currentOrder: number,
-    direction: "up" | "down",
-  ) => {
+  const moveOrder = async (id: string, currentOrder: number, direction: "up" | "down") => {
     const newOrder = direction === "up" ? currentOrder - 1 : currentOrder + 1;
     try {
       const res = await fetch(`/api/users/${id}`, {
@@ -476,11 +439,7 @@ export default function SuperAdminPage() {
       return "border-cyan-500/50 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold";
     if (act.includes("GUEST"))
       return "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold";
-    if (
-      act.includes("DELETE") ||
-      act.includes("WIPE") ||
-      act.includes("SUSPEND")
-    )
+    if (act.includes("DELETE") || act.includes("WIPE") || act.includes("SUSPEND"))
       return "border-rose-500/50 bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold";
     if (
       act.includes("CREATE") ||
@@ -489,22 +448,15 @@ export default function SuperAdminPage() {
       act.includes("APPROVE")
     )
       return "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold";
-    if (
-      act.includes("UPDATE") ||
-      act.includes("EDIT") ||
-      act.includes("CHANGE")
-    )
+    if (act.includes("UPDATE") || act.includes("EDIT") || act.includes("CHANGE"))
       return "border-amber-500/50 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold";
     if (act.includes("LOGIN") || act.includes("AUTH"))
       return "border-indigo-500/50 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold";
     return "border-slate-500/50 bg-slate-500/10 text-slate-600 dark:text-slate-400 font-bold";
   };
 
-  
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-2 md:p-4 font-sans selection:bg-blue-500/30 relative overflow-hidden">
-
       {/* Background Depth */}
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-rose-500/5 blur-[120px] rounded-full pointer-events-none" />
@@ -625,7 +577,7 @@ export default function SuperAdminPage() {
                 จัดการรายชื่อผู้ใช้ในระบบ
               </h2>
             </div>
-            
+
             <div className="flex flex-1 items-center gap-4 w-full justify-center md:justify-end">
               <div className="relative flex-1 max-w-[400px] group">
                 <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
@@ -667,7 +619,9 @@ export default function SuperAdminPage() {
                     <td colSpan={6} className="p-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <RefreshCcw className="w-8 h-8 text-blue-500 animate-spin" />
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">กำลังโหลดข้อมูลบุคลากร...</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+                          กำลังโหลดข้อมูลบุคลากร...
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -685,9 +639,7 @@ export default function SuperAdminPage() {
                         <td className="p-4">
                           <div className="flex flex-col items-center gap-1">
                             <button
-                              onClick={() =>
-                                moveOrder(user._id, user.orderIndex || 0, "up")
-                              }
+                              onClick={() => moveOrder(user._id, user.orderIndex || 0, "up")}
                               className="text-slate-300 dark:text-zinc-700 hover:text-blue-500 transition-colors"
                             >
                               <ChevronUp size={16} />
@@ -696,9 +648,7 @@ export default function SuperAdminPage() {
                               {(index + 1).toString().padStart(2, "0")}
                             </span>
                             <button
-                              onClick={() =>
-                                moveOrder(user._id, user.orderIndex || 0, "down")
-                              }
+                              onClick={() => moveOrder(user._id, user.orderIndex || 0, "down")}
                               className="text-slate-300 dark:text-zinc-700 hover:text-rose-500 transition-colors"
                             >
                               <ChevronDown size={16} />
@@ -727,35 +677,21 @@ export default function SuperAdminPage() {
                         <td className="p-4 text-center">
                           <select
                             value={user.role || "user"}
-                            onChange={(e) =>
-                              changeRole(user._id, e.target.value, user.name)
-                            }
+                            onChange={(e) => changeRole(user._id, e.target.value, user.name)}
                             className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
                           >
-                            <option value="super_admin">
-                              SUPER_ADMIN (สูงสุด)
-                            </option>
-                            <option value="editor">EDITOR (ดูแลเนื้อหา)</option>
+                            <option value="super_admin">SUPER_ADMIN (สูงสุด)</option>
                             <option value="admin">ADMIN (แอดมิน)</option>
+                            <option value="editor">EDITOR (ดูแลเนื้อหา)</option>
                             <option value="director">ผอ. (DIRECTOR)</option>
-                            <option value="deputy_resource">
-                              รอง ผอ. (ทรัพยากร)
-                            </option>
-                            <option value="deputy_strategy">
-                              รอง ผอ. (แผนงาน)
-                            </option>
-                            <option value="deputy_academic">
-                              รอง ผอ. (วิชาการ)
-                            </option>
-                            <option value="deputy_student_affairs">
-                              รอง ผอ. (กิจการนักเรียน)
-                            </option>
+                            <option value="deputy_resource">รอง ผอ. (ทรัพยากร)</option>
+                            <option value="deputy_strategy">รอง ผอ. (แผนงาน)</option>
+                            <option value="deputy_academic">รอง ผอ. (วิชาการ)</option>
+                            <option value="deputy_student_affairs">รอง ผอ. (กิจการนักเรียน)</option>
                             <option value="teacher">ครู (TEACHER)</option>
                             <option value="hr">ฝ่ายบุคคล (HR)</option>
                             <option value="staff">เจ้าหน้าที่ (STAFF)</option>
-                            <option value="janitor">
-                              แม่บ้าน/นักการ (JANITOR)
-                            </option>
+                            <option value="janitor">แม่บ้าน/นักการ (JANITOR)</option>
                             <option value="student">นักเรียน (STUDENT)</option>
                             <option value="user">ผู้ใช้ทั่วไป (USER)</option>
                           </select>
@@ -763,36 +699,22 @@ export default function SuperAdminPage() {
                         <td className="p-4 text-center">
                           <select
                             value={user.department || "ไม่มีสังกัด"}
-                            onChange={(e) =>
-                              changeDepartment(
-                                user._id,
-                                e.target.value,
-                                user.name,
-                              )
-                            }
+                            onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
                             className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
                           >
                             <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                            <option value="ผู้บริหารสถานศึกษา">
-                              ผู้บริหารสถานศึกษา
-                            </option>
+                            <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                             <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                              <option value="งานบริหารงานทั่วไป">
-                                งานบริหารงานทั่วไป
-                              </option>
+                              <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
                               <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
                                 งานบริหารและพัฒนาทรัพยากรบุคคล
                               </option>
                               <option value="งานการเงิน">งานการเงิน</option>
                               <option value="งานการบัญชี">งานการบัญชี</option>
                               <option value="งานพัสดุ">งานพัสดุ</option>
-                              <option value="งานอาคารสถานที่">
-                                งานอาคารสถานที่
-                              </option>
+                              <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                               <option value="งานทะเบียน">งานทะเบียน</option>
-                              <option value="งานแม่บ้าน/นักการ">
-                                งานแม่บ้าน/นักการ
-                              </option>
+                              <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
                             </optgroup>
                             <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
                               <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
@@ -810,9 +732,7 @@ export default function SuperAdminPage() {
                               <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
                                 งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
                               </option>
-                              <option value="งานติดตามและประเมินผล">
-                                งานติดตามและประเมินผล
-                              </option>
+                              <option value="งานติดตามและประเมินผล">งานติดตามและประเมินผล</option>
                             </optgroup>
                             <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
                               <option value="งานกิจกรรมนักเรียนนักศึกษา">
@@ -835,9 +755,7 @@ export default function SuperAdminPage() {
                               <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
                                 งานพัฒนาหลักสูตรและการจัดการเรียนรู้
                               </option>
-                              <option value="งานวัดผลและประเมินผล">
-                                งานวัดผลและประเมินผล
-                              </option>
+                              <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
                               <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
                                 งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
                               </option>
@@ -855,35 +773,23 @@ export default function SuperAdminPage() {
                               <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
                               <option value="การบัญชี">การบัญชี</option>
                               <option value="การตลาด">การตลาด</option>
-                              <option value="การตลาด/โลจิสติก์">
-                                การตลาด/โลจิสติก์
-                              </option>
-                              <option value="เทคโนโลยีธุรกิจดิจิทัล">
-                                เทคโนโลยีธุรกิจดิจิทัล
-                              </option>
+                              <option value="การตลาด/โลจิสติก์">การตลาด/โลจิสติก์</option>
+                              <option value="เทคโนโลยีธุรกิจดิจิทัล">เทคโนโลยีธุรกิจดิจิทัล</option>
                               <option value="การโรงแรม">การโรงแรม</option>
                               <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
-                              <option value="ช่างอิเล็กทรอนิกส์">
-                                ช่างอิเล็กทรอนิกส์
-                              </option>
+                              <option value="ช่างอิเล็กทรอนิกส์">ช่างอิเล็กทรอนิกส์</option>
                               <option value="ช่างยนต์">ช่างยนต์</option>
                               <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
-                              <option value="ช่างไฟฟ้ากำลัง">
-                                ช่างไฟฟ้ากำลัง
-                              </option>
+                              <option value="ช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
                               <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
-                              <option value="ช่างเชื่อมโลหะ">
-                                ช่างเชื่อมโลหะ
-                              </option>
+                              <option value="ช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
                               <option value="ช่างก่อสร้าง">ช่างก่อสร้าง</option>
                             </optgroup>
                           </select>
                         </td>
                         <td className="p-4 text-center">
                           <button
-                            onClick={() =>
-                              toggleActive(user._id, user.isActive, user.name)
-                            }
+                            onClick={() => toggleActive(user._id, user.isActive, user.name)}
                             className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
                           >
                             <div
@@ -894,9 +800,7 @@ export default function SuperAdminPage() {
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-3  ">
                             <button
-                              onClick={() =>
-                                router.push(`/dashboard/users/edit/${user._id}`)
-                              }
+                              onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
                               className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
                               title="แก้ไขข้อมูล"
                             >
@@ -918,7 +822,7 @@ export default function SuperAdminPage() {
                 {!loading && users.length === 0 && (
                   <tr>
                     <td colSpan={6} className="p-12 text-center">
-                       <span className="text-slate-400 font-bold italic">ไม่พบข้อมูลที่ค้นหา</span>
+                      <span className="text-slate-400 font-bold italic">ไม่พบข้อมูลที่ค้นหา</span>
                     </td>
                   </tr>
                 )}
@@ -952,8 +856,7 @@ export default function SuperAdminPage() {
 
             {!hasMore && !loading && users.length > 0 && (
               <div className="px-6 py-3 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-2xl text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2 shadow-sm">
-                <Database size={14} /> รายชื่อทั้งหมดที่แสดง: {users.length} /{" "}
-                {total} ราย
+                <Database size={14} /> รายชื่อทั้งหมดที่แสดง: {users.length} / {total} ราย
               </div>
             )}
           </div>
@@ -1048,9 +951,7 @@ export default function SuperAdminPage() {
                           href={log.link}
                           className="text-zinc-300 hover:text-blue-400 flex items-center justify-between group/link transition-colors"
                         >
-                          <span className="text-xs font-bold leading-relaxed">
-                            {log.details}
-                          </span>
+                          <span className="text-xs font-bold leading-relaxed">{log.details}</span>
                           <ExternalLink
                             size={14}
                             className="opacity-0 group-link:opacity-100 transition-opacity"
