@@ -26,6 +26,7 @@ export default function RegisterPage() {
     phone: "",
     lineId: "",
     department: "ไม่มีสังกัด",
+    role: "teacher",
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -430,8 +431,29 @@ export default function RegisterPage() {
                           <option value="ช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
                           <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
                           <option value="ช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
-                          <option value="ช่างก่อสร้าง">ช่างก่อสร้าง</option>
                         </optgroup>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                      ประเภทผู้ใช้งาน (Role)
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                        <ShieldCheck size={18} />
+                      </div>
+                      <select
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm font-bold cursor-pointer appearance-none"
+                        required
+                      >
+                        <option value="teacher">บุคลากร (Teacher / Staff)</option>
+                        <option value="student">นักเรียน / นักศึกษา (Student)</option>
+                        <option value="user">บุคคลภายนอก (General User)</option>
                       </select>
                     </div>
                   </div>

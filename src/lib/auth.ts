@@ -18,21 +18,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const client = await clientPromise;
         const db = client.db("ktltc_db");
+        
+        const cleanUsername = (credentials.username as string).trim();
+        console.log(`[AUTH] Attempting login for: "${cleanUsername}"`);
+
         // ค้นหา username แบบ Case-insensitive
         const user = await db
           .collection("users")
-          .findOne({ username: { $regex: new RegExp(`^${(credentials.username as string).trim()}$`, "i") } });
+          .findOne({ username: { $regex: new RegExp(`^${cleanUsername}$`, "i") } });
 
-        if (!user) throw new Error("ไม่พบผู้ใช้งานในระบบ");
+        if (!user) {
+          console.warn(`[AUTH] User not found: "${cleanUsername}"`);
+          throw new Error("ไม่พบผู้ใช้งานในระบบ");
+        }
+
+        console.log(`[AUTH] User found: ${user.username} (ID: ${user._id})`);
 
         const isPasswordCorrect = await bcrypt.compare(
           credentials.password as string,
           user.password,
         );
-        if (!isPasswordCorrect) throw new Error("รหัสผ่านไม่ถูกต้อง");
+
+        if (!isPasswordCorrect) {
+          console.warn(`[AUTH] Incorrect password for: "${cleanUsername}"`);
+          throw new Error("รหัสผ่านไม่ถูกต้อง");
+        }
 
         // ✅ ตรวจสอบว่า Super Admin อนุมัติบัญชีแล้วหรือยัง
         if (user.isActive === false) {
+          console.warn(`[AUTH] Account not active: "${cleanUsername}"`);
           throw new Error("บัญชีของคุณยังรอการอนุมัติจาก Super Admin กรุณาติดต่อผู้ดูแลระบบ");
         }
 

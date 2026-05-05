@@ -7,15 +7,17 @@ export async function GET() {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // เข้ารหัสผ่าน 123456
-    const hashedPassword = await bcrypt.hash("123456", 10);
+    // เข้ารหัสผ่าน 12345678
+    const hashedPassword = await bcrypt.hash("12345678", 12);
 
     const user = {
       username: "admin",
       password: hashedPassword,
-      name: "สมชาย ใจดี", // ชื่อนี้จะไปโผล่ในข่าว
-      role: "admin",
+      name: "Super Admin", 
+      role: "super_admin",
+      isActive: true,
       image: "https://ui-avatars.com/api/?name=Admin",
+      updatedAt: new Date(),
     };
 
     // อัปเดตหรือสร้างใหม่ถ้ายังไม่มี
@@ -24,9 +26,10 @@ export async function GET() {
       .updateOne({ username: "admin" }, { $set: user }, { upsert: true });
 
     return NextResponse.json({
-      message: "User 'admin' created with password '123456'",
+      message: "Super Admin 'admin' created/updated with password '12345678'",
     });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Setup Admin Error:", error);
+    return NextResponse.json({ error: "Failed", message: error.message }, { status: 500 });
   }
 }

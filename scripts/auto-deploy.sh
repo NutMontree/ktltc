@@ -35,7 +35,7 @@ if [ "$LOCAL_HEAD" != "$LAST_BUILT_COMMIT" ]; then
         # 4. Restart PM2 service
         echo "[$(date)] Restarting PM2 service..."
         # Make sure pm2 is in path or use absolute path
-        /usr/local/bin/pm2 restart ktltc || pm2 restart ktltc
+        /usr/local/bin/pm2 restart ktltc --update-env || pm2 restart ktltc --update-env
         
         # Save the successful build commit
         echo $LOCAL_HEAD > .last_built_commit
