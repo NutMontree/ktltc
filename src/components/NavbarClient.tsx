@@ -202,6 +202,11 @@ export default function NavbarClient({
   };
 
   const handleLogout = async () => {
+    try {
+      await fetch("/api/attendance/logout", { method: "POST" });
+    } catch (_) {
+      // ถ้า log ไม่สำเร็จ ก็ยังต้อง logout ได้
+    }
     await signOut({ callbackUrl: "/login" });
   };
 
@@ -520,29 +525,33 @@ export default function NavbarClient({
                               <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
                                 <Shield size={12} /> เฉพาะ Super Admin
                               </p>
+
                               <Link
                                 href="/dashboard/super-admin"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                               >
                                 <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
                               </Link>
+
+                              <Link
+                                href="/dashboard/permissions"
+                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                              >
+                                <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
+                              </Link>
+
                               <Link
                                 href="/dashboard/data-management"
                                 className="flex items-center gap-3 px-3 py-2 text-[12px] font-bold text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
                               >
                                 <FileText size={14} /> แก้ไขข้อมูลการเข้างาน / ออกงาน
                               </Link>
+                              
                               <Link
                                 href="/work-reports-management"
                                 className="flex items-center gap-3 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                               >
                                 <FileText size={14} /> แก้ไขรายงานปฏิบัติงาน
-                              </Link>
-                              <Link
-                                href="/dashboard/permissions"
-                                className="flex items-center gap-3 px-3 py-2 text-[12px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-                              >
-                                <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
                               </Link>
                             </div>
                           )}
