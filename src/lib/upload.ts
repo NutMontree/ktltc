@@ -19,11 +19,7 @@ export const uploadFile = async (
   const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
   const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
   const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
-
-  if (!isImage && !isVideo) {
-    console.error("Unsupported file type:", file.type, file.name);
-    return { secure_url: null, thumbnail_url: null };
-  }
+  const isCompressibleImage = isImage && !isGif && !file.type?.includes("svg");
 
   if (isImage && file.size > MAX_IMAGE_SIZE) {
     console.error("Image file too large:", file.name, file.size);
@@ -35,8 +31,8 @@ export const uploadFile = async (
     return { secure_url: null, thumbnail_url: null };
   }
 
-  // Skip image compression for GIFs and videos
-  if (!isGif && !isVideo) {
+  // Only compress images that are not GIFs or SVGs
+  if (isCompressibleImage) {
     try {
       const options = {
         maxSizeMB: 0.8,

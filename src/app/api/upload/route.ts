@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     // Read limits from environment variables (bytes). Fallback to sensible defaults.
     const MAX_IMAGE_SIZE = Number(process.env.MAX_IMAGE_SIZE_BYTES) || 10 * 1024 * 1024; // 10 MB
     const MAX_VIDEO_SIZE = Number(process.env.MAX_VIDEO_SIZE_BYTES) || 200 * 1024 * 1024; // 200 MB
+    const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE_BYTES) || 500 * 1024 * 1024; // 500 MB for other files
 
     const allowedImageTypes = [
       'image/jpeg',
@@ -40,13 +41,9 @@ export async function POST(req: Request) {
     }
     const sanitizedFolder = rawFolder.replace(/[^a-zA-Z0-9_\-/]/g, '');
 
-    // Validate MIME and size
+    // Validate size based on type
     const isImage = allowedImageTypes.includes(fileType) || fileType.startsWith('image/');
     const isVideo = allowedVideoTypes.includes(fileType) || fileType.startsWith('video/');
-
-    if (!isImage && !isVideo) {
-      return NextResponse.json({ success: false, message: 'Unsupported file type' }, { status: 415 });
-    }
 
     if (isImage && fileSize > MAX_IMAGE_SIZE) {
       return NextResponse.json({ success: false, message: `Image exceeds size limit (${MAX_IMAGE_SIZE} bytes)` }, { status: 413 });
@@ -54,6 +51,10 @@ export async function POST(req: Request) {
 
     if (isVideo && fileSize > MAX_VIDEO_SIZE) {
       return NextResponse.json({ success: false, message: `Video exceeds size limit (${MAX_VIDEO_SIZE} bytes)` }, { status: 413 });
+    }
+
+    if (!isImage && !isVideo && fileSize > MAX_FILE_SIZE) {
+      return NextResponse.json({ success: false, message: `File exceeds size limit (${MAX_FILE_SIZE} bytes)` }, { status: 413 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());

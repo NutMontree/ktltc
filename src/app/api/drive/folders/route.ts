@@ -32,7 +32,13 @@ export async function GET(request: Request) {
       .sort({ name: 1 })
       .toArray();
 
-    return NextResponse.json({ folders, files });
+    // Fetch All Folders (for move picker)
+    const allFolders = await db.collection("drive_folders")
+      .find({})
+      .project({ _id: 1, name: 1, parentId: 1 })
+      .toArray();
+
+    return NextResponse.json({ folders, files, allFolders });
   } catch (error) {
     console.error("Drive API GET Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -49,7 +55,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { name, parentId: parentIdStr } = await request.json();
+    const { name, parentId: parentIdStr, isCollaborative } = await request.json();
     if (!name) return NextResponse.json({ error: "Folder name is required" }, { status: 400 });
 
     const parentId = parentIdStr ? new ObjectId(parentIdStr) : null;
@@ -59,6 +65,7 @@ export async function POST(request: Request) {
     const newFolder = {
       name,
       parentId,
+      isCollaborative: !!isCollaborative,
       ownerId: (session.user as any).id,
       ownerName: session.user.name,
       createdAt: new Date(),

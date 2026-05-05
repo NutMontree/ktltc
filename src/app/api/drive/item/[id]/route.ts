@@ -18,9 +18,8 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { name, type } = await request.json(); // type: 'file' | 'folder'
-    if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
-
+    const { name, type, newParentId, isCollaborative } = await request.json(); // type: 'file' | 'folder'
+    
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const collectionName = type === "folder" ? "drive_folders" : "drive_files";
@@ -30,12 +29,34 @@ export async function PATCH(
 
     // Permission check: Owner or Super Admin
     if (item.ownerId !== userId && userRole !== "super_admin") {
-      return NextResponse.json({ error: "No permission to rename this item" }, { status: 403 });
+      return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
+    }
+
+    const updateData: any = { updatedAt: new Date() };
+    if (name) updateData.name = name;
+    if (isCollaborative !== undefined && type === "folder") updateData.isCollaborative = isCollaborative;
+    
+    // Handle Moving
+    if (newParentId !== undefined) {
+      const parentId = newParentId === "null" || !newParentId ? null : new ObjectId(newParentId);
+      
+      // Prevent moving a folder into itself or its children
+      if (type === "folder" && parentId) {
+        if (parentId.toString() === id) {
+          return NextResponse.json({ error: "Cannot move a folder into itself" }, { status: 400 });
+        }
+      }
+      
+      if (type === "folder") {
+        updateData.parentId = parentId;
+      } else {
+        updateData.folderId = parentId;
+      }
     }
 
     await db.collection(collectionName).updateOne(
       { _id: new ObjectId(id) },
-      { $set: { name, updatedAt: new Date() } }
+      { $set: updateData }
     );
 
     return NextResponse.json({ success: true });
