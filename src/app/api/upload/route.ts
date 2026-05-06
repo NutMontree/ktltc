@@ -7,6 +7,7 @@ export async function POST(req: Request) {
     // Dynamic import เพื่อไม่ให้ Vercel bundle fs เข้าไปใน client chunk
     const { writeFile, mkdir } = await import('fs/promises');
     const { join } = await import('path');
+    const sharp = (await import('sharp')).default;
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -73,27 +74,40 @@ export async function POST(req: Request) {
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
 
-    // Optionally generate a thumbnail for videos if ENABLE_VIDEO_THUMBNAIL=1 and ffmpeg is available
+    // Optionally generate a thumbnail for videos/gifs
     let thumbnail_url: string | null = null;
     try {
       const shouldGenThumb = (process.env.ENABLE_VIDEO_THUMBNAIL || '1') === '1';
-      if (isVideo && shouldGenThumb) {
-        try {
-          const { spawn } = await import('child_process');
-          const thumbName = `${filename}.thumb.jpg`;
-          const thumbPath = join(uploadDir, thumbName);
+      if (shouldGenThumb) {
+        const thumbName = `${filename}.thumb.jpg`;
+        const thumbPath = join(uploadDir, thumbName);
 
-          // Run ffmpeg to capture a frame at 1 second
-          await new Promise<void>((resolve, reject) => {
-            const ff = spawn('ffmpeg', ['-ss', '00:00:01', '-i', filepath, '-frames:v', '1', '-q:v', '2', thumbPath]);
-            ff.on('error', (err) => reject(err));
-            ff.on('close', (code) => {
-              if (code === 0) resolve(); else reject(new Error(`ffmpeg exited with ${code}`));
+        if (isVideo) {
+          try {
+            const { spawn } = await import('child_process');
+            // Run ffmpeg to capture a frame at 1 second
+            await new Promise<void>((resolve, reject) => {
+              const ff = spawn('ffmpeg', ['-ss', '00:00:01', '-i', filepath, '-frames:v', '1', '-q:v', '2', thumbPath]);
+              ff.on('error', (err) => reject(err));
+              ff.on('close', (code) => {
+                if (code === 0) resolve(); else reject(new Error(`ffmpeg exited with ${code}`));
+              });
             });
-          });
-          thumbnail_url = `/api/media/${sanitizedFolder}/${thumbName}`;
-        } catch (fferr) {
-          console.warn('Thumbnail generation failed (ffmpeg not available or error):', fferr);
+            thumbnail_url = `/api/media/${sanitizedFolder}/${thumbName}`;
+          } catch (fferr) {
+            console.warn('Video thumbnail generation failed:', fferr);
+          }
+        } else if (fileType === 'image/gif') {
+          try {
+            // Generate a static thumbnail for GIF using sharp (first frame)
+            await sharp(filepath)
+              .resize(400, 400, { fit: 'cover' })
+              .toFormat('jpg')
+              .toFile(thumbPath);
+            thumbnail_url = `/api/media/${sanitizedFolder}/${thumbName}`;
+          } catch (gifErr) {
+            console.warn('GIF thumbnail generation failed:', gifErr);
+          }
         }
       }
     } catch (thumbErr) {

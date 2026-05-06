@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   Folder,
@@ -44,16 +45,35 @@ interface DriveItem {
   ownerName: string;
   createdAt: string;
   updatedAt: string;
+  parentId?: string;
   type?: string;
   size?: number;
   url?: string;
+  thumbnailUrl?: string;
   isCollaborative?: boolean;
 }
 
 export default function DrivePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-[80vh] items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+        </div>
+      }
+    >
+      <DriveContent />
+    </Suspense>
+  );
+}
+
+function DriveContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const urlFolderId = searchParams.get("folderId");
+
+  const [currentFolderId, setCurrentFolderId] = useState<string | null>(urlFolderId);
   const [folders, setFolders] = useState<DriveItem[]>([]);
   const [files, setFiles] = useState<DriveItem[]>([]);
   const [breadcrumbs, setBreadcrumbs] = useState<{ id: string | null; name: string }[]>([
@@ -81,6 +101,7 @@ export default function DrivePage() {
     currentIndex: number;
     totalCount: number;
   } | null>(null);
+  const [filterType, setFilterType] = useState<"all" | "image" | "video" | "document" | "archive" | "audio" | "other">("all");
 
   const userRole = (session?.user as any)?.role?.toLowerCase();
   const userId = (session?.user as any)?.id;
@@ -112,25 +133,50 @@ export default function DrivePage() {
       if (["user", "student"].includes(userRole)) {
         router.push("/dashboard");
       } else {
-        fetchItems(currentFolderId);
+        // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
+        setCurrentFolderId(urlFolderId);
+        fetchItems(urlFolderId);
       }
     }
-  }, [status, userRole, router, currentFolderId, fetchItems]);
+  }, [status, userRole, router, urlFolderId, fetchItems]);
+
+  // Reconstruct breadcrumbs when folders list or current ID changes
+  useEffect(() => {
+    if (allFoldersList.length > 0) {
+      if (!urlFolderId) {
+        setBreadcrumbs([{ id: null, name: "คลังไฟล์งาน" }]);
+      } else {
+        const path: { id: string | null; name: string }[] = [{ id: null, name: "คลังไฟล์งาน" }];
+        const buildPath = (targetId: string) => {
+          const folder = allFoldersList.find((f) => f._id === targetId);
+          if (folder) {
+            if (folder.parentId) {
+              buildPath(folder.parentId);
+            }
+            path.push({ id: folder._id, name: folder.name });
+          }
+        };
+        buildPath(urlFolderId);
+        setBreadcrumbs(path);
+      }
+    }
+  }, [allFoldersList, urlFolderId]);
 
   const handleFolderClick = (folder: DriveItem) => {
-    setCurrentFolderId(folder._id);
-    setBreadcrumbs([...breadcrumbs, { id: folder._id, name: folder.name }]);
+    router.push(`?folderId=${folder._id}`);
   };
 
   const handleBreadcrumbClick = (index: number) => {
     if (index === -1) {
-      setBreadcrumbs([{ id: null, name: "คลังไฟล์งาน" }]);
-      setCurrentFolderId(null);
+      router.push("/dashboard/drive");
       return;
     }
-    const newCrumbs = breadcrumbs.slice(0, index + 1);
-    setBreadcrumbs(newCrumbs);
-    setCurrentFolderId(newCrumbs[index].id);
+    const targetId = breadcrumbs[index].id;
+    if (targetId) {
+      router.push(`?folderId=${targetId}`);
+    } else {
+      router.push("/dashboard/drive");
+    }
   };
 
   const createFolder = async () => {
@@ -283,11 +329,24 @@ export default function DrivePage() {
   };
 
   const selectAll = () => {
-    const allIds = [...folders.map((f) => f._id), ...files.map((f) => f._id)];
-    if (selectedIds.size === allIds.length) {
-      setSelectedIds(new Set());
+    const currentItems = [...folders, ...filteredFiles];
+    const currentItemIds = currentItems.map((item) => item._id);
+    
+    // Check if all current items are already selected
+    const isAllSelected = currentItemIds.every(id => selectedIds.has(id));
+
+    if (isAllSelected) {
+      // Unselect only the items currently shown
+      const newSelected = new Set(selectedIds);
+      currentItemIds.forEach(id => newSelected.delete(id));
+      setSelectedIds(newSelected);
+      if (newSelected.size === 0) setIsSelectionMode(false);
     } else {
-      setSelectedIds(new Set(allIds));
+      // Select all items currently shown
+      setIsSelectionMode(true);
+      const newSelected = new Set(selectedIds);
+      currentItemIds.forEach(id => newSelected.add(id));
+      setSelectedIds(newSelected);
     }
   };
 
@@ -308,7 +367,7 @@ export default function DrivePage() {
           totalCount: totalCount,
         });
 
-        const { secure_url } = await uploadFile(file, "ktltc_drive", (percent) => {
+        const { secure_url, thumbnail_url } = await uploadFile(file, "ktltc_drive", (percent) => {
           setUploadStatus({
             fileName: file.name,
             percent,
@@ -324,6 +383,7 @@ export default function DrivePage() {
             body: JSON.stringify({
               name: file.name,
               url: secure_url,
+              thumbnailUrl: thumbnail_url,
               folderId: currentFolderId,
               size: file.size,
               type: file.type,
@@ -355,7 +415,7 @@ export default function DrivePage() {
       return (
         <div className="relative h-full w-full overflow-hidden rounded-2xl">
           <img
-            src={file.url}
+            src={file.thumbnailUrl || file.url}
             alt={file.name}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
@@ -366,8 +426,28 @@ export default function DrivePage() {
 
     if (type.startsWith("video/")) {
       return (
-        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-slate-900 text-white">
-          <Video size={32} fill="currentColor" fillOpacity={0.2} />
+        <div className="relative h-full w-full overflow-hidden rounded-2xl bg-slate-900 text-white">
+          {file.thumbnailUrl ? (
+            <>
+              <img
+                src={file.thumbnailUrl}
+                alt={file.name}
+                className="h-full w-full object-cover opacity-60 transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Video
+                  size={32}
+                  className="text-white drop-shadow-lg"
+                  fill="currentColor"
+                  fillOpacity={0.5}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <Video size={32} fill="currentColor" fillOpacity={0.2} />
+            </div>
+          )}
         </div>
       );
     }
@@ -375,7 +455,44 @@ export default function DrivePage() {
     if (type.includes("pdf")) {
       return (
         <div className="flex h-full w-full items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400">
-          <FileText size={32} />
+          <FileText size={40} strokeWidth={2.5} />
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-rose-600 text-white text-[8px] font-black rounded uppercase">PDF</div>
+        </div>
+      );
+    }
+
+    if (type.includes("word") || file.name.match(/\.(docx?)$/i)) {
+      return (
+        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+          <FileText size={40} strokeWidth={2.5} />
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-blue-600 text-white text-[8px] font-black rounded uppercase">WORD</div>
+        </div>
+      );
+    }
+
+    if (type.includes("excel") || type.includes("sheet") || file.name.match(/\.(xlsx?|csv)$/i)) {
+      return (
+        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
+          <FileText size={40} strokeWidth={2.5} />
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-emerald-600 text-white text-[8px] font-black rounded uppercase">EXCEL</div>
+        </div>
+      );
+    }
+
+    if (type.includes("presentation") || type.includes("powerpoint") || file.name.match(/\.(pptx?)$/i)) {
+      return (
+        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400">
+          <FileText size={40} strokeWidth={2.5} />
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-orange-600 text-white text-[8px] font-black rounded uppercase">PPT</div>
+        </div>
+      );
+    }
+
+    if (type.includes("zip") || type.includes("rar") || file.name.match(/\.(zip|rar|7z)$/i)) {
+      return (
+        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+          <Folder size={40} strokeWidth={2.5} />
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-amber-600 text-white text-[8px] font-black rounded uppercase">ZIP</div>
         </div>
       );
     }
@@ -394,6 +511,29 @@ export default function DrivePage() {
       </div>
     );
   };
+
+  const getFilteredFiles = () => {
+    if (filterType === "all") return files;
+    return files.filter((file) => {
+      const type = file.type?.toLowerCase() || "";
+      const name = file.name.toLowerCase();
+      
+      if (filterType === "image") return type.startsWith("image/");
+      if (filterType === "video") return type.startsWith("video/");
+      if (filterType === "audio") return type.startsWith("audio/");
+      if (filterType === "document") {
+        return type.includes("pdf") || type.includes("word") || type.includes("excel") || 
+               type.includes("sheet") || type.includes("presentation") || 
+               /\.(docx?|xlsx?|pptx?|pdf|txt)$/i.test(name);
+      }
+      if (filterType === "archive") {
+        return type.includes("zip") || type.includes("rar") || /\.(zip|rar|7z)$/i.test(name);
+      }
+      return false;
+    });
+  };
+
+  const filteredFiles = getFilteredFiles();
 
   if (status === "loading" || loading) {
     return (
@@ -487,36 +627,117 @@ export default function DrivePage() {
           >
             <Plus size={20} strokeWidth={2.5} /> โฟลเดอร์
           </button>
+
+          <button
+            onClick={() => {
+              if (isSelectionMode) {
+                setSelectedIds(new Set());
+                setIsSelectionMode(false);
+              } else {
+                setIsSelectionMode(true);
+              }
+            }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-black transition-all shadow-lg border hover:-translate-y-0.5 active:scale-95 ${
+              isSelectionMode
+                ? "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-900/20 dark:border-rose-900/30"
+                : "bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/20 dark:border-indigo-900/30 hover:bg-indigo-100"
+            }`}
+          >
+            {isSelectionMode ? <X size={20} /> : <CheckSquare size={20} />}
+            <span className="hidden sm:inline">
+              {isSelectionMode ? "ยกเลิก" : "เลือกหลายรายการ"}
+            </span>
+          </button>
         </div>
       </div>
 
-      {/* Navigation & Breadcrumbs */}
-      <div className="mb-8 flex items-center justify-between bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md p-4 rounded-[24px] border border-slate-200 dark:border-zinc-800">
-        <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-1">
+      {/* Announcement Section - Modern Style */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8 overflow-hidden rounded-[32px] bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-[1px] shadow-xl shadow-blue-500/20"
+      >
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl p-6 md:px-8 rounded-[31px]">
+          <div className="flex items-start gap-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+              <Info size={28} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight mb-1">
+                อัปเกรดระบบคลังไฟล์งานใหม่! 🚀
+              </h3>
+              <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 leading-relaxed">
+                รองรับการอัปโหลดวิดีโอขนาดใหญ่สูงสุด{" "}
+                <span className="text-blue-600 dark:text-blue-400 font-black">500 MB</span> ต่อครั้ง
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="px-4 py-2 bg-slate-100 dark:bg-zinc-800 rounded-xl text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
+              Updated 2026
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* File Type Filter Tabs */}
+      <div className="mb-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+        {[
+          { id: "all", label: "ทั้งหมด", icon: <LayoutGrid size={14} /> },
+          { id: "image", label: "รูปภาพ", icon: <ImageIcon size={14} /> },
+          { id: "video", label: "วิดีโอ", icon: <Video size={14} /> },
+          { id: "document", label: "เอกสาร", icon: <FileText size={14} /> },
+          { id: "archive", label: "ไฟล์บีบอัด", icon: <Folder size={14} /> },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setFilterType(tab.id as any)}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black transition-all shrink-0 ${
+              filterType === tab.id
+                ? "bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900"
+                : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400"
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+            {filterType === tab.id && (
+              <span className="ml-1 px-1.5 py-0.5 bg-blue-500 text-white text-[10px] rounded-full">
+                {tab.id === "all" ? files.length : filteredFiles.length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Navigation & Breadcrumbs - Compact & Responsive */}
+      <div className="mb-6 flex items-center justify-between bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md p-2 md:p-3 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <div className="flex items-center gap-1 md:gap-2 overflow-x-auto no-scrollbar py-0.5">
           {isSelectionMode && (
             <button
               onClick={selectAll}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-200 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all shrink-0"
             >
-              <CheckSquare size={16} />{" "}
-              {selectedIds.size === folders.length + files.length
-                ? "ไม่เลือกทั้งหมด"
-                : "เลือกทั้งหมด"}
+              <CheckSquare size={14} />{" "}
+              <span>
+                {[...folders, ...filteredFiles].every(item => selectedIds.has(item._id))
+                  ? "ไม่เลือกทั้งหมด"
+                  : "เลือกทั้งหมดในกลุ่มนี้"}
+              </span>
             </button>
           )}
           <button
             onClick={() => handleBreadcrumbClick(-1)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition-all ${breadcrumbs.length === 0 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all shrink-0 ${breadcrumbs.length === 0 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
           >
-            <HardDrive size={16} /> หน้าแรก
+            <HardDrive size={14} /> <span className="hidden xs:inline">หน้าแรก</span>
           </button>
 
           {breadcrumbs.map((crumb, idx) => (
-            <React.Fragment key={crumb.id}>
-              <span className="text-slate-300 dark:text-zinc-700">/</span>
+            <React.Fragment key={crumb.id || idx}>
+              <span className="text-slate-300 dark:text-zinc-700 text-xs">/</span>
               <button
                 onClick={() => handleBreadcrumbClick(idx)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition-all whitespace-nowrap ${idx === breadcrumbs.length - 1 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all whitespace-nowrap shrink-0 ${idx === breadcrumbs.length - 1 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
               >
                 {crumb.name}
               </button>
@@ -527,9 +748,9 @@ export default function DrivePage() {
         {breadcrumbs.length > 0 && (
           <button
             onClick={() => handleBreadcrumbClick(breadcrumbs.length - 2)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all shrink-0 border border-transparent hover:border-slate-200 dark:hover:border-zinc-700"
           >
-            <ArrowLeft size={16} /> ย้อนกลับ
+            <ArrowLeft size={14} /> <span className="hidden sm:inline">ย้อนกลับ</span>
           </button>
         )}
       </div>
@@ -657,7 +878,7 @@ export default function DrivePage() {
                 <span className="truncate max-w-[80px]">{folder.ownerName}</span>
               </div>
 
-              <div className="flex gap-1.5 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="flex gap-1.5 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl">
                 {(isSuperAdmin || folder.ownerId === userId) && (
                   <>
                     <button
@@ -702,7 +923,7 @@ export default function DrivePage() {
         ))}
 
         {/* Files */}
-        {files.map((file) => (
+        {filteredFiles.map((file) => (
           <motion.div
             layout
             key={file._id}

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { name, url, folderId: folderIdStr, size, type } = await request.json();
+    const { name, url, thumbnailUrl, folderId: folderIdStr, size, type } = await request.json();
     if (!name || !url) return NextResponse.json({ error: "Name and URL are required" }, { status: 400 });
 
     const folderId = folderIdStr ? new ObjectId(folderIdStr) : null;
@@ -23,6 +23,7 @@ export async function POST(request: Request) {
     const newFile = {
       name,
       url,
+      thumbnailUrl,
       folderId,
       size,
       type,
