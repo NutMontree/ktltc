@@ -18,6 +18,7 @@ import {
   Download,
   Bell,
   Check,
+  Home,
   HardDrive,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
@@ -218,6 +219,9 @@ export default function NavbarClient({
 
   const filteredMenuTree = menuTree.filter((item) => {
     const path = item.path || "";
+    const isStaff = !["user", "student"].includes(role?.toLowerCase() || "");
+    if (path === "/wfh" && !isStaff) return false;
+    if (path === "/dashboard/drive" && !isStaff) return false;
     if (path.startsWith("/dashboard") && !canAccessDashboard) return false;
     if (path.startsWith("/attendance-dashboard") && !canManageAttendance) return false;
     if (path.startsWith("/attendance-report") && !canManageAttendance) return false;
@@ -471,16 +475,29 @@ export default function NavbarClient({
                         <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
                           <Command className="w-3 h-3" /> เมนูหลัก
                         </h4>
+                        <Link
+                          href="/"
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+                            pathname === "/"
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                              : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                          }`}
+                        >
+                          <Home className="w-5 h-5" /> หน้าแรก
+                        </Link>
+
                         <div className="space-y-0.5">
-                          <Link
-                            href="/wfh"
-                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-2xl transition-all group"
-                          >
-                            <div className="p-1.5 rounded-xl bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50 transition-colors shadow-sm">
-                              <FileText size={16} />
-                            </div>
-                            รายงานปฏิบัติงาน (WFH)
-                          </Link>
+                          {!["student"].includes(role?.toLowerCase() || "") && (
+                            <Link
+                              href="/wfh"
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-2xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-xl bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50 transition-colors shadow-sm">
+                                <FileText size={16} />
+                              </div>
+                              รายงานปฏิบัติงาน (WFH)
+                            </Link>
+                          )}
 
                           {canAccessDashboard && (
                             <Link
@@ -494,7 +511,7 @@ export default function NavbarClient({
                             </Link>
                           )}
 
-                          {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                          {!["student"].includes(role?.toLowerCase() || "") && (
                             <Link
                               href="/dashboard/drive"
                               className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
@@ -515,9 +532,11 @@ export default function NavbarClient({
                         canManageNews ||
                         canManageQA) && (
                         <div>
-                          <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                            <Shield className="w-3 h-3" /> ระบบจัดการ
-                          </h4>
+                          {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                            <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                              <Shield className="w-3 h-3" /> ระบบจัดการ
+                            </h4>
+                          )}
 
                           {/* Super Admin Card */}
                           {isSuperAdmin && (
@@ -605,9 +624,11 @@ export default function NavbarClient({
                           {/* Content Management */}
                           {(canManageNews || canManageQA) && (
                             <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/60">
-                              <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                                <FileText className="w-3 h-3" /> จัดการเนื้อหา
-                              </h4>
+                              {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                                <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                                  <FileText className="w-3 h-3" /> จัดการเนื้อหา
+                                </h4>
+                              )}
                               <div className="space-y-0.5">
                                 {canManageNews && (
                                   <Link
@@ -642,7 +663,7 @@ export default function NavbarClient({
                     <div className="p-3 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/30">
                       <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest px-2">
                         <span>KTL Management</span>
-                        <span>v2.0.26</span>
+                        <span>v3.0</span>
                       </div>
                     </div>
                   </div>

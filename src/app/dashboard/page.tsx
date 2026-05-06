@@ -465,7 +465,7 @@ export default function DashboardLoader() {
           )}
 
           {/* --- Drive Section --- */}
-          {!(["user", "student"].includes(((session?.user as any)?.role || "").toLowerCase())) && (
+          {!["user", "student"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 flex items-center gap-4">

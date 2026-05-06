@@ -280,7 +280,7 @@ export default function MobileMenu({
                         </Link>
                       )}
 
-                      {!["user", "student"].includes(roleLower) && (
+                      {!["student"].includes(roleLower) && (
                         <Link
                           href="/dashboard/drive"
                           onClick={closeMenu}
@@ -382,9 +382,11 @@ export default function MobileMenu({
 
                   {/* News & Activity Group */}
                   <div>
-                    <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
-                      <Newspaper className="w-3 h-3" /> จัดการเนื้อหา
-                    </h4>
+                    {!["user", "student"].includes(roleLower) && (
+                      <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
+                        <Newspaper className="w-3 h-3" /> จัดการเนื้อหา
+                      </h4>
+                    )}
                     <div className="space-y-1">
                       {permissions?.manage_news && (
                         <Link
@@ -410,9 +412,11 @@ export default function MobileMenu({
                   {/* Dynamic Menu Tree from Database */}
                   {menuTree && menuTree.length > 0 && (
                     <div>
-                      <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
-                        <Globe className="w-3 h-3" /> เมนูเว็บไซต์
-                      </h4>
+                      {!["user", "student"].includes(roleLower) && (
+                        <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
+                          <Globe className="w-3 h-3" /> เมนูเว็บไซต์
+                        </h4>
+                      )}
                       <div className="space-y-0.5">
                         {menuTree.map((item: any) => (
                           <RecursiveMenuItem key={item._id} item={item} />
@@ -427,7 +431,7 @@ export default function MobileMenu({
               <div className="p-6 border-t border-zinc-100 dark:border-zinc-800">
                 <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest">
                   <span>KTL Management</span>
-                  <span>v2.0.26</span>
+                  <span>v3.0</span>
                 </div>
               </div>
             </motion.div>

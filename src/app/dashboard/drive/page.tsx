@@ -130,15 +130,11 @@ function DriveContent() {
     if (status === "unauthenticated") {
       router.push("/login");
     } else if (status === "authenticated") {
-      if (["user", "student"].includes(userRole)) {
-        router.push("/dashboard");
-      } else {
-        // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
-        setCurrentFolderId(urlFolderId);
-        fetchItems(urlFolderId);
-      }
+      // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
+      setCurrentFolderId(urlFolderId);
+      fetchItems(urlFolderId);
     }
-  }, [status, userRole, router, urlFolderId, fetchItems]);
+  }, [status, router, urlFolderId, fetchItems]);
 
   // Reconstruct breadcrumbs when folders list or current ID changes
   useEffect(() => {

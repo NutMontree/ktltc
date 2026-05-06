@@ -18,7 +18,7 @@ export async function GET() {
     
     // Default fallback if no custom permissions in DB
     const permissions = dbPermission?.permissions || {
-      access_dashboard: ["super_admin", "admin", "hr", "director", "editor", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role),
+      access_dashboard: ["super_admin", "admin", "hr", "director", "editor", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "user", "student"].includes(role),
       manage_users: ["super_admin"].includes(role),
       manage_news: ["super_admin", "admin", "editor"].includes(role),
       manage_pages: ["super_admin", "editor"].includes(role),

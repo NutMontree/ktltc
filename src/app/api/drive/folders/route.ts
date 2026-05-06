@@ -7,12 +7,9 @@ import { ObjectId } from "mongodb";
 export async function GET(request: Request) {
   try {
     const session = await auth();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const userRole = (session?.user as any)?.role?.toLowerCase();
-
-    if (!session || ["user", "student"].includes(userRole)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const parentIdStr = searchParams.get("parentId");
     const parentId = parentIdStr && parentIdStr !== "null" ? new ObjectId(parentIdStr) : null;
@@ -20,21 +17,39 @@ export async function GET(request: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // Define access filter based on role
+    const isAdmin = !["user", "student"].includes(userRole);
+    const userId = (session.user as any).id;
+
+    const baseFilter = isAdmin 
+      ? { parentId } 
+      : { 
+          parentId, 
+          $or: [
+            { ownerId: userId },
+            { isCollaborative: true }
+          ]
+        };
+
+    const fileFilter = isAdmin
+      ? { folderId: parentId }
+      : { folderId: parentId, ownerId: userId };
+
     // Fetch Folders
     const folders = await db.collection("drive_folders")
-      .find({ parentId })
+      .find(baseFilter)
       .sort({ name: 1 })
       .toArray();
 
     // Fetch Files
     const files = await db.collection("drive_files")
-      .find({ folderId: parentId })
+      .find(fileFilter)
       .sort({ name: 1 })
       .toArray();
 
-    // Fetch All Folders (for move picker)
+    // Fetch All Folders (for move picker - limited to owned/collab for users)
     const allFolders = await db.collection("drive_folders")
-      .find({})
+      .find(isAdmin ? {} : { $or: [{ ownerId: userId }, { isCollaborative: true }] })
       .project({ _id: 1, name: 1, parentId: 1 })
       .toArray();
 
@@ -49,11 +64,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
-
-    if (!session || ["user", "student"].includes(userRole)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { name, parentId: parentIdStr, isCollaborative } = await request.json();
     if (!name) return NextResponse.json({ error: "Folder name is required" }, { status: 400 });

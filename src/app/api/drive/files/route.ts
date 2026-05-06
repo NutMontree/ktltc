@@ -7,11 +7,7 @@ import { ObjectId } from "mongodb";
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
-
-    if (!session || ["user", "student"].includes(userRole)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { name, url, thumbnailUrl, folderId: folderIdStr, size, type } = await request.json();
     if (!name || !url) return NextResponse.json({ error: "Name and URL are required" }, { status: 400 });
