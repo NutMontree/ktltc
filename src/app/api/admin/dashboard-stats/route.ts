@@ -83,6 +83,8 @@ export async function GET() {
     let serverTotalMB = 0; // Real disk capacity
     let serverUsedMB = 0;
     let serverAvailableMB = 0;
+    let cpuUsage = "0";
+    let ramUsage = { total: 0, used: 0, percent: 0 };
     
     try {
       // Fetch custom limits from database
@@ -114,8 +116,23 @@ export async function GET() {
         serverTotalMB = parseInt(diskInfo[0]) || 0;
         serverUsedMB = parseInt(diskInfo[1]) || 0;
         serverAvailableMB = parseInt(diskInfo[2]) || 0;
+
+        // Get CPU usage (1 minute load average)
+        const cpuCmd = "top -bn1 | grep 'Cpu(s)' | awk '{print $2 + $4}'";
+        cpuUsage = execSync(cpuCmd).toString().trim() || "0";
+
+        // Get RAM usage
+        const ramCmd = "free -m | grep Mem | awk '{print $2 \" \" $3}'";
+        const ramInfo = execSync(ramCmd).toString().trim().split(/\s+/);
+        const ramTotal = parseInt(ramInfo[0]) || 0;
+        const ramUsed = parseInt(ramInfo[1]) || 0;
+        ramUsage = {
+          total: ramTotal,
+          used: ramUsed,
+          percent: ramTotal > 0 ? Math.round((ramUsed / ramTotal) * 100) : 0,
+        };
       } catch (diskErr) {
-        console.error("Disk Capacity Check Error:", diskErr);
+        console.error("Infrastructure Telemetry Check Error:", diskErr);
       }
     } catch (err) {
       console.error("Local Storage Usage Calculation Error:", err);
@@ -136,6 +153,8 @@ export async function GET() {
       serverTotalMB: serverTotalMB,
       serverUsedMB: serverUsedMB,
       serverAvailableMB: serverAvailableMB,
+      cpuUsage: cpuUsage,
+      ramUsage: ramUsage,
       totalPendingQA,
       totalUsers,
     });

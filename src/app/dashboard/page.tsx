@@ -185,8 +185,15 @@ export default function DashboardLoader() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto bg-transparent transition-colors duration-500">
-      <div className="max-w-[1600px] mx-auto w-full px-4 py-8 md:py-12">
+    <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
+      {/* Background Mesh Gradients */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-600/10 animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px] dark:bg-indigo-600/10 animate-pulse delay-700" />
+        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-purple-500/5 blur-[100px] dark:bg-purple-600/5" />
+      </div>
+
+      <div className="max-w-[1600px] mx-auto w-full px-4 py-8 md:py-12 relative">
         {/* --- Header Section --- */}
         <DashboardHeader user={user} />
 
@@ -196,62 +203,67 @@ export default function DashboardLoader() {
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">
-                  Core Infrastructure Telemetry
+                  ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)
                   <span className="h-px bg-blue-500/10 flex-1" />
                 </h2>
                 <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  การตรวจสอบความพร้อมของระบบและฐานข้อมูล
+                  ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์
                 </span>
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                {/* Stat Grid */}
-                <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  <StatCard
-                    label="ข่าวสารทั้งหมด"
-                    value={stats.totalNews}
-                    icon={Newspaper}
+                {/* Status Dashboard */}
+                <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <TelemetryCard
+                    label="ภาระการประมวลผล (CPU)"
+                    value={stats.cpuUsage}
+                    unit="%"
+                    icon={Database}
                     color="blue"
-                    variants={item}
                   />
-                  <StatCard
-                    label="แบนเนอร์ประชาสัมพันธ์"
-                    value={stats.totalBanners}
-                    icon={ImageIcon}
-                    color="pink"
-                    variants={item}
+                  <TelemetryCard
+                    label="หน่วยความจำ (RAM)"
+                    value={stats.ramUsage.percent}
+                    unit="%"
+                    subValue={`ใช้งาน ${(stats.ramUsage.used / 1024).toFixed(1)} จาก ${(stats.ramUsage.total / 1024).toFixed(1)} GB`}
+                    icon={HardDrive}
+                    color="purple"
                   />
                   <StatCard
                     label="User ในระบบ"
                     value={stats.totalUsers}
                     icon={Users}
                     color="emerald"
+                    unit=" Users"
                     variants={item}
                   />
                   <StatCard
-                    label="โครงสร้างเมนู"
-                    value={stats.totalNav}
-                    icon={Navigation}
-                    color="purple"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="หน้าเนื้อเมนู"
-                    value={stats.totalPages}
-                    icon={FileText}
-                    color="amber"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="จำนวนรูปภาพในระบบ"
+                    label="จำนวนรูปภาพ"
                     value={stats.totalImagesCount}
-                    icon={Layers}
+                    icon={ImageIcon}
                     color="indigo"
                     unit=" ไฟล์"
                     variants={item}
                   />
+
                   <StatCard
-                    label="ไฟล์ในคลังข้อมูล"
+                    label="ข่าวสารทั้งหมด"
+                    value={stats.totalNews}
+                    icon={Newspaper}
+                    color="blue"
+                    unit=" ข่าว"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="แบนเนอร์"
+                    value={stats.totalBanners}
+                    icon={ImageIcon}
+                    color="pink"
+                    unit=" รูป"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="ไฟล์ในคลัง"
                     value={stats.totalDriveFiles}
                     icon={HardDrive}
                     color="orange"
@@ -259,11 +271,27 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                   <StatCard
-                    label="โฟลเดอร์ในคลัง"
+                    label="โฟลเดอร์"
                     value={stats.totalDriveFolders}
                     icon={Folder}
                     color="amber"
                     unit=" โฟลเดอร์"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="เมนูหลัก"
+                    value={stats.totalNav}
+                    icon={Navigation}
+                    color="purple"
+                    unit=" เมนู"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="หน้าเนื้อหา"
+                    value={stats.totalPages}
+                    icon={FileText}
+                    color="amber"
+                    unit=" หน้า"
                     variants={item}
                   />
                 </div>
@@ -320,11 +348,11 @@ export default function DashboardLoader() {
           <div>
             <motion.div variants={item} className="mb-8 flex flex-col gap-1">
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 flex items-center gap-4">
-                Administrative Operations
+                เมนูการจัดการข้อมูล (Administrative)
                 <span className="h-px bg-indigo-500/10 flex-1" />
               </h2>
               <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                การจัดการและบริหารข้อมูลเว็บไซต์
+                เครื่องมือจัดการเนื้อหาและข่าวสารของวิทยาลัย
               </span>
             </motion.div>
 
@@ -332,36 +360,36 @@ export default function DashboardLoader() {
               {permissions?.manage_news && (
                 <ActionCard
                   href="/dashboard/news"
-                  title="จัดการส่วนข่าว"
+                  title="จัดการข่าวสาร"
                   icon={Newspaper}
-                  desc="Manage all news & activities"
+                  desc="ลงข่าวประชาสัมพันธ์และกิจกรรมล่าสุด"
                   variants={item}
                 />
               )}
               {(session?.user as any)?.role === "super_admin" && (
                 <ActionCard
                   href="/dashboard/manage-home"
-                  title="จัดการหน้าแรก"
+                  title="ปรับแต่งหน้าหลัก"
                   icon={Globe}
-                  desc="Hero sections & Visibility"
+                  desc="จัดการแบนเนอร์และประกาศหน้าแรก"
                   variants={item}
                 />
               )}
               {(session?.user as any)?.role === "super_admin" && (
                 <ActionCard
                   href="/dashboard/navbar"
-                  title="จัดการเมนูหลัก"
+                  title="เมนูเว็บไซต์"
                   icon={Navigation}
-                  desc="Website navigation tree"
+                  desc="ตั้งค่าโครงสร้างเมนูและลิงก์เชื่อมโยง"
                   variants={item}
                 />
               )}
               {permissions?.manage_pages && (
                 <ActionCard
                   href="/dashboard/pages"
-                  title="จัดการเนื้อหาหน้า"
+                  title="เนื้อหาหน้าเว็บ"
                   icon={FileText}
-                  desc="Independent page builder"
+                  desc="จัดการข้อมูลและเนื้อหาในแต่ละหน้า"
                   variants={item}
                 />
               )}
@@ -370,16 +398,16 @@ export default function DashboardLoader() {
                   href="/dashboard/questions"
                   title="ระบบถาม-ตอบ"
                   icon={MessageSquare}
-                  desc="User Q&A & Support"
+                  desc="จัดการคำถามและข้อร้องเรียนจากผู้ใช้"
                   badge={stats.totalPendingQA > 0 ? stats.totalPendingQA : null}
                   variants={item}
                 />
               )}
               <ActionCard
                 href="/"
-                title="เข้าสู่หน้าหลัก"
+                title="ดูเว็บไซต์จริง"
                 icon={ArrowUpRight}
-                desc="View production site"
+                desc="เปิดหน้าเว็บไซต์หลักในแท็บใหม่"
                 external
                 variants={item}
               />
@@ -402,65 +430,65 @@ export default function DashboardLoader() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 <ActionCard
                   href="/dashboard/permissions"
-                  title="จัดการสิทธิ์แต่ละระดับ"
+                  title="จัดการสิทธิ์"
                   icon={Shield}
-                  desc="Role-based permission control"
+                  desc="กำหนดสิทธิ์การเข้าถึงแยกตามรายบุคคล"
                   variants={item}
                 />
                 <ActionCard
                   href="/dashboard/data-management"
-                  title="แก้ไขข้อมูลเข้า/ออกงาน"
+                  title="ข้อมูลลงเวลา"
                   icon={ClipboardList}
-                  desc="Attendance data correction"
+                  desc="ตรวจสอบและแก้ไขข้อมูลการเข้า-ออกงาน"
                   variants={item}
                 />
                 <ActionCard
                   href="/work-reports-management"
-                  title="แก้ไขรายงานปฏิบัติงาน"
+                  title="จัดการรายงานงาน"
                   icon={FileText}
-                  desc="Work report management"
+                  desc="บริหารจัดการข้อมูลรายงานการปฏิบัติงาน"
                   variants={item}
                 />
                 <ActionCard
                   href="/attendance-dashboard"
-                  title="ภาพรวมลงเวลาบุคลากร"
+                  title="ภาพรวมบุคลากร"
                   icon={CalendarCheck}
-                  desc="Personnel attendance overview"
+                  desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
                   variants={item}
                 />
                 <ActionCard
                   href="/attendance-report"
-                  title="ระบบรายงานการเข้างาน"
+                  title="ออกรายงานสรุป"
                   icon={Clock}
-                  desc="Attendance reporting system"
+                  desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
                   variants={item}
                 />
                 <ActionCard
                   href="/work-reports"
-                  title="ระบบรายงานปฏิบัติงาน"
+                  title="ตรวจสอบรายงาน"
                   icon={FileText}
-                  desc="Work performance reports"
+                  desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
                   variants={item}
                 />
                 <ActionCard
                   href="/leave-approvals"
-                  title="จัดการอนุมัติใบลา"
+                  title="อนุมัติใบลา"
                   icon={CalendarCheck}
-                  desc="Leave request approvals"
+                  desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
                   variants={item}
                 />
                 <ActionCard
                   href="/manage-roles"
-                  title="จัดการสิทธิ์บุคลากร"
+                  title="กำหนดบทบาท"
                   icon={UserCog}
-                  desc="Personnel role settings"
+                  desc="จัดการระดับผู้ใช้งานและบทบาทหน้าที่"
                   variants={item}
                 />
                 <ActionCard
                   href="/attendance-settings"
                   title="ตั้งค่าเวลาเข้างาน"
                   icon={Settings}
-                  desc="Working hours configuration"
+                  desc="กำหนดตารางเวลาทำงานและเกณฑ์สาย"
                   variants={item}
                 />
               </div>
@@ -480,9 +508,9 @@ export default function DashboardLoader() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
                 <ActionCard
                   href="/dashboard/drive"
-                  title="คลังไฟล์งาน (Drive)"
+                  title="คลังไฟล์ (Drive)"
                   icon={HardDrive}
-                  desc="File storage & management"
+                  desc="จัดการไฟล์เอกสารและสื่อดิจิทัลทั้งหมด"
                   variants={item}
                 />
               </div>
@@ -606,53 +634,89 @@ export default function DashboardLoader() {
 
 // --- Premium Sub-Components ---
 
+function TelemetryCard({ label, value, unit, subValue, icon: Icon, color }: any) {
+  return (
+    <div className="relative group p-6 rounded-[2rem] bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:-translate-y-1 overflow-hidden">
+      <div
+        className={`absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity ${color === "blue" ? "text-blue-500" : "text-purple-500"}`}
+      >
+        <Icon size={80} strokeWidth={1} />
+      </div>
+      <div className="relative z-10">
+        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 dark:text-zinc-500 mb-3">
+          {label}
+        </p>
+        <div className="flex items-baseline gap-2">
+          <h3 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter">
+            {value}
+          </h3>
+          <span className="text-xs font-bold text-zinc-500 uppercase">{unit}</span>
+        </div>
+        {subValue && (
+          <p className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 mt-2 bg-zinc-100 dark:bg-zinc-900/50 w-fit px-2 py-0.5 rounded-lg border border-zinc-200 dark:border-zinc-800 uppercase tracking-tight">
+            {subValue}
+          </p>
+        )}
+        <div className="mt-5 h-1.5 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${Math.min(value, 100)}%` }}
+            transition={{ duration: 2, ease: "circOut" }}
+            className={`h-full ${color === "blue" ? "bg-blue-500 shadow-blue-500/50" : "bg-purple-500 shadow-purple-500/50"} rounded-full shadow-[0_0_15px]`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatCard({ label, value, icon: Icon, color, unit, variants }: any) {
   const colors: any = {
-    blue: "text-blue-600 dark:text-blue-400 bg-blue-500/5 dark:bg-blue-500/10 border-blue-500/20",
-    purple:
-      "text-purple-600 dark:text-purple-400 bg-purple-500/5 dark:bg-purple-500/10 border-purple-500/20",
-    amber:
-      "text-amber-600 dark:text-amber-400 bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20",
-    pink: "text-pink-600 dark:text-pink-400 bg-pink-500/5 dark:bg-pink-500/10 border-pink-500/20",
-    emerald:
-      "text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20",
-    indigo:
-      "text-indigo-600 dark:text-indigo-400 bg-indigo-500/5 dark:bg-indigo-500/10 border-indigo-500/20",
+    blue: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
+    purple: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
+    amber: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+    pink: "text-pink-600 dark:text-pink-400 bg-pink-500/10 border-pink-500/20",
+    emerald: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    indigo: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+    orange: "text-orange-600 dark:text-orange-400 bg-orange-500/10 border-orange-500/20",
   };
 
-  const glow: any = {
+  const glows: any = {
     blue: "group-hover:shadow-blue-500/20",
     purple: "group-hover:shadow-purple-500/20",
     amber: "group-hover:shadow-amber-500/20",
     pink: "group-hover:shadow-pink-500/20",
     emerald: "group-hover:shadow-emerald-500/20",
     indigo: "group-hover:shadow-indigo-500/20",
+    orange: "group-hover:shadow-orange-500/20",
   };
 
   return (
     <motion.div
       variants={variants}
-      className={`group relative p-6 rounded-4xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${glow[color]}`}
+      className={`group relative p-6 rounded-[2.5rem] bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-500/30 ${glows[color]}`}
     >
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-5">
         <div
-          className={`p-3 rounded-2xl border ${colors[color]} group-hover:scale-110 transition-transform duration-500`}
+          className={`p-3.5 rounded-2xl ${colors[color]} group-hover:scale-110 transition-transform duration-500`}
         >
-          <Icon className="w-5 h-5" />
+          <Icon size={20} strokeWidth={2.5} />
         </div>
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-          <ArrowUpRight className="w-4 h-4 text-zinc-300 dark:text-zinc-700" />
-        </div>
+        <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800" />
       </div>
       <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-1">
           {label}
         </p>
-        <div className="flex items-baseline gap-1">
+        <div className="flex items-baseline gap-1.5">
           <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter">
             {value.toLocaleString()}
           </h3>
-          {unit && <span className="text-[10px] font-bold text-zinc-400 uppercase">{unit}</span>}
+          {unit && (
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+              {unit}
+            </span>
+          )}
         </div>
       </div>
     </motion.div>
@@ -678,22 +742,26 @@ function UsageCard({
   const effectiveMax = isUnlimited ? serverTotalMB || 1 : max;
   const percentage = Math.min((parseFloat(displayValue) / effectiveMax) * 100, 100);
   const colorClass =
-    color === "emerald" ? "bg-emerald-500 shadow-emerald-500/40" : "bg-blue-500 shadow-blue-500/40";
+    color === "emerald" ? "bg-emerald-500 shadow-emerald-500/50" : "bg-blue-600 shadow-blue-600/50";
   const iconColor = color === "emerald" ? "text-emerald-500" : "text-blue-500";
-  const bgColor = color === "emerald" ? "bg-emerald-500/5" : "bg-blue-500/5";
+  const bgColor = color === "emerald" ? "bg-emerald-500/10" : "bg-blue-500/10";
 
   return (
     <motion.div
       variants={variants}
-      className="bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-6 rounded-[2.5rem] shadow-sm flex flex-col justify-between group relative overflow-hidden backdrop-blur-sm"
+      className="group relative p-7 rounded-[3rem] bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:shadow-2xl hover:border-blue-500/30 overflow-hidden"
     >
+      <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+        <Icon size={120} strokeWidth={1} />
+      </div>
+
       <div className="relative z-10">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${bgColor} ${iconColor}`}>
-              <Icon className="w-4 h-4" />
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-2xl ${bgColor} ${iconColor} shadow-inner`}>
+              <Icon size={20} />
             </div>
-            <span className="text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            <span className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">
               {title}
             </span>
           </div>
@@ -701,44 +769,47 @@ function UsageCard({
             {isSuperAdmin && onEdit && (
               <button
                 onClick={onEdit}
-                className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-blue-500 transition-all"
-                title="ตั้งค่าพื้นที่"
+                className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-blue-500 hover:border-blue-500/50 transition-all"
               >
-                <Settings className="w-3.5 h-3.5" />
+                <Settings size={14} />
               </button>
             )}
-            <span className={`text-sm font-black ${iconColor}`}>{percentage.toFixed(1)}%</span>
+            <div className={`px-3 py-1 rounded-full ${bgColor} ${iconColor} text-xs font-black`}>
+              {percentage.toFixed(1)}%
+            </div>
           </div>
         </div>
 
-        <div className="mb-4">
-          <p className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter leading-none">
-            {value}
-            <span className="text-sm text-zinc-400 font-bold ml-1.5">{unit}</span>
-          </p>
-          <div className="mt-2 space-y-1">
-            <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-wide">
+        <div className="mb-6">
+          <div className="flex items-baseline gap-2 mb-2">
+            <h4 className="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter">
+              {parseFloat(value).toLocaleString()}
+            </h4>
+            <span className="text-sm font-black text-zinc-400 uppercase tracking-widest">
+              {unit}
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-widest leading-relaxed">
               {isUnlimited
-                ? `การใช้งานเครื่อง: ${percentage.toFixed(1)}% (${(serverUsedMB / 1024).toFixed(1)} GB / ${(serverTotalMB / 1024).toFixed(1)} GB)`
-                : `โควตาที่ใช้: ${((parseFloat(value) / max) * 100).toFixed(1)}% ของ ${(max / 1024).toFixed(1)} GB`}
+                ? `การใช้งานระบบ: ${(serverUsedMB / 1024).toFixed(1)}GB จากทั้งหมด ${(serverTotalMB / 1024).toFixed(1)}GB`
+                : `การจัดสรรโควตา: ${((parseFloat(value) / max) * 100).toFixed(1)}% ของความจุ ${(max / 1024).toFixed(1)}GB`}
             </p>
-            {/* <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
-               พื้นที่ว่างจริง (Available): {(serverAvailableMB/1024).toFixed(2)} GB
-             </p> */}
-            {!isUnlimited && (
-              <p className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 italic">
-                * เหลือตามโควตา: {Math.max(0, (max - parseFloat(value)) / 1024).toFixed(2)} GB
+            {/* <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
+                พื้นที่ว่างในเซิร์ฟเวอร์: {(serverAvailableMB / 1024).toFixed(2)} GB
               </p>
-            )}
+            </div> */}
           </div>
         </div>
 
-        <div className="h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden p-[2px]">
+        <div className="h-3 w-full bg-zinc-200/50 dark:bg-zinc-900 rounded-full p-1 border border-zinc-200/60 dark:border-zinc-800/60">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
-            transition={{ duration: 1.5, delay: 0.5, ease: "circOut" }}
-            className={`h-full ${colorClass} rounded-full shadow-[0_0_15px_rgba(0,0,0,0.1)]`}
+            transition={{ duration: 2, ease: "circOut" }}
+            className={`h-full ${colorClass} rounded-full shadow-[0_0_15px]`}
           />
         </div>
       </div>
@@ -747,29 +818,51 @@ function UsageCard({
 }
 
 function ActionCard({ href, title, icon: Icon, desc, external, badge, variants }: any) {
+  const gradients: any = [
+    "from-blue-600 to-indigo-700",
+    "from-purple-600 to-pink-700",
+    "from-emerald-600 to-teal-700",
+    "from-orange-600 to-red-700",
+    "from-sky-600 to-blue-700",
+    "from-zinc-800 to-black",
+  ];
+  // Simple hash for consistent color
+  const colorIdx = title.length % gradients.length;
+
   return (
     <motion.div variants={variants}>
       <Link
         href={href}
         target={external ? "_blank" : "_self"}
-        className="group relative flex flex-col h-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 rounded-4xl transition-all duration-300 hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1"
+        className="group relative flex flex-col h-full p-[1px] rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2"
       >
-        {badge && (
-          <div className="absolute top-4 right-4 px-2 py-1 bg-rose-500 text-white text-[10px] font-black rounded-lg shadow-lg shadow-rose-500/30 animate-bounce">
-            {badge}
+        <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-7 rounded-[2.45rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
+          {badge && (
+            <div className="absolute top-5 right-5 px-2.5 py-1 bg-rose-500 text-white text-[10px] font-black rounded-lg shadow-lg shadow-rose-500/30 z-10 animate-bounce">
+              {badge}
+            </div>
+          )}
+
+          <div className="absolute -right-4 -bottom-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
+            <Icon size={120} />
           </div>
-        )}
-        <div className="w-12 h-12 bg-zinc-50 dark:bg-zinc-900 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-inner">
-          <Icon className="w-6 h-6" />
-        </div>
-        <h3 className="text-base font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-1 truncate">
-          {title}
-        </h3>
-        <p className="text-zinc-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-tight leading-none mb-4">
-          {desc}
-        </p>
-        <div className="mt-auto pt-2 flex items-center text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-          Launch Module <ArrowUpRight className="w-3 h-3 ml-1" />
+
+          <div
+            className={`w-14 h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center mb-6 group-hover:bg-linear-to-br ${gradients[colorIdx]} group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner`}
+          >
+            <Icon size={24} />
+          </div>
+
+          <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-2 truncate">
+            {title}
+          </h3>
+          <p className="text-zinc-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-snug mb-6">
+            {desc}
+          </p>
+
+          <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
+            เข้าสู่ระบบจัดการ <ArrowUpRight size={14} strokeWidth={3} />
+          </div>
         </div>
       </Link>
     </motion.div>
