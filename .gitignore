@@ -57,6 +57,8 @@ next-env.d.ts
 /public/ktltc_news/
 /public/ktltc_newsletters/
 /public/ktltc_posters/
+/public/ktltc_drive/
+/public/posts/
   
 # AI Assistant
 .gemini/
