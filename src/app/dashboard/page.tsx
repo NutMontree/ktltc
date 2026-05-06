@@ -51,11 +51,13 @@ export default function DashboardLoader() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-   const [permissions, setPermissions] = useState<any>(null);
-   const [isEditingQuota, setIsEditingQuota] = useState(false);
-   const [editingQuotaKey, setEditingQuotaKey] = useState<"storage_limit_mb" | "db_limit_mb">("storage_limit_mb");
-   const [tempQuota, setTempQuota] = useState("");
-   const [isSavingQuota, setIsSavingQuota] = useState(false);
+  const [permissions, setPermissions] = useState<any>(null);
+  const [isEditingQuota, setIsEditingQuota] = useState(false);
+  const [editingQuotaKey, setEditingQuotaKey] = useState<"storage_limit_mb" | "db_limit_mb">(
+    "storage_limit_mb",
+  );
+  const [tempQuota, setTempQuota] = useState("");
+  const [isSavingQuota, setIsSavingQuota] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -64,7 +66,7 @@ export default function DashboardLoader() {
         setLoading(true);
         const [statsRes, permRes] = await Promise.all([
           fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
-          fetch("/api/auth/permissions")
+          fetch("/api/auth/permissions"),
         ]);
 
         if (!statsRes.ok) throw new Error("Failed to fetch dashboard statistics");
@@ -101,8 +103,8 @@ export default function DashboardLoader() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           key: editingQuotaKey,
-          value: tempQuota === "0" ? "0" : quotaInMB.toString()
-        })
+          value: tempQuota === "0" ? "0" : quotaInMB.toString(),
+        }),
       });
 
       if (res.ok) {
@@ -188,12 +190,7 @@ export default function DashboardLoader() {
         {/* --- Header Section --- */}
         <DashboardHeader user={user} />
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="space-y-12"
-        >
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
           {/* --- Statistics Section --- */}
           {((session?.user as any)?.role === "super_admin" || permissions?.manage_users) && (
             <div>
@@ -283,8 +280,11 @@ export default function DashboardLoader() {
                     variants={item}
                     isSuperAdmin={session?.user?.role === "super_admin"}
                     serverTotalMB={stats.serverTotalMB}
+                    serverUsedMB={stats.serverUsedMB}
+                    serverAvailableMB={stats.serverAvailableMB}
                     onEdit={() => {
-                      const currentGB = stats.dbLimitMB === 0 ? "0" : (stats.dbLimitMB / 1024).toFixed(1);
+                      const currentGB =
+                        stats.dbLimitMB === 0 ? "0" : (stats.dbLimitMB / 1024).toFixed(1);
                       setEditingQuotaKey("db_limit_mb");
                       setTempQuota(currentGB);
                       setIsEditingQuota(true);
@@ -300,9 +300,12 @@ export default function DashboardLoader() {
                     variants={item}
                     isSuperAdmin={session?.user?.role === "super_admin"}
                     serverTotalMB={stats.serverTotalMB}
+                    serverUsedMB={stats.serverUsedMB}
+                    serverAvailableMB={stats.serverAvailableMB}
                     onEdit={() => {
                       // Convert MB to GB for display in modal
-                      const currentGB = stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
+                      const currentGB =
+                        stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
                       setEditingQuotaKey("storage_limit_mb");
                       setTempQuota(currentGB);
                       setIsEditingQuota(true);
@@ -519,29 +522,35 @@ export default function DashboardLoader() {
               <div className="absolute top-0 right-0 p-8">
                 <Database className="w-12 h-12 text-blue-500/10" />
               </div>
-              
+
               <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
                 {editingQuotaKey === "db_limit_mb" ? "Database Quota" : "Storage Quota"}
               </h3>
               <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">
-                {editingQuotaKey === "db_limit_mb" ? "กำหนดขีดจำกัดฐานข้อมูล (GB)" : "กำหนดขีดจำกัดพื้นที่จัดเก็บข้อมูล (GB)"}
+                {editingQuotaKey === "db_limit_mb"
+                  ? "กำหนดขีดจำกัดฐานข้อมูล (GB)"
+                  : "กำหนดขีดจำกัดพื้นที่จัดเก็บข้อมูล (GB)"}
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700">
                   <div>
                     <p className="text-sm font-bold text-zinc-900 dark:text-white">
-                      ไม่จำกัด{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"} (Unlimited)
+                      ไม่จำกัด{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}{" "}
+                      (Unlimited)
                     </p>
                     <p className="text-[10px] text-zinc-500">
-                      เปิดการใช้งาน{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}ทั้งหมดของเซิร์ฟเวอร์
+                      เปิดการใช้งาน{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}
+                      ทั้งหมดของเซิร์ฟเวอร์
                     </p>
                   </div>
                   <button
                     onClick={() => setTempQuota(tempQuota === "0" ? "20" : "0")}
                     className={`w-12 h-6 rounded-full transition-all relative ${tempQuota === "0" ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"}`}
                   >
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${tempQuota === "0" ? "left-7" : "left-1"}`} />
+                    <div
+                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${tempQuota === "0" ? "left-7" : "left-1"}`}
+                    />
                   </button>
                 </div>
 
@@ -572,7 +581,7 @@ export default function DashboardLoader() {
                     onClick={() => setIsEditingQuota(false)}
                     className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
                   >
-                     ยกเลิก
+                    ยกเลิก
                   </button>
                   <button
                     onClick={handleSaveQuota}
@@ -643,11 +652,7 @@ function StatCard({ label, value, icon: Icon, color, unit, variants }: any) {
           <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter">
             {value.toLocaleString()}
           </h3>
-          {unit && (
-            <span className="text-[10px] font-bold text-zinc-400 uppercase">
-              {unit}
-            </span>
-          )}
+          {unit && <span className="text-[10px] font-bold text-zinc-400 uppercase">{unit}</span>}
         </div>
       </div>
     </motion.div>
@@ -665,14 +670,15 @@ function UsageCard({
   isSuperAdmin,
   onEdit,
   serverTotalMB = 0,
+  serverUsedMB = 0,
+  serverAvailableMB = 0,
 }: any) {
-   const isUnlimited = max <= 0;
-   const effectiveMax = isUnlimited ? (serverTotalMB || 1) : max;
-   const percentage = Math.min((parseFloat(value) / effectiveMax) * 100, 100);
+  const isUnlimited = max <= 0;
+  const displayValue = isUnlimited ? serverUsedMB : value;
+  const effectiveMax = isUnlimited ? serverTotalMB || 1 : max;
+  const percentage = Math.min((parseFloat(displayValue) / effectiveMax) * 100, 100);
   const colorClass =
-    color === "emerald"
-      ? "bg-emerald-500 shadow-emerald-500/40"
-      : "bg-blue-500 shadow-blue-500/40";
+    color === "emerald" ? "bg-emerald-500 shadow-emerald-500/40" : "bg-blue-500 shadow-blue-500/40";
   const iconColor = color === "emerald" ? "text-emerald-500" : "text-blue-500";
   const bgColor = color === "emerald" ? "bg-emerald-500/5" : "bg-blue-500/5";
 
@@ -701,24 +707,30 @@ function UsageCard({
                 <Settings className="w-3.5 h-3.5" />
               </button>
             )}
-             <span className={`text-sm font-black ${iconColor}`}>
-               {percentage.toFixed(1)}%
-             </span>
+            <span className={`text-sm font-black ${iconColor}`}>{percentage.toFixed(1)}%</span>
           </div>
         </div>
 
         <div className="mb-4">
           <p className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter leading-none">
             {value}
-            <span className="text-sm text-zinc-400 font-bold ml-1.5">
-              {unit}
-            </span>
+            <span className="text-sm text-zinc-400 font-bold ml-1.5">{unit}</span>
           </p>
-           <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 mt-2 uppercase tracking-wide">
-             {isUnlimited 
-               ? `ใช้ไป ${percentage.toFixed(1)}% ของความจุเซิร์ฟเวอร์ (${(serverTotalMB/1024).toFixed(1)} GB)` 
-               : `ที่เหลืออยู่: ${(max - parseFloat(value)).toFixed(2)} ${unit}`}
-           </p>
+          <div className="mt-2 space-y-1">
+            <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-wide">
+              {isUnlimited
+                ? `การใช้งานเครื่อง: ${percentage.toFixed(1)}% (${(serverUsedMB / 1024).toFixed(1)} GB / ${(serverTotalMB / 1024).toFixed(1)} GB)`
+                : `โควตาที่ใช้: ${((parseFloat(value) / max) * 100).toFixed(1)}% ของ ${(max / 1024).toFixed(1)} GB`}
+            </p>
+            {/* <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
+               พื้นที่ว่างจริง (Available): {(serverAvailableMB/1024).toFixed(2)} GB
+             </p> */}
+            {!isUnlimited && (
+              <p className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 italic">
+                * เหลือตามโควตา: {Math.max(0, (max - parseFloat(value)) / 1024).toFixed(2)} GB
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden p-[2px]">
@@ -734,15 +746,7 @@ function UsageCard({
   );
 }
 
-function ActionCard({
-  href,
-  title,
-  icon: Icon,
-  desc,
-  external,
-  badge,
-  variants,
-}: any) {
+function ActionCard({ href, title, icon: Icon, desc, external, badge, variants }: any) {
   return (
     <motion.div variants={variants}>
       <Link

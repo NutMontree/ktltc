@@ -81,6 +81,8 @@ export async function GET() {
     let storageLimitMB = 20000; // Default fallback
     let dbLimitMB = 0; // Default unlimited for DB
     let serverTotalMB = 0; // Real disk capacity
+    let serverUsedMB = 0;
+    let serverAvailableMB = 0;
     
     try {
       // Fetch custom limits from database
@@ -107,9 +109,11 @@ export async function GET() {
 
       // Get real disk capacity
       try {
-        const diskCmd = `df -m ${process.cwd()} | tail -1 | awk '{print $2}'`;
-        const diskTotalStr = execSync(diskCmd).toString().trim();
-        serverTotalMB = parseInt(diskTotalStr) || 0;
+        const diskCmd = `df -m "${process.cwd()}" | tail -1 | awk '{print $2 " " $3 " " $4}'`;
+        const diskInfo = execSync(diskCmd).toString().trim().split(/\s+/);
+        serverTotalMB = parseInt(diskInfo[0]) || 0;
+        serverUsedMB = parseInt(diskInfo[1]) || 0;
+        serverAvailableMB = parseInt(diskInfo[2]) || 0;
       } catch (diskErr) {
         console.error("Disk Capacity Check Error:", diskErr);
       }
@@ -130,6 +134,8 @@ export async function GET() {
       cloudUsageMB: storageUsageMB, // Keeping same key for frontend compatibility
       cloudLimitMB: storageLimitMB,
       serverTotalMB: serverTotalMB,
+      serverUsedMB: serverUsedMB,
+      serverAvailableMB: serverAvailableMB,
       totalPendingQA,
       totalUsers,
     });
