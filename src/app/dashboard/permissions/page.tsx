@@ -456,7 +456,7 @@ export default function PermissionsPage() {
                   </thead>
                   <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                     {rolesOrder.map((role) => (
-                      <motion.tr
+                       <motion.tr
                         key={role}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

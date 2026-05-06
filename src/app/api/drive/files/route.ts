@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       if (!parentFolder) return NextResponse.json({ error: "Target folder not found" }, { status: 404 });
       
       const userRole = (session?.user as any)?.role?.toLowerCase();
-      const isAdmin = !["user", "student"].includes(userRole);
+      const isAdmin = ["super_admin", "admin"].includes(userRole);
       const userId = (session.user as any).id;
 
       if (!isAdmin && parentFolder.ownerId !== userId && !parentFolder.isCollaborative) {

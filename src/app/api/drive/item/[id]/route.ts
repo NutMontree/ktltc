@@ -41,11 +41,16 @@ export async function PATCH(
     // Permission check:
     // 1. Owner or Super Admin -> Always allowed
     // 2. Collaborative context -> Allowed for everyone EXCEPT students
-    const isOwnerOrAdmin = item.ownerId === userId || userRole === "super_admin";
+    const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
     const canCollaborate = isCollaborativeContext && userRole !== "student";
 
     if (!isOwnerOrAdmin && !canCollaborate) {
       return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
+    }
+
+    // SECURITY: Only Owner or Admin can change 'isCollaborative' status
+    if (isCollaborative !== undefined && !isOwnerOrAdmin) {
+      return NextResponse.json({ error: "Only the owner can change sharing settings" }, { status: 403 });
     }
 
     const updateData: any = { updatedAt: new Date() };
@@ -121,7 +126,7 @@ export async function DELETE(
     // Permission check:
     // 1. Owner or Super Admin -> Always allowed
     // 2. Collaborative context -> Allowed for everyone EXCEPT students
-    const isOwnerOrAdmin = item.ownerId === userId || userRole === "super_admin";
+    const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
     const canCollaborate = isCollaborativeContext && userRole !== "student";
 
     if (!isOwnerOrAdmin && !canCollaborate) {

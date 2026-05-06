@@ -18,9 +18,10 @@ export async function GET(request: Request) {
     const db = client.db("ktltc_db");
 
     // Define access filter based on role
-    const isAdmin = !["user", "student"].includes(userRole);
+    // Define access filter based on role - Only REAL admins see everything
+    const isAdmin = ["super_admin", "admin"].includes(userRole);
     const userId = (session.user as any).id;
-
+ 
     // Check if parent folder is collaborative
     let isCurrentFolderCollaborative = false;
     if (parentId) {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
         isCurrentFolderCollaborative = true;
       }
     }
-
+ 
     const baseFilter = isAdmin 
       ? { parentId } 
       : { 
@@ -39,7 +40,7 @@ export async function GET(request: Request) {
             { isCollaborative: true }
           ]
         };
-
+ 
     const fileFilter = (isAdmin || isCurrentFolderCollaborative)
       ? { folderId: parentId }
       : { folderId: parentId, ownerId: userId };
