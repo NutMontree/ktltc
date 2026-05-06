@@ -14,8 +14,8 @@ export async function PATCH(
     const userRole = (session?.user as any)?.role?.toLowerCase();
     const userId = (session?.user as any)?.id;
 
-    if (!session || ["user", "student"].includes(userRole)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { name, type, newParentId, isCollaborative } = await request.json(); // type: 'file' | 'folder'
@@ -27,8 +27,24 @@ export async function PATCH(
     const item = await db.collection(collectionName).findOne({ _id: new ObjectId(id) });
     if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
 
-    // Permission check: Owner or Super Admin
-    if (item.ownerId !== userId && userRole !== "super_admin") {
+    // Check for collaborative context
+    let isCollaborativeContext = false;
+    if (type === "folder" && item.isCollaborative) {
+      isCollaborativeContext = true;
+    } else if (type === "file" && item.folderId) {
+      const parentFolder = await db.collection("drive_folders").findOne({ _id: new ObjectId(item.folderId) });
+      if (parentFolder?.isCollaborative) {
+        isCollaborativeContext = true;
+      }
+    }
+
+    // Permission check:
+    // 1. Owner or Super Admin -> Always allowed
+    // 2. Collaborative context -> Allowed for everyone EXCEPT students
+    const isOwnerOrAdmin = item.ownerId === userId || userRole === "super_admin";
+    const canCollaborate = isCollaborativeContext && userRole !== "student";
+
+    if (!isOwnerOrAdmin && !canCollaborate) {
       return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
     }
 
@@ -77,8 +93,8 @@ export async function DELETE(
     const userRole = (session?.user as any)?.role?.toLowerCase();
     const userId = (session?.user as any)?.id;
 
-    if (!session || ["user", "student"].includes(userRole)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -91,9 +107,25 @@ export async function DELETE(
     const item = await db.collection(collectionName).findOne({ _id: new ObjectId(id) });
     if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
 
-    // Permission check: Owner or Super Admin
-    if (item.ownerId !== userId && userRole !== "super_admin") {
-      return NextResponse.json({ error: "No permission to delete this item" }, { status: 403 });
+    // Check for collaborative context
+    let isCollaborativeContext = false;
+    if (type === "folder" && item.isCollaborative) {
+      isCollaborativeContext = true;
+    } else if (type === "file" && item.folderId) {
+      const parentFolder = await db.collection("drive_folders").findOne({ _id: new ObjectId(item.folderId) });
+      if (parentFolder?.isCollaborative) {
+        isCollaborativeContext = true;
+      }
+    }
+
+    // Permission check:
+    // 1. Owner or Super Admin -> Always allowed
+    // 2. Collaborative context -> Allowed for everyone EXCEPT students
+    const isOwnerOrAdmin = item.ownerId === userId || userRole === "super_admin";
+    const canCollaborate = isCollaborativeContext && userRole !== "student";
+
+    if (!isOwnerOrAdmin && !canCollaborate) {
+      return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
     }
 
     if (type === "folder") {

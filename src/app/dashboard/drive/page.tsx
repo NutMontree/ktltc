@@ -101,7 +101,9 @@ function DriveContent() {
     currentIndex: number;
     totalCount: number;
   } | null>(null);
-  const [filterType, setFilterType] = useState<"all" | "image" | "video" | "document" | "archive" | "audio" | "other">("all");
+  const [filterType, setFilterType] = useState<
+    "all" | "image" | "video" | "document" | "archive" | "audio" | "other"
+  >("all");
 
   const userRole = (session?.user as any)?.role?.toLowerCase();
   const userId = (session?.user as any)?.id;
@@ -109,7 +111,10 @@ function DriveContent() {
 
   const currentFolder = allFoldersList.find((f) => f._id === currentFolderId);
   const canUploadInCurrentFolder =
-    isSuperAdmin || currentFolder?.ownerId === userId || currentFolder?.isCollaborative;
+    !currentFolderId ||
+    isSuperAdmin ||
+    currentFolder?.ownerId === userId ||
+    currentFolder?.isCollaborative;
 
   const fetchItems = useCallback(async (folderId: string | null) => {
     setLoading(true);
@@ -130,6 +135,11 @@ function DriveContent() {
     if (status === "unauthenticated") {
       router.push("/login");
     } else if (status === "authenticated") {
+      // Block student role from accessing drive
+      if (userRole === "student") {
+        router.push("/dashboard");
+        return;
+      }
       // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
       setCurrentFolderId(urlFolderId);
       fetchItems(urlFolderId);
@@ -327,21 +337,21 @@ function DriveContent() {
   const selectAll = () => {
     const currentItems = [...folders, ...filteredFiles];
     const currentItemIds = currentItems.map((item) => item._id);
-    
+
     // Check if all current items are already selected
-    const isAllSelected = currentItemIds.every(id => selectedIds.has(id));
+    const isAllSelected = currentItemIds.every((id) => selectedIds.has(id));
 
     if (isAllSelected) {
       // Unselect only the items currently shown
       const newSelected = new Set(selectedIds);
-      currentItemIds.forEach(id => newSelected.delete(id));
+      currentItemIds.forEach((id) => newSelected.delete(id));
       setSelectedIds(newSelected);
       if (newSelected.size === 0) setIsSelectionMode(false);
     } else {
       // Select all items currently shown
       setIsSelectionMode(true);
       const newSelected = new Set(selectedIds);
-      currentItemIds.forEach(id => newSelected.add(id));
+      currentItemIds.forEach((id) => newSelected.add(id));
       setSelectedIds(newSelected);
     }
   };
@@ -452,7 +462,9 @@ function DriveContent() {
       return (
         <div className="flex h-full w-full items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400">
           <FileText size={40} strokeWidth={2.5} />
-          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-rose-600 text-white text-[8px] font-black rounded uppercase">PDF</div>
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-rose-600 text-white text-[8px] font-black rounded uppercase">
+            PDF
+          </div>
         </div>
       );
     }
@@ -461,7 +473,9 @@ function DriveContent() {
       return (
         <div className="flex h-full w-full items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
           <FileText size={40} strokeWidth={2.5} />
-          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-blue-600 text-white text-[8px] font-black rounded uppercase">WORD</div>
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-blue-600 text-white text-[8px] font-black rounded uppercase">
+            WORD
+          </div>
         </div>
       );
     }
@@ -470,16 +484,24 @@ function DriveContent() {
       return (
         <div className="flex h-full w-full items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
           <FileText size={40} strokeWidth={2.5} />
-          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-emerald-600 text-white text-[8px] font-black rounded uppercase">EXCEL</div>
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-emerald-600 text-white text-[8px] font-black rounded uppercase">
+            EXCEL
+          </div>
         </div>
       );
     }
 
-    if (type.includes("presentation") || type.includes("powerpoint") || file.name.match(/\.(pptx?)$/i)) {
+    if (
+      type.includes("presentation") ||
+      type.includes("powerpoint") ||
+      file.name.match(/\.(pptx?)$/i)
+    ) {
       return (
         <div className="flex h-full w-full items-center justify-center rounded-2xl bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400">
           <FileText size={40} strokeWidth={2.5} />
-          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-orange-600 text-white text-[8px] font-black rounded uppercase">PPT</div>
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-orange-600 text-white text-[8px] font-black rounded uppercase">
+            PPT
+          </div>
         </div>
       );
     }
@@ -488,7 +510,9 @@ function DriveContent() {
       return (
         <div className="flex h-full w-full items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
           <Folder size={40} strokeWidth={2.5} />
-          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-amber-600 text-white text-[8px] font-black rounded uppercase">ZIP</div>
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-amber-600 text-white text-[8px] font-black rounded uppercase">
+            ZIP
+          </div>
         </div>
       );
     }
@@ -513,14 +537,19 @@ function DriveContent() {
     return files.filter((file) => {
       const type = file.type?.toLowerCase() || "";
       const name = file.name.toLowerCase();
-      
+
       if (filterType === "image") return type.startsWith("image/");
       if (filterType === "video") return type.startsWith("video/");
       if (filterType === "audio") return type.startsWith("audio/");
       if (filterType === "document") {
-        return type.includes("pdf") || type.includes("word") || type.includes("excel") || 
-               type.includes("sheet") || type.includes("presentation") || 
-               /\.(docx?|xlsx?|pptx?|pdf|txt)$/i.test(name);
+        return (
+          type.includes("pdf") ||
+          type.includes("word") ||
+          type.includes("excel") ||
+          type.includes("sheet") ||
+          type.includes("presentation") ||
+          /\.(docx?|xlsx?|pptx?|pdf|txt)$/i.test(name)
+        );
       }
       if (filterType === "archive") {
         return type.includes("zip") || type.includes("rar") || /\.(zip|rar|7z)$/i.test(name);
@@ -613,16 +642,18 @@ function DriveContent() {
             </label>
           )}
 
-          <button
-            onClick={() => {
-              setNewItemName("");
-              setIsCollaborative(false);
-              setIsCreateModalOpen(true);
-            }}
-            className="flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-black text-slate-700 shadow-lg border border-slate-200 transition-all hover:bg-slate-50 dark:bg-zinc-900 dark:text-zinc-200 dark:border-zinc-800 hover:-translate-y-0.5 active:scale-95"
-          >
-            <Plus size={20} strokeWidth={2.5} /> โฟลเดอร์
-          </button>
+          {(isSuperAdmin || canUploadInCurrentFolder) && (
+            <button
+              onClick={() => {
+                setNewItemName("");
+                setIsCollaborative(false);
+                setIsCreateModalOpen(true);
+              }}
+              className="flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-black text-slate-700 shadow-lg border border-slate-200 transition-all hover:bg-slate-50 dark:bg-zinc-900 dark:text-zinc-200 dark:border-zinc-800 hover:-translate-y-0.5 active:scale-95"
+            >
+              <Plus size={20} strokeWidth={2.5} /> โฟลเดอร์
+            </button>
+          )}
 
           <button
             onClick={() => {
@@ -715,7 +746,7 @@ function DriveContent() {
             >
               <CheckSquare size={14} />{" "}
               <span>
-                {[...folders, ...filteredFiles].every(item => selectedIds.has(item._id))
+                {[...folders, ...filteredFiles].every((item) => selectedIds.has(item._id))
                   ? "ไม่เลือกทั้งหมด"
                   : "เลือกทั้งหมดในกลุ่มนี้"}
               </span>
@@ -875,7 +906,7 @@ function DriveContent() {
               </div>
 
               <div className="flex gap-1.5 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl">
-                {(isSuperAdmin || folder.ownerId === userId) && (
+                {(isSuperAdmin || folder.ownerId === userId || (folder.isCollaborative && userRole !== "student")) && (
                   <>
                     <button
                       onClick={() => {
@@ -1004,21 +1035,19 @@ function DriveContent() {
                   >
                     <Download size={14} />
                   </a>
-                  {(isSuperAdmin || file.ownerId === userId || currentFolder?.isCollaborative) && (
+                  {(isSuperAdmin || file.ownerId === userId || (currentFolder?.isCollaborative && userRole !== "student")) && (
                     <>
-                      {(isSuperAdmin || file.ownerId === userId) && (
-                        <button
-                          onClick={() => {
-                            setSelectedItem({ id: file._id, name: file.name, type: "file" });
-                            setNewItemName(file.name);
-                            setIsRenameModalOpen(true);
-                          }}
-                          className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                          title="เปลี่ยนชื่อ"
-                        >
-                          <Edit3 size={14} />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => {
+                          setSelectedItem({ id: file._id, name: file.name, type: "file" });
+                          setNewItemName(file.name);
+                          setIsRenameModalOpen(true);
+                        }}
+                        className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                        title="เปลี่ยนชื่อ"
+                      >
+                        <Edit3 size={14} />
+                      </button>
                       <button
                         onClick={() => {
                           setSelectedItem({ id: file._id, name: file.name, type: "file" });

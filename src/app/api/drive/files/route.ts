@@ -12,9 +12,23 @@ export async function POST(request: Request) {
     const { name, url, thumbnailUrl, folderId: folderIdStr, size, type } = await request.json();
     if (!name || !url) return NextResponse.json({ error: "Name and URL are required" }, { status: 400 });
 
-    const folderId = folderIdStr ? new ObjectId(folderIdStr) : null;
+    const folderId = folderIdStr && folderIdStr !== "null" ? new ObjectId(folderIdStr) : null;
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+
+    // Permission check for target folder
+    if (folderId) {
+      const parentFolder = await db.collection("drive_folders").findOne({ _id: folderId });
+      if (!parentFolder) return NextResponse.json({ error: "Target folder not found" }, { status: 404 });
+      
+      const userRole = (session?.user as any)?.role?.toLowerCase();
+      const isAdmin = !["user", "student"].includes(userRole);
+      const userId = (session.user as any).id;
+
+      if (!isAdmin && parentFolder.ownerId !== userId && !parentFolder.isCollaborative) {
+        return NextResponse.json({ error: "No permission to upload files to this folder" }, { status: 403 });
+      }
+    }
 
     const newFile = {
       name,

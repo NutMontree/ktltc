@@ -21,6 +21,15 @@ export async function GET(request: Request) {
     const isAdmin = !["user", "student"].includes(userRole);
     const userId = (session.user as any).id;
 
+    // Check if parent folder is collaborative
+    let isCurrentFolderCollaborative = false;
+    if (parentId) {
+      const currentFolder = await db.collection("drive_folders").findOne({ _id: parentId });
+      if (currentFolder?.isCollaborative) {
+        isCurrentFolderCollaborative = true;
+      }
+    }
+
     const baseFilter = isAdmin 
       ? { parentId } 
       : { 
@@ -31,7 +40,7 @@ export async function GET(request: Request) {
           ]
         };
 
-    const fileFilter = isAdmin
+    const fileFilter = (isAdmin || isCurrentFolderCollaborative)
       ? { folderId: parentId }
       : { folderId: parentId, ownerId: userId };
 
@@ -69,9 +78,23 @@ export async function POST(request: Request) {
     const { name, parentId: parentIdStr, isCollaborative } = await request.json();
     if (!name) return NextResponse.json({ error: "Folder name is required" }, { status: 400 });
 
-    const parentId = parentIdStr ? new ObjectId(parentIdStr) : null;
+    const parentId = parentIdStr && parentIdStr !== "null" ? new ObjectId(parentIdStr) : null;
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+
+    // Permission check for parent folder
+    if (parentId) {
+      const parentFolder = await db.collection("drive_folders").findOne({ _id: parentId });
+      if (!parentFolder) return NextResponse.json({ error: "Parent folder not found" }, { status: 404 });
+      
+      const userRole = (session?.user as any)?.role?.toLowerCase();
+      const isAdmin = !["user", "student"].includes(userRole);
+      const userId = (session.user as any).id;
+
+      if (!isAdmin && parentFolder.ownerId !== userId && !parentFolder.isCollaborative) {
+        return NextResponse.json({ error: "No permission to create items in this folder" }, { status: 403 });
+      }
+    }
 
     const newFolder = {
       name,

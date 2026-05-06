@@ -3271,26 +3271,26 @@ export default function FriendProfilePage({
               </>
             )}
 
-            {/* Close Button - Fixed at top right */}
+            {/* Close Button - Moved down to avoid Navbar */}
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all z-50 border border-white/20 backdrop-blur-md group"
+              className="absolute top-24 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all z-50 border border-white/20 backdrop-blur-md group"
             >
               <CloseOutlined className="text-2xl group-hover:rotate-90 transition-transform duration-300" />
             </button>
 
             <motion.div
               key={selectedImage.index}
-              initial={{ scale: 0.9, opacity: 0, x: 20 }}
-              animate={{ scale: 1, opacity: 1, x: 0 }}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, x: -20 }}
-              className="relative max-w-6xl w-full flex flex-col items-center gap-4"
+              className="relative max-w-6xl w-full flex flex-col items-center gap-4 mt-12"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative group">
                 <img
                   src={selectedImage.images[selectedImage.index]}
-                  className="w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-2xl mx-auto"
+                  className="w-full h-auto max-h-[75vh] object-contain rounded-lg shadow-2xl mx-auto"
                   alt="Full view"
                 />
 

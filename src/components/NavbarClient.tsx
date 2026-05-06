@@ -487,7 +487,7 @@ export default function NavbarClient({
                         </Link>
 
                         <div className="space-y-0.5">
-                          {!["student"].includes(role?.toLowerCase() || "") && (
+                          {/* {!["student"].includes(role?.toLowerCase() || "") && (
                             <Link
                               href="/wfh"
                               className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-2xl transition-all group"
@@ -497,7 +497,7 @@ export default function NavbarClient({
                               </div>
                               รายงานปฏิบัติงาน (WFH)
                             </Link>
-                          )}
+                          )} */}
 
                           {canAccessDashboard && (
                             <Link
