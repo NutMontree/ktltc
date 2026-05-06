@@ -15,7 +15,9 @@ import {
   FiCalendar,
   FiMessageSquare,
   FiLayers,
-  FiNavigation,
+  FiTrash2,
+  FiEdit3,
+  FiInfo,
 } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -39,6 +41,7 @@ const FEATURE_LABELS: {
 export default function PermissionsPage() {
   const [permissions, setPermissions] = useState<any>(null);
   const [roleLabels, setRoleLabels] = useState<any>({});
+  const [rolesOrder, setRolesOrder] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingRole, setSavingRole] = useState<string | null>(null);
 
@@ -48,6 +51,13 @@ export default function PermissionsPage() {
   const [newRoleLabel, setNewRoleLabel] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
+  // For Editing Role
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingRole, setEditingRole] = useState(""); // The original ID
+  const [editRoleID, setEditRoleID] = useState("");   // The potentially new ID
+  const [editRoleLabel, setEditRoleLabel] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
   const fetchPermissions = async () => {
     try {
       setLoading(true);
@@ -56,6 +66,7 @@ export default function PermissionsPage() {
         const data = await res.json();
         setPermissions(data.permissions);
         setRoleLabels(data.labels);
+        setRolesOrder(data.rolesOrder || Object.keys(data.permissions));
       } else {
         toast.error("ไม่สามารถโหลดข้อมูลสิทธิ์ได้");
       }
@@ -72,7 +83,7 @@ export default function PermissionsPage() {
   }, []);
 
   const handleToggle = (role: string, feature: string) => {
-    if (role === "super_admin") return; // Protection
+    if (role === "super_admin") return; 
 
     setPermissions((prev: any) => ({
       ...prev,
@@ -84,6 +95,7 @@ export default function PermissionsPage() {
   };
 
   const handleSaveAll = async () => {
+    if (!permissions) return;
     try {
       setSavingRole("all");
       const updates = Object.keys(permissions)
@@ -91,7 +103,10 @@ export default function PermissionsPage() {
         .map((role) => ({
           role,
           permissions: permissions[role],
+          label: roleLabels[role],
         }));
+
+      console.log("💾 [Frontend] Saving all permissions:", updates);
 
       const res = await fetch("/api/admin/permissions", {
         method: "PATCH",
@@ -115,12 +130,6 @@ export default function PermissionsPage() {
   const handleAddRole = async () => {
     if (!newRoleID || !newRoleLabel) {
       toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
-      return;
-    }
-
-    const idRegex = /^[a-z0-9_]+$/;
-    if (!idRegex.test(newRoleID)) {
-      toast.error("Role ID ต้องเป็นภาษาอังกฤษพิมพ์เล็กและตัวเลขเท่านั้น (เช่น teacher_expert)");
       return;
     }
 
@@ -149,7 +158,77 @@ export default function PermissionsPage() {
     }
   };
 
-  if (loading) {
+  const openEditModal = (role: string) => {
+    setEditingRole(role);
+    setEditRoleID(role);
+    setEditRoleLabel(roleLabels[role] || "");
+    setShowEditModal(true);
+  };
+
+  const handleEditRole = async () => {
+    if (!editRoleID || !editRoleLabel) {
+      toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+
+    try {
+      setIsEditing(true);
+      const payload = { 
+        oldRole: editingRole, 
+        newRole: editRoleID, 
+        label: editRoleLabel 
+      };
+      
+      console.log("✏️ [Frontend] Sending PATCH request:", payload);
+
+      const res = await fetch("/api/admin/permissions", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => ({ error: "ไม่สามารถอ่านข้อมูลตอบกลับจาก Server ได้" }));
+      console.log("📥 [Frontend] API Response:", { status: res.status, data });
+
+      if (res.ok) {
+        toast.success("แก้ไขข้อมูลบทบาทเรียบร้อยแล้ว");
+        setShowEditModal(false);
+        fetchPermissions();
+      } else {
+        toast.error(data.error || "เกิดข้อผิดพลาดไม่ทราบสาเหตุ");
+      }
+    } catch (error: any) {
+      console.error("🔥 [Frontend] handleEditRole Error:", error);
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย");
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
+  const handleDeleteRole = async (role: string) => {
+    if (!window.confirm(`ยืนยันการลบบทบาท "${roleLabels[role] || role}" ใช่หรือไม่?`)) return;
+
+    try {
+      const res = await fetch(`/api/admin/permissions?role=${role}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success("ลบบทบาทเรียบร้อยแล้ว");
+        fetchPermissions();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "ไม่สามารถลบได้");
+      }
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาด");
+    }
+  };
+
+  const isSystemRole = (role: string) => {
+    return ["super_admin", "admin"].includes(role);
+  };
+
+  if (loading || !permissions) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <FiLoader className="w-10 h-10 text-blue-600 animate-spin mb-4" />
@@ -201,10 +280,6 @@ export default function PermissionsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-            <div className="hidden lg:flex bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 px-5 py-2.5 rounded-2xl items-center gap-3 text-amber-700 dark:text-amber-400 text-xs font-bold shadow-sm">
-              <FiLock className="shrink-0" />
-              <span>สิทธิ์ของ Super Admin ถูกล็อกไว้เพื่อความปลอดภัย</span>
-            </div>
             <button
               onClick={() => setShowAddModal(true)}
               className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all border-2 border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none active:scale-95"
@@ -227,15 +302,29 @@ export default function PermissionsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div className="space-y-20">
+          {/* --- Section 1: Permissions Matrix --- */}
           <div className="xl:col-span-12">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-2xl bg-zinc-900 dark:bg-white flex items-center justify-center text-white dark:text-zinc-900 shadow-xl">
+                <FiShield size={20} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none mb-1">
+                  Permissions Matrix
+                </h2>
+                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+                  จัดการสิทธิ์การเข้าใช้งานของทุกบทบาท
+                </p>
+              </div>
+            </div>
             <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
-              <div className="overflow-auto max-h-[75vh]">
+              <div className="overflow-auto max-h-[70vh]">
                 <table className="w-full text-left border-separate border-spacing-0 min-w-[1200px]">
                   <thead>
                     <tr className="bg-slate-50/95 dark:bg-zinc-800/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
-                      <th className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[140px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
-                        Role / ระดับ
+                      <th className="p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[220px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
+                        บทบาท / Role Name
                       </th>
                       {Object.keys(FEATURE_LABELS).map((key) => (
                         <th
@@ -260,33 +349,30 @@ export default function PermissionsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {Object.keys(permissions || {}).map((role) => (
+                    {rolesOrder.map((role) => (
                       <motion.tr
                         key={role}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors group ${role === "super_admin" ? "bg-blue-50/20 dark:bg-blue-900/10" : ""}`}
+                        className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors group ${role === "super_admin" ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}
                       >
-                        <td className="p-4 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
-                          <div className="flex items-center gap-3">
+                        <td className="p-6 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
+                          <div className="flex items-center gap-4">
                             <div
-                              className={`w-1.5 h-6 rounded-full ${
-                                role === "super_admin"
-                                  ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.3)]"
-                                  : role === "admin"
-                                    ? "bg-amber-500"
-                                    : role === "student"
-                                      ? "bg-cyan-500"
-                                      : "bg-slate-300"
-                              }`}
-                            ></div>
-                            <div>
-                              <div className="font-black text-zinc-900 dark:text-white uppercase tracking-tight text-xs">
-                                {role}
+                              className={`w-1.5 h-10 rounded-full ${role === "super_admin" ? "bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.4)]" : isSystemRole(role) ? "bg-indigo-400" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.2)]"}`}
+                            />
+                            <div className="flex flex-col">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest leading-none">
+                                  {role}
+                                </span>
+                                {role === "super_admin" && (
+                                  <FiLock size={10} className="text-blue-600" />
+                                )}
                               </div>
-                              <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
-                                {roleLabels[role] || "บทบาททั่วไป"}
-                              </div>
+                              <span className={`font-black text-sm tracking-tight leading-none ${role === "super_admin" ? "text-blue-600 uppercase" : "text-zinc-950 dark:text-white"}`}>
+                                {roleLabels[role] || role}
+                              </span>
                             </div>
                           </div>
                         </td>
@@ -298,8 +384,8 @@ export default function PermissionsPage() {
                           >
                             {role === "super_admin" ? (
                               <div className="flex justify-center">
-                                <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-500 border border-emerald-100 dark:border-emerald-800/50">
-                                  <FiCheckCircle size={20} />
+                                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 border border-blue-200 dark:border-blue-800/50">
+                                  <FiCheckCircle size={20} strokeWidth={3} />
                                 </div>
                               </div>
                             ) : (
@@ -334,21 +420,100 @@ export default function PermissionsPage() {
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex justify-end mt-12">
-          <button
-            onClick={handleSaveAll}
-            disabled={savingRole === "all"}
-            className="flex items-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-blue-500/40 disabled:opacity-50"
-          >
-            {savingRole === "all" ? (
-              <FiLoader className="animate-spin" size={16} />
-            ) : (
-              <FiSave size={16} />
-            )}
-            <span>บันทึกการตั้งค่าทั้งหมด</span>
-          </button>
+          {/* --- Section 2: Custom Role Manager --- */}
+          <div className="xl:col-span-12">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                  <FiUsers size={18} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none mb-1">
+                    Role Settings
+                  </h2>
+                  <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest">
+                    ตั้งค่าชื่อและรหัสบทบาททั้งหมดในระบบ
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl overflow-hidden max-w-4xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800">
+                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                        Role ID
+                      </th>
+                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                        Display Name (Thai)
+                      </th>
+                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest text-center">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                    {rolesOrder.map((role) => (
+                      <motion.tr
+                        key={role}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-colors ${role === "super_admin" ? "bg-blue-50/20 dark:bg-blue-900/5" : ""}`}
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-bold uppercase tracking-tight text-xs px-3 py-1 rounded-lg ${
+                              role === "super_admin" 
+                                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" 
+                                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                            }`}>
+                              {role}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-black ${role === "super_admin" ? "text-blue-600" : "text-zinc-900 dark:text-white"}`}>
+                              {roleLabels[role] || "-"}
+                            </span>
+                            {isSystemRole(role) && (
+                              <span className="text-[8px] font-black text-blue-500/50 uppercase tracking-widest border border-blue-500/20 px-1.5 rounded-md">System</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex justify-center gap-2">
+                            {isSystemRole(role) ? (
+                              <div className="w-9 h-9 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-300 flex items-center justify-center border border-zinc-100 dark:border-zinc-700">
+                                <FiLock size={14} />
+                              </div>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => openEditModal(role)}
+                                  className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95"
+                                >
+                                  <FiEdit3 size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteRole(role)}
+                                  className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-sm active:scale-95"
+                                >
+                                  <FiTrash2 size={16} />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="mt-16 bg-blue-600 rounded-[3.5rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl shadow-blue-500/20">
@@ -360,19 +525,6 @@ export default function PermissionsPage() {
               สิทธิ์ที่กำหนดในหน้านี้จะมีผลทันทีต่อการแสดงผลเมนู Navbar และการเข้าถึง API ในอนาคต
               กรุณาตรวจสอบให้แน่ใจก่อนทำการบันทึกข้อมูลเนื่องจากจะมีผลต่อความปลอดภัยของข้อมูลหลักของวิทยาลัย
             </p>
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-black uppercase tracking-widest text-emerald-100">
-                    Active Module
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
-                  <span className="text-xs font-black uppercase tracking-widest">v2.1.0</span>
-                </div>
-              </div>
-            </div>
           </div>
           <div className="absolute right-0 bottom-0 opacity-10 -mr-20 -mb-20">
             <FiShield size={450} />
@@ -395,82 +547,140 @@ export default function PermissionsPage() {
               initial={{ scale: 0.9, opacity: 0, y: 40 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 40 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative bg-white dark:bg-zinc-900 p-8 sm:p-12 rounded-[3.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.2)] border-2 border-zinc-100 dark:border-zinc-800 max-w-xl w-full overflow-hidden"
+              className="relative bg-white dark:bg-zinc-900 p-8 sm:p-12 rounded-[3.5rem] shadow-2xl border-2 border-zinc-100 dark:border-zinc-800 max-w-xl w-full"
             >
-              {/* Modal Background Accents */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-[80px] -mr-32 -mt-32" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/5 blur-[80px] -ml-32 -mb-32" />
-
-              <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="p-4 rounded-3xl bg-blue-600 text-white shadow-xl shadow-blue-500/40">
-                    <FiUsers size={28} strokeWidth={3} />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none">
-                      Add New Role
-                    </h2>
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
-                      เพิ่มบทบาทการเข้าถึงระบบ
-                    </p>
-                  </div>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-4 rounded-3xl bg-blue-600 text-white shadow-xl shadow-blue-500/40">
+                  <FiUsers size={28} strokeWidth={3} />
                 </div>
+                <div>
+                  <h2 className="text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none">
+                    Add New Role
+                  </h2>
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
+                    เพิ่มบทบาทการเข้าถึงระบบ
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-8">
+                <div>
+                  <label className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3 block">
+                    Role ID (English Only)
+                  </label>
+                  <input
+                    type="text"
+                    value={newRoleID}
+                    onChange={(e) =>
+                      setNewRoleID(e.target.value.toLowerCase().replace(/\s/g, "_"))
+                    }
+                    className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 transition-all"
+                    placeholder="เช่น teacher_admin"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3 block">
+                    Role Name (Thai)
+                  </label>
+                  <input
+                    type="text"
+                    value={newRoleLabel}
+                    onChange={(e) => setNewRoleLabel(e.target.value)}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 transition-all"
+                    placeholder="เช่น หัวหน้างานหลักสูตร"
+                  />
+                </div>
+                <div className="flex gap-4 pt-6">
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className="flex-1 py-5 rounded-3xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 font-black text-xs uppercase tracking-widest"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleAddRole}
+                    disabled={isAdding}
+                    className="flex-[2] py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-500/40"
+                  >
+                    {isAdding ? "กำลังสร้าง..." : "สร้างบทบาทใหม่"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
-                <div className="space-y-8">
-                  <div className="group">
-                    <label className="text-[11px] font-black text-zinc-400 group-hover:text-blue-500 transition-colors uppercase tracking-[0.2em] mb-3 block">
-                      Role ID (English Only) / ภาษาอังกฤษ
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="เช่น teacher_admin"
-                        value={newRoleID}
-                        onChange={(e) =>
-                          setNewRoleID(e.target.value.toLowerCase().replace(/\s/g, "_"))
-                        }
-                        className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-950 transition-all shadow-inner"
-                      />
-                      <div className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-700">
-                        <FiLock size={20} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="group">
-                    <label className="text-[11px] font-black text-zinc-400 group-hover:text-blue-500 transition-colors uppercase tracking-[0.2em] mb-3 block">
-                      Role Name (Thai) / ภาษาไทย
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="เช่น หัวหน้างานหลักสูตร"
-                        value={newRoleLabel}
-                        onChange={(e) => setNewRoleLabel(e.target.value)}
-                        className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-950 transition-all shadow-inner"
-                      />
-                      <div className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-700">
-                        <FiLayout size={20} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 pt-6">
-                    <button
-                      onClick={() => setShowAddModal(false)}
-                      className="flex-1 py-5 rounded-3xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 font-black text-xs uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all border border-zinc-200 dark:border-zinc-700 active:scale-95"
-                    >
-                      ยกเลิก
-                    </button>
-                    <button
-                      onClick={handleAddRole}
-                      disabled={isAdding}
-                      className="flex-[2] py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest hover:bg-blue-700 hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-blue-500/40 disabled:opacity-50 disabled:scale-100"
-                    >
-                      {isAdding ? "กำลังสร้าง..." : "สร้างบทบาทใหม่"}
-                    </button>
-                  </div>
+      {/* --- Edit Role Modal --- */}
+      <AnimatePresence>
+        {showEditModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-zinc-950/40 backdrop-blur-xl"
+              onClick={() => setShowEditModal(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 40 }}
+              className="relative bg-white dark:bg-zinc-900 p-8 sm:p-12 rounded-[3.5rem] shadow-2xl border-2 border-blue-100 dark:border-zinc-800 max-w-xl w-full"
+            >
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-4 rounded-3xl bg-blue-600 text-white shadow-xl shadow-blue-500/20">
+                  <FiEdit3 size={28} strokeWidth={3} />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none">
+                    Edit Role
+                  </h2>
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
+                    แก้ไขข้อมูลบทบาท
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-8">
+                <div>
+                  <label className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3 block">
+                    Role ID (English)
+                  </label>
+                  <input
+                    type="text"
+                    value={editRoleID}
+                    onChange={(e) =>
+                      setEditRoleID(e.target.value.toLowerCase().replace(/\s/g, "_"))
+                    }
+                    className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 transition-all text-blue-600"
+                    placeholder="เช่น teacher_admin"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3 block">
+                    Role Name (Thai)
+                  </label>
+                  <input
+                    type="text"
+                    value={editRoleLabel}
+                    onChange={(e) => setEditRoleLabel(e.target.value)}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 transition-all"
+                    placeholder="เช่น หัวหน้างานหลักสูตร"
+                  />
+                </div>
+                <div className="flex gap-4 pt-6">
+                  <button
+                    onClick={() => setShowEditModal(false)}
+                    className="flex-1 py-5 rounded-3xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 font-black text-xs uppercase tracking-widest"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleEditRole}
+                    disabled={isEditing}
+                    className="flex-[2] py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/30"
+                  >
+                    {isEditing ? "กำลังบันทึก..." : "ยืนยันการแก้ไข"}
+                  </button>
                 </div>
               </div>
             </motion.div>
