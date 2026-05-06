@@ -1,49 +1,46 @@
-// // src/auth.config.ts
-// import type { NextAuthConfig } from "next-auth";
-
-// export const authConfig = {
-//   pages: {
-//     signIn: "/login",
-//   },
-//   callbacks: {
-//     authorized({ auth, request: { nextUrl } }) {
-//       const isLoggedIn = !!auth?.user;
-//       const isDashboardPage = nextUrl.pathname.startsWith("/dashboard");
-
-//       if (isDashboardPage) {
-//         if (isLoggedIn) return true;
-//         return false; // ถ้าไม่ login ให้ redirect ไปหน้า login
-//       }
-//       return true;
-//     },
-//   },
-//   providers: [], // ปล่อยว่างไว้ จะไปใส่ตัวเต็มใน lib/auth.ts
-// } satisfies NextAuthConfig;
-
 import type { NextAuthConfig } from "next-auth";
 
-export const authConfig = {
-  providers: [], // ปล่อยว่างไว้ เดี๋ยวไปใส่ใน auth.ts
-  callbacks: {
-    async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.role = (user as any).role;
-        token.id = user.id;
-        token.username = (user as any).username;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token.error) {
-        (session as any).error = token.error;
-      }
-      if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
-        (session.user as any).username = token.username;
-      }
-      return session;
-    },
+const callbacks: NextAuthConfig["callbacks"] = {
+  async jwt({ token, user }) {
+    if (user) {
+      token.id = user.id;
+      token.role = (user as any).role;
+      token.username = (user as any).username;
+      token.image = (user as any).image;
+      token.sessionId = (user as any).sessionId;
+      token.loginTimestamp = Date.now();
+    }
+    return token;
   },
-  session: { strategy: "jwt" },
+  async session({ session, token }) {
+    if (session.user) {
+      (session.user as any).id = token.id;
+      (session.user as any).role = token.role;
+      (session.user as any).username = token.username;
+      (session.user as any).image = token.image;
+    }
+    return session;
+  },
+  authorized({ auth, request: { nextUrl } }) {
+    // ปิดการจัดการ Redirect ใน Middleware ชั่วคราวเพื่อแก้ปัญหา Redirect Loop
+    // ให้แต่ละหน้า (เช่น /dashboard) จัดการตรวจสอบสิทธิ์เองผ่าน useSession หรือ auth()
+    return true;
+  },
+  async redirect({ url, baseUrl }) {
+    if (url.startsWith("/")) return `${baseUrl}${url}`;
+    else if (new URL(url).origin === baseUrl) return url;
+    return baseUrl;
+  },
+};
+
+export const authConfig = {
+  providers: [],
+  callbacks,
+  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
+  pages: {
+    signIn: "/login",
+  },
+  trustHost: true,
+  secret: process.env.AUTH_SECRET,
+  debug: true,
 } satisfies NextAuthConfig;

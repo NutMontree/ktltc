@@ -5,6 +5,9 @@ if (!process.env.MONGODB_URI) {
 }
 
 const uri = process.env.MONGODB_URI;
+const sanitizedUri = uri.replace(/\/\/.*@/, "//****:****@");
+console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
+
 const options = {
   // Use defaults for now to isolate the hang issue
   connectTimeoutMS: 30000, // Increase timeout for slow connections
@@ -47,25 +50,29 @@ async function createIndexes(promise: Promise<MongoClient>) {
   }
 }
 
-if (process.env.NODE_ENV === "development") {
-  // ในโหมด Development ใช้ global variable เพื่อไม่ให้ connect ซ้ำซ้อนตอน Hot Reload
-  const globalWithMongo = global as typeof globalThis & {
-    _mongoClientPromise?: Promise<MongoClient>;
-  };
+// ในทุกโหมด ใช้ global variable เพื่อป้องกันการสร้าง Connection ซ้ำซ้อน
+const globalWithMongo = global as typeof globalThis & {
+  _mongoClientPromise?: Promise<MongoClient>;
+};
 
-  if (!globalWithMongo._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    globalWithMongo._mongoClientPromise = client.connect();
-    // ⚡ Re-enable automatic indexing in non-blocking background task
-    createIndexes(globalWithMongo._mongoClientPromise);
-  }
-  clientPromise = globalWithMongo._mongoClientPromise;
-} else {
-  // ในโหมด Production สร้าง connection ใหม่ปกติ
+if (!globalWithMongo._mongoClientPromise) {
+  console.log("🔌 [MongoDB] Initializing new connection...");
   client = new MongoClient(uri, options);
-  clientPromise = client.connect();
-  // ⚡ Re-enable automatic indexing in non-blocking background task
-  createIndexes(clientPromise);
+  globalWithMongo._mongoClientPromise = client.connect()
+    .then((connectedClient) => {
+      console.log("✅ [MongoDB] Connected successfully");
+      return connectedClient;
+    })
+    .catch((err) => {
+      console.error("❌ [MongoDB] Connection failed:", err);
+      globalWithMongo._mongoClientPromise = undefined; // เคลียร์ออกเพื่อให้ลองใหม่ครั้งหน้า
+      throw err;
+    });
+  
+  // ⚡ สร้าง Index ใน background
+  createIndexes(globalWithMongo._mongoClientPromise);
 }
+
+clientPromise = globalWithMongo._mongoClientPromise;
 
 export default clientPromise;

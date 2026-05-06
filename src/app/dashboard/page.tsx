@@ -20,6 +20,7 @@ import {
   Layers,
   Settings,
   HardDrive,
+  Folder,
   Shield,
   Clock,
   ClipboardList,
@@ -252,6 +253,22 @@ export default function DashboardLoader() {
                     unit=" ไฟล์"
                     variants={item}
                   />
+                  <StatCard
+                    label="ไฟล์ในคลังข้อมูล"
+                    value={stats.totalDriveFiles}
+                    icon={HardDrive}
+                    color="orange"
+                    unit=" ไฟล์"
+                    variants={item}
+                  />
+                  <StatCard
+                    label="โฟลเดอร์ในคลัง"
+                    value={stats.totalDriveFolders}
+                    icon={Folder}
+                    color="amber"
+                    unit=" โฟลเดอร์"
+                    variants={item}
+                  />
                 </div>
 
                 {/* Usage Cards */}
@@ -274,7 +291,7 @@ export default function DashboardLoader() {
                     }}
                   />
                   <UsageCard
-                    title="Local Storage"
+                    title="Storage & Drive"
                     value={stats.cloudUsageMB}
                     max={stats.cloudLimitMB}
                     unit="MB"
