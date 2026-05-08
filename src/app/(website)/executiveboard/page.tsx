@@ -127,12 +127,12 @@ export default function ExecutiveBoard() {
 
                 <div className="flex flex-col items-center">
                   {/* Image Container */}
-                  <div className="mb-8 h-64 w-64 overflow-hidden rounded-full border-4 border-yellow-50 shadow-xl dark:border-neutral-800 bg-slate-100 dark:bg-zinc-800">
+                  <div className="mb-8 h-64 w-64 overflow-hidden rounded-3xl border border-yellow-100 bg-slate-50 dark:bg-zinc-800/50 shadow-lg dark:border-neutral-800">
                     {director.img ? (
                       <Image
                         src={director.img}
                         alt="Director"
-                        className="h-full w-full object-cover object-top transition-transform duration-700 hover:scale-110"
+                        className="h-full w-full object-cover object-top transition-transform duration-700 hover:scale-105"
                         width={400}
                       />
                     ) : (
@@ -184,7 +184,7 @@ export default function ExecutiveBoard() {
             {/* --- 2. Board Members Grid --- */}
             <motion.div
               variants={itemVar}
-              className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto"
+              className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto"
             >
               {members.map((item, index) => (
                 <motion.div
@@ -195,7 +195,7 @@ export default function ExecutiveBoard() {
                   <div className="h-full overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-lg transition-all duration-300 hover:border-yellow-200 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-yellow-900/50">
                     <div className="flex h-full flex-col items-center text-center">
                       {/* Image */}
-                      <div className="mb-5 h-40 w-40 overflow-hidden rounded-full border-4 border-slate-50 shadow-md transition-transform duration-500 group-hover:scale-105 dark:border-neutral-800 object-top bg-slate-100 dark:bg-zinc-800">
+                      <div className="mb-5 h-48 w-full aspect-square overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 shadow-sm transition-transform duration-500 group-hover:scale-105 dark:border-neutral-800 dark:bg-zinc-800/50">
                         {item.img ? (
                           <Image
                             src={item.img}

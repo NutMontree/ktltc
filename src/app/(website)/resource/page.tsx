@@ -44,7 +44,7 @@ const resourceJobs = [
   },
   {
     key: "2",
-    title: "งานบริหารงานทั่วไป",
+    title: "งานบริหารทั่วไป",
     subtitle: "General Affairs",
     icon: <AppstoreAddOutlined />,
     component: <GA />,
@@ -53,7 +53,7 @@ const resourceJobs = [
   },
   {
     key: "3",
-    title: "งานบุคลากร",
+    title: "งานบริหารและพัฒนาทรัพยากรบุคคล",
     subtitle: "Human Resources",
     icon: <UsergroupAddOutlined />,
     component: <HR />,
@@ -96,7 +96,7 @@ const resourceJobs = [
   },
   {
     key: "7",
-    title: "งานอาคารและสถานที่",
+    title: "งานอาคารสถานที่",
     subtitle: "Buildings & Grounds",
     icon: <HomeOutlined />,
     component: <RW />,
@@ -111,24 +111,6 @@ const resourceJobs = [
     component: <BASW />,
     color: "bg-pink-500",
     lightColor: "bg-pink-50 text-pink-600",
-  },
-  {
-    key: "9",
-    title: "งานประชาสัมพันธ์",
-    subtitle: "Public Relations",
-    icon: <SoundOutlined />,
-    component: <PRW />,
-    color: "bg-rose-500",
-    lightColor: "bg-rose-50 text-rose-600",
-  },
-  {
-    key: "10",
-    title: "งานบริหารศูนย์ราชการสะดวก",
-    subtitle: "GECC Management",
-    icon: <CustomerServiceOutlined />,
-    component: <CGCA />,
-    color: "bg-violet-500",
-    lightColor: "bg-violet-50 text-violet-600",
   },
 ];
 

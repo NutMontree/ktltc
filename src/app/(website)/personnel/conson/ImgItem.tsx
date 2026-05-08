@@ -7,10 +7,10 @@ export function ImgItem(props: { img: any; onImgClick: any }) {
     <>
       <div className="scale-100   ">
         <BackgroundGradient className="rounded-[22px]   p-4 sm:p-4 bg-white dark:bg-zinc-900 ">
-          <div className="w-full aspect-3/4 overflow-hidden rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center cursor-pointer" onClick={() => onImgClick(img)}>
+          <div className="w-full aspect-square overflow-hidden rounded-xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-700/50 flex items-center justify-center cursor-pointer" onClick={() => onImgClick(img)}>
             {img.img ? (
               <img
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                 src={img.img}
                 alt={img.title}
               />

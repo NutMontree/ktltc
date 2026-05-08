@@ -17,7 +17,7 @@ interface User {
 }
 
 interface PersonnelListProps {
-  departmentCode?: string; // Optional short code if needed
+  departmentCode?: string;
   departmentName: string;
 }
 
@@ -32,7 +32,9 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
         const res = await fetch(`/api/users/department?name=${encodeURIComponent(departmentName)}`);
         if (res.ok) {
           const data = await res.json();
-          setUsers(data.users || []);
+          // Sort by orderIndex if available
+          const sortedUsers = (data.users || []).sort((a: any, b: any) => (a.orderIndex || 0) - (b.orderIndex || 0));
+          setUsers(sortedUsers);
         }
       } catch (error) {
         console.error("Failed to fetch personnel", error);
@@ -45,7 +47,6 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
     }
   }, [departmentName]);
 
-  // Animation Variants
   const containerVar = {
     hidden: { opacity: 0 },
     visible: {
@@ -73,8 +74,9 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
       <div className="flex flex-col items-center justify-center py-20 min-h-[300px] border border-dashed border-slate-300 dark:border-zinc-800 rounded-3xl mx-4">
         <UserOutlined className="text-5xl text-slate-300 dark:text-zinc-700 mb-4" />
         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">ยังไม่มีข้อมูลบุคลากร</h3>
-        <p className="text-slate-500 dark:text-zinc-500">
-          กรุณาเพิ่มข้อมูลบุคลากรและตั้งค่าสังกัดเป็น <span className="font-bold text-[#DAA520]">{departmentName}</span> ในระบบแอดมิน
+        <p className="text-slate-500 dark:text-zinc-500 text-center px-6">
+          กรุณาเพิ่มข้อมูลบุคลากรและตั้งค่าสังกัดเป็น <br />
+          <span className="font-bold text-[#DAA520]">{departmentName}</span> ในระบบแอดมิน
         </p>
       </div>
     );
@@ -85,69 +87,81 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
       variants={containerVar}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
-      className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      viewport={{ once: true, margin: "-50px" }}
+      // Use flex for dynamic centering and filling
+      className="flex flex-wrap justify-center gap-8 px-4"
     >
       <AnimatePresence>
         {users.map((user) => (
-          <motion.div key={user._id} variants={itemVar} layout="position" className="group h-full">
-            <BackgroundGradient className="h-full rounded-[22px] bg-white p-5 shadow-lg transition-all hover:shadow-xl dark:bg-zinc-900">
+          <motion.div 
+            key={user._id} 
+            variants={itemVar} 
+            layout="position" 
+            className="group w-full max-w-[320px]"
+          >
+            <BackgroundGradient className="h-full rounded-[30px] bg-white p-6 shadow-xl transition-all hover:shadow-2xl dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
               <div className="flex h-full flex-col">
-                {/* Image Container */}
-                <div className="relative mb-5 overflow-hidden rounded-xl bg-slate-100 dark:bg-zinc-800">
-                  <div className="aspect-3/4 w-full flex items-center justify-center">
+                {/* Image Container - Square only as requested */}
+                <div className="relative mb-6 aspect-square w-full overflow-hidden rounded-2xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-700/50">
+                  <div className="h-full w-full flex items-center justify-center">
                     {user.image ? (
                       <Image
                         src={user.image}
                         alt={user.name || "บุคลากร"}
-                        className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                        // object-cover handles "zooming in" for vertical/portrait images
+                        className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-110"
                         removeWrapper
                       />
                     ) : (
-                      <UserOutlined className="text-6xl text-slate-300 dark:text-zinc-700" />
+                      <div className="flex flex-col items-center gap-2">
+                        <UserOutlined className="text-6xl text-slate-200 dark:text-zinc-700" />
+                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">No Image</span>
+                      </div>
                     )}
                   </div>
-                  {/* Overlay Icon on Hover */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
-                    <SettingOutlined className="text-3xl text-white drop-shadow-md" />
-                  </div>
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                 </div>
 
                 {/* Content */}
                 <div className="flex flex-1 flex-col text-center">
-                  <h3 className="text-lg font-bold text-slate-800 transition-colors group-hover:text-[#DAA520] dark:text-white leading-tight">
+                  <h3 className="text-xl font-black text-slate-900 transition-colors group-hover:text-[#DAA520] dark:text-white leading-tight tracking-tight">
                     {user.name}
                   </h3>
 
                   {user.position && (
-                    <p className="mb-3 mt-1.5 text-sm font-bold text-[#DAA520]">
-                      {user.position}
-                    </p>
+                    <div className="mt-2 mb-4 inline-block">
+                      <span className="rounded-lg bg-amber-50 px-3 py-1 text-xs font-black text-amber-600 dark:bg-amber-900/20 dark:text-amber-400 uppercase tracking-wide">
+                        {user.position}
+                      </span>
+                    </div>
                   )}
 
-                  <div className="mx-auto mb-3 mt-2 h-px w-full bg-slate-100 dark:bg-zinc-800"></div>
+                  <div className="mx-auto mb-4 h-px w-16 bg-linear-to-r from-transparent via-slate-200 to-transparent dark:via-zinc-800"></div>
 
-                  <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  <div className="space-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
                     {user.department && (
-                      <p className="flex items-center justify-center gap-1">
+                      <p className="flex items-center justify-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                         <span className="font-bold text-slate-700 dark:text-slate-300">
-                          แผนก:
-                        </span>{" "}
-                        {user.department}
+                          {user.department}
+                        </span>
                       </p>
                     )}
-                    {user.faction && <p>{user.faction}</p>}
+                    {user.faction && <p className="opacity-70 italic">{user.faction}</p>}
                     {user.description && (
-                      <p className="italic opacity-80 mt-1">{user.description}</p>
+                      <p className="mt-2 text-[11px] leading-relaxed opacity-60 line-clamp-3">
+                        {user.description}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 {/* Footer Badge */}
-                <div className="mt-5 flex justify-center">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] font-bold text-white shadow-sm dark:bg-white dark:text-slate-900">
-                    <BuildFilled />
-                    <span>{departmentCode || 'KTLTC Staff'}</span>
+                <div className="mt-6 pt-4 border-t border-slate-50 dark:border-zinc-800 flex justify-center">
+                  <span className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-[10px] font-black text-white shadow-lg dark:bg-zinc-100 dark:text-slate-900 uppercase tracking-tighter">
+                    <BuildFilled className="text-amber-500" />
+                    <span>{departmentCode || 'KTLTC PERSONNEL'}</span>
                   </span>
                 </div>
               </div>

@@ -19,12 +19,31 @@ import {
   AppstoreOutlined,
   CarOutlined,
   CheckCircleOutlined,
+  BookOutlined,
+  SolutionOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 
-// Import Components
+// Import Personnel Components
 import PersonnelList from "../(components)/PersonnelList";
 import PersonnelInformation from "./PersonnelInformation";
 import ExecutiveBoard from "../executiveboard/page";
+
+// Import Duties Components (Resource)
+import GA from "../resource/GA";
+import HR from "../resource/HR";
+import Finance from "../resource/Finance";
+import AW from "../resource/AW";
+import PW from "../resource/PW";
+import RW from "../resource/RW";
+import BASW from "../resource/BASW";
+
+// Import Duties Components (Academic)
+import CDW from "../academic/CDW";
+import MAEW from "../academic/MAEW";
+import ARAL from "../academic/ARAL";
+import DVEDS from "../academic/DVEDS";
+import TMW from "../academic/TMW";
 
 // --- Helper Component: กรอบรองหลังไอคอน ---
 const IconBox = ({
@@ -144,39 +163,45 @@ const academicDepartments = [
   },
 ];
 
-const divisions: Record<string, string[]> = {
+interface SubDept {
+  name: string;
+  icon?: React.ReactNode;
+  component?: React.ReactNode;
+}
+
+const divisions: Record<string, SubDept[]> = {
   ฝ่ายบริหารทรัพยากร: [
-    "งานบริหารงานทั่วไป",
-    "งานบริหารและพัฒนาทรัพยากรบุคคล",
-    "งานการเงิน",
-    "งานการบัญชี",
-    "งานพัสดุ",
-    "งานอาคารสถานที่",
-    "งานทะเบียน",
-    "งานแม่บ้าน/นักการ",
+    { name: "งานบริหารทั่วไป", icon: <AppstoreOutlined />, component: <GA /> },
+    { name: "งานบริหารและพัฒนาทรัพยากรบุคคล", icon: <TeamOutlined />, component: <HR /> },
+    { name: "งานการเงิน", icon: <CalculatorOutlined />, component: <Finance /> },
+    { name: "งานการบัญชี", icon: <CalculatorOutlined />, component: <AW /> },
+    { name: "งานพัสดุ", icon: <BuildOutlined />, component: <PW /> },
+    { name: "งานอาคารสถานที่", icon: <BuildOutlined />, component: <RW /> },
+    { name: "งานทะเบียน", icon: <BookOutlined />, component: <BASW /> },
   ],
   ฝ่ายยุทธศาสตร์และแผนงาน: [
-    "งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ",
-    "งานมาตรฐานและการประกันคุณภาพ",
-    "งานศูนย์ดิจิทัลและสื่อสารองค์กร",
-    "งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์",
-    "งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ",
-    "งานติดตามและประเมินผล",
+    { name: "งานพัฒนายุทธศาสตร์ แผนงานโครงการและงบประมาณ", icon: <CheckCircleOutlined /> },
+    { name: "งานมาตรฐานและการประกันคุณภาพการศึกษา", icon: <CheckCircleOutlined /> },
+    { name: "งานศูนย์ดิจิทัลและสื่อสารองค์กร", icon: <CheckCircleOutlined /> },
+    { name: "งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์", icon: <CheckCircleOutlined /> },
+    { name: "งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ", icon: <CheckCircleOutlined /> },
+    { name: "งานติดตามและประเมินผลการอาชีวศึกษา", icon: <CheckCircleOutlined /> },
   ],
-  "ฝ่ายพัฒนากิจการนักเรียน นักศึกษา": [
-    "งานกิจกรรมนักเรียนนักศึกษา",
-    "งานครูที่ปรึกษาและการแนะแนว",
-    "งานปกครองและความปลอดภัยนักเรียนนักศึกษา",
-    "งานสวัสดิการนักเรียนนักศึกษา",
-    "งานโครงการพิเศษและการบริการ",
+  "ฝ่ายกิจการนักเรียน นักศึกษา": [
+    { name: "งานกิจกรรมนักเรียนนักศึกษา", icon: <CheckCircleOutlined /> },
+    { name: "งานครูที่ปรึกษาและการแนะแนว", icon: <CheckCircleOutlined /> },
+    { name: "งานปกครองและความปลอดภัยนักเรียน นักศึกษา", icon: <CheckCircleOutlined /> },
+    { name: "งานสวัสดิการนักเรียนนักศึกษา", icon: <CheckCircleOutlined /> },
+    { name: "งานโครงการพิเศษและการบริการชุมชน", icon: <CheckCircleOutlined /> },
   ],
   ฝ่ายวิชาการ: [
-    "งานพัฒนาหลักสูตรและการจัดการเรียนรู้",
-    "งานวัดผลและประเมินผล",
-    "งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ",
-    "งานวิทยบริการและเทคโนโลยีการศึกษา",
-    "งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา",
-    "งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ",
+    { name: "งานแผนกวิชา.../ภาควิชา.../คณะวิชา...", icon: <SolutionOutlined /> },
+    { name: "งานพัฒนาหลักสูตรและการจัดการเรียนรู้", icon: <BookOutlined />, component: <CDW /> },
+    { name: "งานวัดผลและประเมินผล", icon: <BarChartOutlined />, component: <TMW /> }, // Using TMW for measurement
+    { name: "งานวิทยบริการและเทคโนโลยีการศึกษา", icon: <ReadOutlined />, component: <ARAL /> },
+    { name: "งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ", icon: <SolutionOutlined />, component: <DVEDS /> },
+    { name: "งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา", icon: <CheckCircleOutlined /> },
+    { name: "งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ", icon: <CheckCircleOutlined /> },
   ],
 };
 
@@ -184,7 +209,7 @@ const tabs = [
   "ผู้บริหารสถานศึกษา",
   "ฝ่ายบริหารทรัพยากร",
   "ฝ่ายยุทธศาสตร์และแผนงาน",
-  "ฝ่ายพัฒนากิจการนักเรียน นักศึกษา",
+  "ฝ่ายกิจการนักเรียน นักศึกษา",
   "ฝ่ายวิชาการ",
   "แผนกวิชา",
 ] as const;
@@ -207,12 +232,12 @@ export default function Personnel() {
 
   // Styles สำหรับ Accordion
   const itemClasses = {
-    base: "mb-3 rounded-2xl py-2 px-1 border border-slate-200 bg-white shadow-sm transition-all dark:border-neutral-800 dark:bg-neutral-900",
-    title: "font-semibold text-medium text-slate-800 dark:text-slate-100",
+    base: "py-0 w-full mb-4 group data-[open=true]:shadow-lg transition-shadow duration-300",
+    title: "font-bold text-lg text-slate-800 dark:text-slate-100",
     trigger:
-      "py-2 px-2 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-neutral-800/50 rounded-xl flex items-center transition-colors",
-    indicator: "text-medium text-slate-400 dark:text-slate-500",
-    content: "text-small px-4 pb-6 pt-2 dark:text-slate-300",
+      "px-6 py-5 bg-white dark:bg-zinc-900/80 backdrop-blur-xl hover:bg-slate-50/80 rounded-2xl border border-slate-200/60 dark:border-zinc-800 shadow-sm transition-all duration-300",
+    indicator: "text-lg text-slate-400 data-[open=true]:text-[#DAA520] data-[open=true]:rotate-90",
+    content: "text-small px-6 pb-8 pt-4 bg-white/50 dark:bg-zinc-900/50 rounded-b-2xl border-x border-b border-slate-200/60 dark:border-zinc-800 -mt-2",
   };
 
   return (
@@ -277,7 +302,6 @@ export default function Personnel() {
             >
               {activeTab === "ผู้บริหารสถานศึกษา" && (
                 <div className="rounded-[40px] border border-slate-200 bg-white shadow-xl overflow-hidden dark:border-neutral-800 dark:bg-neutral-900">
-                  {/* ExecutiveBoard component rendering */}
                   <ExecutiveBoard />
                 </div>
               )}
@@ -312,7 +336,7 @@ export default function Personnel() {
 
               {(activeTab === "ฝ่ายบริหารทรัพยากร" ||
                 activeTab === "ฝ่ายยุทธศาสตร์และแผนงาน" ||
-                activeTab === "ฝ่ายพัฒนากิจการนักเรียน นักศึกษา" ||
+                activeTab === "ฝ่ายกิจการนักเรียน นักศึกษา" ||
                 activeTab === "ฝ่ายวิชาการ") && (
                 <Accordion
                   variant="splitted"
@@ -322,19 +346,31 @@ export default function Personnel() {
                   {divisions[activeTab].map((subDept, index) => (
                     <AccordionItem
                       key={String(index)}
-                      aria-label={subDept}
+                      aria-label={subDept.name}
                       startContent={
                         <IconBox colorClass="bg-slate-100 text-slate-600 dark:bg-neutral-800 dark:text-slate-400">
-                          <CheckCircleOutlined />
+                          {subDept.icon || <CheckCircleOutlined />}
                         </IconBox>
                       }
-                      title={subDept}
+                      title={subDept.name}
                     >
-                      <div className="pt-2">
-                        <PersonnelList
-                          departmentName={subDept}
-                          departmentCode={activeTab}
-                        />
+                      <div className="animate-in fade-in slide-in-from-top-4 duration-500 ease-out">
+                        {/* Render Duties Component if available */}
+                        {subDept.component && (
+                          <div className="mb-8 relative">
+                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-[#DAA520]/20 to-transparent rounded-full" />
+                             <div className="pl-6">
+                               {subDept.component}
+                             </div>
+                          </div>
+                        )}
+                        
+                        <div className={`${subDept.component ? "pt-8 border-t border-slate-100 dark:border-zinc-800" : ""}`}>
+                          <PersonnelList
+                            departmentName={subDept.name}
+                            departmentCode={activeTab}
+                          />
+                        </div>
                       </div>
                     </AccordionItem>
                   ))}
