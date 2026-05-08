@@ -18,6 +18,8 @@ import {
   ChevronRight,
   ShieldAlert,
   Loader2,
+  Shield,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -30,7 +32,7 @@ interface User {
   image?: string;
 }
 
-const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
+const PROTECTED_ROLES = ["super_admin", "admin"];
 
 // Framer Motion Variants
 const container: Variants = {
@@ -52,11 +54,26 @@ export default function ManageRolesPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<string[]>([]);
+  const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const currentUserRole = (session?.user as any)?.role;
   const isSuperAdmin = currentUserRole === "super_admin";
+
+  const fetchRoles = async () => {
+    try {
+      const res = await fetch("/api/admin/permissions");
+      if (res.ok) {
+        const data = await res.json();
+        setRoles(data.rolesOrder || Object.keys(data.labels));
+        setRoleLabels(data.labels);
+      }
+    } catch (error) {
+      console.error("Failed to fetch roles:", error);
+    }
+  };
 
   const fetchData = async (q = "") => {
     try {
@@ -76,6 +93,7 @@ export default function ManageRolesPage() {
   };
 
   useEffect(() => {
+    fetchRoles();
     fetchData("");
   }, []);
 
@@ -165,24 +183,7 @@ export default function ManageRolesPage() {
     return avatarColors[index % avatarColors.length];
   };
 
-  // Removed client-side filter as we use server-side search
   const filteredUsers = users;
-
-  const allowedRoles = [
-    { value: "super_admin", label: "ผู้ดูแลระบบสูงสุด (Super Admin)" },
-    { value: "admin", label: "ผู้ดูแลระบบ (Admin)" },
-    { value: "editor", label: "บรรณาธิการ (Editor)" },
-    { value: "director", label: "ผู้บริหาร (Director)" },
-    { value: "deputy_resource", label: "รอง ผอ. (ทรัพยากร)" },
-    { value: "deputy_strategy", label: "รอง ผอ. (แผนงาน)" },
-    { value: "deputy_academic", label: "รอง ผอ. (วิชาการ)" },
-    { value: "deputy_student_affairs", label: "รอง ผอ. (กิจการนักเรียน)" },
-    { value: "teacher", label: "ครูผู้สอน" },
-    { value: "hr", label: "เจ้าหน้าที่ฝ่ายบุคคล" },
-    { value: "staff", label: "เจ้าหน้าที่" },
-    { value: "janitor", label: "แม่บ้าน/นักการ" },
-    { value: "user", label: "ผู้ใช้ทั่วไป" },
-  ];
 
   if (loading && users.length === 0) {
     return (
@@ -209,7 +210,7 @@ export default function ManageRolesPage() {
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <Link
-                href="/attendance-dashboard"
+                href="/dashboard"
                 className="p-3 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-800 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500/20 transition-all active:scale-95"
               >
                 <ArrowLeft size={20} />
@@ -234,19 +235,37 @@ export default function ManageRolesPage() {
             </div>
           </div>
 
-          <div className="w-full xl:w-96 group">
-            <div className="relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
-                size={20}
-              />
-              <input
-                type="text"
-                placeholder="ค้นหาตามชื่อ หรือ USERNAME..."
-                className="w-full pl-12 pr-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-sm group-hover:shadow-lg"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+          <div className="flex flex-col gap-6 w-full xl:w-auto">
+            <div className="flex items-center gap-3 self-end">
+              <Link
+                href="/dashboard/super-admin"
+                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm"
+              >
+                <LayoutDashboard size={14} className="text-rose-500" />
+                Super Admin
+              </Link>
+              <Link
+                href="/dashboard/permissions"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+              >
+                <Shield size={14} />
+                Matrix Permissions
+              </Link>
+            </div>
+            <div className="w-full xl:w-96 group">
+              <div className="relative">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
+                  size={20}
+                />
+                <input
+                  type="text"
+                  placeholder="ค้นหาตามชื่อ หรือ USERNAME..."
+                  className="w-full pl-12 pr-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-sm group-hover:shadow-lg"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -260,12 +279,9 @@ export default function ManageRolesPage() {
         >
           {filteredUsers.map((user) => {
             const isProtected =
-              ["super_admin", "admin", "editor"].includes(user.role) ||
+              ["super_admin", "admin"].includes(user.role) ||
               (PROTECTED_ROLES.includes(user.role) && !isSuperAdmin);
-            const roleLabel =
-              allowedRoles.find((r) => r.value === user.role)?.label ||
-              user.role;
-
+            
             return (
               <motion.div
                 key={user._id}
@@ -310,20 +326,16 @@ export default function ManageRolesPage() {
                     </label>
                     <div className="relative">
                       <select
-                        value={
-                          allowedRoles.some((r) => r.value === user.role)
-                            ? user.role
-                            : "user"
-                        }
+                        value={user.role}
                         onChange={(e) =>
                           changeRole(user._id, e.target.value, user.name)
                         }
                         disabled={isProtected}
                         className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
-                        {allowedRoles.map((role) => (
-                          <option key={role.value} value={role.value}>
-                            {role.label}
+                        {roles.map((roleKey) => (
+                          <option key={roleKey} value={roleKey}>
+                            {roleLabels[roleKey] || roleKey}
                           </option>
                         ))}
                       </select>
@@ -460,7 +472,7 @@ export default function ManageRolesPage() {
                   <div className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
-                      Current: {user.role}
+                      Current: {roleLabels[user.role] || user.role}
                     </span>
                   </div>
                   <div className="p-1 text-slate-300 hover:text-blue-500 transition-colors">

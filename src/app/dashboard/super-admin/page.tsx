@@ -27,6 +27,7 @@ import {
   FileSpreadsheet,
 } from "lucide-react";
 import { Calendar } from "antd";
+import Link from "next/link";
 
 interface User {
   _id: string;
@@ -82,6 +83,22 @@ export default function SuperAdminPage() {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingLogs, setIsExportingLogs] = useState(false);
+
+  const [roles, setRoles] = useState<string[]>([]);
+  const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
+
+  const fetchRoles = async () => {
+    try {
+      const res = await fetch("/api/admin/permissions");
+      if (res.ok) {
+        const data = await res.json();
+        setRoles(data.rolesOrder || Object.keys(data.labels));
+        setRoleLabels(data.labels);
+      }
+    } catch (error) {
+      console.error("Failed to fetch roles:", error);
+    }
+  };
 
   const handleExportLogsCSV = async () => {
     try {
@@ -260,6 +277,7 @@ export default function SuperAdminPage() {
 
   useEffect(() => {
     fetchAdminProfile();
+    fetchRoles();
     fetchData();
   }, []);
 
@@ -482,6 +500,22 @@ export default function SuperAdminPage() {
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-2">
+                <Link
+                    href="/manage-roles"
+                    className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all shadow-lg text-slate-700 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest"
+                >
+                    <UserPlus size={16} className="text-blue-500" />
+                    <span className="hidden sm:inline">จัดการรายบุคคล</span>
+                </Link>
+                <Link
+                    href="/dashboard/permissions"
+                    className="flex items-center gap-2 px-6 py-4 bg-rose-600 text-white rounded-3xl hover:bg-rose-700 transition-all shadow-xl shadow-rose-500/20 font-bold text-xs uppercase tracking-widest"
+                >
+                    <Lock size={16} />
+                    <span className="hidden sm:inline">Permissions Matrix</span>
+                </Link>
+            </div>
             <button
               onClick={handleExportCSV}
               disabled={isExporting}
@@ -680,20 +714,11 @@ export default function SuperAdminPage() {
                             onChange={(e) => changeRole(user._id, e.target.value, user.name)}
                             className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
                           >
-                            <option value="super_admin">SUPER_ADMIN (สูงสุด)</option>
-                            <option value="admin">ADMIN (แอดมิน)</option>
-                            <option value="editor">EDITOR (ดูแลเนื้อหา)</option>
-                            <option value="director">ผอ. (DIRECTOR)</option>
-                            <option value="deputy_resource">รอง ผอ. (ทรัพยากร)</option>
-                            <option value="deputy_strategy">รอง ผอ. (แผนงาน)</option>
-                            <option value="deputy_academic">รอง ผอ. (วิชาการ)</option>
-                            <option value="deputy_student_affairs">รอง ผอ. (กิจการนักเรียน)</option>
-                            <option value="teacher">ครู (TEACHER)</option>
-                            <option value="hr">ฝ่ายบุคคล (HR)</option>
-                            <option value="staff">เจ้าหน้าที่ (STAFF)</option>
-                            <option value="janitor">แม่บ้าน/นักการ (JANITOR)</option>
-                            <option value="student">นักเรียน (STUDENT)</option>
-                            <option value="user">ผู้ใช้ทั่วไป (USER)</option>
+                            {roles.map(roleKey => (
+                                <option key={roleKey} value={roleKey}>
+                                    {roleLabels[roleKey] || roleKey.toUpperCase()}
+                                </option>
+                            ))}
                           </select>
                         </td>
                         <td className="p-4 text-center">

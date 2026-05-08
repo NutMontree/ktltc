@@ -20,6 +20,7 @@ import {
   FiInfo,
 } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 
 const FEATURE_LABELS: {
   [key: string]: { label: string; icon: any; color: string; isSuperAdminOnly?: boolean };
@@ -280,6 +281,22 @@ export default function PermissionsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+            <div className="flex items-center gap-3 mr-4">
+                <Link
+                  href="/dashboard/super-admin"
+                  className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-rose-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
+                >
+                  <FiLayout size={16} />
+                  <span>Super Admin</span>
+                </Link>
+                <Link
+                  href="/manage-roles"
+                  className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-indigo-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
+                >
+                  <FiUsers size={16} />
+                  <span>จัดการรายบุคคล</span>
+                </Link>
+            </div>
             <button
               onClick={() => setShowAddModal(true)}
               className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all border-2 border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none active:scale-95"

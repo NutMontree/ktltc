@@ -151,7 +151,8 @@ const DEFAULT_PERMISSIONS = {
 export async function GET() {
   try {
     const session = await auth();
-    if (!session || (session.user as any)?.role !== "super_admin") {
+    const userRole = (session?.user as any)?.role;
+    if (!session || (userRole !== "super_admin" && userRole !== "admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
