@@ -181,27 +181,19 @@ export async function GET() {
           }
         }
 
-        // 4.2 Get CPU & RAM from Lenovo Host (via MongoDB Admin Command)
-        try {
-          const adminDb = db.admin();
-          const hostInfo = await adminDb.command({ hostInfo: 1 });
-          
+        // 4.2 Get CPU & RAM stats
+        const isLocal = publicDir === path.join(process.cwd(), "public");
+
+        if (isLocal) {
+          // --- รันบนเครื่อง Lenovo โดยตรง (ใช้ค่า Real-time จาก OS) ---
+          const totalMem = os.totalmem();
+          const freeMem = os.freemem();
           ramUsage = {
-            total: hostInfo.extra.memSizeMB || 0,
-            used: 0, 
-            percent: 0, 
+            total: Math.round(totalMem / (1024 * 1024)),
+            used: Math.round((totalMem - freeMem) / (1024 * 1024)),
+            percent: Math.round(((totalMem - freeMem) / totalMem) * 100),
           };
 
-          cpuUsage = hostInfo.system.cpuAddrSize ? "Connected" : "0";
-        } catch (mongoErr) {
-          console.error("MongoDB HostInfo Error:", mongoErr);
-          // Fallback to PC stats if MongoDB Admin command fails
-          ramUsage = {
-            total: Math.round(os.totalmem() / (1024 * 1024)),
-            used: Math.round((os.totalmem() - os.freemem()) / (1024 * 1024)),
-            percent: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
-          };
-          
           const cpus = os.cpus();
           let totalIdle = 0, totalTick = 0;
           cpus.forEach((cpu: any) => {
@@ -209,6 +201,34 @@ export async function GET() {
             totalIdle += cpu.times.idle;
           });
           cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
+        } else {
+          // --- รันบน PC (ดึงข้อมูลพื้นฐานจาก MongoDB) ---
+          try {
+            const adminDb = db.admin();
+            const hostInfo = await adminDb.command({ hostInfo: 1 });
+            ramUsage = {
+              total: hostInfo.extra.memSizeMB || 0,
+              used: 0,
+              percent: 0,
+            };
+            // แสดงเลข 1 เพื่อให้เข็มไมล์ขยับ (แทนสถานะเชื่อมต่อได้)
+            cpuUsage = "1"; 
+          } catch (mongoErr) {
+            console.error("MongoDB HostInfo Error:", mongoErr);
+            ramUsage = {
+              total: Math.round(os.totalmem() / (1024 * 1024)),
+              used: Math.round((os.totalmem() - os.freemem()) / (1024 * 1024)),
+              percent: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
+            };
+            
+            const cpus = os.cpus();
+            let totalIdle = 0, totalTick = 0;
+            cpus.forEach((cpu: any) => {
+              for (let type in cpu.times) totalTick += cpu.times[type];
+              totalIdle += cpu.times.idle;
+            });
+            cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
+          }
         }
       } catch (infraErr) {
         console.error("Infrastructure Check Error:", infraErr);
