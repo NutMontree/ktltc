@@ -7,10 +7,17 @@ import type { Dayjs } from "dayjs";
 import { motion } from "framer-motion";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import "dayjs/locale/th"; // ถ้าต้องการภาษาไทย
+import "dayjs/locale/th";
 
-// ตั้งค่า locale เป็นไทย (Optional)
-// dayjs.locale('th');
+/**
+ * Calendar.tsx: คอมโพเนนต์ปฏิทินกิจกรรม
+ * 
+ * หน้าที่: 
+ * 1. แสดงปฏิทินแบบ Interactive (Ant Design) พร้อมการตั้งค่าสไตล์แบบ Custom
+ * 2. แสดงจุดเครื่องหมาย (Badge) ในวันที่มีกิจกรรมสำคัญ
+ * 3. จัดการสถานะการเลือกวันที่ (Selected Date)
+ * 4. ตกแต่ง UI ด้วย Framer Motion และระบบสี Indigo เพื่อความทันสมัย
+ */
 
 export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
@@ -23,7 +30,10 @@ export default function CalendarPage() {
     setSelectedDate(newValue);
   };
 
-  // จำลองข้อมูลกิจกรรม (Events)
+  /**
+   * getListData: จำลองข้อมูลกิจกรรม (Events) ตามวันที่
+   * (ในอนาคตสามารถดึงจากฐานข้อมูลมาแสดงผลได้)
+   */
   const getListData = (value: Dayjs) => {
     let listData;
     switch (value.date()) {
@@ -38,7 +48,10 @@ export default function CalendarPage() {
     return listData || [];
   };
 
-  // Custom Cell Rendering (แสดงจุดสีเล็กๆ ใต้วันที่มีกิจกรรม)
+  /**
+   * dateCellRender: ฟังก์ชันสำหรับเรนเดอร์เนื้อหาภายในแต่ละช่องของวันที่
+   * ใช้สำหรับแสดงจุด Badge ใต้ตัวเลขวันที่
+   */
   const dateCellRender = (value: Dayjs) => {
     const listData = getListData(value);
     return (
@@ -56,14 +69,14 @@ export default function CalendarPage() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#6366f1", // สี Indigo ทันสมัย
+          colorPrimary: "#6366f1", // สี Indigo หลักของปฏิทิน
           borderRadius: 12,
-          fontFamily: "var(--font-sans)", // ใช้ Font ของโปรเจกต์
+          fontFamily: "var(--font-sans)",
         },
         components: {
           Calendar: {
             fullBg: "#ffffff",
-            itemActiveBg: "#e0e7ff", // สีพื้นหลังเมื่อเลือกวัน
+            itemActiveBg: "#e0e7ff", // สีพื้นหลังเมื่อคลิกเลือกวัน
           },
         },
       }}
@@ -79,7 +92,7 @@ export default function CalendarPage() {
             {/* --- ส่วนปฏิทิน (Calendar Widget) --- */}
             <div className="w-full max-w-md">
               <div className="relative overflow-hidden rounded-3xl bg-white px-2 py-2 shadow-xl ring-1 ring-slate-100 dark:bg-neutral-900 dark:ring-neutral-800">
-                {/* Header ตกแต่ง */}
+                {/* ส่วนหัวการตกแต่ง (Decorative Header) */}
                 <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-neutral-800">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400">
@@ -96,47 +109,21 @@ export default function CalendarPage() {
                   </div>
                 </div>
 
-                {/* ตัวปฏิทิน */}
+                {/* ตัวคอนโทรลปฏิทินจาก Ant Design */}
                 <Calendar
                   fullscreen={false}
                   onPanelChange={onPanelChange}
                   onSelect={onSelect}
-                  cellRender={dateCellRender} // เพิ่มจุดสี
+                  cellRender={dateCellRender}
                 />
               </div>
             </div>
 
-            {/* --- ส่วนแสดงรายละเอียด (Event Detail Side Panel) --- */}
-            {/* เพิ่มส่วนนี้เพื่อให้ดูเป็น Dashboard ที่สมบูรณ์ */}
-            {/* <div className="w-full max-w-md ">
-              <div className="h-full rounded-3xl py-4 bg-white px-4 shadow-lg ring-1 ring-slate-100 dark:bg-neutral-900 dark:ring-neutral-800">
-                <h3 className="mb-4 text-xl font-bold text-slate-800 dark:text-slate-100">
-                  กิจกรรมเดือนนี้
-                </h3>
-
-                <div className="space-y-4 ">
-                  <div className="flex gap-4 rounded-r-xl border-l-4 border-indigo-500 bg-slate-50 p-4 dark:bg-neutral-800">
-                    <div>
-                      <p className="font-semibold text-slate-700 dark:text-slate-200">
-                        No activities.
-                      </p>
-                      <p className="text-sm text-slate-500">Time Any</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 rounded-r-xl border-l-4 border-orange-400 bg-slate-50 p-4 dark:bg-neutral-800">
-                    <div>
-                      <p className="font-semibold text-slate-700 dark:text-slate-200">
-                        No activities.
-                      </p>
-                      <p className="text-sm text-slate-500">Time Any</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
+            {/* Note: ส่วนแสดงรายละเอียดกิจกรรม (Side Panel) สามารถเปิดใช้ได้ภายหลังหากมีข้อมูล Database */}
           </div>
         </motion.div>
       </section>
     </ConfigProvider>
   );
 }
+

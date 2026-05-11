@@ -1,20 +1,38 @@
-/* ✅ 1. @import Font ต้องอยู่บรรทัดแรกสุดเสมอ (ก่อน @import "tailwindcss") */
+/* 
+ * globals.css: ไฟล์กำหนดสไตล์เริ่มต้นและตัวแปรส่วนกลางของทั้งเว็บไซต์
+ * 
+ * ความเชื่อมโยง: 
+ * - ถูก Import ใน Root Layout (src/app/layout.tsx) เพื่อให้มีผลกับทุกหน้า
+ * - ใช้กำหนด CSS Variables สำหรับสีพื้นหลังและสีตัวอักษรหลัก
+ */
+
+/* ✅ 1. การนำเข้าฟอนต์ (Font Import)
+ * ต้องอยู่บรรทัดแรกสุดเสมอเพื่อป้องกันปัญหาการแสดงผล
+ * ในที่นี้ใช้ฟอนต์ 'Inter' ซึ่งเป็นฟอนต์สไตล์ Modern อ่านง่าย
+ */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
+/* ✅ 2. กำหนดตัวแปรสีส่วนกลาง (Root Variables)
+ * ใช้สำหรับอ้างอิงสีที่ใช้บ่อย เพื่อให้ง่ายต่อการแก้ไขในภายหลัง
+ */
 :root {
-  /* พื้นหลัง: สีขาวควันบุหรี่/ขาวนวล (Neutral-50) ไม่ใช่ขาวโอโม่ (#ffffff) */
+  /* พื้นหลัง: สีขาวควันบุหรี่/ขาวนวล (Neutral-50) ช่วยลดความล้าของสายตา */
   --background: #fafafa;
-  /* ตัวหนังสือ: สีเทาเข้มเกือบดำ (Zinc-900) อ่านง่ายสบายตา */
+  /* ตัวหนังสือ: สีเทาเข้มเกือบดำ (Zinc-900) ให้ Contrast ที่ดีกับพื้นหลัง */
   --foreground: #18181b;
 }
 
+/* ✅ 3. สไตล์สำหรับ Body
+ * กำหนดค่าพื้นฐานสำหรับพื้นหลัง ฟอนต์ และการจัดวางเบื้องต้น
+ */
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family:
-    "Inter", sans-serif; /* อย่าลืมกำหนด font-family ให้ body ด้วยนะครับ */
+  font-family: var(--font-prompt), "Inter", sans-serif; 
 
-  /* แสง Glow: ปรับให้จางลงเล็กน้อยเพื่อให้เข้ากับพื้นขาว ดูคลีนๆ */
+  /* แสง Glow ตกแต่งพื้นหลัง (Background Glow): 
+   * สร้างมิติด้วยการไล่เฉดสีฟ้าและม่วงจางๆ บริเวณด้านบนของหน้าเว็บ
+   */
   background-image:
     radial-gradient(
       circle at 50% 0%,
@@ -29,17 +47,20 @@ body {
   min-height: 100vh;
 }
 
-/* Scrollbar: ปรับเป็นโทนสีเทาสว่าง */
+/* ✅ 4. ปรับแต่งแถบเลื่อน (Custom Scrollbar)
+ * เพื่อให้ดูสวยงามและเข้ากับดีไซน์ของเว็บไซต์
+ */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 8px; /* ความกว้างของแถบเลื่อน */
 }
 ::-webkit-scrollbar-track {
-  background: #f4f4f5; /* รางเลื่อนสีเทาอ่อนมาก */
+  background: #f4f4f5; /* สีรางเลื่อน (เทาอ่อน) */
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d8; /* ตัวเลื่อนสีเทากลางๆ */
+  background: #d4d4d8; /* สีตัวเลื่อน (เทากลาง) */
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa; /* สีเข้มขึ้นเมื่อเอาเมาส์ชี้ */
+  background: #a1a1aa; /* สีจะเข้มขึ้นเมื่อเอาเมาส์ชี้ */
 }
+

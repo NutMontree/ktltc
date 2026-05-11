@@ -5,6 +5,16 @@ import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
+/**
+ * sidebar.tsx: คอมโพเนนต์ Sidebar (แถบข้าง) แบบ Responsive และ Interactive
+ * 
+ * หน้าที่: 
+ * 1. เป็นแถบเมนูหลักสำหรับหน้า Dashboard/Admin
+ * 2. รองรับการยืด-หด (Expand/Collapse) เมื่อเอาเมาส์ไปวาง (Hover)
+ * 3. ปรับเปลี่ยนรูปแบบอัตโนมัติระหว่าง Desktop (แถบข้าง) และ Mobile (เมนูแบบเต็มจอ)
+ * 4. ใช้ Context API เพื่อจัดการสถานะการเปิด-ปิดเมนูร่วมกันในหลายส่วน
+ */
+
 interface Links {
   label: string;
   href: string;
@@ -17,10 +27,14 @@ interface SidebarContextProps {
   animate: boolean;
 }
 
+// สร้าง Context สำหรับแชร์สถานะ Sidebar
 const SidebarContext = createContext<SidebarContextProps | undefined>(
   undefined,
 );
 
+/**
+ * useSidebar: Hook สำหรับดึงสถานะ Sidebar ไปใช้งานในคอมโพเนนต์ลูก
+ */
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
   if (!context) {
@@ -29,6 +43,9 @@ export const useSidebar = () => {
   return context;
 };
 
+/**
+ * SidebarProvider: ตัวจัดการสถานะหลักของ Sidebar
+ */
 export const SidebarProvider = ({
   children,
   open: openProp,
@@ -70,6 +87,9 @@ export const Sidebar = ({
   );
 };
 
+/**
+ * SidebarBody: ส่วนหุ้มหลักที่รวมทั้ง Desktop และ Mobile Sidebar เข้าด้วยกัน
+ */
 export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
   return (
     <>
@@ -79,6 +99,9 @@ export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
   );
 };
 
+/**
+ * DesktopSidebar: การแสดงผลบนหน้าจอคอมพิวเตอร์
+ */
 export const DesktopSidebar = ({
   className,
   children,
@@ -93,6 +116,7 @@ export const DesktopSidebar = ({
           className,
         )}
         animate={{
+          // ยืดหดความกว้างตามสถานะ open
           width: animate ? (open ? "300px" : "60px") : "300px",
         }}
         onMouseEnter={() => setOpen(true)}
@@ -105,6 +129,9 @@ export const DesktopSidebar = ({
   );
 };
 
+/**
+ * MobileSidebar: การแสดงผลบนหน้าจอโทรศัพท์ (เมนู Hamburger)
+ */
 export const MobileSidebar = ({
   className,
   children,
@@ -155,6 +182,9 @@ export const MobileSidebar = ({
   );
 };
 
+/**
+ * SidebarLink: ลิงก์เมนูแต่ละรายการใน Sidebar
+ */
 export const SidebarLink = ({
   link,
   className,
@@ -178,6 +208,7 @@ export const SidebarLink = ({
 
       <motion.span
         animate={{
+          // ซ่อนตัวอักษรเมื่อ Sidebar หดตัว
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
@@ -188,3 +219,4 @@ export const SidebarLink = ({
     </Link>
   );
 };
+

@@ -263,6 +263,10 @@ import React from "react";
 // ... imports อื่นๆ
 
 // ตรวจสอบว่ามีคำว่า export const หรือ export function หรือไม่
+/**
+ * BackgroundBeamsWithCollision: คอมโพเนนต์หลักสำหรับแสดงเอฟเฟกต์พื้นหลัง
+ * ปัจจุบันทำหน้าที่เป็น Container สำหรับหุ้มเนื้อหาหน้าเว็บ
+ */
 export const BackgroundBeamsWithCollision = ({
   children,
   className,
@@ -272,8 +276,9 @@ export const BackgroundBeamsWithCollision = ({
 }) => {
   return (
     <div className={className}>
-      {/* ... โค้ดภายใน ... */}
+      {/* สามารถเพิ่มตรรกะลำแสง (Beams) ได้ในส่วนนี้ในอนาคต */}
       {children}
     </div>
   );
 };
+

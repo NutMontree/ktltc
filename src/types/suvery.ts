@@ -1,36 +1,44 @@
-// แนะนำ: ควรย้าย Interface นี้ไปไว้ในไฟล์ Type กลาง เช่น src/types/suvery.ts หรือ src/types/index.ts
+/**
+ * suvery.ts: แม่แบบข้อมูลสำหรับระบบแบบสำรวจ (Survey)
+ * 
+ * หน้าที่: 
+ * - กำหนดโครงสร้างข้อมูลของผู้ตอบแบบสำรวจ (ผู้สำเร็จการศึกษา)
+ * - กำหนดประเภทข้อมูลสำหรับ Props ที่ใช้ในคอมโพเนนต์แสดงรายการแบบสำรวจ
+ */
 
-// 💡 อัปเดต: เปลี่ยนชื่อเป็น SuveryItem และเพิ่ม Field ที่ Modal ต้องใช้
 export interface SuveryItem {
-  _id: string;
-  studentId: string;
-  fullName: string;
-  graduationYear: number;
+  _id: string;            // ID ผู้กรอกแบบสำรวจ
+  studentId: string;      // รหัสนักเรียน/นักศึกษา
+  fullName: string;       // ชื่อ-นามสกุล
+  graduationYear: number; // ปีที่จบการศึกษา
 
-  // ข้อมูลที่แสดงใน List
-  currentStatus: string; // '1' (ไม่ได้ทำงาน) หรือ '2' (ทำงานแล้ว)
-  submittedAt: string; // ISO Date string (วันที่กรอก)
+  // ข้อมูลสถานะการทำงาน
+  currentStatus: string;  // '1' = ยังไม่ได้ทำงาน, '2' = ทำงานแล้ว
+  submittedAt: string;    // วันที่ส่งแบบสำรวจ (ISO Date string)
 
-  // ข้อมูลที่ Modal ต้องใช้ (จาก Mongoose Schema)
-  major: string;
-  employmentStatus: string; // สถานะการจ้างงาน
-  companyName: string;
-  salary: number; // หรือ string, ตามที่คุณเก็บใน DB
-  satisfaction: number; // 1-5 (ความพึงพอใจ)
+  // รายละเอียดเพิ่มเติม (แสดงใน Modal)
+  major: string;            // สาขาวิชา
+  employmentStatus: string; // ลักษณะการจ้างงาน
+  companyName: string;      // ชื่อสถานประกอบการ
+  salary: number;           // เงินเดือนเดือนแรก
+  satisfaction: number;     // ระดับความพึงพอใจ (1-5)
 
-  // 💡 หากใช้ submittedAt แทน createdAt ให้เปลี่ยนชื่อใน Modal ด้วย
-  [key: string]: any; // ใช้สำหรับ Field อื่นๆ และหลีกเลี่ยง Error 7053
+  // รองรับฟิลด์อื่นๆ แบบ Dynamic
+  [key: string]: any; 
 }
 
-// 💡 กำหนด Type สำหรับ Props ของ suveryListItem
+/**
+ * SuveryListItemProps: กำหนดค่า Props สำหรับคอมโพเนนต์แสดงผลแบบสำรวจแต่ละแถว
+ */
 interface SuveryListItemProps {
-  // ใช้ PascalCase
-  suvery: SuveryItem; // 💡 ใช้ SuveryItem
-  onDetailClick: (suvery: SuveryItem) => void; // 💡 ใช้ SuveryItem
+  suvery: SuveryItem; 
+  onDetailClick: (suvery: SuveryItem) => void; // ฟังก์ชันสำหรับเปิดดูรายละเอียด
 }
 
-// 💡 กำหนด Type สำหรับ Props ของ suveryList หลัก
+/**
+ * SuveryListProps: กำหนดค่า Props สำหรับคอมโพเนนต์แสดงรายการแบบสำรวจทั้งหมด
+ */
 interface SuveryListProps {
-  // ใช้ PascalCase
-  suverys: SuveryItem[]; // 💡 ใช้ SuveryItem
+  suverys: SuveryItem[]; 
 }
+

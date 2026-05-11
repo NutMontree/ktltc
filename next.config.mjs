@@ -12,18 +12,43 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'ktltc.vercel.app' }],
-        destination: 'https://ktltc.ac.th/:path*',
+        source: "/:path*",
+        has: [{ type: "host", value: "ktltc.vercel.app" }],
+        destination: "https://ktltc.ac.th/:path*",
         permanent: true,
       },
       {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'ktltc.site' }],
-        destination: 'https://ktltc.ac.th/:path*',
+        source: "/:path*",
+        has: [{ type: "host", value: "ktltc.site" }],
+        destination: "https://ktltc.ac.th/:path*",
         permanent: true,
       },
-    ]
+    ];
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: "/uploads/:path*",
+        destination: "/api/media/uploads/:path*",
+      },
+      {
+        source: "/attendance_photos/:path*",
+        destination: "/api/media/attendance_photos/:path*",
+      },
+      {
+        source: "/images/:path*",
+        destination: "/api/media/images/:path*",
+      },
+      {
+        source: "/pdf/:path*",
+        destination: "/api/media/pdf/:path*",
+      },
+      {
+        source: "/ktltc_drive/:path*",
+        destination: "/api/media/ktltc_drive/:path*",
+      },
+    ];
   },
 
   experimental: {

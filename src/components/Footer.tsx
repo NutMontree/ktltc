@@ -9,6 +9,16 @@ import clientPromise from "@/lib/db";
 import VisitorTracker from "./VisitorTracker";
 import Image from "next/image";
 
+/**
+ * Footer.tsx (Server Component): ส่วนท้ายของเว็บไซต์
+ * 
+ * หน้าที่: 
+ * 1. แสดงข้อมูลการติดต่อและโลโก้วิทยาลัย
+ * 2. แสดงเมนูลิงก์สำคัญที่ดึงมาจากฐานข้อมูล
+ * 3. แสดงยอดผู้เข้าชมเว็บไซต์ (Visitor Count)
+ * 4. บันทึกสถิติการเข้าชมผ่านคอมโพเนนต์ VisitorTracker
+ */
+
 interface NavItem {
   _id: string;
   label: string;
@@ -18,6 +28,7 @@ interface NavItem {
 }
 
 // 1. ฟังก์ชันดึงเมนู Footer จากฐานข้อมูล (Server-side)
+// ดึงข้อมูลเดียวกับ Navbar เพื่อให้เมนูอัปเดตพร้อมกัน
 async function getFooterNavItems() {
   try {
     const client = await clientPromise;
@@ -34,7 +45,7 @@ async function getFooterNavItems() {
   }
 }
 
-// 2. ฟังก์ชันดึงยอดผู้เข้าชมล่าสุดมาแสดง (Read-only)
+// 2. ฟังก์ชันดึงยอดผู้เข้าชมล่าสุดมาแสดง
 async function getVisitorCount() {
   try {
     const client = await clientPromise;
@@ -47,7 +58,7 @@ async function getVisitorCount() {
     return result?.count || 1;
   } catch (error) {
     console.error("Error fetching visitor count:", error);
-    return 134001;
+    return 134001; // ค่า Default กรณีดึงข้อมูลไม่สำเร็จ
   }
 }
 
@@ -56,6 +67,7 @@ export default async function Footer() {
   const navItems = await getFooterNavItems();
   const visitorCount = await getVisitorCount();
 
+  // แปลงยอดผู้เข้าชมเป็นอาร์เรย์ของตัวเลข (เช่น 000123) เพื่อทำกราฟิกแบบตัวเลขหมุน
   const countDigits = visitorCount.toString().padStart(6, "0").split("");
 
   const parents = navItems.filter((item) => !item.parentId);
@@ -64,6 +76,7 @@ export default async function Footer() {
 
   return (
     <footer className="bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-8 border-t border-slate-800 overflow-hidden">
+      {/* ส่วนประกอบสำหรับนับยอดผู้เข้าชม (ทำงานฝั่ง Client) */}
       <VisitorTracker />
 
       <div className="max-w-[1600px] mx-auto px-2">
@@ -94,7 +107,7 @@ export default async function Footer() {
             </div>
 
             <div className="flex gap-4">
-              {/* ✅ แก้ไข: ใส่ลิงก์ Facebook ที่นี่ */}
+              {/* ลิงก์ Social Media */}
               <SocialIcon
                 icon={<FaFacebookF />}
                 href="https://www.facebook.com/ngan.prachasamphanth.withyalay.thekhnikh"
@@ -105,7 +118,7 @@ export default async function Footer() {
             </div>
           </div>
 
-          {/* Columns 2-5: เมนูลิงก์ต่างๆ */}
+          {/* Columns 2-5: เมนูลิงก์ต่างๆ ที่ดึงจาก DB */}
           {parents.length > 0 ? (
             parents.map((parent) => (
               <div key={parent._id}>
@@ -138,7 +151,7 @@ export default async function Footer() {
           )}
         </div>
 
-        {/* --- ส่วนแสดงยอดผู้เข้าชม --- */}
+        {/* --- ส่วนแสดงยอดผู้เข้าชม (ตัวเลขสไตล์ Retro/Mechanical) --- */}
         <div className="flex flex-col items-center justify-center mb-8 gap-3">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
             จำนวนผู้เข้าชมเว็บไซต์
@@ -150,6 +163,7 @@ export default async function Footer() {
                 key={index}
                 className="relative w-8 h-12 md:w-10 md:h-14 bg-linear-to-b from-[#222] to-[#111] rounded border border-slate-700 flex items-center justify-center overflow-hidden shadow-lg"
               >
+                {/* ดีไซน์เส้นคั่นกลางตัวเลข */}
                 <div className="absolute top-1/2 w-full h-px bg-black/50 z-10 shadow-[0_1px_0_rgba(255,255,255,0.1)]"></div>
                 <span className="text-2xl md:text-3xl font-mono font-bold text-slate-200 z-0">
                   {digit}
@@ -160,7 +174,7 @@ export default async function Footer() {
           </div>
         </div>
 
-        {/* --- Copyright --- */}
+        {/* --- ลิขสิทธิ์และการออกแบบ --- */}
         <div className="pt-8 border-t border-slate-800 flex flex-col items-center justify-center text-center text-xs text-slate-500 space-y-2">
           <div className="flex items-center gap-1">
             สงวนลิขสิทธิ์ © {new Date().getFullYear()}.
@@ -179,7 +193,7 @@ export default async function Footer() {
               All M Min
             </a>
           </p>
-          {/* --- Policy & Service Links --- */}
+          {/* --- ลิงก์นโยบายต่างๆ --- */}
           <div className="flex items-center gap-4 pt-2">
             <Link
               href="/service"
@@ -201,6 +215,9 @@ export default async function Footer() {
   );
 }
 
+/**
+ * FooterLink: คอมโพเนนต์ย่อยสำหรับลิงก์ใน Footer
+ */
 function FooterLink({
   href,
   children,
@@ -220,7 +237,9 @@ function FooterLink({
   );
 }
 
-// ✅ แก้ไข: เพิ่ม Props 'href' ให้รับลิงก์ได้ และเปิดแท็บใหม่เมื่อคลิก
+/**
+ * SocialIcon: คอมโพเนนต์ย่อยสำหรับปุ่ม Social Media
+ */
 function SocialIcon({
   icon,
   href = "#",
@@ -231,11 +250,12 @@ function SocialIcon({
   return (
     <a
       href={href}
-      target={href !== "#" ? "_blank" : "_self"} // ถ้ามีลิงก์ให้เปิดแท็บใหม่
-      rel={href !== "#" ? "noopener noreferrer" : undefined} // ป้องกันความปลอดภัย
+      target={href !== "#" ? "_blank" : "_self"} 
+      rel={href !== "#" ? "noopener noreferrer" : undefined}
       className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-blue-700 hover:text-white hover:scale-110 transition-all duration-300 border border-slate-700"
     >
       {icon}
     </a>
   );
 }
+

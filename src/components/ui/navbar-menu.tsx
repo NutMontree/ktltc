@@ -1,9 +1,20 @@
+"use client";
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Image } from "@heroui/image";
-
 import type { Transition } from "framer-motion";
+
+/**
+ * navbar-menu.tsx: ระบบเมนูนำทาง (Navigation Menu) แบบ Dropdown ที่มีแอนิเมชันลื่นไหล
+ * 
+ * หน้าที่: 
+ * 1. Menu: Container หลักสำหรับจัดวางเมนูในแนวนอน
+ * 2. MenuItem: แต่ละหัวข้อเมนู เมื่อ Hover จะแสดง Dropdown (Children) ออกมา
+ * 3. ProductItem: รูปแบบการแสดงผลรายการภายในเมนู (มีรูปภาพ, หัวข้อ, คำอธิบาย)
+ * 4. HoveredLink: ลิงก์ภายในเมนูที่มีเอฟเฟกต์สีเมื่อ Hover
+ * 5. ใช้ Framer Motion `layoutId="active"` เพื่อให้พื้นหลังของ Dropdown เลื่อนตามหัวข้อที่เลือกได้อย่างนุ่มนวล
+ */
 
 const transition: Transition = {
   type: "spring",
@@ -14,6 +25,9 @@ const transition: Transition = {
   restSpeed: 0.001,
 };
 
+/**
+ * MenuItem: หัวข้อเมนูหลัก
+ */
 export const MenuItem = ({
   setActive,
   active,
@@ -33,6 +47,7 @@ export const MenuItem = ({
       >
         {item}
       </motion.div>
+      {/* แสดงเนื้อหา Dropdown เมื่อสถานะ active ตรงกับหัวข้อนี้ */}
       {active !== null && (
         <motion.div
           initial={{ opacity: 0, scale: 0.85, y: 10 }}
@@ -43,11 +58,11 @@ export const MenuItem = ({
             <div className="absolute left-1/2 top-[calc(100%+1.2rem)] -translate-x-1/2 transform pt-4">
               <motion.div
                 transition={transition}
-                layoutId="active" // layoutId ensures smooth animation
+                layoutId="active" // แอนิเมชันการเลื่อนพื้นหลังระหว่างเมนู
                 className="overflow-hidden rounded-2xl border border-black/20 bg-white shadow-xl backdrop-blur-sm dark:border-white/20 dark:bg-black"
               >
                 <motion.div
-                  layout // layout ensures smooth animation
+                  layout // แอนิเมชันการปรับขนาด Dropdown ตามเนื้อหา
                   className="h-full w-max p-2"
                 >
                   {children}
@@ -61,6 +76,9 @@ export const MenuItem = ({
   );
 };
 
+/**
+ * Menu: Container หลักของแถบเมนู
+ */
 export const Menu = ({
   setActive,
   children,
@@ -70,7 +88,7 @@ export const Menu = ({
 }) => {
   return (
     <nav
-      onMouseLeave={() => setActive(null)} // resets the state
+      onMouseLeave={() => setActive(null)} // เคลียร์สถานะเมื่อเมาส์ออกจากแถบเมนู
       className="flex justify-center space-x-4 px-8 py-6"
     >
       {children}
@@ -78,6 +96,9 @@ export const Menu = ({
   );
 };
 
+/**
+ * ProductItem: รายการเนื้อหาภายในเมนู (แบบมีรูปประกอบ)
+ */
 export const ProductItem = ({
   title,
   description,
@@ -110,6 +131,9 @@ export const ProductItem = ({
   );
 };
 
+/**
+ * HoveredLink: ลิงก์ข้อความภายในเมนู
+ */
 export const HoveredLink = ({ children, ...rest }: any) => {
   return (
     <Link
@@ -120,3 +144,4 @@ export const HoveredLink = ({ children, ...rest }: any) => {
     </Link>
   );
 };
+

@@ -1,13 +1,31 @@
 /**
- * Log Structure Documentation (Native MongoDB)
+ * ไฟล์นี้ใช้สำหรับกำหนดโครงสร้างข้อมูลการบันทึกกิจกรรม (System Logs)
+ * เพื่อใช้ในการตรวจสอบย้อนหลัง (Audit Trail) ว่าใคร ทำอะไร ที่ไหน เมื่อไหร่
  * 
- * Fields:
- * - userId: ObjectId (ref: User)
- * - userName: string
- * - action: string (LOGIN, REGISTER, etc.)
- * - details: string
- * - ip: string
- * - timestamp: Date
+ * ความเชื่อมโยง:
+ * - ถูกเรียกใช้โดยไฟล์ logger.ts/js เพื่อบันทึกลงฐานข้อมูล
+ * - เชื่อมโยงกับผู้ใช้งานผ่าน userId และ userName
  */
 
-export const LogActionTypes = ["LOGIN", "REGISTER", "LOGOUT", "CREATE", "UPDATE", "DELETE"];
+/**
+ * รายละเอียดฟิลด์ข้อมูลใน MongoDB (logs collection):
+ * - userId: ไอดีของผู้ที่ทำกิจกรรม (ObjectId อ้างอิง User)
+ * - userName: ชื่อผู้ที่ทำกิจกรรม (เพื่อความสะดวกในการดูรายงานโดยไม่ต้อง Join)
+ * - action: ประเภทกิจกรรมที่ทำ (เช่น LOGIN, UPDATE)
+ * - details: รายละเอียดเพิ่มเติมของกิจกรรม (string)
+ * - ip: หมายเลข IP Address ของผู้ใช้งาน
+ * - timestamp: วันและเวลาที่เกิดเหตุการณ์ (Date)
+ */
+
+/**
+ * ประเภทของกิจกรรมที่ระบบจะบันทึก
+ */
+export const LogActionTypes = [
+  "LOGIN",    // เข้าสู่ระบบ
+  "REGISTER", // ลงทะเบียนใหม่
+  "LOGOUT",   // ออกจากระบบ
+  "CREATE",   // สร้างข้อมูลใหม่
+  "UPDATE",   // แก้ไขข้อมูล
+  "DELETE"    // ลบข้อมูล
+];
+

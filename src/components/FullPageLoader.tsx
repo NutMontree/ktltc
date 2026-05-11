@@ -4,6 +4,16 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
+/**
+ * FullPageLoader.tsx: คอมโพเนนต์หน้าจอโหลดแบบเต็มจอ (Loading Overlay)
+ * 
+ * หน้าที่: 
+ * 1. แสดงผลทับเนื้อหาทั้งหมดเมื่อระบบกำลังทำงานเบื้องหลัง (เช่น การส่งข้อมูลหรือเปลี่ยนหน้า)
+ * 2. ปรับสไตล์อัตโนมัติทั้ง Light/Dark Mode พร้อมเอฟเฟกต์ Glassmorphism
+ * 3. ใช้ Framer Motion เพื่อสร้างแอนิเมชันการปรากฏตัวที่นุ่มนวล
+ * 4. บังคับไม่ให้ผู้ใช้ Scroll หน้าเว็บขณะที่ยังโหลดไม่เสร็จ
+ */
+
 interface FullPageLoaderProps {
   message?: string;
   subtitle?: string;
@@ -15,16 +25,16 @@ export default function FullPageLoader({
 }: FullPageLoaderProps) {
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/80 dark:bg-zinc-950/90 backdrop-blur-2xl">
-      {/* Animated Background Gradients */}
+      {/* เอฟเฟกต์สีพื้นหลังไล่ระดับแบบนุ่มนวล (Animated Background Gradients) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-blue-500/10 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-indigo-500/10 blur-[120px] rounded-full animate-pulse delay-700" />
       </div>
 
       <div className="relative flex flex-col items-center">
-        {/* Main Spinner Container */}
+        {/* คอนเทนเนอร์ตัวหมุนโหลด (Main Spinner Container) */}
         <div className="relative">
-          {/* Subtle Outer Glow */}
+          {/* เงาเรืองแสงด้านนอก (Subtle Outer Glow) */}
           <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full scale-150 animate-pulse" />
           
           <motion.div
@@ -52,7 +62,7 @@ export default function FullPageLoader({
           </motion.div>
         </div>
 
-        {/* Branding/Footer Note */}
+        {/* สถานะการทำงานของระบบ (System Operational Note) */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -66,6 +76,7 @@ export default function FullPageLoader({
         </motion.div>
       </div>
 
+      {/* ปิดการ Scroll หน้าเว็บ (Global Style Overlay) */}
       <style jsx global>{`
         body {
           overflow: hidden !important;
@@ -74,3 +85,4 @@ export default function FullPageLoader({
     </div>
   );
 }
+

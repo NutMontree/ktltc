@@ -10,11 +10,10 @@ export async function GET(
 ) {
   try {
     const { path } = await params;
-    const filePath = join(process.cwd(), 'public', ...path);
+    const filePath = join('Z:', ...path);
 
-    // Security check: ensure the file is within the public directory
-    const publicDir = join(process.cwd(), 'public');
-    if (!filePath.startsWith(publicDir)) {
+    // Security check: ensure the file is within the Z: drive
+    if (!filePath.toLowerCase().startsWith('z:')) {
       return new NextResponse('Forbidden', { status: 403 });
     }
 

@@ -3,6 +3,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+/**
+ * flip-words.tsx: คอมโพเนนต์สำหรับแสดงข้อความแบบสลับคำอัตโนมัติ (Typing/Flipping Effect)
+ * 
+ * หน้าที่: 
+ * 1. รับรายการคำ (Words) และสลับแสดงผลตามช่วงเวลาที่กำหนด (Duration)
+ * 2. มีแอนิเมชันการลอยขึ้น (Initial) และการหายไปแบบเบลอและขยายตัว (Exit)
+ * 3. แยกแอนิเมชันทีละตัวอักษรเพื่อให้ดูมีความต่อเนื่องและสวยงาม
+ */
+
 export const FlipWords = ({
   words,
   duration = 3000,
@@ -15,13 +24,14 @@ export const FlipWords = ({
   const [currentWord, setCurrentWord] = useState(words[0]);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
-  // thanks for the fix Julian - https://github.com/Julian-AT
+  // ฟังก์ชันสลับคำถัดไป
   const startAnimation = useCallback(() => {
     const word = words[words.indexOf(currentWord) + 1] || words[0];
     setCurrentWord(word);
     setIsAnimating(true);
   }, [currentWord, words]);
 
+  // ตั้งเวลาสลับคำอัตโนมัติ
   useEffect(() => {
     if (!isAnimating)
       setTimeout(() => {
@@ -63,7 +73,7 @@ export const FlipWords = ({
         )}
         key={currentWord}
       >
-        {/* edit suggested by Sajal: https://x.com/DewanganSajal */}
+        {/* แยกคำและตัวอักษรเพื่อใส่แอนิเมชันทีละชิ้น */}
         {currentWord.split(" ").map((word, wordIndex) => (
           <motion.span
             key={word + wordIndex}
@@ -96,3 +106,4 @@ export const FlipWords = ({
     </AnimatePresence>
   );
 };
+

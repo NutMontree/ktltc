@@ -4,6 +4,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * placeholders-and-vanish-input.tsx: ช่องกรอกข้อมูลที่มีเอฟเฟกต์ "ข้อความสลายตัว" (Particle Vanish)
+ * 
+ * หน้าที่: 
+ * 1. แสดง Placeholder แบบสลับคำอัตโนมัติ (Animated Placeholders)
+ * 2. เมื่อกดตกลง (Submit) ข้อความในช่องจะถูกแปลงเป็นพิกเซลบน Canvas และสลายตัวเป็นอนุภาค (Particles)
+ * 3. ใช้ Canvas API เพื่อดึงข้อมูลพิกเซล (getImageData) และ Framer Motion เพื่อจัดการแอนิเมชัน Placeholder
+ * 4. จัดการเรื่อง Visibility เพื่อหยุดแอนิเมชันเมื่อผู้ใช้ไม่ได้อยู่ที่หน้าจอ (Tab Inactive)
+ */
+
 export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
@@ -17,12 +27,14 @@ export function PlaceholdersAndVanishInput({
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // เริ่มต้นแอนิเมชันสลับ Placeholder
   const startAnimation = useCallback(() => {
     intervalRef.current = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
     }, 3000);
   }, [placeholders.length]);
 
+  // หยุดหรือเริ่มแอนิเมชันตามสถานะของหน้าต่าง (Tab Focus)
   const handleVisibilityChange = useCallback(() => {
     if (document.visibilityState !== "visible" && intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -50,6 +62,9 @@ export function PlaceholdersAndVanishInput({
   const [value, setValue] = useState("");
   const [animating, setAnimating] = useState(false);
 
+  /**
+   * draw: วาดข้อความลงบน Canvas และวิเคราะห์พิกเซลเพื่อสร้างเป็นข้อมูลอนุภาค
+   */
   const draw = useCallback(() => {
     if (!inputRef.current) return;
     const canvas = canvasRef.current;
@@ -71,10 +86,11 @@ export function PlaceholdersAndVanishInput({
     const pixelData = imageData.data;
     const newData: any[] = [];
 
+    // วนลูปเช็คพิกเซลที่มีสี (ไม่ใช่โปร่งใส) เพื่อเก็บตำแหน่งไปทำอนุภาค
     for (let t = 0; t < 800; t++) {
-      const i = 4 * t * 800; // ✅ เปลี่ยนเป็น const
+      const i = 4 * t * 800; 
       for (let n = 0; n < 800; n++) {
-        const e = i + 4 * n; // ✅ เปลี่ยนเป็น const
+        const e = i + 4 * n; 
         if (
           pixelData[e] !== 0 &&
           pixelData[e + 1] !== 0 &&
@@ -106,6 +122,9 @@ export function PlaceholdersAndVanishInput({
     draw();
   }, [value, draw]);
 
+  /**
+   * animate: เล่นแอนิเมชันให้อนุภาคกระจายตัวและหายไป
+   */
   const animate = (start: number) => {
     const animateFrame = (pos: number = 0) => {
       requestAnimationFrame(() => {
@@ -119,6 +138,7 @@ export function PlaceholdersAndVanishInput({
               current.r = 0;
               continue;
             }
+            // ใส่ความสุ่มเพื่อให้กระจายตัวดูเป็นธรรมชาติ
             current.x += Math.random() > 0.5 ? 1 : -1;
             current.y += Math.random() > 0.5 ? 1 : -1;
             current.r -= 0.05 * Math.random();
@@ -151,6 +171,9 @@ export function PlaceholdersAndVanishInput({
     animateFrame(start);
   };
 
+  /**
+   * vanishAndSubmit: เริ่มกระบวนการสลายตัวและส่งข้อมูล
+   */
   const vanishAndSubmit = useCallback(() => {
     setAnimating(true);
     draw();
@@ -175,7 +198,6 @@ export function PlaceholdersAndVanishInput({
     e.preventDefault();
     vanishAndSubmit();
     if (onSubmit) {
-      // ✅ แก้ไข Short-circuit เป็น If-statement
       onSubmit(e);
     }
   };
@@ -188,6 +210,7 @@ export function PlaceholdersAndVanishInput({
       )}
       onSubmit={handleSubmit}
     >
+      {/* Canvas สำหรับเล่นแอนิเมชันอนุภาคสลายตัว */}
       <canvas
         className={cn(
           "pointer-events-none absolute left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 sm:left-8",
@@ -195,12 +218,12 @@ export function PlaceholdersAndVanishInput({
         )}
         ref={canvasRef}
       />
+      
       <input
         onChange={(e) => {
           if (!animating) {
             setValue(e.target.value);
             if (onChange) {
-              // ✅ แก้ไข Short-circuit เป็น If-statement
               onChange(e);
             }
           }
@@ -215,6 +238,7 @@ export function PlaceholdersAndVanishInput({
         )}
       />
 
+      {/* ปุ่มส่งข้อมูลที่มีแอนิเมชันไอคอน */}
       <button
         disabled={!value}
         type="submit"
@@ -252,23 +276,15 @@ export function PlaceholdersAndVanishInput({
         </motion.svg>
       </button>
 
+      {/* ส่วนแสดง Placeholder แบบสลับคำอัตโนมัติ */}
       <div className="pointer-events-none absolute inset-0 flex items-center rounded-full">
         <AnimatePresence mode="wait">
           {!value && (
             <motion.p
-              initial={{
-                y: 5,
-                opacity: 0,
-              }}
+              initial={{ y: 5, opacity: 0 }}
               key={`current-placeholder-${currentPlaceholder}`}
-              animate={{
-                y: 0,
-                opacity: 1,
-              }}
-              exit={{
-                y: -15,
-                opacity: 0,
-              }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -15, opacity: 0 }}
               transition={{
                 duration: 0.3,
                 ease: "linear",
@@ -283,3 +299,4 @@ export function PlaceholdersAndVanishInput({
     </form>
   );
 }
+

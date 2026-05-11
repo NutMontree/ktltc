@@ -18,6 +18,16 @@ type ParticlesProps = {
   particleColor?: string;
   particleDensity?: number;
 };
+/**
+ * sparkles.tsx: ระบบสร้างเอฟเฟกต์อนุภาคระยิบระยับ (Sparkles Particle System)
+ * 
+ * หน้าที่: 
+ * 1. ใช้เอนจิน `tsparticles` เพื่อเรนเดอร์อนุภาคจำนวนมากบน Canvas อย่างมีประสิทธิภาพ
+ * 2. จัดการการโหลดเอนจิน (Slim version) และการกำหนดค่าอนุภาค (ขนาด, สี, ความหนาแน่น, ความเร็ว)
+ * 3. มีระบบแอนิเมชัน Fade-in เมื่อโหลดอนุภาคเสร็จสิ้นเพื่อความสวยงาม
+ * 4. รองรับการตอบสนองพื้นฐาน เช่น การเพิ่มอนุภาคเมื่อคลิก (Push mode)
+ */
+
 export const SparklesCore = (props: ParticlesProps) => {
   const {
     id,

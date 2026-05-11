@@ -1,16 +1,28 @@
+/**
+ * middleware.ts.bak: ไฟล์สำรอง (Backup) สำหรับการตั้งค่า Middleware
+ * 
+ * หน้าที่เดิม: 
+ * - ใช้สำหรับ Redirect จากโดเมนเก่า (ktltc.vercel.app) ไปยังโดเมนใหม่ (ktltc.site)
+ * 
+ * หมายเหตุ: 
+ * - ปัจจุบันไฟล์นี้ถูกปิดใช้งาน (นามสกุล .bak) เพื่อหลีกเลี่ยงการชนกันกับ proxy.ts
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host") || "";
+  // ถ้ามีการเรียกใช้งานผ่านโดเมน Vercel เดิม
   if (host === "ktltc.vercel.app") {
     const url = request.nextUrl.clone();
-    url.hostname = "ktltc.site";
+    url.hostname = "ktltc.site"; // เปลี่ยนไปที่โดเมนหลัก
     url.protocol = "https:";
-    return NextResponse.redirect(url, 301);
+    return NextResponse.redirect(url, 301); // ส่งผู้ใช้ไปโดเมนใหม่แบบถาวร (301)
   }
 }
 
 export const config = {
-  matcher: "/:path*",
+  matcher: "/:path*", // รันกับทุก URL
 };
+

@@ -1,5 +1,14 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * bento-grid.tsx: คอมโพเนนต์สำหรับสร้างเลย์เอาต์แบบ Bento Grid (ตารางสไตล์ Apple)
+ * 
+ * หน้าที่: 
+ * 1. BentoGrid: เป็น Container หลักที่จัดการการเรียงตัวของไอเทมในตารางแบบ Grid
+ * 2. BentoGridItem: เป็นไอเทมแต่ละชิ้นในตาราง รองรับไอคอน, หัวข้อ, คำอธิบาย และส่วน Header
+ * 3. มีเอฟเฟกต์ Hover เพื่อยกตัว (Shadow) และขยับเนื้อหา (Translate)
+ */
+
 export const BentoGrid = ({
   className,
   children,
@@ -39,12 +48,19 @@ export const BentoGridItem = ({
         className,
       )}
     >
+      {/* ส่วนหัว เช่น รูปภาพหรือกราฟิก */}
       {header}
+      
       <div className="group-hover/bento:translate-x-2 transition duration-200">
+        {/* ไอคอนประดับ */}
         {icon}
+        
+        {/* หัวข้อ */}
         <div className="font-sans font-bold text-neutral-600 dark:text-neutral-200 mb-2 mt-2">
           {title}
         </div>
+        
+        {/* รายละเอียด/คำอธิบาย */}
         <div className="font-sans font-normal text-neutral-600 text-xs dark:text-neutral-300">
           {description}
         </div>
@@ -52,3 +68,4 @@ export const BentoGridItem = ({
     </div>
   );
 };
+

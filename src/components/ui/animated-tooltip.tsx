@@ -9,6 +9,15 @@ import {
   useSpring,
 } from "framer-motion";
 
+/**
+ * animated-tooltip.tsx: คอมโพเนนต์ Tooltip (คำอธิบาย) แบบมีแอนิเมชันเคลื่อนตามเมาส์
+ * 
+ * หน้าที่: 
+ * 1. แสดงชื่อและตำแหน่งเมื่อผู้ใช้เอาเมาส์ไปวางบนรูปภาพ
+ * 2. มีแอนิเมชันการขยับ (Tilt) และการเคลื่อนที่ (Follow mouse) ตามตำแหน่งเมาส์
+ * 3. ใช้ Framer Motion สำหรับคำนวณฟิสิกส์การเคลื่อนที่ (Spring physics)
+ */
+
 export const AnimatedTooltip = ({
   items,
 }: {
@@ -20,21 +29,31 @@ export const AnimatedTooltip = ({
   }[];
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  
+  // ตั้งค่าความเด้งของแอนิเมชัน
   const springConfig = { stiffness: 100, damping: 5 };
-  const x = useMotionValue(0); // going to set this value on mouse move
-  // rotate the tooltip
+  
+  // สร้างตัวแปรเก็บค่าตำแหน่งเมาส์ในแนวแกน X
+  const x = useMotionValue(0); 
+
+  // คำนวณค่าการหมุน (Rotate) ตามตำแหน่ง X ของเมาส์
   const rotate = useSpring(
     useTransform(x, [-100, 100], [-45, 45]),
     springConfig,
   );
-  // translate the tooltip
+
+  // คำนวณค่าการเลื่อน (Translate) ตามตำแหน่ง X ของเมาส์
   const translateX = useSpring(
     useTransform(x, [-100, 100], [-50, 50]),
     springConfig,
   );
+
+  /**
+   * handleMouseMove: ตรวจจับตำแหน่งเมาส์บนรูปภาพและอัปเดตค่า x
+   */
   const handleMouseMove = (event: any) => {
     const halfWidth = event.target.offsetWidth / 2;
-    x.set(event.nativeEvent.offsetX - halfWidth); // set the x value, which is then used in transform and rotate
+    x.set(event.nativeEvent.offsetX - halfWidth); 
   };
 
   return (
@@ -68,8 +87,10 @@ export const AnimatedTooltip = ({
                 }}
                 className="absolute -top-16 -left-1/2 z-50 flex translate-x-1/2 flex-col items-center justify-center rounded-md bg-black px-4 py-2 text-xs shadow-xl"
               >
+                {/* เอฟเฟกต์เส้นใต้เรืองแสง */}
                 <div className="absolute inset-x-10 -bottom-px z-30 h-px w-[20%] bg-linear-to-r from-transparent via-emerald-500 to-transparent" />
                 <div className="absolute -bottom-px left-10 z-30 h-px w-[40%] bg-linear-to-r from-transparent via-sky-500 to-transparent" />
+                
                 <div className="relative z-30 text-base font-bold text-white">
                   {item.name}
                 </div>
@@ -77,6 +98,7 @@ export const AnimatedTooltip = ({
               </motion.div>
             )}
           </AnimatePresence>
+          
           <Image
             onMouseMove={handleMouseMove}
             height={100}
@@ -90,3 +112,4 @@ export const AnimatedTooltip = ({
     </>
   );
 };
+

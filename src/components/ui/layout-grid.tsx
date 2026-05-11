@@ -3,9 +3,18 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+/**
+ * layout-grid.tsx: ตารางเลย์เอาต์ที่สามารถกดเพื่อขยายภาพ (Expanding Grid)
+ * 
+ * หน้าที่: 
+ * 1. แสดงรายการภาพในรูปแบบตาราง (Grid)
+ * 2. เมื่อกดที่ภาพ ภาพจะขยายตัวออกมาตรงกลางหน้าจอ (Selected State) พร้อมแอนิเมชัน
+ * 3. ใช้ Framer Motion `layoutId` เพื่อให้ภาพเคลื่อนที่จากตำแหน่งในตารางไปยังจุดกึ่งกลางได้อย่างราบรื่น
+ * 4. มีฉากหลังสีดำจางๆ (Overlay) เมื่อเปิดภาพเพื่อเน้นจุดสนใจ
+ */
+
 type Card = {
   id: number;
-  // content: JSX.Element | React.ReactNode | string;
   className: string;
   thumbnail: string;
 };
@@ -14,11 +23,13 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
   const [selected, setSelected] = useState<Card | null>(null);
   const [lastSelected, setLastSelected] = useState<Card | null>(null);
 
+  // จัดการการคลิกเพื่อเลือกภาพ
   const handleClick = (card: Card) => {
     setLastSelected(selected);
     setSelected(card);
   };
 
+  // ปิดภาพเมื่อคลิกพื้นที่ว่างข้างนอก
   const handleOutsideClick = () => {
     setLastSelected(selected);
     setSelected(null);
@@ -39,13 +50,14 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
                   ? "z-40 bg-white rounded-xl h-full w-full"
                   : "bg-white rounded-xl h-full w-full",
             )}
-            layoutId={`card-${card.id}`}
+            layoutId={`card-${card.id}`} // เชื่อมโยงแอนิเมชันข้าม State
           >
             {selected?.id === card.id && <SelectedCard selected={selected} />}
             <ImageComponent card={card} />
           </motion.div>
         </div>
       ))}
+      {/* ฉากหลังสีดำจางๆ (Overlay) */}
       <motion.div
         onClick={handleOutsideClick}
         className={cn(
@@ -58,6 +70,9 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
   );
 };
 
+/**
+ * ImageComponent: ส่วนแสดงผลรูปภาพพร้อมแอนิเมชัน
+ */
 const ImageComponent = ({ card }: { card: Card }) => {
   return (
     <motion.img
@@ -73,40 +88,31 @@ const ImageComponent = ({ card }: { card: Card }) => {
   );
 };
 
+/**
+ * SelectedCard: ส่วนแสดงผลเนื้อหาเพิ่มเติมเมื่อภาพถูกขยาย
+ */
 const SelectedCard = ({ selected }: { selected: Card | null }) => {
   return (
     <div className="bg-transparent h-full w-full flex flex-col justify-end rounded-lg shadow-2xl relative z-60">
       <motion.div
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 0.6,
-        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.6 }}
         className="absolute inset-0 h-full w-full bg-black opacity-60 z-10"
       />
       <motion.div
         layoutId={`content-${selected?.id}`}
-        initial={{
-          opacity: 0,
-          y: 100,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        exit={{
-          opacity: 0,
-          y: 100,
-        }}
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 100 }}
         transition={{
           duration: 0.3,
           ease: "easeInOut",
         }}
         className="relative px-8 pb-4 z-70"
       >
-        {/* {selected?.content} */}
+        {/* สามารถใส่เนื้อหาเพิ่มเติม เช่น คำอธิบายภาพ ได้ที่นี่ */}
       </motion.div>
     </div>
   );
 };
+

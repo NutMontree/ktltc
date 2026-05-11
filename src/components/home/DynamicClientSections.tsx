@@ -2,15 +2,25 @@
 
 import dynamic from "next/dynamic";
 
-// ✅ ปรับให้รองรับ SSR สำหรับคอมโพเนนต์ที่แสดงข้อมูลสำคัญ และเพิ่ม Skeleton สำหรับส่วนที่ต้องรอ Client
+/**
+ * DynamicClientSections.tsx: จัดการการโหลดคอมโพเนนต์แบบ Dynamic (Lazy Loading)
+ * 
+ * หน้าที่: 
+ * 1. ช่วยลดขนาดไฟล์ Bundle เริ่มต้นของหน้าแรก (Home)
+ * 2. กำหนดว่าคอมโพเนนต์ไหนควรทำ SSR (Server Side Rendering) หรือโหลดเฉพาะฝั่ง Client
+ * 3. แสดง Skeleton (ภาพร่างจำลอง) ระหว่างรอคอมโพเนนต์จริงโหลดเสร็จ
+ */
+
+// โหลดคอมโพเนนต์แสดงผลวิดีโอ/โซเชียลมีเดีย
 export const DynamicSocialFeedDisplay = dynamic(
   () => import("@/components/home/SocialFeedDisplay"),
   { 
-    ssr: true,
+    ssr: true, // อนุญาตให้ทำ SSR เพื่อ SEO
     loading: () => <SectionSkeleton title="กำลังโหลดวิดีโอ..." />
   }
 );
 
+// โหลดปฏิทินกิจกรรม (ใช้เฉพาะฝั่ง Client เพราะอาจมีเรื่อง Timezone/Browser APIs)
 export const DynamicCalendarPage = dynamic(
   () => import("@/components/Calendar"),
   { 
@@ -19,6 +29,7 @@ export const DynamicCalendarPage = dynamic(
   }
 );
 
+// โหลดกระดานถาม-ตอบ
 export const DynamicQAPage = dynamic(
   () => import("@/app/q-and-a/page"),
   { 
@@ -27,11 +38,15 @@ export const DynamicQAPage = dynamic(
   }
 );
 
+// โหลดเอฟเฟกต์พื้นหลัง (Background Beams)
 export const DynamicBackgroundBeams = dynamic(
   () => import("@/components/BackgroundBeamsWithCollisionDemo"),
   { ssr: true }
 );
 
+/**
+ * SectionSkeleton: คอมโพเนนต์แสดงสถานะ "กำลังโหลด" ให้ดูสวยงาม
+ */
 function SectionSkeleton({ title, height = "h-64" }: { title: string, height?: string }) {
   return (
     <div className={`w-full ${height} bg-zinc-50 dark:bg-zinc-950/20 rounded-[3rem] animate-pulse flex flex-col items-center justify-center border border-zinc-100 dark:border-zinc-800`}>
@@ -40,3 +55,4 @@ function SectionSkeleton({ title, height = "h-64" }: { title: string, height?: s
     </div>
   );
 }
+

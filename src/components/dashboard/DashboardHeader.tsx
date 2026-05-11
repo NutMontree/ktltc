@@ -6,6 +6,16 @@ import { motion } from "framer-motion";
 import { User, Activity, LayoutDashboard, ExternalLink } from "lucide-react";
 import NotificationBell from "../NotificationBell";
 
+/**
+ * DashboardHeader.tsx (Client Component): ส่วนหัวของหน้า Dashboard
+ * 
+ * หน้าที่: 
+ * 1. แสดงชื่อหน้า (Overview) พร้อม Animation สวยงาม
+ * 2. แสดงสถานะระบบ (System Live)
+ * 3. แสดงการ์ดข้อมูลส่วนตัวของผู้ใช้ (User Profile Card) 
+ * 4. มีปุ่มทางลัดไปหน้าแก้ไขโปรไฟล์และกระดิ่งแจ้งเตือน
+ */
+
 interface DashboardHeaderProps {
   user: {
     username?: string;
@@ -15,6 +25,7 @@ interface DashboardHeaderProps {
 }
 
 export default function DashboardHeader({ user }: DashboardHeaderProps) {
+  // การตั้งค่า Animation สำหรับการปรากฏตัวของ Element
   const containerVariants = {
     hidden: { opacity: 0, y: -20 },
     visible: {
@@ -22,7 +33,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
       y: 0,
       transition: {
         duration: 0.6,
-        staggerChildren: 0.1,
+        staggerChildren: 0.1, // ให้คอมโพเนนต์ลูกค่อยๆ โผล่ตามกันมา
       },
     },
   };
@@ -40,9 +51,11 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
       className="mb-12"
     >
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-10 border-b border-zinc-200/60 dark:border-zinc-800/60">
-        {/* Left Section: Title & Status */}
+        
+        {/* ส่วนซ้าย: หัวข้อหน้า และสถานะระบบ */}
         <div className="space-y-6">
           <motion.div variants={itemVariants} className="flex items-center gap-3">
+            {/* ไฟสถานะสีเขียว (Pulse) */}
             <div className="relative flex items-center justify-center">
               <span className="absolute w-4 h-4 rounded-full bg-emerald-500/20 animate-ping" />
               <span className="relative w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
@@ -68,14 +81,16 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
           </motion.div>
         </div>
 
-        {/* Right Section: User Profile Card & Notifications */}
+        {/* ส่วนขวา: การ์ดโปรไฟล์ผู้ใช้และกระดิ่งแจ้งเตือน */}
         <motion.div variants={itemVariants} className="w-full lg:w-auto flex items-center gap-4">
           <div className="hidden sm:block">
             <NotificationBell />
           </div>
+          
           <div className="group relative p-px rounded-4xl bg-linear-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700 hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-xl shadow-zinc-200/50 dark:shadow-none">
             <div className="relative flex items-center gap-5 p-5 rounded-[1.95rem] bg-white dark:bg-zinc-950 group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95 transition-colors">
-              {/* Profile Image */}
+              
+              {/* รูปโปรไฟล์ */}
               <div className="relative shrink-0">
                 <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-zinc-100 dark:border-zinc-800 shadow-inner group-hover:scale-105 transition-transform duration-500">
                   {user.image ? (
@@ -90,10 +105,11 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
                     </div>
                   )}
                 </div>
+                {/* จุดสีเขียวแสดงสถานะ Online */}
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-white dark:border-zinc-950 rounded-full shadow-sm" />
               </div>
 
-              {/* User Details */}
+              {/* รายละเอียดผู้ใช้ */}
               <div className="flex flex-col min-w-[140px]">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
@@ -109,7 +125,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* ปุ่มทางลัดไปหน้าโปรไฟล์ */}
               <Link
                 href="/dashboard/profile"
                 className="ml-4 p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
@@ -123,3 +139,4 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
     </motion.div>
   );
 }
+

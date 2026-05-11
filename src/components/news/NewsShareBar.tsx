@@ -2,11 +2,23 @@
 
 import { useState } from "react";
 
+/**
+ * NewsShareBar.tsx (Client Component): แถบปุ่มสำหรับแชร์ข่าวสารไปยังโซเชียลมีเดีย
+ * 
+ * หน้าที่: 
+ * 1. สร้างลิงก์สำหรับแชร์ไปยัง Facebook, Line และ X (Twitter)
+ * 2. มีฟังก์ชัน "คัดลอกลิงก์" (Copy to Clipboard) พร้อมแสดงสถานะเมื่อคัดลอกสำเร็จ
+ * 3. ใช้ดีไซน์แบบปุ่มมน (Rounded) ที่รองรับทั้ง Light และ Dark Mode
+ */
+
 type NewsShareBarProps = {
-  title: string;
-  url: string;
+  title: string; // หัวข้อข่าว
+  url: string;   // URL ของหน้าข่าว
 };
 
+/**
+ * IconShare: ไอคอนรูปการแชร์ (SVG)
+ */
 function IconShare() {
   return (
     <svg
@@ -28,6 +40,9 @@ function IconShare() {
   );
 }
 
+/**
+ * IconCopy: ไอคอนรูปการคัดลอก (SVG)
+ */
 function IconCopy() {
   return (
     <svg
@@ -46,15 +61,19 @@ function IconCopy() {
   );
 }
 
+// สไตล์ของปุ่มที่ใช้ซ้ำกัน
 const buttonClassName =
   "inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:border-blue-200 hover:text-blue-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-slate-300 dark:hover:border-blue-800 dark:hover:text-blue-400";
 
 export default function NewsShareBar({ title, url }: NewsShareBarProps) {
+  // สถานะบอกว่าคัดลอกลิงก์ไปหรือยัง
   const [copied, setCopied] = useState(false);
 
+  // เตรียม URL และ Title ให้พร้อมสำหรับการส่งผ่าน URL (Encoding)
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
 
+  // รายการลิงก์สำหรับแชร์แต่ละแพลตฟอร์ม
   const shareLinks = [
     {
       label: "Facebook",
@@ -70,10 +89,14 @@ export default function NewsShareBar({ title, url }: NewsShareBarProps) {
     },
   ];
 
+  /**
+   * handleCopy: ฟังก์ชันคัดลอกลิงก์ลง Clipboard
+   */
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
+      // เปลี่ยนข้อความกลับเป็น "คัดลอกลิงก์" หลังจากผ่านไป 2 วินาที
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
@@ -87,6 +110,7 @@ export default function NewsShareBar({ title, url }: NewsShareBarProps) {
         แชร์ข่าวนี้
       </div>
       <div className="flex flex-wrap gap-3">
+        {/* วนลูปสร้างปุ่มแชร์ */}
         {shareLinks.map((item) => (
           <a
             key={item.label}
@@ -98,6 +122,8 @@ export default function NewsShareBar({ title, url }: NewsShareBarProps) {
             {item.label}
           </a>
         ))}
+        
+        {/* ปุ่มคัดลอกลิงก์ */}
         <button type="button" onClick={handleCopy} className={buttonClassName}>
           <IconCopy />
           {copied ? "คัดลอกแล้ว" : "คัดลอกลิงก์"}
@@ -106,3 +132,4 @@ export default function NewsShareBar({ title, url }: NewsShareBarProps) {
     </section>
   );
 }
+

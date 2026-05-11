@@ -1,8 +1,12 @@
 /**
- * Note: Use position fixed according to your needs
- * Desktop navbar is better positioned at the bottom
- * Mobile navbar is better positioned at bottom right.
- **/
+ * floating-dock.tsx: แถบเมนูแบบลอย (Dock) สไตล์ macOS
+ * 
+ * หน้าที่: 
+ * 1. FloatingDock: คอมโพเนนต์หลักที่สลับการแสดงผลระหว่าง Desktop และ Mobile
+ * 2. FloatingDockDesktop: เมนูบนเดสก์ท็อปที่จะขยายไอคอนตามระยะห่างของเมาส์ (Magnification Effect)
+ * 3. FloatingDockMobile: เมนูบนมือถือที่จะแสดงเป็นรายการแนวตั้งเมื่อกดปุ่ม
+ * 4. IconContainer: จัดการแอนิเมชันของแต่ละไอคอน ทั้งขนาดตัวไอคอนและ Tooltip
+ */
 
 import { cn } from "@/lib/utils";
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
@@ -34,6 +38,9 @@ export const FloatingDock = ({
   );
 };
 
+/**
+ * FloatingDockMobile: เมนูสำหรับหน้าจอขนาดเล็ก
+ */
 const FloatingDockMobile = ({
   items,
   className,
@@ -89,6 +96,9 @@ const FloatingDockMobile = ({
   );
 };
 
+/**
+ * FloatingDockDesktop: เมนูสำหรับหน้าจอเดสก์ท็อปที่มีเอฟเฟกต์แว่นขยาย
+ */
 const FloatingDockDesktop = ({
   items,
   className,
@@ -113,6 +123,9 @@ const FloatingDockDesktop = ({
   );
 };
 
+/**
+ * IconContainer: จัดการการย่อ/ขยายของแต่ละไอคอนตามตำแหน่งเมาส์
+ */
 function IconContainer({
   mouseX,
   title,
@@ -126,15 +139,17 @@ function IconContainer({
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
+  // คำนวณระยะห่างระหว่างเมาส์กับไอคอน
   const distance = useTransform(mouseX, (val) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-
     return val - bounds.x - bounds.width / 2;
   });
 
+  // แปลงระยะห่างเป็นขนาดความกว้าง/สูง (ยิ่งใกล้ ยิ่งขยาย)
   const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
   const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
 
+  // ปรับขนาดของตัวไอคอนภายใน
   const widthTransformIcon = useTransform(
     distance,
     [-150, 0, 150],
@@ -146,6 +161,7 @@ function IconContainer({
     [20, 40, 20]
   );
 
+  // ใช้ useSpring เพื่อให้แอนิเมชันมีความนุ่มนวล
   const width = useSpring(widthTransform, {
     mass: 0.1,
     stiffness: 150,
@@ -180,6 +196,7 @@ function IconContainer({
         className="aspect-square rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center relative"
       >
         <AnimatePresence>
+          {/* แสดงชื่อเมนู (Tooltip) เมื่อเมาส์จ่อ */}
           {hovered && (
             <motion.div
               initial={{ opacity: 0, y: 10, x: "-50%" }}
@@ -201,3 +218,4 @@ function IconContainer({
     </Link>
   );
 }
+

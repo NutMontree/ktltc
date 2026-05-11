@@ -1,3 +1,12 @@
+/**
+ * floating-navbar.tsx: แถบเมนูนำทางแบบลอยที่จะปรากฏเมื่อเลื่อนหน้าจอลง (Scroll-triggered Navbar)
+ * 
+ * หน้าที่ (เดิม): 
+ * 1. ตรวจจับทิศทางการ Scroll เพื่อแสดงเมนูเมื่อเลื่อนขึ้น และซ่อนเมื่อเลื่อนลง
+ * 2. แสดงผลเป็นแถบโค้งมน (Pill shape) กลางหน้าจอพร้อมแอนิเมชัน
+ * 
+ * หมายเหตุ: ปัจจุบันไฟล์นี้ถูกคอมเม้นต์ปิดการใช้งานไว้ทั้งหมด
+ */
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // "use client";
 // import React, { useState } from "react";

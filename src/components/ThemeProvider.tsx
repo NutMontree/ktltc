@@ -5,6 +5,15 @@ import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 
+/**
+ * ThemeProvider.tsx: คอมโพเนนต์หลักสำหรับจัดการ Context ของระบบ
+ * 
+ * หน้าที่: 
+ * 1. SessionProvider: จัดการสถานะการ Login ของผู้ใช้ (Next-Auth) ทั่วทั้งแอป
+ * 2. NextThemesProvider: จัดการระบบ Dark/Light Mode ของเว็บไซต์
+ * 3. ToasterWrapper: แสดงผลการแจ้งเตือน (Toast Notifications) ที่ปรับสีตาม Theme
+ */
+
 export function ThemeProvider({
   children,
   ...props
@@ -19,6 +28,10 @@ export function ThemeProvider({
   );
 }
 
+/**
+ * ToasterWrapper: ส่วนจัดการการแจ้งเตือน (Toast)
+ * ปรับแต่งสไตล์ (สีพื้นหลัง, สีตัวอักษร, เงา) ให้เข้ากับโหมดมืดและโหมดสว่างโดยอัตโนมัติ
+ */
 function ToasterWrapper() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
@@ -29,7 +42,6 @@ function ToasterWrapper() {
       reverseOrder={false}
       gutter={8}
       toastOptions={{
-        // Default options for all toasts
         duration: 4000,
         style: {
           borderRadius: '12px',
@@ -59,3 +71,4 @@ function ToasterWrapper() {
     />
   );
 }
+

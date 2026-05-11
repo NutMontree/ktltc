@@ -1,19 +1,25 @@
 import imageCompression from "browser-image-compression";
 
 /**
- * ฟังก์ชันสำหรับอัปโหลดรูปภาพ (เปลี่ยนมาใช้ Local Storage บน Lenovo Server)
+ * upload.ts: ไฟล์ตัวช่วยสำหรับจัดการการอัปโหลดไฟล์จากฝั่ง Client
+ * 
+ * หน้าที่: 
+ * 1. บีบอัดรูปภาพก่อนอัปโหลด (ยกเว้น GIF และ SVG) เพื่อประหยัดพื้นที่
+ * 2. ส่งไฟล์ไปยัง API /api/upload ของ Server
+ * 3. ติดตามสถานะความคืบหน้า (Progress) การอัปโหลด
  */
+
 /**
- * ฟังก์ชันสำหรับอัปโหลดรูปภาพ/วิดีโอ (รองรับ Progress)
+ * uploadFile: ฟังก์ชันหลักสำหรับอัปโหลดไฟล์
+ * @param file ไฟล์ที่ต้องการอัปโหลด
+ * @param folder โฟลเดอร์ปลายทาง (ค่าเริ่มต้นคือ uploads)
+ * @param onProgress Callback ฟังก์ชันสำหรับติดตามสถานะ (%)
  */
 export const uploadFile = async (
   file: File,
   folder: string = "uploads",
   onProgress?: (percent: number, loaded: number, total: number) => void
 ): Promise<{ secure_url: string | null; thumbnail_url: string | null }> => {
-  // Client-side pre-checks using public env vars (NEXT_PUBLIC_*)
-  const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
-  const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 200 * 1024 * 1024;
   
   let fileToUpload = file;
   const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
@@ -21,12 +27,13 @@ export const uploadFile = async (
   const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
   const isCompressibleImage = isImage && !isGif && !file.type?.includes("svg");
 
-  // Only compress images that are not GIFs or SVGs
+  // 1. ขั้นตอนการบีบอัดรูปภาพ (Client-side Compression)
+  // ช่วยให้โหลดเร็วขึ้นและไม่หนัก Server
   if (isCompressibleImage) {
     try {
       const options = {
-        maxSizeMB: 0.8,
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 0.8, // ขนาดสูงสุดไม่เกิน 0.8 MB
+        maxWidthOrHeight: 1920, // ความกว้าง/สูงสูงสุด 1920px
         useWebWorker: true,
       };
       fileToUpload = await imageCompression(file, options);
@@ -35,17 +42,18 @@ export const uploadFile = async (
     }
   }
 
-  // เตรียมข้อมูลสำหรับส่งไป API
+  // 2. เตรียมข้อมูลสำหรับส่งไป API
   const formData = new FormData();
   formData.append("file", fileToUpload);
   formData.append("folder", folder);
 
+  // ใช้ XMLHttpRequest แทน fetch เพื่อให้สามารถติดตาม Progress ได้
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
     
     xhr.open("POST", "/api/upload", true);
 
-    // ติดตามสถานะการอัปโหลด
+    // 3. ติดตามสถานะการอัปโหลด (Upload Progress)
     if (xhr.upload && onProgress) {
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
@@ -55,6 +63,7 @@ export const uploadFile = async (
       };
     }
 
+    // เมื่ออัปโหลดเสร็จสิ้น
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
@@ -73,6 +82,7 @@ export const uploadFile = async (
       }
     };
 
+    // กรณีเกิดข้อผิดพลาดทาง Network
     xhr.onerror = () => {
       console.error("❌ Network/Upload error");
       resolve({ secure_url: null, thumbnail_url: null });
@@ -82,5 +92,9 @@ export const uploadFile = async (
   });
 };
 
-// Alias สำหรับโค้ดเก่า
+/**
+ * Alias สำหรับรองรับโค้ดเก่าที่ยังเรียกชื่อ uploadToCloudinary
+ * (ปัจจุบันระบบเปลี่ยนมาใช้ Local Storage แทน Cloudinary แล้ว)
+ */
 export const uploadToCloudinary = uploadFile;
+

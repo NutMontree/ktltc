@@ -1,24 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { signOut } from "next-auth/react"; // ✅ ต้องใช้ตัวนี้เท่านั้น
+import { signOut } from "next-auth/react";
+
+/**
+ * LogoutBtn.tsx (Client Component): ปุ่มสำหรับออกจากระบบ
+ * 
+ * หน้าที่: 
+ * 1. แสดงปุ่มที่ปรับเปลี่ยนตามธีม (Light/Dark Mode)
+ * 2. เมื่อคลิก จะแสดง Confirm Dialog เพื่อยืนยันการออกจากระบบ
+ * 3. เรียกใช้ฟังก์ชัน signOut ของ NextAuth เพื่อล้าง Session และ Redirect ไปหน้า Login
+ */
 
 export default function LogoutBtn() {
+  // สถานะการโหลด (เพื่อป้องกันการกดซ้ำ)
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
+    // 1. ถามความยืนยันก่อนออก
     if (!confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) return;
 
     setIsLoading(true);
     try {
-      // ✅ signOut จะทำหน้าที่เรียก API, ล้าง Cookie และ Redirect ให้เองในคำสั่งเดียว
+      // 2. เรียกใช้ signOut: 
+      // - ล้าง Cookie ใน Browser
+      // - ส่ง Request ไปหา Server เพื่อทำลาย Session
+      // - ส่งผู้ใช้กลับไปหน้า /login
       await signOut({
-        callbackUrl: "/login", // ออกแล้วให้ไปที่หน้า login
+        callbackUrl: "/login",
         redirect: true,
       });
     } catch (error) {
       console.error("Logout error:", error);
-      // ถ้า Error จริงๆ ให้ใช้ Hard Reload ไปหน้า login
+      // กรณีเกิดข้อผิดพลาด ให้ใช้วิธีเปลี่ยนหน้าแบบปกติ (Hard Reload)
       window.location.href = "/login";
     } finally {
       setIsLoading(false);
@@ -40,6 +54,7 @@ export default function LogoutBtn() {
       >
         <span className="text-lg transition-transform group-hover:scale-110">
           {isLoading ? (
+            // Spinner แสดงสถานะกำลังโหลด
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : (
             "🚪"
@@ -52,3 +67,4 @@ export default function LogoutBtn() {
     </div>
   );
 }
+

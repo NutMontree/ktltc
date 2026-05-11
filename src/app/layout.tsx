@@ -1,4 +1,13 @@
+/**
+ * layout.tsx: โครงสร้างหลัก (Root Layout) ของเว็บไซต์
+ * 
+ * หน้าที่: 
+ * 1. กำหนดฟอนต์หลัก (Prompt), Metadata สำหรับ SEO และการแชร์ลงโซเชียล
+ * 2. หุ้ม (Wrap) เนื้อหาทั้งหมดด้วย Providers (Auth, Theme, Ant Design)
+ * 3. กำหนดส่วนประกอบที่จะแสดงในทุกหน้า เช่น Navbar, Footer, Cookie Consent
+ */
 /* eslint-disable @next/next/no-page-custom-font */
+
 // นำเข้า CSS สำหรับ Ant Design patch, Syntax Highlight, และ Global Styles
 import "@ant-design/v5-patch-for-react-19";
 import "../styles/prism-vsc-dark-plus.css";

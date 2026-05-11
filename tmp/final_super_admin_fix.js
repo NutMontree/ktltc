@@ -1,3 +1,12 @@
+/**
+ * final_super_admin_fix.js: สคริปต์เฉพาะกิจสำหรับแก้ไขรายการแผนกในหน้า Super Admin
+ * 
+ * หน้าที่: 
+ * - ค้นหาบรรทัดที่ 542 ถึง 665 ในไฟล์ super-admin/page.tsx และแทนที่ด้วยรายการแผนกชุดใหม่
+ * - ใช้แก้ไขปัญหาความไม่สอดคล้องของชื่อแผนกที่แสดงใน Dropdown
+ * - สคริปต์นี้เป็นการแก้ไขแบบ "Hard-coded Replace" ตามเลขบรรทัด
+ */
+
 const fs = require('fs');
 const path = 'd:/ktl/src/app/dashboard/super-admin/page.tsx';
 let data = fs.readFileSync(path, 'utf8');
@@ -82,7 +91,7 @@ const newSelectBlock = [
     '                          </optgroup>'
 ];
 
-// Confirm the lines we are replacing started as expected
+// ยืนยันว่าบรรทัดที่เริ่มต้นคือ <select ตามที่คาดไว้หรือไม่
 if (lines[startLineIndex].trim() === '<select') {
     lines.splice(startLineIndex, (endLineIndex - startLineIndex + 1), ...newSelectBlock);
     fs.writeFileSync(path, lines.join('\n'), 'utf8');
@@ -91,3 +100,4 @@ if (lines[startLineIndex].trim() === '<select') {
     console.error("Mismatch at start line: Expected '<select>', found '" + lines[startLineIndex].trim() + "'");
     process.exit(1);
 }
+

@@ -1,4 +1,12 @@
-"use client";
+/**
+ * navbar-menu-1.tsx: ระบบเมนูนำทาง (Version 1)
+ * 
+ * หน้าที่: 
+ * 1. เป็นคอมโพเนนต์เมนูทางเลือกที่มีโครงสร้างคล้ายกับ navbar-menu.tsx
+ * 2. ใช้สำหรับการทดสอบหรือการแสดงผลในส่วนที่ต้องการความเรียบง่าย (Minimalist)
+ * 3. มีฟังก์ชัน MenuItem1, Menu1 และ ProductItem สำหรับสร้างเลเยอร์เมนู
+ */
+// "use client";
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";

@@ -1,7 +1,17 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+
+/**
+ * card-hover-effect.tsx: เอฟเฟกต์พื้นหลังเลื่อนตามเมื่อเอาเมาส์วางบนการ์ด
+ * 
+ * หน้าที่: 
+ * 1. HoverEffect: สร้างรายการการ์ดที่เมื่อเอาเมาส์วาง จะมีพื้นหลังสีเทาเลื่อนตาม (Shared Layout Animation)
+ * 2. จัดการสถานะ Index ของการ์ดที่ถูก Hover เพื่อแสดงแอนิเมชันให้ถูกตำแหน่ง
+ * 3. ใช้ Framer Motion `layoutId` เพื่อให้พื้นหลังเคลื่อนที่ได้อย่างราบรื่นระหว่างการ์ด
+ */
 
 export const HoverEffect = ({
   items,
@@ -35,7 +45,7 @@ export const HoverEffect = ({
             {hoveredIndex === idx && (
               <motion.span
                 className="absolute inset-0 h-full w-full bg-neutral-200 dark:bg-slate-800/80 block  rounded-3xl"
-                layoutId="hoverBackground"
+                layoutId="hoverBackground" // หัวใจสำคัญที่ทำให้พื้นหลังเลื่อนตามกัน
                 initial={{ opacity: 0 }}
                 animate={{
                   opacity: 1,
@@ -78,6 +88,7 @@ export const Card = ({
     </div>
   );
 };
+
 export const CardTitle = ({
   className,
   children,
@@ -91,6 +102,7 @@ export const CardTitle = ({
     </h4>
   );
 };
+
 export const CardDescription = ({
   className,
   children,
@@ -109,3 +121,4 @@ export const CardDescription = ({
     </p>
   );
 };
+

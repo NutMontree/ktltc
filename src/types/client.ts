@@ -1,7 +1,12 @@
+/**
+ * client.ts: โครงสร้างข้อมูลสำหรับพาร์ทเนอร์หรือลูกค้า (Clients/Partners)
+ * ใช้สำหรับแสดงโลโก้ของหน่วยงานเครือข่ายความร่วมมือ
+ */
 export type Client = {
-  id: number;
-  title: string;
-  logo: string;
-  logoWhite: string;
-  link: string;
+  id: number;      // ID ลำดับ
+  title: string;   // ชื่อหน่วยงาน
+  logo: string;    // พาธโลโก้ (โหมดปกติ)
+  logoWhite: string; // พาธโลโก้ (โหมดมืด หรือ สำหรับพื้นหลังเข้ม)
+  link: string;    // ลิงก์เว็บไซต์หน่วยงาน
 };
+

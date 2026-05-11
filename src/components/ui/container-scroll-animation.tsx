@@ -1,6 +1,16 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useScroll, useTransform, motion, MotionValue } from "framer-motion";
+
+/**
+ * container-scroll-animation.tsx: แอนิเมชันการเอียงและยืดขยายตามการ Scroll (Scroll-linked 3D Animation)
+ * 
+ * หน้าที่: 
+ * 1. ContainerScroll: ส่วนควบคุมหลักที่ใช้ `useScroll` ตรวจจับความคืบหน้าการเลื่อนหน้าจอภายในขอบเขตของมัน
+ * 2. Header: ส่วนหัวข้อที่ขยับขึ้นลง (Translate) ตามการเลื่อน
+ * 3. Card: ส่วนเนื้อหาหลักที่หมุน (RotateX) จากระนาบเอียงเป็นแนวตั้งตรง และขยายขนาด (Scale) เมื่อเลื่อนลงมา
+ * 4. รองรับการปรับขนาดแอนิเมชันให้เหมาะสมกับหน้าจอ Mobile และ Desktop
+ */
 
 export const ContainerScroll = ({
   titleComponent,
@@ -10,12 +20,15 @@ export const ContainerScroll = ({
   children: React.ReactNode;
 }) => {
   const containerRef = useRef<any>(null);
+  
+  // ตรวจจับ Scroll Progress ของ Container นี้
   const { scrollYProgress } = useScroll({
     target: containerRef,
   });
+  
   const [isMobile, setIsMobile] = React.useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -30,6 +43,7 @@ export const ContainerScroll = ({
     return isMobile ? [0.7, 0.9] : [1.05, 1];
   };
 
+  // แปลงค่า Scroll Progress (0 ถึง 1) เป็นค่าแอนิเมชัน (องศา, ขนาด, ตำแหน่ง)
   const rotate = useTransform(scrollYProgress, [0, 1], [20, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], scaleDimensions());
   const translate = useTransform(scrollYProgress, [0, 1], [0, -100]);
@@ -42,7 +56,7 @@ export const ContainerScroll = ({
       <div
         className="py-10 md:py-40 w-full relative"
         style={{
-          perspective: "1000px",
+          perspective: "1000px", // กำหนดความลึกของมิติ 3D
         }}
       >
         <Header translate={translate} titleComponent={titleComponent} />
@@ -54,6 +68,9 @@ export const ContainerScroll = ({
   );
 };
 
+/**
+ * Header: ส่วนหัวเรื่องที่มีการเคลื่อนที่ตามแรง Scroll
+ */
 export const Header = ({ translate, titleComponent }: any) => {
   return (
     <motion.div
@@ -67,6 +84,9 @@ export const Header = ({ translate, titleComponent }: any) => {
   );
 };
 
+/**
+ * Card: ส่วนการ์ดเนื้อหาที่หมุนและขยายตามแรง Scroll
+ */
 export const Card = ({
   rotate,
   scale,
@@ -80,8 +100,8 @@ export const Card = ({
   return (
     <motion.div
       style={{
-        rotateX: rotate,
-        scale,
+        rotateX: rotate, // การหมุนในระนาบ X (เอียง)
+        scale,           // การย่อ/ขยาย
         boxShadow:
           "0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003",
       }}
@@ -93,3 +113,4 @@ export const Card = ({
     </motion.div>
   );
 };
+

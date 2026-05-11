@@ -4,16 +4,28 @@ import NavbarClient from "./NavbarClient";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
-// บังคับให้ Navbar เป็น Dynamic Component และดึงข้อมูลใหม่เสมอ
+/**
+ * Navbar.tsx (Server Component): คอมโพเนนต์แถบเมนูด้านบนฝั่ง Server
+ * 
+ * หน้าที่: 
+ * 1. ดึงข้อมูลรายการเมนู (Navigation Items) จากฐานข้อมูล MongoDB
+ * 2. ตรวจสอบข้อมูล Session ของผู้ใช้ที่ Login อยู่
+ * 3. ดึงข้อมูลสิทธิ์ (Permissions) ตามบทบาท (Role) ของผู้ใช้
+ * 4. ส่งข้อมูลทั้งหมดไปยัง NavbarClient เพื่อเรนเดอร์หน้าจอ
+ */
+
+// บังคับให้ Navbar ดึงข้อมูลใหม่เสมอ (ไม่ใช้ Cache) เพื่อให้ข้อมูลเมนูอัปเดตแบบ Real-time
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// ปรับ Type ให้ _id เป็น string เสมอเพื่อให้เข้ากับ NavbarClient
 export type MenuItem = NavItem & {
   _id: string;
   children?: MenuItem[];
 };
 
+/**
+ * getNavItems: ดึงข้อมูลโครงสร้างเมนูจากคอลเลกชัน 'navbar'
+ */
 async function getNavItems() {
   try {
     const client = await clientPromise;
@@ -21,7 +33,7 @@ async function getNavItems() {
     const items = await db
       .collection("navbar")
       .find({})
-      .sort({ order: 1 })
+      .sort({ order: 1 }) // เรียงตามลำดับที่กำหนดไว้
       .toArray();
 
     if (!items || items.length === 0) {
@@ -29,7 +41,7 @@ async function getNavItems() {
       return [];
     }
 
-    // บังคับ Type cast ให้ _id เป็น string และกรองข้อมูล
+    // แปลงข้อมูลและสร้างโครงสร้างแบบ Tree (Parent-Children)
     const allItems = JSON.parse(JSON.stringify(items)) as (NavItem & {
       _id: string;
     })[];
@@ -50,6 +62,7 @@ async function getNavItems() {
 }
 
 export default async function Navbar() {
+  // ดึงข้อมูลเมนูและ Session ไปพร้อมๆ กัน (Parallel Fetching)
   const [menuTree, session] = await Promise.all([
     getNavItems(),
     auth()
@@ -61,6 +74,8 @@ export default async function Navbar() {
 
   let permissions = null;
   let userId = "";
+
+  // ถ้าผู้ใช้ Login อยู่ ให้ไปดึงข้อมูลล่าสุดจากฐานข้อมูล (เพื่อความแม่นยำกว่าข้อมูลใน Cookie)
   if (session?.user) {
     try {
       userId = (session.user as any).id || (session as any).userId || "";
@@ -78,7 +93,7 @@ export default async function Navbar() {
           role = (userData.role || "user").trim().toLowerCase();
         }
 
-        // Fetch permissions for the role
+        // ดึงสิทธิ์ (Permissions) ของบทบาทนี้
         const rolePermissions = await db
           .collection("role_permissions")
           .findOne({ role: role });
@@ -86,7 +101,7 @@ export default async function Navbar() {
         if (rolePermissions) {
           permissions = rolePermissions.permissions;
         } else if (role === "super_admin") {
-          // Fallback for super_admin if not in DB
+          // กรณีไม่มีข้อมูลในฐานข้อมูล แต่เป็น super_admin ให้สิทธิ์เต็มเสมอ
           permissions = {
             access_dashboard: true,
             manage_users: true,
@@ -103,6 +118,7 @@ export default async function Navbar() {
     }
   }
 
+  // ส่งข้อมูลที่รวบรวมได้ไปยัง NavbarClient (Client Component) เพื่อแสดงผลและจัดการ Interaction
   return (
     <NavbarClient
       menuTree={menuTree}
@@ -114,3 +130,4 @@ export default async function Navbar() {
     />
   );
 }
+

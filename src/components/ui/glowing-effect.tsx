@@ -4,6 +4,16 @@ import { memo, useCallback, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { animate } from "framer-motion";
 
+/**
+ * glowing-effect.tsx: เอฟเฟกต์ขอบเรืองแสงตามตำแหน่งเมาส์ (Mouse-tracking Border Glow)
+ * 
+ * หน้าที่: 
+ * 1. ตรวจจับตำแหน่งเมาส์และคำนวณมุม (Angle) เพื่อแสดงแสงเรืองที่ขอบ Component
+ * 2. ใช้ Conic Gradient ร่วมกับ Masking เพื่อสร้างเอฟเฟกต์เส้นแสงวิ่งรอบขอบ
+ * 3. มีระบบ Inactive Zone เพื่อซ่อนแสงเมื่อเมาส์อยู่ใกล้จุดศูนย์กลางเกินไป
+ * 4. ใช้ RequestAnimationFrame และ Framer Motion `animate` เพื่อความลื่นไหลระดับสูง
+ */
+
 interface GlowingEffectProps {
   blur?: number;
   inactiveZone?: number;
@@ -16,6 +26,7 @@ interface GlowingEffectProps {
   movementDuration?: number;
   borderWidth?: number;
 }
+
 const GlowingEffect = memo(
   ({
     blur = 0,
@@ -33,6 +44,9 @@ const GlowingEffect = memo(
     const lastPosition = useRef({ x: 0, y: 0 });
     const animationFrameRef = useRef<number>(0);
 
+    /**
+     * handleMove: คำนวณตำแหน่งเมาส์และอัปเดตมุมของแสงเรือง
+     */
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
         if (!containerRef.current) return;
@@ -58,6 +72,8 @@ const GlowingEffect = memo(
             mouseX - center[0],
             mouseY - center[1],
           );
+          
+          // ตรวจสอบพื้นที่หยุดทำงาน (Inactive Zone)
           const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
 
           if (distanceFromCenter < inactiveRadius) {
@@ -65,6 +81,7 @@ const GlowingEffect = memo(
             return;
           }
 
+          // ตรวจสอบว่าเมาส์อยู่ใกล้พอที่จะแสดงแสงหรือไม่
           const isActive =
             mouseX > left - proximity &&
             mouseX < left + width + proximity &&
@@ -75,6 +92,7 @@ const GlowingEffect = memo(
 
           if (!isActive) return;
 
+          // คำนวณมุมของแสงตามตำแหน่งเมาส์
           const currentAngle =
             parseFloat(element.style.getPropertyValue("--start")) || 0;
           const targetAngle =
@@ -85,6 +103,7 @@ const GlowingEffect = memo(
           const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
           const newAngle = currentAngle + angleDiff;
 
+          // เล่นแอนิเมชันการหมุนของแสง
           animate(currentAngle, newAngle, {
             duration: movementDuration,
             ease: [0.16, 1, 0.3, 1],
@@ -119,6 +138,7 @@ const GlowingEffect = memo(
 
     return (
       <>
+        {/* เลเยอร์ขอบนิ่ง (เมื่อปิดใช้งานแอนิเมชัน) */}
         <div
           className={cn(
             "pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity",
@@ -127,6 +147,8 @@ const GlowingEffect = memo(
             disabled && "block!",
           )}
         />
+        
+        {/* เลเยอร์แสงเรือง (Glow Layer) */}
         <div
           ref={containerRef}
           style={
@@ -188,3 +210,4 @@ const GlowingEffect = memo(
 GlowingEffect.displayName = "GlowingEffect";
 
 export { GlowingEffect };
+

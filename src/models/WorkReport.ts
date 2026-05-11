@@ -1,17 +1,37 @@
 import { ObjectId } from 'mongodb';
 
+/**
+ * อินเตอร์เฟซสำหรับรายงานการปฏิบัติงานประจำวัน (Work Report Interface)
+ * 
+ * หน้าที่: กำหนดโครงสร้างข้อมูลสำหรับการส่งรายงานผลการปฏิบัติงานของบุคลากรในแต่ละวัน
+ * การทำงาน: 
+ * - บันทึกรายการงาน (Activities) หลายรายการในหนึ่งวัน
+ * - ติดตามสถานะของแต่ละงาน (เสร็จสิ้น, กำลังดำเนินการ, ค้างคา)
+ * - สรุปภาพรวมและปัญหาที่พบ เพื่อแจ้งหัวหน้างาน
+ * 
+ * ความเชื่อมโยง:
+ * - userId: เชื่อมโยงกับบุคลากรผู้รายงาน (users collection)
+ * - ใช้ใน API Routes สำหรับระบบ Work Report
+ * - ใช้แสดงในส่วนของผู้บริหารเพื่อติดตามความคืบหน้าของงานในแต่ละฝ่าย
+ */
 export interface IWorkReport {
-  _id?: ObjectId;
-  userId: ObjectId;
-  date: Date;
+  _id?: ObjectId;           // ไอดีของรายงาน
+  userId: ObjectId;         // ไอดีผู้ส่งรายงาน (Foreign Key -> User)
+  date: Date;               // วันที่ที่รายงานผล (มักเป็นวันที่ทำงานจริง)
+  
+  // รายการกิจกรรมที่ทำ
   activities: {
-    taskName: string;
-    detail?: string;
-    status: 'Completed' | 'In Progress' | 'Pending';
+    taskName: string;       // ชื่อภารกิจ/งานที่ทำ
+    detail?: string;        // รายละเอียดงานโดยสังเขป
+    status: 'Completed' | 'In Progress' | 'Pending'; 
+    // Completed: เสร็จสิ้น, In Progress: กำลังทำ, Pending: ยังไม่ได้เริ่ม/รอดำเนินการ
   }[];
-  summary: string;
-  problems?: string;
-  plansNextDay?: string;
-  createdAt: Date;
-  updatedAt: Date;
+
+  summary: string;          // สรุปผลการปฏิบัติงานในภาพรวมของวันนั้น
+  problems?: string;        // ปัญหาและอุปสรรคที่พบ (ถ้ามี)
+  plansNextDay?: string;    // แผนการดำเนินงานในวันถัดไป
+  
+  createdAt: Date;          // วันที่บันทึกรายงานเข้าระบบ
+  updatedAt: Date;          // วันที่แก้ไขรายงานล่าสุด
 }
+

@@ -13,7 +13,17 @@ import {
   IconQuote,
 } from "@tabler/icons-react";
 
-// --- ข้อมูลองค์กร ---
+/**
+ * tabs.tsx (WelcomePage): หน้าต้อนรับและแสดงข้อมูลพื้นฐานของวิทยาลัย
+ * 
+ * หน้าที่: 
+ * 1. แสดงข้อมูล Director Spotlight (ผู้อำนวยการ) โดยใช้คอมโพเนนต์ 3D Card
+ * 2. แสดงข้อมูลสำคัญขององค์กร (วิสัยทัศน์, เอกลักษณ์, อัตลักษณ์ ฯลฯ) ในรูปแบบ Tab Switcher
+ * 3. ใช้ Framer Motion เพื่อสร้างแอนิเมชันการเปลี่ยน Tab ที่นุ่มนวล (Smooth Transitions)
+ * 4. จัดเลย์เอาต์แบบ Responsive (Desktop: 2 Columns / Mobile: Stacked)
+ */
+
+// --- ข้อมูลองค์กร (ใช้สำหรับแสดงผลในส่วน Tabs) ---
 const ORG_INFO = [
   {
     id: "vision",
@@ -76,7 +86,7 @@ export default function WelcomePage() {
 
   return (
     <section className="relative w-full overflow-hidden bg-slate-50 py-20 font-sans">
-      {/* --- Background Decorations --- */}
+      {/* --- ส่วนตกแต่งพื้นหลัง (Background Decorations) --- */}
       <div className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
         <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-blue-500/10 blur-[100px] filter" />
@@ -91,7 +101,8 @@ export default function WelcomePage() {
         className="relative z-10 container  px-4 lg:px-8"
       >
         <div className="grid gap-12 lg:grid-cols-12 lg:items-start lg:gap-8">
-          {/* --- Left Column: Director Spotlight --- */}
+          
+          {/* --- ฝั่งซ้าย: ข้อมูลผู้อำนวยการ (Director Spotlight) --- */}
           <div className="flex flex-col items-center justify-center lg:col-span-5 lg:justify-start">
             <CardContainer className="inter-var w-full max-w-sm lg:max-w-md">
               <CardBody className="group/card relative h-auto w-auto rounded-3xl border border-white/40 bg-white/60 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-blue-500/10">
@@ -129,10 +140,10 @@ export default function WelcomePage() {
             </CardContainer>
           </div>
 
-          {/* --- Right Column: Organization Info Tabs --- */}
+          {/* --- ฝั่งขวา: แท็บข้อมูลองค์กร (Organization Info Tabs) --- */}
           <div className="flex h-full flex-col lg:col-span-7">
             <div className="relative h-full overflow-hidden rounded-3xl border border-white/50 bg-white shadow-xl backdrop-blur-xl">
-              {/* 1. Header Area: Dynamic Title */}
+              {/* 1. ส่วนหัวของแท็บ: แสดงชื่อข้อมูลที่เลือก */}
               <div className="border-b border-slate-200/60 bg-white/50 px-8 py-6 backdrop-blur-sm">
                 <div className="flex items-center gap-4">
                   <div
@@ -159,7 +170,7 @@ export default function WelcomePage() {
                 </div>
               </div>
 
-              {/* 2. Menu Selection Area */}
+              {/* 2. เมนูเลือกแท็บ (Selection Area) */}
               <div className="px-6 pt-6">
                 <div className="flex flex-wrap gap-2 pb-2">
                   {ORG_INFO.map((tab) => (
@@ -191,7 +202,7 @@ export default function WelcomePage() {
                 </div>
               </div>
 
-              {/* 3. Content Area */}
+              {/* 3. ส่วนแสดงเนื้อหา (Content Area) */}
               <div className="min-h-[300px] p-6 md:p-8">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -232,3 +243,4 @@ export default function WelcomePage() {
     </section>
   );
 }
+

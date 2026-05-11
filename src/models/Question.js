@@ -1,18 +1,32 @@
 /**
- * Question Structure Documentation (Native MongoDB)
+ * ไฟล์นี้ใช้สำหรับกำหนดโครงสร้างข้อมูลของคำถาม (Q&A Model)
+ * สำหรับระบบถาม-ตอบ (Q&A) สาธารณะบนเว็บไซต์
  * 
- * Fields:
- * - guestName: string
- * - subject: string
- * - content: string
- * - answer: {
- *     text: string,
- *     repliedBy: string,
- *     repliedAt: Date
- *   }
- * - status: enum ["pending", "answered", "hidden"]
- * - createdAt: Date
- * - updatedAt: Date
+ * ความเชื่อมโยง:
+ * - ใช้ใน API Public (/api/questions/public) สำหรับหน้าแรกของเว็บไซต์
+ * - ใช้ใน API Admin สำหรับการเข้าไปตอบคำถามหรือซ่อนคำถามที่ไม่เหมาะสม
  */
 
-export const QuestionStatus = ["pending", "answered", "hidden"];
+/**
+ * รายละเอียดฟิลด์ข้อมูลใน MongoDB (questions collection):
+ * - guestName: ชื่อผู้ที่เข้ามาตั้งคำถาม (string)
+ * - subject: หัวข้อคำถาม (string)
+ * - content: เนื้อหาคำถามรายละเอียด (string)
+ * - answer: วัตถุที่เก็บข้อมูลการตอบกลับ
+ *     - text: ข้อความที่ตอบ (string)
+ *     - repliedBy: ชื่อหรือไอดีผู้ที่ตอบคำถาม (string)
+ *     - repliedAt: วันที่ตอบคำถาม (Date)
+ * - status: สถานะของคำถาม (enum ตาม QuestionStatus)
+ * - createdAt: วันที่ตั้งคำถาม (Date)
+ * - updatedAt: วันที่แก้ไข/ตอบคำถามล่าสุด (Date)
+ */
+
+/**
+ * รายการสถานะของคำถาม
+ */
+export const QuestionStatus = [
+  "pending",  // รอการตอบกลับ (ค่าเริ่มต้น)
+  "answered", // ตอบกลับแล้ว (จะแสดงบนหน้าเว็บสาธารณะ)
+  "hidden"    // ซ่อนคำถาม (กรณีเป็นคำถามที่ไม่เหมาะสม)
+];
+

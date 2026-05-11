@@ -11,6 +11,16 @@ import React, {
     useState,
 } from "react";
 
+/**
+ * animated-modal.tsx: คอมโพเนนต์ Modal (หน้าต่างป๊อปอัป) แบบมีแอนิเมชัน
+ * 
+ * หน้าที่: 
+ * 1. จัดการการเปิด-ปิดหน้าต่าง Modal ด้วย Context API
+ * 2. แสดงผลด้วยแอนิเมชันแบบ Spring (เด้ง) และการเบลอพื้นหลัง (Backdrop Blur)
+ * 3. ป้องกันการเลื่อนหน้าเว็บ (Scroll Lock) เมื่อ Modal เปิดอยู่
+ * 4. รองรับการปิดเมื่อคลิกภายนอกหน้าต่าง (Outside Click)
+ */
+
 interface ModalContextType {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -18,6 +28,9 @@ interface ModalContextType {
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
+/**
+ * ModalProvider: ตัวจัดการสถานะหลักของ Modal ในกลุ่มคอมโพเนนต์ที่เกี่ยวข้อง
+ */
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
     const [open, setOpen] = useState(false);
 
@@ -40,6 +53,9 @@ export function Modal({ children }: { children: ReactNode }) {
     return <ModalProvider>{children}</ModalProvider>;
 }
 
+/**
+ * ModalTrigger: ปุ่มหรือส่วนประกอบที่ใช้กดเพื่อเปิด Modal
+ */
 export const ModalTrigger = ({
     children,
     className,
@@ -61,6 +77,9 @@ export const ModalTrigger = ({
     );
 };
 
+/**
+ * ModalBody: โครงสร้างหลักของหน้าต่าง Modal (รวม Overlay และ Animation)
+ */
 export const ModalBody = ({
     children,
     className,
@@ -70,6 +89,7 @@ export const ModalBody = ({
 }) => {
     const { open } = useModal();
 
+    // ล็อกการ Scroll ของ Body เมื่อ Modal เปิด
     useEffect(() => {
         if (open) {
             document.body.style.overflow = "hidden";
@@ -80,15 +100,15 @@ export const ModalBody = ({
 
     const modalRef = useRef<HTMLDivElement>(null);
     const { setOpen } = useModal();
+    
+    // ปิด Modal เมื่อคลิกข้างนอก
     useOutsideClick(modalRef, () => setOpen(false));
 
     return (
         <AnimatePresence>
             {open && (
                 <motion.div
-                    initial={{
-                        opacity: 0,
-                    }}
+                    initial={{ opacity: 0 }}
                     animate={{
                         opacity: 1,
                         backdropFilter: "blur(10px)",
@@ -139,6 +159,9 @@ export const ModalBody = ({
     );
 };
 
+/**
+ * ModalContent: ส่วนเนื้อหาภายใน Modal
+ */
 export const ModalContent = ({
     children,
     className,
@@ -153,6 +176,9 @@ export const ModalContent = ({
     );
 };
 
+/**
+ * ModalFooter: ส่วนท้ายของ Modal (มักใส่ปุ่มยืนยัน/ยกเลิก)
+ */
 export const ModalFooter = ({
     children,
     className,
@@ -172,12 +198,13 @@ export const ModalFooter = ({
     );
 };
 
+/**
+ * Overlay: ฉากหลังสีดำโปร่งแสง
+ */
 const Overlay = ({ className }: { className?: string }) => {
     return (
         <motion.div
-            initial={{
-                opacity: 0,
-            }}
+            initial={{ opacity: 0 }}
             animate={{
                 opacity: 1,
                 backdropFilter: "blur(10px)",
@@ -191,6 +218,9 @@ const Overlay = ({ className }: { className?: string }) => {
     );
 };
 
+/**
+ * CloseIcon: ปุ่มกากบาทสำหรับปิด Modal
+ */
 const CloseIcon = () => {
     const { setOpen } = useModal();
     return (
@@ -218,15 +248,15 @@ const CloseIcon = () => {
     );
 };
 
-// Hook to detect clicks outside of a component.
-// Add it in a separate file, I've added here for simplicity
+/**
+ * useOutsideClick: Hook สำหรับตรวจจับการคลิกนอกพื้นที่คอมโพเนนต์
+ */
 export const useOutsideClick = (
     ref: React.RefObject<HTMLDivElement | null>,
     callback: Function
 ) => {
     useEffect(() => {
         const listener = (event: any) => {
-            // DO NOTHING if the element being clicked is the target element or their children
             if (!ref.current || ref.current.contains(event.target)) {
                 return;
             }
@@ -242,3 +272,4 @@ export const useOutsideClick = (
         };
     }, [ref, callback]);
 };
+
