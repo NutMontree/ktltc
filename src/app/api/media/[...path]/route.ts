@@ -10,10 +10,19 @@ export async function GET(
 ) {
   try {
     const { path: pathSegments } = await params;
-    const filePath = join("\\\\192.168.6.118\\public", ...pathSegments);
+    
+    const { existsSync } = require('fs');
+    let baseDir = join(process.cwd(), 'public');
+    
+    // ถ้าหาในเครื่องไม่เจอ ให้สลับไปหาที่ Network
+    if (!existsSync(baseDir)) {
+      baseDir = "\\\\192.168.6.118\\public";
+    }
 
-    // Security check: ensure the file is within the Lenovo shared folder
-    if (!filePath.toLowerCase().startsWith('\\\\192.168.6.118\\public')) {
+    const filePath = join(baseDir, ...pathSegments);
+
+    // Security check: ensure the file is within the allowed base directory
+    if (!filePath.toLowerCase().startsWith(baseDir.toLowerCase())) {
       return new NextResponse('Forbidden', { status: 403 });
     }
 

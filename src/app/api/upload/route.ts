@@ -65,8 +65,14 @@ export async function POST(req: Request) {
     
     const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${ext}`;
     
-    // Ensure we are saving in Lenovo Network Drive (UNC Path)
-    const uploadDir = join("\\\\192.168.6.118\\public", sanitizedFolder);
+    // Auto-detect base directory
+    const { existsSync } = await import('fs');
+    let baseDir = join(process.cwd(), 'public');
+    if (!existsSync(baseDir)) {
+      baseDir = "\\\\192.168.6.118\\public";
+    }
+    
+    const uploadDir = join(baseDir, sanitizedFolder);
     
     // Create directory if it doesn't exist
     await mkdir(uploadDir, { recursive: true });

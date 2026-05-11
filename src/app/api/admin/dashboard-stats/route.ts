@@ -103,14 +103,23 @@ export async function GET() {
         if (isNaN(dbLimitMB)) dbLimitMB = 0;
       }
 
-      // Calculate size of all relevant folders including ktltc_drive on Lenovo
-      let publicDir = "\\\\192.168.6.118\\public"; 
+      // Calculate size of all relevant folders
+      const fs = require("fs");
+      let publicDir = path.join(process.cwd(), "public"); // ค่าเริ่มต้นสำหรับเครื่องที่รันเอง (Lenovo)
+      
+      // ถ้าหาโฟลเดอร์ public ในเครื่องไม่เจอ (แสดงว่ารันอยู่บน PC) ให้ลองไปหาที่ Lenovo
+      if (!fs.existsSync(path.join(publicDir, "uploads"))) {
+        const networkPath = "\\\\192.168.6.118\\public";
+        if (fs.existsSync(networkPath)) {
+          publicDir = networkPath;
+        } else if (fs.existsSync("Z:")) {
+          publicDir = "Z:";
+        }
+      }
+
       const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
       let totalBytes = 0;
 
-      const fs = require("fs");
-      
-      // ตรวจสอบว่า UNC Path เข้าถึงได้ไหม ถ้าไม่ได้ให้ถอยกลับไปใช้ Z:
       if (!fs.existsSync(publicDir)) {
         console.warn(`⚠️ UNC Path ${publicDir} not accessible, trying Z: drive...`);
         publicDir = "Z:";
