@@ -23,33 +23,34 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 
 const FEATURE_LABELS: {
-  [key: string]: { label: string; icon: any; color: string; isSuperAdminOnly?: boolean };
+  [key: string]: { label: string; icon: any; color: string; href?: string; isSuperAdminOnly?: boolean };
 } = {
-  access_dashboard: { label: "เข้าสู่ระบบ Dashboard", icon: FiLayout, color: "text-blue-500" },
-  manage_users: { label: "จัดการบัญชี / โปรไฟล์", icon: FiUsers, color: "text-indigo-500" },
-  manage_news: { label: "จัดการข่าว / ประชาสัมพันธ์", icon: FiFileText, color: "text-emerald-500" },
-  manage_home: { label: "ปรับแต่งหน้าหลัก", icon: FiLayout, color: "text-blue-400" },
-  manage_navbar: { label: "จัดการเมนูเว็บไซต์", icon: FiLayers, color: "text-indigo-400" },
-  manage_pages: { label: "จัดการเนื้อหาหน้าเว็บ", icon: FiLayers, color: "text-sky-500" },
-  manage_attendance: { label: "รายงานปฏิบัติงาน (WFH)", icon: FiCalendar, color: "text-amber-500" },
-  manage_qa: { label: "จัดการคำถาม Q&A", icon: FiMessageSquare, color: "text-rose-500" },
+  access_dashboard: { label: "เข้าสู่ระบบ Dashboard", icon: FiLayout, color: "text-blue-500", href: "/dashboard" },
+  manage_users: { label: "จัดการบัญชี / โปรไฟล์", icon: FiUsers, color: "text-indigo-500", href: "/dashboard/users" },
+  manage_news: { label: "จัดการข่าว / ประชาสัมพันธ์", icon: FiFileText, color: "text-emerald-500", href: "/dashboard/news" },
+  manage_home: { label: "ปรับแต่งหน้าหลัก", icon: FiLayout, color: "text-blue-400", href: "/dashboard/manage-home" },
+  manage_navbar: { label: "จัดการเมนูเว็บไซต์", icon: FiLayers, color: "text-indigo-400", href: "/dashboard/navbar" },
+  manage_pages: { label: "จัดการเนื้อหาหน้าเว็บ", icon: FiLayers, color: "text-sky-500", href: "/dashboard/pages" },
+  manage_qa: { label: "จัดการคำถาม Q&A", icon: FiMessageSquare, color: "text-rose-500", href: "/dashboard/qa" },
   manage_system: {
     label: "ระบบจัดการ / สิทธิ์ (SA Only)",
     icon: FiShield,
     color: "text-red-500",
+    href: "/dashboard/permissions",
     isSuperAdminOnly: true,
   },
 };
 
 const ADVANCED_FEATURE_LABELS: {
-  [key: string]: { label: string; icon: any; color: string };
+  [key: string]: { label: string; icon: any; color: string; href?: string };
 } = {
-  manage_attendance_dashboard: { label: "ภาพรวมลงเวลา", icon: FiLayout, color: "text-blue-600" },
-  manage_attendance_report: { label: "รายงานการเข้างาน", icon: FiFileText, color: "text-indigo-600" },
-  manage_attendance_work_reports: { label: "รายงานปฏิบัติงาน", icon: FiMessageSquare, color: "text-emerald-600" },
-  manage_attendance_leave_approvals: { label: "จัดการอนุมัติใบลา", icon: FiCheckCircle, color: "text-rose-600" },
-  manage_attendance_settings: { label: "ตั้งค่าเวลาเข้างาน", icon: FiCalendar, color: "text-amber-600" },
-  manage_roles_advanced: { label: "จัดการสิทธิ์บุคลากร", icon: FiUsers, color: "text-sky-600" },
+  manage_attendance_dashboard: { label: "ภาพรวมลงเวลา", icon: FiLayout, color: "text-blue-600", href: "/dashboard/attendance" },
+  manage_attendance_report: { label: "รายงานการเข้างาน", icon: FiFileText, color: "text-indigo-600", href: "/dashboard/attendance/reports" },
+  manage_attendance_work_reports: { label: "รายงานปฏิบัติงาน", icon: FiMessageSquare, color: "text-emerald-600", href: "/dashboard/attendance/work-reports" },
+  manage_attendance_leave_approvals: { label: "จัดการอนุมัติใบลา", icon: FiCheckCircle, color: "text-rose-600", href: "/dashboard/attendance/leave-approvals" },
+  manage_attendance_settings: { label: "ตั้งค่าเวลาเข้างาน", icon: FiCalendar, color: "text-amber-600", href: "/dashboard/attendance/settings" },
+  manage_attendance: { label: "รายงานปฏิบัติงาน (WFH)", icon: FiCalendar, color: "text-amber-500", href: "/dashboard/attendance" },
+  manage_roles_advanced: { label: "จัดการสิทธิ์บุคลากร", icon: FiUsers, color: "text-sky-600", href: "/manage-roles" },
 };
 
 export default function PermissionsPage() {
@@ -96,16 +97,51 @@ export default function PermissionsPage() {
     fetchPermissions();
   }, []);
 
-  const handleToggle = (role: string, feature: string) => {
+  const handleToggle = async (role: string, feature: string) => {
     if (role === "super_admin") return; 
 
+    // คำนวณค่า Permissions ใหม่
+    const updatedRolePermissions = {
+      ...permissions[role],
+      [feature]: !permissions[role][feature],
+    };
+
+    // 1. อัปเดต UI ทันที (Optimistic Update)
     setPermissions((prev: any) => ({
       ...prev,
-      [role]: {
-        ...prev[role],
-        [feature]: !prev[role][feature],
-      },
+      [role]: updatedRolePermissions,
     }));
+
+    // 2. บันทึกลงฐานข้อมูลทันที
+    try {
+      const res = await fetch("/api/admin/permissions", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          updates: [
+            {
+              role,
+              permissions: updatedRolePermissions,
+              label: roleLabels[role],
+            },
+          ],
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`อัปเดตสิทธิ์ ${roleLabels[role] || role} สำเร็จ`, {
+          duration: 1500,
+          icon: '✅',
+        });
+      } else {
+        toast.error("ไม่สามารถบันทึกข้อมูลได้");
+        // ถ้าบันทึกพลาด ให้ดึงข้อมูลใหม่เพื่อคืนค่าเดิม
+        fetchPermissions();
+      }
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      fetchPermissions();
+    }
   };
 
   const handleSaveAll = async () => {
@@ -312,22 +348,10 @@ export default function PermissionsPage() {
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all border-2 border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none active:scale-95"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-blue-500/40"
             >
               <FiUsers size={16} />
               <span>เพิ่มบทบาทใหม่</span>
-            </button>
-            <button
-              onClick={handleSaveAll}
-              disabled={savingRole === "all"}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-blue-500/40 disabled:opacity-50"
-            >
-              {savingRole === "all" ? (
-                <FiLoader className="animate-spin" size={16} />
-              ) : (
-                <FiSave size={16} />
-              )}
-              <span>บันทึกทั้งหมด</span>
             </button>
           </div>
         </div>
@@ -361,19 +385,19 @@ export default function PermissionsPage() {
                           key={key}
                           className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
                         >
-                          <div className="flex flex-col items-center gap-2">
+                          <Link href={FEATURE_LABELS[key].href || "#"} className="flex flex-col items-center gap-2 group/header cursor-pointer">
                             <div
-                              className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm ${FEATURE_LABELS[key].color}`}
+                              className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 ${FEATURE_LABELS[key].color}`}
                             >
                               {(() => {
                                 const Icon = FEATURE_LABELS[key].icon;
                                 return <Icon size={18} />;
                               })()}
                             </div>
-                            <span className="max-w-[100px] text-center leading-tight">
+                            <span className="max-w-[100px] text-center leading-tight group-hover/header:text-blue-600 transition-colors">
                               {FEATURE_LABELS[key].label}
                             </span>
-                          </div>
+                          </Link>
                         </th>
                       ))}
                     </tr>
@@ -479,19 +503,19 @@ export default function PermissionsPage() {
                           key={key}
                           className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
                         >
-                          <div className="flex flex-col items-center gap-2">
+                          <Link href={ADVANCED_FEATURE_LABELS[key].href || "#"} className="flex flex-col items-center gap-2 group/header cursor-pointer">
                             <div
-                              className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm ${ADVANCED_FEATURE_LABELS[key].color}`}
+                              className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 ${ADVANCED_FEATURE_LABELS[key].color}`}
                             >
                               {(() => {
                                 const Icon = ADVANCED_FEATURE_LABELS[key].icon;
                                 return <Icon size={18} />;
                               })()}
                             </div>
-                            <span className="max-w-[100px] text-center leading-tight">
+                            <span className="max-w-[100px] text-center leading-tight group-hover/header:text-blue-600 transition-colors">
                               {ADVANCED_FEATURE_LABELS[key].label}
                             </span>
-                          </div>
+                          </Link>
                         </th>
                       ))}
                     </tr>

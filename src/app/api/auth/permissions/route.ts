@@ -17,18 +17,23 @@ export async function GET() {
     const dbPermission = await db.collection("role_permissions").findOne({ role });
     
     // Default fallback if no custom permissions in DB
-    const permissions = dbPermission?.permissions || {
-      access_dashboard: ["super_admin", "admin", "hr", "director", "editor", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "user", "student"].includes(role),
+    const permissions = {
+      access_dashboard: ["super_admin", "admin", "hr", "director", "editor", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role),
       manage_users: ["super_admin"].includes(role),
       manage_news: ["super_admin", "admin", "editor"].includes(role),
+      manage_home: ["super_admin", "admin"].includes(role),
+      manage_navbar: ["super_admin", "admin"].includes(role),
       manage_pages: ["super_admin", "editor"].includes(role),
       manage_attendance: ["super_admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role),
       manage_qa: ["super_admin", "admin"].includes(role),
       manage_system: ["super_admin"].includes(role),
+      ...(dbPermission?.permissions || {}) // เอาค่าจาก DB มาทับถ้ามี
     };
 
     // Super admin always has everything
     if (role === "super_admin") {
+      permissions.manage_home = true;
+      permissions.manage_navbar = true;
       Object.keys(permissions).forEach(key => permissions[key] = true);
     }
 

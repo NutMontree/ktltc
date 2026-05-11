@@ -66,7 +66,7 @@ export default function DashboardLoader() {
         setLoading(true);
         const [statsRes, permRes] = await Promise.all([
           fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
-          fetch("/api/auth/permissions"),
+          fetch("/api/auth/permissions?_t=" + Date.now()),
         ]);
 
         if (!statsRes.ok) throw new Error("Failed to fetch dashboard statistics");
