@@ -141,6 +141,7 @@ interface NewsItem {
   content?: string;
   images?: string[];
   announcementImages?: string[];
+  thumbnails?: string[];
   links?: { label: string; url: string }[];
   videoEmbeds?: string[];
   createdAt: Date | string;
@@ -170,7 +171,8 @@ export async function generateMetadata({
     plainTextContent.slice(0, 160) ||
     "ข่าวสารและกิจกรรมจากวิทยาลัยเทคนิคกันทรลักษ์";
   const imageUrl =
-    // Prefer an image (not video) for Open Graph. If first item is a video, try to find a non-video image.
+    // Prefer an image (not video) for Open Graph. 
+    (news?.thumbnails || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
     (news?.images || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
     (news?.announcementImages || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
     `${baseUrl}/og-image.png`;
@@ -523,23 +525,41 @@ export default async function NewsDetailPage({
           )}
 
           {/* --- Gallery Section --- */}
-          {news.images && news.images.length > 0 && (
+          {((news.images && news.images.length > 0) || (news.thumbnails && news.thumbnails.length > 0)) && (
             <section className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="h-6 w-1.5 bg-blue-600 rounded-full"></div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                   ประมวลภาพกิจกรรม{" "}
                   <span className="text-slate-400 font-normal ml-2">
-                    ({news.images.length})
+                    ({(news.images?.length || 0) + (news.thumbnails?.length || 0)})
                   </span>
                 </h3>
               </div>
               <div
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
               >
-                {news.images.map((img, idx) => (
+                {/* แสดงรูปจาก thumbnails ก่อนถ้ามี (และยังไม่แสดงซ้ำ) */}
+                {news.thumbnails?.map((img, idx) => (
                   <div
-                    key={idx}
+                    key={`thumb-${idx}`}
+                    className="break-inside-avoid relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group"
+                  >
+                    <Image
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      width={800}
+                      height={600}
+                      unoptimized
+                      className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                ))}
+
+                {/* แสดงรูปจาก images */}
+                {news.images?.map((img, idx) => (
+                  <div
+                    key={`img-${idx}`}
                     className="break-inside-avoid relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group"
                   >
                     {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (

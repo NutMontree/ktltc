@@ -11,22 +11,52 @@ export async function GET(
   try {
     const { path: pathSegments } = await params;
     
-    const { existsSync } = require('fs');
-    let baseDir = join(process.cwd(), 'public');
+    const { existsSync, readFileSync } = require('fs');
+    const localBase = join(process.cwd(), 'public');
+    const networkBase = "\\\\192.168.6.118\\public";
+    const mappedBase = "Z:"; // เพิ่มการรองรับไดรฟ์ Z: ที่มีการ Map ไว้
     
-    // ถ้าหาในเครื่องไม่เจอ ให้สลับไปหาที่ Network
-    if (!existsSync(baseDir)) {
-      baseDir = "\\\\192.168.6.118\\public";
+    let filePath = join(localBase, ...pathSegments);
+    let found = existsSync(filePath);
+
+    // 1. ถ้าในเครื่องไม่มี ให้ลองหาที่ Network UNC
+    if (!found) {
+      const networkPath = join(networkBase, ...pathSegments);
+      if (existsSync(networkPath)) {
+        filePath = networkPath;
+        found = true;
+      }
     }
 
-    const filePath = join(baseDir, ...pathSegments);
+    // 2. ถ้ายังไม่เจออีก ให้ลองหาที่ไดรฟ์ Z: (เผื่อมีการ Map Drive ไว้)
+    if (!found) {
+      const mappedPath = join(mappedBase, ...pathSegments);
+      if (existsSync(mappedPath)) {
+        filePath = mappedPath;
+        found = true;
+      }
+    }
 
-    // Security check: ensure the file is within the allowed base directory
-    if (!filePath.toLowerCase().startsWith(baseDir.toLowerCase())) {
+    if (!found) {
+      console.log(`❌ Not found anywhere:`);
+      console.log(`   - Local: ${join(localBase, ...pathSegments)}`);
+      console.log(`   - Network: ${join(networkBase, ...pathSegments)}`);
+      console.log(`   - Mapped (Z:): ${join(mappedBase, ...pathSegments)}`);
+      return new NextResponse('File not found', { status: 404 });
+    }
+
+    // Security check: ensure the file is within allowed directories
+    const normalizedPath = filePath.toLowerCase();
+    const isAllowed = normalizedPath.startsWith(localBase.toLowerCase()) || 
+                      normalizedPath.startsWith(networkBase.toLowerCase()) ||
+                      normalizedPath.startsWith(mappedBase.toLowerCase()) ||
+                      normalizedPath.startsWith("\\\\192.168.6.118");
+
+    if (!isAllowed) {
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const fileBuffer = await readFile(filePath);
+    const fileBuffer = readFileSync(filePath);
     
     // Determine content type based on extension
     const ext = filePath.split('.').pop()?.toLowerCase();

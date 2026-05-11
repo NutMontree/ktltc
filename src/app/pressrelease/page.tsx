@@ -12,6 +12,8 @@ interface NewsItem {
   title: string;
   category: string;
   images?: string[];
+  announcementImages?: string[];
+  thumbnails?: string[];
   content?: string;
   createdAt: string;
   userName?: string;
@@ -92,9 +94,14 @@ export default async function PressRelease() {
                 className="group flex flex-col rounded-2xl overflow-hidden border border-zinc-100 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full dark:bg-zinc-900 dark:border-zinc-800"
               >
                 <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {((news.images?.[0] && (/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(news.images[0]) || news.images[0].includes('video'))) || (news.images?.[0] && !/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(news.images[0]))) ? (
+                  {(
+                    (news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0]) && (
+                      /\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0] || "") || 
+                      (news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0] || "").includes('video')
+                    )
+                  ) ? (
                     <video
-                      src={news.images[0]}
+                      src={news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0]}
                       className="w-full h-full object-cover object-top"
                       muted
                       playsInline
@@ -103,7 +110,7 @@ export default async function PressRelease() {
                     />
                   ) : (
                     <Image
-                      src={news.images?.[0] || "/no-image.png"}
+                      src={news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0] || "/no-image.png"}
                       alt={news.title}
                       unoptimized
                       fill

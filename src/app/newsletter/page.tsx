@@ -13,6 +13,7 @@ interface NewsItem {
   categories?: string[];
   images?: string[];
   announcementImages?: string[];
+  thumbnails?: string[];
   createdAt: string;
   userName?: string;
   userImage?: string | null;
@@ -79,11 +80,13 @@ export default async function NewsletterPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {newsletters.map((news, index) => {
                 const coverImage =
-                  news.announcementImages && news.announcementImages.length > 0
-                    ? news.announcementImages[0]
-                    : news.images && news.images.length > 0
-                      ? news.images[0]
-                      : "/no-image.png";
+                  news.thumbnails && news.thumbnails.length > 0
+                    ? news.thumbnails[0]
+                    : news.announcementImages && news.announcementImages.length > 0
+                      ? news.announcementImages[0]
+                      : news.images && news.images.length > 0
+                        ? news.images[0]
+                        : "/no-image.png";
 
                 return (
                   <Link

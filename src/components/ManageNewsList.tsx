@@ -402,6 +402,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
           {displayedNews.map((news, index) => {
             const displayImage =
+              news.thumbnails?.[0] ||
               news.images?.[0] ||
               news.announcementImages?.[0] ||
               "/no-image.png";
@@ -531,6 +532,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
         <div className="flex flex-col gap-2">
           {displayedNews.map((news, index) => {
             const displayImage =
+              news.thumbnails?.[0] ||
               news.images?.[0] ||
               news.announcementImages?.[0] ||
               "/no-image.png";

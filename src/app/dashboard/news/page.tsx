@@ -33,6 +33,7 @@ async function getNews(): Promise<NewsItem[]> {
         categories: 1,
         images: 1,
         announcementImages: 1,
+        thumbnails: 1,
         createdAt: 1,
         author: 1,
         userName: 1,
