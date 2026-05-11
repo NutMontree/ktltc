@@ -157,10 +157,19 @@ export async function GET() {
         });
         cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
 
-        // Disk stats fallback (Simple mock or use simplified logic)
-        serverTotalMB = 0; 
-        serverUsedMB = 0;
-        serverAvailableMB = 0;
+        // Get real disk stats for Z: drive (Lenovo)
+        const fs = require("fs");
+        if (fs.statfsSync) {
+          const stats = fs.statfsSync("Z:");
+          serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
+          serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
+          serverUsedMB = serverTotalMB - serverAvailableMB;
+        } else {
+          // Fallback if statfsSync is not available
+          serverTotalMB = storageLimitMB; // Use limit as fallback total
+          serverUsedMB = Math.round(totalBytes / (1024 * 1024));
+          serverAvailableMB = Math.max(0, serverTotalMB - serverUsedMB);
+        }
       } catch (diskErr) {
         console.error("Infrastructure Telemetry Check Error:", diskErr);
       }
