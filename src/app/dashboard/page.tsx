@@ -199,7 +199,7 @@ export default function DashboardLoader() {
 
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
           {/* --- Statistics Section --- */}
-          {((session?.user as any)?.role === "super_admin" || permissions?.manage_users) && (
+          {(["super_admin", "admin", "editor"].includes(((session?.user as any)?.role || "").toLowerCase()) || permissions?.access_dashboard) && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">

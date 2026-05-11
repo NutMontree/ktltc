@@ -37,8 +37,15 @@ async function getNavItems() {
       .toArray();
 
     if (!items || items.length === 0) {
-      console.warn("⚠️ [Navbar] No nav items found in database");
-      return [];
+      console.warn("⚠️ [Navbar] No nav items found in database. Using fallback menu.");
+      // สร้างข้อมูลเมนูสำรองให้ตรงกับ Type NavItem (title, url)
+      return [
+        { _id: "f1", title: "หน้าแรก", url: "/", order: 1, label: "หน้าแรก", path: "/" },
+        { _id: "f2", title: "ข่าวประชาสัมพันธ์", url: "/news", order: 2, label: "ข่าวประชาสัมพันธ์", path: "/news" },
+        { _id: "f3", title: "ข้อมูลพื้นฐาน", url: "/about", order: 3, label: "ข้อมูลพื้นฐาน", path: "/about" },
+        { _id: "f4", title: "บุคลากร", url: "/personnel", order: 4, label: "บุคลากร", path: "/personnel" },
+        { _id: "f5", title: "ติดต่อเรา", url: "/contact", order: 5, label: "ติดต่อเรา", path: "/contact" },
+      ] as MenuItem[];
     }
 
     // แปลงข้อมูลและสร้างโครงสร้างแบบ Tree (Parent-Children)

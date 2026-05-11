@@ -20,6 +20,10 @@ import {
   Check,
   Home,
   HardDrive,
+  ClipboardList,
+  Clock,
+  CalendarCheck,
+  Settings,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
@@ -469,9 +473,34 @@ export default function NavbarClient({
                                   ภาพรวมลงเวลาบุคลากร
                                 </Link>
                               )}
+                              {isSuperAdmin && (
+                                <Link href="/dashboard/data-management" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                  <ClipboardList size={14} className="opacity-40" /> ข้อมูลลงเวลา
+                                </Link>
+                              )}
                               {(isSuperAdmin || canManageAttendanceReport) && (
                                 <Link href="/attendance-report" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
-                                  <FileText size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
+                                  <Clock size={14} className="opacity-40" /> ออกรายงานสรุป
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageAttendanceWorkReports) && (
+                                <Link href="/work-reports" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                  <FileText size={14} className="opacity-40" /> ตรวจสอบรายงานงาน
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
+                                <Link href="/leave-approvals" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                  <CalendarCheck size={14} className="opacity-40" /> อนุมัติใบลา
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageRolesAdvanced) && (
+                                <Link href="/manage-roles" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                  <UserCog size={14} className="opacity-40" /> กำหนดบทบาท
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageAttendanceSettings) && (
+                                <Link href="/attendance-settings" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                  <Settings size={14} className="opacity-40" /> ตั้งค่าเวลาเข้างาน
                                 </Link>
                               )}
                             </div>

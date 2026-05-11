@@ -38,6 +38,17 @@ async function getFooterNavItems() {
       .find({})
       .sort({ order: 1 })
       .toArray();
+
+    if (!items || items.length === 0) {
+      console.warn("⚠️ [Footer] No nav items found in database. Using fallback.");
+      return [
+        { _id: "f1", label: "หน้าแรก", path: "/", order: 1, parentId: null },
+        { _id: "f2", label: "ข่าวประชาสัมพันธ์", path: "/news", order: 2, parentId: null },
+        { _id: "f3", label: "ข้อมูลพื้นฐาน", path: "/about", order: 3, parentId: null },
+        { _id: "f4", label: "บุคลากร", path: "/personnel", order: 4, parentId: null },
+        { _id: "f5", label: "ติดต่อเรา", path: "/contact", order: 5, parentId: null },
+      ] as NavItem[];
+    }
     return JSON.parse(JSON.stringify(items)) as NavItem[];
   } catch (error) {
     console.error("Error fetching footer nav:", error);
