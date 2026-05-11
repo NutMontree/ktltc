@@ -199,7 +199,10 @@ export default function DashboardLoader() {
 
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
           {/* --- Statistics Section --- */}
-          {(["super_admin", "admin", "editor"].includes(((session?.user as any)?.role || "").toLowerCase()) || permissions?.access_dashboard) && (
+          {(["super_admin", "admin", "editor"].includes(
+            ((session?.user as any)?.role || "").toLowerCase(),
+          ) ||
+            permissions?.access_dashboard) && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">
@@ -360,12 +363,13 @@ export default function DashboardLoader() {
               {permissions?.manage_news && (
                 <ActionCard
                   href="/dashboard/news"
-                  title="จัดการข่าวสาร"
+                  title="จัดการข่าวสาร / ประชาสัมพันธ์"
                   icon={Newspaper}
                   desc="ลงข่าวประชาสัมพันธ์และกิจกรรมล่าสุด"
                   variants={item}
                 />
               )}
+
               {(session?.user as any)?.role === "super_admin" || permissions?.manage_home ? (
                 <ActionCard
                   href="/dashboard/manage-home"
@@ -419,7 +423,7 @@ export default function DashboardLoader() {
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 flex items-center gap-4">
-                  <Shield className="w-4 h-4" /> ระบบจัดการ (Super Admin)
+                  <Shield className="w-4 h-4" /> ระบบจัดการข้อมูล
                   <span className="h-px bg-sky-500/10 flex-1" />
                 </h2>
                 <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
@@ -430,63 +434,63 @@ export default function DashboardLoader() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 <ActionCard
                   href="/dashboard/permissions"
-                  title="จัดการสิทธิ์"
+                  title="จัดการสิทธิ์การเข้าถึงเมนูและฟังก์ชันต่างๆ"
                   icon={Shield}
                   desc="กำหนดสิทธิ์การเข้าถึงแยกตามรายบุคคล"
                   variants={item}
                 />
                 <ActionCard
                   href="/dashboard/data-management"
-                  title="ข้อมูลลงเวลา"
+                  title="แก้ไขข้อมูลการลงเวลา"
                   icon={ClipboardList}
                   desc="ตรวจสอบและแก้ไขข้อมูลการเข้า-ออกงาน"
                   variants={item}
                 />
                 <ActionCard
                   href="/work-reports-management"
-                  title="จัดการรายงานงาน"
+                  title="แก้ไขรายงานการปฏิบัติงาน"
                   icon={FileText}
                   desc="บริหารจัดการข้อมูลรายงานการปฏิบัติงาน"
                   variants={item}
                 />
                 <ActionCard
                   href="/attendance-dashboard"
-                  title="ภาพรวมบุคลากร"
+                  title="ภาพรวมการเข้างาน"
                   icon={CalendarCheck}
                   desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
                   variants={item}
                 />
                 <ActionCard
                   href="/attendance-report"
-                  title="ออกรายงานสรุป"
+                  title="รายงานการเข้างาน"
                   icon={Clock}
                   desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
                   variants={item}
                 />
                 <ActionCard
                   href="/work-reports"
-                  title="ตรวจสอบรายงาน"
+                  title="รายงานการปฏิบัติงาน"
                   icon={FileText}
                   desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
                   variants={item}
                 />
                 <ActionCard
                   href="/leave-approvals"
-                  title="อนุมัติใบลา"
+                  title="อนุมัติการลางาน"
                   icon={CalendarCheck}
                   desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
                   variants={item}
                 />
                 <ActionCard
                   href="/manage-roles"
-                  title="กำหนดบทบาท"
+                  title="จัดการ สิทธิ์บุคลากร"
                   icon={UserCog}
                   desc="จัดการระดับผู้ใช้งานและบทบาทหน้าที่"
                   variants={item}
                 />
                 <ActionCard
                   href="/attendance-settings"
-                  title="ตั้งค่าเวลาเข้างาน"
+                  title="ตั้งค่าระบบลงเวลา"
                   icon={Settings}
                   desc="กำหนดตารางเวลาทำงานและเกณฑ์สาย"
                   variants={item}

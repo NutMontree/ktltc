@@ -436,7 +436,7 @@ export default function DataManagementPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-zinc-100 tracking-tight">
-                  ระบบจัดการข้อมูลขั้นสูง
+                  แก้ไขข้อมูลการลงเวลา
                 </h1>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
@@ -608,9 +608,7 @@ export default function DataManagementPage() {
                     <td colSpan={5} className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center gap-3 opacity-30">
                         <Database size={64} className="text-slate-300" />
-                        <span className="text-xl font-black text-slate-400">
-                          ไม่พบข้อมูล
-                        </span>
+                        <span className="text-xl font-black text-slate-400">ไม่พบข้อมูล</span>
                       </div>
                     </td>
                   </tr>
@@ -721,9 +719,7 @@ export default function DataManagementPage() {
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none"
                                   >
                                     <option value="pending">รออนุมัติ</option>
-                                    <option value="approved">
-                                      อนุมัติแล้ว
-                                    </option>
+                                    <option value="approved">อนุมัติแล้ว</option>
                                     <option value="rejected">ปฏิเสธ</option>
                                   </select>
                                 </div>
@@ -784,11 +780,7 @@ export default function DataManagementPage() {
                                   </label>
                                   <input
                                     type="text"
-                                    value={
-                                      editFormData.workPlace ||
-                                      editFormData.studyPlace ||
-                                      ""
-                                    }
+                                    value={editFormData.workPlace || editFormData.studyPlace || ""}
                                     onChange={(e) =>
                                       setEditFormData({
                                         ...editFormData,
@@ -853,8 +845,7 @@ export default function DataManagementPage() {
                                 <span className="text-xs text-slate-400 font-mono mt-1 uppercase tracking-tighter">
                                   {activeTab === "suvery"
                                     ? `ID: ${record.studentId}`
-                                    : record.user?.username ||
-                                      record._id.slice(-8)}
+                                    : record.user?.username || record._id.slice(-8)}
                                 </span>
                               </div>
                             </div>
@@ -865,18 +856,14 @@ export default function DataManagementPage() {
                                 <span className="text-sm sm:text-lg font-black text-slate-700 dark:text-zinc-200 leading-none">
                                   {
                                     formatDateParts(
-                                      activeTab === "attendance"
-                                        ? record.date
-                                        : record.startDate,
+                                      activeTab === "attendance" ? record.date : record.startDate,
                                     ).day
                                   }
                                 </span>
                                 <span className="text-[9px] font-black text-slate-400 uppercase mt-0.5">
                                   {
                                     formatDateParts(
-                                      activeTab === "attendance"
-                                        ? record.date
-                                        : record.startDate,
+                                      activeTab === "attendance" ? record.date : record.startDate,
                                     ).month
                                   }
                                 </span>
@@ -888,9 +875,7 @@ export default function DataManagementPage() {
                                 <span className="text-xs font-bold text-slate-600 dark:text-zinc-300">
                                   {
                                     formatDateParts(
-                                      activeTab === "attendance"
-                                        ? record.date
-                                        : record.startDate,
+                                      activeTab === "attendance" ? record.date : record.startDate,
                                     ).year
                                   }
                                 </span>
@@ -920,9 +905,7 @@ export default function DataManagementPage() {
                               </div>
                             ) : (
                               <div className="flex justify-center">
-                                <span className="text-xs font-bold text-slate-300">
-                                  -
-                                </span>
+                                <span className="text-xs font-bold text-slate-300">-</span>
                               </div>
                             )}
                           </td>
@@ -933,8 +916,7 @@ export default function DataManagementPage() {
                                 record.status === "approved" ||
                                 record.currentStatus === "ทำงานแล้ว"
                                   ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20"
-                                  : record.status === "Late" ||
-                                      record.status === "pending"
+                                  : record.status === "Late" || record.status === "pending"
                                     ? "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:border-amber-500/20"
                                     : "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20"
                               }`}
@@ -981,10 +963,7 @@ export default function DataManagementPage() {
               {loadingMore ? (
                 <Loader2 className="animate-spin" size={18} />
               ) : (
-                <ChevronDown
-                  className="group-hover:translate-y-1 transition-transform"
-                  size={18}
-                />
+                <ChevronDown className="group-hover:translate-y-1 transition-transform" size={18} />
               )}
               โหลดข้อมูลเพิ่มอีก 20 รายการ
             </button>

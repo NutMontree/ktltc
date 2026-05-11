@@ -103,7 +103,7 @@ export default function WorkReportsManagementPage() {
       setLoading(true);
       setPage(1);
     }
-    
+
     try {
       const currentPage = isLoadMore ? page + 1 : 1;
       const res = await fetch(
@@ -173,12 +173,7 @@ export default function WorkReportsManagementPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (
-      !confirm(
-        "คุณแน่ใจหรือไม่ว่าต้องการลบรายงานนี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
-      )
-    )
-      return;
+    if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายงานนี้? การกระทำนี้ไม่สามารถย้อนกลับได้")) return;
     setActionLoading(true);
     try {
       const res = await fetch(`/api/work-report?id=${id}`, {
@@ -242,14 +237,14 @@ export default function WorkReportsManagementPage() {
     }
 
     const data = filteredReports.map((r) => ({
-      "วันที่": new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" }),
+      วันที่: new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" }),
       "ชื่อ-นามสกุล": r.user?.name || "-",
-      "ตำแหน่ง": ROLE_TH[r.user?.role] || r.user?.role || "-",
+      ตำแหน่ง: ROLE_TH[r.user?.role] || r.user?.role || "-",
       "แผนก/สังกัด": r.user?.department || "-",
-      "สรุปงาน": r.summary || "-",
-      "ปัญหาที่พบ": r.problems || "-",
-      "แผนงานวันถัดไป": r.plansNextDay || "-",
-      "จำนวนกิจกรรม": r.activities?.length || 0,
+      สรุปงาน: r.summary || "-",
+      ปัญหาที่พบ: r.problems || "-",
+      แผนงานวันถัดไป: r.plansNextDay || "-",
+      จำนวนกิจกรรม: r.activities?.length || 0,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -257,7 +252,9 @@ export default function WorkReportsManagementPage() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Work Reports");
 
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const finalData = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+    const finalData = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
     saveAs(finalData, `Work_Reports_${startDate}_to_${endDate}.xlsx`);
   };
 
@@ -278,14 +275,8 @@ export default function WorkReportsManagementPage() {
     setEditActivities(editActivities.filter((a) => a.id !== id));
   };
 
-  const updateActivityField = (
-    id: string,
-    field: keyof Activity,
-    value: string,
-  ) => {
-    setEditActivities(
-      editActivities.map((a) => (a.id === id ? { ...a, [field]: value } : a)),
-    );
+  const updateActivityField = (id: string, field: keyof Activity, value: string) => {
+    setEditActivities(editActivities.map((a) => (a.id === id ? { ...a, [field]: value } : a)));
   };
 
   const filteredReports = reports.filter(
@@ -295,7 +286,12 @@ export default function WorkReportsManagementPage() {
   );
 
   if (loading) {
-    return <FullPageLoader message="กำลังรวบรวมรายงานการปฏิบัติงาน..." subtitle="กรุณารอสักครู่ ระบบกำลังจัดเตรียมข้อมูลทั้งหมดเพื่อคุณ" />;
+    return (
+      <FullPageLoader
+        message="กำลังรวบรวมรายงานการปฏิบัติงาน..."
+        subtitle="กรุณารอสักครู่ ระบบกำลังจัดเตรียมข้อมูลทั้งหมดเพื่อคุณ"
+      />
+    );
   }
 
   return (
@@ -309,7 +305,7 @@ export default function WorkReportsManagementPage() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-neutral-100 uppercase tracking-tight">
-                ระบบตรวจสอบและจัดการรายงานผล
+                แก้ไขรายงานการปฏิบัติงาน
               </h1>
               <p className="text-xs text-slate-500 dark:text-neutral-400 font-bold mt-1.5 uppercase tracking-widest opacity-70">
                 Dashboard สำหรับผู้ดูแลระบบ • ตรวจสอบและบริหารจัดการรายงานการปฏิบัติงาน
@@ -322,8 +318,7 @@ export default function WorkReportsManagementPage() {
               onClick={() => fetchReports()}
               className="flex items-center gap-2 px-6 py-3 bg-slate-50 dark:bg-neutral-800 text-slate-800 dark:text-neutral-100 rounded-3xl shadow-sm text-sm font-black hover:bg-slate-100 dark:hover:bg-neutral-700 transition-all active:scale-95 border border-slate-100 dark:border-neutral-700"
             >
-              <Clock size={18} className={loading ? "animate-spin" : ""} />{" "}
-              รีเฟรชข้อมูล
+              <Clock size={18} className={loading ? "animate-spin" : ""} /> รีเฟรชข้อมูล
             </button>
 
             <button
@@ -459,9 +454,7 @@ export default function WorkReportsManagementPage() {
                           size={48}
                           className="text-slate-200 dark:text-neutral-800 mx-auto mb-4"
                         />
-                        <p className="text-slate-400 font-black">
-                          ไม่พบข้อมูลรายงานในช่วงเวลานี้
-                        </p>
+                        <p className="text-slate-400 font-black">ไม่พบข้อมูลรายงานในช่วงเวลานี้</p>
                       </td>
                     </tr>
                   ) : (
@@ -573,10 +566,7 @@ export default function WorkReportsManagementPage() {
               {loadingMore ? (
                 <Loader2 className="animate-spin" size={18} />
               ) : (
-                <ChevronDown
-                  className="group-hover:translate-y-1 transition-transform"
-                  size={18}
-                />
+                <ChevronDown className="group-hover:translate-y-1 transition-transform" size={18} />
               )}
               โหลดข้อมูลเพิ่มอีก {LIMIT} รายการ
             </button>
@@ -621,10 +611,9 @@ export default function WorkReportsManagementPage() {
                       </h2>
                       <p className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-widest mt-1">
                         พนักงาน: {selectedReport.user.name} •{" "}
-                        {new Date(selectedReport.date).toLocaleDateString(
-                          "th-TH",
-                          { timeZone: "Asia/Bangkok" },
-                        )}
+                        {new Date(selectedReport.date).toLocaleDateString("th-TH", {
+                          timeZone: "Asia/Bangkok",
+                        })}
                       </p>
                     </div>
                   </div>
@@ -642,8 +631,7 @@ export default function WorkReportsManagementPage() {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                       <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <Clock size={14} className="text-blue-500" /> Activities
-                        History
+                        <Clock size={14} className="text-blue-500" /> Activities History
                       </h4>
                       <button
                         onClick={addActivity}
@@ -673,11 +661,7 @@ export default function WorkReportsManagementPage() {
                                 placeholder="ชื่อกิจกรรม / งานที่ทำ"
                                 value={act.taskName}
                                 onChange={(e) =>
-                                  updateActivityField(
-                                    act.id,
-                                    "taskName",
-                                    e.target.value,
-                                  )
+                                  updateActivityField(act.id, "taskName", e.target.value)
                                 }
                                 className="w-full bg-transparent border-b-2 border-slate-200 dark:border-neutral-700 py-2 font-bold text-slate-800 dark:text-neutral-100 focus:outline-none focus:border-blue-500 transition-colors"
                               />
@@ -685,25 +669,17 @@ export default function WorkReportsManagementPage() {
                                 placeholder="รายละเอียด (ถ้ามี)"
                                 value={act.detail}
                                 onChange={(e) =>
-                                  updateActivityField(
-                                    act.id,
-                                    "detail",
-                                    e.target.value,
-                                  )
+                                  updateActivityField(act.id, "detail", e.target.value)
                                 }
                                 className="w-full bg-white dark:bg-neutral-900/50 border border-slate-200 dark:border-neutral-700 mt-3 p-3 rounded-2xl text-xs text-slate-600 dark:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500/10 resize-none"
                                 rows={2}
                               />
                             </div>
                             <div className="flex flex-col gap-2">
-                              {(
-                                ["Completed", "In Progress", "Pending"] as const
-                              ).map((s) => (
+                              {(["Completed", "In Progress", "Pending"] as const).map((s) => (
                                 <button
                                   key={s}
-                                  onClick={() =>
-                                    updateActivityField(act.id, "status", s)
-                                  }
+                                  onClick={() => updateActivityField(act.id, "status", s)}
                                   className={`py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${
                                     act.status === s
                                       ? s === "Completed"
@@ -805,9 +781,7 @@ export default function WorkReportsManagementPage() {
                               </button>
                               <button
                                 onClick={() =>
-                                  setEditImages(
-                                    editImages.filter((_, i) => i !== idx),
-                                  )
+                                  setEditImages(editImages.filter((_, i) => i !== idx))
                                 }
                                 className="p-2.5 bg-rose-500/20 hover:bg-rose-500/40 text-rose-200 rounded-xl transition-colors"
                                 title="ลบรูปภาพ"
@@ -820,10 +794,7 @@ export default function WorkReportsManagementPage() {
                       </div>
                     ) : (
                       <div className="py-12 border-2 border-dashed border-slate-100 dark:border-neutral-800 rounded-3xl flex flex-col items-center justify-center gap-3">
-                        <ImageIcon
-                          size={32}
-                          className="text-slate-200 dark:text-neutral-800"
-                        />
+                        <ImageIcon size={32} className="text-slate-200 dark:text-neutral-800" />
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                           ไม่มีรูปภาพแนบมา
                         </p>

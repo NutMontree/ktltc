@@ -23,20 +23,55 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 
 const FEATURE_LABELS: {
-  [key: string]: { label: string; icon: any; color: string; href?: string; isSuperAdminOnly?: boolean };
+  [key: string]: {
+    label: string;
+    icon: any;
+    color: string;
+    href?: string;
+    isSuperAdminOnly?: boolean;
+  };
 } = {
-  access_dashboard: { label: "เข้าสู่ระบบ Dashboard", icon: FiLayout, color: "text-blue-500", href: "/dashboard" },
-  manage_users: { label: "จัดการบัญชี / โปรไฟล์", icon: FiUsers, color: "text-indigo-500", href: "/dashboard/users" },
-  manage_news: { label: "จัดการข่าว / ประชาสัมพันธ์", icon: FiFileText, color: "text-emerald-500", href: "/dashboard/news" },
-  manage_home: { label: "ปรับแต่งหน้าหลัก", icon: FiLayout, color: "text-blue-400", href: "/dashboard/manage-home" },
-  manage_navbar: { label: "จัดการเมนูเว็บไซต์", icon: FiLayers, color: "text-indigo-400", href: "/dashboard/navbar" },
-  manage_pages: { label: "จัดการเนื้อหาหน้าเว็บ", icon: FiLayers, color: "text-sky-500", href: "/dashboard/pages" },
-  manage_qa: { label: "จัดการคำถาม Q&A", icon: FiMessageSquare, color: "text-rose-500", href: "/dashboard/qa" },
+  access_dashboard: {
+    label: "เข้าสู่ระบบ Dashboard",
+    icon: FiLayout,
+    color: "text-blue-500",
+    href: "/dashboard",
+  },
+  manage_news: {
+    label: "จัดการข่าว / ประชาสัมพันธ์",
+    icon: FiFileText,
+    color: "text-emerald-500",
+    href: "/dashboard/news",
+  },
+  manage_home: {
+    label: "ปรับแต่งหน้าหลัก",
+    icon: FiLayout,
+    color: "text-blue-400",
+    href: "/dashboard/manage-home",
+  },
+  manage_navbar: {
+    label: "จัดการเมนูเว็บไซต์",
+    icon: FiLayers,
+    color: "text-indigo-400",
+    href: "/dashboard/navbar",
+  },
+  manage_pages: {
+    label: "จัดการเนื้อหาหน้าเว็บ",
+    icon: FiLayers,
+    color: "text-sky-500",
+    href: "/dashboard/pages",
+  },
+  manage_qa: {
+    label: "จัดการคำถาม Q&A",
+    icon: FiMessageSquare,
+    color: "text-rose-500",
+    href: "/dashboard/questions",
+  },
   manage_system: {
     label: "ระบบจัดการ / สิทธิ์ (SA Only)",
     icon: FiShield,
     color: "text-red-500",
-    href: "/dashboard/permissions",
+    href: "",
     isSuperAdminOnly: true,
   },
 };
@@ -44,13 +79,48 @@ const FEATURE_LABELS: {
 const ADVANCED_FEATURE_LABELS: {
   [key: string]: { label: string; icon: any; color: string; href?: string };
 } = {
-  manage_attendance_dashboard: { label: "ภาพรวมลงเวลา", icon: FiLayout, color: "text-blue-600", href: "/dashboard/attendance" },
-  manage_attendance_report: { label: "รายงานการเข้างาน", icon: FiFileText, color: "text-indigo-600", href: "/dashboard/attendance/reports" },
-  manage_attendance_work_reports: { label: "รายงานปฏิบัติงาน", icon: FiMessageSquare, color: "text-emerald-600", href: "/dashboard/attendance/work-reports" },
-  manage_attendance_leave_approvals: { label: "จัดการอนุมัติใบลา", icon: FiCheckCircle, color: "text-rose-600", href: "/dashboard/attendance/leave-approvals" },
-  manage_attendance_settings: { label: "ตั้งค่าเวลาเข้างาน", icon: FiCalendar, color: "text-amber-600", href: "/dashboard/attendance/settings" },
-  manage_attendance: { label: "รายงานปฏิบัติงาน (WFH)", icon: FiCalendar, color: "text-amber-500", href: "/dashboard/attendance" },
-  manage_roles_advanced: { label: "จัดการสิทธิ์บุคลากร", icon: FiUsers, color: "text-sky-600", href: "/manage-roles" },
+  manage_attendance_dashboard: {
+    label: "ภาพรวมลงเวลา",
+    icon: FiLayout,
+    color: "text-blue-600",
+    href: "/dashboard/attendance",
+  },
+  manage_attendance_report: {
+    label: "รายงานการเข้างาน",
+    icon: FiFileText,
+    color: "text-indigo-600",
+    href: "/dashboard/attendance/reports",
+  },
+  manage_attendance_work_reports: {
+    label: "รายงานปฏิบัติงาน",
+    icon: FiMessageSquare,
+    color: "text-emerald-600",
+    href: "/dashboard/attendance/work-reports",
+  },
+  manage_attendance_leave_approvals: {
+    label: "จัดการอนุมัติใบลา",
+    icon: FiCheckCircle,
+    color: "text-rose-600",
+    href: "/dashboard/attendance/leave-approvals",
+  },
+  manage_attendance_settings: {
+    label: "ตั้งค่าเวลาเข้างาน",
+    icon: FiCalendar,
+    color: "text-amber-600",
+    href: "/dashboard/attendance/settings",
+  },
+  manage_attendance: {
+    label: "รายงานปฏิบัติงาน (WFH)",
+    icon: FiCalendar,
+    color: "text-amber-500",
+    href: "/dashboard/attendance",
+  },
+  manage_roles_advanced: {
+    label: "จัดการสิทธิ์บุคลากร",
+    icon: FiUsers,
+    color: "text-sky-600",
+    href: "/manage-roles",
+  },
 };
 
 export default function PermissionsPage() {
@@ -69,7 +139,7 @@ export default function PermissionsPage() {
   // For Editing Role
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingRole, setEditingRole] = useState(""); // The original ID
-  const [editRoleID, setEditRoleID] = useState("");   // The potentially new ID
+  const [editRoleID, setEditRoleID] = useState(""); // The potentially new ID
   const [editRoleLabel, setEditRoleLabel] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
@@ -98,7 +168,7 @@ export default function PermissionsPage() {
   }, []);
 
   const handleToggle = async (role: string, feature: string) => {
-    if (role === "super_admin") return; 
+    if (role === "super_admin") return;
 
     // คำนวณค่า Permissions ใหม่
     const updatedRolePermissions = {
@@ -131,7 +201,7 @@ export default function PermissionsPage() {
       if (res.ok) {
         toast.success(`อัปเดตสิทธิ์ ${roleLabels[role] || role} สำเร็จ`, {
           duration: 1500,
-          icon: '✅',
+          icon: "✅",
         });
       } else {
         toast.error("ไม่สามารถบันทึกข้อมูลได้");
@@ -223,12 +293,12 @@ export default function PermissionsPage() {
 
     try {
       setIsEditing(true);
-      const payload = { 
-        oldRole: editingRole, 
-        newRole: editRoleID, 
-        label: editRoleLabel 
+      const payload = {
+        oldRole: editingRole,
+        newRole: editRoleID,
+        label: editRoleLabel,
       };
-      
+
       console.log("✏️ [Frontend] Sending PATCH request:", payload);
 
       const res = await fetch("/api/admin/permissions", {
@@ -237,7 +307,9 @@ export default function PermissionsPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json().catch(() => ({ error: "ไม่สามารถอ่านข้อมูลตอบกลับจาก Server ได้" }));
+      const data = await res
+        .json()
+        .catch(() => ({ error: "ไม่สามารถอ่านข้อมูลตอบกลับจาก Server ได้" }));
       console.log("📥 [Frontend] API Response:", { status: res.status, data });
 
       if (res.ok) {
@@ -331,20 +403,20 @@ export default function PermissionsPage() {
 
           <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
             <div className="flex items-center gap-3 mr-4">
-                <Link
-                  href="/dashboard/super-admin"
-                  className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-rose-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
-                >
-                  <FiLayout size={16} />
-                  <span>Super Admin</span>
-                </Link>
-                <Link
-                  href="/manage-roles"
-                  className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-indigo-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
-                >
-                  <FiUsers size={16} />
-                  <span>จัดการรายบุคคล</span>
-                </Link>
+              <Link
+                href="/dashboard/super-admin"
+                className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-rose-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
+              >
+                <FiLayout size={16} />
+                <span>Super Admin</span>
+              </Link>
+              <Link
+                href="/manage-roles"
+                className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-indigo-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
+              >
+                <FiUsers size={16} />
+                <span>จัดการรายบุคคล</span>
+              </Link>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
@@ -385,7 +457,10 @@ export default function PermissionsPage() {
                           key={key}
                           className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
                         >
-                          <Link href={FEATURE_LABELS[key].href || "#"} className="flex flex-col items-center gap-2 group/header cursor-pointer">
+                          <Link
+                            href={FEATURE_LABELS[key].href || "#"}
+                            className="flex flex-col items-center gap-2 group/header cursor-pointer"
+                          >
                             <div
                               className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 ${FEATURE_LABELS[key].color}`}
                             >
@@ -424,7 +499,9 @@ export default function PermissionsPage() {
                                   <FiLock size={10} className="text-blue-600" />
                                 )}
                               </div>
-                              <span className={`font-black text-sm tracking-tight leading-none ${role === "super_admin" ? "text-blue-600 uppercase" : "text-zinc-950 dark:text-white"}`}>
+                              <span
+                                className={`font-black text-sm tracking-tight leading-none ${role === "super_admin" ? "text-blue-600 uppercase" : "text-zinc-950 dark:text-white"}`}
+                              >
                                 {roleLabels[role] || role}
                               </span>
                             </div>
@@ -503,7 +580,10 @@ export default function PermissionsPage() {
                           key={key}
                           className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
                         >
-                          <Link href={ADVANCED_FEATURE_LABELS[key].href || "#"} className="flex flex-col items-center gap-2 group/header cursor-pointer">
+                          <Link
+                            href={ADVANCED_FEATURE_LABELS[key].href || "#"}
+                            className="flex flex-col items-center gap-2 group/header cursor-pointer"
+                          >
                             <div
                               className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 ${ADVANCED_FEATURE_LABELS[key].color}`}
                             >
@@ -539,7 +619,9 @@ export default function PermissionsPage() {
                                   {role}
                                 </span>
                               </div>
-                              <span className={`font-black text-sm tracking-tight leading-none ${role === "super_admin" ? "text-blue-600 uppercase" : "text-zinc-950 dark:text-white"}`}>
+                              <span
+                                className={`font-black text-sm tracking-tight leading-none ${role === "super_admin" ? "text-blue-600 uppercase" : "text-zinc-950 dark:text-white"}`}
+                              >
                                 {roleLabels[role] || role}
                               </span>
                             </div>
@@ -618,7 +700,7 @@ export default function PermissionsPage() {
                   </thead>
                   <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                     {rolesOrder.map((role) => (
-                       <motion.tr
+                      <motion.tr
                         key={role}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -626,22 +708,28 @@ export default function PermissionsPage() {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <span className={`font-bold uppercase tracking-tight text-xs px-3 py-1 rounded-lg ${
-                              role === "super_admin" 
-                                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" 
-                                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
-                            }`}>
+                            <span
+                              className={`font-bold uppercase tracking-tight text-xs px-3 py-1 rounded-lg ${
+                                role === "super_admin"
+                                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                              }`}
+                            >
                               {role}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <span className={`text-sm font-black ${role === "super_admin" ? "text-blue-600" : "text-zinc-900 dark:text-white"}`}>
+                            <span
+                              className={`text-sm font-black ${role === "super_admin" ? "text-blue-600" : "text-zinc-900 dark:text-white"}`}
+                            >
                               {roleLabels[role] || "-"}
                             </span>
                             {isSystemRole(role) && (
-                              <span className="text-[8px] font-black text-blue-500/50 uppercase tracking-widest border border-blue-500/20 px-1.5 rounded-md">System</span>
+                              <span className="text-[8px] font-black text-blue-500/50 uppercase tracking-widest border border-blue-500/20 px-1.5 rounded-md">
+                                System
+                              </span>
                             )}
                           </div>
                         </td>
@@ -732,9 +820,7 @@ export default function PermissionsPage() {
                   <input
                     type="text"
                     value={newRoleID}
-                    onChange={(e) =>
-                      setNewRoleID(e.target.value.toLowerCase().replace(/\s/g, "_"))
-                    }
+                    onChange={(e) => setNewRoleID(e.target.value.toLowerCase().replace(/\s/g, "_"))}
                     className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 transition-all"
                     placeholder="เช่น teacher_admin"
                   />

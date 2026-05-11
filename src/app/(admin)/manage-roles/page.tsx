@@ -78,9 +78,7 @@ export default function ManageRolesPage() {
   const fetchData = async (q = "") => {
     try {
       setLoading(true);
-      const res = await fetch(
-        `/api/admin/users?all=true&search=${q}&_t=${Date.now()}`,
-      );
+      const res = await fetch(`/api/admin/users?all=true&search=${q}&_t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         setUsers(data.users);
@@ -105,11 +103,7 @@ export default function ManageRolesPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const changeRole = async (
-    targetId: string,
-    newRole: string,
-    targetName: string,
-  ) => {
+  const changeRole = async (targetId: string, newRole: string, targetName: string) => {
     try {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
@@ -132,11 +126,7 @@ export default function ManageRolesPage() {
     }
   };
 
-  const changeDepartment = async (
-    targetId: string,
-    newDept: string,
-    targetName: string,
-  ) => {
+  const changeDepartment = async (targetId: string, newDept: string, targetName: string) => {
     try {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
@@ -177,9 +167,7 @@ export default function ManageRolesPage() {
   ];
 
   const getAvatarColor = (id: string) => {
-    const index = id
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const index = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return avatarColors[index % avatarColors.length];
   };
 
@@ -225,8 +213,7 @@ export default function ManageRolesPage() {
 
             <div className="space-y-2">
               <h1 className="text-4xl sm:text-6xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
-                จัดการ{" "}
-                <span className="text-blue-600 italic">สิทธิ์บุคลากร</span>
+                จัดการ <span className="text-blue-600 italic">สิทธิ์บุคลากร</span>
               </h1>
               <p className="text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-[0.2em] text-xs sm:text-sm flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
@@ -236,22 +223,6 @@ export default function ManageRolesPage() {
           </div>
 
           <div className="flex flex-col gap-6 w-full xl:w-auto">
-            <div className="flex items-center gap-3 self-end">
-              <Link
-                href="/dashboard/super-admin"
-                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm"
-              >
-                <LayoutDashboard size={14} className="text-rose-500" />
-                Super Admin
-              </Link>
-              <Link
-                href="/dashboard/permissions"
-                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
-              >
-                <Shield size={14} />
-                Matrix Permissions
-              </Link>
-            </div>
             <div className="w-full xl:w-96 group">
               <div className="relative">
                 <Search
@@ -281,7 +252,7 @@ export default function ManageRolesPage() {
             const isProtected =
               ["super_admin", "admin"].includes(user.role) ||
               (PROTECTED_ROLES.includes(user.role) && !isSuperAdmin);
-            
+
             return (
               <motion.div
                 key={user._id}
@@ -327,9 +298,7 @@ export default function ManageRolesPage() {
                     <div className="relative">
                       <select
                         value={user.role}
-                        onChange={(e) =>
-                          changeRole(user._id, e.target.value, user.name)
-                        }
+                        onChange={(e) => changeRole(user._id, e.target.value, user.name)}
                         disabled={isProtected}
                         className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
@@ -356,29 +325,21 @@ export default function ManageRolesPage() {
                     <div className="relative">
                       <select
                         value={user.department || "ไม่มีสังกัด"}
-                        onChange={(e) =>
-                          changeDepartment(user._id, e.target.value, user.name)
-                        }
+                        onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
                         disabled={isProtected}
                         className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
                         <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                        <option value="ผู้บริหารสถานศึกษา">
-                          ผู้บริหารสถานศึกษา
-                        </option>
+                        <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                         <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                          <option value="งานบริหารทั่วไป">
-                            งานบริหารทั่วไป
-                          </option>
+                          <option value="งานบริหารทั่วไป">งานบริหารทั่วไป</option>
                           <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
                             งานบริหารและพัฒนาทรัพยากรบุคคล
                           </option>
                           <option value="งานการเงิน">งานการเงิน</option>
                           <option value="งานการบัญชี">งานการบัญชี</option>
                           <option value="งานพัสดุ">งานพัสดุ</option>
-                          <option value="งานอาคารสถานที่">
-                            งานอาคารสถานที่
-                          </option>
+                          <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                           <option value="งานทะเบียน">งานทะเบียน</option>
                         </optgroup>
                         <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
@@ -425,9 +386,7 @@ export default function ManageRolesPage() {
                           <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
                             งานพัฒนาหลักสูตรและการจัดการเรียนรู้
                           </option>
-                          <option value="งานวัดผลและประเมินผล">
-                            งานวัดผลและประเมินผล
-                          </option>
+                          <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
                           <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
                             งานวิทยบริการและเทคโนโลยีการศึกษา
                           </option>
@@ -493,9 +452,7 @@ export default function ManageRolesPage() {
               className="py-32 flex flex-col items-center justify-center text-slate-300 dark:text-zinc-800 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[3rem] shadow-inner"
             >
               <Users size={64} className="mb-6 opacity-20" />
-              <p className="font-black text-xl uppercase tracking-tighter">
-                ไม่พบรายชื่อบุคลากร
-              </p>
+              <p className="font-black text-xl uppercase tracking-tighter">ไม่พบรายชื่อบุคลากร</p>
               <p className="text-sm font-bold uppercase tracking-widest mt-2 opacity-50">
                 No Personnel Found in Records
               </p>

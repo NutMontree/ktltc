@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip as RechartsTooltip,
-} from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import {
   Activity,
   Users,
@@ -30,9 +24,7 @@ const MapDashboard = dynamic(() => import("@/components/MapDashboard"), {
     <div className="w-full h-full bg-slate-50 dark:bg-zinc-900 animate-pulse flex items-center justify-center text-slate-400 rounded-3xl border border-dashed border-slate-200 dark:border-zinc-800">
       <div className="flex flex-col items-center gap-3">
         <LucideLoader className="animate-spin text-blue-500" size={32} />
-        <p className="text-[10px] font-black uppercase tracking-widest">
-           กำลังเรียกข้อมูล...
-        </p>
+        <p className="text-[10px] font-black uppercase tracking-widest">กำลังเรียกข้อมูล...</p>
       </div>
     </div>
   ),
@@ -59,9 +51,7 @@ export default function AdminAttendanceDashboard() {
     async function fetchStats() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/attendance/dashboard?date=${selectedDate}&_t=${Date.now()}`,
-        );
+        const res = await fetch(`/api/attendance/dashboard?date=${selectedDate}&_t=${Date.now()}`);
         const json = await res.json();
         if (json.success) {
           setData(json.data);
@@ -121,7 +111,7 @@ export default function AdminAttendanceDashboard() {
                 <Layers size={22} />
               </div>
               <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
-                ระบบข้อมูล <span className="text-blue-600">การเข้างาน</span>
+                ระบบข้อมูล <span className="text-blue-600">ภาพรวมการเข้างาน</span>
               </h1>
             </div>
             <p className="text-slate-400 dark:text-zinc-500 text-[11px] font-black uppercase tracking-[0.25em] pl-1 flex items-center gap-2">
@@ -265,10 +255,7 @@ export default function AdminAttendanceDashboard() {
             <div className="relative z-10 flex-1 flex flex-col justify-between gap-12">
               {loading ? (
                 <div className="flex-1 flex flex-col items-center justify-center gap-5">
-                  <LucideLoader
-                    className="animate-spin text-blue-500"
-                    size={48}
-                  />
+                  <LucideLoader className="animate-spin text-blue-500" size={48} />
                   <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">
                     กำลังประมวลผลข้อมูล...
                   </p>
@@ -348,8 +335,7 @@ export default function AdminAttendanceDashboard() {
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{
-                          width:
-                            total > 0 ? `${(d.value / total) * 100}%` : "0%",
+                          width: total > 0 ? `${(d.value / total) * 100}%` : "0%",
                         }}
                         transition={{
                           duration: 1.5,
@@ -381,8 +367,7 @@ export default function AdminAttendanceDashboard() {
 
         <div className="pt-16 pb-8 text-center border-t border-slate-100 dark:border-zinc-900">
           <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.5em] leading-loose">
-            ระบบศูนย์กลางข้อมูล KTL-Hub (Enterprise Edition) <br />©
-            2026 DATACENTER DEPARTMENT
+            ระบบศูนย์กลางข้อมูล KTL-Hub (Enterprise Edition) <br />© 2026 DATACENTER DEPARTMENT
           </p>
         </div>
       </div>

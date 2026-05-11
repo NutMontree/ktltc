@@ -60,7 +60,7 @@ export default async function ManageNewsPage() {
           <div className="w-1.5 self-stretch rounded-full bg-linear-to-b from-blue-500 to-indigo-600 shrink-0 mt-0.5" />
           <div>
             <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">
-              จัดการข่าวสาร
+              จัดการข่าวสาร / ประชาสัมพันธ์
             </h1>
             <p className="text-zinc-400 dark:text-zinc-500 mt-1 text-sm flex items-center gap-2">
               ข่าวประชาสัมพันธ์ทั้งหมด
@@ -76,7 +76,12 @@ export default async function ManageNewsPage() {
           className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all text-sm"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           เพิ่มข่าวใหม่
         </Link>

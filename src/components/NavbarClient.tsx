@@ -24,14 +24,15 @@ import {
   Clock,
   CalendarCheck,
   Settings,
+  Newspaper,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
 /**
  * NavbarClient.tsx: คอมโพเนนต์แถบเมนูฝั่ง Client (จัดการ UI และ Interaction)
- * 
- * หน้าที่: 
- * 1. แสดงผลแถบเมนูหลัก (Desktop & Mobile) พร้อมแอนิเมชันเมื่อ Scroll
+ *
+ * หน้าที่:
+ * 1. แสดงผลแถบเมนูลัด (Desktop & Mobile) พร้อมแอนิเมชันเมื่อ Scroll
  * 2. จัดการเมนู Dropdown ของผู้ใช้ (User Profile, Dashboard, Logout)
  * 3. ตรวจสอบสิทธิ์ (Permissions) เพื่อแสดง/ซ่อนรายการเมนูตามบทบาทของผู้ใช้
  * 4. รองรับการติดตั้ง Web App (PWA - Progressive Web App) ผ่าน deferredPrompt
@@ -87,15 +88,24 @@ export default function NavbarClient({
    */
   const getRoleDisplayName = (r: string) => {
     switch (r) {
-      case "super_admin": return "ผู้ดูแลระบบสูงสุด";
-      case "admin": return "ผู้ดูแลระบบ";
-      case "editor": return "บรรณาธิการ";
-      case "hr": return "บุคลากร";
-      case "director": return "ผู้อำนวยการ";
-      case "staff": return "เจ้าหน้าที่";
-      case "user": return "สมาชิก";
-      case "student": return "นักเรียน";
-      default: return r ? r.replace("_", " ") : "Member";
+      case "super_admin":
+        return "ผู้ดูแลระบบสูงสุด";
+      case "admin":
+        return "ผู้ดูแลระบบ";
+      case "editor":
+        return "บรรณาธิการ";
+      case "hr":
+        return "บุคลากร";
+      case "director":
+        return "ผู้อำนวยการ";
+      case "staff":
+        return "เจ้าหน้าที่";
+      case "user":
+        return "สมาชิก";
+      case "student":
+        return "นักเรียน";
+      default:
+        return r ? r.replace("_", " ") : "Member";
     }
   };
 
@@ -105,24 +115,46 @@ export default function NavbarClient({
   // ใช้ค่าจากฐานข้อมูล (permissions) ถ้าไม่มีให้ใช้ระบบตรวจสอบตาม Role พื้นฐาน
   const canAccessDashboard =
     permissions?.access_dashboard ??
-    ["admin", "editor", "super_admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"]
-    .includes(role?.toLowerCase() || "");
+    [
+      "admin",
+      "editor",
+      "super_admin",
+      "hr",
+      "director",
+      "deputy_resource",
+      "deputy_strategy",
+      "deputy_academic",
+      "deputy_student_affairs",
+    ].includes(role?.toLowerCase() || "");
 
   const canManageUsers = permissions?.manage_users ?? role?.toLowerCase() === "super_admin";
-  const canManageNews = permissions?.manage_news ?? ["super_admin", "admin", "editor"].includes(role?.toLowerCase() || "");
-  const canManageAttendance = permissions?.manage_attendance ?? ["super_admin", "hr", "director"].includes(role?.toLowerCase() || "");
+  const canManageNews =
+    permissions?.manage_news ??
+    ["super_admin", "admin", "editor"].includes(role?.toLowerCase() || "");
+  const canManageAttendance =
+    permissions?.manage_attendance ??
+    ["super_admin", "hr", "director"].includes(role?.toLowerCase() || "");
   const canManageSystem = permissions?.manage_system ?? role?.toLowerCase() === "super_admin";
-  const canManageQA = permissions?.manage_qa ?? ["super_admin", "admin"].includes(role?.toLowerCase() || "");
-  const canManagePages = permissions?.manage_pages ?? ["super_admin", "editor", "teacher", "janitor", "staff"].includes(role?.toLowerCase() || "");
+  const canManageQA =
+    permissions?.manage_qa ?? ["super_admin", "admin"].includes(role?.toLowerCase() || "");
+  const canManagePages =
+    permissions?.manage_pages ??
+    ["super_admin", "editor", "teacher", "janitor", "staff"].includes(role?.toLowerCase() || "");
   const canManageHome = permissions?.manage_home ?? role?.toLowerCase() === "super_admin";
   const canManageNavbar = permissions?.manage_navbar ?? role?.toLowerCase() === "super_admin";
 
-  const canManageAttendanceDashboard = permissions?.manage_attendance_dashboard ?? role?.toLowerCase() === "super_admin";
-  const canManageAttendanceReport = permissions?.manage_attendance_report ?? role?.toLowerCase() === "super_admin";
-  const canManageAttendanceWorkReports = permissions?.manage_attendance_work_reports ?? role?.toLowerCase() === "super_admin";
-  const canManageAttendanceLeaveApprovals = permissions?.manage_attendance_leave_approvals ?? role?.toLowerCase() === "super_admin";
-  const canManageAttendanceSettings = permissions?.manage_attendance_settings ?? role?.toLowerCase() === "super_admin";
-  const canManageRolesAdvanced = permissions?.manage_roles_advanced ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceDashboard =
+    permissions?.manage_attendance_dashboard ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceReport =
+    permissions?.manage_attendance_report ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceWorkReports =
+    permissions?.manage_attendance_work_reports ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceLeaveApprovals =
+    permissions?.manage_attendance_leave_approvals ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceSettings =
+    permissions?.manage_attendance_settings ?? role?.toLowerCase() === "super_admin";
+  const canManageRolesAdvanced =
+    permissions?.manage_roles_advanced ?? role?.toLowerCase() === "super_admin";
 
   const isSuperAdmin = role?.toLowerCase() === "super_admin";
   const isAdmin = role?.toLowerCase() === "admin";
@@ -151,7 +183,10 @@ export default function NavbarClient({
     // ปิดเมนูเมื่อคลิกนอกพื้นที่ (Click Outside)
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest(".desktop-menu-container") && !target.closest(".user-dropdown-container")) {
+      if (
+        !target.closest(".desktop-menu-container") &&
+        !target.closest(".user-dropdown-container")
+      ) {
         setActiveMenuId(null);
         setIsUserDropdownOpen(false);
       }
@@ -357,7 +392,14 @@ export default function NavbarClient({
                 >
                   <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
                     {image ? (
-                      <Image src={image} alt={username || "User"} fill sizes="36px" priority className="object-cover" />
+                      <Image
+                        src={image}
+                        alt={username || "User"}
+                        fill
+                        sizes="36px"
+                        priority
+                        className="object-cover"
+                      />
                     ) : (
                       <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
                         {(username || "U").charAt(0)}
@@ -365,30 +407,41 @@ export default function NavbarClient({
                     )}
                   </div>
                   <div className="text-left hidden lg:block overflow-hidden">
-                    <p className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+                    <p
+                      className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}
+                    >
                       {displayRole}
                     </p>
                     <p className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px]">
                       {username}
                     </p>
                   </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 hidden lg:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 hidden lg:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
+                  />
                 </button>
 
                 {/* เมนู Dropdown สำหรับผู้ใช้ (User Dropdown Menu) */}
                 <div
                   className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${
-                    isUserDropdownOpen ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60" : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                    isUserDropdownOpen
+                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
+                      : "opacity-0 translate-y-3 scale-95 pointer-events-none"
                   }`}
                 >
                   <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] overflow-hidden w-72 ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
-                    
                     {/* ข้อมูลสรุปผู้ใช้ด้านบนสุด (Profile Header) */}
                     <div className="p-5 bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800/60">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                           {image ? (
-                            <Image src={image} alt={username || "User"} width={48} height={48} className="w-full h-full object-cover" />
+                            <Image
+                              src={image}
+                              alt={username || "User"}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-lg font-black">
                               {(username || "U").charAt(0)}
@@ -396,7 +449,9 @@ export default function NavbarClient({
                           )}
                         </div>
                         <div className="overflow-hidden">
-                          <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest mb-1 inline-block ${isSuperAdmin ? "bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400" : isAdmin ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"}`}>
+                          <span
+                            className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest mb-1 inline-block ${isSuperAdmin ? "bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400" : isAdmin ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"}`}
+                          >
                             {displayRole}
                           </span>
                           <h3 className="text-[15px] font-black text-zinc-900 dark:text-white leading-none truncate">
@@ -405,10 +460,16 @@ export default function NavbarClient({
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <Link href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all">
+                        <Link
+                          href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
+                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all"
+                        >
                           <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
                         </Link>
-                        <button onClick={handleLogout} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all">
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all"
+                        >
                           <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
                         </button>
                       </div>
@@ -420,13 +481,43 @@ export default function NavbarClient({
                         <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
                           <Command className="w-3 h-3" /> เมนูหลัก
                         </h4>
-                        <Link href="/" className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}>
+
+                        {/* ปุ่มจัดการข่าวสารแบบด่วน (Featured Quick Action) */}
+                        {canManageNews && (
+                          <Link
+                            href="/dashboard/news"
+                            className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                          >
+                            <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform duration-500">
+                              <Newspaper size={48} strokeWidth={1.5} />
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-md shadow-inner">
+                              <Newspaper size={20} />
+                            </div>
+                            <div className="relative z-10">
+                              <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">
+                                Content Center
+                              </p>
+                              <h4 className="text-sm font-black uppercase tracking-tight">
+                                จัดการข่าวสาร / ประชาสัมพันธ์
+                              </h4>
+                            </div>
+                          </Link>
+                        )}
+
+                        <Link
+                          href="/"
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
                           <Home className="w-5 h-5" /> หน้าแรก
                         </Link>
 
                         <div className="space-y-0.5">
                           {canAccessDashboard && (
-                            <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group">
+                            <Link
+                              href="/dashboard"
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                            >
                               <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
                                 <Command size={16} />
                               </div>
@@ -434,7 +525,10 @@ export default function NavbarClient({
                             </Link>
                           )}
                           {!["student"].includes(role?.toLowerCase() || "") && (
-                            <Link href="/dashboard/drive" className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group">
+                            <Link
+                              href="/dashboard/drive"
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
+                            >
                               <div className="p-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors shadow-sm">
                                 <HardDrive size={16} />
                               </div>
@@ -445,7 +539,11 @@ export default function NavbarClient({
                       </div>
 
                       {/* ส่วนการจัดการระบบ (Admin & Executive Section) */}
-                      {(canManageAttendance || canManageUsers || canManageSystem || canManageNews || canManageQA) && (
+                      {(canManageAttendance ||
+                        canManageUsers ||
+                        canManageSystem ||
+                        canManageNews ||
+                        canManageQA) && (
                         <div>
                           {!["user", "student"].includes(role?.toLowerCase() || "") && (
                             <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
@@ -459,51 +557,86 @@ export default function NavbarClient({
                               <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
                                 <Shield size={12} /> เฉพาะ Super Admin
                               </p>
-                              <Link href="/dashboard/super-admin" className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all">
+                              <Link
+                                href="/dashboard/super-admin"
+                                className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                              >
                                 <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
                               </Link>
-                              <Link href="/dashboard/permissions" className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all">
+                              <Link
+                                href="/dashboard/permissions"
+                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                              >
                                 <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
                               </Link>
                             </div>
                           )}
 
                           {/* ระบบลงเวลาและรายงาน (Attendance & Reports) */}
-                          {(isSuperAdmin || canManageAttendanceDashboard || canManageAttendanceReport || canManageAttendanceWorkReports || canManageAttendanceLeaveApprovals || canManageRolesAdvanced || canManageAttendanceSettings) && (
+                          {(isSuperAdmin ||
+                            canManageAttendanceDashboard ||
+                            canManageAttendanceReport ||
+                            canManageAttendanceWorkReports ||
+                            canManageAttendanceLeaveApprovals ||
+                            canManageRolesAdvanced ||
+                            canManageAttendanceSettings) && (
                             <div className="space-y-0.5">
                               {(isSuperAdmin || canManageAttendanceDashboard) && (
-                                <Link href="/attendance-dashboard" className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all">
-                                  <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm"><Bell size={14} /></div>
+                                <Link
+                                  href="/attendance-dashboard"
+                                  className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
+                                >
+                                  <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
+                                    <Bell size={14} />
+                                  </div>
                                   ภาพรวมลงเวลาบุคลากร
                                 </Link>
                               )}
                               {isSuperAdmin && (
-                                <Link href="/dashboard/data-management" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                <Link
+                                  href="/dashboard/data-management"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
                                   <ClipboardList size={14} className="opacity-40" /> ข้อมูลลงเวลา
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageAttendanceReport) && (
-                                <Link href="/attendance-report" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                <Link
+                                  href="/attendance-report"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
                                   <Clock size={14} className="opacity-40" /> ออกรายงานสรุป
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageAttendanceWorkReports) && (
-                                <Link href="/work-reports" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                <Link
+                                  href="/work-reports"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
                                   <FileText size={14} className="opacity-40" /> ตรวจสอบรายงานงาน
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
-                                <Link href="/leave-approvals" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                <Link
+                                  href="/leave-approvals"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
                                   <CalendarCheck size={14} className="opacity-40" /> อนุมัติใบลา
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageRolesAdvanced) && (
-                                <Link href="/manage-roles" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                <Link
+                                  href="/manage-roles"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
                                   <UserCog size={14} className="opacity-40" /> กำหนดบทบาท
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageAttendanceSettings) && (
-                                <Link href="/attendance-settings" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all">
+                                <Link
+                                  href="/attendance-settings"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
                                   <Settings size={14} className="opacity-40" /> ตั้งค่าเวลาเข้างาน
                                 </Link>
                               )}
@@ -552,4 +685,3 @@ export default function NavbarClient({
     </div>
   );
 }
-
