@@ -34,6 +34,7 @@ import {
   Move,
   Check,
   CheckSquare,
+  ChevronLeft,
 } from "lucide-react";
 import { uploadFile } from "@/lib/upload";
 import { motion, AnimatePresence } from "framer-motion";
@@ -104,6 +105,7 @@ function DriveContent() {
   const [filterType, setFilterType] = useState<
     "all" | "image" | "video" | "document" | "archive" | "audio" | "other"
   >("all");
+  const [previewFile, setPreviewFile] = useState<DriveItem | null>(null);
 
   const userRole = (session?.user as any)?.role?.toLowerCase();
   const userId = (session?.user as any)?.id;
@@ -569,7 +571,7 @@ function DriveContent() {
   }
 
   return (
-    <div className="mx-auto max-w-[1700px] px-6 py-10 font-['Sarabun'] animate-in fade-in duration-700">
+    <div className="mx-auto max-w-[1600px] px-2 py-10 font-['Sarabun'] animate-in fade-in duration-700">
       {/* Header Section */}
       <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
         <div>
@@ -600,7 +602,7 @@ function DriveContent() {
             />
           </div>
 
-          <div className="h-10 w-[1px] bg-slate-200 dark:bg-zinc-800 hidden md:block mx-1"></div>
+          <div className="h-10 w-px bg-slate-200 dark:bg-zinc-800 hidden md:block mx-1"></div>
 
           {/* View Toggle */}
           <div className="flex items-center rounded-2xl bg-slate-100 p-1.5 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-inner">
@@ -619,21 +621,6 @@ function DriveContent() {
               <ListIcon size={20} />
             </button>
           </div>
-
-          <button
-            onClick={() => {
-              setIsSelectionMode(!isSelectionMode);
-              setSelectedIds(new Set());
-            }}
-            className={`flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-black transition-all ${
-              isSelectionMode
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                : "bg-white text-slate-700 shadow-lg border border-slate-200 dark:bg-zinc-900 dark:text-zinc-200 dark:border-zinc-800"
-            }`}
-          >
-            {isSelectionMode ? <X size={18} /> : <CheckSquare size={18} />}
-            {isSelectionMode ? "ยกเลิกการเลือก" : "เลือกหลายรายการ"}
-          </button>
 
           {(isSuperAdmin || canUploadInCurrentFolder) && (
             <label className="flex cursor-pointer items-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-black text-white shadow-xl shadow-blue-500/30 transition-all hover:bg-blue-700 hover:-translate-y-0.5 active:scale-95">
@@ -677,35 +664,6 @@ function DriveContent() {
           </button>
         </div>
       </div>
-
-      {/* Announcement Section - Modern Style */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8 overflow-hidden rounded-[32px] bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-[1px] shadow-xl shadow-blue-500/20"
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl p-6 md:px-8 rounded-[31px]">
-          <div className="flex items-start gap-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-              <Info size={28} strokeWidth={2.5} />
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight mb-1">
-                อัปเกรดระบบคลังไฟล์งานใหม่! 🚀
-              </h3>
-              <p className="text-sm font-bold text-slate-500 dark:text-zinc-400 leading-relaxed">
-                รองรับการอัปโหลดวิดีโอขนาดใหญ่สูงสุด{" "}
-                <span className="text-blue-600 dark:text-blue-400 font-black">500 MB</span> ต่อครั้ง
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="px-4 py-2 bg-slate-100 dark:bg-zinc-800 rounded-xl text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
-              Updated 2026
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* File Type Filter Tabs */}
       <div className="mb-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
@@ -866,8 +824,8 @@ function DriveContent() {
               <div
                 className={`relative rounded-[24px] flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 ${
                   folder.isCollaborative
-                    ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20"
-                    : "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
+                    ? "bg-linear-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20"
+                    : "bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
                 } ${viewMode === "grid" ? "h-24 w-24" : "h-12 w-12"}`}
               >
                 <Folder
@@ -906,7 +864,9 @@ function DriveContent() {
               </div>
 
               <div className="flex gap-1.5 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl">
-                {(isSuperAdmin || folder.ownerId === userId || (folder.isCollaborative && userRole !== "student")) && (
+                {(isSuperAdmin ||
+                  folder.ownerId === userId ||
+                  (folder.isCollaborative && userRole !== "student")) && (
                   <>
                     <button
                       onClick={() => {
@@ -957,7 +917,10 @@ function DriveContent() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             whileHover={!isSelectionMode ? { scale: 1.02 } : {}}
-            onClick={() => isSelectionMode && toggleSelection(file._id)}
+            onClick={() => {
+              if (isSelectionMode) toggleSelection(file._id);
+              else setPreviewFile(file);
+            }}
             className={`group relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
               selectedIds.has(file._id)
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50 dark:bg-blue-900/10"
@@ -986,14 +949,15 @@ function DriveContent() {
             >
               {renderFilePreview(file)}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <a
-                  href={file.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPreviewFile(file);
+                  }}
                   className="p-3 bg-white text-blue-600 rounded-full shadow-xl hover:scale-110 transition-transform"
                 >
                   <ExternalLink size={20} strokeWidth={3} />
-                </a>
+                </button>
               </div>
             </div>
 
@@ -1035,7 +999,9 @@ function DriveContent() {
                   >
                     <Download size={14} />
                   </a>
-                  {(isSuperAdmin || file.ownerId === userId || (currentFolder?.isCollaborative && userRole !== "student")) && (
+                  {(isSuperAdmin ||
+                    file.ownerId === userId ||
+                    (currentFolder?.isCollaborative && userRole !== "student")) && (
                     <>
                       <button
                         onClick={() => {
@@ -1081,7 +1047,7 @@ function DriveContent() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-6 bg-slate-900/90 backdrop-blur-xl px-8 py-5 rounded-[32px] shadow-2xl border border-white/10 text-white min-w-[400px]"
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-90 flex items-center gap-6 bg-slate-900/90 backdrop-blur-xl px-8 py-5 rounded-[32px] shadow-2xl border border-white/10 text-white min-w-[400px]"
           >
             <div className="flex flex-col border-r border-white/10 pr-6 mr-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-0.5">
@@ -1140,7 +1106,7 @@ function DriveContent() {
       {/* Create Modal - Modern Glass */}
       <AnimatePresence>
         {isCreateModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4">
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -1207,7 +1173,7 @@ function DriveContent() {
       {/* Rename/Edit Modal */}
       <AnimatePresence>
         {isRenameModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4">
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -1274,7 +1240,7 @@ function DriveContent() {
       {/* Move Modal - Premium Picker */}
       <AnimatePresence>
         {isMoveModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -1326,6 +1292,124 @@ function DriveContent() {
                 </button>
               </div>
             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* File Preview Modal */}
+      <AnimatePresence>
+        {previewFile && (
+          <div
+            className="fixed inset-0 z-99999 flex items-center justify-center bg-slate-900/95 backdrop-blur-xl px-4 pt-16 sm:pt-0"
+            onClick={() => setPreviewFile(null)}
+          >
+            {/* Previous Button */}
+            {filteredFiles.findIndex((f) => f._id === previewFile._id) > 0 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const currentIndex = filteredFiles.findIndex((f) => f._id === previewFile._id);
+                  setPreviewFile(filteredFiles[currentIndex - 1]);
+                }}
+                className="absolute left-2 sm:left-6 z-50 p-3 sm:p-4 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all shadow-xl hover:scale-110"
+              >
+                <ChevronLeft size={28} strokeWidth={3} />
+              </button>
+            )}
+
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-6xl h-[85vh] sm:h-[90vh] bg-black/80 rounded-[32px] overflow-hidden shadow-2xl flex flex-col border border-white/10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute top-4 right-4 z-10 flex gap-2">
+                <a
+                  href={previewFile.url}
+                  download={previewFile.name}
+                  className="p-3 bg-white/10 hover:bg-blue-600 text-white rounded-full backdrop-blur-md transition-all shadow-lg"
+                  title="ดาวน์โหลดไฟล์นี้"
+                >
+                  <Download size={20} />
+                </a>
+                <button
+                  onClick={() => setPreviewFile(null)}
+                  className="p-3 bg-white/10 hover:bg-rose-600 text-white rounded-full backdrop-blur-md transition-all shadow-lg"
+                  title="ปิด"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden relative">
+                {previewFile.type?.startsWith("image/") ? (
+                  <img
+                    src={previewFile.url}
+                    alt={previewFile.name}
+                    className="max-w-full max-h-full object-contain rounded-2xl select-none shadow-2xl"
+                  />
+                ) : previewFile.type?.startsWith("video/") ? (
+                  <video
+                    src={previewFile.url}
+                    controls
+                    playsInline
+                    className="max-w-full max-h-full rounded-2xl shadow-2xl w-full"
+                  />
+                ) : previewFile.type?.includes("pdf") ? (
+                  <iframe
+                    src={previewFile.url}
+                    className="w-full h-full rounded-2xl bg-white shadow-2xl"
+                    title={previewFile.name}
+                  />
+                ) : (
+                  <div className="text-center text-white bg-white/5 p-12 rounded-3xl backdrop-blur-sm border border-white/10">
+                    <FileText size={80} className="mx-auto mb-6 opacity-50" />
+                    <h3 className="text-2xl font-black mb-2">{previewFile.name}</h3>
+                    <p className="text-slate-400 mb-8 font-medium">
+                      ระบบไม่สามารถแสดงตัวอย่างไฟล์ประเภทนี้ได้โดยตรง
+                    </p>
+                    <a
+                      href={previewFile.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/50 inline-flex items-center gap-2"
+                    >
+                      <ExternalLink size={18} />
+                      ดาวน์โหลดหรือเปิดในแท็บใหม่
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-5 bg-slate-900 border-t border-slate-800 text-white flex justify-between items-center z-10">
+                <div className="flex flex-col">
+                  <div className="truncate font-black text-base max-w-xl">{previewFile.name}</div>
+                  <div className="text-xs text-slate-400 mt-0.5 font-bold uppercase tracking-wider">
+                    {previewFile.type?.split("/")[1] || "FILE"}
+                  </div>
+                </div>
+                <div className="px-3 py-1.5 bg-slate-800 rounded-lg text-sm text-slate-300 font-bold font-mono">
+                  {formatSize(previewFile.size)}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Next Button */}
+            {filteredFiles.findIndex((f) => f._id === previewFile._id) <
+              filteredFiles.length - 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const currentIndex = filteredFiles.findIndex((f) => f._id === previewFile._id);
+                  setPreviewFile(filteredFiles[currentIndex + 1]);
+                }}
+                className="absolute right-2 sm:right-6 z-50 p-3 sm:p-4 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all shadow-xl hover:scale-110"
+              >
+                <ChevronRight size={28} strokeWidth={3} />
+              </button>
+            )}
           </div>
         )}
       </AnimatePresence>

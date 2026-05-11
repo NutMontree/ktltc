@@ -56,12 +56,26 @@
    ล้างค่าเริ่มต้นของเบราว์เซอร์ และกำหนดฟอนต์หลัก
    ================================================================================= */
 @layer base {
+  :root {
+    /* บังคับ Ant Design ให้ใช้ฟอนต์ Prompt */
+    --ant-font-family: var(--font-prompt), "Inter", sans-serif !important;
+  }
+
   body {
-    font-family: var(--font-prompt), "Inter", sans-serif !important;
     color: var(--color-dark) !important;
     background-color: var(--color-white);
     line-height: 1.5;
     margin: 0;
+  }
+
+  /* บังคับทุก Elements ให้ใช้ฟอนต์ Prompt ยกเว้นไอคอน */
+  html, body, div, span, p, a, h1, h2, h3, h4, h5, h6, button, input, textarea, select {
+    font-family: var(--font-prompt), "Inter", sans-serif;
+  }
+
+  /* ละเว้นไอคอนต่างๆ เพื่อไม่ให้ไอคอนพัง */
+  .anticon, [class^="anticon-"], [class*=" anticon-"], svg {
+    font-family: inherit !important;
   }
 
   /* ตั้งค่าสีพื้นหลังสำหรับ Dark Mode */

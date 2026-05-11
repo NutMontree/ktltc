@@ -384,7 +384,7 @@ export default function NavbarClient({
                     setIsUserDropdownOpen(!isUserDropdownOpen);
                     setActiveMenuId(null);
                   }}
-                  className={`flex items-center gap-3 p-1.5 pr-4 rounded-full border transition-all duration-300 outline-none ${
+                  className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${
                     isUserDropdownOpen
                       ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
                       : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
@@ -406,7 +406,7 @@ export default function NavbarClient({
                       </div>
                     )}
                   </div>
-                  <div className="text-left hidden lg:block overflow-hidden">
+                  <div className="text-left hidden md:block overflow-hidden">
                     <p
                       className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}
                     >
@@ -417,7 +417,7 @@ export default function NavbarClient({
                     </p>
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 hidden lg:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
+                    className={`w-4 h-4 transition-transform duration-300 hidden md:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
                   />
                 </button>
 
