@@ -43,7 +43,7 @@ export async function saveFileLocally(
 
     // 3. ตั้งชื่อไฟล์ใหม่เพื่อป้องกันการซ้ำกัน (Timestamp + Random)
     const filename = `${filenamePrefix}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
-    const uploadDir = join("Z:", folder);
+    const uploadDir = join("\\\\192.168.6.118\\public", folder);
 
     // 4. ตรวจสอบและสร้างโฟลเดอร์หากยังไม่มี
     await mkdir(uploadDir, { recursive: true });

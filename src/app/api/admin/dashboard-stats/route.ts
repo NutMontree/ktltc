@@ -103,16 +103,26 @@ export async function GET() {
         if (isNaN(dbLimitMB)) dbLimitMB = 0;
       }
 
-      // Calculate size of all relevant folders including ktltc_drive on Lenovo (Z:)
-      const publicDir = "Z:";
+      // Calculate size of all relevant folders including ktltc_drive on Lenovo
+      let publicDir = "\\\\192.168.6.118\\public"; 
       const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
       let totalBytes = 0;
 
+      const fs = require("fs");
+      
+      // ตรวจสอบว่า UNC Path เข้าถึงได้ไหม ถ้าไม่ได้ให้ถอยกลับไปใช้ Z:
+      if (!fs.existsSync(publicDir)) {
+        console.warn(`⚠️ UNC Path ${publicDir} not accessible, trying Z: drive...`);
+        publicDir = "Z:";
+      }
+
       const getDirSize = (dirPath: string) => {
-        const fs = require("fs");
         let size = 0;
         try {
-          if (!fs.existsSync(dirPath)) return 0;
+          if (!fs.existsSync(dirPath)) {
+            console.log(`❌ Folder not found: ${dirPath}`);
+            return 0;
+          }
           const files = fs.readdirSync(dirPath);
           for (let i = 0; i < files.length; i++) {
             const filePath = path.join(dirPath, files[i]);
@@ -123,58 +133,79 @@ export async function GET() {
               size += stats.size;
             }
           }
-        } catch (e) {}
+        } catch (e: any) {
+          console.error(`Error reading ${dirPath}:`, e.message);
+        }
         return size;
       };
 
       foldersToMeasure.forEach((folder) => {
-        totalBytes += getDirSize(path.join(publicDir, folder));
+        const folderPath = path.join(publicDir, folder);
+        const folderSize = getDirSize(folderPath);
+        console.log(`📁 Folder ${folder}: ${(folderSize / (1024 * 1024)).toFixed(2)} MB`);
+        totalBytes += folderSize;
       });
       
       storageUsageMB = (totalBytes / (1024 * 1024)).toFixed(2);
 
-      // Get real disk capacity & System stats using 'os' module (Cross-platform)
+      // 4. Get real disk stats and Lenovo Host Info
       try {
         const os = require("os");
-        const totalMem = os.totalmem();
-        const freeMem = os.freemem();
-        const usedMem = totalMem - freeMem;
-        
-        ramUsage = {
-          total: Math.round(totalMem / (1024 * 1024)),
-          used: Math.round(usedMem / (1024 * 1024)),
-          percent: Math.round((usedMem / totalMem) * 100),
-        };
-
-        // CPU Usage fallback for Windows/Linux
-        const cpus = os.cpus();
-        let totalIdle = 0, totalTick = 0;
-        cpus.forEach((cpu: any) => {
-          for (let type in cpu.times) {
-            totalTick += cpu.times[type];
-          }
-          totalIdle += cpu.times.idle;
-        });
-        cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
-
-        // Get real disk stats for Z: drive (Lenovo)
         const fs = require("fs");
+
+        // 4.1 Get Disk Stats (UNC Path or Z:)
         if (fs.statfsSync) {
-          const stats = fs.statfsSync("Z:");
-          serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
-          serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
-          serverUsedMB = serverTotalMB - serverAvailableMB;
-        } else {
-          // Fallback if statfsSync is not available
-          serverTotalMB = storageLimitMB; // Use limit as fallback total
-          serverUsedMB = Math.round(totalBytes / (1024 * 1024));
-          serverAvailableMB = Math.max(0, serverTotalMB - serverUsedMB);
+          try {
+            const stats = fs.statfsSync(publicDir);
+            serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
+            serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
+            serverUsedMB = serverTotalMB - serverAvailableMB;
+          } catch (e) {
+            try {
+              const stats = fs.statfsSync("Z:");
+              serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
+              serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
+              serverUsedMB = serverTotalMB - serverAvailableMB;
+            } catch (zErr) {
+              console.warn("Disk stats failed for both UNC and Z:");
+            }
+          }
         }
-      } catch (diskErr) {
-        console.error("Infrastructure Telemetry Check Error:", diskErr);
+
+        // 4.2 Get CPU & RAM from Lenovo Host (via MongoDB Admin Command)
+        try {
+          const adminDb = db.admin();
+          const hostInfo = await adminDb.command({ hostInfo: 1 });
+          
+          ramUsage = {
+            total: hostInfo.extra.memSizeMB || 0,
+            used: 0, 
+            percent: 0, 
+          };
+
+          cpuUsage = hostInfo.system.cpuAddrSize ? "Connected" : "0";
+        } catch (mongoErr) {
+          console.error("MongoDB HostInfo Error:", mongoErr);
+          // Fallback to PC stats if MongoDB Admin command fails
+          ramUsage = {
+            total: Math.round(os.totalmem() / (1024 * 1024)),
+            used: Math.round((os.totalmem() - os.freemem()) / (1024 * 1024)),
+            percent: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
+          };
+          
+          const cpus = os.cpus();
+          let totalIdle = 0, totalTick = 0;
+          cpus.forEach((cpu: any) => {
+            for (let type in cpu.times) totalTick += cpu.times[type];
+            totalIdle += cpu.times.idle;
+          });
+          cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
+        }
+      } catch (infraErr) {
+        console.error("Infrastructure Check Error:", infraErr);
       }
     } catch (err) {
-      console.error("Local Storage Usage Calculation Error:", err);
+      console.error("General Stats Calculation Error:", err);
     }
 
     return NextResponse.json({

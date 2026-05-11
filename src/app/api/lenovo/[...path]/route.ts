@@ -15,8 +15,8 @@ export async function GET(
     const { path: filePathArray } = await params;
     const filePath = filePathArray.join("/");
     
-    // 2. กำหนดตำแหน่งไฟล์บน Network Drive Z:
-    const fullPath = path.join("Z:", filePath);
+    // 2. กำหนดตำแหน่งไฟล์บน Lenovo Network Drive (UNC Path)
+    const fullPath = path.join("\\\\192.168.6.118\\public", filePath);
 
     // 3. ตรวจสอบว่าไฟล์มีอยู่จริงหรือไม่
     if (!fs.existsSync(fullPath)) {

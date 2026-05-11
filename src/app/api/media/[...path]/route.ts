@@ -9,11 +9,11 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    const { path } = await params;
-    const filePath = join('Z:', ...path);
+    const { path: pathSegments } = await params;
+    const filePath = join("\\\\192.168.6.118\\public", ...pathSegments);
 
-    // Security check: ensure the file is within the Z: drive
-    if (!filePath.toLowerCase().startsWith('z:')) {
+    // Security check: ensure the file is within the Lenovo shared folder
+    if (!filePath.toLowerCase().startsWith('\\\\192.168.6.118\\public')) {
       return new NextResponse('Forbidden', { status: 403 });
     }
 

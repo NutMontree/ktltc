@@ -65,8 +65,8 @@ export async function POST(req: Request) {
     
     const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${ext}`;
     
-    // Ensure we are saving in Lenovo Network Drive Z:
-    const uploadDir = join("Z:", sanitizedFolder);
+    // Ensure we are saving in Lenovo Network Drive (UNC Path)
+    const uploadDir = join("\\\\192.168.6.118\\public", sanitizedFolder);
     
     // Create directory if it doesn't exist
     await mkdir(uploadDir, { recursive: true });
