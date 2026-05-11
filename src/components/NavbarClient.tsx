@@ -42,6 +42,12 @@ interface NavbarClientProps {
     manage_system?: boolean;
     manage_qa?: boolean;
     manage_pages?: boolean;
+    manage_attendance_dashboard?: boolean;
+    manage_attendance_report?: boolean;
+    manage_attendance_work_reports?: boolean;
+    manage_attendance_leave_approvals?: boolean;
+    manage_attendance_settings?: boolean;
+    manage_roles_advanced?: boolean;
   } | null;
 }
 
@@ -119,6 +125,13 @@ export default function NavbarClient({
       role?.toLowerCase() === "teacher" ||
       role?.toLowerCase() === "janitor" ||
       role?.toLowerCase() === "staff");
+
+  const canManageAttendanceDashboard = permissions?.manage_attendance_dashboard ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceReport = permissions?.manage_attendance_report ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceWorkReports = permissions?.manage_attendance_work_reports ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceLeaveApprovals = permissions?.manage_attendance_leave_approvals ?? role?.toLowerCase() === "super_admin";
+  const canManageAttendanceSettings = permissions?.manage_attendance_settings ?? role?.toLowerCase() === "super_admin";
+  const canManageRolesAdvanced = permissions?.manage_roles_advanced ?? role?.toLowerCase() === "super_admin";
 
   const isSuperAdmin = role?.toLowerCase() === "super_admin";
   const isAdmin = role?.toLowerCase() === "admin";
@@ -223,10 +236,12 @@ export default function NavbarClient({
     if (path === "/wfh" && !isStaff) return false;
     if (path === "/dashboard/drive" && !isStaff) return false;
     if (path.startsWith("/dashboard") && !canAccessDashboard) return false;
-    if (path.startsWith("/attendance-dashboard") && !canManageAttendance) return false;
-    if (path.startsWith("/attendance-report") && !canManageAttendance) return false;
-    if (path.startsWith("/leave-approvals") && !canManageAttendance) return false;
-    if (path.startsWith("/work-reports") && !canManageAttendance) return false;
+    if (path.startsWith("/attendance-dashboard") && !canManageAttendanceDashboard) return false;
+    if (path.startsWith("/attendance-report") && !canManageAttendanceReport) return false;
+    if (path.startsWith("/leave-approvals") && !canManageAttendanceLeaveApprovals) return false;
+    if (path.startsWith("/work-reports") && !canManageAttendanceWorkReports) return false;
+    if (path.startsWith("/manage-roles") && !canManageRolesAdvanced) return false;
+    if (path.startsWith("/attendance-settings") && !canManageAttendanceSettings) return false;
     return true;
   });
 
@@ -576,48 +591,60 @@ export default function NavbarClient({
                           )}
 
                           {/* Attendance & Reports */}
-                          {isSuperAdmin && (
+                          {(isSuperAdmin || canManageAttendanceDashboard || canManageAttendanceReport || canManageAttendanceWorkReports || canManageAttendanceLeaveApprovals || canManageRolesAdvanced || canManageAttendanceSettings) && (
                             <div className="space-y-0.5">
-                              <Link
-                                href="/attendance-dashboard"
-                                className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
-                              >
-                                <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
-                                  <Bell size={14} />
-                                </div>
-                                ภาพรวมลงเวลาบุคลากร
-                              </Link>
-                              <Link
-                                href="/attendance-report"
-                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                              >
-                                <FileText size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
-                              </Link>
-                              <Link
-                                href="/work-reports"
-                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                              >
-                                <FileText size={14} className="opacity-40" /> ระบบรายงานปฏิบัติงาน
-                              </Link>
-                              <Link
-                                href="/leave-approvals"
-                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                              >
-                                <FileText size={14} className="opacity-40" /> จัดการอนุมัติใบลา
-                              </Link>
+                              {(isSuperAdmin || canManageAttendanceDashboard) && (
+                                <Link
+                                  href="/attendance-dashboard"
+                                  className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
+                                >
+                                  <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
+                                    <Bell size={14} />
+                                  </div>
+                                  ภาพรวมลงเวลาบุคลากร
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageAttendanceReport) && (
+                                <Link
+                                  href="/attendance-report"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
+                                  <FileText size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageAttendanceWorkReports) && (
+                                <Link
+                                  href="/work-reports"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
+                                  <FileText size={14} className="opacity-40" /> ระบบรายงานปฏิบัติงาน
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
+                                <Link
+                                  href="/leave-approvals"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
+                                  <FileText size={14} className="opacity-40" /> จัดการอนุมัติใบลา
+                                </Link>
+                              )}
                               <div className="my-1.5 border-t border-zinc-100 dark:border-zinc-800/60" />
-                              <Link
-                                href="/manage-roles"
-                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                              >
-                                <UserCog size={14} className="opacity-40" /> จัดการสิทธิ์บุคลากร
-                              </Link>
-                              <Link
-                                href="/attendance-settings"
-                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                              >
-                                <Bell size={14} className="opacity-40" /> ตั้งค่าเวลาเข้างาน
-                              </Link>
+                              {(isSuperAdmin || canManageRolesAdvanced) && (
+                                <Link
+                                  href="/manage-roles"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
+                                  <UserCog size={14} className="opacity-40" /> จัดการสิทธิ์บุคลากร
+                                </Link>
+                              )}
+                              {(isSuperAdmin || canManageAttendanceSettings) && (
+                                <Link
+                                  href="/attendance-settings"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                >
+                                  <Bell size={14} className="opacity-40" /> ตั้งค่าเวลาเข้างาน
+                                </Link>
+                              )}
                             </div>
                           )}
 

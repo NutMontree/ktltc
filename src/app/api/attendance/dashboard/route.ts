@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
-import { auth } from '@/lib/auth';
+import { auth, hasPermission } from '@/lib/auth';
  
 export const dynamic = 'force-dynamic';
  
@@ -10,6 +10,12 @@ export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const role = (session.user as any)?.role;
+    const canAccess = await hasPermission(role, "manage_attendance_dashboard");
+    if (!canAccess) {
+      return NextResponse.json({ error: "Forbidden: No permission for Attendance Dashboard" }, { status: 403 });
+    }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");

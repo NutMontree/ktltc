@@ -28,6 +28,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: true,
     manage_qa: true,
     manage_pages: true,
+    manage_attendance_dashboard: true,
+    manage_attendance_report: true,
+    manage_attendance_work_reports: true,
+    manage_attendance_leave_approvals: true,
+    manage_attendance_settings: true,
+    manage_roles_advanced: true,
   },
   admin: {
     access_dashboard: true,
@@ -37,6 +43,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: true,
     manage_pages: false,
+    manage_attendance_dashboard: false,
+    manage_attendance_report: false,
+    manage_attendance_work_reports: false,
+    manage_attendance_leave_approvals: false,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   editor: {
     access_dashboard: true,
@@ -46,6 +58,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: true,
+    manage_attendance_dashboard: false,
+    manage_attendance_report: false,
+    manage_attendance_work_reports: false,
+    manage_attendance_leave_approvals: false,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   hr: {
     access_dashboard: true,
@@ -55,6 +73,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: false,
+    manage_attendance_dashboard: true,
+    manage_attendance_report: true,
+    manage_attendance_work_reports: true,
+    manage_attendance_leave_approvals: true,
+    manage_attendance_settings: true,
+    manage_roles_advanced: true,
   },
   director: {
     access_dashboard: true,
@@ -64,6 +88,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: false,
+    manage_attendance_dashboard: true,
+    manage_attendance_report: true,
+    manage_attendance_work_reports: true,
+    manage_attendance_leave_approvals: true,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   deputy_resource: {
     access_dashboard: true,
@@ -73,6 +103,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: false,
+    manage_attendance_dashboard: true,
+    manage_attendance_report: true,
+    manage_attendance_work_reports: true,
+    manage_attendance_leave_approvals: true,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   deputy_strategy: {
     access_dashboard: true,
@@ -82,6 +118,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: false,
+    manage_attendance_dashboard: true,
+    manage_attendance_report: true,
+    manage_attendance_work_reports: true,
+    manage_attendance_leave_approvals: true,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   deputy_academic: {
     access_dashboard: true,
@@ -91,6 +133,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: false,
+    manage_attendance_dashboard: true,
+    manage_attendance_report: true,
+    manage_attendance_work_reports: true,
+    manage_attendance_leave_approvals: true,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   deputy_student_affairs: {
     access_dashboard: true,
@@ -100,6 +148,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: false,
+    manage_attendance_dashboard: true,
+    manage_attendance_report: true,
+    manage_attendance_work_reports: true,
+    manage_attendance_leave_approvals: true,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   teacher: {
     access_dashboard: false,
@@ -109,6 +163,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: true,
+    manage_attendance_dashboard: false,
+    manage_attendance_report: false,
+    manage_attendance_work_reports: false,
+    manage_attendance_leave_approvals: false,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   janitor: {
     access_dashboard: false,
@@ -118,6 +178,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: true,
+    manage_attendance_dashboard: false,
+    manage_attendance_report: false,
+    manage_attendance_work_reports: false,
+    manage_attendance_leave_approvals: false,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   staff: {
     access_dashboard: false,
@@ -127,6 +193,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: true,
+    manage_attendance_dashboard: false,
+    manage_attendance_report: false,
+    manage_attendance_work_reports: false,
+    manage_attendance_leave_approvals: false,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   student: {
     access_dashboard: false,
@@ -136,6 +208,12 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: true,
+    manage_attendance_dashboard: false,
+    manage_attendance_report: false,
+    manage_attendance_work_reports: false,
+    manage_attendance_leave_approvals: false,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   },
   user: {
     access_dashboard: false,
@@ -145,19 +223,31 @@ const DEFAULT_PERMISSIONS = {
     manage_system: false,
     manage_qa: false,
     manage_pages: false,
+    manage_attendance_dashboard: false,
+    manage_attendance_report: false,
+    manage_attendance_work_reports: false,
+    manage_attendance_leave_approvals: false,
+    manage_attendance_settings: false,
+    manage_roles_advanced: false,
   }
 };
 
 export async function GET() {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role;
-    if (!session || (userRole !== "super_admin" && userRole !== "admin")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const userRole = (session?.user as any)?.role;
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+
+    // Check dynamic permissions
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
+
+    if (!canManageSystem) {
+      return NextResponse.json({ error: "Forbidden: No permission for System Management" }, { status: 403 });
+    }
     
     // Sort DB roles by createdAt descending (newest first)
     const dbPermissions = await db.collection("role_permissions")
@@ -233,15 +323,20 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    if (!session || (session.user as any)?.role !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const userRole = (session?.user as any)?.role;
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
+
+    if (!session || !canManageSystem) {
+      return NextResponse.json({ error: "Unauthorized: No permission for System Management" }, { status: 403 });
     }
 
     const body = await req.json();
     console.log("🛠️ [API] PATCH Request Body:", JSON.stringify(body, null, 2));
     
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // Case 1: Individual Role Rename/Update
     if (body.oldRole !== undefined && body.newRole !== undefined) {
@@ -347,8 +442,15 @@ export async function PATCH(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || (session.user as any)?.role !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const userRole = (session?.user as any)?.role;
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
+
+    if (!session || !canManageSystem) {
+      return NextResponse.json({ error: "Unauthorized: No permission for System Management" }, { status: 403 });
     }
 
     const { role, label } = await req.json();
@@ -356,9 +458,6 @@ export async function POST(req: Request) {
     if (!role || !label) {
       return NextResponse.json({ error: "Role and Label are required" }, { status: 400 });
     }
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // Check if role exists
     const existing = await db.collection("role_permissions").findOne({ role });
@@ -394,8 +493,15 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    if (!session || (session.user as any)?.role !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const userRole = (session?.user as any)?.role;
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
+
+    if (!session || !canManageSystem) {
+      return NextResponse.json({ error: "Unauthorized: No permission for System Management" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -410,9 +516,6 @@ export async function DELETE(req: Request) {
     if (SYSTEM_PROTECTED_ROLES.includes(role)) {
       return NextResponse.json({ error: "ไม่สามารถลบบทบาทระบบหลัก (super_admin/admin) ได้" }, { status: 400 });
     }
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
     const result = await db.collection("role_permissions").deleteOne({ role });
 
     if (result.deletedCount > 0) {

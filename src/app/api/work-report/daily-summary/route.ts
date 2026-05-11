@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role;
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_director", "editor"];
-    if (!allowedRoles.includes(userRole)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const userRole = (session?.user as any)?.role;
+    const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
+    if (!canAccess) {
+      return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);

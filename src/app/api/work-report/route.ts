@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 import { saveFileLocally } from "@/lib/upload-server";
 import { deleteFileFromUrl } from "@/lib/file-utils";
@@ -31,16 +31,9 @@ export async function GET(req: Request) {
 
     // Case 1: Fetch all reports for a date range (Admin only)
     if (startDateParam && endDateParam) {
-      const allowedRoles = [
-        "super_admin",
-        "admin",
-        "hr",
-        "director",
-        "deputy_director",
-        "editor",
-      ];
-      if (!allowedRoles.includes(userRole)) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
+      if (!canAccess) {
+        return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
       }
 
       const matchStage: any = {
@@ -270,8 +263,9 @@ export async function PATCH(req: Request) {
     if (!existingReport) return NextResponse.json({ error: "Report not found" }, { status: 404 });
 
     const isOwner = (existingReport.userId as ObjectId).toString() === userId;
+    const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
 
-    if (!isOwner && userRole !== "super_admin") {
+    if (!isOwner && !canAccess) {
       return NextResponse.json({ error: "Forbidden: Not authorized to edit this report" }, { status: 403 });
     }
 
@@ -317,8 +311,9 @@ export async function DELETE(req: Request) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role;
-    if (userRole !== "super_admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
+    if (!canAccess) {
+      return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);

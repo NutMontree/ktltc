@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 
 const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
 const ALLOWED_ADMIN_ROLES = [
@@ -80,10 +79,13 @@ export async function PATCH(
 
     const currentUserRole = String((session.user as any)?.role || "").toLowerCase().trim();
     const isSuperAdmin = currentUserRole === "super_admin";
+    
+    // Check dynamic permissions
+    const canManageRoles = await hasPermission(currentUserRole, "manage_roles_advanced");
  
     // 🔒 Ensure the current user has administrative permissions
-    if (!ALLOWED_ADMIN_ROLES.includes(currentUserRole)) {
-      return NextResponse.json({ error: "Access Denied: Administrative role required." }, { status: 403 });
+    if (!canManageRoles && !isSuperAdmin) {
+      return NextResponse.json({ error: "Access Denied: No permission for Role Management." }, { status: 403 });
     }
  
     // 🚫 Check if target user has a protected role and current user is NOT super_admin
@@ -158,9 +160,13 @@ export async function DELETE(
   try {
     const session = await auth();
     const currentUserRole = (session?.user as any)?.role;
+    const isSuperAdmin = currentUserRole === "super_admin";
 
-    if (!session || currentUserRole !== "super_admin") {
-      return NextResponse.json({ error: "Access Denied: Only Super Admins can delete users." }, { status: 403 });
+    // Check dynamic permissions
+    const canManageRoles = await hasPermission(currentUserRole, "manage_roles_advanced");
+
+    if (!session || (!isSuperAdmin && !canManageRoles)) {
+      return NextResponse.json({ error: "Access Denied: Permission for Role Management required." }, { status: 403 });
     }
 
     const { id } = await params;

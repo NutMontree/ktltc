@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
 export async function GET(req: Request) {
   try {
     const session = await auth();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const userRole = (session?.user as any)?.role;
-    if (!session || userRole !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    const canAccess = await hasPermission(userRole, "manage_attendance_leave_approvals");
+    if (!canAccess) {
+      return NextResponse.json({ error: "Forbidden: No permission for Leave Approvals" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -63,11 +66,14 @@ export async function GET(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const userRole = (session?.user as any)?.role;
     const adminId = (session?.user as any)?.id;
     
-    if (!session || userRole !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    const canAccess = await hasPermission(userRole, "manage_attendance_leave_approvals");
+    if (!canAccess) {
+      return NextResponse.json({ error: "Forbidden: No permission for Leave Approvals" }, { status: 403 });
     }
 
     const { id, status } = await req.json();

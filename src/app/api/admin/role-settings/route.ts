@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 
 /**
  * [GET] ดึงการตั้งค่าเวลาเข้า-ออกงานตาม Role
@@ -76,11 +76,10 @@ export async function PATCH(req: Request) {
     const db = client.db("ktltc_db");
 
     // Check dynamic permissions
-    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
-    const canManageAttendance = rolePerms?.permissions?.manage_attendance || userRole === "super_admin";
+    const canManageSettings = await hasPermission(userRole, "manage_attendance_settings");
 
-    if (!session || userRole !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
+    if (!session || !canManageSettings) {
+      return NextResponse.json({ error: "Unauthorized: No permission for Attendance Settings" }, { status: 403 });
     }
 
     const body = await req.json();

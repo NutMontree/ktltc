@@ -68,3 +68,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 });
+
+/**
+ * ตรวจสอบสิทธิ์การเข้าถึงฟังก์ชันแบบ Granular (สำหรับใช้ใน API Routes)
+ */
+export async function hasPermission(role: string, feature: string): Promise<boolean> {
+  if (!role) return false;
+  const roleLower = role.toLowerCase();
+  
+  // Super Admin มีสิทธิ์ทุกอย่างเสมอ
+  if (roleLower === "super_admin") return true;
+
+  try {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const rolePermissions = await db.collection("role_permissions").findOne({ role: roleLower });
+    
+    if (!rolePermissions || !rolePermissions.permissions) return false;
+    
+    return !!rolePermissions.permissions[feature];
+  } catch (error) {
+    console.error("hasPermission Error:", error);
+    return false;
+  }
+}

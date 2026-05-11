@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth"; // เปลี่ยนมาใช้ตัวนี้
+import { auth, hasPermission } from "@/lib/auth"; // เปลี่ยนมาใช้ตัวนี้
 
 export async function GET(req: Request) {
   try {
     const session = await auth();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const userRole = (session?.user as any)?.role?.toLowerCase();
+
+    // Check dynamic permissions
+    const canManageRoles = await hasPermission(userRole, "manage_roles_advanced");
+
+    if (!canManageRoles) {
+      return NextResponse.json({ error: "สิทธิ์ไม่เพียงพอ: No permission for Role Management" }, { status: 403 });
+    }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-
-    // Check dynamic permissions
-    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
-    const canManageUsers = rolePerms?.permissions?.manage_users || userRole === "super_admin";
-
-    if (!session || (!canManageUsers && userRole !== "admin")) {
-      return NextResponse.json({ error: "สิทธิ์ไม่เพียงพอ" }, { status: 403 });
-    }
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
