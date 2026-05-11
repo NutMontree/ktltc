@@ -781,8 +781,8 @@ function DriveContent() {
       <div
         className={
           viewMode === "grid"
-            ? "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            : "flex flex-col gap-4"
+            ? "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+            : "flex flex-col gap-3"
         }
       >
         {/* Folders */}
@@ -797,11 +797,11 @@ function DriveContent() {
             className={`group relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
               selectedIds.has(folder._id)
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50 dark:bg-blue-900/10"
-                : "border-slate-100 dark:border-zinc-800 hover:shadow-2xl hover:border-blue-100 dark:hover:border-blue-900/30"
+                : "border-slate-100 dark:border-zinc-800 hover:shadow-xl hover:border-blue-100 dark:hover:border-blue-900/30"
             } ${
               viewMode === "grid"
-                ? "flex-col rounded-[32px] p-6"
-                : "flex-row items-center rounded-2xl p-4"
+                ? "flex-col rounded-[24px] p-5"
+                : "flex-row items-center rounded-2xl p-3"
             } ${isSelectionMode ? "cursor-pointer" : ""}`}
           >
             {isSelectionMode && (
@@ -854,7 +854,8 @@ function DriveContent() {
             </div>
 
             <div
-              className={`flex items-center gap-3 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-5 border-t border-slate-50 dark:border-zinc-800/50" : ""}`}
+              onClick={(e) => e.stopPropagation()}
+              className={`flex items-center gap-3 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : ""}`}
             >
               <div className="flex items-center gap-2 shrink-0">
                 <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border border-white dark:border-zinc-700">
@@ -919,16 +920,15 @@ function DriveContent() {
             whileHover={!isSelectionMode ? { scale: 1.02 } : {}}
             onClick={() => {
               if (isSelectionMode) toggleSelection(file._id);
-              else setPreviewFile(file);
             }}
             className={`group relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
               selectedIds.has(file._id)
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50 dark:bg-blue-900/10"
-                : "border-slate-100 dark:border-zinc-800 hover:shadow-2xl hover:border-blue-100 dark:hover:border-blue-900/30"
+                : "border-slate-100 dark:border-zinc-800 hover:shadow-xl hover:border-blue-100 dark:hover:border-blue-900/30"
             } ${
               viewMode === "grid"
-                ? "flex-col rounded-[32px] p-4"
-                : "flex-row items-center rounded-2xl p-4"
+                ? "flex-col rounded-[24px] p-3"
+                : "flex-row items-center rounded-xl p-3"
             } ${isSelectionMode ? "cursor-pointer" : ""}`}
           >
             {isSelectionMode && (
@@ -945,26 +945,32 @@ function DriveContent() {
               </div>
             )}
             <div
-              className={`relative overflow-hidden shrink-0 shadow-inner bg-slate-100 dark:bg-zinc-800 ${viewMode === "grid" ? "mb-4 aspect-video w-full rounded-[24px]" : "h-14 w-14 rounded-xl mr-5"}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isSelectionMode) toggleSelection(file._id);
+                else if (file.type?.startsWith("image/") || file.type?.startsWith("video/")) setPreviewFile(file);
+                else window.open(file.url, "_blank");
+              }}
+              className={`relative overflow-hidden shrink-0 shadow-inner bg-slate-100 dark:bg-zinc-800 cursor-pointer ${viewMode === "grid" ? "mb-3 aspect-[4/3] w-full rounded-xl" : "h-12 w-12 rounded-lg mr-4"}`}
             >
               {renderFilePreview(file)}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPreviewFile(file);
-                  }}
-                  className="p-3 bg-white text-blue-600 rounded-full shadow-xl hover:scale-110 transition-transform"
-                >
-                  <ExternalLink size={20} strokeWidth={3} />
-                </button>
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <div className="p-2 sm:p-3 bg-white text-blue-600 rounded-full shadow-xl transition-transform scale-90 group-hover:scale-100">
+                  <ExternalLink size={16} strokeWidth={3} className="sm:w-5 sm:h-5" />
+                </div>
               </div>
             </div>
 
             <div className="flex-1 min-w-0 px-2 overflow-hidden">
-              <div className={`flex flex-col ${viewMode === "grid" ? "mb-5" : ""}`}>
+              <div className={`flex flex-col ${viewMode === "grid" ? "mb-4" : ""}`}>
                 <span
-                  className="truncate text-sm font-black text-slate-800 dark:text-zinc-100 group-hover:text-blue-600 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isSelectionMode) toggleSelection(file._id);
+                    else if (file.type?.startsWith("image/") || file.type?.startsWith("video/")) setPreviewFile(file);
+                    else window.open(file.url, "_blank");
+                  }}
+                  className="truncate text-xs sm:text-sm font-black text-slate-800 dark:text-zinc-100 hover:text-blue-600 transition-colors cursor-pointer"
                   title={file.name}
                 >
                   {file.name}
@@ -990,7 +996,10 @@ function DriveContent() {
                   <span className="truncate max-w-[70px]">{file.ownerName}</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl">
+                <div 
+                  className="flex items-center gap-1 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <a
                     href={file.url}
                     download={file.name}
