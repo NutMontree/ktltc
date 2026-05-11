@@ -145,18 +145,18 @@ export default function DashboardLoader() {
         </div>
         <div>
           <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-            การเข้าถึงโดยไม่ได้รับอนุญาต
+            เซสชันหมดอายุหรือไม่มีสิทธิ์เข้าถึง
           </h2>
           <p className="text-zinc-500 mt-2 font-medium">
-            กรุณาเข้าสู่ระบบเพื่อเข้าถึงศูนย์บัญชาการผู้บริหาร
+            กรุณาลงชื่อเข้าใช้งานใหม่อีกครั้ง หรือกดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ
           </p>
         </div>
-        <Link
-          href="/login"
-          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20"
+        <button
+          onClick={() => window.location.reload()}
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
         >
-          Go to Login
-        </Link>
+          กดเพื่อรีเฟรช
+        </button>
       </div>
     );
   }
@@ -366,7 +366,7 @@ export default function DashboardLoader() {
                   variants={item}
                 />
               )}
-              {(session?.user as any)?.role === "super_admin" && (
+              {(session?.user as any)?.role === "super_admin" || permissions?.manage_home ? (
                 <ActionCard
                   href="/dashboard/manage-home"
                   title="ปรับแต่งหน้าหลัก"
@@ -374,8 +374,8 @@ export default function DashboardLoader() {
                   desc="จัดการแบนเนอร์และประกาศหน้าแรก"
                   variants={item}
                 />
-              )}
-              {(session?.user as any)?.role === "super_admin" && (
+              ) : null}
+              {(session?.user as any)?.role === "super_admin" || permissions?.manage_navbar ? (
                 <ActionCard
                   href="/dashboard/navbar"
                   title="เมนูเว็บไซต์"
@@ -383,7 +383,7 @@ export default function DashboardLoader() {
                   desc="ตั้งค่าโครงสร้างเมนูและลิงก์เชื่อมโยง"
                   variants={item}
                 />
-              )}
+              ) : null}
               {permissions?.manage_pages && (
                 <ActionCard
                   href="/dashboard/pages"
@@ -533,7 +533,7 @@ export default function DashboardLoader() {
       {/* --- Quota Edit Modal --- */}
       <AnimatePresence>
         {isEditingQuota && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -614,7 +614,7 @@ export default function DashboardLoader() {
                   <button
                     onClick={handleSaveQuota}
                     disabled={isSavingQuota}
-                    className="flex-[2] py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    className="flex-2 py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
                     {isSavingQuota ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -636,7 +636,7 @@ export default function DashboardLoader() {
 
 function TelemetryCard({ label, value, unit, subValue, icon: Icon, color }: any) {
   return (
-    <div className="relative group p-6 rounded-[2rem] bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:-translate-y-1 overflow-hidden">
+    <div className="relative group p-6 rounded-4xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:-translate-y-1 overflow-hidden">
       <div
         className={`absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity ${color === "blue" ? "text-blue-500" : "text-purple-500"}`}
       >
@@ -834,7 +834,7 @@ function ActionCard({ href, title, icon: Icon, desc, external, badge, variants }
       <Link
         href={href}
         target={external ? "_blank" : "_self"}
-        className="group relative flex flex-col h-full p-[1px] rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2"
+        className="group relative flex flex-col h-full p-px rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2"
       >
         <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-7 rounded-[2.45rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
           {badge && (

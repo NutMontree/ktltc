@@ -28,6 +28,8 @@ const FEATURE_LABELS: {
   access_dashboard: { label: "เข้าสู่ระบบ Dashboard", icon: FiLayout, color: "text-blue-500" },
   manage_users: { label: "จัดการบัญชี / โปรไฟล์", icon: FiUsers, color: "text-indigo-500" },
   manage_news: { label: "จัดการข่าว / ประชาสัมพันธ์", icon: FiFileText, color: "text-emerald-500" },
+  manage_home: { label: "ปรับแต่งหน้าหลัก", icon: FiLayout, color: "text-blue-400" },
+  manage_navbar: { label: "จัดการเมนูเว็บไซต์", icon: FiLayers, color: "text-indigo-400" },
   manage_pages: { label: "จัดการเนื้อหาหน้าเว็บ", icon: FiLayers, color: "text-sky-500" },
   manage_attendance: { label: "รายงานปฏิบัติงาน (WFH)", icon: FiCalendar, color: "text-amber-500" },
   manage_qa: { label: "จัดการคำถาม Q&A", icon: FiMessageSquare, color: "text-rose-500" },
@@ -671,7 +673,7 @@ export default function PermissionsPage() {
       {/* --- Add Role Modal --- */}
       <AnimatePresence>
         {showAddModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -735,7 +737,7 @@ export default function PermissionsPage() {
                   <button
                     onClick={handleAddRole}
                     disabled={isAdding}
-                    className="flex-[2] py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-500/40"
+                    className="flex-2 py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-500/40"
                   >
                     {isAdding ? "กำลังสร้าง..." : "สร้างบทบาทใหม่"}
                   </button>
@@ -749,7 +751,7 @@ export default function PermissionsPage() {
       {/* --- Edit Role Modal --- */}
       <AnimatePresence>
         {showEditModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -787,7 +789,7 @@ export default function PermissionsPage() {
                     onChange={(e) =>
                       setEditRoleID(e.target.value.toLowerCase().replace(/\s/g, "_"))
                     }
-                    className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 transition-all text-blue-600"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-5 text-lg text-zinc-900 dark:text-white font-black outline-none focus:border-blue-500 transition-all"
                     placeholder="เช่น teacher_admin"
                   />
                 </div>
@@ -813,7 +815,7 @@ export default function PermissionsPage() {
                   <button
                     onClick={handleEditRole}
                     disabled={isEditing}
-                    className="flex-[2] py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/30"
+                    className="flex-2 py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/30"
                   >
                     {isEditing ? "กำลังบันทึก..." : "ยืนยันการแก้ไข"}
                   </button>

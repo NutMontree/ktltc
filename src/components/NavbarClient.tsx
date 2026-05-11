@@ -63,6 +63,8 @@ interface NavbarClientProps {
     manage_attendance_leave_approvals?: boolean;
     manage_attendance_settings?: boolean;
     manage_roles_advanced?: boolean;
+    manage_home?: boolean;
+    manage_navbar?: boolean;
   } | null;
 }
 
@@ -112,6 +114,8 @@ export default function NavbarClient({
   const canManageSystem = permissions?.manage_system ?? role?.toLowerCase() === "super_admin";
   const canManageQA = permissions?.manage_qa ?? ["super_admin", "admin"].includes(role?.toLowerCase() || "");
   const canManagePages = permissions?.manage_pages ?? ["super_admin", "editor", "teacher", "janitor", "staff"].includes(role?.toLowerCase() || "");
+  const canManageHome = permissions?.manage_home ?? role?.toLowerCase() === "super_admin";
+  const canManageNavbar = permissions?.manage_navbar ?? role?.toLowerCase() === "super_admin";
 
   const canManageAttendanceDashboard = permissions?.manage_attendance_dashboard ?? role?.toLowerCase() === "super_admin";
   const canManageAttendanceReport = permissions?.manage_attendance_report ?? role?.toLowerCase() === "super_admin";
