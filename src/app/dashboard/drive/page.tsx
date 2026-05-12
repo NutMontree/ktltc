@@ -571,7 +571,7 @@ function DriveContent() {
   }
 
   return (
-    <div className="mx-auto max-w-[1600px] px-2 py-10 font-['Sarabun'] animate-in fade-in duration-700">
+    <div className="mx-auto max-w-[1600px] px-2 pt-28 pb-10 lg:pt-32 animate-in fade-in duration-700">
       {/* Header Section */}
       <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
         <div>
@@ -855,16 +855,16 @@ function DriveContent() {
 
             <div
               onClick={(e) => e.stopPropagation()}
-              className={`flex items-center gap-3 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : ""}`}
+              className={`flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : ""}`}
             >
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border border-white dark:border-zinc-700">
+              <div className="flex items-center gap-2 shrink-0 max-w-[50%]">
+                <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border border-white dark:border-zinc-700 shrink-0">
                   <User size={12} className="text-slate-400" />
                 </div>
-                <span className="truncate max-w-[80px]">{folder.ownerName}</span>
+                <span className="truncate">{folder.ownerName}</span>
               </div>
 
-              <div className="flex gap-1.5 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl">
+              <div className="flex items-center gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
                 {(isSuperAdmin ||
                   folder.ownerId === userId ||
                   (folder.isCollaborative && userRole !== "student")) && (

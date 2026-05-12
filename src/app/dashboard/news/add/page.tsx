@@ -957,7 +957,7 @@ export default function AddNewsPage() {
       {/* Zoom Modal (Lightbox) */}
       <AnimatePresence>
         {selectedZoomImage && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-10">
+          <div className="fixed inset-0 z-300 flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-10">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -994,7 +994,7 @@ export default function AddNewsPage() {
 
       {/* Upload Progress Modal */}
       {uploadStatus && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-200 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
           <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-zinc-800 animate-in fade-in zoom-in duration-300">
             <div className="flex flex-col items-center text-center">
               {/* Progress Circle */}

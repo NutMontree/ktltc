@@ -946,7 +946,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
         {/* Zoom Modal (Lightbox) */}
         <AnimatePresence>
           {selectedZoomImage && (
-            <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-10">
+            <div className="fixed inset-0 z-300 flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-10">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
