@@ -951,7 +951,7 @@ function DriveContent() {
                 else if (file.type?.startsWith("image/") || file.type?.startsWith("video/")) setPreviewFile(file);
                 else window.open(file.url, "_blank");
               }}
-              className={`relative overflow-hidden shrink-0 shadow-inner bg-slate-100 dark:bg-zinc-800 cursor-pointer ${viewMode === "grid" ? "mb-3 aspect-[4/3] w-full rounded-xl" : "h-12 w-12 rounded-lg mr-4"}`}
+              className={`relative overflow-hidden shrink-0 shadow-inner bg-slate-100 dark:bg-zinc-800 cursor-pointer ${viewMode === "grid" ? "mb-3 aspect-4/3 w-full rounded-xl" : "h-12 w-12 rounded-lg mr-4"}`}
             >
               {renderFilePreview(file)}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">

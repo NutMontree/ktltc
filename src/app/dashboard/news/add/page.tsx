@@ -54,15 +54,7 @@ const CATEGORIES = [
   { value: "Order", label: "คำสั่งวิทยาลัย", color: "bg-indigo-500" },
 ];
 
-const fontList = [
-  "Sarabun",
-  "Kanit",
-  "Prompt",
-  "Mitr",
-  "Roboto",
-  "Arial",
-  "Tahoma",
-];
+const fontList = ["Sarabun", "Kanit", "Prompt", "Mitr", "Roboto", "Arial", "Tahoma"];
 
 // ✅ Helper สำหรับบันทึก Log
 async function recordActivity(data: {
@@ -84,14 +76,9 @@ async function recordActivity(data: {
 
 // --- Sub-Component: Sortable Image Item ---
 function SortableImage({ id, src, onRemove, onZoom, isVertical = false, isVideo = false }: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -111,12 +98,7 @@ function SortableImage({ id, src, onRemove, onZoom, isVertical = false, isVideo 
         className="w-full h-full cursor-grab active:cursor-grabbing relative flex items-center justify-center"
       >
         {isVideo ? (
-          <video
-            src={src}
-            className="object-contain w-full h-full"
-            controls
-            playsInline
-          />
+          <video src={src} className="object-contain w-full h-full" controls playsInline />
         ) : (
           <div className="relative w-full h-full">
             <Image
@@ -128,7 +110,7 @@ function SortableImage({ id, src, onRemove, onZoom, isVertical = false, isVideo 
             />
           </div>
         )}
-        
+
         {/* Overlay for drag instruction - only visible on hover */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center pointer-events-none">
           <div className="opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
@@ -167,7 +149,7 @@ function SortableImage({ id, src, onRemove, onZoom, isVertical = false, isVideo 
 
       {/* Index Badge */}
       <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/40 backdrop-blur-md rounded-md text-[9px] font-black text-white/80 border border-white/10 pointer-events-none z-10">
-        #{id.split('/').pop()?.substring(0, 4) || 'IMG'}
+        #{id.split("/").pop()?.substring(0, 4) || "IMG"}
       </div>
     </div>
   );
@@ -208,7 +190,6 @@ export default function AddNewsPage() {
     totalCount: number;
   } | null>(null);
 
-
   // Client-side limits (can be controlled via NEXT_PUBLIC_* env vars)
   const MAX_IMAGE_SIZE = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE) || 10 * 1024 * 1024;
   const MAX_VIDEO_SIZE = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE) || 200 * 1024 * 1024;
@@ -220,8 +201,9 @@ export default function AddNewsPage() {
     }),
   );
 
-  const [SunEditorComponent, setSunEditorComponent] =
-    useState<React.ComponentType<any> | null>(null);
+  const [SunEditorComponent, setSunEditorComponent] = useState<React.ComponentType<any> | null>(
+    null,
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -230,10 +212,7 @@ export default function AddNewsPage() {
         if (res.ok) {
           const userData = await res.json();
           setCurrentUser({
-            name:
-              userData.name ||
-              userData.user?.name ||
-              "งานศูนย์ข้อมูล วิทยาลัยเทคนิคกันทรลักษ์",
+            name: userData.name || userData.user?.name || "งานศูนย์ข้อมูล วิทยาลัยเทคนิคกันทรลักษ์",
             image: userData.image || userData.user?.image || null,
           });
         }
@@ -245,9 +224,7 @@ export default function AddNewsPage() {
       }
     };
     fetchUser();
-    import("suneditor-react").then((mod) =>
-      setSunEditorComponent(() => mod.default),
-    );
+    import("suneditor-react").then((mod) => setSunEditorComponent(() => mod.default));
   }, []);
 
   const compressImage = async (file: File) => {
@@ -270,9 +247,7 @@ export default function AddNewsPage() {
   };
 
   const normalizeEmbedHtml = (embedCode: string) =>
-    embedCode
-      .replace(/width="\d+"/g, 'width="100%"')
-      .replace(/height="\d+"/g, 'height="100%"');
+    embedCode.replace(/width="\d+"/g, 'width="100%"').replace(/height="\d+"/g, 'height="100%"');
 
   const addVideoEmbed = () => {
     const result = parseYouTubeVideoInput(currentEmbed);
@@ -316,7 +291,8 @@ export default function AddNewsPage() {
       const acceptedFiles: File[] = [];
       for (const file of originalFiles) {
         const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
-        const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
+        const isImage =
+          file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
 
         if (!isImage && !isVideo) {
           alert(`ข้ามไฟล์ '${file.name}' — ชนิดไฟล์ไม่รองรับ`);
@@ -336,9 +312,7 @@ export default function AddNewsPage() {
         acceptedFiles.push(file);
       }
 
-      const compressedFiles = await Promise.all(
-        acceptedFiles.map((file) => compressImage(file)),
-      );
+      const compressedFiles = await Promise.all(acceptedFiles.map((file) => compressImage(file)));
       const newPreviews = compressedFiles.map((f) => URL.createObjectURL(f));
 
       if (type === "general") {
@@ -353,10 +327,7 @@ export default function AddNewsPage() {
     }
   };
 
-  const handleDragEnd = (
-    event: DragEndEvent,
-    type: "general" | "newsletter",
-  ) => {
+  const handleDragEnd = (event: DragEndEvent, type: "general" | "newsletter") => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       if (type === "general") {
@@ -398,17 +369,21 @@ export default function AddNewsPage() {
             currentIndex: uploadedCount,
             totalCount: totalToUpload,
           });
-          return await uploadFile(f, `ktltc_news/${mainCategory}/${datePath}`, (percent, loaded, total) => {
-            setUploadStatus({
-              fileName: f.name,
-              percent,
-              loaded,
-              total,
-              startTime: Date.now(),
-              currentIndex: uploadedCount,
-              totalCount: totalToUpload,
-            });
-          });
+          return await uploadFile(
+            f,
+            `ktltc_news/${mainCategory}/${datePath}`,
+            (percent, loaded, total) => {
+              setUploadStatus({
+                fileName: f.name,
+                percent,
+                loaded,
+                total,
+                startTime: Date.now(),
+                currentIndex: uploadedCount,
+                totalCount: totalToUpload,
+              });
+            },
+          );
         }),
       );
 
@@ -425,17 +400,21 @@ export default function AddNewsPage() {
             currentIndex: uploadedCount,
             totalCount: totalToUpload,
           });
-          return await uploadFile(f, `ktltc_newsletters/${mainCategory}/${datePath}`, (percent, loaded, total) => {
-            setUploadStatus({
-              fileName: f.name,
-              percent,
-              loaded,
-              total,
-              startTime: Date.now(),
-              currentIndex: uploadedCount,
-              totalCount: totalToUpload,
-            });
-          });
+          return await uploadFile(
+            f,
+            `ktltc_newsletters/${mainCategory}/${datePath}`,
+            (percent, loaded, total) => {
+              setUploadStatus({
+                fileName: f.name,
+                percent,
+                loaded,
+                total,
+                startTime: Date.now(),
+                currentIndex: uploadedCount,
+                totalCount: totalToUpload,
+              });
+            },
+          );
         }),
       );
 
@@ -579,9 +558,7 @@ export default function AddNewsPage() {
               <FiArrowLeft />
             </Link>
             <div>
-              <h1 className="mb-1 text-xl font-bold leading-none dark:text-white">
-                ย้อนกลับ
-              </h1>
+              <h1 className="mb-1 text-xl font-bold leading-none dark:text-white">ย้อนกลับ</h1>
               <p className="text-[10px] uppercase tracking-tighter text-slate-500">
                 ผู้เขียน:{" "}
                 <span className="font-bold text-indigo-600 dark:text-indigo-400">
@@ -638,27 +615,20 @@ export default function AddNewsPage() {
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="space-y-3">
             <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
-              <FiCalendar className="text-indigo-500" /> วันที่และเวลาลงข่าว (24
-              ชม.)
+              <FiCalendar className="text-indigo-500" /> วันที่และเวลาลงข่าว (24 ชม.)
             </label>
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <input
                 type="date"
                 value={publishDate ? publishDate.split("T")[0] : ""}
                 onChange={(e) =>
-                  setPublishDate(
-                    `${e.target.value}T${publishDate.split("T")[1] || "00:00"}`,
-                  )
+                  setPublishDate(`${e.target.value}T${publishDate.split("T")[1] || "00:00"}`)
                 }
                 className="w-full sm:flex-1 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 font-bold text-sm outline-none"
               />
               <div className="w-full sm:w-auto flex items-center justify-center bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500 px-2">
                 <select
-                  value={
-                    publishDate
-                      ? publishDate.split("T")[1]?.split(":")[0] || "00"
-                      : "00"
-                  }
+                  value={publishDate ? publishDate.split("T")[1]?.split(":")[0] || "00" : "00"}
                   onChange={(e) =>
                     setPublishDate(
                       `${publishDate.split("T")[0]}T${e.target.value}:${publishDate.split("T")[1]?.split(":")[1] || "00"}`,
@@ -678,11 +648,7 @@ export default function AddNewsPage() {
                 </select>
                 <span className="font-black text-slate-400 text-lg">:</span>
                 <select
-                  value={
-                    publishDate
-                      ? publishDate.split("T")[1]?.split(":")[1] || "00"
-                      : "00"
-                  }
+                  value={publishDate ? publishDate.split("T")[1]?.split(":")[1] || "00" : "00"}
                   onChange={(e) =>
                     setPublishDate(
                       `${publishDate.split("T")[0]}T${publishDate.split("T")[1]?.split(":")[0] || "00"}:${e.target.value}`,
@@ -700,9 +666,7 @@ export default function AddNewsPage() {
                     </option>
                   ))}
                 </select>
-                <span className="font-bold text-slate-400 pr-4 text-xs">
-                  น.
-                </span>
+                <span className="font-bold text-slate-400 pr-4 text-xs">น.</span>
               </div>
             </div>
           </div>
@@ -749,14 +713,7 @@ export default function AddNewsPage() {
                   buttonList: [
                     ["undo", "redo"],
                     ["font", "fontSize", "formatBlock"],
-                    [
-                      "bold",
-                      "underline",
-                      "italic",
-                      "strike",
-                      "fontColor",
-                      "hiliteColor",
-                    ],
+                    ["bold", "underline", "italic", "strike", "fontColor", "hiliteColor"],
                     ["align", "list", "table", "link", "image", "video"],
                     ["fullScreen", "codeView"],
                   ],
@@ -785,11 +742,8 @@ export default function AddNewsPage() {
             collisionDetection={closestCenter}
             onDragEnd={(e) => handleDragEnd(e, "general")}
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <SortableContext
-                items={imagePreviews}
-                strategy={rectSortingStrategy}
-              >
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+              <SortableContext items={imagePreviews} strategy={rectSortingStrategy}>
                 {imagePreviews.map((src, i) => (
                   <SortableImage
                     key={src}
@@ -799,12 +753,8 @@ export default function AddNewsPage() {
                     onZoom={setSelectedZoomImage}
                     onRemove={() => {
                       URL.revokeObjectURL(src);
-                      setImageFiles((prev) =>
-                        prev.filter((_, idx) => idx !== i),
-                      );
-                      setImagePreviews((prev) =>
-                        prev.filter((_, idx) => idx !== i),
-                      );
+                      setImageFiles((prev) => prev.filter((_, idx) => idx !== i));
+                      setImagePreviews((prev) => prev.filter((_, idx) => idx !== i));
                     }}
                   />
                 ))}
@@ -817,13 +767,8 @@ export default function AddNewsPage() {
                   className="hidden"
                   onChange={(e) => handleFileChange(e, "general")}
                 />
-                <FiPlus
-                  size={24}
-                  className="text-slate-300 group-hover:text-indigo-500"
-                />
-                <span className="text-[10px] font-bold text-slate-400 mt-2">
-                  เพิ่มรูปภาพ
-                </span>
+                <FiPlus size={24} className="text-slate-300 group-hover:text-indigo-500" />
+                <span className="text-[10px] font-bold text-slate-400 mt-2">เพิ่มรูปภาพ</span>
               </label>
             </div>
           </DndContext>
@@ -834,15 +779,9 @@ export default function AddNewsPage() {
           <h2 className="font-extrabold flex items-center gap-2 text-lg">
             <FiFileText className="text-purple-500" /> จดหมายข่าว (A4)
           </h2>
-          <DndContext
-            sensors={sensors}
-            onDragEnd={(e) => handleDragEnd(e, "newsletter")}
-          >
+          <DndContext sensors={sensors} onDragEnd={(e) => handleDragEnd(e, "newsletter")}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <SortableContext
-                items={newsletterPreviews}
-                strategy={rectSortingStrategy}
-              >
+              <SortableContext items={newsletterPreviews} strategy={rectSortingStrategy}>
                 {newsletterPreviews.map((src, i) => (
                   <SortableImage
                     key={src}
@@ -853,12 +792,8 @@ export default function AddNewsPage() {
                     onZoom={setSelectedZoomImage}
                     onRemove={() => {
                       URL.revokeObjectURL(src);
-                      setNewsletterFiles((prev) =>
-                        prev.filter((_, idx) => idx !== i),
-                      );
-                      setNewsletterPreviews((prev) =>
-                        prev.filter((_, idx) => idx !== i),
-                      );
+                      setNewsletterFiles((prev) => prev.filter((_, idx) => idx !== i));
+                      setNewsletterPreviews((prev) => prev.filter((_, idx) => idx !== i));
                     }}
                   />
                 ))}
@@ -872,9 +807,7 @@ export default function AddNewsPage() {
                   onChange={(e) => handleFileChange(e, "newsletter")}
                 />
                 <FiPlus className="text-slate-300 group-hover:text-purple-500" />
-                <span className="text-[10px] font-bold text-slate-400 mt-2">
-                  เพิ่มแผ่นจดหมาย
-                </span>
+                <span className="text-[10px] font-bold text-slate-400 mt-2">เพิ่มแผ่นจดหมาย</span>
               </label>
             </div>
           </DndContext>
@@ -894,13 +827,9 @@ export default function AddNewsPage() {
                   key={i}
                   className="flex items-center gap-2 bg-white dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-700 shadow-sm"
                 >
-                  <span className="text-xs font-bold text-blue-600">
-                    {l.label}
-                  </span>
+                  <span className="text-xs font-bold text-blue-600">{l.label}</span>
                   <button
-                    onClick={() =>
-                      setLinks(links.filter((_, idx) => idx !== i))
-                    }
+                    onClick={() => setLinks(links.filter((_, idx) => idx !== i))}
                     className="text-red-500 hover:scale-110 transition-transform"
                   >
                     <FiTrash2 size={14} />
@@ -913,17 +842,13 @@ export default function AddNewsPage() {
             <input
               placeholder="ชื่อปุ่ม"
               value={currentLink.label}
-              onChange={(e) =>
-                setCurrentLink({ ...currentLink, label: e.target.value })
-              }
+              onChange={(e) => setCurrentLink({ ...currentLink, label: e.target.value })}
               className="w-full bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs outline-none"
             />
             <input
               placeholder="URL ลิงก์"
               value={currentLink.url}
-              onChange={(e) =>
-                setCurrentLink({ ...currentLink, url: e.target.value })
-              }
+              onChange={(e) => setCurrentLink({ ...currentLink, url: e.target.value })}
               className="w-full bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs outline-none text-blue-500"
             />
           </div>
@@ -955,11 +880,7 @@ export default function AddNewsPage() {
                 >
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
-                      onClick={() =>
-                        setVideoEmbeds(
-                          videoEmbeds.filter((_, idx) => idx !== i),
-                        )
-                      }
+                      onClick={() => setVideoEmbeds(videoEmbeds.filter((_, idx) => idx !== i))}
                       className="bg-red-600 text-white p-2 rounded-full"
                     >
                       <FiTrash2 size={16} />
@@ -1059,7 +980,7 @@ export default function AddNewsPage() {
                   className="object-contain"
                 />
               </div>
-              
+
               <button
                 onClick={() => setSelectedZoomImage(null)}
                 className="absolute top-[-20px] right-[-20px] md:top-0 md:right-0 w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-all pointer-events-auto border border-white/20 shadow-2xl"
@@ -1122,27 +1043,26 @@ export default function AddNewsPage() {
                     ขนาดไฟล์
                   </p>
                   <p className="text-sm font-bold text-slate-700 dark:text-zinc-200">
-                    {(uploadStatus.loaded / (1024 * 1024)).toFixed(1)} / {(uploadStatus.total / (1024 * 1024)).toFixed(1)} MB
+                    {(uploadStatus.loaded / (1024 * 1024)).toFixed(1)} /{" "}
+                    {(uploadStatus.total / (1024 * 1024)).toFixed(1)} MB
                   </p>
                 </div>
                 <div className="bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl border border-slate-100 dark:border-zinc-800">
                   <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1">
                     ความคืบหน้า
                   </p>
-                  <p className="text-sm font-bold text-indigo-600">
-                    {uploadStatus.percent}%
-                  </p>
+                  <p className="text-sm font-bold text-indigo-600">{uploadStatus.percent}%</p>
                 </div>
               </div>
 
               {/* Animated Progress Bar */}
               <div className="w-full h-3 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-4 shadow-inner">
-                <div 
+                <div
                   className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-indigo-600 transition-all duration-300 ease-out shadow-[0_0_12px_rgba(79,70,229,0.4)]"
                   style={{ width: `${uploadStatus.percent}%` }}
                 />
               </div>
-              
+
               <p className="text-[11px] font-bold text-slate-400 animate-pulse italic">
                 กรุณาอย่าปิดหน้านี้จนกว่าการอัปโหลดจะเสร็จสิ้น...
               </p>
