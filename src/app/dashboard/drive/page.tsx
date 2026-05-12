@@ -1056,36 +1056,36 @@ function DriveContent() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-90 flex items-center gap-6 bg-slate-900/90 backdrop-blur-xl px-8 py-5 rounded-[32px] shadow-2xl border border-white/10 text-white min-w-[400px]"
+            className="fixed bottom-4 sm:bottom-10 left-1/2 -translate-x-1/2 z-90 flex flex-col sm:flex-row items-center gap-2 sm:gap-6 bg-slate-900/95 backdrop-blur-xl p-4 sm:px-8 sm:py-5 rounded-3xl sm:rounded-[32px] shadow-2xl border border-white/10 text-white w-[92%] sm:w-auto sm:min-w-max"
           >
-            <div className="flex flex-col border-r border-white/10 pr-6 mr-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-0.5">
+            <div className="flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-start w-full sm:w-auto border-b sm:border-b-0 sm:border-r border-white/10 pb-2 sm:pb-0 mb-2 sm:mb-0 sm:pr-6 sm:mr-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 sm:mb-0.5">
                 เลือกแล้ว
               </span>
-              <span className="text-xl font-black">{selectedIds.size} รายการ</span>
+              <span className="text-sm sm:text-xl font-black">{selectedIds.size} รายการ</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
               <button
                 onClick={() => setIsMoveModalOpen(true)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-indigo-600 transition-all text-sm font-black"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-indigo-600 transition-all text-xs sm:text-sm font-black"
               >
-                <Move size={18} /> ย้ายที่เลือก
+                <Move size={16} /> <span className="whitespace-nowrap">ย้ายที่เลือก</span>
               </button>
               <button
                 onClick={bulkDelete}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-rose-600 transition-all text-sm font-black"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-rose-600 transition-all text-xs sm:text-sm font-black"
               >
-                <Trash2 size={18} /> ลบที่เลือก
+                <Trash2 size={16} /> <span className="whitespace-nowrap">ลบที่เลือก</span>
               </button>
               <button
                 onClick={() => {
                   setSelectedIds(new Set());
                   setIsSelectionMode(false);
                 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl hover:bg-white/10 transition-all text-sm font-black text-slate-400 hover:text-white"
+                className="flex-none flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 rounded-xl hover:bg-white/10 transition-all text-xs sm:text-sm font-black text-slate-400 hover:text-white"
               >
-                <X size={18} /> ยกเลิก
+                <X size={16} /> <span className="whitespace-nowrap hidden sm:inline">ยกเลิก</span>
               </button>
             </div>
           </motion.div>
