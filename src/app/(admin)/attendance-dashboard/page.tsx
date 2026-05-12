@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import {
   Activity,
   Users,
@@ -15,7 +14,26 @@ import {
   Map as MapIcon,
   PieChart as PieIcon,
   Loader2 as LucideLoader,
+  Search,
+  Zap,
+  BarChart3,
+  ListRestart,
+  Building2,
 } from "lucide-react";
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer, 
+  Tooltip as RechartsTooltip,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  BarChart,
+  Bar
+} from "recharts";
 import dynamic from "next/dynamic";
 
 const MapDashboard = dynamic(() => import("@/components/MapDashboard"), {
@@ -44,6 +62,10 @@ export default function AdminAttendanceDashboard() {
     { name: "ลา / ขาด", value: 0, color: "#f43f5e" }, // Rose 500
   ]);
   const [markers, setMarkers] = useState<any[]>([]);
+  const [recentCheckIns, setRecentCheckIns] = useState<any[]>([]);
+  const [trends, setTrends] = useState<any[]>([]);
+  const [trendRange, setTrendRange] = useState<"day" | "week" | "month">("week");
+  const [departmentStats, setDepartmentStats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [realTotal, setRealTotal] = useState(0);
 
@@ -51,12 +73,15 @@ export default function AdminAttendanceDashboard() {
     async function fetchStats() {
       setLoading(true);
       try {
-        const res = await fetch(`/api/attendance/dashboard?date=${selectedDate}&_t=${Date.now()}`);
+        const res = await fetch(`/api/attendance/dashboard?date=${selectedDate}&range=${trendRange}&_t=${Date.now()}`);
         const json = await res.json();
         if (json.success) {
           setData(json.data);
           setMarkers(json.markers || []);
           setRealTotal(json.totalEmployees || 0);
+          setRecentCheckIns(json.recentCheckIns || []);
+          setTrends(json.trends || []);
+          setDepartmentStats(json.departmentStats || []);
         }
       } catch (error) {
         console.error("Failed to fetch dashboard stats", error);
@@ -65,7 +90,7 @@ export default function AdminAttendanceDashboard() {
       }
     }
     fetchStats();
-  }, [selectedDate]);
+  }, [selectedDate, trendRange]);
 
   const total = realTotal || data.reduce((acc, curr) => acc + curr.value, 0);
 
@@ -149,7 +174,7 @@ export default function AdminAttendanceDashboard() {
             {
               label: "สถานะการมาทำงานปกติ (ตรงเวลา)",
               val: data[0].value,
-              unit: "staff",
+              unit: "คน",
               icon: Activity,
               theme: "emerald",
               delay: 0.1,
@@ -157,7 +182,7 @@ export default function AdminAttendanceDashboard() {
             {
               label: "สถานะการเข้างาน (สาย)",
               val: data[1].value,
-              unit: "staff",
+              unit: "คน",
               icon: Clock,
               theme: "amber",
               delay: 0.2,
@@ -165,7 +190,7 @@ export default function AdminAttendanceDashboard() {
             {
               label: "สถานะการลางาน / ขาดงาน",
               val: data[2].value,
-              unit: "staff",
+              unit: "คน",
               icon: AlertTriangle,
               theme: "rose",
               delay: 0.3,
@@ -211,158 +236,316 @@ export default function AdminAttendanceDashboard() {
         </div>
 
         {/* Content Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12 ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Map Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className=""
+            className="lg:col-span-2 space-y-8"
           >
-            {/* <div className="absolute top-10 left-10 z-20">
-              <div className="px-2 py-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-2xl border border-slate-100 dark:border-zinc-800 flex items-center gap-3 shadow-2xl">
-                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-800 dark:text-zinc-300">
-                  Personnel Heatmap
-                </span>
-              </div>
-            </div> */}
-            <div className="h-[580px] w-full rounded-3xl overflow-hidden relative border border-slate-50 dark:border-zinc-800 shadow-inner">
-              <MapDashboard markers={markers} />
-            </div>
-          </motion.div>
-
-          {/* Stats Visualization */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-6 shadow-2xl shadow-black/3 overflow-hidden group relative flex flex-col"
-          >
-            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all -rotate-12 duration-1000 scale-150">
-              <PieIcon size={140} className="text-blue-500" />
-            </div>
-
-            <div className="relative z-10 mb-10">
-              <h3 className="text-2xl font-black text-slate-800 dark:text-white leading-tight tracking-tighter uppercase mb-2">
-                สัดส่วน <span className="text-blue-600">สถานะ</span>
-              </h3>
-              <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest pl-1">
-                สรุปภาพรวมการเข้างานรายวัน
-              </p>
-            </div>
-
-            <div className="relative z-10 flex-1 flex flex-col justify-between gap-12">
-              {loading ? (
-                <div className="flex-1 flex flex-col items-center justify-center gap-5">
-                  <LucideLoader className="animate-spin text-blue-500" size={48} />
-                  <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">
-                    กำลังประมวลผลข้อมูล...
+            <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] p-6 shadow-2xl shadow-black/3 overflow-hidden group relative">
+              <div className="flex items-center justify-between mb-6 px-2">
+                <div>
+                  <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                    พื้นที่ <span className="text-blue-600">การปฏิบัติงาน</span>
+                  </h3>
+                  <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest mt-1">
+                    Heatmap ตำแหน่งการลงเวลาของบุคลากร
                   </p>
                 </div>
-              ) : (
-                <div className="h-64 relative transform hover:scale-105 transition-transform duration-500">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-32 h-32 rounded-full bg-slate-50 dark:bg-zinc-800 transition-colors duration-500" />
-                  </div>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={data}
-                        innerRadius={78}
-                        outerRadius={105}
-                        paddingAngle={8}
-                        dataKey="value"
-                        stroke="none"
-                        animationBegin={600}
-                        animationDuration={1500}
-                      >
-                        {data.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={entry.color}
-                            className="focus:outline-none hover:opacity-85 transition-opacity cursor-pointer shadow-xl"
-                          />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip
-                        contentStyle={{
-                          backgroundColor: "rgba(0,0,0,0.9)",
-                          borderRadius: "20px",
-                          border: "none",
-                          backdropFilter: "blur(12px)",
-                          padding: "16px 20px",
-                          boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
-                        }}
-                        itemStyle={{
-                          color: "#fff",
-                          fontSize: "11px",
-                          fontWeight: "900",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.1em",
-                        }}
-                      />
-                      <CustomPieLabel />
-                    </PieChart>
-                  </ResponsiveContainer>
+                <div className="p-3 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-2xl">
+                  <MapIcon size={20} />
                 </div>
-              )}
+              </div>
+              <div className="h-[480px] w-full rounded-3xl overflow-hidden relative border border-slate-100 dark:border-zinc-800 shadow-inner">
+                <MapDashboard markers={markers} />
+              </div>
+            </div>
 
-              <div className="space-y-6">
-                {data.map((d, i) => (
-                  <div key={i} className="group/item relative">
-                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-4">
-                        <div
-                          className="w-3.5 h-3.5 rounded-full shadow-lg border-2 border-white dark:border-zinc-800"
-                          style={{ backgroundColor: d.color }}
-                        />
-                        <span className="text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">
-                          {d.name}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-sm font-black text-slate-800 dark:text-white uppercase leading-none">
-                          {d.value}
-                        </span>
-                        <div className="h-4 w-px bg-slate-100 dark:bg-zinc-800" />
-                        <span className="text-[9px] font-black text-slate-300 dark:text-zinc-600 uppercase tracking-widest">
-                          {total > 0 ? Math.round((d.value / total) * 100) : 0}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="w-full h-2.5 bg-slate-50 dark:bg-zinc-800 rounded-full overflow-hidden shadow-inner">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{
-                          width: total > 0 ? `${(d.value / total) * 100}%` : "0%",
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          ease: [0.34, 1.56, 0.64, 1],
-                          delay: 0.8 + i * 0.15,
-                        }}
-                        className="h-full rounded-full shadow-lg"
-                        style={{ backgroundColor: d.color }}
-                      />
-                    </div>
-                  </div>
-                ))}
+            {/* Trends Section */}
+            <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl shadow-black/3 group relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all duration-1000">
+                <TrendingUp size={120} className="text-emerald-500" />
+              </div>
+              
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 relative z-10 gap-4">
+                <div>
+                  <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                    แนวโน้ม <span className="text-emerald-500">การเข้างาน</span>
+                  </h3>
+                  <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest mt-1">
+                    สถิติการเข้างาน ({trendRange === 'day' ? 'รายชั่วโมง' : trendRange === 'week' ? 'ย้อนหลัง 7 วัน' : 'ย้อนหลัง 30 วัน'})
+                  </p>
+                </div>
+                
+                <div className="flex bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-2xl border border-slate-100 dark:border-zinc-800">
+                  {[
+                    { id: "day", label: "วัน" },
+                    { id: "week", label: "7 วัน" },
+                    { id: "month", label: "เดือน" },
+                  ].map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => setTrendRange(r.id as any)}
+                      className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${
+                        trendRange === r.id
+                          ? "bg-white dark:bg-zinc-700 text-emerald-500 shadow-sm"
+                          : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="pt-8 border-t border-slate-50 dark:border-zinc-800 flex items-center justify-between mt-4">
-                <div className="flex items-center gap-3 text-emerald-500 group-hover:translate-x-1 transition-transform">
-                  <TrendingUp size={18} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                    ประสิทธิภาพการทำงานปกติ
-                  </span>
-                </div>
-                <div className="p-2.5 bg-slate-50 dark:bg-zinc-800 rounded-xl text-slate-300 dark:text-zinc-600 hover:text-blue-500 transition-colors">
-                  <ArrowRight size={18} />
-                </div>
+              <div className="h-64 w-full relative z-10">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trends}>
+                    <defs>
+                      <linearGradient id="colorPresent" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.1} />
+                    <XAxis 
+                      dataKey="_id" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 800 }}
+                      tickFormatter={(val) => {
+                        if (trendRange === 'day') return `${val}:00`;
+                        if (typeof val === 'string' && val.includes('-')) {
+                          return val.split("-").slice(1).join("/");
+                        }
+                        return val;
+                      }}
+                    />
+                    <YAxis hide />
+                    <RechartsTooltip 
+                      contentStyle={{ 
+                        backgroundColor: "rgba(0,0,0,0.8)", 
+                        borderRadius: "16px", 
+                        border: "none",
+                        backdropFilter: "blur(10px)",
+                        color: "#fff"
+                      }}
+                      itemStyle={{ color: "#fff", fontSize: "12px", fontWeight: "bold" }}
+                      labelFormatter={(label) => {
+                        if (trendRange === 'day') return `เวลา ${label}:00 น.`;
+                        return `วันที่ ${label}`;
+                      }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="present" 
+                      stroke="#10b981" 
+                      strokeWidth={4}
+                      fillOpacity={1} 
+                      fill="url(#colorPresent)" 
+                      animationDuration={1000}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </motion.div>
+
+          {/* Sidebar Section */}
+          <div className="space-y-8">
+            {/* Pie Chart Section */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl shadow-black/3 overflow-hidden group relative flex flex-col"
+            >
+              <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all -rotate-12 duration-1000 scale-150">
+                <PieIcon size={140} className="text-blue-500" />
+              </div>
+
+              <div className="relative z-10 mb-8">
+                <h3 className="text-xl font-black text-slate-800 dark:text-white leading-tight tracking-tight uppercase mb-1">
+                  สัดส่วน <span className="text-blue-600">สถานะ</span>
+                </h3>
+                <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest">
+                  สรุปภาพรวมรายวัน
+                </p>
+              </div>
+
+              <div className="relative z-10 flex-1 flex flex-col justify-between gap-8">
+                {loading ? (
+                  <div className="h-48 flex flex-col items-center justify-center gap-4">
+                    <LucideLoader className="animate-spin text-blue-500" size={32} />
+                    <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">ประมวลผล...</p>
+                  </div>
+                ) : (
+                  <div className="h-56 relative transform hover:scale-105 transition-transform duration-500">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={data}
+                          innerRadius={65}
+                          outerRadius={90}
+                          paddingAngle={8}
+                          dataKey="value"
+                          stroke="none"
+                        >
+                          {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <CustomPieLabel />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  {data.map((d, i) => (
+                    <div key={i} className="group/item">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }} />
+                          <span className="text-[10px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">
+                            {d.name}
+                          </span>
+                        </div>
+                        <span className="text-xs font-black text-slate-800 dark:text-white">
+                          {d.value} <span className="text-[9px] text-slate-400">({total > 0 ? Math.round((d.value / total) * 100) : 0}%)</span>
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-50 dark:bg-zinc-800 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: total > 0 ? `${(d.value / total) * 100}%` : "0%" }}
+                          className="h-full rounded-full"
+                          style={{ backgroundColor: d.color }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Recent Check-ins */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl shadow-black/3 group relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                    กิจกรรม <span className="text-rose-500">ล่าสุด</span>
+                  </h3>
+                  <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest mt-1">
+                    การลงเวลา 10 รายการล่าสุด
+                  </p>
+                </div>
+                <div className="p-3 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-2xl">
+                  <ListRestart size={20} />
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {recentCheckIns.length > 0 ? (
+                  recentCheckIns.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-4 group/row">
+                      <div className="relative">
+                        {item.image ? (
+                          <img src={item.image} alt={item.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-zinc-800" />
+                        ) : (
+                          <div className="w-10 h-10 bg-slate-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-400 text-xs font-black">
+                            {item.name.charAt(0)}
+                          </div>
+                        )}
+                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-zinc-900 ${item.status === 'Late' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
+                          {item.name}
+                        </p>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase truncate">
+                          {item.department}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 tabular-nums">
+                          {new Date(item.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                        <p className="text-[8px] text-slate-400 font-black uppercase tracking-tighter">
+                          น.
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-10 text-center space-y-3">
+                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">ไม่มีข้อมูลการลงเวลา</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Department Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl shadow-black/3 group relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                    สถิติ <span className="text-indigo-500">แผนก</span>
+                  </h3>
+                  <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest mt-1">
+                    การเข้างานแยกตามฝ่าย
+                  </p>
+                </div>
+                <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl">
+                  <Building2 size={20} />
+                </div>
+              </div>
+
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={departmentStats} layout="vertical">
+                    <XAxis type="number" hide />
+                    <YAxis 
+                      dataKey="_id" 
+                      type="category" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: "#94a3b8", fontSize: 9, fontWeight: 800 }}
+                      width={80}
+                    />
+                    <RechartsTooltip 
+                      cursor={{ fill: "transparent" }}
+                      contentStyle={{ 
+                        backgroundColor: "rgba(0,0,0,0.8)", 
+                        borderRadius: "16px", 
+                        border: "none",
+                        backdropFilter: "blur(10px)",
+                        color: "#fff"
+                      }}
+                    />
+                    <Bar 
+                      dataKey="count" 
+                      fill="#6366f1" 
+                      radius={[0, 8, 8, 0]} 
+                      barSize={12}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+          </div>
         </div>
 
         <div className="pt-16 pb-8 text-center border-t border-slate-100 dark:border-zinc-900">

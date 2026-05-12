@@ -593,19 +593,29 @@ export default function NavbarClient({
                                 </Link>
                               )}
                               {isSuperAdmin && (
-                                <Link
-                                  href="/dashboard/data-management"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <ClipboardList size={14} className="opacity-40" /> ข้อมูลลงเวลา
-                                </Link>
+                                <>
+                                  <Link
+                                    href="/dashboard/data-management"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <ClipboardList size={14} className="opacity-40" />{" "}
+                                    แก้ไขข้อมูลการลงเวลา
+                                  </Link>
+                                  <Link
+                                    href="/work-reports-management"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <FileText size={14} className="opacity-40" />{" "}
+                                    แก้ไขรายงานการทำงาน
+                                  </Link>
+                                </>
                               )}
                               {(isSuperAdmin || canManageAttendanceReport) && (
                                 <Link
                                   href="/attendance-report"
                                   className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                                 >
-                                  <Clock size={14} className="opacity-40" /> ออกรายงานสรุป
+                                  <Clock size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageAttendanceWorkReports) && (
@@ -613,7 +623,8 @@ export default function NavbarClient({
                                   href="/work-reports"
                                   className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                                 >
-                                  <FileText size={14} className="opacity-40" /> ตรวจสอบรายงานงาน
+                                  <FileText size={14} className="opacity-40" />{" "}
+                                  ระบบรายงานการปฏิบัติงาน
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
@@ -621,7 +632,8 @@ export default function NavbarClient({
                                   href="/leave-approvals"
                                   className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                                 >
-                                  <CalendarCheck size={14} className="opacity-40" /> อนุมัติใบลา
+                                  <CalendarCheck size={14} className="opacity-40" />{" "}
+                                  ระบบอนุมัติการลางาน
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageRolesAdvanced) && (
@@ -629,7 +641,7 @@ export default function NavbarClient({
                                   href="/manage-roles"
                                   className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                                 >
-                                  <UserCog size={14} className="opacity-40" /> กำหนดบทบาท
+                                  <UserCog size={14} className="opacity-40" /> จัดการ สิทธิ์บุคลากร
                                 </Link>
                               )}
                               {(isSuperAdmin || canManageAttendanceSettings) && (
@@ -637,7 +649,7 @@ export default function NavbarClient({
                                   href="/attendance-settings"
                                   className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                                 >
-                                  <Settings size={14} className="opacity-40" /> ตั้งค่าเวลาเข้างาน
+                                  <Settings size={14} className="opacity-40" /> ตั้งค่าระบบลงเวลา
                                 </Link>
                               )}
                             </div>
@@ -649,7 +661,7 @@ export default function NavbarClient({
                     {/* ส่วนท้ายเมนู (Footer) */}
                     <div className="p-3 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/30">
                       <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest px-2">
-                        <span>KTL Management</span>
+                        <span>KTL by AllMaster</span>
                         <span>v3.0</span>
                       </div>
                     </div>

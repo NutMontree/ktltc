@@ -58,6 +58,7 @@ export default function ManageRolesPage() {
   const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(20);
 
   const currentUserRole = (session?.user as any)?.role;
   const isSuperAdmin = currentUserRole === "super_admin";
@@ -99,6 +100,7 @@ export default function ManageRolesPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchData(searchQuery);
+      setVisibleCount(20); // Reset pagination on search
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -119,7 +121,7 @@ export default function ManageRolesPage() {
             borderRadius: "1rem",
           },
         });
-        fetchData();
+        fetchData(searchQuery);
       }
     } catch (error) {
       toast.error("เปลี่ยนสิทธิ์ไม่สำเร็จ");
@@ -142,7 +144,7 @@ export default function ManageRolesPage() {
             borderRadius: "1rem",
           },
         });
-        fetchData(searchQuery); // Re-fetch current state
+        fetchData(searchQuery);
       }
     } catch (error) {
       toast.error("เปลี่ยนสังกัดไม่สำเร็จ");
@@ -171,7 +173,8 @@ export default function ManageRolesPage() {
     return avatarColors[index % avatarColors.length];
   };
 
-  const filteredUsers = users;
+  const filteredUsers = users.slice(0, visibleCount);
+  const hasMore = users.length > visibleCount;
 
   if (loading && users.length === 0) {
     return (
@@ -185,58 +188,58 @@ export default function ManageRolesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-8 md:p-12 font-sans selection:bg-blue-500/30 overflow-x-hidden relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans selection:bg-blue-500/30 overflow-x-hidden relative">
       <Toaster position="top-right" />
 
       {/* Background Blobs */}
       <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+      <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         {/* Header section */}
-        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-8 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-12">
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <Link
-                href="/dashboard"
-                className="p-3 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-800 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500/20 transition-all active:scale-95"
-              >
-                <ArrowLeft size={20} />
-              </Link>
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
-                <UserCog className="w-3.5 h-3.5 text-blue-600" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">
-                  Personnel RBAC
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="text-4xl sm:text-6xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
-                จัดการ <span className="text-blue-600 italic">สิทธิ์บุคลากร</span>
-              </h1>
-              <p className="text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-[0.2em] text-xs sm:text-sm flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                Administrative Role & Department Management Hub
-              </p>
-            </div>
+        <div className="bg-white dark:bg-zinc-900 px-6 py-10 md:p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-zinc-800 relative overflow-hidden group w-full">
+          <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none">
+            <UserCog size={220} />
           </div>
-
-          <div className="flex flex-col gap-6 w-full xl:w-auto">
-            <div className="w-full xl:w-96 group">
-              <div className="relative">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
-                  size={20}
-                />
-                <input
-                  type="text"
-                  placeholder="ค้นหาตามชื่อ หรือ USERNAME..."
-                  className="w-full pl-12 pr-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-sm group-hover:shadow-lg"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+          
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/dashboard"
+                  className="p-3 bg-slate-50 dark:bg-zinc-800 rounded-2xl text-slate-400 hover:text-blue-500 transition-all active:scale-95 border border-slate-100 dark:border-zinc-700"
+                >
+                  <ArrowLeft size={20} />
+                </Link>
+                <div className="p-5 bg-linear-to-br from-blue-500 to-indigo-600 text-white rounded-3xl shadow-lg shadow-blue-500/20">
+                  <ShieldCheck size={32} />
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-4xl font-black text-slate-800 dark:text-zinc-100 uppercase tracking-tight leading-none">
+                    จัดการ <span className="text-blue-600 italic">สิทธิ์บุคลากร</span>
+                  </h1>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                      Administrative Role & Department Management
+                    </span>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div className="relative w-full md:w-96 group">
+              <Search
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
+                size={20}
+              />
+              <input
+                type="text"
+                placeholder="ค้นหาตามชื่อ หรือ USERNAME..."
+                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-[1.5rem] focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -246,7 +249,7 @@ export default function ManageRolesPage() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {filteredUsers.map((user) => {
             const isProtected =
@@ -257,17 +260,17 @@ export default function ManageRolesPage() {
               <motion.div
                 key={user._id}
                 variants={item}
-                className="group relative p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-4xl shadow-sm hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 hover:-translate-y-1"
+                className="group relative p-6 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] shadow-xl shadow-slate-200/40 dark:shadow-black/10 hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 hover:-translate-y-1.5"
               >
                 {isProtected && (
-                  <div className="absolute top-4 right-4 text-rose-500/40">
-                    <Lock size={18} />
+                  <div className="absolute top-6 right-6 p-2 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl">
+                    <Lock size={16} />
                   </div>
                 )}
 
-                <div className="flex items-start gap-4 mb-8">
+                <div className="flex items-center gap-5 mb-8">
                   <div
-                    className={`w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-white font-black shadow-inner relative transition-all duration-300 group-hover:scale-105 ${user.image ? "bg-zinc-100" : getAvatarColor(user._id)}`}
+                    className={`w-16 h-16 rounded-[1.25rem] overflow-hidden flex items-center justify-center text-white font-black shadow-lg relative transition-all duration-300 group-hover:scale-110 ${user.image ? "bg-zinc-100" : getAvatarColor(user._id)}`}
                   >
                     {user.image ? (
                       <img
@@ -276,14 +279,14 @@ export default function ManageRolesPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-xl">{getInitials(user.name)}</span>
+                      <span className="text-2xl">{getInitials(user.name)}</span>
                     )}
                   </div>
                   <div className="flex-1 overflow-hidden">
-                    <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100 truncate uppercase tracking-tight">
+                    <h3 className="text-lg font-black text-slate-800 dark:text-zinc-100 truncate uppercase tracking-tight">
                       {user.name}
                     </h3>
-                    <p className="text-xs font-black text-blue-500 uppercase tracking-widest mt-0.5 opacity-80 italic">
+                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mt-1 opacity-70 italic">
                       @{user.username}
                     </p>
                   </div>
@@ -291,16 +294,16 @@ export default function ManageRolesPage() {
 
                 <div className="space-y-6">
                   {/* Role Select */}
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 flex items-center gap-2">
-                      <ShieldCheck size={12} /> บทบาทสิทธิ์
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.2em] pl-1 flex items-center gap-2">
+                      <Shield size={14} className="text-indigo-500" /> บทบาทสิทธิ์
                     </label>
                     <div className="relative">
                       <select
                         value={user.role}
                         onChange={(e) => changeRole(user._id, e.target.value, user.name)}
                         disabled={isProtected}
-                        className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+                        className={`w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-2xl p-4 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none shadow-inner ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
                         {roles.map((roleKey) => (
                           <option key={roleKey} value={roleKey}>
@@ -310,7 +313,7 @@ export default function ManageRolesPage() {
                       </select>
                       {!isProtected && (
                         <ChevronRight
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 rotate-90"
                           size={14}
                         />
                       )}
@@ -318,16 +321,16 @@ export default function ManageRolesPage() {
                   </div>
 
                   {/* Department Select */}
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 flex items-center gap-2">
-                      <Building2 size={12} /> สังกัด / แผนก
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.2em] pl-1 flex items-center gap-2">
+                      <Building2 size={14} className="text-blue-500" /> สังกัด / แผนก
                     </label>
                     <div className="relative">
                       <select
                         value={user.department || "ไม่มีสังกัด"}
                         onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
                         disabled={isProtected}
-                        className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+                        className={`w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-2xl p-4 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none shadow-inner ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
                         <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
                         <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
@@ -419,7 +422,7 @@ export default function ManageRolesPage() {
                       </select>
                       {!isProtected && (
                         <ChevronRight
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 rotate-90"
                           size={14}
                         />
                       )}
@@ -427,15 +430,15 @@ export default function ManageRolesPage() {
                   </div>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-slate-50 dark:border-zinc-800 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
-                      Current: {roleLabels[user.role] || user.role}
+                <div className="mt-8 pt-5 border-t border-slate-50 dark:border-zinc-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${isProtected ? 'bg-rose-500' : 'bg-emerald-500'} animate-pulse`} />
+                    <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                      Active: {roleLabels[user.role] || user.role}
                     </span>
                   </div>
-                  <div className="p-1 text-slate-300 hover:text-blue-500 transition-colors">
-                    <MoreVertical size={14} />
+                  <div className="p-2 bg-slate-50 dark:bg-zinc-800/50 rounded-xl text-slate-300 dark:text-zinc-600 hover:text-blue-500 transition-colors cursor-pointer">
+                    <ArrowLeft size={16} className="rotate-180" />
                   </div>
                 </div>
               </motion.div>
@@ -443,8 +446,21 @@ export default function ManageRolesPage() {
           })}
         </motion.div>
 
+        {/* Load More Button */}
+        {hasMore && (
+          <div className="flex justify-center pt-12 pb-8">
+            <button
+              onClick={() => setVisibleCount(prev => prev + 20)}
+              className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-full font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-xl shadow-slate-200/50 dark:shadow-none hover:bg-slate-50 dark:hover:bg-zinc-800 active:scale-95 text-slate-800 dark:text-zinc-200"
+            >
+              <Users className="group-hover:rotate-12 transition-transform" size={18} />
+              โหลดข้อมูลพนักงานเพิ่มอีก 20 ท่าน
+            </button>
+          </div>
+        )}
+
         <AnimatePresence>
-          {filteredUsers.length === 0 && (
+          {users.length === 0 && !loading && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -469,3 +485,4 @@ export default function ManageRolesPage() {
     </div>
   );
 }
+

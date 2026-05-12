@@ -18,15 +18,8 @@ import {
   RefreshCcw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const ROLE_TH: Record<string, string> = {
-  all: "ทั้งหมด",
-  teacher: "ครู",
-  staff: "เจ้าหน้าที่",
-  janitor: "แม่บ้าน/นักการ",
-  hr: "ฝ่ายบุคคล",
-  director: "ผู้บริหาร",
-};
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function AdminWorkReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
@@ -35,6 +28,26 @@ export default function AdminWorkReportsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<any | null>(null);
   const [showDailyDetailModal, setShowDailyDetailModal] = useState<any | null>(null);
+  const [roleMap, setRoleMap] = useState<Record<string, string>>({ all: "ทั้งหมด" });
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch("/api/admin/role-settings");
+        const data = await res.json();
+        const map: Record<string, string> = { all: "ทั้งหมด" };
+        data.forEach((r: any) => {
+          if (r.role !== "system_global") {
+            map[r.role] = r.roleName;
+          }
+        });
+        setRoleMap(map);
+      } catch (err) {
+        console.error("Failed to fetch roles", err);
+      }
+    };
+    fetchRoles();
+  }, []);
 
   const getInitials = (name: string) => {
     return name ? name.trim().charAt(0).toUpperCase() : "?";
@@ -115,100 +128,59 @@ export default function AdminWorkReportsPage() {
     fetchReports(1);
   }, [startDate, endDate, roleFilter]);
 
-  const exportToCSV = () => {
+  const exportToExcel = () => {
     if (reports.length === 0) {
       alert("ไม่พบข้อมูลที่จะส่งออกครับ");
       return;
     }
 
-    const summaryRows = [
-      ["รายงานการปฏิบัติงาน (Work Report Summary)"],
-      [`ช่วงวันที่`, `${startDate} ถึง ${endDate}`],
-      [`หมวดหมู่พนักงาน`, `${ROLE_TH[roleFilter] || roleFilter}`],
-      [`จำนวนรายงานที่โหลด`, `${reports.length} รายการ`],
-      [`จำนวนรายงานทั้งหมดในระบบ`, `${total} รายการ`],
-      [`วันที่ส่งออกไฟล์`, `${new Date().toLocaleString("th-TH")}`],
-      [],
-    ];
+    const dataRows = reports.map((r) => {
+      const d = new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
+      const roleName = roleMap[r.user?.role] || r.user?.role || "-";
+      const totalTasks = r.activities?.length || 0;
+      const completedTasks = r.activities?.filter((a: any) => a.status === "Completed").length || 0;
+      const activityDetails = r.activities?.map((a: any, i: number) => `${i + 1}. ${a.taskName}${a.detail ? ` (${a.detail})` : ""} [${a.status}]`).join(" | ") || "ไม่มีกิจกรรม";
 
-    const headers = [
-      "วันที่",
-      "ชื่อ-สกุล",
-      "ตำแหน่ง",
-      "แผนก",
-      "สรุปภาพรวม",
-      "จำนวนงานทั้งหมด",
-      "จำนวนงานที่เสร็จ",
-      "รายละเอียดงาน (Activities)",
-      "ปัญหาที่พบ",
-      "แผนงานวันถัดไป",
-    ];
-
-    const escape = (val: any) => `"${String(val || "").replace(/"/g, '""')}"`;
-
-    const csvContent = [
-      ...summaryRows.map((row) => row.map(escape).join(",")),
-      headers.map(escape).join(","),
-      ...reports.map((r) => {
-        const d = new Date(r.date).toLocaleDateString("th-TH", {
-          timeZone: "Asia/Bangkok",
-        });
-        const roleName = ROLE_TH[r.user?.role] || r.user?.role || "-";
-
-        const totalTasks = r.activities?.length || 0;
-        const completedTasks =
-          r.activities?.filter((a: any) => a.status === "Completed").length ||
-          0;
-
-        // Detailed activities string
-        const activityDetails =
-          r.activities
-            ?.map(
-              (a: any, i: number) =>
-                `${i + 1}. ${a.taskName}${a.detail ? ` (${a.detail})` : ""} [${a.status}]`,
-            )
-            .join(" | ") || "ไม่มีกิจกรรม";
-
-        return [
-          d,
-          r.user?.name || "-",
-          roleName,
-          r.user?.department || "-",
-          r.summary || "-",
-          totalTasks,
-          completedTasks,
-          activityDetails,
-          r.problems || "-",
-          r.plansNextDay || "-",
-        ]
-          .map(escape)
-          .join(",");
-      }),
-      [],
-      ["--- รายชื่อผู้ที่ไม่ส่งรายงานแยกตามวัน ---"],
-      ["วันที่", "ชื่อ-สกุล", "ตำแหน่ง", "แผนก", "สถานะการส่งรายงาน"].map(escape).join(","),
-      ...dailySummary.flatMap((summary: any) => {
-        const d = new Date(summary.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
-        return summary.missingUsers.map((u: any) => [
-            d,
-            u.name,
-            ROLE_TH[u.role] || u.role || "-",
-            u.department || "-",
-            "ไม่ส่งรายงาน"
-        ].map(escape).join(','));
-      })
-    ].join("\n");
-
-    const blob = new Blob(["\uFEFF" + csvContent], {
-      type: "text/csv;charset=utf-8;",
+      return {
+        "วันที่": d,
+        "ชื่อ-สกุล": r.user?.name || "-",
+        "ตำแหน่ง": roleName,
+        "แผนก": r.user?.department || "-",
+        "สรุปภาพรวม": r.summary || "-",
+        "จำนวนงานทั้งหมด": totalTasks,
+        "จำนวนงานที่เสร็จ": completedTasks,
+        "รายละเอียดงาน (Activities)": activityDetails,
+        "ปัญหาที่พบ": r.problems || "-",
+        "แผนงานวันถัดไป": r.plansNextDay || "-"
+      };
     });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `work_report_${startDate}_to_${endDate}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    const missingDataRows = dailySummary.flatMap((summary: any) => {
+      const d = new Date(summary.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
+      return summary.missingUsers.map((u: any) => ({
+        "วันที่": d,
+        "ชื่อ-สกุล": u.name,
+        "ตำแหน่ง": roleMap[u.role] || u.role || "-",
+        "แผนก": u.department || "-",
+        "สถานะการส่งรายงาน": "ไม่ส่งรายงาน"
+      }));
+    });
+
+    const wb = XLSX.utils.book_new();
+    
+    // Sheet 1: รายงานการปฏิบัติงาน
+    const ws1 = XLSX.utils.json_to_sheet(dataRows);
+    XLSX.utils.book_append_sheet(wb, ws1, "Work Reports");
+
+    // Sheet 2: ผู้ที่ไม่ส่งรายงาน
+    if (missingDataRows.length > 0) {
+      const ws2 = XLSX.utils.json_to_sheet(missingDataRows);
+      XLSX.utils.book_append_sheet(wb, ws2, "Missing Reports");
+    }
+
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const finalData = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+    saveAs(finalData, `work_report_${startDate}_to_${endDate}.xlsx`);
   };
 
   const filteredReports = reports.filter(
@@ -237,7 +209,7 @@ export default function AdminWorkReportsPage() {
           </div>
 
           <button
-            onClick={exportToCSV}
+            onClick={exportToExcel}
             className="group relative flex items-center gap-3 bg-linear-to-br from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-indigo-500/50 dark:border-slate-200"
           >
             <div className="absolute -top-1 -right-1 flex h-4 w-4">
@@ -248,7 +220,7 @@ export default function AdminWorkReportsPage() {
               size={22}
               className="group-hover:translate-y-0.5 transition-transform"
             />
-            <span className="tracking-tight text-lg">ออกแบบรายงาน (CSV)</span>
+            <span className="tracking-tight text-lg">ดาวน์โหลดรายงาน (Excel)</span>
           </button>
         </div>
 
@@ -283,7 +255,7 @@ export default function AdminWorkReportsPage() {
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-sm appearance-none"
               >
-                {Object.entries(ROLE_TH).map(([val, label]) => (
+                {Object.entries(roleMap).map(([val, label]) => (
                   <option key={val} value={val}>
                     {label} ({val.toUpperCase()})
                   </option>
@@ -782,7 +754,7 @@ export default function AdminWorkReportsPage() {
                            </div>
                            <div>
                              <p className="text-xs font-bold text-slate-800 dark:text-neutral-200">{u.name}</p>
-                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{ROLE_TH[u.role] || u.role} • {u.department}</p>
+                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{roleMap[u.role] || u.role} • {u.department}</p>
                            </div>
                          </div>
                        ))}
@@ -808,7 +780,7 @@ export default function AdminWorkReportsPage() {
                            </div>
                            <div>
                              <p className="text-xs font-bold text-slate-700 dark:text-neutral-300">{u.name}</p>
-                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{ROLE_TH[u.role] || u.role} • {u.department}</p>
+                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{roleMap[u.role] || u.role} • {u.department}</p>
                            </div>
                          </div>
                        ))}

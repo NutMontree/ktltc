@@ -15,6 +15,7 @@ import {
   Download,
   X,
   Maximize2,
+  Loader2,
 } from "lucide-react";
 
 export default function LeaveApprovalsPage() {
@@ -25,6 +26,20 @@ export default function LeaveApprovalsPage() {
   const [hasMore, setHasMore] = useState(true);
   const [filter, setFilter] = useState("pending"); // pending, approved, rejected, all
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const getInitials = (name: string) => {
+    return name ? name.trim().charAt(0).toUpperCase() : "?";
+  };
+
+  const getAvatarBg = (name: string) => {
+    const colors = [
+      "bg-emerald-500", "bg-indigo-500", "bg-blue-500",
+      "bg-purple-500", "bg-rose-500", "bg-amber-500",
+      "bg-cyan-500", "bg-violet-500",
+    ];
+    const index = (name || "").length % colors.length;
+    return colors[index];
+  };
 
   const LIMIT = 20;
 
@@ -153,14 +168,19 @@ export default function LeaveApprovalsPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl md:rounded-3xl p-4 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
-          <div className="flex-1">
-            <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-              <ShieldCheck className="text-indigo-500" /> ระบบอนุมัติการลางาน
-            </h1>
-            <p className="text-slate-500 text-sm mt-1">
-              ทบทวนและอนุมัติคำขอลาป่วย ลากิจ และตรวจสอบใบรับรองแพทย์
-            </p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-zinc-900 p-4 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-zinc-800">
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
+              <ShieldCheck size={32} />
+            </div>
+            <div>
+              <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                ระบบอนุมัติการลางาน
+              </h1>
+              <p className="text-sm text-slate-500 font-medium mt-1">
+                ทบทวนและอนุมัติคำขอลาป่วย ลากิจ และตรวจสอบใบรับรองแพทย์
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -187,23 +207,30 @@ export default function LeaveApprovalsPage() {
             </div>
             <button
               onClick={exportToCSV}
-              className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold transition-all shadow-sm shadow-emerald-500/20 active:scale-95 shrink-0"
+              className="group relative flex items-center gap-3 bg-linear-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-emerald-500/50 dark:border-slate-200"
               title="Export ข้อมูลเป็นไฟล์ CSV/Excel"
             >
-              <Download size={18} />{" "}
-              <span className="hidden sm:inline">ส่งออกข้อมูล</span>
+              <div className="absolute -top-1 -right-1 flex h-4 w-4">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
+              </div>
+              <Download size={22} className="group-hover:translate-y-0.5 transition-transform" /> 
+              <span className="tracking-tight text-lg hidden sm:inline">ส่งออกข้อมูล</span>
             </button>
           </div>
         </div>
 
         {/* List */}
-        <div className="space-y-4">
-          {loading ? (
-            <div className="text-center py-20 text-slate-400 font-medium animate-pulse">
-              กำลังโหลดข้อมูล...
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {loading && leaves.length === 0 ? (
+            <div className="col-span-full py-20 text-center">
+              <Loader2 size={40} className="animate-spin text-blue-500 mx-auto mb-4" />
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">
+                กำลังโหลดข้อมูล...
+              </p>
             </div>
           ) : leaves.length === 0 ? (
-            <div className="bg-white dark:bg-zinc-900 rounded-3xl p-12 text-center border border-slate-200 dark:border-zinc-800 shadow-sm">
+            <div className="col-span-full py-20 text-center bg-white dark:bg-zinc-900 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-zinc-800">
               <Calendar className="w-16 h-16 text-slate-300 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">
                 ไม่มีข้อมูลคำขอลา
@@ -217,86 +244,92 @@ export default function LeaveApprovalsPage() {
               {leaves.map((leave, idx) => (
                 <motion.div
                   key={leave._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="bg-white dark:bg-zinc-900 rounded-2xl p-4 border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col lg:flex-row gap-6 hover:shadow-md transition-shadow"
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ y: -5 }}
+                  className="bg-white dark:bg-zinc-900 p-4 rounded-4xl border border-slate-100 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all group relative overflow-hidden flex flex-col"
                 >
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+                    <FileText size={80} />
+                  </div>
+
                   {/* User Info & Dates */}
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                          {leave.user?.name ||
-                            leave.user?.username ||
-                            "ไม่ระบุชื่อบุคลากร"}
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusColor(leave.status)}`}
-                          >
-                            {leave.status}
-                          </span>
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-1 flex items-center gap-1.5 hover:text-slate-700 transition-colors">
-                          <span className="font-semibold text-indigo-600 dark:text-indigo-400">
-                            {getTypeLabel(leave.leaveType)}
-                          </span>
-                          &bull; ขอเอกสารเมื่อ{" "}
-                          {format(
-                            new Date(leave.createdAt),
-                            "dd MMM yyyy HH:mm",
-                            { locale: th },
-                          )}
+                  <div className="flex items-center gap-4 mb-5">
+                    {leave.user?.image ? (
+                      <img src={leave.user.image} alt={leave.user?.name} className="w-14 h-14 rounded-2xl object-cover shadow-lg border border-slate-100 dark:border-zinc-800" />
+                    ) : (
+                      <div className={`w-14 h-14 rounded-2xl ${getAvatarBg(leave.user?.name || "U")} flex items-center justify-center text-white font-black text-xl shadow-lg border border-slate-100 dark:border-zinc-800`}>
+                        {getInitials(leave.user?.name || "U")}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-black text-slate-800 dark:text-white text-lg leading-tight truncate">
+                        {leave.user?.name || leave.user?.username || "ไม่ระบุชื่อบุคลากร"}
+                      </h3>
+                      <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest leading-none mt-1 flex items-center gap-1.5 truncate">
+                        <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                          {getTypeLabel(leave.leaveType)}
+                        </span>
+                        • {leave.user?.department || "-"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 flex-1">
+                    <div className="flex items-center justify-between text-xs pb-3 border-b border-slate-100 dark:border-zinc-800/50">
+                      <span className="text-slate-500 font-bold flex items-center gap-1.5">
+                        <Calendar size={14} className="text-blue-500" /> 
+                        ขอเมื่อ {format(new Date(leave.createdAt), "dd MMM yy HH:mm", { locale: th })}
+                      </span>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight border ${getStatusColor(leave.status)}`}>
+                        {leave.status === "pending" ? "รออนุมัติ" : leave.status === "approved" ? "อนุมัติ" : "ปฏิเสธ"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-800 flex flex-col items-center justify-center text-center">
+                        <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                           <Clock size={12}/> เริ่มลา
                         </p>
+                        <span className="font-bold text-slate-700 dark:text-zinc-300 text-sm">
+                          {format(new Date(leave.startDate), "dd MMM yyyy", { locale: th })}
+                        </span>
+                      </div>
+                      <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-800 flex flex-col items-center justify-center text-center">
+                        <p className="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                           <Clock size={12}/> ถึงวันที่
+                        </p>
+                        <span className="font-bold text-slate-700 dark:text-zinc-300 text-sm">
+                          {format(new Date(leave.endDate), "dd MMM yyyy", { locale: th })}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-4 text-sm bg-slate-50 dark:bg-zinc-950 p-4 rounded-xl border border-slate-100 dark:border-zinc-800">
-                      <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
-                        <Clock size={16} className="text-indigo-500" />
-                        <strong>เริ่มลา:</strong>{" "}
-                        {format(new Date(leave.startDate), "dd MMM yyyy", {
-                          locale: th,
-                        })}
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
-                        <Clock size={16} className="text-indigo-500" />
-                        <strong>ถึง:</strong>{" "}
-                        {format(new Date(leave.endDate), "dd MMM yyyy", {
-                          locale: th,
-                        })}
-                      </div>
-                    </div>
-
-                    <div>
-                      <strong className="text-xs text-slate-400 uppercase tracking-widest">
-                        เหตุผล
+                    <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-800 text-xs">
+                      <strong className="text-[10px] text-slate-400 uppercase tracking-widest block mb-1">
+                        เหตุผลการลา
                       </strong>
-                      <p className="mt-1 text-slate-700 dark:text-zinc-300">
+                      <p className="text-slate-700 dark:text-zinc-300 truncate">
                         {leave.reason}
                       </p>
                     </div>
                   </div>
 
                   {/* Attachments & Actions */}
-                  <div className="lg:w-64 flex flex-col justify-between gap-4 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-zinc-800 pt-4 lg:pt-0 lg:pl-6">
-                    <div>
-                      <strong className="text-xs text-slate-400 uppercase tracking-widest block mb-2">
-                        เอกสารแนบ
-                      </strong>
-                      {leave.attachmentUrl ? (
-                        <button
-                          onClick={() => setSelectedImage(leave.attachmentUrl)}
-                          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-3 rounded-xl transition-colors font-medium border border-blue-100 w-full"
-                        >
-                          <FileText size={16} /> ดูรูปถ่าย/เอกสาร{" "}
-                          <Maximize2 size={14} />
-                        </button>
-                      ) : (
-                        <div className="text-sm text-slate-400 italic bg-slate-50 dark:bg-zinc-950 p-3 rounded-xl border border-slate-100 dark:border-zinc-800">
-                          ไม่มีไฟล์แนบส่งมา
-                        </div>
-                      )}
-                    </div>
+                  <div className="mt-4 flex flex-col justify-between gap-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
+                    {leave.attachmentUrl ? (
+                      <button
+                        onClick={() => setSelectedImage(leave.attachmentUrl)}
+                        className="flex justify-center items-center gap-2 text-xs text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 p-2 rounded-xl transition-colors font-bold w-full"
+                      >
+                        <FileText size={14} /> ดูเอกสารแนบ <Maximize2 size={12} />
+                      </button>
+                    ) : (
+                      <div className="text-xs text-center text-slate-400 italic p-2 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-dashed border-slate-200 dark:border-zinc-800">
+                        ไม่มีเอกสารแนบ
+                      </div>
+                    )}
 
                     {leave.status === "pending" && (
                       <div className="flex gap-2 mt-auto">
@@ -324,14 +357,14 @@ export default function LeaveApprovalsPage() {
 
               {/* Load More Button */}
               {hasMore && (
-                <div className="flex justify-center pt-8">
+                <div className="col-span-full flex justify-center pt-8">
                   <button
                     onClick={() => fetchLeaves(true)}
                     disabled={loadingMore}
                     className={`flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black text-sm transition-all shadow-lg active:scale-95 ${
                       loadingMore
                         ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                        : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
+                        : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20"
                     }`}
                   >
                     {loadingMore ? (

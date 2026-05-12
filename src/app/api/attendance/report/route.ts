@@ -72,7 +72,8 @@ export async function GET(req: Request) {
           name: { $ifNull: ["$userDetails.name", { $ifNull: ["$userDetails.username", "Unknown User"] }] },
           email: { $ifNull: ["$userDetails.email", ""] },
           role: { $ifNull: ["$userDetails.role", ""] },
-          department: { $ifNull: ["$userDetails.department", "ไม่มีสังกัด"] }
+          department: { $ifNull: ["$userDetails.department", "ไม่มีสังกัด"] },
+          image: { $ifNull: ["$userDetails.image", ""] }
         },
         checkInTime: "$checkIn.time",
         checkOutTime: "$checkOut.time",
@@ -139,7 +140,8 @@ export async function GET(req: Request) {
               name: u.name || u.username || "Unknown",
               email: u.email || "",
               role: u.role || "",
-              department: u.department || "ไม่มีสังกัด"
+              department: u.department || "ไม่มีสังกัด",
+              image: u.image || ""
             },
             checkInTime: null,
             checkOutTime: null,

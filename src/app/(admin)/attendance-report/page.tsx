@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, Search, FileText, Loader2, X, Camera, Calendar } from "lucide-react";
+import { Download, Search, FileText, Loader2, X, Camera, Calendar, Clock, AlertCircle } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { motion, AnimatePresence } from "framer-motion";
 
 const STATUS_TH: Record<string, string> = {
   Present: "มาทำงาน",
@@ -11,15 +12,6 @@ const STATUS_TH: Record<string, string> = {
   Absent: "ขาดงาน",
   Leave: "ลางาน",
   Holiday: "วันหยุด",
-};
-
-const ROLE_TH: Record<string, string> = {
-  all: "ทั้งหมด",
-  teacher: "ครู",
-  staff: "เจ้าหน้าที่",
-  janitor: "แม่บ้าน/นักการ",
-  hr: "ฝ่ายบุคคล",
-  director: "ผู้บริหาร",
 };
 
 type PhotoPreview = {
@@ -49,6 +41,27 @@ export default function AttendanceReportPage() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [roleMap, setRoleMap] = useState<Record<string, string>>({ all: "ทั้งหมด" });
+  const [visibleRecordsCount, setVisibleRecordsCount] = useState(20);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch("/api/admin/role-settings");
+        const data = await res.json();
+        const map: Record<string, string> = { all: "ทั้งหมด" };
+        data.forEach((r: any) => {
+          if (r.role !== "system_global") {
+            map[r.role] = r.roleName;
+          }
+        });
+        setRoleMap(map);
+      } catch (err) {
+        console.error("Failed to fetch roles", err);
+      }
+    };
+    fetchRoles();
+  }, []);
 
   const fetchRecords = async () => {
     setLoading(true);
@@ -104,6 +117,7 @@ export default function AttendanceReportPage() {
   };
 
   useEffect(() => {
+    setVisibleRecordsCount(20);
     fetchRecords();
   }, [startDate, endDate, roleFilter]);
 
@@ -126,7 +140,7 @@ export default function AttendanceReportPage() {
       return {
         "วันที่": new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" }),
         "ชื่อ-นามสกุล": r.user?.name || "-",
-        "ตำแหน่ง": ROLE_TH[r.user?.role] || r.user?.role || "-",
+        "ตำแหน่ง": roleMap[r.user?.role] || r.user?.role || "-",
         "แผนก/สังกัด": r.user?.department || "-",
         "เวลาเข้า": inDate ? inDate.toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok", hour: '2-digit', minute: '2-digit', hour12: false }) : "-",
         "เวลาออก": outDate ? outDate.toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok", hour: '2-digit', minute: '2-digit', hour12: false }) : "-",
@@ -209,16 +223,16 @@ export default function AttendanceReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 py-4 px-2 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-neutral-900 p-3 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-neutral-900 p-4 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800">
           <div className="flex items-center gap-4">
-            <div className="p-4 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl">
-              <FileText size={28} />
+            <div className="p-4 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl">
+              <FileText size={32} />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-slate-800 dark:text-neutral-100">
+              <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-neutral-100 uppercase tracking-tight">
                 ระบบรายงานการเข้างาน
               </h1>
               <p className="text-sm text-slate-500 font-medium mt-1">
@@ -229,92 +243,111 @@ export default function AttendanceReportPage() {
 
           <button
             onClick={exportToExcel}
-            className="group relative flex items-center gap-3 bg-linear-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-emerald-500/50"
+            className="group relative flex items-center gap-3 bg-linear-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-emerald-500/50 dark:border-slate-200"
           >
+            <div className="absolute -top-1 -right-1 flex h-4 w-4">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
+            </div>
             <Download size={22} className="group-hover:translate-y-0.5 transition-transform" /> 
             <span className="tracking-tight text-lg">ดาวน์โหลดรายงาน (Excel)</span>
           </button>
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 p-4 rounded-4xl shadow-sm border border-slate-100 dark:border-neutral-800">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            <div className="w-full">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
-                ค้นหารายชื่อพนักงาน
+        <div className="bg-white dark:bg-neutral-900 p-4 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-5 gap-4 items-end w-full">
+          <div className="md:col-span-2">
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
+              ค้นหารายชื่อพนักงาน
+            </label>
+            <div className="relative">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                size={18}
+              />
+              <input
+                type="text"
+                placeholder="พิมพ์ชื่อพนักงาน..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="md:col-span-1">
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
+              หมวดหมู่พนักงาน
+            </label>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-sm appearance-none"
+            >
+              {Object.entries(roleMap).map(([val, label]) => (
+                <option key={val} value={val}>
+                  {label} ({val.toUpperCase()})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="md:col-span-1 flex gap-4">
+            <div className="flex-1">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
+                วันที่เริ่มต้น
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Search size={18} />
-                </div>
+                <Calendar
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
                 <input
-                  type="text"
-                  placeholder="พิมพ์ชื่อพนักงาน..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 pr-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-700 dark:text-neutral-200"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
                 />
               </div>
             </div>
+          </div>
 
-            <div className="w-full">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
-                หมวดหมู่พนักงาน
-              </label>
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200 appearance-none"
-              >
-                <option value="all">ทั้งหมด (ALL)</option>
-                <option value="teacher">ครู (TEACHER)</option>
-                <option value="staff">เจ้าหน้าที่ (STAFF)</option>
-                <option value="janitor">ภารโรง (JANITOR)</option>
-                <option value="hr">ฝ่ายบุคคล (HR)</option>
-                <option value="director">ผู้บริหาร (DIRECTOR)</option>
-              </select>
-            </div>
-
-            <div className="w-full">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
-                วันที่เริ่มต้น
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="px-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200"
+          <div className="md:col-span-1">
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
+              วันที่สิ้นสุด
+            </label>
+            <div className="relative">
+              <Calendar
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                size={18}
               />
-            </div>
-
-            <div className="w-full">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
-                วันที่สิ้นสุด
-              </label>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="px-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200"
+                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
               />
             </div>
           </div>
         </div>
 
         {/* Legend & Stats */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 px-1">
-          <p className="text-xs text-slate-400 dark:text-neutral-500 flex items-center gap-1.5 font-medium">
-            <Camera size={12} className="text-blue-500" />
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md px-8 py-4 rounded-3xl border border-white/20 dark:border-neutral-800 shadow-sm mb-4 gap-4">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 flex items-center gap-1.5 font-bold">
+            <Camera size={14} className="text-blue-500" />
             เวลาที่มีไอคอนกล้อง = คลิกเพื่อดูรูปหลักฐานพนักงาน
           </p>
-          <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 px-3 py-1.5 rounded-full border border-slate-100 dark:border-neutral-800 shadow-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-[10px] md:text-xs font-black text-slate-600 dark:text-neutral-400 uppercase tracking-widest">
-              พบ {filteredRecords.length} รายการ
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Search size={16} className="text-blue-500" />
+              <span className="text-sm font-bold text-slate-600 dark:text-neutral-400">
+                แสดงอยู่:{" "}
+                <span className="text-slate-900 dark:text-white font-black">
+                  {filteredRecords.length}
+                </span>{" "}
+                รายการ
+              </span>
+            </div>
           </div>
         </div>
 
@@ -380,151 +413,109 @@ export default function AttendanceReportPage() {
           </div>
         )}
 
-        {/* Table Section */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[700px] md:min-w-full">
-              <thead>
-                <tr className="bg-slate-50/50 dark:bg-neutral-800/50 border-b border-slate-100 dark:border-neutral-800 text-slate-500 dark:text-neutral-400">
-                  {/* ปรับ text-xs สำหรับมือถือ และ text-sm สำหรับจอใหญ่ */}
-                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
-                    วันที่
-                  </th>
-                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
-                    พนักงาน
-                  </th>
-                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
-                    สังกัด / แผนก
-                  </th>
-                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
-                    เข้างาน{" "}
-                    <span className="hidden sm:inline text-[10px] text-sky-600 font-normal">
-                      (📷=มีรูป)
-                    </span>
-                  </th>
-                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
-                    ออกงาน{" "}
-                    <span className="hidden sm:inline text-[10px] text-sky-600 font-normal">
-                      (📷=มีรูป)
-                    </span>
-                  </th>
-                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm text-center">
-                    OT
-                  </th>
-                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm">
-                    สถานะ
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-neutral-800">
-                {loading ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
-                      <Loader2
-                        size={24}
-                        className="animate-spin mx-auto mb-2 text-blue-500"
-                      />
-                      <span className="text-xs md:text-sm text-slate-400">
-                        กำลังโหลด...
-                      </span>
-                    </td>
-                  </tr>
-                ) : filteredRecords.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-12 text-center text-xs md:text-sm text-slate-400 font-medium"
-                    >
-                      ไม่พบข้อมูลการลงเวลา
-                    </td>
-                  </tr>
-                ) : (
-                  filteredRecords.map((r) => (
-                    <tr
-                      key={r.id}
-                      className="hover:bg-slate-50/80 dark:hover:bg-neutral-800/40 transition-colors"
-                    >
-                      {/* วันที่: ปรับขนาดฟอนต์ให้เล็กลงในมือถือ */}
-                      <td className="px-3 md:px-4 py-3 text-xs md:text-sm font-medium text-slate-700 dark:text-neutral-300 whitespace-nowrap">
-                        {new Date(r.date).toLocaleDateString("th-TH", {
-                          timeZone: "Asia/Bangkok",
-                          day: "numeric",
-                          month: "short",
-                          year: "2-digit", // ใช้ปีแบบสั้นเพื่อประหยัดพื้นที่
-                        })}
-                      </td>
+        {/* Reports Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <AnimatePresence mode="popLayout">
+            {loading && filteredRecords.length === 0 ? (
+              <div className="col-span-full py-20 text-center">
+                <Loader2 size={40} className="animate-spin text-blue-500 mx-auto mb-4" />
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">
+                  กำลังโหลดข้อมูล...
+                </p>
+              </div>
+            ) : filteredRecords.length === 0 ? (
+              <div className="col-span-full py-20 text-center bg-white dark:bg-neutral-900 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-neutral-800">
+                <AlertCircle size={48} className="text-slate-200 dark:text-neutral-800 mx-auto mb-4" />
+                <p className="text-slate-400 font-bold">ไม่พบข้อมูลการลงเวลา</p>
+              </div>
+            ) : (
+              <>
+                {filteredRecords.slice(0, visibleRecordsCount).map((r) => (
+                  <motion.div
+                    key={r.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ y: -5 }}
+                    className="bg-white dark:bg-neutral-900 p-4 rounded-4xl border border-slate-100 dark:border-neutral-800 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all group relative overflow-hidden flex flex-col"
+                  >
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+                      <Clock size={80} />
+                    </div>
 
-                      {/* ข้อมูลพนักงาน: ใช้ลอจิกซ่อน Email ในจอเล็กเพื่อประหยัดพื้นที่ */}
-                      <td className="px-3 md:px-4 py-3">
-                        <div className="max-w-[120px] md:max-w-none">
-                          <p className="font-bold text-xs md:text-sm text-slate-800 dark:text-neutral-200 truncate">
-                            {r.user.name}
-                          </p>
-                          <p className="text-[10px] md:text-xs text-slate-500 truncate hidden md:block">
-                            {r.user.email}
-                          </p>
+                    <div className="flex items-center gap-4 mb-5">
+                      {r.user.image ? (
+                        <img src={r.user.image} alt={r.user.name} className="w-14 h-14 rounded-2xl object-cover shadow-lg border border-slate-100 dark:border-neutral-800" />
+                      ) : (
+                        <div className={`w-14 h-14 rounded-2xl ${getAvatarBg(r.user.name)} flex items-center justify-center text-white font-black text-xl shadow-lg border border-slate-100 dark:border-neutral-800`}>
+                          {getInitials(r.user.name)}
                         </div>
-                      </td>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-black text-slate-800 dark:text-neutral-100 text-lg leading-tight truncate">
+                          {r.user.name}
+                        </h3>
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest leading-none mt-1 truncate">
+                          {roleMap[r.user.role] || r.user.role} • {r.user.department || "-"}
+                        </p>
+                      </div>
+                    </div>
 
-                      {/* สังกัด / แผนก */}
-                      <td className="px-3 md:px-4 py-3">
-                        <span className="text-xs md:text-sm font-medium text-slate-600 dark:text-neutral-400">
-                          {r.user.department || "-"}
+                    <div className="space-y-4 flex-1">
+                      <div className="flex items-center justify-between text-xs pb-3 border-b border-slate-100 dark:border-neutral-800/50">
+                        <span className="text-slate-500 font-bold flex items-center gap-1.5">
+                          <Calendar size={14} className="text-blue-500" /> 
+                          {new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok", day: "numeric", month: "short", year: "2-digit" })}
                         </span>
-                      </td>
-
-                      {/* เวลาเข้า/ออก: ใช้ขนาดตัวอักษรที่ยืดหยุ่น */}
-                      <td className="px-3 md:px-4 py-3">
-                        <TimeCell
-                          time={r.checkInTime}
-                          photoUrl={r.photoUrl}
-                          label="เข้า"
-                          colorClass="text-green-600 dark:text-green-400 text-xs md:text-sm"
-                        />
-                      </td>
-
-                      <td className="px-3 md:px-4 py-3">
-                        <TimeCell
-                          time={r.checkOutTime}
-                          photoUrl={r.checkOutPhotoUrl}
-                          label="ออก"
-                          colorClass="text-orange-500 dark:text-orange-400 text-xs md:text-sm"
-                        />
-                      </td>
-
-                      {/* OT: ปรับ Badge ให้เล็กลง */}
-                      <td className="px-3 md:px-4 py-3 text-center">
-                        {r.otHours ? (
-                          <span className="bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold border border-orange-100 dark:border-orange-900/50">
-                            {r.otHours} ชม.
-                          </span>
-                        ) : (
-                          <span className="text-slate-300">-</span>
-                        )}
-                      </td>
-
-                      {/* สถานะ: ปรับ Padding และ Text Size */}
-                      <td className="px-3 md:px-4 py-3 text-right md:text-left">
-                        <span
-                          className={`inline-block px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-tight rounded-md border ${
-                            r.status === "Present"
-                              ? "bg-green-50 text-green-700 border-green-100"
-                              : r.status === "Late"
-                                ? "bg-yellow-50 text-yellow-700 border-yellow-100"
-                                : r.status === "Holiday"
-                                  ? "bg-blue-50 text-blue-700 border-blue-100"
-                                  : "bg-red-50 text-red-700 border-red-100"
-                          }`}
-                        >
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight border ${
+                          r.status === "Present" ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800" :
+                          r.status === "Late" ? "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800" :
+                          r.status === "Holiday" ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800" :
+                          "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
+                        }`}>
                           {STATUS_TH[r.status] || r.status}
                         </span>
-                      </td>
-                    </tr>
-                  ))
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3 bg-slate-50 dark:bg-neutral-800/50 rounded-2xl border border-slate-100 dark:border-neutral-800 flex flex-col items-center justify-center text-center">
+                          <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">
+                             เข้างาน
+                          </p>
+                          <TimeCell time={r.checkInTime} photoUrl={r.photoUrl} label="เข้างาน" colorClass="text-emerald-700 dark:text-emerald-300 text-lg" />
+                        </div>
+                        <div className="p-3 bg-slate-50 dark:bg-neutral-800/50 rounded-2xl border border-slate-100 dark:border-neutral-800 flex flex-col items-center justify-center text-center">
+                          <p className="text-[10px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-1">
+                             ออกงาน
+                          </p>
+                          <TimeCell time={r.checkOutTime} photoUrl={r.checkOutPhotoUrl} label="ออกงาน" colorClass="text-orange-700 dark:text-orange-300 text-lg" />
+                        </div>
+                      </div>
+                      
+                      {r.otHours ? (
+                         <div className="flex justify-center mt-2">
+                           <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-full text-[10px] font-black border border-orange-200 dark:border-orange-800/50 flex items-center gap-1.5">
+                             <Clock size={12} /> ทำงานล่วงเวลา (OT): {r.otHours} ชม.
+                           </span>
+                         </div>
+                      ) : null}
+                    </div>
+                  </motion.div>
+                ))}
+                
+                {filteredRecords.length > visibleRecordsCount && (
+                  <div className="col-span-full flex justify-center pt-8">
+                    <button
+                      onClick={() => setVisibleRecordsCount(prev => prev + 20)}
+                      className="flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black text-sm bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+                    >
+                      แสดงเพิ่มอีก 20 รายการ (เหลืออีก {filteredRecords.length - visibleRecordsCount} รายการ)
+                    </button>
+                  </div>
                 )}
-              </tbody>
-            </table>
-          </div>
+              </>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -614,7 +605,7 @@ export default function AttendanceReportPage() {
                          </div>
                          <div>
                            <p className="text-xs font-bold text-slate-800 dark:text-neutral-200">{u.name}</p>
-                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{ROLE_TH[u.role] || u.role} • {u.department}</p>
+                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{roleMap[u.role] || u.role} • {u.department}</p>
                          </div>
                        </div>
                      ))}
@@ -640,7 +631,7 @@ export default function AttendanceReportPage() {
                          </div>
                          <div>
                            <p className="text-xs font-bold text-slate-700 dark:text-neutral-300">{u.name}</p>
-                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{ROLE_TH[u.role] || u.role} • {u.department}</p>
+                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{roleMap[u.role] || u.role} • {u.department}</p>
                          </div>
                        </div>
                      ))}
