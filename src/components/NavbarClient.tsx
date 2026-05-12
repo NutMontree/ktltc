@@ -662,7 +662,7 @@ export default function NavbarClient({
                     <div className="p-3 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/30">
                       <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest px-2">
                         <span>KTL by AllMaster</span>
-                        <span>v3.0</span>
+                        <span>v3.2026</span>
                       </div>
                     </div>
                   </div>

@@ -529,7 +529,7 @@ export default function DashboardLoader() {
           className="mt-20 pt-10 border-t border-zinc-200 dark:border-zinc-800 text-center"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300 dark:text-zinc-700">
-            KTL Management System • Core v2026.03
+            KTL by AllMaster • Core v3.2026
           </p>
         </motion.div>
       </div>

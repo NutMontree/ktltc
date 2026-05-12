@@ -16,10 +16,11 @@ export async function GET(
     const networkBase = "\\\\192.168.6.118\\public";
     const mappedBase = "Z:"; // เพิ่มการรองรับไดรฟ์ Z: ที่มีการ Map ไว้
     
-    let filePath = join(localBase, ...pathSegments);
+    // 1. ลองหาที่ไดรฟ์ Z: (Lenovo) เป็นอันดับแรก
+    let filePath = join(mappedBase, ...pathSegments);
     let found = existsSync(filePath);
-
-    // 1. ถ้าในเครื่องไม่มี ให้ลองหาที่ Network UNC
+    
+    // 2. ถ้าในเครื่องไม่มี ให้ลองหาที่ Network UNC
     if (!found) {
       const networkPath = join(networkBase, ...pathSegments);
       if (existsSync(networkPath)) {
@@ -28,11 +29,11 @@ export async function GET(
       }
     }
 
-    // 2. ถ้ายังไม่เจออีก ให้ลองหาที่ไดรฟ์ Z: (เผื่อมีการ Map Drive ไว้)
+    // 3. สุดท้ายถ้ายังไม่เจออีก ให้ลองหาที่ Local (เผื่อเป็นไฟล์เก่าหรือไฟล์ระบบ)
     if (!found) {
-      const mappedPath = join(mappedBase, ...pathSegments);
-      if (existsSync(mappedPath)) {
-        filePath = mappedPath;
+      const localPath = join(localBase, ...pathSegments);
+      if (existsSync(localPath)) {
+        filePath = localPath;
         found = true;
       }
     }

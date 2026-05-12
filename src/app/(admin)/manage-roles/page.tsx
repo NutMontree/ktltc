@@ -236,7 +236,7 @@ export default function ManageRolesPage() {
               <input
                 type="text"
                 placeholder="ค้นหาตามชื่อ หรือ USERNAME..."
-                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-[1.5rem] focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -245,7 +245,7 @@ export default function ManageRolesPage() {
         </div>
 
         {/* Content Section */}
-        <motion.div
+        <motion.div 
           variants={container}
           initial="hidden"
           animate="show"

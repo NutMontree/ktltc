@@ -78,16 +78,9 @@ export default function WFHHubPage() {
             <div className="relative group/avatar">
               <div className="h-24 w-24 rounded-4xl overflow-hidden border-4 border-white dark:border-zinc-800 shadow-2xl shadow-black/10 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-500 hover:scale-105">
                 {userImage ? (
-                  <img
-                    src={userImage}
-                    alt={userName}
-                    className="h-full w-full object-cover"
-                  />
+                  <img src={userImage} alt={userName} className="h-full w-full object-cover" />
                 ) : (
-                  <User
-                    size={40}
-                    className="text-slate-300 dark:text-zinc-700"
-                  />
+                  <User size={40} className="text-slate-300 dark:text-zinc-700" />
                 )}
               </div>
               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-zinc-900 rounded-full flex items-center justify-center shadow-lg">
@@ -103,8 +96,7 @@ export default function WFHHubPage() {
               </h1>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />{" "}
-                  WFH ACTIVE
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" /> WFH ACTIVE
                 </span>
               </div>
             </div>
@@ -285,7 +277,7 @@ export default function WFHHubPage() {
 
         <div className="pt-10 pb-6 text-center">
           <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.4em]">
-            KTL Management System • Workplace Portal
+            KTL by AllMaster • Workplace Portal
           </p>
         </div>
       </div>

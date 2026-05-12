@@ -73,10 +73,7 @@ const compressImage = async (base64Str: string): Promise<string> => {
           const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
           resolve(dataUrl);
         } catch (canvasErr) {
-          console.error(
-            "Canvas compression failed, using original:",
-            canvasErr,
-          );
+          console.error("Canvas compression failed, using original:", canvasErr);
           resolve(base64Str); // Fallback on canvas error
         }
       };
@@ -161,11 +158,7 @@ export default function WorkReportPage() {
     setActivities(newActivities);
   };
 
-  const updateActivity = (
-    index: number,
-    field: keyof Activity,
-    value: string,
-  ) => {
+  const updateActivity = (index: number, field: keyof Activity, value: string) => {
     const newActivities = [...activities];
     newActivities[index] = { ...newActivities[index], [field]: value };
     setActivities(newActivities);
@@ -201,9 +194,7 @@ export default function WorkReportPage() {
 
     // Must have at least one thing to save
     if (isNoActivities && isNoSummary && isNoImages) {
-      setError(
-        "กรุณาเพิ่มข้อมูลอย่างน้อย 1 อย่าง (ภารกิจ, สรุปผล หรือ รูปภาพ)",
-      );
+      setError("กรุณาเพิ่มข้อมูลอย่างน้อย 1 อย่าง (ภารกิจ, สรุปผล หรือ รูปภาพ)");
       return;
     }
 
@@ -390,9 +381,7 @@ export default function WorkReportPage() {
                             type="text"
                             placeholder="พิมพ์ชื่อภารกิจของคุณ..."
                             value={activity.taskName}
-                            onChange={(e) =>
-                              updateActivity(index, "taskName", e.target.value)
-                            }
+                            onChange={(e) => updateActivity(index, "taskName", e.target.value)}
                             className="w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 p-4 rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                           />
                         </div>
@@ -403,15 +392,11 @@ export default function WorkReportPage() {
                           สถานะความคืบหน้า
                         </label>
                         <div className="flex flex-wrap items-center gap-3">
-                          {(
-                            ["Completed", "In Progress", "Pending"] as const
-                          ).map((status) => (
+                          {(["Completed", "In Progress", "Pending"] as const).map((status) => (
                             <button
                               key={status}
                               type="button"
-                              onClick={() =>
-                                updateActivity(index, "status", status)
-                              }
+                              onClick={() => updateActivity(index, "status", status)}
                               className={`flex-1 min-w-[100px] px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
                                 activity.status === status
                                   ? status === "Completed"
@@ -439,9 +424,7 @@ export default function WorkReportPage() {
                         <textarea
                           placeholder="อธิบายรายละเอียดการทำงานของคุณเพิ่มเติม..."
                           value={activity.detail}
-                          onChange={(e) =>
-                            updateActivity(index, "detail", e.target.value)
-                          }
+                          onChange={(e) => updateActivity(index, "detail", e.target.value)}
                           rows={3}
                           className="w-full bg-slate-50/50 dark:bg-zinc-950/50 border border-slate-100 dark:border-zinc-800 rounded-3xl p-5 text-sm font-medium text-slate-600 dark:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none italic"
                         />
@@ -617,13 +600,8 @@ export default function WorkReportPage() {
                   onClick={() => fileInputRef.current?.click()}
                   className="aspect-square border-2 border-dashed border-slate-100 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2 text-slate-300 hover:text-blue-500 hover:border-blue-500/50 transition-all group"
                 >
-                  <Plus
-                    size={24}
-                    className="group-hover:scale-110 transition-transform"
-                  />
-                  <span className="text-[10px] font-black uppercase">
-                    เพิ่มรูปภาพ
-                  </span>
+                  <Plus size={24} className="group-hover:scale-110 transition-transform" />
+                  <span className="text-[10px] font-black uppercase">เพิ่มรูปภาพ</span>
                 </button>
               </div>
             ) : (
@@ -691,16 +669,13 @@ export default function WorkReportPage() {
                 </>
               ) : (
                 <>
-                  <Save
-                    size={28}
-                    className="group-hover:rotate-12 transition-transform"
-                  />
+                  <Save size={28} className="group-hover:rotate-12 transition-transform" />
                   <span>ส่งรายงานการปฏิบัติงาน</span>
                 </>
               )}
             </button>
             <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-8">
-              KTL Management System • v1.2026
+              KTL by AllMaster System • v3.2026
             </p>
           </div>
         </form>

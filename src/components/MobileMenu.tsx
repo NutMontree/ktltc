@@ -31,8 +31,8 @@ import { signOut } from "next-auth/react";
 
 /**
  * MobileMenu.tsx: ระบบเมนูแบบ Drawer สำหรับอุปกรณ์พกพา
- * 
- * หน้าที่: 
+ *
+ * หน้าที่:
  * 1. แสดงผลแถบเมนูข้าง (Drawer) เมื่อผู้ใช้คลิกปุ่มแฮมเบอร์เกอร์
  * 2. รองรับการแสดงผลเมนูแบบลำดับขั้น (Nested/Recursive Menu) จากฐานข้อมูล
  * 3. จัดการการเข้าถึงเมนูต่างๆ ตามสิทธิ์และบทบาทของผู้ใช้ (Permissions/Roles)
@@ -113,10 +113,14 @@ export default function MobileMenu({
             }`}
           >
             <span className="flex items-center gap-3">
-              <div className={`w-1.5 h-1.5 rounded-full ${isExpanded ? "bg-blue-500" : "bg-zinc-300 dark:bg-zinc-700"}`} />
+              <div
+                className={`w-1.5 h-1.5 rounded-full ${isExpanded ? "bg-blue-500" : "bg-zinc-300 dark:bg-zinc-700"}`}
+              />
               {item.label}
             </span>
-            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : "opacity-40"}`} />
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : "opacity-40"}`}
+            />
           </button>
         ) : (
           <Link
@@ -128,7 +132,9 @@ export default function MobileMenu({
                 : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
             }`}
           >
-            <div className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-white" : "bg-zinc-300 dark:bg-zinc-700"}`} />
+            <div
+              className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-white" : "bg-zinc-300 dark:bg-zinc-700"}`}
+            />
             {item.label}
           </Link>
         )}
@@ -184,19 +190,25 @@ export default function MobileMenu({
               {/* ส่วนหัวเมนู (Drawer Header) */}
               <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl italic shadow-lg shadow-blue-600/20">K</div>
+                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl italic shadow-lg shadow-blue-600/20">
+                    K
+                  </div>
                   <div>
-                    <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">KTLTC</h2>
+                    <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+                      KTLTC
+                    </h2>
                   </div>
                 </div>
-                <button onClick={closeMenu} className="w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">
+                <button
+                  onClick={closeMenu}
+                  className="w-10 h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
               {/* ส่วนเนื้อหาเมนู (Drawer Content) */}
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                
                 {/* ข้อมูลผู้ใช้และบทบาท (User Profile Section) */}
                 {userId ? (
                   <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
@@ -220,12 +232,18 @@ export default function MobileMenu({
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <Link href="/dashboard/profile" onClick={closeMenu} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm">
+                      <Link
+                        href="/dashboard/profile"
+                        onClick={closeMenu}
+                        className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm"
+                      >
                         <User className="w-3.5 h-3.5" /> โปรไฟล์
                       </Link>
                       <button
                         onClick={async () => {
-                          try { await fetch("/api/attendance/logout", { method: "POST" }); } catch (_) {}
+                          try {
+                            await fetch("/api/attendance/logout", { method: "POST" });
+                          } catch (_) {}
                           signOut({ callbackUrl: "/login" });
                         }}
                         className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm"
@@ -235,7 +253,11 @@ export default function MobileMenu({
                     </div>
                   </div>
                 ) : (
-                  <Link href="/login" onClick={closeMenu} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-sm shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3">
+                  <Link
+                    href="/login"
+                    onClick={closeMenu}
+                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-sm shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3"
+                  >
                     <User className="w-5 h-5" /> Sign In to System
                   </Link>
                 )}
@@ -247,18 +269,30 @@ export default function MobileMenu({
                       <Activity className="w-3 h-3" /> เมนูหลัก
                     </h4>
                     <div className="space-y-1">
-                      <Link href="/" onClick={closeMenu} className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}>
+                      <Link
+                        href="/"
+                        onClick={closeMenu}
+                        className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                      >
                         <Home className="w-5 h-5" /> หน้าแรก
                       </Link>
 
                       {canAccessDashboard && (
-                        <Link href="/dashboard" onClick={closeMenu} className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}>
+                        <Link
+                          href="/dashboard"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
                           <LayoutDashboard className="w-5 h-5" /> Dashboard
                         </Link>
                       )}
 
                       {!["student"].includes(roleLower) && (
-                        <Link href="/dashboard/drive" onClick={closeMenu} className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/drive" ? "bg-amber-600 text-white shadow-lg shadow-amber-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}>
+                        <Link
+                          href="/dashboard/drive"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/drive" ? "bg-amber-600 text-white shadow-lg shadow-amber-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
                           <HardDrive className="w-5 h-5" /> คลังไฟล์งาน (Drive)
                         </Link>
                       )}
@@ -266,10 +300,18 @@ export default function MobileMenu({
                       {/* รายการจัดการพิเศษสำหรับ Super Admin */}
                       {isSuperAdmin && (
                         <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
-                          <Link href="/dashboard/super-admin" onClick={closeMenu} className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors">
+                          <Link
+                            href="/dashboard/super-admin"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
+                          >
                             <Shield className="w-4 h-4" /> ศูนย์ควบคุมจัดการระบบ
                           </Link>
-                          <Link href="/dashboard/permissions" onClick={closeMenu} className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors">
+                          <Link
+                            href="/dashboard/permissions"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
+                          >
                             <Settings className="w-3.5 h-3.5" /> จัดการสิทธิ์แต่ละระดับ
                           </Link>
                         </div>
@@ -296,10 +338,10 @@ export default function MobileMenu({
               </div>
 
               {/* ส่วนล่างสุดของเมนู (Footer) */}
-              <div className="p-6 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="p-4 border-t border-zinc-100 dark:border-zinc-800">
                 <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest">
-                  <span>KTL Management</span>
-                  <span>v3.0</span>
+                  <span>KTL by AllMaster</span>
+                  <span>v3.2026</span>
                 </div>
               </div>
             </motion.div>
@@ -309,4 +351,3 @@ export default function MobileMenu({
     </>
   );
 }
-

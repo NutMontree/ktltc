@@ -22,16 +22,34 @@ export async function deleteFileFromUrl(url: string): Promise<boolean> {
 
   try {
     // 1. แปลง URL เป็น Path จริงในเครื่อง Server
-    // ลบส่วน '/api/media/' ออกเพื่อให้เหลือแต่เส้นทางไฟล์ในโฟลเดอร์ public
     const relativePath = url.replace('/api/media/', '');
     const parts = relativePath.split('/');
-    const filePath = join(process.cwd(), 'public', ...parts);
+    
+    const { existsSync } = require('fs');
+    let filePath = join("Z:", ...parts);
+    
+    // ถ้าใน Z: ไม่มี ให้ลอง UNC
+    if (!existsSync(filePath)) {
+      filePath = join("\\\\192.168.6.118\\public", ...parts);
+    }
+    
+    // สุดท้ายถ้ายังไม่มี ให้ลอง Local
+    if (!existsSync(filePath)) {
+      filePath = join(process.cwd(), 'public', ...parts);
+    }
 
     // 2. ตรวจสอบความปลอดภัย (Security Check)
-    // ป้องกันกรณีผู้ใช้อาจจะส่ง URL หลอกเพื่อพยายามลบไฟล์ระบบ (เช่น ../../.env)
-    const publicDir = join(process.cwd(), 'public');
-    if (!filePath.startsWith(publicDir)) {
-      console.warn(`Security warning: Attempted to delete file outside public directory: ${filePath}`);
+    const allowedPrefixes = [
+      join(process.cwd(), 'public').toLowerCase(),
+      "z:".toLowerCase(),
+      "\\\\192.168.6.118\\public".toLowerCase()
+    ];
+
+    const normalizedPath = filePath.toLowerCase();
+    const isAllowed = allowedPrefixes.some(prefix => normalizedPath.startsWith(prefix));
+
+    if (!isAllowed) {
+      console.warn(`Security warning: Attempted to delete file outside allowed directories: ${filePath}`);
       return false;
     }
 
