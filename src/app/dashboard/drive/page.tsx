@@ -304,6 +304,35 @@ function DriveContent() {
     }
   };
 
+  const bulkDownload = () => {
+    const selectedFiles = files.filter((f) => selectedIds.has(f._id));
+    if (selectedFiles.length === 0) {
+      alert("ไม่พบไฟล์ที่รองรับการดาวน์โหลด (โฟลเดอร์ไม่สามารถดาวน์โหลดได้)");
+      return;
+    }
+
+    if (
+      !confirm(
+        `คุณต้องการดาวน์โหลดไฟล์จำนวน ${selectedFiles.length} ไฟล์ใช่หรือไม่?\nเบราว์เซอร์อาจขออนุญาตในการดาวน์โหลดหลายไฟล์พร้อมกัน`
+      )
+    )
+      return;
+
+    selectedFiles.forEach((file, index) => {
+      setTimeout(() => {
+        const a = document.createElement("a");
+        a.href = file.url || "";
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }, index * 500); // Delay 500ms between each download to prevent browser blocking
+    });
+
+    setSelectedIds(new Set());
+    setIsSelectionMode(false);
+  };
+
   const bulkDelete = async () => {
     const count = selectedIds.size;
     if (!confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ ${count} รายการที่เลือก?`)) return;
@@ -1067,16 +1096,31 @@ function DriveContent() {
 
             <div className="flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
               <button
+                onClick={bulkDownload}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-blue-600 transition-all text-xs sm:text-sm font-black"
+                title="ดาวน์โหลดที่เลือก"
+              >
+                <Download size={16} /> 
+                <span className="whitespace-nowrap hidden sm:inline">โหลดที่เลือก</span>
+                <span className="whitespace-nowrap sm:hidden">โหลด</span>
+              </button>
+              <button
                 onClick={() => setIsMoveModalOpen(true)}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-indigo-600 transition-all text-xs sm:text-sm font-black"
+                title="ย้ายที่เลือก"
               >
-                <Move size={16} /> <span className="whitespace-nowrap">ย้ายที่เลือก</span>
+                <Move size={16} /> 
+                <span className="whitespace-nowrap hidden sm:inline">ย้ายที่เลือก</span>
+                <span className="whitespace-nowrap sm:hidden">ย้าย</span>
               </button>
               <button
                 onClick={bulkDelete}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-rose-600 transition-all text-xs sm:text-sm font-black"
+                title="ลบที่เลือก"
               >
-                <Trash2 size={16} /> <span className="whitespace-nowrap">ลบที่เลือก</span>
+                <Trash2 size={16} /> 
+                <span className="whitespace-nowrap hidden sm:inline">ลบที่เลือก</span>
+                <span className="whitespace-nowrap sm:hidden">ลบ</span>
               </button>
               <button
                 onClick={() => {
@@ -1084,6 +1128,7 @@ function DriveContent() {
                   setIsSelectionMode(false);
                 }}
                 className="flex-none flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 rounded-xl hover:bg-white/10 transition-all text-xs sm:text-sm font-black text-slate-400 hover:text-white"
+                title="ยกเลิก"
               >
                 <X size={16} /> <span className="whitespace-nowrap hidden sm:inline">ยกเลิก</span>
               </button>
