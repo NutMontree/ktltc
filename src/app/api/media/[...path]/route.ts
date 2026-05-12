@@ -82,12 +82,20 @@ export async function GET(
       contentType = mimeMap[ext];
     }
 
-    return new NextResponse(fileBuffer, {
-      headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
-      },
-    });
+    const { searchParams } = new URL(req.url);
+    const isDownload = searchParams.get("download") === "1";
+
+    const headers: Record<string, string> = {
+      "Content-Type": contentType,
+      "Cache-Control": "public, max-age=31536000, immutable",
+    };
+
+    if (isDownload) {
+      const fileName = encodeURIComponent(pathSegments[pathSegments.length - 1]);
+      headers["Content-Disposition"] = `attachment; filename*=UTF-8''${fileName}`;
+    }
+
+    return new NextResponse(fileBuffer, { headers });
   } catch (error) {
     console.error('Media serve error:', error);
     return new NextResponse('File not found', { status: 404 });

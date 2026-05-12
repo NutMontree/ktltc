@@ -320,13 +320,27 @@ function DriveContent() {
 
     selectedFiles.forEach((file, index) => {
       setTimeout(() => {
-        const a = document.createElement("a");
-        a.href = file.url || "";
-        a.download = file.name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }, index * 500); // Delay 500ms between each download to prevent browser blocking
+        if (!file.url) return;
+        
+        let downloadUrl = file.url;
+        // หากเป็นไฟล์ในระบบ (Media API) ให้เติม query เพื่อบังคับดาวน์โหลด
+        if (downloadUrl.includes("/api/media/")) {
+          downloadUrl += (downloadUrl.includes("?") ? "&" : "?") + "download=1";
+        }
+        
+        // ใช้ iframe ที่ซ่อนไว้เพื่อหลบเลี่ยงระบบบล็อกการดาวน์โหลดซ้อนของเบราว์เซอร์
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = downloadUrl;
+        document.body.appendChild(iframe);
+        
+        // ลบ iframe ทิ้งเมื่อส่งคำสั่งดาวน์โหลดสำเร็จ
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 10000);
+      }, index * 300); // ดีเลย์ 300ms เพื่อให้เบราว์เซอร์จัดคิว
     });
 
     setSelectedIds(new Set());
