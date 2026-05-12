@@ -2,6 +2,34 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
+import { unlink } from "fs/promises";
+import { join } from "path";
+import { existsSync } from "fs";
+
+async function deletePhysicalFile(fileUrl: string) {
+  try {
+    if (!fileUrl || !fileUrl.startsWith("/api/media/")) return;
+    const pathPart = fileUrl.replace("/api/media/", "");
+    const cleanPath = pathPart.split('?')[0]; // Remove query params if any
+    const pathSegments = cleanPath.split("/");
+    
+    const localBase = join(process.cwd(), 'public');
+    const networkBase = "\\\\192.168.6.118\\public";
+    const mappedBase = "Z:";
+    
+    const possibleBases = [localBase, networkBase, mappedBase];
+    
+    for (const base of possibleBases) {
+      const filePath = join(base, ...pathSegments);
+      if (existsSync(filePath)) {
+        await unlink(filePath);
+        break; 
+      }
+    }
+  } catch (error) {
+    console.error("Failed to delete physical file:", fileUrl, error);
+  }
+}
 
 // --- PATCH: Rename item ---
 export async function PATCH(
@@ -137,6 +165,8 @@ export async function DELETE(
       // Recursive deletion of sub-folders and files
       await deleteFolderRecursive(db, new ObjectId(id));
     } else {
+      if (item.url) await deletePhysicalFile(item.url);
+      if (item.thumbnailUrl) await deletePhysicalFile(item.thumbnailUrl);
       await db.collection("drive_files").deleteOne({ _id: new ObjectId(id) });
     }
 
@@ -155,7 +185,14 @@ async function deleteFolderRecursive(db: any, folderId: ObjectId) {
     await deleteFolderRecursive(db, sub._id);
   }
 
-  // Delete files in this folder
+  // Find files in this folder to delete physically
+  const filesToDelete = await db.collection("drive_files").find({ folderId }).toArray();
+  for (const file of filesToDelete) {
+    if (file.url) await deletePhysicalFile(file.url);
+    if (file.thumbnailUrl) await deletePhysicalFile(file.thumbnailUrl);
+  }
+
+  // Delete files in this folder from DB
   await db.collection("drive_files").deleteMany({ folderId });
 
   // Delete the folder itself
