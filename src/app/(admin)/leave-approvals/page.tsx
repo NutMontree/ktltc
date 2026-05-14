@@ -183,7 +183,7 @@ export default function LeaveApprovalsPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             <div className="flex bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl overflow-x-auto hide-scrollbar">
               {["pending", "approved", "rejected", "all"].map((f) => (
                 <button
@@ -207,7 +207,7 @@ export default function LeaveApprovalsPage() {
             </div>
             <button
               onClick={exportToCSV}
-              className="group relative flex items-center gap-3 bg-linear-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-emerald-500/50 dark:border-slate-200"
+              className="group relative flex items-center justify-center gap-3 bg-linear-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-6 py-3 sm:px-8 sm:py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-emerald-500/50 dark:border-slate-200 w-full sm:w-auto"
               title="Export ข้อมูลเป็นไฟล์ CSV/Excel"
             >
               <div className="absolute -top-1 -right-1 flex h-4 w-4">
@@ -215,7 +215,7 @@ export default function LeaveApprovalsPage() {
                 <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
               </div>
               <Download size={22} className="group-hover:translate-y-0.5 transition-transform" /> 
-              <span className="tracking-tight text-lg hidden sm:inline">ส่งออกข้อมูล</span>
+              <span className="tracking-tight text-base sm:text-lg inline">ส่งออกข้อมูล</span>
             </button>
           </div>
         </div>

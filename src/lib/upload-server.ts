@@ -45,11 +45,14 @@ export async function saveFileLocally(
     const filename = `${filenamePrefix}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
     
     const { existsSync } = require("fs");
-    let baseDir = join(process.cwd(), "public");
+    let baseDir = "Z:\\";
     
-    // ถ้าหาโฟลเดอร์ public ในเครื่องไม่เจอ ให้สลับไปใช้ Network Path
+    // ถ้าหาไดรฟ์ Z: ไม่เจอ ให้สลับไปใช้ Local Public หรือ Network Path
     if (!existsSync(baseDir)) {
-      baseDir = "\\\\192.168.6.118\\public";
+      baseDir = join(process.cwd(), "public");
+      if (!existsSync(baseDir)) {
+        baseDir = "\\\\192.168.6.118\\public";
+      }
     }
     
     const uploadDir = join(baseDir, folder);
@@ -61,6 +64,7 @@ export async function saveFileLocally(
     
     // 5. เขียนไฟล์ลงบน Disk
     await writeFile(filepath, buffer);
+    console.log(`✅ Server-side file saved to: ${filepath}`);
 
     // คืนค่า URL ที่ชี้ไปที่ API Media ของเรา (เพื่อให้เข้าถึงไฟล์ได้ผ่าน HTTP)
     return `/api/media/${folder}/${filename}`;

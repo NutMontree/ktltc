@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readFile } from 'fs/promises';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 export const dynamic = 'force-dynamic';
@@ -11,10 +11,9 @@ export async function GET(
   try {
     const { path: pathSegments } = await params;
     
-    const { existsSync, readFileSync } = require('fs');
     const localBase = join(process.cwd(), 'public');
     const networkBase = "\\\\192.168.6.118\\public";
-    const mappedBase = "Z:"; // เพิ่มการรองรับไดรฟ์ Z: ที่มีการ Map ไว้
+    const mappedBase = "Z:\\"; // ใช้ Z:\ เพื่อให้เป็น Absolute Path ที่ถูกต้องบน Windows
     
     // 1. ลองหาที่ไดรฟ์ Z: (Lenovo) เป็นอันดับแรก
     let filePath = join(mappedBase, ...pathSegments);
@@ -39,12 +38,44 @@ export async function GET(
     }
 
     if (!found) {
-      console.log(`❌ Not found anywhere:`);
-      console.log(`   - Local: ${join(localBase, ...pathSegments)}`);
-      console.log(`   - Network: ${join(networkBase, ...pathSegments)}`);
-      console.log(`   - Mapped (Z:): ${join(mappedBase, ...pathSegments)}`);
+      // 4. Fallback สำหรับเครื่อง Local (Dev): ถ้าหาไฟล์ไม่เจอ ให้ลองดึงจาก Server จริง (Production) มาแสดง
+      if (process.env.NODE_ENV === 'development') {
+        try {
+          const prodUrl = `https://ktltc.ac.th/api/media/${pathSegments.join('/')}`;
+          const prodRes = await fetch(prodUrl);
+          
+          if (prodRes.ok) {
+            console.log(`🌐 Proxying Media from Production: ${prodUrl}`);
+            const arrayBuffer = await prodRes.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            
+            // ดึง Content-Type กลับมา
+            const ext = prodUrl.split('.').pop()?.toLowerCase() || 'jpg';
+            const mimeMap: Record<string, string> = {
+              'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif', 'webp': 'image/webp'
+            };
+            
+            return new NextResponse(buffer, {
+              headers: {
+                "Content-Type": mimeMap[ext] || 'application/octet-stream',
+                "Cache-Control": "public, max-age=31536000, immutable",
+              }
+            });
+          }
+        } catch (fetchErr) {
+          console.error("Proxy fetch error:", fetchErr);
+        }
+      }
+
+      console.log(`❌ Media Not Found [${new Date().toLocaleString()}]:`);
+      console.log(`   - Requested: ${pathSegments.join('/')}`);
+      console.log(`   - Attempted Local: ${join(localBase, ...pathSegments)}`);
+      console.log(`   - Attempted Network: ${join(networkBase, ...pathSegments)}`);
+      console.log(`   - Attempted Mapped (Z:): ${join(mappedBase, ...pathSegments)}`);
       return new NextResponse('File not found', { status: 404 });
     }
+
+    console.log(`✅ Media Found: ${filePath}`);
 
     // Security check: ensure the file is within allowed directories
     const normalizedPath = filePath.toLowerCase();

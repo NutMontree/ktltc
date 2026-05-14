@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     
     // Auto-detect base directory (Lenovo Server)
     const { existsSync } = await import('fs');
-    let baseDir = "Z:"; 
+    let baseDir = "Z:\\"; 
     if (!existsSync(baseDir)) {
       baseDir = "\\\\192.168.6.118\\public";
     }
@@ -79,6 +79,7 @@ export async function POST(req: Request) {
 
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
+    console.log(`✅ File uploaded and saved to: ${filepath}`);
 
     // Optionally generate a thumbnail for videos/gifs
     let thumbnail_url: string | null = null;

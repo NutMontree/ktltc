@@ -22,6 +22,7 @@ import { Prompt } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 // import { Analytics } from "@vercel/analytics/next";
 import ScrollUp from "@/components/Common/ScrollUp";
+import ScrollToTop from "@/components/Common/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
 import SessionWatcher from "@/components/SessionWatcher";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -111,6 +112,7 @@ export default async function RootLayout({
               {/* <Analytics /> */}
 
               {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
+              <ScrollToTop />
               <ScrollUp />
               <CookieConsent />
               <Footer />
