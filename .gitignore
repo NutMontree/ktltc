@@ -63,3 +63,23 @@ next-env.d.ts
 # AI Assistant
 .gemini/
 
+# Network / Shared / Windows Mapped Drives and paths created locally on Linux
+\\\\192.168.6.118\\public/
+\\\\192.168.6.118\\public
+\\\\192.168.6.118/
+\\\\*
+\\\\*/**
+*192.168.6.118*
+*192.168.6.118*/**
+Z:
+Z:/
+Z:\
+Z:\\
+*Z:*
+*Z:\*
+*Z:/**
+
+# Temporary, scratch, and local runtime directories
+/scratch/
+/tmp/
+
