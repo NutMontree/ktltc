@@ -1107,17 +1107,17 @@ export default function FriendProfilePage({
                       const mutualCount = uFriendsIds.filter((fId: any) => myFriendsIds.includes(fId)).length;
 
                       return (
-                        <div 
-                          key={String(u._id)} 
+                        <div
+                          key={String(u._id)}
                           onClick={() => router.push(`/dashboard/profile/${String(u._id)}`)}
                           className="min-w-[180px] w-[180px] bg-white dark:bg-zinc-900 rounded-2xl border dark:border-zinc-800 overflow-hidden flex flex-col snap-start group cursor-pointer hover:shadow-xl hover:shadow-blue-500/10 transition-all hover:-translate-y-1"
                         >
                           <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                             {u.image ? (
-                              <img 
-                                src={u.image} 
-                                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110" 
-                                alt={u.name} 
+                              <img
+                                src={u.image}
+                                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                                alt={u.name}
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
@@ -1125,10 +1125,10 @@ export default function FriendProfilePage({
                               </div>
                             )}
                             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            <button 
+                            <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDismissedUsers(prev => [...prev, String(u._id)]);
+                                setDismissedUsers((prev) => [...prev, String(u._id)]);
                               }}
                               className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/20 hover:bg-rose-500 text-white flex items-center justify-center backdrop-blur-md transition-all z-10 opacity-0 group-hover:opacity-100"
                             >
@@ -1140,9 +1140,10 @@ export default function FriendProfilePage({
                               {u.name}
                             </h4>
                             <p className="text-[10px] text-zinc-500 font-bold flex items-center gap-1 mb-4">
-                              <TeamOutlined className="text-[8px]" /> {mutualCount} mutual friend{mutualCount !== 1 ? 's' : ''}
+                              <TeamOutlined className="text-[8px]" /> {mutualCount} เพื่อนร่วมกัน
+                              {mutualCount !== 1 ? "s" : ""}
                             </p>
-                            <button 
+                            <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleRequestFriend(String(u._id));
@@ -2619,23 +2620,8 @@ export default function FriendProfilePage({
                         </button>
                       </Popconfirm>
                     )}
-                    <button 
-                      onClick={() => Modal.info({
-                        title: <div className="text-3xl font-black text-blue-600 mb-2">อยู่ในระหว่างการพัฒนา</div>,
-                        content: (
-                          <div className="text-xl font-bold text-zinc-500 py-6">
-                            ขออภัยในความไม่สะดวก ระบบข้อความแชท (Chat System) 
-                            กำลังอยู่ในขั้นตอนการพัฒนาเพื่อยกระดับการสื่อสารให้ดียิ่งขึ้นสำหรับคุณ
-                          </div>
-                        ),
-                        centered: true,
-                        width: 600,
-                        okText: "รับทราบ",
-                        okButtonProps: { 
-                          className: "bg-blue-600 hover:bg-blue-700 text-white font-black px-8 py-3 rounded-xl h-auto" 
-                        },
-                        icon: <MessageOutlined className="text-blue-500 text-4xl mb-4" />
-                      })}
+                    <button
+                      onClick={() => router.push(`/dashboard/chat?u=${id}`)}
                       className="px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 font-black flex items-center gap-2 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95"
                     >
                       <MessageOutlined /> ข้อความ

@@ -25,6 +25,7 @@ import {
   CalendarCheck,
   Settings,
   Newspaper,
+  MessageSquare,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
@@ -513,6 +514,16 @@ export default function NavbarClient({
                         </Link>
 
                         <div className="space-y-0.5">
+                          <Link
+                            href="/dashboard/chat"
+                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-2xl transition-all group"
+                          >
+                            <div className="p-1.5 rounded-xl bg-sky-100 dark:bg-sky-900/30 group-hover:bg-sky-200 dark:group-hover:bg-sky-900/50 transition-colors shadow-sm">
+                              <MessageSquare size={16} />
+                            </div>
+                            ระบบแชท / กล่องข้อความ
+                          </Link>
+
                           {canAccessDashboard && (
                             <Link
                               href="/dashboard"
