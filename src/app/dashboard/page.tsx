@@ -137,46 +137,46 @@ export default function DashboardLoader() {
     );
   }
 
-  if (status === "unauthenticated") {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
-        <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-100 dark:border-rose-500/20 shadow-xl shadow-rose-500/10">
-          <ShieldAlert className="w-10 h-10 text-rose-500" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-            เซสชันหมดอายุหรือไม่มีสิทธิ์เข้าถึง
-          </h2>
-          <p className="text-zinc-500 mt-2 font-medium">
-            กรุณาลงชื่อเข้าใช้งานใหม่อีกครั้ง หรือกดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ
-          </p>
-        </div>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-        >
-          กดเพื่อรีเฟรช
-        </button>
-      </div>
-    );
-  }
+  // if (status === "unauthenticated") {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
+  //       <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-100 dark:border-rose-500/20 shadow-xl shadow-rose-500/10">
+  //         <ShieldAlert className="w-10 h-10 text-rose-500" />
+  //       </div>
+  //       <div>
+  //         <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+  //           เซสชันหมดอายุหรือไม่มีสิทธิ์เข้าถึง
+  //         </h2>
+  //         <p className="text-zinc-500 mt-2 font-medium">
+  //           กรุณาลงชื่อเข้าใช้งานใหม่อีกครั้ง หรือกดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ
+  //         </p>
+  //       </div>
+  //       <button
+  //         onClick={() => window.location.reload()}
+  //         className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+  //       >
+  //         กดเพื่อรีเฟรช
+  //       </button>
+  //     </div>
+  //   );
+  // }
 
-  if (error || !stats) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <ShieldAlert className="w-12 h-12 text-amber-500" />
-        <p className="text-zinc-500 font-bold italic">
-          {error || "Unable to sync dashboard data. Please try again."}
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="text-blue-500 font-black uppercase text-xs hover:underline"
-        >
-          ระบบรีเฟรช
-        </button>
-      </div>
-    );
-  }
+  // if (error || !stats) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+  //       <ShieldAlert className="w-12 h-12 text-amber-500" />
+  //       <p className="text-zinc-500 font-bold italic">
+  //         {error || "Unable to sync dashboard data. Please try again."}
+  //       </p>
+  //       <button
+  //         onClick={() => window.location.reload()}
+  //         className="text-blue-500 font-black uppercase text-xs hover:underline"
+  //       >
+  //         ระบบรีเฟรช
+  //       </button>
+  //     </div>
+  //   );
+  // }
 
   const user = {
     username: session?.user?.name || (session?.user as any)?.username,
@@ -523,7 +523,11 @@ export default function DashboardLoader() {
                     <motion.div variants={item}>
                       <button
                         onClick={async () => {
-                          if (confirm("คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตจำนวนผู้เข้าชมทั้งหมดของทุกโฟลเดอร์ให้กลับเป็น 0?")) {
+                          if (
+                            confirm(
+                              "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตจำนวนผู้เข้าชมทั้งหมดของทุกโฟลเดอร์ให้กลับเป็น 0?",
+                            )
+                          ) {
                             try {
                               const res = await fetch("/api/drive/folders?reset=true");
                               if (res.ok) {
@@ -561,19 +565,43 @@ export default function DashboardLoader() {
                       </button>
                     </motion.div>
 
-                    <motion.div variants={item} className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 flex flex-col justify-center p-6 bg-amber-50/50 dark:bg-amber-950/10 border border-amber-100/30 rounded-[2.5rem]">
+                    <motion.div
+                      variants={item}
+                      className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 flex flex-col justify-center p-6 bg-amber-50/50 dark:bg-amber-950/10 border border-amber-100/30 rounded-[2.5rem]"
+                    >
                       <h4 className="text-xs font-black text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                         💡 <strong>คำอธิบายระบบรีเซ็ต (Reset Views Junction)</strong>
                       </h4>
                       <p className="text-[11px] text-slate-600 dark:text-zinc-400 leading-relaxed font-bold">
-                        ปุ่มด้านซ้ายนี้จะทำหน้าที่ล้างยอดผู้เข้าชมสะสม (Views) ของทุกๆ โฟลเดอร์ในระบบคลังเอกสาร Drive ให้กลับเป็น 0 เพื่อเริ่มเก็บสถิติใหม่ทั้งหมด
+                        ปุ่มด้านซ้ายนี้จะทำหน้าที่ล้างยอดผู้เข้าชมสะสม (Views) ของทุกๆ
+                        โฟลเดอร์ในระบบคลังเอกสาร Drive ให้กลับเป็น 0 เพื่อเริ่มเก็บสถิติใหม่ทั้งหมด
                       </p>
                       <p className="text-[10px] text-slate-500 dark:text-zinc-500 mt-2 font-medium">
                         โดยตัวปุ่มจะเรียกใช้ API เบื้องหลังซึ่งเข้าถึงได้ผ่าน URL เหล่านี้โดยตรง:
                       </p>
                       <div className="mt-1 space-y-1 font-mono text-[9px] break-all">
-                        <p>• Local: <a href="http://localhost:3000/api/drive/folders?reset=true" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">http://localhost:3000/api/drive/folders?reset=true</a></p>
-                        <p>• Prod: <a href="https://ktltc.ac.th/api/drive/folders?reset=true" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">https://ktltc.ac.th/api/drive/folders?reset=true</a></p>
+                        <p>
+                          • Local:{" "}
+                          <a
+                            href="http://localhost:3000/api/drive/folders?reset=true"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            http://localhost:3000/api/drive/folders?reset=true
+                          </a>
+                        </p>
+                        <p>
+                          • Prod:{" "}
+                          <a
+                            href="https://ktltc.ac.th/api/drive/folders?reset=true"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            https://ktltc.ac.th/api/drive/folders?reset=true
+                          </a>
+                        </p>
                       </div>
                     </motion.div>
                   </>

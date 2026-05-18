@@ -28,71 +28,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setError("");
-
-  //   try {
-  //     const result = await signIn("credentials", {
-  //       username,
-  //       password,
-  //       redirect: false,
-  //     });
-  //     if (result?.error) {
-  //       await recordActivity({
-  //         userName: username || "Unknown User",
-  //         action: "LOGIN_FAILED",
-  //         details: `เข้าสู่ระบบไม่สำเร็จ: ${result.error}`,
-  //       });
-
-  //       let errorMessage = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
-  //       if (result.error.toLowerCase().includes("ยังรอการอนุมัติ")) {
-  //         errorMessage = "บัญชีของคุณยังรอการอนุมัติจาก Super Admin";
-  //       } else if (result.error.toLowerCase().includes("ไม่พบผู้ใช้งาน")) {
-  //         errorMessage = "ไม่พบชื่อผู้ใช้นี้ในระบบ";
-  //       }
-
-  //       setError(errorMessage);
-  //       setLoading(false);
-  //     } else {
-  //       await recordActivity({
-  //         userName: username,
-  //         action: "LOGIN",
-  //         details: "เข้าสู่ระบบสำเร็จ",
-  //       });
-  //       setSuccess(true);
-  //       router.refresh();
-
-  //       const session = await getSession();
-  //       const role = (session?.user as any)?.role?.toLowerCase();
-
-  //       if (role === "super_admin") {
-  //         router.push("/");
-  //       } else {
-  //         router.push("/");
-  //       }
-  //     }
-  //   } catch (err) {
-  //     setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      // 1️⃣ เรียก API login ด้วย Credential Provider
       const result = await signIn("credentials", {
         username,
         password,
         redirect: false,
       });
-
-      // 2️⃣ ดำเนินการกรณี login ไม่สำเร็จ
       if (result?.error) {
         await recordActivity({
           userName: username || "Unknown User",
@@ -100,7 +46,6 @@ export default function LoginPage() {
           details: `เข้าสู่ระบบไม่สำเร็จ: ${result.error}`,
         });
 
-        // ปรับข้อความ error ตามสาเหตุที่กลับมาจาก Next‑Auth
         let errorMessage = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
         if (result.error.toLowerCase().includes("ยังรอการอนุมัติ")) {
           errorMessage = "บัญชีของคุณยังรอการอนุมัติจาก Super Admin";
@@ -109,40 +54,30 @@ export default function LoginPage() {
         }
 
         setError(errorMessage);
-        // ไม่ต้องทำอะไรต่อ — `finally` จะทำให้ loading ปิด
-        return;
-      }
-
-      // 3️⃣ Login สำเร็จ
-      await recordActivity({
-        userName: username,
-        action: "LOGIN",
-        details: "เข้าสู่ระบบสำเร็จ",
-      });
-      setSuccess(true);
-
-      // **สำคัญ:** รอให้เซสชันอัปเดตแล้วดึง role
-      const session = await getSession();
-      const role = (session?.user as any)?.role?.toLowerCase();
-
-      // 4️⃣ นำผู้ใช้ไปยังหน้า dashboard ที่เหมาะสม
-      if (role === "super_admin") {
-        // ปรับตามเส้นทางหน้า admin ของคุณ
-        router.replace("/admin-dashboard");
-      } else if (role === "student") {
-        // ปรับตามเส้นทางหน้า dashboard ของนักศึกษา
-        // router.replace("/student/dashboard");
-        router.replace("/");
+        setLoading(false);
       } else {
-        // หน้า dashboard ปกติสำหรับผู้ใช้ทั่วไป
-        router.replace("/");
+        await recordActivity({
+          userName: username,
+          action: "LOGIN",
+          details: "เข้าสู่ระบบสำเร็จ",
+        });
+        setSuccess(true);
+        router.refresh();
+
+        const session = await getSession();
+        const role = (session?.user as any)?.role?.toLowerCase();
+
+        if (role === "super_admin") {
+          router.replace("/dashboard"); // ปรับตามเส้นทางของคุณ
+        } else if (role === "student") {
+          // router.replace("/student/dashboard"); // ปรับตามเส้นทางของคุณ
+          router.replace("/dashboard");
+        } else {
+          router.replace("/"); // หน้า dashboard ทั่วไป
+        }
       }
     } catch (err) {
-      // คำผิดพลาดจากเครือข่ายหรือ server
-      // setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-    } finally {
-      // ปิด loading ไม่ว่าผลลัพธ์จะเป็นแบบไหน
       setLoading(false);
     }
   };
