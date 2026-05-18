@@ -23,6 +23,7 @@ import {
   DynamicQAPage as QAPage,
 } from "@/components/home/DynamicClientSections";
 import ShowFacebookClient from "@/components/ShowFacebookClient";
+import PerformancePage from "./performance/page";
 
 // ดึงข้อมูลผ่าน Server Side เหมือนเดิม (รันบนเครื่องเซิร์ฟเวอร์เท่านั้น ปลอดภัยกว่า)
 async function getHomeData() {
@@ -32,11 +33,7 @@ async function getHomeData() {
     const [visibilityData, siteData, postersData, feeds, banners] = await Promise.all([
       db.collection("home_settings").find().toArray(),
       db.collection("site_settings").find().toArray(),
-      db
-        .collection("posters")
-        .find({ isActive: true })
-        .sort({ createdAt: -1 })
-        .toArray(),
+      db.collection("posters").find({ isActive: true }).sort({ createdAt: -1 }).toArray(),
       db.collection("social_feeds").find({}).sort({ createdAt: -1 }).toArray(),
       db.collection("banners").find({ isActive: true }).toArray(),
     ]);
@@ -90,46 +87,36 @@ export default async function Home() {
 
           {/* ✅ Marquee กว้างเต็มจอ */}
           {isShow.scroll_velocity !== false && (
-            <ScrollVelocity
-              text1={settings.marquee_text_1}
-              text2={settings.marquee_text_2}
-            />
+            <ScrollVelocity text1={settings.marquee_text_1} text2={settings.marquee_text_2} />
           )}
         </div>
+
+        {isShow.performance !== false && (
+          <div className="max-w-[1600px] mx-auto w-full">
+            <div className="py-12">
+              <PerformancePage />
+            </div>
+          </div>
+        )}
 
         <div className="max-w-7xl mx-auto w-full px-2">
           {isShow.background_effect !== false && activePosters.length > 0 && (
             <div className="flex flex-col gap-10 my-10 py-12">
               {Array.isArray(activePosters) &&
                 activePosters.map((poster: any) => (
-                  <BackgroundBeamsWithCollisionDemo
-                    key={poster._id.toString()}
-                    data={poster}
-                  />
+                  <BackgroundBeamsWithCollisionDemo key={poster._id.toString()} data={poster} />
                 ))}
             </div>
           )}
         </div>
 
         <div className="max-w-[1600px] mx-auto w-full px-2">
-          <div className="py-12">
-            {isShow.press_release !== false && <PressRelease />}
-          </div>
-          <div className="py-12">
-            {isShow.newsletter !== false && <Newsletter />}
-          </div>
-          <div className="py-12">
-            {isShow.announcement !== false && <Announcement />}
-          </div>
-          <div className="py-12">
-            {isShow.tender !== false && <TenderPage />}
-          </div>
-          <div className="py-12">
-            {isShow.command !== false && <CommandPage />}
-          </div>
-          <div className="py-12">
-            {isShow.internship !== false && <InternshipPage />}
-          </div>
+          <div className="py-12">{isShow.press_release !== false && <PressRelease />}</div>
+          <div className="py-12">{isShow.newsletter !== false && <Newsletter />}</div>
+          <div className="py-12">{isShow.announcement !== false && <Announcement />}</div>
+          <div className="py-12">{isShow.tender !== false && <TenderPage />}</div>
+          <div className="py-12">{isShow.command !== false && <CommandPage />}</div>
+          <div className="py-12">{isShow.internship !== false && <InternshipPage />}</div>
           <div className="py-12">
             <ShowFacebookClient />
           </div>

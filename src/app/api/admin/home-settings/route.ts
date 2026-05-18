@@ -33,9 +33,43 @@ export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+
+    // Self-healing database check: ensure "performance" component exists
+    const hasPerformance = await db.collection("home_settings").findOne({ componentId: "performance" });
+    if (!hasPerformance) {
+      await db.collection("home_settings").insertOne({
+        componentId: "performance",
+        label: "เผยแพร่ผลงานวิจัย/วิชาการ",
+        isVisible: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
     const components = await db.collection("home_settings").find().toArray();
+
+    // Predefined visual order for /dashboard/manage-home list
+    const COMPONENT_ORDER: Record<string, number> = {
+      welcome: 1,
+      scroll_velocity: 2,
+      background_effect: 3, // Places background_effect on Row 2 Column 1
+      performance: 4, // Places performance directly below scroll_velocity in Column 2 (Right)
+      press_release: 5,
+      newsletter: 6,
+      announcement: 7,
+      facebook_feed: 8,
+      youtube_feed: 9,
+      calendar: 10,
+    };
+
+    const sortedComponents = components.sort((a: any, b: any) => {
+      const orderA = COMPONENT_ORDER[a.componentId?.toLowerCase()] ?? 99;
+      const orderB = COMPONENT_ORDER[b.componentId?.toLowerCase()] ?? 99;
+      return orderA - orderB;
+    });
+
     const siteSettings = await db.collection("site_settings").find().toArray();
-    return NextResponse.json({ components, siteSettings });
+    return NextResponse.json({ components: sortedComponents, siteSettings });
   } catch (error) {
     return NextResponse.json({ error: "Fetch failed" }, { status: 500 });
   }
