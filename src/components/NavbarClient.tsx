@@ -258,6 +258,15 @@ export default function NavbarClient({
     return true;
   });
 
+  // แทรกเมนูหลักเฉพาะสำหรับนักเรียน/นักศึกษา เท่านั้น
+  if (role?.toLowerCase() === "student") {
+    filteredMenuTree.push({
+      _id: "student-flagpole-menu",
+      label: "สำหรับนักเรียน นักศึกษา",
+      path: "/student/flagpole",
+    });
+  }
+
   return (
     <div
       className={`fixed top-0 left-0 right-0 z-9999 transition-[padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 lg:px-2" : ""}`}
@@ -533,6 +542,17 @@ export default function NavbarClient({
                                 <HardDrive size={16} />
                               </div>
                               คลังไฟล์งาน (Drive)
+                            </Link>
+                          )}
+                          {role?.toLowerCase() === "student" && (
+                            <Link
+                              href="/student/flagpole"
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
+                                <Clock size={16} />
+                              </div>
+                              เช็คชื่อเข้าแถวเสาธง
                             </Link>
                           )}
                         </div>

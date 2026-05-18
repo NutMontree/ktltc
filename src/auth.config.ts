@@ -55,7 +55,16 @@ const callbacks: NextAuthConfig["callbacks"] = {
       "/attendance-settings",
       "/work-reports",
       "/work-reports-management",
+      "/flagpole",
     ];
+
+    // หน้าของนักเรียน/นักศึกษา
+    if (pathname.startsWith("/student")) {
+      if (!isLoggedIn) {
+        return false; // บังคับให้เข้าสู่ระบบก่อน
+      }
+      return true;
+    }
 
     const isProtected = protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
 

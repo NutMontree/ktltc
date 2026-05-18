@@ -70,8 +70,7 @@ export default function LoginPage() {
         if (role === "super_admin") {
           router.replace("/dashboard"); // ปรับตามเส้นทางของคุณ
         } else if (role === "student") {
-          // router.replace("/student/dashboard"); // ปรับตามเส้นทางของคุณ
-          router.replace("/");
+          router.replace("/student/flagpole");
         } else {
           router.replace("/"); // หน้า dashboard ทั่วไป
         }
