@@ -145,9 +145,12 @@ function DriveContent() {
 
     const isStaff = !!(session && !["user", "student"].includes(userRole || ""));
 
+    // Check raw window.location to prevent hydration delay race conditions in Next.js
+    const activeFolderId = urlFolderId || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("folderId") : null);
+
     // If they are not staff, they are only allowed to see shared folders if folderId is in the URL
     if (!isStaff) {
-      if (!urlFolderId) {
+      if (!activeFolderId) {
         if (status === "unauthenticated") {
           router.push("/login");
         } else {
@@ -158,8 +161,8 @@ function DriveContent() {
     }
 
     // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
-    setCurrentFolderId(urlFolderId);
-    fetchItems(urlFolderId);
+    setCurrentFolderId(activeFolderId);
+    fetchItems(activeFolderId);
   }, [status, session, userRole, urlFolderId, fetchItems, router]);
 
   // Increment views count with 100% accuracy (excluding page reloads/refreshes)
