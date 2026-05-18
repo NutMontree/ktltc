@@ -110,13 +110,15 @@ function DriveContent() {
   const userRole = (session?.user as any)?.role?.toLowerCase();
   const userId = (session?.user as any)?.id;
   const isSuperAdmin = userRole === "super_admin";
+  const isStaff = !!(session && !["user", "student"].includes(userRole || ""));
 
   const currentFolder = allFoldersList.find((f) => f._id === currentFolderId);
   const canUploadInCurrentFolder =
-    !currentFolderId ||
-    isSuperAdmin ||
-    currentFolder?.ownerId === userId ||
-    currentFolder?.isCollaborative;
+    isStaff &&
+    (!currentFolderId ||
+      isSuperAdmin ||
+      currentFolder?.ownerId === userId ||
+      currentFolder?.isCollaborative);
 
   const fetchItems = useCallback(async (folderId: string | null) => {
     setLoading(true);
@@ -134,19 +136,26 @@ function DriveContent() {
   }, []);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    } else if (status === "authenticated") {
-      // Block student role from accessing drive
-      if (userRole === "student") {
-        router.push("/dashboard");
+    if (status === "loading") return;
+
+    const isStaff = !!(session && !["user", "student"].includes(userRole || ""));
+
+    // If they are not staff, they are only allowed to see shared folders if folderId is in the URL
+    if (!isStaff) {
+      if (!urlFolderId) {
+        if (status === "unauthenticated") {
+          router.push("/login");
+        } else {
+          router.push("/dashboard");
+        }
         return;
       }
-      // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
-      setCurrentFolderId(urlFolderId);
-      fetchItems(urlFolderId);
     }
-  }, [status, router, urlFolderId, fetchItems]);
+
+    // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
+    setCurrentFolderId(urlFolderId);
+    fetchItems(urlFolderId);
+  }, [status, session, userRole, urlFolderId, fetchItems, router]);
 
   // Reconstruct breadcrumbs when folders list or current ID changes
   useEffect(() => {
@@ -908,7 +917,7 @@ function DriveContent() {
               </div>
 
               <div className="flex items-center gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
-                {(isSuperAdmin ||
+                {isStaff && (isSuperAdmin ||
                   folder.ownerId === userId ||
                   (folder.isCollaborative && userRole !== "student")) && (
                   <>
@@ -1051,7 +1060,7 @@ function DriveContent() {
                   >
                     <Download size={14} />
                   </a>
-                  {(isSuperAdmin ||
+                  {isStaff && (isSuperAdmin ||
                     file.ownerId === userId ||
                     (currentFolder?.isCollaborative && userRole !== "student")) && (
                     <>
@@ -1118,24 +1127,28 @@ function DriveContent() {
                 <span className="whitespace-nowrap hidden sm:inline">โหลดที่เลือก</span>
                 <span className="whitespace-nowrap sm:hidden">โหลด</span>
               </button>
-              <button
-                onClick={() => setIsMoveModalOpen(true)}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-indigo-600 transition-all text-xs sm:text-sm font-black"
-                title="ย้ายที่เลือก"
-              >
-                <Move size={16} /> 
-                <span className="whitespace-nowrap hidden sm:inline">ย้ายที่เลือก</span>
-                <span className="whitespace-nowrap sm:hidden">ย้าย</span>
-              </button>
-              <button
-                onClick={bulkDelete}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-rose-600 transition-all text-xs sm:text-sm font-black"
-                title="ลบที่เลือก"
-              >
-                <Trash2 size={16} /> 
-                <span className="whitespace-nowrap hidden sm:inline">ลบที่เลือก</span>
-                <span className="whitespace-nowrap sm:hidden">ลบ</span>
-              </button>
+              {isStaff && (
+                <button
+                  onClick={() => setIsMoveModalOpen(true)}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-indigo-600 transition-all text-xs sm:text-sm font-black"
+                  title="ย้ายที่เลือก"
+                >
+                  <Move size={16} /> 
+                  <span className="whitespace-nowrap hidden sm:inline">ย้ายที่เลือก</span>
+                  <span className="whitespace-nowrap sm:hidden">ย้าย</span>
+                </button>
+              )}
+              {isStaff && (
+                <button
+                  onClick={bulkDelete}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-rose-600 transition-all text-xs sm:text-sm font-black"
+                  title="ลบที่เลือก"
+                >
+                  <Trash2 size={16} /> 
+                  <span className="whitespace-nowrap hidden sm:inline">ลบที่เลือก</span>
+                  <span className="whitespace-nowrap sm:hidden">ลบ</span>
+                </button>
+              )}
               <button
                 onClick={() => {
                   setSelectedIds(new Set());

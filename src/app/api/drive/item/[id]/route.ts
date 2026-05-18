@@ -69,8 +69,9 @@ export async function PATCH(
     // Permission check:
     // 1. Owner or Super Admin -> Always allowed
     // 2. Collaborative context -> Allowed for everyone EXCEPT students
+    const isStaff = !["user", "student"].includes(userRole || "");
     const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
-    const canCollaborate = isCollaborativeContext && userRole !== "student";
+    const canCollaborate = isCollaborativeContext && isStaff;
 
     if (!isOwnerOrAdmin && !canCollaborate) {
       return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
@@ -154,8 +155,9 @@ export async function DELETE(
     // Permission check:
     // 1. Owner or Super Admin -> Always allowed
     // 2. Collaborative context -> Allowed for everyone EXCEPT students
+    const isStaff = !["user", "student"].includes(userRole || "");
     const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
-    const canCollaborate = isCollaborativeContext && userRole !== "student";
+    const canCollaborate = isCollaborativeContext && isStaff;
 
     if (!isOwnerOrAdmin && !canCollaborate) {
       return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
