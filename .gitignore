@@ -71,13 +71,13 @@ next-env.d.ts
 \\\\*/**
 *192.168.6.118*
 *192.168.6.118*/**
-Z:
-Z:/
-Z:\
-Z:\\
-*Z:*
-*Z:\*
-*Z:/**
+# Z:
+# Z:/
+# Z:\
+# Z:\\
+# *Z:*
+# *Z:\*
+# *Z:/**
 
 # Temporary, scratch, and local runtime directories
 /scratch/

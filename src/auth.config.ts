@@ -78,8 +78,11 @@ const callbacks: NextAuthConfig["callbacks"] = {
       const role = (auth?.user as any)?.role?.toLowerCase();
 
       // สิทธิ์พื้นฐานอย่าง 'student' หรือ 'user' ไม่มีสิทธิ์เข้าถึงหน้าควบคุมระบบ (Dashboard/Admin) ใดๆ ทั้งสิ้น
+      // ยกเว้นหน้าโปรไฟล์ (/dashboard/profile)
       if (role === "student" || role === "user") {
-        return Response.redirect(new URL("/", nextUrl));
+        if (!pathname.startsWith("/dashboard/profile")) {
+          return Response.redirect(new URL("/", nextUrl));
+        }
       }
 
       // หน้าที่มีความปลอดภัยสูงและจำเป็นต้องเป็น Super Admin เท่านั้น
@@ -105,15 +108,16 @@ const callbacks: NextAuthConfig["callbacks"] = {
 
         if (callbackUrl) {
           if (role === "student") {
-            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าเสาธงนักเรียน
-            if (callbackUrl.startsWith("/student")) {
+            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student หรือหน้าโปรไฟล์ ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าแรก
+            if (callbackUrl.startsWith("/student") || callbackUrl.startsWith("/dashboard/profile")) {
               return Response.redirect(new URL(callbackUrl, nextUrl));
             }
             return Response.redirect(new URL("/", nextUrl));
           }
-          // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin)
+          // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin) ยกเว้นหน้าโปรไฟล์
           if (
             role === "user" &&
+            !callbackUrl.startsWith("/dashboard/profile") &&
             (callbackUrl.startsWith("/dashboard") ||
               callbackUrl.startsWith("/manage-roles") ||
               callbackUrl.startsWith("/attendance-"))
