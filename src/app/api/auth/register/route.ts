@@ -8,6 +8,7 @@ import { getStudentAcademicYear } from "@/lib/student";
 export async function POST(req: Request) {
   try {
     // 1. รับค่าจากหน้าบ้าน
+    const body = await req.json();
     const { 
       username, 
       password, 
@@ -20,10 +21,18 @@ export async function POST(req: Request) {
       citizenId,
       classGroupId,
       academicLevel
-    } = await req.json();
+    } = body;
+
+    // Debug log (remove in production)
+    console.log("[Register] Received body:", {
+      username, name, email, phone, lineId, department, role,
+      citizenId, classGroupId, academicLevel,
+      password: password ? `[set, length=${String(password).length}]` : "[missing]",
+    });
 
     // 2. ตรวจสอบข้อมูลเบื้องต้น
     if (!username || !password || !name || !email || !phone) {
+      console.log("[Register] 400 – missing basic fields:", { username: !!username, password: !!password, name: !!name, email: !!email, phone: !!phone });
       return NextResponse.json(
         {
           error:
@@ -36,12 +45,14 @@ export async function POST(req: Request) {
     // ตรวจสอบความถูกต้องของข้อมูลสําหรับนักเรียน/นักศึกษา
     if (role === "student") {
       if (!citizenId || citizenId.length !== 13 || isNaN(Number(citizenId))) {
+        console.log("[Register] 400 – citizenId invalid:", { citizenId, length: citizenId?.length });
         return NextResponse.json(
           { error: "รหัสบัตรประชาชนต้องเป็นตัวเลข 13 หลักเท่านั้น" },
           { status: 400 }
         );
       }
       if (!classGroupId) {
+        console.log("[Register] 400 – classGroupId missing");
         return NextResponse.json(
           { error: "กรุณาระบุรหัสกลุ่มเรียน" },
           { status: 400 }
@@ -49,6 +60,7 @@ export async function POST(req: Request) {
       }
       const validLevels = ["ปวช 1", "ปวช 2", "ปวช 3", "ปวส 1", "ปวส 2"];
       if (!academicLevel || !validLevels.includes(academicLevel)) {
+        console.log("[Register] 400 – academicLevel invalid:", JSON.stringify(academicLevel), "valid:", validLevels.map(v => JSON.stringify(v)));
         return NextResponse.json(
           { error: "กรุณาเลือกชั้นปีให้ถูกต้องตามเงื่อนไข (ปวช 1-3, ปวส 1-2)" },
           { status: 400 }
@@ -75,6 +87,13 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
+      console.log("[Register] 400 – duplicate user found:", {
+        matchedId: existingUser._id,
+        citizenIdMatch: existingUser.citizenId === citizenId,
+        usernameMatch: existingUser.username?.toLowerCase() === (username as string).toLowerCase(),
+        emailMatch: existingUser.email === email,
+        phoneMatch: existingUser.phone === phone,
+      });
       if (role === "student" && existingUser.citizenId === citizenId) {
         return NextResponse.json(
           { error: "รหัสประจำตัวประชาชนนี้ถูกใช้งานในระบบแล้ว" },
