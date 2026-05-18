@@ -75,6 +75,14 @@ export default function StudentFlagpolePortal() {
     canProceed: true,
   });
 
+  const [flagpoleConfig, setFlagpoleConfig] = useState({
+    checkInStart: "07:00",
+    lateThreshold: "08:00",
+    checkInEnd: "08:45",
+    inSiteDistance: 200,
+    closedDays: [0, 6],
+  });
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const faceApiRef = useRef<any>(null);
   const profileDescriptorRef = useRef<Float32Array | null>(null);
@@ -117,6 +125,17 @@ export default function StudentFlagpolePortal() {
           setTodayAttendance(foundToday);
         }
       }
+
+      // 3. Fetch Flagpole Settings
+      try {
+        const resConfig = await fetch("/api/admin/flagpole-settings");
+        if (resConfig.ok) {
+          const configData = await resConfig.json();
+          setFlagpoleConfig(configData);
+        }
+      } catch (errConfig) {
+        console.error("Failed to load flagpole settings", errConfig);
+      }
     } catch (err) {
       console.error("Failed to load student portal data", err);
     } finally {
@@ -140,8 +159,11 @@ export default function StudentFlagpolePortal() {
       const now = new Date();
       setTime(now);
 
-      const flagStart = 700;   // 07:00 น.
-      const flagClose = 845;   // 08:45 น.
+      const [startH, startM] = (flagpoleConfig.checkInStart || "07:00").split(":").map(Number);
+      const [closeH, closeM] = (flagpoleConfig.checkInEnd || "08:45").split(":").map(Number);
+
+      const flagStart = startH * 100 + startM;
+      const flagClose = closeH * 100 + closeM;
 
       // เวลาประเทศไทย (ICT)
       const thNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
@@ -151,28 +173,29 @@ export default function StudentFlagpolePortal() {
       let msg = "";
       let canAction = true;
 
-      // วันเสาร์-อาทิตย์ ปิดระบบการเข้าแถวโดยอัตโนมัติ
+      // วันเสาร์-อาทิตย์ ปิดระบบการเข้าแถวโดยอัตโนมัติ (หรือตามที่ผู้ดูแลตั้งค่าไว้)
       const thDay = thNow.getUTCDay();
-      if (thDay === 0 || thDay === 6) {
+      const closedDays = flagpoleConfig.closedDays || [0, 6];
+      if (closedDays.includes(thDay)) {
         locked = true;
-        msg = "วันนี้เป็นวันหยุดสุดสัปดาห์ ไม่ต้องเช็คชื่อเข้าแถวหน้าเสาธง";
+        msg = "วันนี้เป็นวันหยุดทำกิจกรรม ไม่ต้องเช็คชื่อเข้าแถวหน้าเสาธง";
         canAction = false;
       }
       else if (val < flagStart) {
         locked = true;
-        msg = `ยังไม่ถึงเวลากิจกรรมเช็คชื่อเข้าแถว (ระบบเปิดเช็คชื่อเวลา 07:00 น.)`;
+        msg = `ยังไม่ถึงเวลากิจกรรมเช็คชื่อเข้าแถว (ระบบเปิดเช็คชื่อเวลา ${flagpoleConfig.checkInStart || "07:00"} น.)`;
         canAction = false;
       }
       else if (val > flagClose) {
         locked = true;
-        msg = `หมดช่วงเวลาเช็คชื่อเข้าแถวหน้าเสาธงแล้ว (ระบบปิดให้บริการเมื่อเวลา 08:45 น.)`;
+        msg = `หมดช่วงเวลาเช็คชื่อเข้าแถวหน้าเสาธงแล้ว (ระบบปิดให้บริการเมื่อเวลา ${flagpoleConfig.checkInEnd || "08:45"} น.)`;
         canAction = false;
       }
 
       setTimeState({ isLocked: locked, lockMsg: msg, canProceed: canAction });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [flagpoleConfig]);
 
   const loadFaceApiAndProfile = async () => {
     try {
@@ -364,7 +387,7 @@ export default function StudentFlagpolePortal() {
       if (data.success) {
         if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
         setIsCameraOpen(false);
-        setStatusMsg("เช็คชื่อเข้าแถวเสาธงเรียบร้อยแล้ว!");
+        setStatusMsg("เช็คชื่อเข้าแถวเรียบร้อยแล้ว!");
         loadStudentData(); // Reload stats and history
       } else {
         alert(data.message || "เช็คชื่อไม่สำเร็จ");
@@ -636,7 +659,7 @@ export default function StudentFlagpolePortal() {
                       <button
                         disabled={isProcessing || !location || faceStatus === "not_matched"}
                         onClick={submitCheckIn}
-                        className="flex-[2] py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5"
+                        className="flex-2 py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5"
                       >
                         {isProcessing ? <Loader2 className="animate-spin" size={14} /> : <span>ลงเวลาเข้าแถว 🇹🇭</span>}
                       </button>
@@ -654,7 +677,7 @@ export default function StudentFlagpolePortal() {
               >
                 {loadingHistory ? (
                   [1, 2].map(i => (
-                    <div key={i} className="bg-white dark:bg-zinc-900 rounded-[2rem] p-4 border border-slate-100 dark:border-zinc-800 animate-pulse h-24 shadow-sm" />
+                    <div key={i} className="bg-white dark:bg-zinc-900 rounded-4xl p-4 border border-slate-100 dark:border-zinc-800 animate-pulse h-24 shadow-sm" />
                   ))
                 ) : history.length === 0 ? (
                   <div className="text-center py-16 bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-slate-100 dark:border-zinc-800 shadow-inner">
@@ -676,7 +699,7 @@ export default function StudentFlagpolePortal() {
                         initial={{ opacity: 0, x: -5 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="bg-white dark:bg-zinc-900 rounded-[2rem] p-4 border border-slate-100 dark:border-zinc-800 shadow-lg flex items-center justify-between gap-4"
+                        className="bg-white dark:bg-zinc-900 rounded-4xl p-4 border border-slate-100 dark:border-zinc-800 shadow-lg flex items-center justify-between gap-4"
                       >
                         <div className="flex items-center gap-3">
                           {/* Mini Date Badge */}

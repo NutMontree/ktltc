@@ -646,7 +646,7 @@ export default function FlagpoleCheckInPage() {
                   <button
                     disabled={submitDisabled}
                     onClick={submitAttendance}
-                    className="flex-[2] py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2"
+                    className="flex-2 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2"
                   >
                     {isProcessing ? (
                       <>

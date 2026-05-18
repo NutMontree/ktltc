@@ -101,10 +101,34 @@ const callbacks: NextAuthConfig["callbacks"] = {
     if (pathname === "/login") {
       if (isLoggedIn) {
         const role = (auth?.user as any)?.role?.toLowerCase();
-        if (role === "student" || role === "user") {
+        const callbackUrl = nextUrl.searchParams.get("callbackUrl");
+
+        if (callbackUrl) {
+          if (role === "student") {
+            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าเสาธงนักเรียน
+            if (callbackUrl.startsWith("/student")) {
+              return Response.redirect(new URL(callbackUrl, nextUrl));
+            }
+            return Response.redirect(new URL("/", nextUrl));
+          }
+          // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin)
+          if (
+            role === "user" &&
+            (callbackUrl.startsWith("/dashboard") ||
+              callbackUrl.startsWith("/manage-roles") ||
+              callbackUrl.startsWith("/attendance-"))
+          ) {
+            return Response.redirect(new URL("/", nextUrl));
+          }
+          return Response.redirect(new URL(callbackUrl, nextUrl));
+        }
+
+        if (role === "student") {
+          return Response.redirect(new URL("/", nextUrl));
+        } else if (role === "user") {
           return Response.redirect(new URL("/", nextUrl));
         } else {
-          return Response.redirect(new URL("/dashboard", nextUrl));
+          return Response.redirect(new URL("/", nextUrl));
         }
       }
     }

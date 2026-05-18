@@ -297,6 +297,16 @@ export default function MobileMenu({
                         </Link>
                       )}
 
+                      {roleLower === "student" && (
+                        <Link
+                          href="/student/flagpole"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/student/flagpole" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
+                          <Activity className="w-5 h-5" /> เช็คชื่อเข้าแถว
+                        </Link>
+                      )}
+
                       {/* รายการจัดการพิเศษสำหรับ Super Admin */}
                       {isSuperAdmin && (
                         <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-1">

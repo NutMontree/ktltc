@@ -609,6 +609,65 @@ export default function DashboardLoader() {
               </div>
             </div>
           )}
+
+          {/* --- Student Section --- */}
+          {(((session?.user as any)?.role || "").toLowerCase() === "student" ||
+            ["super_admin", "admin"].includes(
+              ((session?.user as any)?.role || "").toLowerCase(),
+            )) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 flex items-center gap-4">
+                  <Clock className="w-4 h-4" /> สำหรับนักเรียน นักศึกษา
+                  <span className="h-px bg-indigo-500/10 flex-1" />
+                </h2>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                <ActionCard
+                  href="/student/flagpole"
+                  title="เช็คชื่อเข้าแถว"
+                  icon={Clock}
+                  desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
+                  variants={item}
+                />
+                {["super_admin", "admin"].includes(
+                  ((session?.user as any)?.role || "").toLowerCase(),
+                ) && (
+                  <>
+                    <ActionCard
+                      href="/dashboard/flagpole-dashboard"
+                      title="ภาพรวมการเข้าแถว"
+                      icon={Layers}
+                      desc="รายงานสถิติ แผนที่ และภาพรวมการเข้าแถวหน้าเสาธง"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/dashboard/flagpole-reports"
+                      title="ระบบรายงานการเข้าแถว"
+                      icon={FileText}
+                      desc="ตรวจสอบ แก้ไข และออกรายงานสรุปประวัติเข้าแถวนักศึกษา"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/dashboard/flagpole-data-management"
+                      title="แก้ไขข้อมูลการเข้าแถว"
+                      icon={ClipboardList}
+                      desc="เครื่องมือปรับแก้พิกัด ระยะห่าง และวันเวลาลงชื่อของนักเรียน"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/dashboard/flagpole-settings"
+                      title="ตั้งค่าเวลาเข้าแถว"
+                      icon={Settings}
+                      desc="จัดการกฎและเวลาเข้าแถวเสาธงของนักเรียน"
+                      variants={item}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </motion.div>
 
         <motion.div

@@ -64,15 +64,42 @@ export default function LoginPage() {
         setSuccess(true);
         router.refresh();
 
-        const session = await getSession();
-        const role = (session?.user as any)?.role?.toLowerCase();
+        // 1. ดึง callbackUrl จาก query parameters (ถ้ามี) เพื่อนำทางกลับหน้าเดิม
+        const searchParams = new URLSearchParams(window.location.search);
+        const callbackUrl = searchParams.get("callbackUrl");
 
-        if (role === "super_admin") {
-          router.replace("/dashboard"); // ปรับตามเส้นทางของคุณ
-        } else if (role === "student") {
-          router.replace("/student/flagpole");
+        // 2. ใช้ระบบ Polling เพื่อรอจนกว่า NextAuth Session จะได้รับการอัปเดตและมีข้อมูลสิทธิ์บทบาท (Role) ครบถ้วน
+        let session = null;
+        let role = "";
+        let retries = 5;
+        while (retries > 0) {
+          session = await getSession();
+          role = (session?.user as any)?.role?.toLowerCase() || "";
+          if (role) break;
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          retries--;
+        }
+
+        // 3. นำทางผู้ใช้งานไปยังหน้าปลายทางที่ถูกต้องตามสิทธิ์และ callbackUrl
+        if (role === "student") {
+          if (callbackUrl && callbackUrl.startsWith("/student")) {
+            router.replace(callbackUrl);
+          } else {
+            router.replace("/student/flagpole");
+          }
+        } else if (["super_admin", "admin"].includes(role)) {
+          if (callbackUrl && !callbackUrl.startsWith("/login")) {
+            router.replace(callbackUrl);
+          } else {
+            router.replace("/dashboard");
+          }
         } else {
-          router.replace("/"); // หน้า dashboard ทั่วไป
+          // สิทธิ์ปกติ (user)
+          if (callbackUrl && !callbackUrl.startsWith("/dashboard") && !callbackUrl.startsWith("/manage-roles") && !callbackUrl.startsWith("/attendance-")) {
+            router.replace(callbackUrl);
+          } else {
+            router.replace("/");
+          }
         }
       }
     } catch (err) {

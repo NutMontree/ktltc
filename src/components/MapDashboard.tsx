@@ -1,8 +1,8 @@
 // @ts-nocheck
 'use client';
 
-import { useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { useMemo, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -15,19 +15,39 @@ const icon = L.icon({
   iconAnchor: [12, 41],
 });
 
-const COLLEGE_LOCATION = [14.754043, 104.65807];
-const IN_SITE_RADIUS = 200; 
+const DEFAULT_COLLEGE_LOCATION = [14.754043, 104.65807];
 const MAX_RADIUS = 200000; 
 
-export default function MapDashboard({ markers }: { markers: any[] }) {
+// Subcomponent to dynamically pan/re-center map when dynamic center changes
+function ChangeMapView({ center }: { center: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, map.getZoom());
+  }, [center]);
+  return null;
+}
+
+export default function MapDashboard({ 
+  markers, 
+  centerLat = 14.754043, 
+  centerLng = 104.65807, 
+  radius = 200 
+}: { 
+  markers: any[]; 
+  centerLat?: number; 
+  centerLng?: number; 
+  radius?: number; 
+}) {
   if (typeof window === 'undefined') return null;
+
+  const dynamicCenter: [number, number] = useMemo(() => [centerLat, centerLng], [centerLat, centerLng]);
 
   // Optimized Marker Rendering using Memoization
   const markerElements = useMemo(() => {
     return markers.map((m, i) => (
       <Marker key={`${m.lat}-${m.lng}-${i}`} position={[m.lat, m.lng]} icon={icon}>
         <Popup className="premium-popup" closeButton={false}>
-          <div className="flex flex-col items-center min-w-[140px] pb-3 bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden">
+          <div className="flex flex-col items-center min-w-[140px] pb-3 bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden text-left">
             {m.photoUrl ? (
               <div className="w-full h-24 overflow-hidden mb-3 border-b border-slate-100 dark:border-zinc-800">
                  <img src={m.photoUrl} alt="face" className="w-full h-full object-cover" />
@@ -57,7 +77,7 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
   return (
     <div className="w-full h-full rounded-xl overflow-hidden z-0 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-inner">
       <MapContainer 
-        center={COLLEGE_LOCATION} 
+        center={dynamicCenter} 
         zoom={15} 
         scrollWheelZoom={false} 
         preferCanvas={true} // VITAL for mobile performance: hardware-accelerated vectors
@@ -69,7 +89,7 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
         />
         
         <Circle
-          center={COLLEGE_LOCATION}
+          center={dynamicCenter}
           radius={MAX_RADIUS}
           pathOptions={{ 
             color: '#10b981', 
@@ -81,8 +101,8 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
         />
 
         <Circle
-          center={COLLEGE_LOCATION}
-          radius={IN_SITE_RADIUS}
+          center={dynamicCenter}
+          radius={radius}
           pathOptions={{ 
             color: '#3b82f6', 
             fillColor: '#3b82f6', 
@@ -92,16 +112,17 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
           }}
         />
         
-        <Marker position={COLLEGE_LOCATION} icon={icon}>
+        <Marker position={dynamicCenter} icon={icon}>
           <Popup closeButton={false}>
             <div className="text-center p-2 min-w-[140px]">
-              <p className="font-black text-blue-600 text-[10px] uppercase tracking-tight mb-1">วิทยาลัยเทคนิคกันทรลักษ์</p>
-              <p className="text-[8px] text-slate-400 dark:text-zinc-500 leading-tight mb-2 italic">จุดพิกัดอาณาเขตอย่างเป็นทางการ</p>
-              <span className="text-[8px] px-2 py-1 bg-blue-50 text-blue-500 rounded-lg inline-block font-black uppercase tracking-widest border border-blue-100">อาคารหลัก</span>
+              <p className="font-black text-blue-600 text-[10px] uppercase tracking-tight mb-1">จุดพิกัดเสาธงกิจกรรม</p>
+              <p className="text-[8px] text-slate-400 dark:text-zinc-500 leading-tight mb-2 italic">ศูนย์กลางอาณาเขตเข้าแถวเสาธง</p>
+              <span className="text-[8px] px-2 py-1 bg-blue-50 text-blue-500 rounded-lg inline-block font-black uppercase tracking-widest border border-blue-100">จุดรวมพล</span>
             </div>
           </Popup>
         </Marker>
 
+        <ChangeMapView center={dynamicCenter} />
         {markerElements}
       </MapContainer>
 

@@ -11,7 +11,7 @@ import {
   ChevronRight,
   MapPin,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -113,7 +113,9 @@ export default function FlagpoleHistoryPage() {
             >
               {history.map((record, index) => {
                 const cfg = getStatusConfig(record.status);
-                const checkInDate = record.checkIn?.time ? new Date(record.checkIn.time) : new Date(record.date);
+                const checkInDate = record.checkIn?.time
+                  ? new Date(record.checkIn.time)
+                  : new Date(record.date);
                 return (
                   <motion.div
                     key={record._id || index}
@@ -194,7 +196,7 @@ export default function FlagpoleHistoryPage() {
 
         <div className="pt-12 pb-8 text-center border-t border-slate-100 dark:border-zinc-900/50">
           <p className="text-[9px] text-slate-300 dark:text-zinc-800 font-black uppercase tracking-[0.4em] leading-loose">
-            ระบบตรวจสอบสิทธิ์เช็คชื่อเข้าแถวเสาธง KTLTC <br />
+            ระบบตรวจสอบสิทธิ์เช็คชื่อเข้าแถว KTLTC <br />
             จัดเก็บและตรวจสอบข้อมูลความถูกต้องฝั่งเซิร์ฟเวอร์
           </p>
         </div>

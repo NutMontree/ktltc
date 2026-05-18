@@ -212,7 +212,8 @@ function Footer() {
           return [4 /*yield*/, getVisitorCount()];
         case 2:
           visitorCount = _a.sent();
-          countDigits = visitorCount.toString().padStart(6, "0").split("");
+          var countStr = String(visitorCount);
+          countDigits = (countStr.length < 6 ? countStr.padStart(6, "0") : countStr).split("");
           parents = navItems.filter(function (item) {
             return !item.parentId;
           });

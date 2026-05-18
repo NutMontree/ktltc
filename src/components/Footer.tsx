@@ -66,7 +66,9 @@ async function getVisitorCount() {
       .collection("site_stats")
       .findOne({ _id: "visitor_count" as any });
 
-    return result?.count || 1;
+    const rawCount = result?.count;
+    const parsed = typeof rawCount === "number" ? rawCount : parseInt(String(rawCount)) || 0;
+    return parsed > 0 ? parsed : 134001;
   } catch (error) {
     console.error("Error fetching visitor count:", error);
     return 134001; // ค่า Default กรณีดึงข้อมูลไม่สำเร็จ
@@ -79,7 +81,8 @@ export default async function Footer() {
   const visitorCount = await getVisitorCount();
 
   // แปลงยอดผู้เข้าชมเป็นอาร์เรย์ของตัวเลข (เช่น 000123) เพื่อทำกราฟิกแบบตัวเลขหมุน
-  const countDigits = visitorCount.toString().padStart(6, "0").split("");
+  const countStr = String(visitorCount);
+  const countDigits = (countStr.length < 6 ? countStr.padStart(6, "0") : countStr).split("");
 
   const parents = navItems.filter((item) => !item.parentId);
   const getChildren = (parentId: string) =>
