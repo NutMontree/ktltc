@@ -33,19 +33,15 @@ export default function RegisterPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword)
-      return setErrorMsg("รหัสผ่านไม่ตรงกัน");
-    if (formData.password.length < 6)
-      return setErrorMsg("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+    if (formData.password !== formData.confirmPassword) return setErrorMsg("รหัสผ่านไม่ตรงกัน");
+    if (formData.password.length < 6) return setErrorMsg("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
 
     setLoading(true);
     try {
@@ -86,9 +82,7 @@ export default function RegisterPage() {
             <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md group-hover:bg-white/20 transition">
               <Command size={24} className="text-indigo-400" />
             </div>
-            <span className="font-bold text-xl tracking-wide uppercase">
-              KTLTC System
-            </span>
+            <span className="font-bold text-xl tracking-wide uppercase">KTLTC System</span>
           </Link>
         </div>
 
@@ -110,9 +104,8 @@ export default function RegisterPage() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-slate-400 text-lg font-medium leading-relaxed"
           >
-            Register to access comprehensive academic and organizational tools.
-            All registrations are subject to administrator approval to ensure
-            secure access to sensitive data.
+            Register to access comprehensive academic and organizational tools. All registrations
+            are subject to administrator approval to ensure secure access to sensitive data.
           </motion.p>
         </div>
       </div>
@@ -135,9 +128,7 @@ export default function RegisterPage() {
             transition={{ duration: 0.5 }}
           >
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-4xl font-black text-slate-900 dark:text-white">
-                Create Account
-              </h2>
+              <h2 className="text-4xl font-black text-slate-900 dark:text-white">Create Account</h2>
               <Link
                 href="/login"
                 className="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors bg-slate-100 dark:bg-zinc-900 p-3 rounded-full hover:bg-slate-200 dark:hover:bg-zinc-800"
@@ -157,12 +148,7 @@ export default function RegisterPage() {
               className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-500/30 p-8 rounded-4xl text-center shadow-lg shadow-emerald-500/10"
             >
               <div className="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/30">
-                <svg
-                  className="w-10 h-10"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -175,8 +161,7 @@ export default function RegisterPage() {
                 สมัครสมาชิกสำเร็จ!
               </h3>
               <p className="text-emerald-600/80 dark:text-emerald-300 font-medium mb-8 text-lg">
-                กรุณารอผู้ดูแลระบบอนุมัติบัญชีของคุณ
-                ระบบกำลังนำคุณไปหน้าเข้าสู่ระบบ...
+                กรุณารอผู้ดูแลระบบอนุมัติบัญชีของคุณ ระบบกำลังนำคุณไปหน้าเข้าสู่ระบบ...
               </p>
               <div className="w-full bg-emerald-200 dark:bg-emerald-900/50 h-2 rounded-full overflow-hidden">
                 <motion.div
@@ -188,7 +173,22 @@ export default function RegisterPage() {
               </div>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <>
+              {/* สำหรับนักเรียน นักศึกษา */}
+              <div className="mb-6 p-4 bg-amber-500/10 dark:bg-amber-950/10 border border-amber-500/20 dark:border-amber-500/10 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md shadow-amber-500/5">
+                <div>
+                  <h4 className="text-sm font-black text-amber-800 dark:text-amber-400">สำหรับนักเรียน นักศึกษา 🎓</h4>
+                  <p className="text-xs text-amber-750 dark:text-zinc-400 font-bold mt-0.5">กรุณาใช้ช่องทางเฉพาะเพื่อกรอกข้อมูลเลขบัตรประชาชน ชั้นปี และกลุ่มเรียนทวิภาคี</p>
+                </div>
+                <Link
+                  href="/register/student"
+                  className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 shrink-0"
+                >
+                  ลงทะเบียนนักศึกษา <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
               {errorMsg && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -236,7 +236,7 @@ export default function RegisterPage() {
                         value={formData.username}
                         onChange={handleChange}
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
-                        placeholder="เช่น somchai_admin"
+                        placeholder="เช่น somchai"
                         required
                       />
                     </div>
@@ -299,7 +299,7 @@ export default function RegisterPage() {
                         value={formData.email}
                         onChange={handleChange}
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
-                        placeholder="name@ktltc.ac.th"
+                        placeholder="name@gmail.com"
                         required
                       />
                     </div>
@@ -341,13 +341,9 @@ export default function RegisterPage() {
                         required
                       >
                         <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                        <option value="ผู้บริหารสถานศึกษา">
-                          ผู้บริหารสถานศึกษา
-                        </option>
+                        <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                         <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                          <option value="งานบริหารงานทั่วไป">
-                            งานบริหารงานทั่วไป
-                          </option>
+                          <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
                           <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
                             งานบริหารและพัฒนาทรัพยากรบุคคล
                           </option>
@@ -356,9 +352,7 @@ export default function RegisterPage() {
                           <option value="งานพัสดุ">งานพัสดุ</option>
                           <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                           <option value="งานทะเบียน">งานทะเบียน</option>
-                          <option value="งานแม่บ้าน/นักการ">
-                            งานแม่บ้าน/นักการ
-                          </option>
+                          <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
                         </optgroup>
                         <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
                           <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
@@ -376,9 +370,7 @@ export default function RegisterPage() {
                           <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
                             งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
                           </option>
-                          <option value="งานติดตามและประเมินผล">
-                            งานติดตามและประเมินผล
-                          </option>
+                          <option value="งานติดตามและประเมินผล">งานติดตามและประเมินผล</option>
                         </optgroup>
                         <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
                           <option value="งานกิจกรรมนักเรียนนักศึกษา">
@@ -401,9 +393,7 @@ export default function RegisterPage() {
                           <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
                             งานพัฒนาหลักสูตรและการจัดการเรียนรู้
                           </option>
-                          <option value="งานวัดผลและประเมินผล">
-                            งานวัดผลและประเมินผล
-                          </option>
+                          <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
                           <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
                             งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
                           </option>
@@ -452,7 +442,6 @@ export default function RegisterPage() {
                         required
                       >
                         <option value="teacher">บุคลากร (Teacher / Staff)</option>
-                        <option value="student">นักเรียน / นักศึกษา (Student)</option>
                         <option value="user">บุคคลภายนอก (General User)</option>
                       </select>
                     </div>
@@ -486,6 +475,7 @@ export default function RegisterPage() {
                 </button>
               </motion.div>
             </form>
+          </>
           )}
 
           {!success && (

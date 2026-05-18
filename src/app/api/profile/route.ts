@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
@@ -6,6 +5,7 @@ import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { saveFileLocally } from "@/lib/upload-server";
 import { deleteFileFromUrl } from "@/lib/file-utils";
+import { checkAndPromoteStudent } from "@/lib/student";
 
 export async function GET() {
   const session = await auth();
@@ -26,7 +26,9 @@ export async function GET() {
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    return NextResponse.json(user);
+    const promotedUser = await checkAndPromoteStudent(db, user);
+
+    return NextResponse.json(promotedUser);
   } catch (_error) {
     return NextResponse.json({ error: "Error" }, { status: 500 });
   }

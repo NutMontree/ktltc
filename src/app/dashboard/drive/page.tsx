@@ -16,6 +16,7 @@ import {
   Edit3,
   Upload,
   ArrowLeft,
+  Eye,
   Search,
   HardDrive,
   User,
@@ -35,11 +36,15 @@ import {
   Check,
   CheckSquare,
   ChevronLeft,
+  RotateCcw,
 } from "lucide-react";
 import { uploadFile } from "@/lib/upload";
 import { motion, AnimatePresence } from "framer-motion";
 
+let isFirstMount = true;
+
 interface DriveItem {
+  views: number;
   _id: string;
   name: string;
   ownerId: string;
@@ -106,17 +111,20 @@ function DriveContent() {
     "all" | "image" | "video" | "document" | "archive" | "audio" | "other"
   >("all");
   const [previewFile, setPreviewFile] = useState<DriveItem | null>(null);
+  const [currentFolderData, setCurrentFolderData] = useState<any>(null);
 
   const userRole = (session?.user as any)?.role?.toLowerCase();
   const userId = (session?.user as any)?.id;
   const isSuperAdmin = userRole === "super_admin";
+  const isStaff = !!(session && !["user", "student"].includes(userRole || ""));
 
   const currentFolder = allFoldersList.find((f) => f._id === currentFolderId);
   const canUploadInCurrentFolder =
-    !currentFolderId ||
-    isSuperAdmin ||
-    currentFolder?.ownerId === userId ||
-    currentFolder?.isCollaborative;
+    isStaff &&
+    (!currentFolderId ||
+      isSuperAdmin ||
+      currentFolder?.ownerId === userId ||
+      currentFolder?.isCollaborative);
 
   const fetchItems = useCallback(async (folderId: string | null) => {
     setLoading(true);
@@ -126,6 +134,7 @@ function DriveContent() {
       if (data.folders) setFolders(data.folders);
       if (data.files) setFiles(data.files);
       if (data.allFolders) setAllFoldersList(data.allFolders);
+      setCurrentFolderData(data.currentFolder || null);
     } catch (error) {
       console.error("Failed to fetch drive items", error);
     } finally {
@@ -134,19 +143,76 @@ function DriveContent() {
   }, []);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    } else if (status === "authenticated") {
-      // Block student role from accessing drive
-      if (userRole === "student") {
-        router.push("/dashboard");
+    if (status === "loading") return;
+
+    const isStaff = !!(session && !["user", "student"].includes(userRole || ""));
+
+    // Check raw window.location to prevent hydration delay race conditions in Next.js
+    const activeFolderId =
+      urlFolderId ||
+      (typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("folderId")
+        : null);
+
+    // If they are not staff, they are only allowed to see shared folders if folderId is in the URL
+    if (!isStaff) {
+      if (!activeFolderId) {
+        if (status === "unauthenticated") {
+          router.push("/login");
+        } else {
+          router.push("/dashboard");
+        }
         return;
       }
-      // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
-      setCurrentFolderId(urlFolderId);
-      fetchItems(urlFolderId);
     }
-  }, [status, router, urlFolderId, fetchItems]);
+
+    // เมื่อ URL เปลี่ยน ให้เปลี่ยน folder ใน state ด้วย
+    setCurrentFolderId(activeFolderId);
+    fetchItems(activeFolderId);
+  }, [status, session, userRole, urlFolderId, fetchItems, router]);
+
+  // Increment views count with 100% accuracy (excluding page reloads/refreshes)
+  useEffect(() => {
+    if (!urlFolderId) {
+      setCurrentFolderData(null);
+      return;
+    }
+
+    const reloadKey = `did_reload_drive_${urlFolderId}`;
+    const isReload = sessionStorage.getItem(reloadKey) === "true";
+
+    if (isReload) {
+      // This is a browser reload. Do not increment!
+      sessionStorage.removeItem(reloadKey);
+    } else {
+      // This is a new entry or client-side re-entry! Increment views.
+      fetch("/api/drive/folders/views", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folderId: urlFolderId }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.views !== undefined) {
+            // Update current views in state
+            setCurrentFolderData((prev: any) =>
+              prev && prev._id === urlFolderId ? { ...prev, views: data.views } : prev,
+            );
+          }
+        })
+        .catch((err) => console.error("Failed to increment folder views", err));
+    }
+
+    // Register beforeunload handler to detect browser reload/refresh
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem(reloadKey, "true");
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [urlFolderId]);
 
   // Reconstruct breadcrumbs when folders list or current ID changes
   useEffect(() => {
@@ -313,7 +379,7 @@ function DriveContent() {
 
     if (
       !confirm(
-        `คุณต้องการดาวน์โหลดไฟล์จำนวน ${selectedFiles.length} ไฟล์ใช่หรือไม่?\nเบราว์เซอร์อาจขออนุญาตในการดาวน์โหลดหลายไฟล์พร้อมกัน`
+        `คุณต้องการดาวน์โหลดไฟล์จำนวน ${selectedFiles.length} ไฟล์ใช่หรือไม่?\nเบราว์เซอร์อาจขออนุญาตในการดาวน์โหลดหลายไฟล์พร้อมกัน`,
       )
     )
       return;
@@ -321,19 +387,19 @@ function DriveContent() {
     selectedFiles.forEach((file, index) => {
       setTimeout(() => {
         if (!file.url) return;
-        
+
         let downloadUrl = file.url;
         // หากเป็นไฟล์ในระบบ (Media API) ให้เติม query เพื่อบังคับดาวน์โหลด
         if (downloadUrl.includes("/api/media/")) {
           downloadUrl += (downloadUrl.includes("?") ? "&" : "?") + "download=1";
         }
-        
+
         // ใช้ iframe ที่ซ่อนไว้เพื่อหลบเลี่ยงระบบบล็อกการดาวน์โหลดซ้อนของเบราว์เซอร์
         const iframe = document.createElement("iframe");
         iframe.style.display = "none";
         iframe.src = downloadUrl;
         document.body.appendChild(iframe);
-        
+
         // ลบ iframe ทิ้งเมื่อส่งคำสั่งดาวน์โหลดสำเร็จ
         setTimeout(() => {
           if (document.body.contains(iframe)) {
@@ -773,14 +839,22 @@ function DriveContent() {
           ))}
         </div>
 
-        {breadcrumbs.length > 0 && (
-          <button
-            onClick={() => handleBreadcrumbClick(breadcrumbs.length - 2)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all shrink-0 border border-transparent hover:border-slate-200 dark:hover:border-zinc-700"
-          >
-            <ArrowLeft size={14} /> <span className="hidden sm:inline">ย้อนกลับ</span>
-          </button>
-        )}
+        <div className="flex items-center gap-3 shrink-0 ml-auto">
+          {currentFolderData && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-100/50 dark:border-amber-900/30 shadow-sm shrink-0">
+              <Eye size={14} strokeWidth={2.5} />
+              <span>ผู้เข้าชม {(currentFolderData.views || 0).toLocaleString()} ครั้ง</span>
+            </div>
+          )}
+          {breadcrumbs.length > 0 && (
+            <button
+              onClick={() => handleBreadcrumbClick(breadcrumbs.length - 2)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all shrink-0 border border-transparent hover:border-slate-200 dark:hover:border-zinc-700"
+            >
+              <ArrowLeft size={14} /> <span className="hidden sm:inline">ย้อนกลับ</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Upload Progress */}
@@ -867,8 +941,8 @@ function DriveContent() {
               <div
                 className={`relative rounded-[24px] flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 ${
                   folder.isCollaborative
-                    ? "bg-linear-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20"
-                    : "bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
+                    ? "bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
+                    : "bg-linear-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20"
                 } ${viewMode === "grid" ? "h-24 w-24" : "h-12 w-12"}`}
               >
                 <Folder
@@ -879,7 +953,7 @@ function DriveContent() {
                 />
                 {folder.isCollaborative && (
                   <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 p-1.5 rounded-full shadow-lg border border-slate-100 dark:border-zinc-700">
-                    <Share2 size={12} className="text-indigo-600" strokeWidth={3} />
+                    <Share2 size={12} className="text-amber-500" strokeWidth={3} />
                   </div>
                 )}
               </div>
@@ -893,6 +967,12 @@ function DriveContent() {
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                   {folder.isCollaborative ? "คลังทำงานร่วมกัน" : "แฟ้มส่วนตัว"}
                 </span>
+                <div
+                  className={`flex items-center gap-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-md border border-amber-100/30 mt-2 w-fit ${viewMode === "grid" ? "mx-auto" : ""}`}
+                >
+                  <Eye size={12} />
+                  <span>{(folder.views || 0).toLocaleString()} ครั้ง</span>
+                </div>
               </div>
             </div>
 
@@ -908,46 +988,47 @@ function DriveContent() {
               </div>
 
               <div className="flex items-center gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
-                {(isSuperAdmin ||
-                  folder.ownerId === userId ||
-                  (folder.isCollaborative && userRole !== "student")) && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setSelectedItem({
-                          id: folder._id,
-                          name: folder.name,
-                          type: "folder",
-                          isCollaborative: !!folder.isCollaborative,
-                        });
-                        setNewItemName(folder.name);
-                        setIsCollaborative(!!folder.isCollaborative);
-                        setIsRenameModalOpen(true);
-                      }}
-                      className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                      title="การตั้งค่า"
-                    >
-                      <Edit3 size={14} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedItem({ id: folder._id, name: folder.name, type: "folder" });
-                        setIsMoveModalOpen(true);
-                      }}
-                      className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                      title="ย้าย"
-                    >
-                      <Move size={14} />
-                    </button>
-                    <button
-                      onClick={() => deleteItem(folder._id, "folder")}
-                      className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                      title="ลบ"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </>
-                )}
+                {isStaff &&
+                  (isSuperAdmin ||
+                    folder.ownerId === userId ||
+                    (folder.isCollaborative && userRole !== "student")) && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setSelectedItem({
+                            id: folder._id,
+                            name: folder.name,
+                            type: "folder",
+                            isCollaborative: !!folder.isCollaborative,
+                          });
+                          setNewItemName(folder.name);
+                          setIsCollaborative(!!folder.isCollaborative);
+                          setIsRenameModalOpen(true);
+                        }}
+                        className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                        title="การตั้งค่า"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedItem({ id: folder._id, name: folder.name, type: "folder" });
+                          setIsMoveModalOpen(true);
+                        }}
+                        className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                        title="ย้าย"
+                      >
+                        <Move size={14} />
+                      </button>
+                      <button
+                        onClick={() => deleteItem(folder._id, "folder")}
+                        className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                        title="ลบ"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </>
+                  )}
               </div>
             </div>
           </motion.div>
@@ -991,7 +1072,8 @@ function DriveContent() {
               onClick={(e) => {
                 e.stopPropagation();
                 if (isSelectionMode) toggleSelection(file._id);
-                else if (file.type?.startsWith("image/") || file.type?.startsWith("video/")) setPreviewFile(file);
+                else if (file.type?.startsWith("image/") || file.type?.startsWith("video/"))
+                  setPreviewFile(file);
                 else window.open(file.url, "_blank");
               }}
               className={`relative overflow-hidden shrink-0 shadow-inner bg-slate-100 dark:bg-zinc-800 cursor-pointer ${viewMode === "grid" ? "mb-3 aspect-4/3 w-full rounded-xl" : "h-12 w-12 rounded-lg mr-4"}`}
@@ -1010,7 +1092,8 @@ function DriveContent() {
                   onClick={(e) => {
                     e.stopPropagation();
                     if (isSelectionMode) toggleSelection(file._id);
-                    else if (file.type?.startsWith("image/") || file.type?.startsWith("video/")) setPreviewFile(file);
+                    else if (file.type?.startsWith("image/") || file.type?.startsWith("video/"))
+                      setPreviewFile(file);
                     else window.open(file.url, "_blank");
                   }}
                   className="truncate text-xs sm:text-sm font-black text-slate-800 dark:text-zinc-100 hover:text-blue-600 transition-colors cursor-pointer"
@@ -1039,7 +1122,7 @@ function DriveContent() {
                   <span className="truncate max-w-[70px]">{file.ownerName}</span>
                 </div>
 
-                <div 
+                <div
                   className="flex items-center gap-1 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -1051,40 +1134,41 @@ function DriveContent() {
                   >
                     <Download size={14} />
                   </a>
-                  {(isSuperAdmin ||
-                    file.ownerId === userId ||
-                    (currentFolder?.isCollaborative && userRole !== "student")) && (
-                    <>
-                      <button
-                        onClick={() => {
-                          setSelectedItem({ id: file._id, name: file.name, type: "file" });
-                          setNewItemName(file.name);
-                          setIsRenameModalOpen(true);
-                        }}
-                        className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                        title="เปลี่ยนชื่อ"
-                      >
-                        <Edit3 size={14} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedItem({ id: file._id, name: file.name, type: "file" });
-                          setIsMoveModalOpen(true);
-                        }}
-                        className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                        title="ย้าย"
-                      >
-                        <Move size={14} />
-                      </button>
-                      <button
-                        onClick={() => deleteItem(file._id, "file")}
-                        className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                        title="ลบ"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </>
-                  )}
+                  {isStaff &&
+                    (isSuperAdmin ||
+                      file.ownerId === userId ||
+                      (currentFolder?.isCollaborative && userRole !== "student")) && (
+                      <>
+                        <button
+                          onClick={() => {
+                            setSelectedItem({ id: file._id, name: file.name, type: "file" });
+                            setNewItemName(file.name);
+                            setIsRenameModalOpen(true);
+                          }}
+                          className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                          title="เปลี่ยนชื่อ"
+                        >
+                          <Edit3 size={14} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedItem({ id: file._id, name: file.name, type: "file" });
+                            setIsMoveModalOpen(true);
+                          }}
+                          className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                          title="ย้าย"
+                        >
+                          <Move size={14} />
+                        </button>
+                        <button
+                          onClick={() => deleteItem(file._id, "file")}
+                          className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                          title="ลบ"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </>
+                    )}
                 </div>
               </div>
             </div>
@@ -1114,28 +1198,32 @@ function DriveContent() {
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-blue-600 transition-all text-xs sm:text-sm font-black"
                 title="ดาวน์โหลดที่เลือก"
               >
-                <Download size={16} /> 
+                <Download size={16} />
                 <span className="whitespace-nowrap hidden sm:inline">โหลดที่เลือก</span>
                 <span className="whitespace-nowrap sm:hidden">โหลด</span>
               </button>
-              <button
-                onClick={() => setIsMoveModalOpen(true)}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-indigo-600 transition-all text-xs sm:text-sm font-black"
-                title="ย้ายที่เลือก"
-              >
-                <Move size={16} /> 
-                <span className="whitespace-nowrap hidden sm:inline">ย้ายที่เลือก</span>
-                <span className="whitespace-nowrap sm:hidden">ย้าย</span>
-              </button>
-              <button
-                onClick={bulkDelete}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-rose-600 transition-all text-xs sm:text-sm font-black"
-                title="ลบที่เลือก"
-              >
-                <Trash2 size={16} /> 
-                <span className="whitespace-nowrap hidden sm:inline">ลบที่เลือก</span>
-                <span className="whitespace-nowrap sm:hidden">ลบ</span>
-              </button>
+              {isStaff && (
+                <button
+                  onClick={() => setIsMoveModalOpen(true)}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-indigo-600 transition-all text-xs sm:text-sm font-black"
+                  title="ย้ายที่เลือก"
+                >
+                  <Move size={16} />
+                  <span className="whitespace-nowrap hidden sm:inline">ย้ายที่เลือก</span>
+                  <span className="whitespace-nowrap sm:hidden">ย้าย</span>
+                </button>
+              )}
+              {isStaff && (
+                <button
+                  onClick={bulkDelete}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-rose-600 transition-all text-xs sm:text-sm font-black"
+                  title="ลบที่เลือก"
+                >
+                  <Trash2 size={16} />
+                  <span className="whitespace-nowrap hidden sm:inline">ลบที่เลือก</span>
+                  <span className="whitespace-nowrap sm:hidden">ลบ</span>
+                </button>
+              )}
               <button
                 onClick={() => {
                   setSelectedIds(new Set());
