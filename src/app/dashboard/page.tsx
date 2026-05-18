@@ -517,6 +517,67 @@ export default function DashboardLoader() {
                   desc="จัดการไฟล์เอกสารและสื่อดิจิทัลทั้งหมด"
                   variants={item}
                 />
+
+                {((session?.user as any)?.role || "").toLowerCase() === "super_admin" && (
+                  <>
+                    <motion.div variants={item}>
+                      <button
+                        onClick={async () => {
+                          if (confirm("คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตจำนวนผู้เข้าชมทั้งหมดของทุกโฟลเดอร์ให้กลับเป็น 0?")) {
+                            try {
+                              const res = await fetch("/api/drive/folders?reset=true");
+                              if (res.ok) {
+                                alert("รีเซ็ตจำนวนผู้เข้าชมทั้งหมดเป็น 0 เรียบร้อยแล้ว!");
+                              } else {
+                                alert("เกิดข้อผิดพลาดในการรีเซ็ต");
+                              }
+                            } catch (e) {
+                              alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+                            }
+                          }
+                        }}
+                        className="text-left w-full h-full group relative flex flex-col p-px rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-amber-500 hover:to-orange-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-2 cursor-pointer"
+                      >
+                        <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-7 rounded-[2.45rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
+                          <div className="absolute -right-4 -bottom-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
+                            <Settings size={120} />
+                          </div>
+
+                          <div className="w-14 h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center mb-6 group-hover:bg-linear-to-br group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner text-amber-500">
+                            <Settings size={24} />
+                          </div>
+
+                          <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-2 truncate">
+                            รีเซ็ตยอดดูเป็น 0
+                          </h3>
+                          <p className="text-zinc-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-snug mb-6">
+                            รีเซ็ตยอดเข้าชมสะสมของโฟลเดอร์ทั้งหมดกลับเป็นศูนย์
+                          </p>
+
+                          <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
+                            ล้างค่าทันที <ArrowUpRight size={14} strokeWidth={3} />
+                          </div>
+                        </div>
+                      </button>
+                    </motion.div>
+
+                    <motion.div variants={item} className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 flex flex-col justify-center p-6 bg-amber-50/50 dark:bg-amber-950/10 border border-amber-100/30 rounded-[2.5rem]">
+                      <h4 className="text-xs font-black text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        💡 <strong>คำอธิบายระบบรีเซ็ต (Reset Views Junction)</strong>
+                      </h4>
+                      <p className="text-[11px] text-slate-600 dark:text-zinc-400 leading-relaxed font-bold">
+                        ปุ่มด้านซ้ายนี้จะทำหน้าที่ล้างยอดผู้เข้าชมสะสม (Views) ของทุกๆ โฟลเดอร์ในระบบคลังเอกสาร Drive ให้กลับเป็น 0 เพื่อเริ่มเก็บสถิติใหม่ทั้งหมด
+                      </p>
+                      <p className="text-[10px] text-slate-500 dark:text-zinc-500 mt-2 font-medium">
+                        โดยตัวปุ่มจะเรียกใช้ API เบื้องหลังซึ่งเข้าถึงได้ผ่าน URL เหล่านี้โดยตรง:
+                      </p>
+                      <div className="mt-1 space-y-1 font-mono text-[9px] break-all">
+                        <p>• Local: <a href="http://localhost:3000/api/drive/folders?reset=true" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">http://localhost:3000/api/drive/folders?reset=true</a></p>
+                        <p>• Prod: <a href="https://ktltc.ac.th/api/drive/folders?reset=true" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">https://ktltc.ac.th/api/drive/folders?reset=true</a></p>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
               </div>
             </div>
           )}

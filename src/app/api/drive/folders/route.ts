@@ -27,6 +27,11 @@ export async function GET(request: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // Reset all folder views to 0 if requested
+    if (searchParams.get("reset") === "true") {
+      await db.collection("drive_folders").updateMany({}, { $set: { views: 0 } });
+    }
+
     // Self-healing database check for the public academic/research folder
     if ((parentIdStr === "6a0a90990f09681854ea47d6" || parentIdStr === "6a0a91550f09681854ea47d7") && parentId) {
       const publicFolder = await db.collection("drive_folders").findOne({ _id: parentId });
@@ -42,10 +47,13 @@ export async function GET(request: Request) {
           updatedAt: new Date(),
           views: 0,
         });
-      } else if (!publicFolder.isCollaborative) {
+      } else if (!publicFolder.isCollaborative || publicFolder.views === undefined) {
+        const updateDoc: any = {};
+        if (!publicFolder.isCollaborative) updateDoc.isCollaborative = true;
+        if (publicFolder.views === undefined) updateDoc.views = 0;
         await db.collection("drive_folders").updateOne(
           { _id: parentId },
-          { $set: { isCollaborative: true } }
+          { $set: updateDoc }
         );
       }
     }
@@ -66,8 +74,13 @@ export async function GET(request: Request) {
     let currentFolder = null;
     if (parentId) {
       currentFolder = await db.collection("drive_folders").findOne({ _id: parentId });
-      if (currentFolder?.isCollaborative) {
-        isCurrentFolderCollaborative = true;
+      if (currentFolder) {
+        if (currentFolder.views === undefined) {
+          currentFolder.views = 0;
+        }
+        if (currentFolder.isCollaborative) {
+          isCurrentFolderCollaborative = true;
+        }
       }
     }
 
@@ -90,10 +103,15 @@ export async function GET(request: Request) {
       : { folderId: parentId, ownerId: userId };
 
     // Fetch Folders
-    const folders = await db.collection("drive_folders")
+    const rawFolders = await db.collection("drive_folders")
       .find(baseFilter)
       .sort({ name: 1 })
       .toArray();
+
+    const folders = rawFolders.map(f => ({
+      ...f,
+      views: f.views === undefined ? 0 : f.views
+    }));
 
     // Fetch Files
     const files = await db.collection("drive_files")
@@ -154,6 +172,7 @@ export async function POST(request: Request) {
       ownerName: session.user.name,
       createdAt: new Date(),
       updatedAt: new Date(),
+      views: 0,
     };
 
     const result = await db.collection("drive_folders").insertOne(newFolder);
