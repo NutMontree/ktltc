@@ -137,46 +137,46 @@ export default function DashboardLoader() {
     );
   }
 
-  // if (status === "unauthenticated") {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
-  //       <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-100 dark:border-rose-500/20 shadow-xl shadow-rose-500/10">
-  //         <ShieldAlert className="w-10 h-10 text-rose-500" />
-  //       </div>
-  //       <div>
-  //         <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-  //           เซสชันหมดอายุหรือไม่มีสิทธิ์เข้าถึง
-  //         </h2>
-  //         <p className="text-zinc-500 mt-2 font-medium">
-  //           กรุณาลงชื่อเข้าใช้งานใหม่อีกครั้ง หรือกดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ
-  //         </p>
-  //       </div>
-  //       <button
-  //         onClick={() => window.location.reload()}
-  //         className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-  //       >
-  //         กดเพื่อรีเฟรช
-  //       </button>
-  //     </div>
-  //   );
-  // }
+  if (status === "unauthenticated") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
+        <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-100 dark:border-rose-500/20 shadow-xl shadow-rose-500/10">
+          <ShieldAlert className="w-10 h-10 text-rose-500" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+            เซสชันหมดอายุหรือไม่มีสิทธิ์เข้าถึง
+          </h2>
+          <p className="text-zinc-500 mt-2 font-medium">
+            กรุณาลงชื่อเข้าใช้งานใหม่อีกครั้ง หรือกดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ
+          </p>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+        >
+          กดเพื่อรีเฟรช
+        </button>
+      </div>
+    );
+  }
 
-  // if (error || !stats) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-  //       <ShieldAlert className="w-12 h-12 text-amber-500" />
-  //       <p className="text-zinc-500 font-bold italic">
-  //         {error || "Unable to sync dashboard data. Please try again."}
-  //       </p>
-  //       <button
-  //         onClick={() => window.location.reload()}
-  //         className="text-blue-500 font-black uppercase text-xs hover:underline"
-  //       >
-  //         ระบบรีเฟรช
-  //       </button>
-  //     </div>
-  //   );
-  // }
+  if (error || !stats) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <ShieldAlert className="w-12 h-12 text-amber-500" />
+        <p className="text-zinc-500 font-bold italic">
+          {error || "Unable to sync dashboard data. Please try again."}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="text-blue-500 font-black uppercase text-xs hover:underline"
+        >
+          ระบบรีเฟรช
+        </button>
+      </div>
+    );
+  }
 
   const user = {
     username: session?.user?.name || (session?.user as any)?.username,

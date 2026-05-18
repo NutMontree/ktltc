@@ -213,8 +213,12 @@ export async function GET() {
             };
             // แสดงเลข 1 เพื่อให้เข็มไมล์ขยับ (แทนสถานะเชื่อมต่อได้)
             cpuUsage = "1"; 
-          } catch (mongoErr) {
-            console.error("MongoDB HostInfo Error:", mongoErr);
+          } catch (mongoErr: any) {
+            if (mongoErr.code === 13 || mongoErr.message?.includes("not authorized")) {
+              console.warn("⚠️ MongoDB user is not authorized on admin db for hostInfo (falling back to OS stats)");
+            } else {
+              console.error("MongoDB HostInfo Error:", mongoErr);
+            }
             ramUsage = {
               total: Math.round(os.totalmem() / (1024 * 1024)),
               used: Math.round((os.totalmem() - os.freemem()) / (1024 * 1024)),

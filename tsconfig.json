@@ -32,6 +32,6 @@
     "next.config.mjs",
     "src/lib/auth.ts",
     "src/app/api/auth/[...nextauth]/rout"
-, "src/proxy.ts"  ],
+, "src/middleware.ts"  ],
   "exclude": ["node_modules"]
 }

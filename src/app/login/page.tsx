@@ -71,7 +71,7 @@ export default function LoginPage() {
           router.replace("/dashboard"); // ปรับตามเส้นทางของคุณ
         } else if (role === "student") {
           // router.replace("/student/dashboard"); // ปรับตามเส้นทางของคุณ
-          router.replace("/dashboard");
+          router.replace("/");
         } else {
           router.replace("/"); // หน้า dashboard ทั่วไป
         }
