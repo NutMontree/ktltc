@@ -3,10 +3,24 @@ import clientPromise from "@/lib/db";
 import bcrypt from "bcryptjs"; // แนะนำให้ใช้ bcryptjs เพื่อความเสถียรบน Serverless
 import { recordLog } from "@/models/logger"; // นำเข้าฟังก์ชันบันทึก Log
 
+import { getStudentAcademicYear } from "@/lib/student";
+
 export async function POST(req: Request) {
   try {
     // 1. รับค่าจากหน้าบ้าน
-    const { username, password, name, email, phone, lineId, department, role } = await req.json();
+    const { 
+      username, 
+      password, 
+      name, 
+      email, 
+      phone, 
+      lineId, 
+      department, 
+      role,
+      citizenId,
+      classGroupId,
+      academicLevel
+    } = await req.json();
 
     // 2. ตรวจสอบข้อมูลเบื้องต้น
     if (!username || !password || !name || !email || !phone) {
@@ -19,19 +33,54 @@ export async function POST(req: Request) {
       );
     }
 
+    // ตรวจสอบความถูกต้องของข้อมูลสําหรับนักเรียน/นักศึกษา
+    if (role === "student") {
+      if (!citizenId || citizenId.length !== 13 || isNaN(Number(citizenId))) {
+        return NextResponse.json(
+          { error: "รหัสบัตรประชาชนต้องเป็นตัวเลข 13 หลักเท่านั้น" },
+          { status: 400 }
+        );
+      }
+      if (!classGroupId) {
+        return NextResponse.json(
+          { error: "กรุณาระบุรหัสกลุ่มเรียน" },
+          { status: 400 }
+        );
+      }
+      const validLevels = ["ปวช 1", "ปวช 2", "ปวช 3", "ปวส 1", "ปวส 2"];
+      if (!academicLevel || !validLevels.includes(academicLevel)) {
+        return NextResponse.json(
+          { error: "กรุณาเลือกชั้นปีให้ถูกต้องตามเงื่อนไข (ปวช 1-3, ปวส 1-2)" },
+          { status: 400 }
+        );
+      }
+    }
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // 3. ตรวจสอบว่ามี Username หรือ Email หรือเบอร์โทร นี้อยู่แล้วหรือไม่
+    // 3. ตรวจสอบว่ามี Username หรือ Email หรือเบอร์โทร หรือรหัสประชาชน นี้อยู่แล้วหรือไม่
+    const searchConditions: any[] = [
+      { username: { $regex: new RegExp(`^${(username as string).trim()}$`, "i") } }, 
+      { email }, 
+      { phone }
+    ];
+
+    if (role === "student" && citizenId) {
+      searchConditions.push({ citizenId });
+    }
+
     const existingUser = await db.collection("users").findOne({
-      $or: [
-        { username: { $regex: new RegExp(`^${(username as string).trim()}$`, "i") } }, 
-        { email }, 
-        { phone }
-      ],
+      $or: searchConditions,
     });
 
     if (existingUser) {
+      if (role === "student" && existingUser.citizenId === citizenId) {
+        return NextResponse.json(
+          { error: "รหัสประจำตัวประชาชนนี้ถูกใช้งานในระบบแล้ว" },
+          { status: 400 },
+        );
+      }
       return NextResponse.json(
         { error: "ชื่อผู้ใช้, อีเมล หรือเบอร์โทรศัพท์นี้ถูกใช้งานในระบบแล้ว" },
         { status: 400 },
@@ -41,8 +90,11 @@ export async function POST(req: Request) {
     // 4. เข้ารหัสรหัสผ่าน (Hash Password)
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // กำหนดการเข้าใช้งานทันที (student = เข้าใช้งานได้เลย, บทบาทอื่น = ต้องอนุมัติโดย super_admin)
+    const userIsActive = role === "student";
+
     // 5. เตรียมข้อมูลผู้ใช้ใหม่ตามโครงสร้างระบบ ktltc
-    const newUser = {
+    const newUser: any = {
       username,
       password: hashedPassword,
       name,
@@ -51,10 +103,20 @@ export async function POST(req: Request) {
       lineId: lineId || "",
       department: department || "ไม่มีสังกัด",
       role: role || "user", // รับค่า role จากหน้าบ้าน
-      isActive: false, // ตั้งเป็น false เพื่อให้รอ super_admin อนุมัติการใช้งานก่อน
+      isActive: userIsActive,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+
+    // เพิ่มข้อมูลเฉพาะสำหรับนักเรียน / นักศึกษา (student)
+    if (role === "student") {
+      newUser.citizenId = citizenId;
+      newUser.classGroupId = classGroupId;
+      newUser.academicLevel = academicLevel;
+      newUser.studentStatus = "กำลังศึกษา"; // ล็อคสถานะเป็นกำลังศึกษา
+      newUser.learnerType = "ทวิภาคี"; // ล็อคประเภทผู้เรียนเป็นทวิภาคี
+      newUser.lastPromotedYear = getStudentAcademicYear(new Date());
+    }
 
     // 6. บันทึกลงฐานข้อมูล
     const result = await db.collection("users").insertOne(newUser);
@@ -65,7 +127,9 @@ export async function POST(req: Request) {
         userId: result.insertedId,
         userName: name,
         action: "REGISTER",
-        details: `สมัครสมาชิกใหม่ รอการอนุมัติ (Username: ${username})`,
+        details: userIsActive
+          ? `สมัครสมาชิกใหม่ อนุมัติเข้าใช้งานอัตโนมัติ (Role: student, Username: ${username})`
+          : `สมัครสมาชิกใหม่ รอการอนุมัติจากผู้ดูแลระบบ (Role: ${role}, Username: ${username})`,
         req: req,
       });
     } catch (logError) {
@@ -74,8 +138,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
-        message:
-          "สมัครสมาชิกสำเร็จ! ท่านสามารถเข้าสู่ระบบและเริ่มใช้งานได้ทันที",
+        message: userIsActive
+          ? "สมัครสมาชิกสำเร็จ! ท่านสามารถเข้าสู่ระบบและเริ่มใช้งานได้ทันที"
+          : "สมัครสมาชิกสำเร็จ! กรุณารอการอนุมัติการเข้าใช้งานจากผู้ดูแลระบบ",
       },
       { status: 201 },
     );

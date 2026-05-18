@@ -25,6 +25,7 @@ import {
   Loader2,
   Download,
   FileSpreadsheet,
+  X,
 } from "lucide-react";
 import { Calendar } from "antd";
 import Link from "next/link";
@@ -86,6 +87,49 @@ export default function SuperAdminPage() {
 
   const [roles, setRoles] = useState<string[]>([]);
   const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
+
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [autoApproveSignup, setAutoApproveSignup] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  const fetchSignupSetting = async () => {
+    try {
+      const res = await fetch("/api/admin/site-settings");
+      if (res.ok) {
+        const settings = await res.json();
+        const autoApprove = settings.find((s: any) => s.key === "auto_approve_signup");
+        setAutoApproveSignup(autoApprove ? autoApprove.value === "true" : false);
+      }
+    } catch (e) {
+      console.error("Failed to fetch signup setting:", e);
+    }
+  };
+
+  const handleToggleAutoApprove = async (newValue: boolean) => {
+    try {
+      setIsSavingSettings(true);
+      const res = await fetch("/api/admin/site-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "auto_approve_signup", value: newValue ? "true" : "false" }),
+      });
+      if (res.ok) {
+        setAutoApproveSignup(newValue);
+        toast.success(
+          newValue
+            ? "ตั้งค่าสำเร็จ: ผู้สมัครใหม่สามารถเข้าใช้งานได้ทันที 🔓"
+            : "ตั้งค่าสำเร็จ: ผู้สมัครใหม่ต้องรออนุมัติจาก Super Admin 🔒"
+        );
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "เกิดข้อผิดพลาดในการบันทึกค่า");
+      }
+    } catch (e) {
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
 
   const fetchRoles = async () => {
     try {
@@ -278,6 +322,7 @@ export default function SuperAdminPage() {
   useEffect(() => {
     fetchAdminProfile();
     fetchRoles();
+    fetchSignupSetting();
     fetchData();
   }, []);
 
@@ -515,6 +560,13 @@ export default function SuperAdminPage() {
                     <Lock size={16} />
                     <span className="hidden sm:inline">Permissions Matrix</span>
                 </Link>
+                <button
+                    onClick={() => setIsSettingsModalOpen(true)}
+                    className="flex items-center gap-2 px-6 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-3xl transition-all shadow-lg shadow-amber-500/20 font-bold text-xs uppercase tracking-widest"
+                >
+                    <Settings size={16} />
+                    <span>อนุมัติสมาชิก</span>
+                </button>
             </div>
             <button
               onClick={handleExportCSV}
@@ -1019,6 +1071,125 @@ export default function SuperAdminPage() {
           </p>
         </div>
       </div>
+
+      {/* Settings Modal */}
+      <AnimatePresence>
+        {isSettingsModalOpen && (
+          <div className="fixed inset-0 z-99999 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSettingsModalOpen(false)}
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-md"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] shadow-2xl p-6 sm:p-8 overflow-hidden z-10"
+            >
+              {/* Decorative background glows */}
+              <div className="absolute top-[-20%] left-[-20%] w-[50%] h-[50%] bg-amber-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute bottom-[-20%] right-[-20%] w-[50%] h-[50%] bg-rose-500/10 blur-[80px] rounded-full pointer-events-none" />
+
+              {/* Close Button */}
+              <button
+                onClick={() => setIsSettingsModalOpen(false)}
+                className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full bg-slate-50 dark:bg-zinc-800 transition-colors"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 bg-rose-500/10 rounded-2xl text-rose-500">
+                  <ShieldCheck size={28} />
+                </div>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none mb-1">
+                    นโยบายการอนุมัติสมาชิกใหม่
+                  </h2>
+                  <p className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                    USER REGISTRATION APPROVAL POLICY
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {/* Explanation text */}
+                <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed font-bold">
+                  ระบบได้เปิดใช้งานการควบคุมการสมัครสมาชิกแบบแยกประเภทโดยอัตโนมัติ เพื่อรักษาความปลอดภัยของข้อมูลวิทยาลัยตามรายละเอียดด้านล่าง:
+                </p>
+
+                {/* Policy 1: Student (Auto-Approve) */}
+                <div
+                  className="flex items-start gap-4 p-5 rounded-3xl border-2 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/10 shadow-lg shadow-emerald-500/5"
+                >
+                  <div className="p-3 rounded-2xl bg-emerald-500 text-white">
+                    <CheckCircle2 size={20} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <h3 className="text-base font-black text-slate-800 dark:text-white">
+                        กลุ่มนักเรียน นักศึกษา (Student) 🎓
+                      </h3>
+                      <span className="px-2.5 py-0.5 bg-emerald-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse">
+                        อนุมัติทันที
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
+                      นักเรียน/นักศึกษาที่ลงทะเบียนผ่านพอร์ทัลนักศึกษาจะสามารถเข้าใช้ระบบเพื่อตรวจสอบงาน ดูไฟล์ และปฏิบัติหน้าที่ทวิภาคีได้<strong>ทันทีหลังกรอกข้อมูลสำเร็จ</strong>โดยไม่ต้องรอแอดมินอนุมัติ เพื่อลดความซ้ำซ้อนและอำนวยความสะดวกสูงสุด
+                    </p>
+                  </div>
+                </div>
+
+                {/* Policy 2: Teachers & External Users (Admin Approval) */}
+                <div
+                  className="flex items-start gap-4 p-5 rounded-3xl border-2 border-rose-500/30 bg-rose-500/5 dark:bg-rose-950/10 shadow-lg shadow-rose-500/5"
+                >
+                  <div className="p-3 rounded-2xl bg-rose-500 text-white">
+                    <Lock size={20} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <h3 className="text-base font-black text-slate-800 dark:text-white">
+                        กลุ่มบุคลากร และ บุคคลภายนอก 🔒
+                      </h3>
+                      <span className="px-2.5 py-0.5 bg-rose-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest">
+                        ต้องอนุมัติโดยแอดมิน
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
+                      สิทธิ์ครู/บุคลากร (Teacher / Staff) และบุคคลทั่วไป (General User) <strong>จะต้องรอการอนุมัติสิทธิ์การเข้าใช้งานจาก Super Admin ด้วยตนเองเท่านั้น</strong> โดยคุณสามารถค้นหาชื่อของพวกเขาในตารางด้านหลัง และกดปุ่มเพื่อเปลี่ยนสถานะเป็นเปิดใช้งาน
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Indicator */}
+              <div className="mt-8 pt-6 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
+                  <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
+                    สถานะการบังคับใช้: <strong className="text-rose-500">นโยบายความปลอดภัยของระบบเปิดใช้งานอยู่</strong>
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => setIsSettingsModalOpen(false)}
+                  className="px-6 py-2.5 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 rounded-2xl font-bold text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md"
+                >
+                  เข้าใจแล้ว
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {

@@ -7,11 +7,7 @@ import { signIn, getSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Lock, Command, Eye, EyeOff, ArrowRight } from "lucide-react";
 
-async function recordActivity(data: {
-  userName: string;
-  action: string;
-  details: string;
-}) {
+async function recordActivity(data: { userName: string; action: string; details: string }) {
   try {
     await fetch("/api/admin/logs", {
       method: "POST",
@@ -100,9 +96,7 @@ export default function LoginPage() {
             <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md group-hover:bg-white/20 transition">
               <Command size={24} className="text-blue-400" />
             </div>
-            <span className="font-bold text-xl tracking-wide uppercase">
-              ระบบจัดการ KTLTC
-            </span>
+            <span className="font-bold text-xl tracking-wide uppercase">ระบบจัดการ KTLTC</span>
           </Link>
         </div>
 
@@ -124,8 +118,7 @@ export default function LoginPage() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-slate-400 text-lg font-medium leading-relaxed"
           >
-            ระบบจัดการที่ปลอดภัย รวดเร็ว และครอบคลุม
-            ออกแบบมาเพื่อความเป็นเลิศในการดำเนินงาน
+            ระบบจัดการที่ปลอดภัย รวดเร็ว และครอบคลุม ออกแบบมาเพื่อความเป็นเลิศในการดำเนินงาน
             เข้าสู่ระบบเพื่อจัดการเครื่องมือบริหารจัดการ
           </motion.p>
         </div>
@@ -150,9 +143,7 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-3">
-              เข้าสู่ระบบ
-            </h2>
+            <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-3">เข้าสู่ระบบ</h2>
             <p className="text-slate-500 dark:text-zinc-400 font-medium mb-10 text-lg">
               กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ
             </p>
@@ -191,7 +182,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-11 pr-4 py-4 bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600 font-medium shadow-sm hover:shadow-md"
-                  placeholder="กรอกชื่อผู้ใช้งาน"
+                  placeholder="ชื่อผู้ใช้งาน หรือ เลขประจำตัวประชาชน 13 หลัก"
                   autoComplete="username"
                   required
                 />
@@ -223,7 +214,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-11 pr-12 py-4 bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600 font-medium shadow-sm hover:shadow-md tracking-wide max-w-full"
-                  placeholder="••••••••"
+                  placeholder="รหัสผ่าน หรือ เบอร์โทรศัพท์มือถือ"
                   autoComplete="current-password"
                   required
                 />
@@ -274,16 +265,26 @@ export default function LoginPage() {
             className="mt-10 text-center space-y-6"
           >
             <div className="space-y-3">
-              <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
-                ยังไม่มีบัญชีใช่หรือไม่?{" "}
-                <Link
-                  href="/register"
-                  className="text-blue-600 dark:text-blue-400 font-bold hover:underline underline-offset-4 ml-1 transition-all"
-                >
-                  สมัครสมาชิก
-                </Link>
-              </p>
-              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm font-bold">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">
+                  ยังไม่มีบัญชีใช่หรือไม่?
+                </span>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/register"
+                    className="px-4 py-2 bg-slate-100 dark:bg-zinc-900 border border-slate-200/50 dark:border-zinc-800/80 text-slate-700 dark:text-zinc-300 rounded-xl hover:bg-slate-200 dark:hover:bg-zinc-800 transition-all hover:scale-105 active:scale-95 shadow-sm text-xs"
+                  >
+                    สมัครสมาชิกทั่วไป
+                  </Link>
+                  <Link
+                    href="/register/student"
+                    className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all hover:scale-105 active:scale-95 shadow-md shadow-amber-500/10 text-xs flex items-center gap-1.5"
+                  >
+                    <span>สมัครนักศึกษา 🎓</span>
+                  </Link>
+                </div>
+              </div>
+
               <div className="pt-4 border-t border-slate-100 dark:border-zinc-900/50">
                 <p className="text-slate-400 dark:text-zinc-500 text-xs font-bold uppercase tracking-widest mb-3">
                   ต้องการความช่วยเหลือ?
@@ -295,7 +296,7 @@ export default function LoginPage() {
                   className="inline-flex items-center gap-2 px-4 py-2 bg-[#06C755]/10 hover:bg-[#06C755]/20 text-[#06C755] rounded-full text-xs font-bold transition-all border border-[#06C755]/20"
                 >
                   <span className="w-2 h-2 bg-[#06C755] rounded-full animate-pulse" />
-                  ติดต่อ ผู้ดูแลระบบ (Line ID: allmmin)
+                  ติดต่อ ผู้ดูแลระบบ (Line ครูณัช)
                 </Link>
               </div>
             </div>
