@@ -16,6 +16,7 @@ import {
   Edit3,
   Upload,
   ArrowLeft,
+  Eye,
   Search,
   HardDrive,
   User,
@@ -38,6 +39,8 @@ import {
 } from "lucide-react";
 import { uploadFile } from "@/lib/upload";
 import { motion, AnimatePresence } from "framer-motion";
+
+let isFirstMount = true;
 
 interface DriveItem {
   _id: string;
@@ -106,6 +109,7 @@ function DriveContent() {
     "all" | "image" | "video" | "document" | "archive" | "audio" | "other"
   >("all");
   const [previewFile, setPreviewFile] = useState<DriveItem | null>(null);
+  const [currentFolderData, setCurrentFolderData] = useState<any>(null);
 
   const userRole = (session?.user as any)?.role?.toLowerCase();
   const userId = (session?.user as any)?.id;
@@ -128,6 +132,7 @@ function DriveContent() {
       if (data.folders) setFolders(data.folders);
       if (data.files) setFiles(data.files);
       if (data.allFolders) setAllFoldersList(data.allFolders);
+      setCurrentFolderData(data.currentFolder || null);
     } catch (error) {
       console.error("Failed to fetch drive items", error);
     } finally {
@@ -156,6 +161,49 @@ function DriveContent() {
     setCurrentFolderId(urlFolderId);
     fetchItems(urlFolderId);
   }, [status, session, userRole, urlFolderId, fetchItems, router]);
+
+  // Increment views count with 100% accuracy (excluding page reloads/refreshes)
+  useEffect(() => {
+    if (!urlFolderId) {
+      setCurrentFolderData(null);
+      return;
+    }
+
+    const reloadKey = `did_reload_drive_${urlFolderId}`;
+    const isReload = sessionStorage.getItem(reloadKey) === "true";
+
+    if (isReload) {
+      // This is a browser reload. Do not increment!
+      sessionStorage.removeItem(reloadKey);
+    } else {
+      // This is a new entry or client-side re-entry! Increment views.
+      fetch("/api/drive/folders/views", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folderId: urlFolderId }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.views !== undefined) {
+            // Update current views in state
+            setCurrentFolderData((prev: any) =>
+              prev && prev._id === urlFolderId ? { ...prev, views: data.views } : prev
+            );
+          }
+        })
+        .catch((err) => console.error("Failed to increment folder views", err));
+    }
+
+    // Register beforeunload handler to detect browser reload/refresh
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem(reloadKey, "true");
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [urlFolderId]);
 
   // Reconstruct breadcrumbs when folders list or current ID changes
   useEffect(() => {
@@ -782,14 +830,22 @@ function DriveContent() {
           ))}
         </div>
 
-        {breadcrumbs.length > 0 && (
-          <button
-            onClick={() => handleBreadcrumbClick(breadcrumbs.length - 2)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all shrink-0 border border-transparent hover:border-slate-200 dark:hover:border-zinc-700"
-          >
-            <ArrowLeft size={14} /> <span className="hidden sm:inline">ย้อนกลับ</span>
-          </button>
-        )}
+        <div className="flex items-center gap-3 shrink-0 ml-auto">
+          {currentFolderData && currentFolderData.views !== undefined && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-100/50 dark:border-amber-900/30 shadow-sm shrink-0">
+              <Eye size={14} strokeWidth={2.5} />
+              <span>ผู้เข้าชม {currentFolderData.views.toLocaleString()} ครั้ง</span>
+            </div>
+          )}
+          {breadcrumbs.length > 0 && (
+            <button
+              onClick={() => handleBreadcrumbClick(breadcrumbs.length - 2)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all shrink-0 border border-transparent hover:border-slate-200 dark:hover:border-zinc-700"
+            >
+              <ArrowLeft size={14} /> <span className="hidden sm:inline">ย้อนกลับ</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Upload Progress */}
@@ -876,8 +932,8 @@ function DriveContent() {
               <div
                 className={`relative rounded-[24px] flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 ${
                   folder.isCollaborative
-                    ? "bg-linear-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20"
-                    : "bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
+                    ? "bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
+                    : "bg-linear-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20"
                 } ${viewMode === "grid" ? "h-24 w-24" : "h-12 w-12"}`}
               >
                 <Folder
@@ -888,7 +944,7 @@ function DriveContent() {
                 />
                 {folder.isCollaborative && (
                   <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 p-1.5 rounded-full shadow-lg border border-slate-100 dark:border-zinc-700">
-                    <Share2 size={12} className="text-indigo-600" strokeWidth={3} />
+                    <Share2 size={12} className="text-amber-500" strokeWidth={3} />
                   </div>
                 )}
               </div>

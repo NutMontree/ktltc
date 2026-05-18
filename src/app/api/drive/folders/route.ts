@@ -28,18 +28,19 @@ export async function GET(request: Request) {
     const db = client.db("ktltc_db");
 
     // Self-healing database check for the public academic/research folder
-    if (parentIdStr === "6a0a90990f09681854ea47d6" && parentId) {
+    if ((parentIdStr === "6a0a90990f09681854ea47d6" || parentIdStr === "6a0a91550f09681854ea47d7") && parentId) {
       const publicFolder = await db.collection("drive_folders").findOne({ _id: parentId });
       if (!publicFolder) {
         await db.collection("drive_folders").insertOne({
           _id: parentId,
-          name: "เผยแพร่ผลงานวิจัย/วิชาการ",
+          name: parentIdStr === "6a0a90990f09681854ea47d6" ? "เผยแพร่ผลงานวิจัย/วิชาการ" : "คลังเอกสารเผยแพร่",
           isCollaborative: true,
           parentId: null,
           ownerId: "system",
           ownerName: "ระบบ",
           createdAt: new Date(),
           updatedAt: new Date(),
+          views: 0,
         });
       } else if (!publicFolder.isCollaborative) {
         await db.collection("drive_folders").updateOne(
@@ -62,8 +63,9 @@ export async function GET(request: Request) {
 
     // Check if parent folder is collaborative (directly)
     let isCurrentFolderCollaborative = false;
+    let currentFolder = null;
     if (parentId) {
-      const currentFolder = await db.collection("drive_folders").findOne({ _id: parentId });
+      currentFolder = await db.collection("drive_folders").findOne({ _id: parentId });
       if (currentFolder?.isCollaborative) {
         isCurrentFolderCollaborative = true;
       }
@@ -107,7 +109,7 @@ export async function GET(request: Request) {
           .toArray()
       : [];
 
-    return NextResponse.json({ folders, files, allFolders });
+    return NextResponse.json({ folders, files, allFolders, currentFolder });
   } catch (error) {
     console.error("Drive API GET Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
