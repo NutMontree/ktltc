@@ -74,6 +74,17 @@ export async function GET() {
         );
         const recipient = otherParticipants[0] || null;
 
+        // Check if there are any unread chat notifications for the logged-in user for this chat
+        const unreadNotif = await db.collection("notifications").findOne({
+          userId: userObjectId,
+          type: "chat_message",
+          $or: [
+            { targetUrl: "/dashboard/chat" },
+            { targetUrl: `/dashboard/chat?c=${chat._id.toString()}` }
+          ],
+          read: false,
+        });
+
         return {
           _id: chat._id.toString(),
           participants: chat.participants.map((p: any) => p.toString()),
@@ -88,6 +99,7 @@ export async function GET() {
           lastMessageSender: chat.lastMessageSender ? chat.lastMessageSender.toString() : null,
           createdAt: chat.createdAt,
           updatedAt: chat.updatedAt,
+          hasUnread: !!unreadNotif,
         };
       })
     );

@@ -46,6 +46,7 @@ interface Chat {
   groupAvatar?: string;
   creatorId?: string | null;
   participantsDetails?: Recipient[];
+  hasUnread?: boolean;
 }
 
 interface Message {
@@ -79,7 +80,9 @@ function ChatPageContent() {
 
   // Attachment states
   const [attachedImages, setAttachedImages] = useState<string[]>([]);
-  const [attachedFiles, setAttachedFiles] = useState<{ url: string; name: string; size: number; type: string }[]>([]);
+  const [attachedFiles, setAttachedFiles] = useState<
+    { url: string; name: string; size: number; type: string }[]
+  >([]);
   const [isUploading, setIsUploading] = useState(false);
 
   // Create Group Modal States
@@ -138,7 +141,7 @@ function ChatPageContent() {
   };
 
   // Poll for messages in active chat
-  useEffect(() => { 
+  useEffect(() => {
     if (!activeChat) return;
 
     const fetchMessages = async () => {
@@ -190,7 +193,13 @@ function ChatPageContent() {
 
   // Auto-select user or group chat from search query params (e.g. ?u=id or ?c=chatId)
   useEffect(() => {
-    if ((!targetUserId && !targetChatId) || hasProcessedParam.current || loadingChats || !currentUserId) return;
+    if (
+      (!targetUserId && !targetChatId) ||
+      hasProcessedParam.current ||
+      loadingChats ||
+      !currentUserId
+    )
+      return;
 
     const autoSelectUser = async () => {
       hasProcessedParam.current = true;
@@ -201,19 +210,23 @@ function ChatPageContent() {
         if (matchedChat) {
           setActiveChat(matchedChat);
           setShowMobileChat(true);
+          setChats((prev) =>
+            prev.map((c) => (c._id === targetChatId ? { ...c, hasUnread: false } : c))
+          );
           return;
         }
       }
 
       // 2. If targetUserId is provided, check if there's an existing 1-on-1 private chat
       if (targetUserId) {
-        const existingChat = chats.find(
-          (c) => !c.isGroup && c.recipient?._id === targetUserId
-        );
+        const existingChat = chats.find((c) => !c.isGroup && c.recipient?._id === targetUserId);
 
         if (existingChat) {
           setActiveChat(existingChat);
           setShowMobileChat(true);
+          setChats((prev) =>
+            prev.map((c) => (c._id === existingChat._id ? { ...c, hasUnread: false } : c))
+          );
           return;
         }
 
@@ -311,23 +324,27 @@ function ChatPageContent() {
       return;
     }
 
-    const delayDebounceFn = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/chat/users?q=${encodeURIComponent(groupUserSearchQuery)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success) {
-            // Filter out already selected users and self
-            const filtered = data.users.filter(
-              (u: any) => u._id !== currentUserId && !selectedGroupUsers.some((su) => su._id === u._id)
-            );
-            setGroupUserSearchResults(filtered);
+    const delayDebounceFn = setTimeout(
+      async () => {
+        try {
+          const res = await fetch(`/api/chat/users?q=${encodeURIComponent(groupUserSearchQuery)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              // Filter out already selected users and self
+              const filtered = data.users.filter(
+                (u: any) =>
+                  u._id !== currentUserId && !selectedGroupUsers.some((su) => su._id === u._id),
+              );
+              setGroupUserSearchResults(filtered);
+            }
           }
+        } catch (err) {
+          console.error("Error searching group users:", err);
         }
-      } catch (err) {
-        console.error("Error searching group users:", err);
-      }
-    }, groupUserSearchQuery ? 400 : 0);
+      },
+      groupUserSearchQuery ? 400 : 0,
+    );
 
     return () => clearTimeout(delayDebounceFn);
   }, [groupUserSearchQuery, selectedGroupUsers, currentUserId, isCreateGroupModalOpen]);
@@ -339,23 +356,26 @@ function ChatPageContent() {
       return;
     }
 
-    const delayDebounceFn = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/chat/users?q=${encodeURIComponent(addMemberSearchQuery)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success) {
-            // Filter out existing participants of the active group
-            const filtered = data.users.filter(
-              (u: any) => !activeChat.participants.includes(u._id)
-            );
-            setAddMemberSearchResults(filtered);
+    const delayDebounceFn = setTimeout(
+      async () => {
+        try {
+          const res = await fetch(`/api/chat/users?q=${encodeURIComponent(addMemberSearchQuery)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              // Filter out existing participants of the active group
+              const filtered = data.users.filter(
+                (u: any) => !activeChat.participants.includes(u._id),
+              );
+              setAddMemberSearchResults(filtered);
+            }
           }
+        } catch (err) {
+          console.error("Error searching add member users:", err);
         }
-      } catch (err) {
-        console.error("Error searching add member users:", err);
-      }
-    }, addMemberSearchQuery ? 400 : 0);
+      },
+      addMemberSearchQuery ? 400 : 0,
+    );
 
     return () => clearTimeout(delayDebounceFn);
   }, [addMemberSearchQuery, activeChat, isInviteMemberModalOpen]);
@@ -420,7 +440,7 @@ function ChatPageContent() {
           setSelectedGroupUsers([]);
           setGroupUserSearchQuery("");
           setGroupUserSearchResults([]);
-          
+
           // Refresh conversation list
           const listRes = await fetch("/api/chat/list");
           if (listRes.ok) {
@@ -729,7 +749,11 @@ function ChatPageContent() {
             const resolvedChat: Chat = {
               ...activeChat,
               _id: data.chatId,
-              lastMessage: data.message.text || (originalFiles.length > 0 ? `ส่งไฟล์เอกสาร 📁 (${originalFiles[0].name})` : "ส่งรูปภาพ 📷"),
+              lastMessage:
+                data.message.text ||
+                (originalFiles.length > 0
+                  ? `ส่งไฟล์เอกสาร 📁 (${originalFiles[0].name})`
+                  : "ส่งรูปภาพ 📷"),
               lastMessageAt: data.message.createdAt,
               lastMessageSender: currentUserId,
             };
@@ -781,18 +805,14 @@ function ChatPageContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4 text-center px-4">
         <MessageSquare className="w-16 h-16 text-zinc-300 dark:text-zinc-700 animate-bounce" />
-        <h2 className="text-xl font-black text-zinc-800 dark:text-white">
-          คุณยังไม่ได้เข้าสู่ระบบ
-        </h2>
-        <p className="text-zinc-500 max-w-sm text-sm">
-          กรุณาเข้าสู่ระบบก่อน เพื่อเริ่มต้นส่งข้อความแชทคุยกับบุคลากรท่านอื่น
-        </p>
-        <a
-          href="/login"
-          className="mt-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-lg transition-transform active:scale-95"
+        <h2 className="text-xl font-black text-zinc-800 dark:text-white">เซสชันหมดอายุ</h2>
+        <p className="text-zinc-500 max-w-sm text-sm">กดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-lg transition-transform active:scale-95 cursor-pointer"
         >
-          เข้าสู่ระบบ
-        </a>
+          รีเฟรชหน้าเว็บ 1 ครั้ง
+        </button>
       </div>
     );
   }
@@ -944,6 +964,9 @@ function ChatPageContent() {
                       setActiveChat(chat);
                       setShowMobileChat(true);
                       setIsGroupInfoOpen(false); // Close details drawer when switching chats
+                      setChats((prev) =>
+                        prev.map((c) => (c._id === chat._id ? { ...c, hasUnread: false } : c))
+                      );
                     }}
                     className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl text-left transition-all duration-300 ${
                       isActive
@@ -976,9 +999,13 @@ function ChatPageContent() {
                             {chat.isGroup ? chat.groupName : recipient?.name}
                           </span>
                           {chat.isGroup && (
-                            <span className={`text-[8px] font-black uppercase px-1 py-0.5 rounded shrink-0 ${
-                              isActive ? "bg-white/20 text-white" : "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
-                            }`}>
+                            <span
+                              className={`text-[8px] font-black uppercase px-1 py-0.5 rounded shrink-0 ${
+                                isActive
+                                  ? "bg-white/20 text-white"
+                                  : "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
+                              }`}
+                            >
                               กลุ่ม
                             </span>
                           )}
@@ -996,11 +1023,9 @@ function ChatPageContent() {
                           {chat.lastMessageSender === currentUserId ? "คุณ: " : ""}
                           {chat.lastMessage || "เริ่มคุยกันเลย!"}
                         </p>
-                        {!isActive &&
-                          chat.lastMessageSender !== currentUserId &&
-                          chat.lastMessage && (
-                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0 ml-2" />
-                          )}
+                        {!isActive && chat.hasUnread && (
+                          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0 ml-2" />
+                        )}
                       </div>
                     </div>
                   </button>
@@ -1063,7 +1088,9 @@ function ChatPageContent() {
                     </div>
                     {activeChat.isGroup ? (
                       <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-1 uppercase tracking-wider leading-none">
-                        สมาชิก {activeChat.participantsDetails?.length || activeChat.participants.length} คน
+                        สมาชิก{" "}
+                        {activeChat.participantsDetails?.length || activeChat.participants.length}{" "}
+                        คน
                       </p>
                     ) : activeChat.recipient?.department ? (
                       <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-1 uppercase tracking-wider leading-none">
@@ -1094,7 +1121,7 @@ function ChatPageContent() {
                           Online
                         </span>
                       </div>
-                      
+
                       <button
                         onClick={handleDeleteGroup}
                         className="p-2 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-zinc-450 hover:text-rose-500 rounded-xl transition-all active:scale-95 flex items-center justify-center border border-transparent hover:border-rose-100 dark:hover:border-rose-900/30"
@@ -1107,435 +1134,467 @@ function ChatPageContent() {
                 </div>
               </div>
 
-            <div className="flex-1 flex overflow-hidden relative">
-              {/* Left inner area: Messages + Input */}
-              <div className="flex-1 flex flex-col min-w-0 h-full relative">
-                {/* Messages Listing Thread */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-zinc-50/10 dark:bg-zinc-950/5">
-                  {messages.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center p-6 text-center text-zinc-400 dark:text-zinc-600 space-y-3">
-                      <div className="w-14 h-14 bg-blue-500/5 rounded-full flex items-center justify-center text-blue-500">
-                        <Sparkles className="w-6 h-6 animate-pulse" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-black text-zinc-800 dark:text-white">
-                          ส่งข้อความทักทาย
-                        </p>
-                        <p className="text-xs font-medium text-zinc-400">
-                          {activeChat.isGroup 
-                            ? `นี่คือจุดเริ่มต้นของการพูดคุยภายในกลุ่ม ${activeChat.groupName}`
-                            : `นี่คือจุดเริ่มต้นของการพูดคุยกับ ${activeChat.recipient?.name}`
-                          }
-                        </p>
-                      </div>
-                    </div>
-                ) : (
-                  messages.map((message, index) => {
-                    const isMe = message.senderId === currentUserId;
-
-                    // Group date changes
-                    const prevMsg = index > 0 ? messages[index - 1] : null;
-                    const showDateHeader =
-                      !prevMsg || formatDate(prevMsg.createdAt) !== formatDate(message.createdAt);
-
-                    return (
-                      <div key={message._id} className="space-y-3">
-                        {/* Optional Date Divider */}
-                        {showDateHeader && (
-                          <div className="flex items-center justify-center my-6">
-                            <span className="px-3.5 py-1 text-[9px] font-black uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 text-zinc-400 dark:text-zinc-500 rounded-full shadow-sm flex items-center gap-1.5">
-                              <Clock className="w-3 h-3 text-zinc-400" />{" "}
-                              {formatDate(message.createdAt)}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Bubble row */}
-                        <div
-                          className={`flex items-end gap-2.5 ${isMe ? "justify-end" : "justify-start"}`}
-                        >
-                          {/* Profile thumbnail for other user */}
-                          {!isMe && (
-                            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-linear-to-tr from-blue-600 to-indigo-500 border border-zinc-200/20 shadow-sm">
-                              {activeChat.recipient?.image ? (
-                                <img
-                                  src={activeChat.recipient.image}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-white text-xs font-black uppercase">
-                                  {activeChat.recipient?.name.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          <div
-                            className={`flex flex-col max-w-[70%] space-y-1 ${isMe ? "items-end" : "items-start"}`}
-                          >
-                            <div
-                              className={`p-3.5 rounded-2xl text-sm font-medium shadow-sm transition-all duration-300 ${
-                                isMe
-                                  ? "bg-blue-600 text-white rounded-br-sm shadow-blue-600/10"
-                                  : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 rounded-bl-sm border border-zinc-200/50 dark:border-zinc-800/50"
-                              }`}
-                            >
-                              {/* Attached Images */}
-                              {message.images && message.images.length > 0 && (
-                                <div className="grid gap-3 grid-cols-1 mb-2">
-                                  {message.images.map((imgUrl, i) => (
-                                    <div key={i} className="flex flex-col gap-1.5 max-w-sm">
-                                      <a
-                                        href={imgUrl}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="block rounded-xl overflow-hidden border border-zinc-200/20 shadow-md active:scale-95 transition-transform bg-zinc-950/20"
-                                      >
-                                        <img
-                                          src={imgUrl}
-                                          alt="Chat Attachment"
-                                          className="w-full max-h-56 object-cover"
-                                        />
-                                      </a>
-                                      <a
-                                        href={imgUrl}
-                                        download={`image_${i}.jpg`}
-                                        className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
-                                          isMe
-                                            ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
-                                            : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200/40 dark:border-zinc-800/40 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                                        }`}
-                                      >
-                                        <Download className="w-3 h-3 shrink-0" />
-                                        <span>ดาวน์โหลดรูปภาพ 📥</span>
-                                      </a>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* Attached Files */}
-                              {message.files && message.files.length > 0 && (
-                                <div className="grid gap-3 grid-cols-1 mb-2">
-                                  {message.files.map((fileObj: any, i: number) => {
-                                    const formattedSize = fileObj.size 
-                                      ? (fileObj.size / (1024 * 1024)).toFixed(2) + " MB" 
-                                      : "";
-                                    return (
-                                      <div key={i} className="flex flex-col gap-1.5 max-w-sm">
-                                        <div
-                                          className={`flex items-center gap-3 p-3 rounded-xl border ${
-                                            isMe
-                                              ? "bg-white/10 border-white/20 text-white"
-                                              : "bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200"
-                                          }`}
-                                        >
-                                          <div className={`p-2 rounded-lg ${isMe ? "bg-white/20" : "bg-blue-500/10 text-blue-500"}`}>
-                                            <Paperclip className="w-4 h-4" />
-                                          </div>
-                                          <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-black truncate max-w-[160px] leading-tight">
-                                              {fileObj.name}
-                                            </p>
-                                            {formattedSize && (
-                                              <p className={`text-[9px] font-bold ${isMe ? "text-blue-200" : "text-zinc-400"}`}>
-                                                {formattedSize}
-                                              </p>
-                                            )}
-                                          </div>
-                                        </div>
-                                        <a
-                                          href={fileObj.url}
-                                          download={fileObj.name}
-                                          className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
-                                            isMe
-                                              ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
-                                              : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200/40 dark:border-zinc-800/40 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                                          }`}
-                                        >
-                                          <Download className="w-3 h-3 shrink-0" />
-                                          <span>ดาวน์โหลดเอกสาร 📥</span>
-                                        </a>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                              {/* Download All Trigger (Shown only if there are multiple attachments) */}
-                              {((message.images?.length || 0) + (message.files?.length || 0)) > 1 && (
-                                <button
-                                  type="button"
-                                  onClick={() => downloadAllAttachments(message.images, message.files)}
-                                  className={`w-full max-w-sm mb-3 py-2 px-4 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 border cursor-pointer shadow-md ${
-                                    isMe
-                                      ? "bg-white text-blue-600 border-white hover:bg-zinc-100 shadow-white/5"
-                                      : "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-blue-500/10"
-                                  }`}
-                                >
-                                  <Download className="w-3 h-3 shrink-0 animate-bounce" />
-                                  <span>ดาวน์โหลดไฟล์ทั้งหมด ({ (message.images?.length || 0) + (message.files?.length || 0) } ไฟล์) 📦</span>
-                                </button>
-                              )}
-
-                              {/* Text message content */}
-                              {message.text && (
-                                <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">
-                                  {message.text}
-                                </p>
-                              )}
-                            </div>
-
-                            <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 px-1">
-                              {formatTime(message.createdAt)}
-                            </span>
-                          </div>
+              <div className="flex-1 flex overflow-hidden relative">
+                {/* Left inner area: Messages + Input */}
+                <div className="flex-1 flex flex-col min-w-0 h-full relative">
+                  {/* Messages Listing Thread */}
+                  <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-zinc-50/10 dark:bg-zinc-950/5">
+                    {messages.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center p-6 text-center text-zinc-400 dark:text-zinc-600 space-y-3">
+                        <div className="w-14 h-14 bg-blue-500/5 rounded-full flex items-center justify-center text-blue-500">
+                          <Sparkles className="w-6 h-6 animate-pulse" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm font-black text-zinc-800 dark:text-white">
+                            ส่งข้อความทักทาย
+                          </p>
+                          <p className="text-xs font-medium text-zinc-400">
+                            {activeChat.isGroup
+                              ? `นี่คือจุดเริ่มต้นของการพูดคุยภายในกลุ่ม ${activeChat.groupName}`
+                              : `นี่คือจุดเริ่มต้นของการพูดคุยกับ ${activeChat.recipient?.name}`}
+                          </p>
                         </div>
                       </div>
-                    );
-                  })
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Chat Send Input Box Footer */}
-              <div className="p-4 border-t border-zinc-200/40 dark:border-zinc-800/40 bg-white/20 dark:bg-zinc-950/20 backdrop-blur-md relative">
-                {/* Images Attachment Preview bar */}
-                <AnimatePresence>
-                  {attachedImages.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="flex gap-2 flex-wrap pb-3.5"
-                    >
-                      {attachedImages.map((imgUrl, i) => (
-                        <div
-                          key={i}
-                          className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-500/50 shadow-md group"
-                        >
-                          <img src={imgUrl} alt="" className="w-full h-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => removeAttachedImage(i)}
-                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-300"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Files Attachment Preview bar */}
-                <AnimatePresence>
-                  {attachedFiles.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="flex gap-2 flex-wrap pb-3.5"
-                    >
-                      {attachedFiles.map((fileObj, i) => (
-                        <div
-                          key={i}
-                          className="relative flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-800 rounded-xl max-w-xs shadow-sm group"
-                        >
-                          <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
-                          <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[140px]">
-                            {fileObj.name}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => removeAttachedFile(i)}
-                            className="p-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-500 hover:text-rose-500 rounded-full transition-colors shrink-0"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Input Controls */}
-                <form onSubmit={handleSendMessage} className="flex items-center gap-3">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <input
-                    type="file"
-                    ref={fileAttachmentRef}
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-
-                  {/* Attachment image selection btn */}
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading}
-                    className="p-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-2xl transition-all flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50"
-                    title="แนบรูปภาพ"
-                  >
-                    <ImageIcon className="w-5 h-5" />
-                  </button>
-
-                  {/* Attachment file selection btn */}
-                  <button
-                    type="button"
-                    onClick={() => fileAttachmentRef.current?.click()}
-                    disabled={isUploading}
-                    className="p-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-2xl transition-all flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50"
-                    title="แนบไฟล์เอกสาร"
-                  >
-                    {isUploading ? (
-                      <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                     ) : (
-                      <Paperclip className="w-5 h-5" />
-                    )}
-                  </button>
+                      messages.map((message, index) => {
+                        const isMe = message.senderId === currentUserId;
 
-                  {/* Input area */}
-                  <input
-                    type="text"
-                    placeholder={
-                      isUploading ? "กำลังประมวลผล..." : "พิมพ์ข้อความแชทส่งที่นี่..."
-                    }
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    disabled={isUploading}
-                    className="flex-1 bg-white/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium transition-all"
-                  />
+                        // Group date changes
+                        const prevMsg = index > 0 ? messages[index - 1] : null;
+                        const showDateHeader =
+                          !prevMsg ||
+                          formatDate(prevMsg.createdAt) !== formatDate(message.createdAt);
 
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={(!inputText.trim() && attachedImages.length === 0 && attachedFiles.length === 0) || isUploading}
-                    className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl transition-all shadow-md hover:shadow-lg hover:shadow-blue-600/20 flex items-center justify-center active:scale-95 disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {/* Right inner area: Group Info Drawer */}
-            <AnimatePresence>
-              {isGroupInfoOpen && activeChat.isGroup && (
-                <motion.div
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 320, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  className="h-full border-l border-zinc-200/40 dark:border-zinc-800/40 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl flex flex-col shrink-0 overflow-hidden relative z-10"
-                >
-                  {/* Drawer Header */}
-                  <div className="p-4 border-b border-zinc-200/40 dark:border-zinc-800/40 flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-black text-zinc-900 dark:text-white">รายละเอียดกลุ่ม</h3>
-                      <p className="text-[10px] font-bold text-zinc-400">สมาชิก {activeChat.participantsDetails?.length || activeChat.participants.length} คน</p>
-                    </div>
-                    <button
-                      onClick={() => setIsGroupInfoOpen(false)}
-                      className="p-1.5 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-white rounded-lg transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {/* Invite/Add Member Button Trigger */}
-                  <div className="p-4 border-b border-zinc-200/40 dark:border-zinc-800/40">
-                    <button
-                      type="button"
-                      onClick={() => setIsInviteMemberModalOpen(true)}
-                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-md shadow-blue-500/10"
-                    >
-                      <UserPlus className="w-4 h-4 shrink-0" />
-                      <span>เชิญสมาชิกใหม่เข้าร่วมกลุ่ม 👤➕</span>
-                    </button>
-                  </div>
-
-                  {/* Members List Scroller */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    <span className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-2">
-                      รายชื่อสมาชิกกลุ่ม
-                    </span>
-                    {activeChat.participantsDetails?.map((member) => {
-                      if (!member) return null;
-                      const isFounder = activeChat.creatorId && member._id === activeChat.creatorId;
-                      const isSelf = member._id === currentUserId;
-                      const currentUserIsFounder = activeChat.creatorId && currentUserId === activeChat.creatorId;
-
-                      return (
-                        <div
-                          key={member._id}
-                          className="flex items-center gap-3 p-2 hover:bg-zinc-100/30 dark:hover:bg-zinc-900/30 rounded-xl transition-colors border border-transparent hover:border-zinc-200/20"
-                        >
-                          <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700 bg-linear-to-tr from-blue-600 to-indigo-500">
-                            {member.image ? (
-                              <img src={member.image} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-white text-xs font-black uppercase">
-                                {member.name.charAt(0)}
+                        return (
+                          <div key={message._id} className="space-y-3">
+                            {/* Optional Date Divider */}
+                            {showDateHeader && (
+                              <div className="flex items-center justify-center my-6">
+                                <span className="px-3.5 py-1 text-[9px] font-black uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 text-zinc-400 dark:text-zinc-500 rounded-full shadow-sm flex items-center gap-1.5">
+                                  <Clock className="w-3 h-3 text-zinc-400" />{" "}
+                                  {formatDate(message.createdAt)}
+                                </span>
                               </div>
                             )}
-                          </div>
 
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1 flex-wrap">
-                              <h4 className="text-xs font-black text-zinc-900 dark:text-white truncate leading-none">
-                                {member.name} {isSelf ? "(คุณ)" : ""}
-                              </h4>
-                              {isFounder && (
-                                <span className="text-[7px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400 px-1 py-0.5 rounded-sm shrink-0">
-                                  ผู้สร้าง
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[9px] font-bold text-zinc-400 truncate mt-0.5 uppercase tracking-wider leading-none">
-                              {member.role}
-                            </p>
-                          </div>
-
-                          {/* Remove member button: ONLY visible to creator (founder), and cannot remove oneself */}
-                          {currentUserIsFounder && !isSelf && !isFounder && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveMemberFromGroup(member._id, member.name)}
-                              className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/20 text-zinc-450 hover:text-red-500 rounded-lg transition-colors shrink-0"
-                              title="ลบออกจากกลุ่ม"
+                            {/* Bubble row */}
+                            <div
+                              className={`flex items-end gap-2.5 ${isMe ? "justify-end" : "justify-start"}`}
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
+                              {/* Profile thumbnail for other user */}
+                              {!isMe && (
+                                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-linear-to-tr from-blue-600 to-indigo-500 border border-zinc-200/20 shadow-sm">
+                                  {activeChat.recipient?.image ? (
+                                    <img
+                                      src={activeChat.recipient.image}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-white text-xs font-black uppercase">
+                                      {activeChat.recipient?.name.charAt(0)}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              <div
+                                className={`flex flex-col max-w-[70%] space-y-1 ${isMe ? "items-end" : "items-start"}`}
+                              >
+                                <div
+                                  className={`p-3.5 rounded-2xl text-sm font-medium shadow-sm transition-all duration-300 ${
+                                    isMe
+                                      ? "bg-blue-600 text-white rounded-br-sm shadow-blue-600/10"
+                                      : "bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 rounded-bl-sm border border-zinc-200/50 dark:border-zinc-800/50"
+                                  }`}
+                                >
+                                  {/* Attached Images */}
+                                  {message.images && message.images.length > 0 && (
+                                    <div className="grid gap-3 grid-cols-1 mb-2">
+                                      {message.images.map((imgUrl, i) => (
+                                        <div key={i} className="flex flex-col gap-1.5 max-w-sm">
+                                          <a
+                                            href={imgUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="block rounded-xl overflow-hidden border border-zinc-200/20 shadow-md active:scale-95 transition-transform bg-zinc-950/20"
+                                          >
+                                            <img
+                                              src={imgUrl}
+                                              alt="Chat Attachment"
+                                              className="w-full max-h-56 object-cover"
+                                            />
+                                          </a>
+                                          <a
+                                            href={imgUrl}
+                                            download={`image_${i}.jpg`}
+                                            className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
+                                              isMe
+                                                ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                                : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200/40 dark:border-zinc-800/40 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                            }`}
+                                          >
+                                            <Download className="w-3 h-3 shrink-0" />
+                                            <span>ดาวน์โหลดรูปภาพ 📥</span>
+                                          </a>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {/* Attached Files */}
+                                  {message.files && message.files.length > 0 && (
+                                    <div className="grid gap-3 grid-cols-1 mb-2">
+                                      {message.files.map((fileObj: any, i: number) => {
+                                        const formattedSize = fileObj.size
+                                          ? (fileObj.size / (1024 * 1024)).toFixed(2) + " MB"
+                                          : "";
+                                        return (
+                                          <div key={i} className="flex flex-col gap-1.5 max-w-sm">
+                                            <div
+                                              className={`flex items-center gap-3 p-3 rounded-xl border ${
+                                                isMe
+                                                  ? "bg-white/10 border-white/20 text-white"
+                                                  : "bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200"
+                                              }`}
+                                            >
+                                              <div
+                                                className={`p-2 rounded-lg ${isMe ? "bg-white/20" : "bg-blue-500/10 text-blue-500"}`}
+                                              >
+                                                <Paperclip className="w-4 h-4" />
+                                              </div>
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-black truncate max-w-[160px] leading-tight">
+                                                  {fileObj.name}
+                                                </p>
+                                                {formattedSize && (
+                                                  <p
+                                                    className={`text-[9px] font-bold ${isMe ? "text-blue-200" : "text-zinc-400"}`}
+                                                  >
+                                                    {formattedSize}
+                                                  </p>
+                                                )}
+                                              </div>
+                                            </div>
+                                            <a
+                                              href={fileObj.url}
+                                              download={fileObj.name}
+                                              className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
+                                                isMe
+                                                  ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                                  : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200/40 dark:border-zinc-800/40 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                              }`}
+                                            >
+                                              <Download className="w-3 h-3 shrink-0" />
+                                              <span>ดาวน์โหลดเอกสาร 📥</span>
+                                            </a>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                  {/* Download All Trigger (Shown only if there are multiple attachments) */}
+                                  {(message.images?.length || 0) + (message.files?.length || 0) >
+                                    1 && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        downloadAllAttachments(message.images, message.files)
+                                      }
+                                      className={`w-full max-w-sm mb-3 py-2 px-4 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 border cursor-pointer shadow-md ${
+                                        isMe
+                                          ? "bg-white text-blue-600 border-white hover:bg-zinc-100 shadow-white/5"
+                                          : "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-blue-500/10"
+                                      }`}
+                                    >
+                                      <Download className="w-3 h-3 shrink-0 animate-bounce" />
+                                      <span>
+                                        ดาวน์โหลดไฟล์ทั้งหมด (
+                                        {(message.images?.length || 0) +
+                                          (message.files?.length || 0)}{" "}
+                                        ไฟล์) 📦
+                                      </span>
+                                    </button>
+                                  )}
+
+                                  {/* Text message content */}
+                                  {message.text && (
+                                    <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">
+                                      {message.text}
+                                    </p>
+                                  )}
+                                </div>
+
+                                <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 px-1">
+                                  {formatTime(message.createdAt)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                    <div ref={messagesEndRef} />
                   </div>
 
-                  {/* Delete Group Section - Creator Only */}
-                  {activeChat.creatorId && currentUserId === activeChat.creatorId && (
-                    <div className="p-4 border-t border-zinc-200/40 dark:border-zinc-800/40 bg-rose-50/10 dark:bg-rose-950/5 shrink-0">
+                  {/* Chat Send Input Box Footer */}
+                  <div className="p-4 border-t border-zinc-200/40 dark:border-zinc-800/40 bg-white/20 dark:bg-zinc-950/20 backdrop-blur-md relative">
+                    {/* Images Attachment Preview bar */}
+                    <AnimatePresence>
+                      {attachedImages.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="flex gap-2 flex-wrap pb-3.5"
+                        >
+                          {attachedImages.map((imgUrl, i) => (
+                            <div
+                              key={i}
+                              className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-500/50 shadow-md group"
+                            >
+                              <img src={imgUrl} alt="" className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                onClick={() => removeAttachedImage(i)}
+                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-300"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Files Attachment Preview bar */}
+                    <AnimatePresence>
+                      {attachedFiles.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="flex gap-2 flex-wrap pb-3.5"
+                        >
+                          {attachedFiles.map((fileObj, i) => (
+                            <div
+                              key={i}
+                              className="relative flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-800 rounded-xl max-w-xs shadow-sm group"
+                            >
+                              <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
+                              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[140px]">
+                                {fileObj.name}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeAttachedFile(i)}
+                                className="p-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-500 hover:text-rose-500 rounded-full transition-colors shrink-0"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Input Controls */}
+                    <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <input
+                        type="file"
+                        ref={fileAttachmentRef}
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+
+                      {/* Attachment image selection btn */}
                       <button
                         type="button"
-                        onClick={handleDeleteGroup}
-                        className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-md shadow-rose-500/10"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        className="p-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-2xl transition-all flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50"
+                        title="แนบรูปภาพ"
                       >
-                        <Trash2 className="w-4 h-4" />
-                        <span>ลบกลุ่มแชทแบบถาวร</span>
+                        <ImageIcon className="w-5 h-5" />
                       </button>
-                    </div>
+
+                      {/* Attachment file selection btn */}
+                      <button
+                        type="button"
+                        onClick={() => fileAttachmentRef.current?.click()}
+                        disabled={isUploading}
+                        className="p-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-2xl transition-all flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50"
+                        title="แนบไฟล์เอกสาร"
+                      >
+                        {isUploading ? (
+                          <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                        ) : (
+                          <Paperclip className="w-5 h-5" />
+                        )}
+                      </button>
+
+                      {/* Input area */}
+                      <input
+                        type="text"
+                        placeholder={
+                          isUploading ? "กำลังประมวลผล..." : "พิมพ์ข้อความแชทส่งที่นี่..."
+                        }
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        disabled={isUploading}
+                        className="flex-1 bg-white/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium transition-all"
+                      />
+
+                      {/* Submit Button */}
+                      <button
+                        type="submit"
+                        disabled={
+                          (!inputText.trim() &&
+                            attachedImages.length === 0 &&
+                            attachedFiles.length === 0) ||
+                          isUploading
+                        }
+                        className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl transition-all shadow-md hover:shadow-lg hover:shadow-blue-600/20 flex items-center justify-center active:scale-95 disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
+                      >
+                        <Send className="w-5 h-5" />
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                {/* Right inner area: Group Info Drawer */}
+                <AnimatePresence>
+                  {isGroupInfoOpen && activeChat.isGroup && (
+                    <motion.div
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: 320, opacity: 1 }}
+                      exit={{ width: 0, opacity: 0 }}
+                      className="h-full border-l border-zinc-200/40 dark:border-zinc-800/40 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl flex flex-col shrink-0 overflow-hidden relative z-10"
+                    >
+                      {/* Drawer Header */}
+                      <div className="p-4 border-b border-zinc-200/40 dark:border-zinc-800/40 flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-black text-zinc-900 dark:text-white">
+                            รายละเอียดกลุ่ม
+                          </h3>
+                          <p className="text-[10px] font-bold text-zinc-400">
+                            สมาชิก{" "}
+                            {activeChat.participantsDetails?.length ||
+                              activeChat.participants.length}{" "}
+                            คน
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setIsGroupInfoOpen(false)}
+                          className="p-1.5 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-white rounded-lg transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* Invite/Add Member Button Trigger */}
+                      <div className="p-4 border-b border-zinc-200/40 dark:border-zinc-800/40">
+                        <button
+                          type="button"
+                          onClick={() => setIsInviteMemberModalOpen(true)}
+                          className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-md shadow-blue-500/10"
+                        >
+                          <UserPlus className="w-4 h-4 shrink-0" />
+                          <span>เชิญสมาชิกใหม่เข้าร่วมกลุ่ม 👤➕</span>
+                        </button>
+                      </div>
+
+                      {/* Members List Scroller */}
+                      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        <span className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-2">
+                          รายชื่อสมาชิกกลุ่ม
+                        </span>
+                        {activeChat.participantsDetails?.map((member) => {
+                          if (!member) return null;
+                          const isFounder =
+                            activeChat.creatorId && member._id === activeChat.creatorId;
+                          const isSelf = member._id === currentUserId;
+                          const currentUserIsFounder =
+                            activeChat.creatorId && currentUserId === activeChat.creatorId;
+
+                          return (
+                            <div
+                              key={member._id}
+                              className="flex items-center gap-3 p-2 hover:bg-zinc-100/30 dark:hover:bg-zinc-900/30 rounded-xl transition-colors border border-transparent hover:border-zinc-200/20"
+                            >
+                              <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700 bg-linear-to-tr from-blue-600 to-indigo-500">
+                                {member.image ? (
+                                  <img
+                                    src={member.image}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-white text-xs font-black uppercase">
+                                    {member.name.charAt(0)}
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1 flex-wrap">
+                                  <h4 className="text-xs font-black text-zinc-900 dark:text-white truncate leading-none">
+                                    {member.name} {isSelf ? "(คุณ)" : ""}
+                                  </h4>
+                                  {isFounder && (
+                                    <span className="text-[7px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400 px-1 py-0.5 rounded-sm shrink-0">
+                                      ผู้สร้าง
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[9px] font-bold text-zinc-400 truncate mt-0.5 uppercase tracking-wider leading-none">
+                                  {member.role}
+                                </p>
+                              </div>
+
+                              {/* Remove member button: ONLY visible to creator (founder), and cannot remove oneself */}
+                              {currentUserIsFounder && !isSelf && !isFounder && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleRemoveMemberFromGroup(member._id, member.name)
+                                  }
+                                  className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/20 text-zinc-450 hover:text-red-500 rounded-lg transition-colors shrink-0"
+                                  title="ลบออกจากกลุ่ม"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Delete Group Section - Creator Only */}
+                      {activeChat.creatorId && currentUserId === activeChat.creatorId && (
+                        <div className="p-4 border-t border-zinc-200/40 dark:border-zinc-800/40 bg-rose-50/10 dark:bg-rose-950/5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={handleDeleteGroup}
+                            className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-md shadow-rose-500/10"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span>ลบกลุ่มแชทแบบถาวร</span>
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
                   )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </>
+                </AnimatePresence>
+              </div>
+            </>
           ) : (
             /* Splash/Select conversation placeholder */
             <div className="flex-1 h-full flex flex-col items-center justify-center p-6 text-center select-none space-y-4">
@@ -1627,7 +1686,11 @@ function ChatPageContent() {
                           <span>{user.name}</span>
                           <button
                             type="button"
-                            onClick={() => setSelectedGroupUsers((prev) => prev.filter((su) => su._id !== user._id))}
+                            onClick={() =>
+                              setSelectedGroupUsers((prev) =>
+                                prev.filter((su) => su._id !== user._id),
+                              )
+                            }
                             className="p-0.5 hover:bg-blue-200/50 dark:hover:bg-blue-800/40 text-blue-500 hover:text-rose-500 rounded-md transition-colors shrink-0"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -1659,7 +1722,9 @@ function ChatPageContent() {
                     <div className="max-h-48 overflow-y-auto custom-scrollbar p-2 space-y-1 bg-white dark:bg-zinc-900">
                       {groupUserSearchResults.length === 0 ? (
                         <div className="p-6 text-center text-xs font-bold text-zinc-450 dark:text-zinc-500">
-                          {groupUserSearchQuery ? "ไม่พบรายชื่อผู้ใช้งาน" : "กำลังโหลดรายชื่อเพื่อน..."}
+                          {groupUserSearchQuery
+                            ? "ไม่พบรายชื่อผู้ใช้งาน"
+                            : "กำลังโหลดรายชื่อเพื่อน..."}
                         </div>
                       ) : (
                         groupUserSearchResults.map((user) => (
@@ -1674,7 +1739,11 @@ function ChatPageContent() {
                           >
                             <div className="w-8.5 h-8.5 rounded-xl overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700 bg-linear-to-tr from-blue-600 to-indigo-500">
                               {user.image ? (
-                                <img src={user.image} alt="" className="w-full h-full object-cover" />
+                                <img
+                                  src={user.image}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-white text-[11px] font-black uppercase">
                                   {user.name.charAt(0)}
@@ -1716,7 +1785,9 @@ function ChatPageContent() {
                 </button>
                 <button
                   type="button"
-                  disabled={isCreatingGroup || !newGroupName.trim() || selectedGroupUsers.length === 0}
+                  disabled={
+                    isCreatingGroup || !newGroupName.trim() || selectedGroupUsers.length === 0
+                  }
                   onClick={handleCreateGroup}
                   className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:pointer-events-none text-white rounded-xl text-xs font-black shadow-lg shadow-blue-500/10 flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                 >
@@ -1783,7 +1854,8 @@ function ChatPageContent() {
                       กลุ่ม: {activeChat.groupName}
                     </h4>
                     <p className="text-[10px] font-bold text-zinc-450 dark:text-zinc-400 mt-1 leading-relaxed">
-                      เลือกสมาชิกใหม่ด้านล่างเพื่อดึงเข้าร่วมกลุ่มแชททันที ระบบจะคัดกรองเฉพาะผู้ที่ยังไม่ได้เป็นสมาชิกของกลุ่มนี้เท่านั้น
+                      เลือกสมาชิกใหม่ด้านล่างเพื่อดึงเข้าร่วมกลุ่มแชททันที
+                      ระบบจะคัดกรองเฉพาะผู้ที่ยังไม่ได้เป็นสมาชิกของกลุ่มนี้เท่านั้น
                     </p>
                   </div>
                 </div>
@@ -1810,17 +1882,21 @@ function ChatPageContent() {
                   <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400">
                     รายชื่อผู้ใช้ที่ยังไม่ได้รับการเชิญ
                   </label>
-                  
+
                   <div className="border border-zinc-150 dark:border-zinc-800/80 rounded-2xl overflow-hidden bg-zinc-50/20 dark:bg-zinc-950/10">
                     <div className="max-h-48 overflow-y-auto custom-scrollbar p-2 space-y-1 bg-white dark:bg-zinc-900">
                       {isAddingMember ? (
                         <div className="flex flex-col items-center justify-center py-8 gap-2">
                           <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest animate-pulse">กำลังดำเนินการ...</p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest animate-pulse">
+                            กำลังดำเนินการ...
+                          </p>
                         </div>
                       ) : addMemberSearchResults.length === 0 ? (
                         <div className="p-6 text-center text-xs font-bold text-zinc-450 dark:text-zinc-500">
-                          {addMemberSearchQuery ? "ไม่พบรายชื่อผู้ใช้งาน" : "กำลังโหลดรายชื่อเพื่อน..."}
+                          {addMemberSearchQuery
+                            ? "ไม่พบรายชื่อผู้ใช้งาน"
+                            : "กำลังโหลดรายชื่อเพื่อน..."}
                         </div>
                       ) : (
                         addMemberSearchResults.map((user) => (
@@ -1835,7 +1911,11 @@ function ChatPageContent() {
                           >
                             <div className="w-8.5 h-8.5 rounded-xl overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700 bg-linear-to-tr from-blue-600 to-indigo-500">
                               {user.image ? (
-                                <img src={user.image} alt="" className="w-full h-full object-cover" />
+                                <img
+                                  src={user.image}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-white text-[11px] font-black uppercase">
                                   {user.name.charAt(0)}
@@ -1886,14 +1966,16 @@ function ChatPageContent() {
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={
-      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
-        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-        <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">
-          กำลังเตรียมระบบแชท...
-        </p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+          <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+          <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">
+            กำลังเตรียมระบบแชท...
+          </p>
+        </div>
+      }
+    >
       <ChatPageContent />
     </Suspense>
   );

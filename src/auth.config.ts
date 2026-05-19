@@ -60,6 +60,10 @@ const callbacks: NextAuthConfig["callbacks"] = {
 
     // หน้าของนักเรียน/นักศึกษา
     if (pathname.startsWith("/student")) {
+      // ยกเว้นหน้าตรวจสอบประวัติเรียน (verify) ให้เข้าถึงได้แบบสาธารณะสำหรับผู้ปกครอง
+      if (pathname === "/student/verify") {
+        return true;
+      }
       if (!isLoggedIn) {
         return false; // บังคับให้เข้าสู่ระบบก่อน
       }
