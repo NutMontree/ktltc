@@ -145,17 +145,17 @@ export default function DashboardLoader() {
         </div>
         <div>
           <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-            เซสชันหมดอายุหรือไม่มีสิทธิ์เข้าถึง
+            เซสชันหมดอายุ
           </h2>
           <p className="text-zinc-500 mt-2 font-medium">
-            กรุณาลงชื่อเข้าใช้งานใหม่อีกครั้ง หรือกดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ
+            กดปุ่มรีเฟรชเพื่อตรวจสอบสถานะการเชื่อมต่อ
           </p>
         </div>
         <button
           onClick={() => window.location.reload()}
-          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95 cursor-pointer"
         >
-          กดเพื่อรีเฟรช
+          รีเฟรชหน้าเว็บ 1 ครั้ง
         </button>
       </div>
     );
