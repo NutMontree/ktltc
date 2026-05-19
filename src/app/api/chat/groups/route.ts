@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
 export const dynamic = "force-dynamic";
 
 // Helper to safely parse MongoDB ObjectIds
-function toObjectId(id: string) {
+function toObjectId(id: string): any {
   try {
     return ObjectId.isValid(id) ? new ObjectId(id) : id;
   } catch (_) {
@@ -217,7 +217,7 @@ export async function PUT(req: Request) {
   }
 }
 
-// 3. DELETE: Delete a group chat (Strictly restricted to group creator)
+// 3. DELETE: Delete a group or direct chat conversation (Creator for group, participant for direct)
 export async function DELETE(req: Request) {
   const session = await auth();
   const userId = (session?.user as any)?.id;
@@ -239,22 +239,29 @@ export async function DELETE(req: Request) {
 
     const chatObjectId = toObjectId(chatId);
 
-    // Fetch the group conversation
+    // Fetch the conversation
     const chat = await db.collection("chats").findOne({ _id: chatObjectId });
 
     if (!chat) {
-      return NextResponse.json({ error: "Group chat not found" }, { status: 404 });
+      return NextResponse.json({ error: "Chat conversation not found" }, { status: 404 });
     }
 
-    if (!chat.isGroup) {
-      return NextResponse.json({ error: "This operation is only supported for Group Chats" }, { status: 400 });
-    }
+    if (chat.isGroup) {
+      // Verify current user is the creator of the group
+      const isCreator = chat.creatorId && chat.creatorId.toString() === userId.toString();
 
-    // Verify current user is the creator of the group
-    const isCreator = chat.creatorId && chat.creatorId.toString() === userId.toString();
+      if (!isCreator) {
+        return NextResponse.json({ error: "Forbidden. Only the group creator can delete this group" }, { status: 403 });
+      }
+    } else {
+      // Direct 1-on-1 chat: Verify current user is a participant
+      const isParticipant = chat.participants.some(
+        (p: any) => p.toString() === userId.toString()
+      );
 
-    if (!isCreator) {
-      return NextResponse.json({ error: "Forbidden. Only the group creator can delete this group" }, { status: 403 });
+      if (!isParticipant) {
+        return NextResponse.json({ error: "Forbidden. You are not a participant of this chat" }, { status: 403 });
+      }
     }
 
     // 1. Delete the conversation record from 'chats'
@@ -263,12 +270,18 @@ export async function DELETE(req: Request) {
     // 2. Delete all message history associated with this chat
     await db.collection("messages").deleteMany({ chatId: chatObjectId });
 
+    // 3. Delete any associated notifications for this conversation
+    await db.collection("notifications").deleteMany({
+      type: "chat_message",
+      targetUrl: `/dashboard/chat?c=${chatId}`
+    });
+
     return NextResponse.json({
       success: true,
-      message: "Group chat and all its history have been deleted successfully",
+      message: "Chat conversation and all its history have been deleted successfully",
     });
   } catch (error: any) {
-    console.error("Delete group chat error:", error);
+    console.error("Delete chat error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

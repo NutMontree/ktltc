@@ -60,8 +60,8 @@ export default function NotificationBell() {
 
   useEffect(() => {
     fetchNotifications();
-    // ตั้งเวลา Polling ดึงข้อมูลใหม่ทุก 1 นาที
-    const interval = setInterval(fetchNotifications, 60000);
+    // ตั้งเวลา Polling ดึงข้อมูลใหม่ทุก 5 วินาที เพื่อให้แจ้งเตือนเด้งทันทีแบบเรียลไทม์ไม่ต้องรีเฟรชหน้าจอ
+    const interval = setInterval(fetchNotifications, 5000);
     return () => clearInterval(interval);
   }, []);
 

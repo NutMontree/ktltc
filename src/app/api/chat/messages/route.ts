@@ -57,6 +57,22 @@ export async function GET(req: Request) {
       .sort({ createdAt: 1 })
       .toArray();
 
+    // Mark notifications as read for this user and this chat (Matches both new precise and legacy URLs)
+    try {
+      await db.collection("notifications").updateMany(
+        {
+          userId: userObjectId,
+          type: "chat_message",
+          $or: [
+            { targetUrl: "/dashboard/chat" },
+            { targetUrl: `/dashboard/chat?c=${chatId}` }
+          ],
+          read: false,
+        },
+        { $set: { read: true, isRead: true } }
+      );
+    } catch (_) {}
+
     const formattedMessages = messages.map((msg) => ({
       ...msg,
       _id: msg._id.toString(),
@@ -108,8 +124,9 @@ export async function POST(req: Request) {
         }
       } catch (_) {}
 
-      // Find an existing chat with exactly these two participants
+      // Find an existing direct chat (1-on-1) with exactly these two participants
       const existingChat = await db.collection("chats").findOne({
+        isGroup: { $ne: true },
         participants: {
           $all: [userObjectId, receiverObjectId],
           $size: 2,
@@ -183,6 +200,48 @@ export async function POST(req: Request) {
         },
       }
     );
+
+    // 4. Create Notifications for recipients (excluding the sender themselves)
+    try {
+      const fullChat = await db.collection("chats").findOne({ _id: chatObjectId });
+      if (fullChat) {
+        const recipients = fullChat.participants.filter(
+          (p: any) => p.toString() !== userObjectId.toString() && p.toString() !== userId.toString()
+        );
+
+        if (recipients.length > 0) {
+          const senderName = session?.user?.name || "เพื่อนร่วมสถาบัน";
+          const senderImage = session?.user?.image || "";
+          const notifTitle = fullChat.isGroup 
+            ? `ข้อความใหม่ในกลุ่ม "${fullChat.groupName}"`
+            : `ข้อความใหม่จากคุณ ${senderName}`;
+          
+          let notifMessage = text || "";
+          if (!notifMessage && images && images.length > 0) {
+            notifMessage = "ส่งรูปภาพ 📷";
+          } else if (!notifMessage && files && files.length > 0) {
+            notifMessage = `ส่งไฟล์เอกสาร 📁 (${files[0].name || "ดาวน์โหลด"})`;
+          }
+
+          const notificationDocs = recipients.map((recipientId: any) => ({
+            userId: recipientId,
+            type: "chat_message",
+            from: userObjectId,
+            fromName: senderName,
+            fromImage: senderImage,
+            title: notifTitle,
+            message: notifMessage,
+            targetUrl: `/dashboard/chat?c=${chatObjectId.toString()}`,
+            read: false,
+            createdAt: new Date(),
+          }));
+
+          await db.collection("notifications").insertMany(notificationDocs);
+        }
+      }
+    } catch (notifErr) {
+      console.error("Failed to create message notifications:", notifErr);
+    }
 
     const createdMessage = {
       ...messageDoc,
