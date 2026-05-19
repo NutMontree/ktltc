@@ -1,17 +1,23 @@
 #!/bin/bash
-# setup-git.sh - สคริปต์ตั้งค่า .gitignore และระบบ Auto Sync ไปยัง GitHub สำหรับโปรเจกต์ KTLTC
+# setup-git.sh - สคริปต์ตั้งค่า .gitignore, แก้ไขสิทธิ์ไฟล์ (Permission Denied) และระบบ Auto Sync สำหรับ KTLTC
 
 PROJECT_DIR="/home/ktltc/ktltc"
 cd "$PROJECT_DIR" || exit 1
 
 echo "=========================================================="
-echo " เริ่มต้นตั้งค่า Git และระบบ Auto Sync สำหรับ KTLTC"
+echo " เริ่มต้นตั้งค่า Git, แก้ไขสิทธิ์ไฟล์ และระบบ Auto Sync สำหรับ KTLTC"
 echo "=========================================================="
 
-# 1. อัปเดต .gitignore ด้วยไฟล์ใหม่ที่เราเตรียมไว้
-echo "1. กำลังอัปเดตไฟล์ .gitignore..."
+# 1. แก้ไขปัญหา Permission Denied ของไฟล์ในโปรเจกต์
+echo "1. กำลังแก้ไขสิทธิ์การเข้าถึงไฟล์ในโปรเจกต์ (Permission Denied)..."
+echo "กรุณาใส่รหัสผ่านเครื่องหากระบบถาม (ใช้เพื่อทำการ chown / chmod สิทธิ์ของไฟล์)"
+sudo chown -R ktltc:ktltc "$PROJECT_DIR"
+sudo chmod -R u+rwX "$PROJECT_DIR"
+echo "✔ แก้ไขสิทธิ์ไฟล์เรียบร้อยแล้ว!"
+
+# 2. อัปเดต .gitignore ด้วยไฟล์ใหม่ที่เราเตรียมไว้
+echo "2. กำลังอัปเดตไฟล์ .gitignore..."
 if [ -f "new_gitignore" ]; then
-    # คัดลอกและเขียนทับ .gitignore (ใช้ sudo เผื่อในกรณีที่ติดสิทธิ์)
     cp new_gitignore .gitignore 2>/dev/null || sudo cp new_gitignore .gitignore
     echo "✔ อัปเดต .gitignore เรียบร้อยแล้ว (ละเว้นทุกอย่างใน public/ ยกเว้น .gitkeep)"
 else
@@ -19,17 +25,24 @@ else
     exit 1
 fi
 
-# 2. ทำการยกเลิกการติดตาม (untrack) ไฟล์ที่เคยอยู่ใน public/ ขึ้น GitHub ไปแล้ว
-echo "2. กำลังยกเลิกการติดตามไฟล์เก่าๆ ในโฟลเดอร์ public/ จาก Git index..."
-# ใช้ git rm --cached เพื่อไม่ให้ลบไฟล์จริงในเครื่อง
+# 3. ทำการยกเลิกการติดตาม (untrack) ไฟล์ที่เคยอยู่ใน public/ ขึ้น GitHub ไปแล้ว
+echo "3. กำลังยกเลิกการติดตามไฟล์เก่าๆ ในโฟลเดอร์ public/ จาก Git index..."
 git rm -r --cached public/ 2>/dev/null || sudo -u ktltc git rm -r --cached public/
-# เพิ่มเฉพาะ .gitkeep กลับเข้ามา เพื่อรักษาโครงสร้างโฟลเดอร์ไว้บน GitHub
 git add public/.gitkeep 2>/dev/null || sudo -u ktltc git add public/.gitkeep
-echo "✔ ยกเลิกการติดตามไฟล์ใน public/ เรียบร้อยแล้ว (ไฟล์ในเครื่องไม่ได้รับผลกระทบ)"
+echo "✔ ยกเลิกการติดตามไฟล์ใน public/ เรียบร้อยแล้ว"
 
-# 3. สร้างสคริปต์ Auto Sync ไว้ใน scripts/git-sync.sh
+# 4. ทดลองดึงโค้ดล่าสุด (Git Pull) เพื่อแก้ปัญหา Merge/Pull ล้มเหลวที่มีก่อนหน้านี้
+echo "4. กำลังดึงโค้ดเวอร์ชันล่าสุดจาก GitHub (Git Pull)..."
+git pull origin main
+if [ $? -eq 0 ]; then
+    echo "✔ ดึงโค้ดเวอร์ชันล่าสุดและเคลียร์ไฟล์สำเร็จแล้ว!"
+else
+    echo "⚠ คำเตือน: Git Pull ยังคงมีข้อผิดพลาด กรุณาตรวจสอบข้อความแสดงข้อผิดพลาดของ Git ด้านบน"
+fi
+
+# 5. สร้างสคริปต์ Auto Sync ไว้ใน scripts/git-sync.sh
 SYNC_SCRIPT="$PROJECT_DIR/scripts/git-sync.sh"
-echo "3. กำลังสร้างสคริปต์ Auto Sync ที่ $SYNC_SCRIPT..."
+echo "5. กำลังสร้างสคริปต์ Auto Sync ที่ $SYNC_SCRIPT..."
 
 cat << 'EOF' > "$SYNC_SCRIPT"
 #!/bin/bash
@@ -80,11 +93,11 @@ EOF
 
 # ตั้งสิทธิ์การรันสคริปต์
 chmod +x "$SYNC_SCRIPT"
-chown ktltc:ktltc "$SYNC_SCRIPT" 2>/dev/null || sudo chown ktltc:ktltc "$SYNC_SCRIPT"
+sudo chown ktltc:ktltc "$SYNC_SCRIPT"
 echo "✔ สร้างสคริปต์ Auto Sync เรียบร้อยแล้ว"
 
-# 4. ตั้งค่า Cron Job เพื่อรันอัตโนมัติทุกๆ 2 นาที
-echo "4. กำลังตั้งค่า Cron Job เพื่อรันสคริปต์ทุกๆ 2 นาที..."
+# 6. ตั้งค่า Cron Job เพื่อรันอัตโนมัติทุกๆ 2 นาที
+echo "6. กำลังตั้งค่า Cron Job เพื่อรันสคริปต์ทุกๆ 2 นาที..."
 CRON_JOB="*/2 * * * * /bin/bash $SYNC_SCRIPT >> $PROJECT_DIR/git-sync.log 2>&1"
 
 # ตรวจสอบว่ามีงานซ้ำใน crontab หรือไม่

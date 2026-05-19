@@ -26,8 +26,6 @@
 deploy.log
 .last_built_commit
 
-
-
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -44,21 +42,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# media & uploads
-/public/uploads/
-/public/user_profiles/
-/public/user_covers/
-/public/attendance_photos/
-/public/banners/
-/public/wallpaper/
-/public/images/
-/public/pdf/
-/public/work_reports/
-/public/ktltc_news/
-/public/ktltc_newsletters/
-/public/ktltc_posters/
-/public/ktltc_drive/
-/public/posts/
+# public folder and all its contents (per user request)
+/public/*
+!/public/.gitkeep
   
 # AI Assistant
 .gemini/
@@ -82,4 +68,3 @@ next-env.d.ts
 # Temporary, scratch, and local runtime directories
 /scratch/
 /tmp/
-
