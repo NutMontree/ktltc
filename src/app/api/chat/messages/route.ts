@@ -81,7 +81,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    let { chatId, receiverId, text, images } = body;
+    let { chatId, receiverId, text, images, files } = body;
 
     if (!chatId && !receiverId) {
       return NextResponse.json({ error: "Either chatId or receiverId must be provided" }, { status: 400 });
@@ -139,10 +139,24 @@ export async function POST(req: Request) {
       }
     } catch (_) {}
 
+    // Verify user is a participant of this chat before posting
+    if (chatId) {
+      const chat = await db.collection("chats").findOne({
+        _id: chatObjectId,
+        participants: { $in: [userObjectId, userId] },
+      });
+
+      if (!chat) {
+        return NextResponse.json({ error: "Chat conversation not found or access denied" }, { status: 404 });
+      }
+    }
+
     // Determine preview text
     let previewText = text || "";
     if (!previewText && images && images.length > 0) {
       previewText = "ส่งรูปภาพ 📷";
+    } else if (!previewText && files && files.length > 0) {
+      previewText = `ส่งไฟล์เอกสาร 📁 (${files[0].name || "ดาวน์โหลด"})`;
     }
 
     // 2. Insert new message
@@ -151,6 +165,7 @@ export async function POST(req: Request) {
       senderId: userObjectId,
       text: text || "",
       images: images || [],
+      files: files || [],
       createdAt: new Date(),
     };
 

@@ -21,6 +21,7 @@ import {
   UserPlus,
   Trash2,
   Info,
+  Download,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -53,6 +54,7 @@ interface Message {
   senderId: string;
   text: string;
   images?: string[];
+  files?: { url: string; name: string; size?: number; type?: string }[];
   createdAt: string;
 }
 
@@ -76,6 +78,7 @@ function ChatPageContent() {
 
   // Attachment states
   const [attachedImages, setAttachedImages] = useState<string[]>([]);
+  const [attachedFiles, setAttachedFiles] = useState<{ url: string; name: string; size: number; type: string }[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   // Create Group Modal States
@@ -98,6 +101,7 @@ function ChatPageContent() {
 
   // File upload input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileAttachmentRef = useRef<HTMLInputElement>(null);
   // Messages scroll ref
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -132,7 +136,7 @@ function ChatPageContent() {
   };
 
   // Poll for messages in active chat
-  useEffect(() => {
+  useEffect(() => { 
     if (!activeChat) return;
 
     const fetchMessages = async () => {
@@ -552,23 +556,105 @@ function ChatPageContent() {
     }
   };
 
+  // Upload file handler
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", "chat_attachments");
+
+    try {
+      setIsUploading(true);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success && data.secure_url) {
+        setAttachedFiles((prev) => [
+          ...prev,
+          {
+            url: data.secure_url,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+          },
+        ]);
+        toast.success("อัปโหลดไฟล์สำเร็จ");
+      } else {
+        toast.error(data.message || "อัปโหลดไฟล์ล้มเหลว");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeAttachedFile = (index: number) => {
+    setAttachedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteGroup = async () => {
+    if (!activeChat) return;
+
+    if (!confirm(`คุณต้องการลบกลุ่มแชท "${activeChat.groupName}" และประวัติการคุยทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/chat/groups?chatId=${activeChat._id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        toast.success(`ลบกลุ่มแชท "${activeChat.groupName}" เรียบร้อยแล้ว`);
+        setActiveChat(null);
+        setIsGroupInfoOpen(false);
+
+        // Refresh conversation list
+        const listRes = await fetch("/api/chat/list");
+        if (listRes.ok) {
+          const listData = await listRes.json();
+          if (listData.success) {
+            setChats(listData.chats);
+          }
+        }
+      } else {
+        const errData = await res.json();
+        toast.error(errData.error || "ไม่สามารถลบกลุ่มแชทได้");
+      }
+    } catch (err) {
+      console.error("Delete group error:", err);
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    }
+  };
+
   // Send message handler
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputText.trim() && attachedImages.length === 0) return;
+    if (!inputText.trim() && attachedImages.length === 0 && attachedFiles.length === 0) return;
     if (!activeChat) return;
 
     const originalInput = inputText;
     const originalAttachments = attachedImages;
+    const originalFiles = attachedFiles;
 
     // Reset input states immediately to feel highly responsive
     setInputText("");
     setAttachedImages([]);
+    setAttachedFiles([]);
 
     try {
       const payload: any = {
         text: originalInput,
         images: originalAttachments,
+        files: originalFiles,
       };
 
       if (activeChat._id === "new") {
@@ -591,7 +677,7 @@ function ChatPageContent() {
             const resolvedChat: Chat = {
               ...activeChat,
               _id: data.chatId,
-              lastMessage: data.message.text || "ส่งรูปภาพ 📷",
+              lastMessage: data.message.text || (originalFiles.length > 0 ? `ส่งไฟล์เอกสาร 📁 (${originalFiles[0].name})` : "ส่งรูปภาพ 📷"),
               lastMessageAt: data.message.createdAt,
               lastMessageSender: currentUserId,
             };
@@ -610,12 +696,14 @@ function ChatPageContent() {
         // Rollback states on failure
         setInputText(originalInput);
         setAttachedImages(originalAttachments);
+        setAttachedFiles(originalFiles);
         toast.error("ไม่สามารถส่งข้อความได้");
       }
     } catch (err) {
       console.error("Send message error:", err);
       setInputText(originalInput);
       setAttachedImages(originalAttachments);
+      setAttachedFiles(originalFiles);
       toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     }
   };
@@ -1052,6 +1140,46 @@ function ChatPageContent() {
                                 </div>
                               )}
 
+                              {/* Attached Files */}
+                              {message.files && message.files.length > 0 && (
+                                <div className="grid gap-2 grid-cols-1 mb-2">
+                                  {message.files.map((fileObj: any, i: number) => {
+                                    const formattedSize = fileObj.size 
+                                      ? (fileObj.size / (1024 * 1024)).toFixed(2) + " MB" 
+                                      : "";
+                                    return (
+                                      <a
+                                        key={i}
+                                        href={fileObj.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        download={fileObj.name}
+                                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all active:scale-[0.98] ${
+                                          isMe
+                                            ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                            : "bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-200"
+                                        }`}
+                                      >
+                                        <div className={`p-2 rounded-lg ${isMe ? "bg-white/20" : "bg-blue-500/10 text-blue-500"}`}>
+                                          <Paperclip className="w-4 h-4" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-xs font-black truncate max-w-[160px] leading-tight">
+                                            {fileObj.name}
+                                          </p>
+                                          {formattedSize && (
+                                            <p className={`text-[9px] font-bold ${isMe ? "text-blue-200" : "text-zinc-400"}`}>
+                                              {formattedSize}
+                                            </p>
+                                          )}
+                                        </div>
+                                        <Download className={`w-3.5 h-3.5 shrink-0 opacity-60 ${isMe ? "text-white" : "text-zinc-500"}`} />
+                                      </a>
+                                    );
+                                  })}
+                                </div>
+                              )}
+
                               {/* Text message content */}
                               {message.text && (
                                 <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">
@@ -1102,6 +1230,37 @@ function ChatPageContent() {
                   )}
                 </AnimatePresence>
 
+                {/* Files Attachment Preview bar */}
+                <AnimatePresence>
+                  {attachedFiles.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex gap-2 flex-wrap pb-3.5"
+                    >
+                      {attachedFiles.map((fileObj, i) => (
+                        <div
+                          key={i}
+                          className="relative flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-800 rounded-xl max-w-xs shadow-sm group"
+                        >
+                          <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
+                          <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[140px]">
+                            {fileObj.name}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeAttachedFile(i)}
+                            className="p-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-500 hover:text-rose-500 rounded-full transition-colors shrink-0"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Input Controls */}
                 <form onSubmit={handleSendMessage} className="flex items-center gap-3">
                   <input
@@ -1111,6 +1270,12 @@ function ChatPageContent() {
                     onChange={handleImageUpload}
                     className="hidden"
                   />
+                  <input
+                    type="file"
+                    ref={fileAttachmentRef}
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
 
                   {/* Attachment image selection btn */}
                   <button
@@ -1118,11 +1283,23 @@ function ChatPageContent() {
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
                     className="p-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-2xl transition-all flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50"
+                    title="แนบรูปภาพ"
+                  >
+                    <ImageIcon className="w-5 h-5" />
+                  </button>
+
+                  {/* Attachment file selection btn */}
+                  <button
+                    type="button"
+                    onClick={() => fileAttachmentRef.current?.click()}
+                    disabled={isUploading}
+                    className="p-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-2xl transition-all flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50"
+                    title="แนบไฟล์เอกสาร"
                   >
                     {isUploading ? (
                       <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                     ) : (
-                      <ImageIcon className="w-5 h-5" />
+                      <Paperclip className="w-5 h-5" />
                     )}
                   </button>
 
@@ -1130,7 +1307,7 @@ function ChatPageContent() {
                   <input
                     type="text"
                     placeholder={
-                      isUploading ? "กำลังประมวลผลรูปภาพ..." : "พิมพ์ข้อความแชทส่งที่นี่..."
+                      isUploading ? "กำลังประมวลผล..." : "พิมพ์ข้อความแชทส่งที่นี่..."
                     }
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
@@ -1141,7 +1318,7 @@ function ChatPageContent() {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={(!inputText.trim() && attachedImages.length === 0) || isUploading}
+                    disabled={(!inputText.trim() && attachedImages.length === 0 && attachedFiles.length === 0) || isUploading}
                     className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl transition-all shadow-md hover:shadow-lg hover:shadow-blue-600/20 flex items-center justify-center active:scale-95 disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
                   >
                     <Send className="w-5 h-5" />
@@ -1289,6 +1466,20 @@ function ChatPageContent() {
                       );
                     })}
                   </div>
+
+                  {/* Delete Group Section - Creator Only */}
+                  {currentUserIsFounder && (
+                    <div className="p-4 border-t border-zinc-200/40 dark:border-zinc-800/40 bg-rose-50/10 dark:bg-rose-950/5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleDeleteGroup}
+                        className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-md shadow-rose-500/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>ลบกลุ่มแชทแบบถาวร</span>
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

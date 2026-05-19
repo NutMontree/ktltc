@@ -216,3 +216,59 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+// 3. DELETE: Delete a group chat (Strictly restricted to group creator)
+export async function DELETE(req: Request) {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const chatId = searchParams.get("chatId");
+
+    if (!chatId) {
+      return NextResponse.json({ error: "chatId is required" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const chatObjectId = toObjectId(chatId);
+
+    // Fetch the group conversation
+    const chat = await db.collection("chats").findOne({ _id: chatObjectId });
+
+    if (!chat) {
+      return NextResponse.json({ error: "Group chat not found" }, { status: 404 });
+    }
+
+    if (!chat.isGroup) {
+      return NextResponse.json({ error: "This operation is only supported for Group Chats" }, { status: 400 });
+    }
+
+    // Verify current user is the creator of the group
+    const isCreator = chat.creatorId && chat.creatorId.toString() === userId.toString();
+
+    if (!isCreator) {
+      return NextResponse.json({ error: "Forbidden. Only the group creator can delete this group" }, { status: 403 });
+    }
+
+    // 1. Delete the conversation record from 'chats'
+    await db.collection("chats").deleteOne({ _id: chatObjectId });
+
+    // 2. Delete all message history associated with this chat
+    await db.collection("messages").deleteMany({ chatId: chatObjectId });
+
+    return NextResponse.json({
+      success: true,
+      message: "Group chat and all its history have been deleted successfully",
+    });
+  } catch (error: any) {
+    console.error("Delete group chat error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
