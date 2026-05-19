@@ -398,7 +398,7 @@ export default function ItaDashboard() {
   }
 
   const userRole = (session?.user as any)?.role?.toLowerCase();
-  const hasAccess = ["super_admin", "admin", "editor"].includes(userRole);
+  const hasAccess = ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);
 
   if (status === "unauthenticated" || !hasAccess) {
     return (

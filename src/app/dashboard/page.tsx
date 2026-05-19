@@ -419,7 +419,7 @@ export default function DashboardLoader() {
           </div>
 
           {/* --- OIT Section --- */}
-          {["super_admin", "admin", "editor"].includes(
+          {["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(
             ((session?.user as any)?.role || "").toLowerCase()
           ) && (
             <div>

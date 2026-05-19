@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageSystem =
       rolePerms?.permissions?.manage_system ||
-      ["super_admin", "admin", "editor"].includes(userRole);
+      ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);
 
     if (!canManageSystem) {
       return NextResponse.json(
