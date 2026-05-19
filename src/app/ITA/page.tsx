@@ -380,8 +380,27 @@ const CategorySection = ({ group, index, dbItems }: { group: any; index: number;
 };
 
 export default function ITA() {
-  const [selectedYear, setSelectedYear] = useState("2568");
+  const [selectedYear, setSelectedYear] = useState("2569");
   const [dbItems, setDbItems] = useState<any[]>([]);
+  const [years, setYears] = useState<string[]>(["2569"]);
+
+  useEffect(() => {
+    async function fetchYears() {
+      try {
+        const res = await fetch("/api/ita/years");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.years && data.years.length > 0) {
+            setYears(data.years);
+            setSelectedYear(data.years[data.years.length - 1]);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch OIT years:", err);
+      }
+    }
+    fetchYears();
+  }, []);
 
   useEffect(() => {
     async function fetchOITData() {
@@ -652,7 +671,7 @@ export default function ITA() {
               <CalendarOutlined /> เลือกปีงบประมาณ
             </span>
             <div className="inline-flex p-1.5 bg-white/50 backdrop-blur-xl rounded-2xl border border-slate-200 shadow-xl dark:bg-slate-900/50 dark:border-slate-700">
-              {["2568", "2569"].map((year) => (
+              {years.map((year) => (
                 <button
                   key={year}
                   onClick={() => setSelectedYear(year)}

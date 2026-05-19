@@ -213,6 +213,62 @@ export default function ItaDashboard() {
   const [selectedYear, setSelectedYear] = useState("2569");
   const [selectedOit, setSelectedOit] = useState("O1");
 
+  // Dynamic years list states
+  const [years, setYears] = useState<string[]>(["2569"]);
+  const [showAddYearModal, setShowAddYearModal] = useState(false);
+  const [newYearInput, setNewYearInput] = useState("");
+  const [isAddingYear, setIsAddingYear] = useState(false);
+
+  const fetchYears = async () => {
+    try {
+      const res = await fetch("/api/ita/years");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.years && data.years.length > 0) {
+          // Filter out year 2568 so it cannot be managed or modified from the admin dashboard
+          setYears(data.years.filter((y: string) => y !== "2568"));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching years:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchYears();
+  }, []);
+
+  const handleAddYear = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newYearInput || !/^\d{4}$/.test(newYearInput)) {
+      alert("กรุณากรอกปีงบประมาณเป็นตัวเลข 4 หลัก");
+      return;
+    }
+    setIsAddingYear(true);
+    try {
+      const res = await fetch("/api/ita/years", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ year: newYearInput }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        setShowAddYearModal(false);
+        setNewYearInput("");
+        await fetchYears();
+        setSelectedYear(newYearInput);
+      } else {
+        alert(data.error || "เกิดข้อผิดพลาด");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    } finally {
+      setIsAddingYear(false);
+    }
+  };
+
   // Form states
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -306,7 +362,7 @@ export default function ItaDashboard() {
       // Pre-populate with official OIT structure defaults
       setTitle(defaultMeta?.title || "");
       setDescription(defaultMeta?.desc || "");
-      setLinks([{ name: "1. ลิงก์ข้อมูลประชาสัมพันธ์", url: "https://ktltc.ac.th/" }]);
+      setLinks([]);
     }
   };
 
@@ -452,21 +508,31 @@ export default function ItaDashboard() {
             </p>
           </div>
 
-          {/* Year Selector */}
-          <div className="flex items-center gap-3 bg-white/50 backdrop-blur-xl rounded-2xl border border-slate-200 p-1.5 shadow-md dark:bg-slate-900/50 dark:border-slate-700">
-            {["2568", "2569"].map((year) => (
-              <button
-                key={year}
-                onClick={() => setSelectedYear(year)}
-                className={`relative px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
-                  selectedYear === year
-                    ? "text-white bg-linear-to-r from-blue-600 to-teal-500 shadow-md"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                }`}
-              >
-                ปีงบประมาณ {year}
-              </button>
-            ))}
+          {/* Year Selector & Add Year button */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1.5 bg-white/50 backdrop-blur-xl rounded-2xl border border-slate-200 p-1.5 shadow-md dark:bg-slate-900/50 dark:border-slate-700">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`relative px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
+                    selectedYear === year
+                      ? "text-white bg-linear-to-r from-blue-600 to-teal-500 shadow-md"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  }`}
+                >
+                  ปีงบประมาณ {year}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowAddYearModal(true)}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
+            >
+              <Plus size={14} strokeWidth={3} />
+              <span>เพิ่มปีงบประมาณ</span>
+            </button>
           </div>
         </div>
 
@@ -480,7 +546,7 @@ export default function ItaDashboard() {
             <div className="space-y-1">
               {OIT_INDICATORS.map((ind) => {
                 const isSelected = selectedOit === ind.code;
-                const hasData = dbItems.some((item) => item.oitCode === ind.code);
+                const hasData = dbItems.some((item) => item.oitCode === ind.code && Array.isArray(item.links) && item.links.length > 0);
 
                 return (
                   <button
@@ -502,11 +568,15 @@ export default function ItaDashboard() {
                     </div>
 
                     {/* Status Badge */}
-                    <div className="shrink-0 flex items-center gap-1.5">
+                    <div className="shrink-0 flex items-center gap-2">
                       {hasData ? (
-                        <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/30" />
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 whitespace-nowrap">
+                          บันทึกข้อมูลแล้ว
+                        </span>
                       ) : (
-                        <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-zinc-700" />
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500 border border-slate-200 dark:border-zinc-800 whitespace-nowrap">
+                          ยังไม่บันทึก
+                        </span>
                       )}
                       <ChevronRight size={14} className="opacity-40" />
                     </div>
@@ -712,6 +782,66 @@ export default function ItaDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Add Year Modal */}
+      <AnimatePresence>
+        {showAddYearModal && (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAddYearModal(false)}
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 max-w-sm w-full shadow-2xl z-10"
+            >
+              <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2">
+                เพิ่มปีงบประมาณใหม่
+              </h3>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold mb-6">
+                กรุณาระบุปีงบประมาณที่ต้องการเพิ่มสำหรับการประเมิน ITA / OIT (เช่น 2570)
+              </p>
+
+              <form onSubmit={handleAddYear} className="space-y-4">
+                <input
+                  type="text"
+                  maxLength={4}
+                  required
+                  value={newYearInput}
+                  onChange={(e) => setNewYearInput(e.target.value.replace(/\D/g, ""))}
+                  placeholder="เช่น 2570"
+                  className="w-full bg-slate-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3.5 text-sm text-zinc-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+
+                <div className="flex gap-3 justify-end pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddYearModal(false);
+                      setNewYearInput("");
+                    }}
+                    className="px-5 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-black text-zinc-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isAddingYear}
+                    className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {isAddingYear ? "กำลังเพิ่ม..." : "เพิ่มปีงบประมาณ"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
