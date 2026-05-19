@@ -1,16 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import {
-  Accordion,
-  AccordionItem,
-  Chip,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-} from "@heroui/react";
+import { Accordion, AccordionItem, Chip, Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { Image } from "@heroui/react";
 import {
   FilePdfOutlined,
@@ -20,6 +12,7 @@ import {
   CalendarOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
+import { LinkPreview } from "@/components/ui/link-preview";
 
 // Imports O1 - O37 (Keep existing imports)
 import O1_68 from "./2568/01/page";
@@ -127,9 +120,7 @@ export const TageLink = [
   },
 ];
 
-export const ImageItem = [
-  { imgs: "/images/pressrelease/2568/november/11/00.webp" },
-];
+export const ImageItem = [{ imgs: "/images/pressrelease/2568/november/11/00.webp" }];
 
 // --- Styled Components & Assets ---
 const BackgroundDecor = () => (
@@ -152,37 +143,36 @@ const MainDownloadCard = ({ year }: { year: string }) => {
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-linear-to-tr from-blue-500 to-teal-400 text-white shadow-lg">
             <FilePdfOutlined style={{ fontSize: "40px" }} />
           </div>
+
           <div className="grow">
             <h3 className="mb-2 text-2xl font-bold text-slate-800 dark:text-white">
               รายงานผลการประเมิน ITA {year}
             </h3>
             <p className="mb-4 leading-relaxed text-slate-600 dark:text-slate-300">
-              ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส {year}{" "}
-              (ฉบับทางการ)
+              ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส {year} (ฉบับทางการ)
             </p>
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-              {TageLink.map(
-                (item: { tage: string; href: string }, idx: number) =>
-                  item.tage ? (
-                    <Link key={idx} href={item.href} target="_blank">
-                      <Chip
-                        size="sm"
-                        variant="flat"
-                        color="primary"
-                        className="cursor-pointer font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50"
-                      >
-                        {item.tage}
-                      </Chip>
-                    </Link>
-                  ) : null,
+              {TageLink.map((item: { tage: string; href: string }, idx: number) =>
+                item.tage ? (
+                  <Link key={idx} href={item.href} target="_blank">
+                    <Chip
+                      size="sm"
+                      variant="flat"
+                      color="primary"
+                      className="cursor-pointer font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                    >
+                      {item.tage}
+                    </Chip>
+                  </Link>
+                ) : null,
               )}
             </div>
           </div>
+
+          
           <div className="shrink-0">
             <Link
-              href={
-                year === "2568" ? "/pdf/ITA/2568/ผลประเมินITA2568.pdf" : "#"
-              }
+              href={year === "2568" ? "/pdf/ITA/2568/ผลประเมินITA2568.pdf" : "#"}
               target="_blank"
               download
             >
@@ -190,12 +180,7 @@ const MainDownloadCard = ({ year }: { year: string }) => {
                 size="lg"
                 className="border-0 bg-linear-to-r from-blue-600 to-teal-500 font-semibold text-white shadow-md hover:from-blue-700 hover:to-teal-600"
                 endContent={
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -215,7 +200,7 @@ const MainDownloadCard = ({ year }: { year: string }) => {
   );
 };
 
-const CategorySection = ({ group, index }: { group: any; index: number }) => {
+const CategorySection = ({ group, index, dbItems }: { group: any; index: number; dbItems: any[] }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -245,9 +230,7 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
             <div className="mb-1 text-sm font-bold tracking-wider text-blue-600 uppercase dark:text-blue-400">
               {group.title}
             </div>
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
-              {group.subtitle}
-            </h3>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">{group.subtitle}</h3>
           </div>
           <div
             className={`transform transition-transform duration-300 ${isExpanded ? "rotate-90" : ""} text-slate-400`}
@@ -273,8 +256,7 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
                 className="gap-2"
                 itemClasses={{
                   base: "group rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 px-0 transition-all data-[open=true]:ring-1 data-[open=true]:ring-blue-200 dark:data-[open=true]:ring-blue-800",
-                  title:
-                    "font-semibold text-slate-700 dark:text-slate-200 text-base",
+                  title: "font-semibold text-slate-700 dark:text-slate-200 text-base",
                   subtitle: "text-slate-400 text-sm",
                   indicator: "text-blue-500 data-[open=true]:rotate-180",
                   content: "text-slate-600 dark:text-slate-400 pt-0 pb-4 px-2",
@@ -282,27 +264,112 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
                     "px-2 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
                 }}
               >
-                {group.items.map((item: any) => (
-                  <AccordionItem
-                    key={item.key}
-                    aria-label={item.title}
-                    startContent={
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-xs font-bold text-blue-600 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-300">
-                        {item.key}
+                {group.items.map((item: any) => {
+                  const oitCode = `O${item.key}`;
+                  const dbEntry = dbItems?.find((d) => d.oitCode === oitCode);
+
+                  return (
+                    <AccordionItem
+                      key={item.key}
+                      aria-label={item.title}
+                      startContent={
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-xs font-bold text-blue-600 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-300">
+                          {item.key}
+                        </div>
+                      }
+                      title={<span>{item.title.substring(item.title.indexOf(" ") + 1)}</span>}
+                      subtitle={item.note}
+                    >
+                      <div className="rounded-xl border border-slate-100/50 bg-slate-50 p-4 md:p-6 dark:border-slate-800/50 dark:bg-slate-900/50 font-medium">
+                        {dbEntry ? (
+                          <>
+                            {dbEntry.description && (
+                              <div className="pb-6 text-xs text-blue-500 md:text-sm lg:text-base dark:text-blue-400 leading-relaxed">
+                                {dbEntry.description.split("\n").map((line: string, idx: number) => (
+                                  <p key={idx}>{line}</p>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Image attachments gallery */}
+                            {dbEntry.links && dbEntry.links.filter((l: any) => /\.(jpe?g|png|gif|webp|svg|bmp)(?:\?.*)?$/i.test(l.url)).length > 0 && (
+                              <div className="mb-6">
+                                <p className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider mb-3">
+                                  หลักฐานภาพถ่ายเชิงประจักษ์ (Visual Evidence)
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  {dbEntry.links
+                                    .filter((l: any) => /\.(jpe?g|png|gif|webp|svg|bmp)(?:\?.*)?$/i.test(l.url))
+                                    .map((link: any, idx: number) => (
+                                      <div key={idx} className="group relative overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+                                        <div className="overflow-hidden aspect-video relative flex items-center justify-center bg-slate-100 dark:bg-slate-950">
+                                          <Image
+                                            isBlurred
+                                            removeWrapper
+                                            src={link.url}
+                                            alt={link.name}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                          />
+                                        </div>
+                                        <div className="p-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+                                          <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate pr-2">
+                                            {link.name}
+                                          </span>
+                                          <Link href={link.url} target="_blank">
+                                            <button className="shrink-0 p-1.5 text-blue-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all text-[11px] font-black flex items-center gap-1 cursor-pointer">
+                                              เต็มจอ <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                              </svg>
+                                            </button>
+                                          </Link>
+                                        </div>
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Document & other links */}
+                            {dbEntry.links && dbEntry.links.filter((l: any) => !/\.(jpe?g|png|gif|webp|svg|bmp)(?:\?.*)?$/i.test(l.url)).length > 0 && (
+                              <div>
+                                <p className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider mb-3">
+                                  เอกสารแนบและแหล่งข้อมูล (References & PDFs)
+                                </p>
+                                <div className="space-y-3.5">
+                                  {dbEntry.links
+                                    .filter((l: any) => !/\.(jpe?g|png|gif|webp|svg|bmp)(?:\?.*)?$/i.test(l.url))
+                                    .map((link: any, idx: number) => {
+                                      const isPdf = link.url?.toLowerCase().endsWith(".pdf") || link.name?.toLowerCase().includes("pdf");
+                                      return (
+                                        <div key={idx} className="flex items-center gap-3.5 py-1">
+                                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 text-slate-500">
+                                            {isPdf ? (
+                                              <FilePdfOutlined className="text-rose-500" style={{ fontSize: "16px" }} />
+                                            ) : (
+                                              <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                              </svg>
+                                            )}
+                                          </div>
+                                          <LinkPreview url={link.url}>
+                                            <p className="inline-block text-sm text-slate-700 dark:text-slate-200 hover:text-orange-500 dark:hover:text-orange-400 font-bold transition-colors cursor-pointer">
+                                              {link.name}
+                                            </p>
+                                          </LinkPreview>
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          item.component
+                        )}
                       </div>
-                    }
-                    title={
-                      <span>
-                        {item.title.substring(item.title.indexOf(" ") + 1)}
-                      </span>
-                    }
-                    subtitle={item.note}
-                  >
-                    <div className="rounded-xl border border-slate-100/50 bg-slate-50 p-4 dark:border-slate-800/50 dark:bg-slate-900/50">
-                      {item.component}
-                    </div>
-                  </AccordionItem>
-                ))}
+                    </AccordionItem>
+                  );
+                })}
               </Accordion>
             </div>
           </motion.div>
@@ -314,6 +381,22 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
 
 export default function ITA() {
   const [selectedYear, setSelectedYear] = useState("2568");
+  const [dbItems, setDbItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchOITData() {
+      try {
+        const res = await fetch(`/api/ita?year=${selectedYear}&_t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setDbItems(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch OIT data:", err);
+      }
+    }
+    fetchOITData();
+  }, [selectedYear]);
 
   const topicGroups = useMemo(() => {
     const yearPrefix = selectedYear;
@@ -597,8 +680,7 @@ export default function ITA() {
             animate={{ opacity: 1, scale: 1 }}
             className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-4 py-2 text-sm font-bold text-blue-600 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-800"
           >
-            <SafetyCertificateOutlined /> ITA {selectedYear} :
-            วิทยาลัยเทคนิคกันทรลักษ์
+            <SafetyCertificateOutlined /> ITA {selectedYear} : วิทยาลัยเทคนิคกันทรลักษ์
           </motion.div>
 
           <h1 className="mb-6 text-4xl leading-tight font-extrabold tracking-tight text-slate-800 drop-shadow-sm md:text-6xl lg:text-7xl dark:text-white">
@@ -609,15 +691,16 @@ export default function ITA() {
             Assessment {selectedYear}
           </h1>
           <p className="mx-auto max-w-3xl text-lg leading-relaxed font-medium text-slate-600 md:text-xl dark:text-slate-300">
-            {Description[0]?.description}{" "}
-            {selectedYear === "2569" && "(ข้อมูลปีปัจจุบัน)"}
+            {Description[0]?.description} {selectedYear === "2569" && "(ข้อมูลปีปัจจุบัน)"}
           </p>
         </div>
 
         {/* Main CTA Card */}
-        <div className="mx-auto mb-16 max-w-[1600px]">
-          <MainDownloadCard year={selectedYear} />
-        </div>
+        {selectedYear === "2568" && (
+          <div className="mx-auto mb-16 max-w-[1600px]">
+            <MainDownloadCard year={selectedYear} />
+          </div>
+        )}
 
         {/* Info Cards Section */}
         <div className="mx-auto mb-24 max-w-5xl space-y-8 px-4">
@@ -638,8 +721,8 @@ export default function ITA() {
                   ITA คืออะไร?
                 </h3>
                 <p className="text-lg leading-relaxed font-medium text-slate-600 dark:text-slate-300">
-                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ
-                  (OIT) ประจำปีงบประมาณ {selectedYear}
+                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (OIT)
+                  ประจำปีงบประมาณ {selectedYear}
                 </p>
                 <p className="mt-2 text-base font-normal text-slate-500 dark:text-slate-400">
                   เพื่อยกระดับธรรมาภิบาล เปิดเผยข้อมูลสู่สาธารณะ
@@ -649,24 +732,26 @@ export default function ITA() {
             </CardBody>
           </Card>
 
-          <Card className="overflow-hidden rounded-3xl">
-            <CardBody className="p-0">
-              {ImageItem.map(
-                (item: { imgs: string }, idx: number) =>
-                  item && (
-                    <motion.div key={idx}>
-                      <Image
-                        isBlurred
-                        removeWrapper
-                        src={item.imgs}
-                        className="w-full h-auto"
-                        alt={`image-${idx}`}
-                      />
-                    </motion.div>
-                  ),
-              )}
-            </CardBody>
-          </Card>
+          {selectedYear === "2568" && (
+            <Card className="overflow-hidden rounded-3xl">
+              <CardBody className="p-0">
+                {ImageItem.map(
+                  (item: { imgs: string }, idx: number) =>
+                    item && (
+                      <motion.div key={idx}>
+                        <Image
+                          isBlurred
+                          removeWrapper
+                          src={item.imgs}
+                          className="w-full h-auto"
+                          alt={`image-${idx}`}
+                        />
+                      </motion.div>
+                    ),
+                )}
+              </CardBody>
+            </Card>
+          )}
         </div>
       </div>
 
@@ -682,18 +767,13 @@ export default function ITA() {
             เอกสารประกอบการประเมิน (OIT) {selectedYear}
           </h2>
           <p className="mx-auto max-w-2xl text-lg font-medium text-slate-600 dark:text-slate-400">
-            ข้อมูลสาธารณะตามตัวชี้วัด เพื่อความโปร่งใสและตรวจสอบได้ของปีงบประมาณ{" "}
-            {selectedYear}
+            ข้อมูลสาธารณะตามตัวชี้วัด เพื่อความโปร่งใสและตรวจสอบได้ของปีงบประมาณ {selectedYear}
           </p>
         </div>
 
         <div className="space-y-6">
           {topicGroups.map((group, index) => (
-            <CategorySection
-              key={`${selectedYear}-${group.id}`}
-              group={group}
-              index={index}
-            />
+            <CategorySection key={`${selectedYear}-${group.id}`} group={group} index={index} dbItems={dbItems} />
           ))}
         </div>
       </div>

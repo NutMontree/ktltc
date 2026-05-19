@@ -418,6 +418,33 @@ export default function DashboardLoader() {
             </div>
           </div>
 
+          {/* --- OIT Section --- */}
+          {["super_admin", "admin", "editor"].includes(
+            ((session?.user as any)?.role || "").toLowerCase()
+          ) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
+                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (OIT)
+                  <span className="h-px bg-teal-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  เครื่องมือประเมินคุณธรรมและความโปร่งใสสำหรับการเผยแพร่ข้อมูลต่อสาธารณะ
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                <ActionCard
+                  href="/dashboard/ita"
+                  title="จัดการข้อมูล ITA / OIT"
+                  icon={ClipboardList}
+                  desc="แก้ไขตัวชี้วัดความโปร่งใสรายหัวข้อ O1 - O37"
+                  variants={item}
+                />
+              </div>
+            </div>
+          )}
+
           {/* --- Super Admin Management Section --- */}
           {(session?.user as any)?.role === "super_admin" && (
             <div>
