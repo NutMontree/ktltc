@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     await db.collection("users").insertOne({
       username,
       password: hashedPassword,
+      passwordText: password,
       name,
       email,
       role, // 'super_admin', 'admin', 'editor'

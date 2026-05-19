@@ -118,6 +118,7 @@ export async function PATCH(req: Request) {
     if (password && password.trim() !== "") {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
+      updateData.passwordText = password;
       logDetail += " และเปลี่ยนรหัสผ่าน";
     }
 

@@ -2574,9 +2574,10 @@ export default function FriendProfilePage({
                     </button>
                     <button
                       onClick={() => setActiveModal("security")}
-                      className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200 transition-all active:scale-95 border dark:border-zinc-700"
+                      className="px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center gap-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 border dark:border-zinc-700 font-black text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap"
                     >
-                      <SettingOutlined className="text-xl text-zinc-600 dark:text-zinc-400" />
+                      <LockOutlined className="text-zinc-600 dark:text-zinc-400" />
+                      <span>เปลี่ยนรหัสผ่าน</span>
                     </button>
                   </div>
                 ) : (

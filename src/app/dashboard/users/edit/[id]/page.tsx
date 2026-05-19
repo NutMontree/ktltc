@@ -51,6 +51,7 @@ interface UserFormData {
   isActive: boolean;
   image?: string; // Added image
   coverImage?: string; // Added coverImage
+  passwordText?: string; // Add this!
 }
 
 export default function EditUserPage() {
@@ -73,16 +74,19 @@ export default function EditUserPage() {
     isActive: true,
     image: "",
     coverImage: "",
+    passwordText: "",
   });
 
   const [username, setUsername] = useState("");
   const [newPassword, setNewPassword] = useState(""); // เพิ่ม State สำหรับรหัสผ่านใหม่
   const [showPassword, setShowPassword] = useState(false); // เพิ่ม State สำหรับเปิด/ปิดการมองเห็นรหัสผ่าน
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false); // เพิ่ม State สำหรับเปิด/ปิดการมองเห็นรหัสผ่านปัจจุบัน
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [adminProfile, setAdminProfile] = useState<{
     _id: string;
     name: string;
+    role?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -114,6 +118,7 @@ export default function EditUserPage() {
             isActive: data.isActive ?? true,
             image: data.image || "",
             coverImage: data.coverImage || "",
+            passwordText: data.passwordText || "",
           });
           setUsername(data.username || "ไม่ระบุ");
         } else {
@@ -519,6 +524,38 @@ export default function EditUserPage() {
                 </h3>
               </div>
               <div className="space-y-4">
+                {adminProfile?.role?.toLowerCase() === "super_admin" && (
+                  <div className="space-y-2 pb-4 mb-4 border-b border-slate-200/60">
+                    <label className="text-xs font-bold text-slate-500 ml-1 flex items-center gap-1.5">
+                      <FiShield className="text-blue-500" />
+                      รหัสผ่านปัจจุบันของผู้ใช้ (เฉพาะ Super Admin)
+                    </label>
+                    <div className="relative">
+                      <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type={showCurrentPassword ? "text" : "password"}
+                        readOnly
+                        value={formData.passwordText || ""}
+                        className="w-full bg-blue-50/20 border border-blue-100 rounded-xl p-4 pl-12 pr-12 text-slate-800 font-bold outline-none cursor-default"
+                        placeholder="ไม่มีการบันทึกรหัสผ่านเดิมเป็นข้อความธรรมดา (ถูกแฮชเข้ารหัส)"
+                      />
+                      {formData.passwordText && (
+                        <button
+                          type="button"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          {showCurrentPassword ? (
+                            <FiEyeOff className="w-5 h-5" />
+                          ) : (
+                            <FiEye className="w-5 h-5" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 ml-1">
                     รหัสผ่านใหม่{" "}

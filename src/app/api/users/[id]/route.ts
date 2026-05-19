@@ -104,6 +104,7 @@ export async function PATCH(
     if (body.password && body.password.trim() !== "") {
       const hashedPassword = await bcrypt.hash(body.password, 10);
       updateData.password = hashedPassword;
+      updateData.passwordText = body.password;
     } else {
       // ถ้าไม่ได้ส่งมา หรือส่งมาเป็นค่าว่าง ให้ลบออกจาก updateData (ใช้รหัสเดิม)
       delete updateData.password;

@@ -25,9 +25,14 @@ export async function GET(
     }
 
     const { id } = await params;
+    const projection: any = { password: 0 };
+    if (userRole !== "super_admin") {
+      projection.passwordText = 0;
+    }
+
     const user = await db
       .collection("users")
-      .findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
+      .findOne({ _id: new ObjectId(id) }, { projection });
 
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -105,6 +110,7 @@ export async function PATCH(
     // ถ้ามีการส่งรหัสผ่านใหม่มา ให้เข้ารหัสก่อน
     if (password && password.length >= 6) {
       updatePayload.password = await bcrypt.hash(password, 10);
+      updatePayload.passwordText = password;
     }
 
     const result = await db

@@ -141,7 +141,7 @@ function ChatPageContent() {
     const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
     const parts = text.split(urlRegex);
     return (
-      <p className="leading-relaxed whitespace-pre-wrap break-words [word-break:break-word] overflow-hidden">
+      <p className="leading-relaxed whitespace-pre-wrap wrap-break-word [word-break:break-word] overflow-hidden">
         {parts.map((part, index) => {
           if (part.match(urlRegex)) {
             const href = part.toLowerCase().startsWith("http") ? part : `https://${part}`;
