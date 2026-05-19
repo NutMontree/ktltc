@@ -66,7 +66,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
           {label}
         </span>
-        <span className="text-base font-medium text-gray-800 dark:text-gray-200 wrap-break-word leading-relaxed">
+        <span className="text-base font-medium text-gray-800 dark:text-gray-200 break-words [word-break:break-word] overflow-hidden leading-relaxed">
           {value}
         </span>
       </div>
@@ -111,7 +111,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 รายละเอียดแบบสำรวจ
               </h3>
-              <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed wrap-break-word">
+              <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed break-words [word-break:break-word] overflow-hidden">
                 <Calendar size={12} /> บันทึกเมื่อ:{" "}
                 {formatDate(suvery.submittedAt || suvery.createdAt)}
               </p>

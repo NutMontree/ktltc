@@ -135,6 +135,38 @@ function ChatPageContent() {
     }
   };
 
+  // Render clickable links helper
+  const renderMessageText = (text: string, isMe: boolean) => {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+    const parts = text.split(urlRegex);
+    return (
+      <p className="leading-relaxed whitespace-pre-wrap break-words [word-break:break-word] overflow-hidden">
+        {parts.map((part, index) => {
+          if (part.match(urlRegex)) {
+            const href = part.toLowerCase().startsWith("http") ? part : `https://${part}`;
+            return (
+              <a
+                key={index}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`underline break-all font-bold transition-all ${
+                  isMe
+                    ? "text-blue-100 hover:text-white"
+                    : "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                }`}
+              >
+                {part}
+              </a>
+            );
+          }
+          return part;
+        })}
+      </p>
+    );
+  };
+
   // Scroll to bottom helper
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -1199,7 +1231,7 @@ function ChatPageContent() {
                               )}
 
                               <div
-                                className={`flex flex-col max-w-[70%] space-y-1 ${isMe ? "items-end" : "items-start"}`}
+                                className={`flex flex-col max-w-[70%] min-w-0 space-y-1 ${isMe ? "items-end" : "items-start"}`}
                               >
                                 <div
                                   className={`p-3.5 rounded-2xl text-sm font-medium shadow-sm transition-all duration-300 ${
@@ -1318,11 +1350,7 @@ function ChatPageContent() {
                                   )}
 
                                   {/* Text message content */}
-                                  {message.text && (
-                                    <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">
-                                      {message.text}
-                                    </p>
-                                  )}
+                                  {message.text && renderMessageText(message.text, isMe)}
                                 </div>
 
                                 <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 px-1">

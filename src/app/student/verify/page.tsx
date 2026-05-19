@@ -294,7 +294,7 @@ export default function StudentVerifyPage() {
             className="text-4xl md:text-6xl font-black tracking-tight leading-none text-slate-900"
           >
             ระบบยืนยันตัวตน{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-655 to-blue-500">
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-indigo-655 to-blue-500">
               นักเรียน นักศึกษา
             </span>
           </motion.h1>
@@ -310,11 +310,11 @@ export default function StudentVerifyPage() {
         </div>
 
         {/* Soft Iridescent Gradient Outline Wrapper (Frosted Light Crystal Glass Console) */}
-        <div className="max-w-3xl mx-auto bg-gradient-to-r from-blue-300 via-indigo-200 via-purple-300 to-blue-200 p-[1.5px] rounded-[32px] shadow-[0_20px_50px_rgba(8,112,184,0.06)] relative overflow-hidden group">
+        <div className="max-w-3xl mx-auto bg-linear-to-r from-blue-300 via-indigo-200 to-blue-200 p-[1.5px] rounded-[32px] shadow-[0_20px_50px_rgba(8,112,184,0.06)] relative overflow-hidden group">
           {/* Biometric Laser Scanner Animation sweeps down when query is loading */}
           {isLoading && (
             <motion.div
-              className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_12px_#3b82f6] z-20 pointer-events-none"
+              className="absolute inset-x-0 h-1 bg-linear-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_12px_#3b82f6] z-20 pointer-events-none"
               initial={{ top: "0%" }}
               animate={{ top: "100%" }}
               transition={{
@@ -486,7 +486,7 @@ export default function StudentVerifyPage() {
                   type="button"
                   onClick={handleClear}
                   disabled={isLoading || (!nameInput && !citizenIdInput)}
-                  className="w-full sm:w-1/3 py-4 bg-white border border-slate-200 hover:bg-rose-50 hover:!text-rose-600 hover:border-rose-250 !text-slate-700 rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 active:scale-98 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full sm:w-1/3 py-4 bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-600! hover:border-rose-250 text-slate-700! rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 active:scale-98 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
                 >
                   <span>รีเซ็ต</span>
                 </button>
@@ -494,7 +494,7 @@ export default function StudentVerifyPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="group/search w-full sm:w-2/3 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:via-indigo-700 hover:to-blue-800 text-white rounded-2xl text-xs sm:text-sm md:text-base font-black shadow-lg shadow-blue-500/10 hover:shadow-xl hover:shadow-indigo-500/25 border border-white/10 hover:-translate-y-0.5 active:scale-98 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2.5 relative overflow-hidden"
+                  className="group/search w-full sm:w-2/3 py-4 bg-linear-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:via-indigo-700 hover:to-blue-800 text-white rounded-2xl text-xs sm:text-sm md:text-base font-black shadow-lg shadow-blue-500/10 hover:shadow-xl hover:shadow-indigo-500/25 border border-white/10 hover:-translate-y-0.5 active:scale-98 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2.5 relative overflow-hidden"
                 >
                   {isLoading ? (
                     <>
@@ -636,7 +636,7 @@ export default function StudentVerifyPage() {
                     return (
                       <div
                         key={student.id}
-                        className="bg-gradient-to-r from-blue-200 via-indigo-100 to-purple-100 p-[1.5px] rounded-[32px] shadow-lg relative overflow-hidden group/card"
+                        className="bg-linear-to-r from-blue-200 via-indigo-100 to-purple-100 p-[1.5px] rounded-[32px] shadow-lg relative overflow-hidden group/card"
                       >
                         <div
                           className={`holographic-badge rounded-[30.5px] p-6 relative overflow-hidden border ${
@@ -659,9 +659,9 @@ export default function StudentVerifyPage() {
 
                             {/* Realistic Golden Microchip decal on smartcard */}
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-7 rounded-md bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-600 border border-amber-200/50 p-1 flex flex-col justify-between shrink-0 shadow-md shadow-amber-955/40 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent animate-pulse" />
-                                <div className="grid grid-cols-3 gap-[1px] h-full w-full opacity-60">
+                              <div className="w-10 h-7 rounded-md bg-linear-to-br from-amber-400 via-amber-300 to-yellow-600 border border-amber-200/50 p-1 flex flex-col justify-between shrink-0 shadow-md shadow-amber-955/40 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/20 to-transparent animate-pulse" />
+                                <div className="grid grid-cols-3 gap-px h-full w-full opacity-60">
                                   <div className="border border-amber-100/40 rounded-[1px]" />
                                   <div className="border border-amber-100/40 rounded-[1px]" />
                                   <div className="border border-amber-100/40 rounded-[1px]" />
@@ -751,12 +751,12 @@ export default function StudentVerifyPage() {
                               <div className="hidden sm:flex flex-col gap-0.5 opacity-25 hover:opacity-40 transition-opacity">
                                 <div className="flex gap-[2px]">
                                   <div className="w-[2px] h-8 bg-slate-400" />
-                                  <div className="w-[1px] h-8 bg-slate-400" />
+                                  <div className="w-px h-8 bg-slate-400" />
                                   <div className="w-[3px] h-8 bg-slate-400" />
-                                  <div className="w-[1px] h-8 bg-slate-400" />
+                                  <div className="w-px h-8 bg-slate-400" />
                                   <div className="w-[2px] h-8 bg-slate-400" />
                                   <div className="w-[4px] h-8 bg-slate-400" />
-                                  <div className="w-[1px] h-8 bg-slate-400" />
+                                  <div className="w-px h-8 bg-slate-400" />
                                 </div>
                                 <span className="text-[5px] font-mono tracking-widest text-slate-500 text-center select-none">
                                   ID_HASH
@@ -897,11 +897,17 @@ export default function StudentVerifyPage() {
                             <button
                               type="button"
                               onClick={() => toggleFlagpoleHistory(student.id)}
-                              className="w-full py-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-100/80 text-blue-700 hover:text-blue-800 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-md"
+                              className="w-full py-3.5 bg-linear-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-100/80 text-blue-700 hover:text-blue-800 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-md"
                             >
                               <Award className="w-4 h-4 text-blue-600 animate-pulse" />
-                              <span>{activeHistoryStudentId === student.id ? "ปิดประวัติการเข้าแถว" : "ดูประวัติการเข้าแถวตอนเช้า"}</span>
-                              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${activeHistoryStudentId === student.id ? "rotate-180" : ""}`} />
+                              <span>
+                                {activeHistoryStudentId === student.id
+                                  ? "ปิดประวัติการเข้าแถว"
+                                  : "ดูประวัติการเข้าแถวตอนเช้า"}
+                              </span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform duration-300 ${activeHistoryStudentId === student.id ? "rotate-180" : ""}`}
+                              />
                             </button>
 
                             {/* Collapsible History Section */}
@@ -916,15 +922,21 @@ export default function StudentVerifyPage() {
                                   {isHistoryLoading ? (
                                     <div className="flex flex-col items-center justify-center py-8 gap-2.5">
                                       <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-                                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">กำลังดาวน์โหลดข้อมูลเข้าแถว...</span>
+                                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                        กำลังดาวน์โหลดข้อมูลเข้าแถว...
+                                      </span>
                                     </div>
                                   ) : flagpoleHistory && flagpoleHistory.length > 0 ? (
                                     <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
                                       {flagpoleHistory.map((history) => {
-                                        const isPresent = history.status === "Present" || history.status === "ตรงเวลา";
-                                        const isLate = history.status === "Late" || history.status === "สาย";
-                                        const isLeave = history.status === "Leave" || history.status === "ลา";
-                                        
+                                        const isPresent =
+                                          history.status === "Present" ||
+                                          history.status === "ตรงเวลา";
+                                        const isLate =
+                                          history.status === "Late" || history.status === "สาย";
+                                        const isLeave =
+                                          history.status === "Leave" || history.status === "ลา";
+
                                         // Formatting Date beautifully
                                         const dateObj = new Date(history.date);
                                         const thaiDate = dateObj.toLocaleDateString("th-TH", {
@@ -939,13 +951,16 @@ export default function StudentVerifyPage() {
                                           try {
                                             const timeDate = new Date(history.time);
                                             if (!isNaN(timeDate.getTime())) {
-                                              formattedTime = timeDate.toLocaleTimeString("th-TH", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false,
-                                              }) + " น.";
+                                              formattedTime =
+                                                timeDate.toLocaleTimeString("th-TH", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  hour12: false,
+                                                }) + " น.";
                                             } else {
-                                              formattedTime = history.time.includes("น.") ? history.time : `${history.time} น.`;
+                                              formattedTime = history.time.includes("น.")
+                                                ? history.time
+                                                : `${history.time} น.`;
                                             }
                                           } catch (e) {
                                             formattedTime = history.time;
@@ -965,12 +980,17 @@ export default function StudentVerifyPage() {
                                                     src={history.photoUrl}
                                                     alt="รูปภาพเช็คชื่อ"
                                                     className="w-full h-full object-cover transition-transform duration-300 group-hover/photo:scale-110 cursor-zoom-in"
-                                                    onClick={() => window.open(history.photoUrl, "_blank")}
+                                                    onClick={() =>
+                                                      window.open(history.photoUrl, "_blank")
+                                                    }
                                                     title="คลิกเพื่อดูรูปภาพขนาดเต็ม"
                                                   />
                                                 </div>
                                               ) : (
-                                                <div className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200/50 flex items-center justify-center shrink-0 text-slate-350" title="ไม่มีรูปภาพเช็คชื่อ">
+                                                <div
+                                                  className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200/50 flex items-center justify-center shrink-0 text-slate-350"
+                                                  title="ไม่มีรูปภาพเช็คชื่อ"
+                                                >
                                                   <User className="w-5 h-5" />
                                                 </div>
                                               )}
@@ -981,7 +1001,8 @@ export default function StudentVerifyPage() {
                                                 </span>
                                                 {formattedTime && (
                                                   <span className="text-[10px] text-slate-450 font-bold block">
-                                                    เวลาเช็คชื่อจริง: {formattedTime} {history.address ? `| ${history.address}` : ""}
+                                                    เวลาเช็คชื่อจริง: {formattedTime}{" "}
+                                                    {history.address ? `| ${history.address}` : ""}
                                                   </span>
                                                 )}
                                               </div>
@@ -992,13 +1013,19 @@ export default function StudentVerifyPage() {
                                                 isPresent
                                                   ? "bg-emerald-50 text-emerald-600 border-emerald-200"
                                                   : isLate
-                                                  ? "bg-amber-50 text-amber-600 border-amber-200"
-                                                  : isLeave
-                                                  ? "bg-blue-50 text-blue-600 border-blue-200"
-                                                  : "bg-rose-50 text-rose-600 border-rose-200"
+                                                    ? "bg-amber-50 text-amber-600 border-amber-200"
+                                                    : isLeave
+                                                      ? "bg-blue-50 text-blue-600 border-blue-200"
+                                                      : "bg-rose-50 text-rose-600 border-rose-200"
                                               }`}
                                             >
-                                              {isPresent ? "ตรงเวลา" : isLate ? "สาย" : isLeave ? "ลากิจ/ป่วย" : "ขาดแถว"}
+                                              {isPresent
+                                                ? "ตรงเวลา"
+                                                : isLate
+                                                  ? "สาย"
+                                                  : isLeave
+                                                    ? "ลากิจ/ป่วย"
+                                                    : "ขาดแถว"}
                                             </span>
                                           </div>
                                         );
@@ -1007,7 +1034,9 @@ export default function StudentVerifyPage() {
                                   ) : (
                                     <div className="text-center py-8 space-y-2 bg-slate-50/50 rounded-2xl border border-slate-200/30">
                                       <Info className="w-6 h-6 text-slate-350 mx-auto" />
-                                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">ไม่พบประวัติการเข้าแถวของนักเรียนรายนี้</p>
+                                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">
+                                        ไม่พบประวัติการเข้าแถวของนักเรียนรายนี้
+                                      </p>
                                     </div>
                                   )}
                                 </motion.div>
