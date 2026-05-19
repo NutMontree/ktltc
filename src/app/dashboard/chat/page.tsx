@@ -658,6 +658,35 @@ function ChatPageContent() {
     }
   };
 
+  // Download all files/images helper (Saves all attachments simultaneously in the browser)
+  const downloadAllAttachments = (images: string[] = [], files: any[] = []) => {
+    try {
+      images.forEach((url, index) => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.download = `image_${index + 1}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+
+      files.forEach((fileObj) => {
+        const link = document.createElement("a");
+        link.href = fileObj.url;
+        link.target = "_blank";
+        link.download = fileObj.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+      toast.success("กำลังเริ่มดาวน์โหลดไฟล์ทั้งหมด...");
+    } catch (err) {
+      console.error("Error downloading multiple files:", err);
+      toast.error("ไม่สามารถดาวน์โหลดไฟล์ทั้งหมดพร้อมกันได้");
+    }
+  };
+
   // Send message handler
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1154,63 +1183,99 @@ function ChatPageContent() {
                             >
                               {/* Attached Images */}
                               {message.images && message.images.length > 0 && (
-                                <div className="grid gap-2 grid-cols-1 mb-2">
+                                <div className="grid gap-3 grid-cols-1 mb-2">
                                   {message.images.map((imgUrl, i) => (
-                                    <a
-                                      key={i}
-                                      href={imgUrl}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="block max-w-sm rounded-xl overflow-hidden border border-zinc-200/20 shadow-md active:scale-95 transition-transform"
-                                    >
-                                      <img
-                                        src={imgUrl}
-                                        alt="Chat Attachment"
-                                        className="w-full max-h-56 object-cover"
-                                      />
-                                    </a>
+                                    <div key={i} className="flex flex-col gap-1.5 max-w-sm">
+                                      <a
+                                        href={imgUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="block rounded-xl overflow-hidden border border-zinc-200/20 shadow-md active:scale-95 transition-transform bg-zinc-950/20"
+                                      >
+                                        <img
+                                          src={imgUrl}
+                                          alt="Chat Attachment"
+                                          className="w-full max-h-56 object-cover"
+                                        />
+                                      </a>
+                                      <a
+                                        href={imgUrl}
+                                        download={`image_${i}.jpg`}
+                                        className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
+                                          isMe
+                                            ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                            : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200/40 dark:border-zinc-800/40 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                        }`}
+                                      >
+                                        <Download className="w-3 h-3 shrink-0" />
+                                        <span>ดาวน์โหลดรูปภาพ 📥</span>
+                                      </a>
+                                    </div>
                                   ))}
                                 </div>
                               )}
 
                               {/* Attached Files */}
                               {message.files && message.files.length > 0 && (
-                                <div className="grid gap-2 grid-cols-1 mb-2">
+                                <div className="grid gap-3 grid-cols-1 mb-2">
                                   {message.files.map((fileObj: any, i: number) => {
                                     const formattedSize = fileObj.size 
                                       ? (fileObj.size / (1024 * 1024)).toFixed(2) + " MB" 
                                       : "";
                                     return (
-                                      <a
-                                        key={i}
-                                        href={fileObj.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        download={fileObj.name}
-                                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all active:scale-[0.98] ${
-                                          isMe
-                                            ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
-                                            : "bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-800 dark:text-zinc-200"
-                                        }`}
-                                      >
-                                        <div className={`p-2 rounded-lg ${isMe ? "bg-white/20" : "bg-blue-500/10 text-blue-500"}`}>
-                                          <Paperclip className="w-4 h-4" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                          <p className="text-xs font-black truncate max-w-[160px] leading-tight">
-                                            {fileObj.name}
-                                          </p>
-                                          {formattedSize && (
-                                            <p className={`text-[9px] font-bold ${isMe ? "text-blue-200" : "text-zinc-400"}`}>
-                                              {formattedSize}
+                                      <div key={i} className="flex flex-col gap-1.5 max-w-sm">
+                                        <div
+                                          className={`flex items-center gap-3 p-3 rounded-xl border ${
+                                            isMe
+                                              ? "bg-white/10 border-white/20 text-white"
+                                              : "bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200"
+                                          }`}
+                                        >
+                                          <div className={`p-2 rounded-lg ${isMe ? "bg-white/20" : "bg-blue-500/10 text-blue-500"}`}>
+                                            <Paperclip className="w-4 h-4" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-xs font-black truncate max-w-[160px] leading-tight">
+                                              {fileObj.name}
                                             </p>
-                                          )}
+                                            {formattedSize && (
+                                              <p className={`text-[9px] font-bold ${isMe ? "text-blue-200" : "text-zinc-400"}`}>
+                                                {formattedSize}
+                                              </p>
+                                            )}
+                                          </div>
                                         </div>
-                                        <Download className={`w-3.5 h-3.5 shrink-0 opacity-60 ${isMe ? "text-white" : "text-zinc-500"}`} />
-                                      </a>
+                                        <a
+                                          href={fileObj.url}
+                                          download={fileObj.name}
+                                          className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
+                                            isMe
+                                              ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                              : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200/40 dark:border-zinc-800/40 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                          }`}
+                                        >
+                                          <Download className="w-3 h-3 shrink-0" />
+                                          <span>ดาวน์โหลดเอกสาร 📥</span>
+                                        </a>
+                                      </div>
                                     );
                                   })}
                                 </div>
+                              )}
+                              {/* Download All Trigger (Shown only if there are multiple attachments) */}
+                              {((message.images?.length || 0) + (message.files?.length || 0)) > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => downloadAllAttachments(message.images, message.files)}
+                                  className={`w-full max-w-sm mb-3 py-2 px-4 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 border cursor-pointer shadow-md ${
+                                    isMe
+                                      ? "bg-white text-blue-600 border-white hover:bg-zinc-100 shadow-white/5"
+                                      : "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-blue-500/10"
+                                  }`}
+                                >
+                                  <Download className="w-3 h-3 shrink-0 animate-bounce" />
+                                  <span>ดาวน์โหลดไฟล์ทั้งหมด ({ (message.images?.length || 0) + (message.files?.length || 0) } ไฟล์) 📦</span>
+                                </button>
                               )}
 
                               {/* Text message content */}
