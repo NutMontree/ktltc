@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -58,7 +58,8 @@ export default function ManageRolesPage() {
   const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const latestQueryRef = useRef("");
 
   const currentUserRole = (session?.user as any)?.role;
   const isSuperAdmin = currentUserRole === "super_admin";
@@ -68,8 +69,8 @@ export default function ManageRolesPage() {
       const res = await fetch("/api/admin/permissions");
       if (res.ok) {
         const data = await res.json();
-        setRoles(data.rolesOrder || Object.keys(data.labels));
-        setRoleLabels(data.labels);
+        setRoles(data.rolesOrder || Object.keys(data.labels || {}));
+        setRoleLabels(data.labels || {});
       }
     } catch (error) {
       console.error("Failed to fetch roles:", error);
@@ -77,30 +78,44 @@ export default function ManageRolesPage() {
   };
 
   const fetchData = async (q = "") => {
+    latestQueryRef.current = q;
     try {
       setLoading(true);
       const res = await fetch(`/api/admin/users?all=true&search=${q}&_t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
-        setUsers(data.users);
+        if (latestQueryRef.current === q) {
+          setUsers(data.users || []);
+        }
       }
     } catch (error) {
       toast.error("โหลดข้อมูลไม่สำเร็จ");
     } finally {
-      setLoading(false);
+      if (latestQueryRef.current === q) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
     fetchRoles();
-    fetchData("");
   }, []);
 
   // Debounced Search
   useEffect(() => {
+    if (isFirstLoad) {
+      fetchData("");
+      setIsFirstLoad(false);
+      return;
+    }
+
+    if (searchQuery === "") {
+      fetchData("");
+      return;
+    }
+
     const timer = setTimeout(() => {
       fetchData(searchQuery);
-      setVisibleCount(20); // Reset pagination on search
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -168,13 +183,13 @@ export default function ManageRolesPage() {
     "bg-teal-500",
   ];
 
-  const getAvatarColor = (id: string) => {
+  const getAvatarColor = (id: string = "") => {
+    if (!id) return "bg-blue-500";
     const index = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return avatarColors[index % avatarColors.length];
   };
 
-  const filteredUsers = users.slice(0, visibleCount);
-  const hasMore = users.length > visibleCount;
+  const filteredUsers = users;
 
   if (loading && users.length === 0) {
     return (
@@ -446,18 +461,7 @@ export default function ManageRolesPage() {
           })}
         </motion.div>
 
-        {/* Load More Button */}
-        {hasMore && (
-          <div className="flex justify-center pt-12 pb-8">
-            <button
-              onClick={() => setVisibleCount(prev => prev + 20)}
-              className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-full font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-xl shadow-slate-200/50 dark:shadow-none hover:bg-slate-50 dark:hover:bg-zinc-800 active:scale-95 text-slate-800 dark:text-zinc-200"
-            >
-              <Users className="group-hover:rotate-12 transition-transform" size={18} />
-              โหลดข้อมูลพนักงานเพิ่มอีก 20 ท่าน
-            </button>
-          </div>
-        )}
+
 
         <AnimatePresence>
           {users.length === 0 && !loading && (

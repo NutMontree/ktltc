@@ -231,9 +231,6 @@ export default function NavbarClient({
    * handleLogout: จัดการการออกจากระบบ
    */
   const handleLogout = async () => {
-    try {
-      await fetch("/api/attendance/logout", { method: "POST" });
-    } catch (_) {}
     await signOut({ callbackUrl: "/login" });
   };
 

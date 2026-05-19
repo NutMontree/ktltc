@@ -117,14 +117,13 @@ function DriveContent() {
   const userId = (session?.user as any)?.id;
   const isSuperAdmin = userRole === "super_admin";
   const isStaff = !!(session && !["user", "student"].includes(userRole || ""));
-
-  const currentFolder = allFoldersList.find((f) => f._id === currentFolderId);
   const canUploadInCurrentFolder =
     isStaff &&
     (!currentFolderId ||
       isSuperAdmin ||
-      currentFolder?.ownerId === userId ||
-      currentFolder?.isCollaborative);
+      currentFolderData?.ownerId === userId ||
+      currentFolderData?.isCollaborative ||
+      currentFolderData?.isCollaborativeContext);
 
   const fetchItems = useCallback(async (folderId: string | null) => {
     setLoading(true);
@@ -301,12 +300,17 @@ function DriveContent() {
 
   const moveItem = async (newParentId: string | null) => {
     if (selectedIds.size > 0) {
-      // Bulk Move
       setLoading(true);
       try {
         for (const id of Array.from(selectedIds)) {
           const item = [...folders, ...files].find((i) => i._id === id);
           if (!item) continue;
+
+          // Skip moving other people's items if not admin
+          if (!isSuperAdmin && item.ownerId !== userId) {
+            continue;
+          }
+
           const type = (item as any).url ? "file" : "folder";
           await fetch(`/api/drive/item/${id}`, {
             method: "PATCH",
@@ -422,6 +426,11 @@ function DriveContent() {
       for (const id of Array.from(selectedIds)) {
         const item = [...folders, ...files].find((i) => i._id === id);
         if (!item) continue;
+
+        if (!isSuperAdmin && item.ownerId !== userId) {
+          continue;
+        }
+
         const type = (item as any).url ? "file" : "folder";
         await fetch(`/api/drive/item/${id}?type=${type}`, { method: "DELETE" });
       }
@@ -988,42 +997,39 @@ function DriveContent() {
               </div>
 
               <div className="flex items-center gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
-                {isStaff &&
-                  (isSuperAdmin ||
-                    folder.ownerId === userId ||
-                    (folder.isCollaborative && userRole !== "student")) && (
-                    <>
-                      <button
-                        onClick={() => {
-                          setSelectedItem({
-                            id: folder._id,
-                            name: folder.name,
-                            type: "folder",
-                            isCollaborative: !!folder.isCollaborative,
-                          });
-                          setNewItemName(folder.name);
-                          setIsCollaborative(!!folder.isCollaborative);
-                          setIsRenameModalOpen(true);
-                        }}
-                        className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                        title="การตั้งค่า"
-                      >
-                        <Edit3 size={14} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedItem({ id: folder._id, name: folder.name, type: "folder" });
-                          setIsMoveModalOpen(true);
-                        }}
-                        className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                        title="ย้าย"
-                      >
-                        <Move size={14} />
-                      </button>
-                      <button
-                        onClick={() => deleteItem(folder._id, "folder")}
-                        className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                        title="ลบ"
+                {isStaff && (isSuperAdmin || folder.ownerId === userId) && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setSelectedItem({
+                          id: folder._id,
+                          name: folder.name,
+                          type: "folder",
+                          isCollaborative: !!folder.isCollaborative,
+                        });
+                        setNewItemName(folder.name);
+                        setIsCollaborative(!!folder.isCollaborative);
+                        setIsRenameModalOpen(true);
+                      }}
+                      className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                      title="การตั้งค่า"
+                    >
+                      <Edit3 size={14} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedItem({ id: folder._id, name: folder.name, type: "folder" });
+                        setIsMoveModalOpen(true);
+                      }}
+                      className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                      title="ย้าย"
+                    >
+                      <Move size={14} />
+                    </button>
+                    <button
+                      onClick={() => deleteItem(folder._id, "folder")}
+                      className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                      title="ลบ"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -1121,7 +1127,6 @@ function DriveContent() {
                   </div>
                   <span className="truncate max-w-[70px]">{file.ownerName}</span>
                 </div>
-
                 <div
                   className="flex items-center gap-1 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl"
                   onClick={(e) => e.stopPropagation()}
@@ -1134,14 +1139,11 @@ function DriveContent() {
                   >
                     <Download size={14} />
                   </a>
-                  {isStaff &&
-                    (isSuperAdmin ||
-                      file.ownerId === userId ||
-                      (currentFolder?.isCollaborative && userRole !== "student")) && (
-                      <>
-                        <button
-                          onClick={() => {
-                            setSelectedItem({ id: file._id, name: file.name, type: "file" });
+                  {isStaff && (isSuperAdmin || file.ownerId === userId) && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setSelectedItem({ id: file._id, name: file.name, type: "file" });
                             setNewItemName(file.name);
                             setIsRenameModalOpen(true);
                           }}

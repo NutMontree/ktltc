@@ -75,19 +75,22 @@ export async function GET(request: Request) {
     if (parentId) {
       currentFolder = await db.collection("drive_folders").findOne({ _id: parentId });
       if (currentFolder) {
+        // Access control: only owner, admin, or shared path can access private folders
+        if (!isAdmin && currentFolder.ownerId !== userId && !isSharedAccess) {
+          return NextResponse.json({ error: "Unauthorized access to this folder" }, { status: 403 });
+        }
+
         if (currentFolder.views === undefined) {
           currentFolder.views = 0;
         }
         if (currentFolder.isCollaborative) {
           isCurrentFolderCollaborative = true;
         }
+        currentFolder.isCollaborativeContext = isSharedAccess;
       }
     }
-
-    const baseFilter = (isStaff && isAdmin)
+    const baseFilter = isAdmin
       ? { parentId } 
-      : (isStaff || isSharedAccess)
-      ? { parentId }
       : { 
           parentId, 
           $or: [
@@ -95,10 +98,8 @@ export async function GET(request: Request) {
             { isCollaborative: true }
           ]
         };
- 
-    const fileFilter = (isStaff && (isAdmin || isCurrentFolderCollaborative))
-      ? { folderId: parentId }
-      : (isStaff || isSharedAccess)
+
+    const fileFilter = (isAdmin || isCurrentFolderCollaborative || isSharedAccess)
       ? { folderId: parentId }
       : { folderId: parentId, ownerId: userId };
 
@@ -159,7 +160,10 @@ export async function POST(request: Request) {
       const isAdmin = ["super_admin", "admin"].includes(userRole);
       const userId = (session.user as any).id;
 
-      if (!isAdmin && parentFolder.ownerId !== userId && !parentFolder.isCollaborative) {
+      // Check if parent or any ancestor is collaborative
+      const isParentShared = await isCollaborativeOrDescendant(db, parentId);
+
+      if (!isAdmin && parentFolder.ownerId !== userId && !isParentShared) {
         return NextResponse.json({ error: "No permission to create items in this folder" }, { status: 403 });
       }
     }

@@ -44,6 +44,12 @@ const callbacks: NextAuthConfig["callbacks"] = {
   authorized({ auth, request: { nextUrl } }) {
     const isLoggedIn = !!auth?.user;
     const { pathname } = nextUrl;
+    const folderId = nextUrl.searchParams.get("folderId");
+
+    // อนุญาตให้ทุกคน (รวมถึงผู้ที่ไม่สิทธิ์ หรือผู้ที่ยังไม่ได้ Login) สามารถเข้าถึงโฟลเดอร์แชร์ใน Drive ได้โดยตรง
+    if (pathname === "/dashboard/drive" && folderId) {
+      return true;
+    }
 
     // รายการเส้นทางที่ต้องมีการเข้าสู่ระบบก่อน (Protected Routes)
     const protectedPrefixes = [

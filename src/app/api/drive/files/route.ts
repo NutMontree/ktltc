@@ -3,6 +3,17 @@ import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
+async function isCollaborativeOrDescendant(db: any, folderId: ObjectId | null): Promise<boolean> {
+  if (!folderId) return false;
+  const folder = await db.collection("drive_folders").findOne({ _id: folderId });
+  if (!folder) return false;
+  if (folder.isCollaborative) return true;
+  if (folder.parentId) {
+    return isCollaborativeOrDescendant(db, folder.parentId);
+  }
+  return false;
+}
+
 // --- POST: Save file metadata ---
 export async function POST(request: Request) {
   try {
@@ -30,7 +41,10 @@ export async function POST(request: Request) {
       const isAdmin = ["super_admin", "admin"].includes(userRole);
       const userId = (session.user as any).id;
 
-      if (!isAdmin && parentFolder.ownerId !== userId && !parentFolder.isCollaborative) {
+      // Check if target folder or any ancestor is collaborative
+      const isFolderShared = await isCollaborativeOrDescendant(db, folderId);
+
+      if (!isAdmin && parentFolder.ownerId !== userId && !isFolderShared) {
         return NextResponse.json({ error: "No permission to upload files to this folder" }, { status: 403 });
       }
     }

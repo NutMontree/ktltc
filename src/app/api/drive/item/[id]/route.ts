@@ -65,15 +65,10 @@ export async function PATCH(
         isCollaborativeContext = true;
       }
     }
-
-    // Permission check:
-    // 1. Owner or Super Admin -> Always allowed
-    // 2. Collaborative context -> Allowed for everyone EXCEPT students
-    const isStaff = !["user", "student"].includes(userRole || "");
+    // Permission check: only Owner or Super Admin / Admin -> Allowed
     const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
-    const canCollaborate = isCollaborativeContext && isStaff;
 
-    if (!isOwnerOrAdmin && !canCollaborate) {
+    if (!isOwnerOrAdmin) {
       return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
     }
 
@@ -151,16 +146,11 @@ export async function DELETE(
         isCollaborativeContext = true;
       }
     }
-
-    // Permission check:
-    // 1. Owner or Super Admin -> Always allowed
-    // 2. Collaborative context -> Allowed for everyone EXCEPT students
-    const isStaff = !["user", "student"].includes(userRole || "");
+    // Permission check: only Owner or Super Admin / Admin -> Allowed
     const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
-    const canCollaborate = isCollaborativeContext && isStaff;
 
-    if (!isOwnerOrAdmin && !canCollaborate) {
-      return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
+    if (!isOwnerOrAdmin) {
+      return NextResponse.json({ error: "No permission to delete this item" }, { status: 403 });
     }
 
     if (type === "folder") {
