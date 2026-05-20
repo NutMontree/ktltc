@@ -241,7 +241,16 @@ export default function MobileMenu({
                       </Link>
                       <button
                         onClick={async () => {
-                          signOut({ callbackUrl: "/login" });
+                          try {
+                            // 1. ลบคุกกี้ความปลอดภัย "token"
+                            await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+                            // 2. เรียกใช้ signOut แบบปิด redirect
+                            await signOut({ redirect: false });
+                          } catch (err) {
+                            console.error("Logout error:", err);
+                          }
+                          // 3. ใช้ window.location.href ทำ Hard Redirect
+                          window.location.href = "/login";
                         }}
                         className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm"
                       >

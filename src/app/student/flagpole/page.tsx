@@ -473,7 +473,18 @@ export default function StudentFlagpolePortal() {
           </div>
 
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={async () => {
+              try {
+                // 1. ลบคุกกี้ความปลอดภัย "token" ผ่าน API
+                await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+                // 2. เรียกใช้ signOut แบบปิด redirect
+                await signOut({ redirect: false });
+              } catch (err) {
+                console.error("Logout error:", err);
+              }
+              // 3. ใช้ window.location.href ทำ Hard Redirect
+              window.location.href = "/login";
+            }}
             className="p-3 bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-2xl transition-all border border-slate-100 dark:border-zinc-800 dark:bg-zinc-800/30 dark:hover:bg-rose-950/20"
             title="ออกจากระบบ"
           >

@@ -231,7 +231,16 @@ export default function NavbarClient({
    * handleLogout: จัดการการออกจากระบบ
    */
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" });
+    try {
+      // 1. ลบคุกกี้ความปลอดภัย "token" ผ่าน API
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      // 2. เรียกใช้ signOut แบบปิด redirect ป้องกันค้าง
+      await signOut({ redirect: false });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+    // 3. ใช้ window.location.href ทำ Hard Redirect เพื่อเคลียร์ state ใน Next.js 100%
+    window.location.href = "/login";
   };
 
   const ensureAbsolute = (path: string) => {
