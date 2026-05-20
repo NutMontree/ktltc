@@ -106,6 +106,22 @@ export async function GET() {
       reports.error = "No legacy source directory detected. Files might have already been moved or the folder name format is different.";
     }
 
+    // --- DB Inspection ---
+    try {
+      const client = await (await import('@/lib/db')).default;
+      const db = client.db("ktltc_db");
+      const collections = await db.listCollections().toArray();
+      const dbReport: any = {};
+      
+      for (const col of collections) {
+        const count = await db.collection(col.name).countDocuments();
+        dbReport[col.name] = count;
+      }
+      reports.databaseCollections = dbReport;
+    } catch (dbErr: any) {
+      reports.databaseError = dbErr.message;
+    }
+
     return NextResponse.json({ success: true, reports });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message, stack: err.stack });
