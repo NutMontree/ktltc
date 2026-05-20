@@ -11,3 +11,5 @@ https://console.cloudinary.com/app/c-a8079b40d30d0074dc19c625167848/image/gettin
 
 pm2 list เพื่อดู status
 pm2 startup เพื่อตั้งค่าให้รันอัตโนมัติ
+
+
