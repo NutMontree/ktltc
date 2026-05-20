@@ -1,55 +1,85 @@
 import { NextResponse } from 'next/server';
-import { existsSync, readFileSync } from 'fs';
-import { join } from 'path';
+import { existsSync, readFileSync, statSync, readdirSync, mkdirSync, copyFileSync } from 'fs';
+import { join, dirname } from 'path';
 
 export const dynamic = 'force-dynamic';
+
+let migrated = false;
+
+function copyRecursiveSync(src: string, dest: string) {
+  if (!existsSync(src)) return;
+  const stats = statSync(src);
+  if (stats.isDirectory()) {
+    if (!existsSync(dest)) {
+      mkdirSync(dest, { recursive: true });
+    }
+    readdirSync(src).forEach((childItemName) => {
+      copyRecursiveSync(join(src, childItemName), join(dest, childItemName));
+    });
+  } else {
+    // Only copy if file doesn't exist or is different size
+    if (!existsSync(dest) || statSync(src).size !== statSync(dest).size) {
+      const destDir = dirname(dest);
+      if (!existsSync(destDir)) {
+        mkdirSync(destDir, { recursive: true });
+      }
+      copyFileSync(src, dest);
+      console.log(`[Migration] Copied file: ${src} -> ${dest}`);
+    }
+  }
+}
+
+function ensureMigration() {
+  if (migrated) return;
+  migrated = true;
+  try {
+    const cwd = process.cwd();
+    // Path to the literal \\192.168.6.118\public folder
+    const sourceDir = join(cwd, "\\\\192.168.6.118\\public");
+    const targetDir = join(cwd, "public");
+    if (existsSync(sourceDir)) {
+      console.log(`🚀 [Migration] Found legacy network base: ${sourceDir}. Merging into local public...`);
+      copyRecursiveSync(sourceDir, targetDir);
+      console.log("✅ [Migration] Merging finished successfully.");
+    }
+  } catch (err: any) {
+    console.error("❌ [Migration] Error during self-migration:", err.message);
+  }
+}
 
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
+    // Run migration check once when a media request comes in
+    ensureMigration();
+
     const { path: pathSegments } = await params;
     
+    // We only use the local public directory now
     const localBase = join(process.cwd(), 'public');
-    const networkBase = "\\\\192.168.6.118\\public";
-    const mappedBase = "Z:\\"; // ใช้ Z:\ เพื่อให้เป็น Absolute Path ที่ถูกต้องบน Windows
-    
-    // 1. ลองหาที่ไดรฟ์ Z: (Lenovo) เป็นอันดับแรก
-    let filePath = join(mappedBase, ...pathSegments);
+    const filePath = join(localBase, ...pathSegments);
     let found = existsSync(filePath);
-    
-    // 2. ถ้าในเครื่องไม่มี ให้ลองหาที่ Network UNC
-    if (!found) {
-      const networkPath = join(networkBase, ...pathSegments);
-      if (existsSync(networkPath)) {
-        filePath = networkPath;
-        found = true;
-      }
-    }
-
-    // 3. สุดท้ายถ้ายังไม่เจออีก ให้ลองหาที่ Local (เผื่อเป็นไฟล์เก่าหรือไฟล์ระบบ)
-    if (!found) {
-      const localPath = join(localBase, ...pathSegments);
-      if (existsSync(localPath)) {
-        filePath = localPath;
-        found = true;
-      }
-    }
 
     if (!found) {
-      // 4. Fallback สำหรับเครื่อง Local (Dev): ถ้าหาไฟล์ไม่เจอ ให้ลองดึงจาก Server จริง (Production) มาแสดง
+      // Fallback for Local Dev environment: try to fetch from production
       if (process.env.NODE_ENV === 'development') {
         try {
           const prodUrl = `https://ktltc.ac.th/api/media/${pathSegments.join('/')}`;
-          const prodRes = await fetch(prodUrl);
+          
+          // Added a timeout of 3 seconds to avoid hanging when production is down
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000);
+          
+          const prodRes = await fetch(prodUrl, { signal: controller.signal });
+          clearTimeout(timeoutId);
           
           if (prodRes.ok) {
             console.log(`🌐 Proxying Media from Production: ${prodUrl}`);
             const arrayBuffer = await prodRes.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
             
-            // ดึง Content-Type กลับมา
             const ext = prodUrl.split('.').pop()?.toLowerCase() || 'jpg';
             const mimeMap: Record<string, string> = {
               'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif', 'webp': 'image/webp'
@@ -62,27 +92,22 @@ export async function GET(
               }
             });
           }
-        } catch (fetchErr) {
-          console.error("Proxy fetch error:", fetchErr);
+        } catch (fetchErr: any) {
+          console.error(`Proxy fetch error for ${pathSegments.join('/')}:`, fetchErr.message || fetchErr);
         }
       }
 
       console.log(`❌ Media Not Found [${new Date().toLocaleString()}]:`);
       console.log(`   - Requested: ${pathSegments.join('/')}`);
-      console.log(`   - Attempted Local: ${join(localBase, ...pathSegments)}`);
-      console.log(`   - Attempted Network: ${join(networkBase, ...pathSegments)}`);
-      console.log(`   - Attempted Mapped (Z:): ${join(mappedBase, ...pathSegments)}`);
+      console.log(`   - Attempted Local: ${filePath}`);
       return new NextResponse('File not found', { status: 404 });
     }
 
     console.log(`✅ Media Found: ${filePath}`);
 
-    // Security check: ensure the file is within allowed directories
+    // Security check: ensure the file is within public directory
     const normalizedPath = filePath.toLowerCase();
-    const isAllowed = normalizedPath.startsWith(localBase.toLowerCase()) || 
-                      normalizedPath.startsWith(networkBase.toLowerCase()) ||
-                      normalizedPath.startsWith(mappedBase.toLowerCase()) ||
-                      normalizedPath.startsWith("\\\\192.168.6.118");
+    const isAllowed = normalizedPath.startsWith(localBase.toLowerCase());
 
     if (!isAllowed) {
       return new NextResponse('Forbidden', { status: 403 });
@@ -102,8 +127,7 @@ export async function GET(
       'webp': 'image/webp',
       'svg': 'image/svg+xml',
       'pdf': 'application/pdf',
-      'blob': 'image/jpeg', // Fallback for the .blob files I saw
-      // Video types
+      'blob': 'image/jpeg',
       'mp4': 'video/mp4',
       'webm': 'video/webm',
       'mov': 'video/quicktime',

@@ -105,25 +105,9 @@ export async function GET() {
 
       // Calculate size of all relevant folders
       const fs = require("fs");
-      let publicDir = path.join(process.cwd(), "public"); // ค่าเริ่มต้นสำหรับเครื่องที่รันเอง (Lenovo)
-      
-      // ถ้าหาโฟลเดอร์ public ในเครื่องไม่เจอ (แสดงว่ารันอยู่บน PC) ให้ลองไปหาที่ Lenovo
-      if (!fs.existsSync(path.join(publicDir, "uploads"))) {
-        const networkPath = "\\\\192.168.6.118\\public";
-        if (fs.existsSync(networkPath)) {
-          publicDir = networkPath;
-        } else if (fs.existsSync("Z:")) {
-          publicDir = "Z:";
-        }
-      }
-
+      const publicDir = path.join(process.cwd(), "public");
       const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
       let totalBytes = 0;
-
-      if (!fs.existsSync(publicDir)) {
-        console.warn(`⚠️ UNC Path ${publicDir} not accessible, trying Z: drive...`);
-        publicDir = "Z:";
-      }
 
       const getDirSize = (dirPath: string) => {
         let size = 0;
@@ -162,7 +146,7 @@ export async function GET() {
         const os = require("os");
         const fs = require("fs");
 
-        // 4.1 Get Disk Stats (UNC Path or Z:)
+        // 4.1 Get Disk Stats
         if (fs.statfsSync) {
           try {
             const stats = fs.statfsSync(publicDir);
@@ -170,14 +154,7 @@ export async function GET() {
             serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
             serverUsedMB = serverTotalMB - serverAvailableMB;
           } catch (e) {
-            try {
-              const stats = fs.statfsSync("Z:");
-              serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
-              serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
-              serverUsedMB = serverTotalMB - serverAvailableMB;
-            } catch (zErr) {
-              console.warn("Disk stats failed for both UNC and Z:");
-            }
+            console.warn("Disk stats failed for local public directory");
           }
         }
 

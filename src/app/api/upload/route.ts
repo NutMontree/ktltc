@@ -65,13 +65,8 @@ export async function POST(req: Request) {
     
     const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${ext}`;
     
-    // Auto-detect base directory (Lenovo Server)
-    const { existsSync } = await import('fs');
-    let baseDir = "Z:\\"; 
-    if (!existsSync(baseDir)) {
-      baseDir = "\\\\192.168.6.118\\public";
-    }
-    
+    // Save locally to public folder
+    const baseDir = join(process.cwd(), "public");
     const uploadDir = join(baseDir, sanitizedFolder);
     
     // Create directory if it doesn't exist

@@ -44,17 +44,7 @@ export async function saveFileLocally(
     // 3. ตั้งชื่อไฟล์ใหม่เพื่อป้องกันการซ้ำกัน (Timestamp + Random)
     const filename = `${filenamePrefix}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
     
-    const { existsSync } = require("fs");
-    let baseDir = "Z:\\";
-    
-    // ถ้าหาไดรฟ์ Z: ไม่เจอ ให้สลับไปใช้ Local Public หรือ Network Path
-    if (!existsSync(baseDir)) {
-      baseDir = join(process.cwd(), "public");
-      if (!existsSync(baseDir)) {
-        baseDir = "\\\\192.168.6.118\\public";
-      }
-    }
-    
+    const baseDir = join(process.cwd(), "public");
     const uploadDir = join(baseDir, folder);
 
     // 4. ตรวจสอบและสร้างโฟลเดอร์หากยังไม่มี
