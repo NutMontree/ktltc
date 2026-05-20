@@ -14,17 +14,9 @@ async function deletePhysicalFile(fileUrl: string) {
     const pathSegments = cleanPath.split("/");
     
     const localBase = join(process.cwd(), 'public');
-    const networkBase = "\\\\192.168.6.118\\public";
-    const mappedBase = "Z:";
-    
-    const possibleBases = [localBase, networkBase, mappedBase];
-    
-    for (const base of possibleBases) {
-      const filePath = join(base, ...pathSegments);
-      if (existsSync(filePath)) {
-        await unlink(filePath);
-        break; 
-      }
+    const filePath = join(localBase, ...pathSegments);
+    if (existsSync(filePath)) {
+      await unlink(filePath);
     }
   } catch (error) {
     console.error("Failed to delete physical file:", fileUrl, error);
