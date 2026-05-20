@@ -13,3 +13,6 @@ pm2 list เพื่อดู status
 pm2 startup เพื่อตั้งค่าให้รันอัตโนมัติ
 
 
+rm -rf .next
+npm run build
+pm2 restart ktltc
