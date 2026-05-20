@@ -34,8 +34,8 @@ function ensureMigration() {
   migrated = true;
   try {
     const cwd = process.cwd();
-    // Path to the literal \\192.168.6.118\public folder
-    const sourceDir = join(cwd, "\\\\192.168.6.118\\public");
+    // Path to the literal \\192.168.6.179\public folder
+    const sourceDir = join(cwd, "\\\\192.168.6.179\\public");
     const targetDir = join(cwd, "public");
     if (existsSync(sourceDir)) {
       console.log(`🚀 [Migration] Found legacy network base: ${sourceDir}. Merging into local public...`);

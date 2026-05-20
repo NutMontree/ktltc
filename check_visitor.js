@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 
 async function run() {
-  const uri = "mongodb://192.168.6.118:27017/ktltc_db?authSource=admin";
+  const uri = "mongodb://192.168.6.179:27017/ktltc_db?authSource=admin";
   const client = new MongoClient(uri);
   try {
     await client.connect();

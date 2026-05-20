@@ -31,8 +31,8 @@ export async function GET() {
   const log: string[] = [];
   try {
     const cwd = process.cwd();
-    // Path to the literal \\192.168.6.118\public folder
-    const sourceDir = path.join(cwd, "\\\\192.168.6.118\\public");
+    // Path to the literal \\192.168.6.179\public folder
+    const sourceDir = path.join(cwd, "\\\\192.168.6.179\\public");
     const targetDir = path.join(cwd, "public");
     
     log.push(`CWD: ${cwd}`);
