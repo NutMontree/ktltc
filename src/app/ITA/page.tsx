@@ -200,7 +200,17 @@ const MainDownloadCard = ({ year }: { year: string }) => {
   );
 };
 
-const CategorySection = ({ group, index, dbItems }: { group: any; index: number; dbItems: any[] }) => {
+const CategorySection = ({
+  group,
+  index,
+  dbItems,
+  onImageClick,
+}: {
+  group: any;
+  index: number;
+  dbItems: any[];
+  onImageClick: (url: string) => void;
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -281,6 +291,30 @@ const CategorySection = ({ group, index, dbItems }: { group: any; index: number;
                       subtitle={item.note}
                     >
                       <div className="rounded-xl border border-slate-100/50 bg-slate-50 p-4 md:p-6 dark:border-slate-800/50 dark:bg-slate-900/50 font-medium">
+                        {/* Guidelines and Responsible Section */}
+                        {item.guidelines && (
+                          <div className="mb-6 p-4 rounded-xl bg-blue-50/40 dark:bg-blue-950/10 border border-blue-100/60 dark:border-blue-900/20 font-medium">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-100/60 dark:border-blue-900/20 pb-3 mb-3">
+                              <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                </svg>
+                                องค์ประกอบที่ต้องแสดง (Guidelines)
+                              </span>
+                              {item.responsible && (
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-teal-500/10 dark:bg-teal-400/10 text-xs font-black text-teal-600 dark:text-teal-400 border border-teal-100/20">
+                                  งานที่รับผิดชอบ: {item.responsible}
+                                </span>
+                              )}
+                            </div>
+                            <div className="space-y-2 text-xs md:text-sm text-slate-600 dark:text-slate-300">
+                              {item.guidelines.map((line: string, i: number) => (
+                                <p key={i} className="leading-relaxed pl-3 border-l-2 border-blue-400/40">{line}</p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                         {dbEntry ? (
                           <>
                             {dbEntry.description && (
@@ -302,13 +336,23 @@ const CategorySection = ({ group, index, dbItems }: { group: any; index: number;
                                     .filter((l: any) => /\.(jpe?g|png|gif|webp|svg|bmp)(?:\?.*)?$/i.test(l.url))
                                     .map((link: any, idx: number) => (
                                       <div key={idx} className="group relative overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
-                                        <div className="overflow-hidden aspect-video relative flex items-center justify-center bg-slate-100 dark:bg-slate-950">
+                                        <div onClick={() => onImageClick(link.url)} className="overflow-hidden aspect-video relative flex items-center justify-center bg-slate-100 dark:bg-slate-950 cursor-zoom-in group/img">
                                           <Image
                                             isBlurred
                                             removeWrapper
                                             src={link.url}
                                             alt={link.name}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+                                           />
+                                           <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+                                             <span className="px-3.5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover/img:translate-y-0 transition-all duration-300">
+                                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                               </svg>
+                                               ขยายรูปภาพ
+                                             </span>
+                                           </div>
+                                           <input type="hidden"
                                           />
                                         </div>
                                         <div className="p-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
@@ -383,6 +427,7 @@ export default function ITA() {
   const [selectedYear, setSelectedYear] = useState("2569");
   const [dbItems, setDbItems] = useState<any[]>([]);
   const [years, setYears] = useState<string[]>(["2569"]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchYears() {
@@ -419,6 +464,313 @@ export default function ITA() {
 
   const topicGroups = useMemo(() => {
     const yearPrefix = selectedYear;
+    if (selectedYear === "2569") {
+      return [
+        {
+          id: "9.1",
+          title: `ตัวชี้วัดย่อยที่ 9.1 ข้อมูลพื้นฐาน`,
+          subtitle: "ข้อมูลพื้นฐาน (O1 - O5)",
+          items: [
+            {
+              key: "1",
+              title: "O1 โครงสร้างและอำนาจหน้าที่",
+              component: <O1_69 />,
+              responsible: "งานบุคลากร/งานบริหารทั่วไป",
+              guidelines: [
+                "1) แสดงแผนผังโครงสร้างการแบ่งส่วนราชการของสถานศึกษา แสดงตำแหน่งที่สำคัญและการแบ่งส่วนงานภายใน เช่น ฝ่าย งาน แผนกวิชา เป็นต้น",
+                "2) แสดงข้อมูลหน้าที่และอำนาจของสถานศึกษาตามที่กฎหมายกำหนด เช่น คำสั่งมอบหมายหน้าที่ของสถานศึกษา ระเบียบสำนักงานคณะกรรมการการอาชีวศึกษา ว่าด้วยการบริหารสถานศึกษา เป็นต้น"
+              ]
+            },
+            {
+              key: "2",
+              title: "O2 ข้อมูลผู้บริหารสถานศึกษา",
+              component: <O2_69 />,
+              responsible: "งานประชาสัมพันธ์/งานศูนย์ข้อมูล",
+              guidelines: [
+                "แสดงข้อมูลของผู้อำนวยการสถานศึกษาและรองผู้อำนวยการสถานศึกษา อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. ชื่อ-นามสกุล",
+                "2. ตำแหน่ง",
+                "3. รูปถ่าย",
+                "4. ช่องทางการติดต่อโดยตรง เช่น หมายเลขโทรศัพท์ หรือ Line หรือ E-mail เป็นต้น (อย่างน้อยหนึ่งช่องทาง)"
+              ]
+            },
+            {
+              key: "3",
+              title: "O3 แผนพัฒนาสถานศึกษา",
+              component: <O3_69 />,
+              responsible: "งานวางแผนและงบประมาณ",
+              guidelines: [
+                "แสดงแผนพัฒนาสถานศึกษาที่มีระยะมากกว่า 1 ปี โดยครอบคลุมปีงบประมาณปัจจุบัน ที่มีข้อมูลรายละเอียดของแผนฯ อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. ยุทธศาสตร์ หรือ แนวทาง",
+                "2. กลยุทธ์",
+                "3. เป้าหมาย",
+                "4. ตัวชี้วัด"
+              ]
+            },
+            {
+              key: "4",
+              title: "O4 ข้อมูลการติดต่อ",
+              component: <O4_69 />,
+              responsible: "งานศูนย์ข้อมูล",
+              guidelines: [
+                "แสดงข้อมูลการติดต่อของสถานศึกษา อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. ที่อยู่สถานศึกษา",
+                "2. หมายเลขโทรศัพท์ของสถานศึกษา",
+                "3. E-mail งานสารบรรณ",
+                "4. พิกัดที่ตั้งของสถานศึกษา (Google Maps)",
+                "5. ช่องทางการติดต่อทางเครือข่ายสังคมออนไลน์ (อย่างน้อยหนึ่งช่องทาง) เช่น Facebook, Twitter, Instagram, TikTok เป็นต้น"
+              ]
+            },
+            {
+              key: "5",
+              title: "O5 กฎหมายที่เกี่ยวข้อง",
+              component: <O5_69 />,
+              responsible: "งานบริหารทั่วไป/งานบุคลากร",
+              guidelines: [
+                "แสดงกฎหมายที่เกี่ยวข้องกับการดำเนินงานหรือการปฏิบัติงานของสถานศึกษา ไม่น้อยกว่า 5 ฉบับ เช่น แผนการศึกษาแห่งชาติ ประกาศกระทรวงศึกษาธิการ การใช้มาตรฐานการอาชีวศึกษา ระดับ ปวช. และระดับ ปวส. เป็นต้น"
+              ]
+            },
+          ],
+        },
+        {
+          id: "9.2",
+          title: `ตัวชี้วัดย่อยที่ 9.2 การบริหารงาน ปฏิสัมพันธ์ข้อมูล และการดำเนินงาน`,
+          subtitle: "การบริหารงาน ปฏิสัมพันธ์ข้อมูล และการดำเนินงาน (O6 - O9)",
+          items: [
+            {
+              key: "6",
+              title: "O6 แผนปฏิบัติราชการและแผนการใช้จ่ายงบประมาณประจำปี",
+              component: <O6_69 />,
+              responsible: "งานวางแผนและงบประมาณ",
+              guidelines: [
+                "1) สรุปผลการใช้จ่ายเงินปีงบประมาณที่ผ่านมา ตามแหล่งที่ได้รับการจัดสรร และประเภทรายการใช้จ่าย",
+                "2) ประมาณการรายรับงบประมาณจากเงินรายได้ (บกศ.) ที่จะยกยอดมาในปีงบประมาณปัจจุบัน และเงินงบประมาณที่คาดว่าจะได้รับจัดสรรในปีงบประมาณปัจจุบัน ตามแหล่งที่ได้รับการจัดสรรและประเภทรายการใช้จ่าย",
+                "3) สรุปรายจ่ายปีงบประมาณปัจจุบัน ตามแหล่งที่ได้รับการจัดสรร และประเภทรายการใช้จ่าย",
+                "4) รายละเอียดโครงการในปีงบประมาณปัจจุบัน โดยมีข้อมูลอย่างน้อยประกอบด้วย: 1. โครงการหรือกิจกรรม, 2. งบประมาณที่ใช้, 3. ระยะเวลาที่ใช้ในการดำเนินการ"
+              ]
+            },
+            {
+              key: "7",
+              title: "O7 รายงานผลการดำเนินงานของสถานศึกษาประจำปี",
+              component: <O7_69 />,
+              responsible: "งานวางแผนและงบประมาณ/ผู้รับผิดชอบโครงการ",
+              guidelines: [
+                "แสดงผลการดำเนินงานของสถานศึกษาประจำปี โดยมีข้อมูลรายละเอียดสรุปผลการดำเนินงานย้อนหลัง 1 ปีงบประมาณ อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. ผลการดำเนินโครงการหรือกิจกรรม",
+                "2. ผลการใช้จ่ายงบประมาณ",
+                "3. ปัญหา อุปสรรค และข้อเสนอแนะหรือแนวทางการแก้ไข"
+              ]
+            },
+            {
+              key: "8",
+              title: "O8 รายงานผลการประเมินตนเอง (SAR) ของสถานศึกษาประจำปี",
+              component: <O8_69 />,
+              responsible: "งานประกันคุณภาพ",
+              guidelines: [
+                "แสดงรายงานผลการขับเคลื่อนระบบการประกันคุณภาพภายในสถานศึกษา ย้อนหลัง 1 ปีการศึกษา อย่างน้อย ประกอบด้วย รายละเอียด ดังนี้:",
+                "1. ผลการพัฒนาคุณภาพการศึกษาของสถานศึกษา (ผลสัมฤทธิ์)",
+                "2. จุดเด่นของการขับเคลื่อนระบบการประกันคุณภาพภายในสถานศึกษา",
+                "3. จุดที่ควรพัฒนาของการขับเคลื่อนระบบการประกันคุณภาพภายในสถานศึกษา",
+                "4. ข้อเสนอแนะเพื่อการพัฒนาของการขับเคลื่อนระบบการประกันคุณภาพภายในสถานศึกษา"
+              ]
+            },
+            {
+              key: "9",
+              title: "O9 ข่าวประชาสัมพันธ์",
+              component: <O9_69 />,
+              responsible: "งานศูนย์ข้อมูล/งานประชาสัมพันธ์",
+              guidelines: [
+                "แสดงข้อมูลข่าวสารต่าง ๆ ที่เกี่ยวข้องกับการดำเนินงานตามอำนาจหน้าที่หรือภารกิจของสถานศึกษา เป็นข้อมูลข่าวสารที่เกิดขึ้นในปีงบประมาณปัจจุบัน (อย่างน้อยหนึ่งช่องทาง)"
+              ]
+            },
+          ],
+        },
+        {
+          id: "9.3",
+          title: `ตัวชี้วัดย่อยที่ 9.3 การจัดซื้อจัดจ้างหรือการจัดหาพัสดุ`,
+          subtitle: "การจัดซื้อจัดจ้างหรือการจัดหาพัสดุ (O10 - O11)",
+          items: [
+            {
+              key: "10",
+              title: "O10 ประกาศต่างๆ เกี่ยวกับการจัดซื้อจัดจ้างหรือการจัดหาพัสดุ",
+              component: <O10_69 />,
+              responsible: "งานพัสดุ",
+              guidelines: [
+                "แสดงประกาศการจัดซื้อจัดจ้างตามที่สถานศึกษาจะต้องดำเนินการ ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 เช่น ประกาศเชิญชวน, ประกาศผลการจัดซื้อจัดจ้าง เป็นต้น โดยเป็นข้อมูลจัดซื้อจัดจ้างในปีงบประมาณปัจจุบัน ที่เปิดเผยข้อมูลบนเว็บไซต์หลักของสถานศึกษา"
+              ]
+            },
+            {
+              key: "11",
+              title: "O11 รายงานผลการจัดซื้อจัดจ้างหรือการจัดหาพัสดุประจำปี",
+              component: <O11_69 />,
+              responsible: "งานพัสดุ",
+              guidelines: [
+                "แสดงสรุปผลการจัดซื้อจัดจ้างของสถานศึกษาที่มีข้อมูลรายละเอียดผลการจัดซื้อจัดจ้างตามแบบฟอร์มสถานศึกษา หรือ ตามแบบฟอร์มระบบจัดซื้อจัดจ้างภาครัฐของกรมบัญชีกลางที่เป็นข้อมูลแบบรายเดือนที่มีข้อมูลครอบคลุมแสดงสรุปผลการจัดซื้อจัดจ้างของสถานศึกษา เป็นรายงานผลย้อนหลัง 1 ปีงบประมาณ"
+              ]
+            },
+          ],
+        },
+        {
+          id: "9.4",
+          title: `ตัวชี้วัดย่อยที่ 9.4 การปฏิบัติหน้าที่`,
+          subtitle: "การปฏิบัติหน้าที่ (O12 - O15)",
+          items: [
+            {
+              key: "12",
+              title: "O12 คู่มือหรือขั้นตอนการปฏิบัติงานภายในสถานศึกษา",
+              component: <O12_69 />,
+              responsible: "งานประกันคุณภาพ",
+              guidelines: [
+                "แสดงคู่มือ หรือ ขั้นตอน หรือแนวทางการปฏิบัติงานตามโครงสร้างของสถานศึกษา ที่ใช้ยึดถือปฏิบัติให้เป็นมาตรฐานเดียวกัน โดยมีข้อมูลรายละเอียดของการปฏิบัติงาน อย่างน้อยฝ่ายละ 1 เล่ม/ขั้นตอน/งาน (จำนวน 4 เล่ม)"
+              ]
+            },
+            {
+              key: "13",
+              title: "O13 คู่มือหรือขั้นตอนการให้บริการ",
+              component: <O13_69 />,
+              responsible: "งานทะเบียน/งานทวิภาคี/งานแนะแนว",
+              guidelines: [
+                "แสดงคู่มือหรือขั้นตอนหรือแนวทางการให้บริการประชาชนที่มาติดต่อกับสถานศึกษา โดยมีข้อมูลรายละเอียดของการปฏิบัติงาน อย่างน้อย 2 คู่มือ/ขั้นตอน/แนวทาง ซึ่งกำหนดวิธีการขั้นตอนการให้บริการหรือการติดต่ออย่างไร ตัวอย่างเช่น คู่มือนักเรียนนักศึกษา, คู่มือการลงทะเบียนสำหรับนักเรียน นักศึกษา, คู่มือผู้ปกครองหรือนักเรียนในระบบ ศธ O2 เป็นต้น"
+              ]
+            },
+            {
+              key: "14",
+              title: "O14 E-Service",
+              component: <O14_69 />,
+              responsible: "งานศูนย์ข้อมูล",
+              guidelines: [
+                "แสดงช่องทางการให้บริการข้อมูลหรือธุรกรรมภาครัฐที่สอดคล้องกับภารกิจของสถานศึกษาผ่านเครือข่ายอินเตอร์เน็ต โดยเชื่อมโยงไปยังช่องทางเว็บไซต์หลักของสถานศึกษา โดยที่ผู้ขอรับบริการไม่จำเป็นต้องเดินทางมายังสถานศึกษา เช่น ระบบ ศธ O2 เป็นต้น"
+              ]
+            },
+            {
+              key: "15",
+              title: "O15 ข้อมูลเชิงสถิติและความพึงพอใจต่อการให้บริการ",
+              component: <O15_69 />,
+              responsible: "งานวิจัยและนวัตกรรม",
+              guidelines: [
+                "แสดงข้อมูลสถิติและความพึงพอใจต่อการให้บริการของสถานศึกษา อย่างน้อย 3 โครงการ/กิจกรรม/งาน ย้อนหลัง 1 ปีงบประมาณ"
+              ]
+            },
+          ],
+        },
+        {
+          id: "9.5",
+          title: `ตัวชี้วัดย่อยที่ 9.5 การบริหารและพัฒนาทรัพยากรบุคคล`,
+          subtitle: "การบริหารและพัฒนาทรัพยากรบุคคล (O16 - O17)",
+          items: [
+            {
+              key: "16",
+              title: "O16 การบริหารและพัฒนาทรัพยากรบุคคล",
+              component: <O16_69 />,
+              responsible: "งานบุคลากร",
+              guidelines: [
+                "แสดงหลักเกณฑ์การบริหารและพัฒนาทรัพยากรบุคคลที่ยังใช้บังคับในสถานศึกษา ปีงบประมาณปัจจุบัน อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. การสรรหา คัดเลือก บรรจุ และแต่งตั้งบุคลากร เช่น การสรรหาและคัดเลือกพนักงานราชการ, ครูพิเศษสอน, เจ้าหน้าที่ เป็นต้น (กรณีไม่มีการสรรหา ให้ใช้การต่อสัญญา)",
+                "2. การพัฒนาบุคลากร เช่น พัฒนาครูและบุคลากรทางการศึกษาในการจัดการเรียนรู้ เป็นต้น",
+                "3. การประเมินผลการปฏิบัติงานบุคลากร เช่น รายงานผลการประเมินเงินเดือน เป็นต้น",
+                "4. การสร้างขวัญกำลังใจ เช่น การขอพระราชทานเครื่องราชอิสริยาภรณ์, การแสดงความยินดีครูและบุคลากรทางการศึกษาที่ผ่านการเลื่อนวิทยฐานะที่สูงขึ้น, การเชิดชูเกียรติครูและบุคลากรดีเด่น เป็นต้น"
+              ]
+            },
+            {
+              key: "17",
+              title: "O17 ประมวลจริยธรรมและการขับเคลื่อนจริยธรรมของข้าราชการครูและบุคลากรทางการศึกษา",
+              component: <O17_69 />,
+              responsible: "งานบริหารทั่วไป",
+              guidelines: [
+                "แสดงผลการเสริมสร้างมาตรฐานทางจริยธรรมให้แก่ครูและบุคลากรอาชีวศึกษา โดยต้องมีรายละเอียด อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. แนวปฏิบัติ Do's & Don't เพื่อลดความสับสนเกี่ยวกับพฤติกรรมสีเทาและเป็นแนวทางในการประพฤติทางจริยธรรมสำหรับสถานศึกษา",
+                "2. ผลการฝึกอบรมหรือกิจกรรมที่มีการสอดแทรกสาระด้านจริยธรรมของเจ้าหน้าที่ของรัฐ (ครูและบุคลากรอาชีวศึกษา) ในหลักสูตร หรือผลการจัดกิจกรรมส่งเสริมจริยธรรมที่ดำเนินการโดยสถานศึกษาในปีงบประมาณปัจจุบัน"
+              ]
+            },
+          ],
+        },
+        {
+          id: "10.1",
+          title: `ตัวชี้วัดย่อยที่ 10.1 การจัดการเรื่องร้องเรียนการทุจริตและประพฤติมิชอบ`,
+          subtitle: "การจัดการเรื่องร้องเรียนการทุจริตและประพฤติมิชอบ (O18 - O19)",
+          items: [
+            {
+              key: "18",
+              title: "O18 แนวปฏิบัติการจัดการเรื่องร้องเรียนการทุจริตและประพฤติมิชอบ",
+              component: <O18_69 />,
+              responsible: "งานบริหารทั่วไป",
+              guidelines: [
+                "แสดงคู่มือหรือแนวทางการดำเนินการต่อเรื่องร้องเรียนที่เกี่ยวข้องกับการทุจริตและประพฤติมิชอบของเจ้าหน้าที่ หรือบุคลากรทางการศึกษาในสถานศึกษา มีข้อมูลรายละเอียดของการปฏิบัติงาน อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. รายละเอียดวิธีการที่บุคคลภายนอกจะทำการร้องเรียน",
+                "2. รายละเอียดขั้นตอนหรือวิธีการในการจัดการต่อเรื่องร้องเรียน",
+                "3. ฝ่ายงานที่รับผิดชอบ (รอง ผอ. บริหารทรัพยากร)",
+                "4. ระยะเวลาดำเนินการ",
+                "5. ช่องทางแจ้งเรื่องร้องเรียน"
+              ]
+            },
+            {
+              key: "19",
+              title: "O19 ข้อมูลเชิงสถิติเรื่องร้องเรียนการทุจริตและประพฤติมิชอบ",
+              component: <O19_69 />,
+              responsible: "งานบริหารทั่วไป",
+              guidelines: [
+                "แสดงข้อมูลสถิติเรื่องร้องเรียนการทุจริตและประพฤติมิชอบของเจ้าหน้าที่หรือบุคลากรทางการศึกษาของสถานศึกษา โดยมีข้อมูลความก้าวหน้าการจัดการเรื่องร้องเรียนการทุจริตและประพฤติมิชอบ อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. จำนวนเรื่องร้องเรียนทั้งหมด",
+                "2. จำนวนเรื่องที่ดำเนินการแล้วเสร็จ",
+                "3. จำนวนเรื่องที่อยู่ระหว่างดำเนินการ",
+                "ให้จัดทำข้อมูลเป็นแบบรายเดือน หรือรายไตรมาส หรือราย 6 เดือน ที่มีข้อมูลครอบคลุมในระยะเวลา 6 เดือนแรกของปีงบประมาณปัจจุบัน *กรณีไม่มีเรื่องร้องเรียนให้เผยแพร่ว่าไม่มีเรื่องร้องเรียน"
+              ]
+            },
+          ],
+        },
+        {
+          id: "10.2",
+          title: `ตัวชี้วัดย่อยที่ 10.2 การป้องกันการทุจริต`,
+          subtitle: "การป้องกันการทุจริต (O20 - O23)",
+          items: [
+            {
+              key: "20",
+              title: "O20 การขับเคลื่อนนโยบาย No Gift Policy",
+              component: <O20_69 />,
+              responsible: "ผู้บริหารสูงสุด/งานบริหารทั่วไป",
+              guidelines: [
+                "แสดงการประกาศเจตนารมณ์ No Gift Policy จากการปฏิบัติหน้าที่ของผู้บริหารสูงสุดสถานศึกษา และการจัดทำรายงานสรุปการรายงานการรับของขวัญและของกำนัลตามนโยบาย No Gift Policy ประจำปีงบประมาณปัจจุบัน",
+                "มีข้อมูลรายละเอียดอย่างน้อยประกอบด้วย: นโยบาย No Gift Policy, รายงานการรับของขวัญและของกำนัล"
+              ]
+            },
+            {
+              key: "21",
+              title: "O21 การประเมินความเสี่ยงการทุจริตประจำปี",
+              component: <O21_69 />,
+              responsible: "งานบริหารทั่วไป",
+              guidelines: [
+                "แสดงรายงานการประเมินความเสี่ยงเพื่อควบคุมหรือลดความเสี่ยงการทุจริต ประจำปีงบประมาณปัจจุบัน",
+                "มีข้อมูลรายละเอียดอย่างน้อยประกอบด้วย: การระบุความเสี่ยงการทุจริต, มาตรการการจัดการความเสี่ยงการทุจริต"
+              ]
+            },
+            {
+              key: "22",
+              title: "O22 แผนปฏิบัติการป้องกันการทุจริตประจำปี",
+              component: <O22_69 />,
+              responsible: "งานวางแผนและงบประมาณ",
+              guidelines: [
+                "แสดงแผนปฏิบัติการป้องกันการทุจริตประจำปี หรือแผนงานป้องกันและส่งเสริมคุณธรรมจริยธรรม ประจำปีงบประมาณปัจจุบัน",
+                "มีข้อมูลรายละเอียดอย่างน้อยประกอบด้วย: โครงการ/กิจกรรม, งบประมาณที่ใช้, ระยะเวลาดำเนินการ"
+              ]
+            },
+            {
+              key: "23",
+              title: "O23 มาตรการส่งเสริมคุณธรรมและความโปร่งใสภายในสถานศึกษา",
+              component: <O23_69 />,
+              responsible: "ผู้เกี่ยวข้องที่ได้รับมอบหมาย",
+              guidelines: [
+                "แสดงโครงการ/กิจกรรม ที่มีวัตถุประสงค์ในการส่งเสริมสนับสนุนการจัดกิจกรรมความซื่อสัตย์สุจริตและความโปร่งใสของสถานศึกษา ปีงบประมาณปัจจุบัน อย่างน้อยประกอบด้วย ดังนี้:",
+                "1. โครงการ / กิจกรรม",
+                "2. งบประมาณ (กรณีไม่ได้ใช้งบประมาณ ให้ระบุว่า ไม่ใช้งบประมาณ)",
+                "3. ช่วงเวลาดำเนินการ",
+                "หรือ มีการแต่งตั้งคณะกรรมการดำเนินการ เรื่อง การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของสถานศึกษาในปีงบประมาณปัจจุบัน (มีอย่างใดอย่างหนึ่ง)"
+              ]
+            },
+          ],
+        },
+      ];
+    }
+
     return [
       {
         id: "9.1",
@@ -792,10 +1144,60 @@ export default function ITA() {
 
         <div className="space-y-6">
           {topicGroups.map((group, index) => (
-            <CategorySection key={`${selectedYear}-${group.id}`} group={group} index={index} dbItems={dbItems} />
+            <CategorySection
+              key={`${selectedYear}-${group.id}`}
+              group={group}
+              index={index}
+              dbItems={dbItems}
+              onImageClick={setSelectedImage}
+            />
           ))}
         </div>
       </div>
+
+      {/* Premium Image Modal Overlay */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+            style={{ zIndex: 99999 }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              className="absolute top-6 right-6 p-3 rounded-full bg-white/10 text-white hover:bg-white/25 transition-colors border border-white/20 shadow-2xl focus:outline-none cursor-pointer"
+              aria-label="Close image preview"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Image Container with scale animation */}
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-full max-h-[85vh] sm:max-h-[90vh] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-slate-900 cursor-default"
+            >
+              <img
+                src={selectedImage}
+                alt="Enlarged evidence"
+                className="w-auto h-auto max-w-full max-h-[85vh] sm:max-h-[90vh] object-contain block"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

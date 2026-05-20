@@ -23,8 +23,8 @@ import {
 import Link from "next/link";
 import { uploadFile } from "@/lib/upload";
 
-// 37 OIT default list
-const OIT_INDICATORS = [
+// 37 OIT default list for 2568
+const OIT_INDICATORS_2568 = [
   {
     code: "O1",
     title: "O1 โครงสร้าง",
@@ -208,6 +208,125 @@ const OIT_INDICATORS = [
   },
 ];
 
+// 23 OIT default list for 2569
+const OIT_INDICATORS_2569 = [
+  {
+    code: "O1",
+    title: "O1 โครงสร้างและอำนาจหน้าที่",
+    desc: "แสดงแผนผังโครงสร้างการแบ่งส่วนราชการ หน้าที่และอำนาจของสถานศึกษาตามที่กฎหมายกำหนด",
+  },
+  {
+    code: "O2",
+    title: "O2 ข้อมูลผู้บริหารสถานศึกษา",
+    desc: "แสดงข้อมูลของผู้อำนวยการและรองผู้อำนวยการสถานศึกษา เช่น ชื่อ-นามสกุล ตำแหน่ง รูปถ่าย และช่องทางการติดต่อ",
+  },
+  {
+    code: "O3",
+    title: "O3 แผนพัฒนาสถานศึกษา",
+    desc: "แสดงแผนพัฒนาสถานศึกษาที่มีระยะมากกว่า 1 ปี ครอบคลุมยุทธศาสตร์ กลยุทธ์ เป้าหมาย และตัวชี้วัด",
+  },
+  {
+    code: "O4",
+    title: "O4 ข้อมูลการติดต่อ",
+    desc: "แสดงข้อมูลการติดต่อ ที่อยู่ เบอร์โทรศัพท์ อีเมล แผนที่ และช่องทางเครือข่ายสังคมออนไลน์",
+  },
+  {
+    code: "O5",
+    title: "O5 กฎหมายที่เกี่ยวข้อง",
+    desc: "แสดงกฎหมายที่เกี่ยวข้องกับการดำเนินงานหรือปฏิบัติงานของสถานศึกษา ไม่น้อยกว่า 5 ฉบับ",
+  },
+  {
+    code: "O6",
+    title: "O6 แผนปฏิบัติราชการและแผนการใช้จ่ายงบประมาณประจำปี",
+    desc: "แสดงแผนปฏิบัติราชการประจำปี งบประมาณที่ได้รับ และรายละเอียดโครงการประจำปีงบประมาณปัจจุบัน",
+  },
+  {
+    code: "O7",
+    title: "O7 รายงานผลการดำเนินงานของสถานศึกษาประจำปี",
+    desc: "แสดงสรุปผลการดำเนินงานโครงการ การใช้จ่ายงบประมาณ และปัญหาอุปสรรคย้อนหลัง 1 ปีงบประมาณ",
+  },
+  {
+    code: "O8",
+    title: "O8 รายงานผลการประเมินตนเอง (SAR) ของสถานศึกษาประจำปี",
+    desc: "แสดงรายงานผลการประเมินตนเองคุณภาพภายในสถานศึกษา ย้อนหลัง 1 ปีการศึกษา",
+  },
+  {
+    code: "O9",
+    title: "O9 ข่าวประชาสัมพันธ์",
+    desc: "แสดงข้อมูลข่าวสารและกิจกรรมที่เกิดขึ้นในสถานศึกษาในปีงบประมาณปัจจุบัน",
+  },
+  {
+    code: "O10",
+    title: "O10 ประกาศจัดซื้อจัดจ้างหรือการจัดหาพัสดุ",
+    desc: "แสดงประกาศการจัดซื้อจัดจ้างตามระเบียบ พ.ร.บ. จัดซื้อจัดจ้างฯ พ.ศ. 2560 ในปีงบประมาณปัจจุบัน",
+  },
+  {
+    code: "O11",
+    title: "O11 รายงานผลการจัดซื้อจัดจ้างหรือการจัดหาพัสดุประจำปี",
+    desc: "แสดงสรุปผลการจัดซื้อจัดจ้างประจำปี และรายงานผลการจัดซื้อจัดจ้างย้อนหลัง 1 ปีงบประมาณ",
+  },
+  {
+    code: "O12",
+    title: "O12 คู่มือหรือขั้นตอนการปฏิบัติงานภายในสถานศึกษา",
+    desc: "แสดงคู่มือขั้นตอนการปฏิบัติงานภายในตามโครงสร้างสถานศึกษาอย่างน้อยฝ่ายละ 1 เล่ม (รวม 4 เล่ม)",
+  },
+  {
+    code: "O13",
+    title: "O13 คู่มือหรือขั้นตอนการให้บริการ",
+    desc: "แสดงคู่มือหรือขั้นตอนการให้บริการประชาชน เช่น คู่มือนักเรียนนักศึกษา คู่มือการลงทะเบียน",
+  },
+  {
+    code: "O14",
+    title: "O14 E-Service",
+    desc: "แสดงช่องทางบริการธุรกรรมออนไลน์ที่ผู้รับบริการไม่จำเป็นต้องเดินทางมา เช่น ระบบ ศธ.02",
+  },
+  {
+    code: "O15",
+    title: "O15 ข้อมูลเชิงสถิติและความพึงพอใจต่อการให้บริการ",
+    desc: "แสดงข้อมูลสถิติและความพึงพอใจการให้บริการ อย่างน้อย 3 โครงการย้อนหลัง 1 ปีงบประมาณ",
+  },
+  {
+    code: "O16",
+    title: "O16 การบริหารและพัฒนาทรัพยากรบุคคล",
+    desc: "แสดงหลักเกณฑ์การสรรหา การพัฒนา การประเมินผล และการสร้างขวัญกำลังใจแก่บุคลากรที่ยังใช้บังคับ",
+  },
+  {
+    code: "O17",
+    title: "O17 ประมวลจริยธรรมและการขับเคลื่อนจริยธรรมของข้าราชการครูและบุคลากรทางการศึกษา",
+    desc: "แสดงแนวปฏิบัติ Do's & Don't และกิจกรรมส่งเสริมจริยธรรมของครูและบุคลากรอาชีวศึกษา",
+  },
+  {
+    code: "O18",
+    title: "O18 แนวปฏิบัติการจัดการเรื่องร้องเรียนการทุจริตและประพฤติมิชอบ",
+    desc: "แสดงคู่มือขั้นตอนการดำเนินการต่อเรื่องร้องเรียนที่เกี่ยวข้องกับการทุจริตและประพฤติมิชอบของเจ้าหน้าที่",
+  },
+  {
+    code: "O19",
+    title: "O19 ข้อมูลเชิงสถิติเรื่องร้องเรียนการทุจริตและประพฤติมิชอบ",
+    desc: "แสดงสถิติจำนวนเรื่องร้องเรียนทุจริต การดำเนินการ และความก้าวหน้าแบบรายเดือน/ไตรมาส/6 เดือน",
+  },
+  {
+    code: "O20",
+    title: "O20 การขับเคลื่อนนโยบาย No Gift Policy",
+    desc: "แสดงการประกาศเจตนารมณ์ No Gift Policy และการสร้างวัฒนธรรมองค์กรในการปฏิบัติหน้าที่",
+  },
+  {
+    code: "O21",
+    title: "O21 การประเมินความเสี่ยงการทุจริตประจำปี",
+    desc: "แสดงรายงานการประเมินความเสี่ยงเพื่อควบคุมหรือลดความเสี่ยงทุจริต ประจำปีงบประมาณ พ.ศ. 2569",
+  },
+  {
+    code: "O22",
+    title: "O22 แผนปฏิบัติการป้องกันการทุจริตประจำปี",
+    desc: "แสดงแผนงานป้องกันและส่งเสริมคุณธรรมจริยธรรม ประจำปีงบประมาณ พ.ศ. 2569",
+  },
+  {
+    code: "O23",
+    title: "O23 มาตรการส่งเสริมคุณธรรมและความโปร่งใสภายในสถานศึกษา",
+    desc: "แสดงโครงการ/กิจกรรมส่งเสริมความซื่อสัตย์สุจริตและความโปร่งใส หรือการแต่งตั้งคณะกรรมการ ITA ในปีงบประมาณปัจจุบัน",
+  },
+];
+
 export default function ItaDashboard() {
   const { data: session, status } = useNextAuthSession();
   const [selectedYear, setSelectedYear] = useState("2569");
@@ -333,7 +452,7 @@ export default function ItaDashboard() {
       if (res.ok) {
         const data = await res.json();
         setDbItems(data);
-        updateFormFields(selectedOit, data);
+        updateFormFields(selectedOit, data, year);
       }
     } catch (error) {
       console.error("Error fetching ITA items:", error);
@@ -345,14 +464,16 @@ export default function ItaDashboard() {
   // Trigger fetch when year changes
   useEffect(() => {
     if (status === "authenticated") {
+      setSelectedOit("O1");
       fetchItaData(selectedYear);
     }
   }, [selectedYear, status]);
 
   // Update form fields based on the selected OIT code and database items
-  const updateFormFields = (oitCode: string, itemsList: any[]) => {
+  const updateFormFields = (oitCode: string, itemsList: any[], year: string = selectedYear) => {
     const existing = itemsList.find((item) => item.oitCode === oitCode);
-    const defaultMeta = OIT_INDICATORS.find((ind) => ind.code === oitCode);
+    const activeIndicators = year === "2568" ? OIT_INDICATORS_2568 : OIT_INDICATORS_2569;
+    const defaultMeta = activeIndicators.find((ind) => ind.code === oitCode);
 
     if (existing) {
       setTitle(existing.title || defaultMeta?.title || "");
@@ -369,7 +490,7 @@ export default function ItaDashboard() {
   // Update form fields when active OIT selection changes
   const handleOitChange = (code: string) => {
     setSelectedOit(code);
-    updateFormFields(code, dbItems);
+    updateFormFields(code, dbItems, selectedYear);
     setMessage(null);
   };
 
@@ -541,10 +662,10 @@ export default function ItaDashboard() {
           {/* OIT Sidebar selector (O1 - O37) */}
           <div className="lg:col-span-4 bg-white/60 dark:bg-zinc-900/60 border border-slate-200/50 dark:border-zinc-800/80 backdrop-blur-xl rounded-[2.5rem] p-6 max-h-[750px] overflow-y-auto shadow-xl scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 mb-4 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-              ตัวชี้วัดย่อยทั้งหมด (O1 - O37)
+              ตัวชี้วัดย่อยทั้งหมด ({selectedYear === "2568" ? "O1 - O37" : "O1 - O23"})
             </h3>
             <div className="space-y-1">
-              {OIT_INDICATORS.map((ind) => {
+              {(selectedYear === "2568" ? OIT_INDICATORS_2568 : OIT_INDICATORS_2569).map((ind) => {
                 const isSelected = selectedOit === ind.code;
                 const hasData = dbItems.some((item) => item.oitCode === ind.code && Array.isArray(item.links) && item.links.length > 0);
 
