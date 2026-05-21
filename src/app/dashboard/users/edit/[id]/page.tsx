@@ -1187,6 +1187,7 @@ export default function EditUserPage() {
                       <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
                       <option value="ช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
                       <option value="ช่างก่อสร้าง">ช่างก่อสร้าง</option>
+                      <option value="ก่อสร้างโยธา">ก่อสร้างโยธา</option>
                     </optgroup>
                   </select>
                 </div>

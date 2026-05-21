@@ -122,7 +122,7 @@ export default function EDUAdmin() {
   return (
     <section className="relative w-full overflow-hidden  bg-slate-50/50 py-20 font-sans text-slate-800 dark:bg-neutral-950/40 dark:text-slate-200">
       {/* Decorative Grid and Ambient Lights */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]" />
       <div className="pointer-events-none absolute -top-40 left-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-amber-500/10 blur-[120px] dark:bg-amber-500/5" />
       <div className="pointer-events-none absolute top-80 right-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-yellow-500/10 blur-[140px] dark:bg-yellow-500/5" />
       <div className="container mx-auto max-w-[1400px] px-4 relative z-10">
@@ -210,12 +210,12 @@ export default function EDUAdmin() {
                     <div className="absolute top-0 left-0 right-0 h-[3px] bg-linear-to-r from-amber-500 via-yellow-400 to-amber-500" />
 
                     <div className="absolute right-6 top-6 text-amber-500/10 dark:text-amber-500/5">
-                      <Star className="w-32 h-32 stroke-[1]" />
+                      <Star className="w-32 h-32 stroke-1" />
                     </div>
 
                     {/* Image */}
                     <div className="relative shrink-0 z-10">
-                      <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-500 opacity-70 blur-[2px] group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute -inset-1 rounded-[28px] bg-linear-to-tr from-amber-500 via-yellow-400 to-amber-500 opacity-70 blur-[2px] group-hover:opacity-100 transition-opacity" />
                       <div className="relative flex h-[320px] w-[240px] overflow-hidden rounded-[24px] border-4 border-white shadow-xl dark:border-neutral-800 bg-slate-50 dark:bg-neutral-800">
                         {director.img ? (
                           <img
@@ -346,7 +346,7 @@ export default function EDUAdmin() {
                             <User className="w-16 h-16 text-slate-300 dark:text-zinc-700" />
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                       </div>
 
                       {/* Content */}
@@ -571,7 +571,7 @@ export default function EDUAdmin() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100000] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-md"
+            className="fixed inset-0 z-100000 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-md"
             onClick={() => setSelectedExec(null)}
           >
             <motion.div
@@ -592,7 +592,7 @@ export default function EDUAdmin() {
 
               {/* Left Column (Photo & Title) */}
               <div className="relative w-full md:w-[40%] bg-slate-50 dark:bg-neutral-950 p-8 flex flex-col items-center justify-center shrink-0 border-r border-slate-100 dark:border-neutral-800">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent opacity-50" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent opacity-50" />
 
                 <div className="relative z-10 w-56 h-72 rounded-[24px] overflow-hidden shadow-2xl border-4 border-white dark:border-neutral-800 bg-white dark:bg-neutral-800 mb-8">
                   {selectedExec.img ? (

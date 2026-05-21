@@ -127,8 +127,18 @@ export const Personnel1 = () => {
             }
 
             // ถ้า Role เท่ากัน ให้จัดตำแหน่งที่เป็น "หัวหน้า" หรือ "ผู้อำนวยการ" หรือ "รอง" ขึ้นก่อน
-            const isHeadA = a.position?.includes("หัวหน้า") || a.position?.includes("ผู้อำนวยการ") || a.position?.includes("รอง") ? 0 : 1;
-            const isHeadB = b.position?.includes("หัวหน้า") || b.position?.includes("ผู้อำนวยการ") || b.position?.includes("รอง") ? 0 : 1;
+            const isHeadA =
+              a.position?.includes("หัวหน้า") ||
+              a.position?.includes("ผู้อำนวยการ") ||
+              a.position?.includes("รอง")
+                ? 0
+                : 1;
+            const isHeadB =
+              b.position?.includes("หัวหน้า") ||
+              b.position?.includes("ผู้อำนวยการ") ||
+              b.position?.includes("รอง")
+                ? 0
+                : 1;
             if (isHeadA !== isHeadB) return isHeadA - isHeadB;
 
             // ตามด้วยลำดับ orderIndex
@@ -237,7 +247,7 @@ export const Personnel1 = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-100000 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
             onClick={onImgCloseClick} // คลิกพื้นหลังเพื่อปิด
           >
             <motion.div

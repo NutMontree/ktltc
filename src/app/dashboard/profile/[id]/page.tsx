@@ -3262,6 +3262,7 @@ export default function FriendProfilePage({
                   <option value="ช่างกลโรงงาน" />
                   <option value="ช่างเชื่อมโลหะ" />
                   <option value="ช่างก่อสร้าง" />
+                  <option value="ก่อสร้างโยธา" />
                   {profileOptions.departments.map((opt) => (
                     <option key={`db-${opt}`} value={opt} />
                   ))}

@@ -142,6 +142,12 @@ const academicDepartments = [
     icon: <BuildOutlined />,
     colorClass: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400",
   },
+  {
+    name: "ก่อสร้างโยธา",
+    code: "Civil Construction",
+    icon: <BuildOutlined />,
+    colorClass: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+  },
 ];
 
 interface SubDept {

@@ -61,6 +61,14 @@ export async function POST(req: Request) {
       );
     }
 
+    // เจาะจงให้เฉพาะ super_admin เท่านั้นที่สามารถสลับการรับสมัครสมาชิกทั่วไปได้
+    if (key === "registration_enabled" && userRole !== "super_admin") {
+      return NextResponse.json(
+        { error: "เฉพาะผู้ดูแลระบบระดับสูง (Super Admin) เท่านั้นที่มีสิทธิ์เปิด-ปิดการรับสมัครสมาชิกทั่วไป" },
+        { status: 403 },
+      );
+    }
+
     // ใช้ updateOne พร้อม upsert: true (ถ้าไม่มีให้สร้างใหม่ ถ้ามีให้ทับค่าเดิม)
     const result = await db.collection("site_settings").updateOne(
       { key: key },

@@ -58,15 +58,18 @@ export default function DashboardLoader() {
   );
   const [tempQuota, setTempQuota] = useState("");
   const [isSavingQuota, setIsSavingQuota] = useState(false);
+  const [regEnabled, setRegEnabled] = useState(true);
+  const [updatingReg, setUpdatingReg] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       if (status !== "authenticated") return;
       try {
         setLoading(true);
-        const [statsRes, permRes] = await Promise.all([
+        const [statsRes, permRes, regRes] = await Promise.all([
           fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
           fetch("/api/auth/permissions?_t=" + Date.now()),
+          fetch("/api/auth/register/status?_t=" + Date.now()),
         ]);
 
         if (!statsRes.ok) throw new Error("Failed to fetch dashboard statistics");
@@ -76,6 +79,13 @@ export default function DashboardLoader() {
         if (permRes.ok) {
           const permData = await permRes.json();
           setPermissions(permData);
+        }
+
+        if (regRes.ok) {
+          const regData = await regRes.json();
+          if (regData && typeof regData.enabled === "boolean") {
+            setRegEnabled(regData.enabled);
+          }
         }
       } catch (err: any) {
         console.error("Dashboard Fetch Error:", err);
@@ -123,6 +133,32 @@ export default function DashboardLoader() {
       alert("เกิดข้อผิดพลาด");
     } finally {
       setIsSavingQuota(false);
+    }
+  };
+
+  const handleToggleRegistration = async () => {
+    try {
+      setUpdatingReg(true);
+      const newValue = !regEnabled;
+      const res = await fetch("/api/admin/site-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: "registration_enabled",
+          value: newValue ? "true" : "false",
+        }),
+      });
+
+      if (res.ok) {
+        setRegEnabled(newValue);
+      } else {
+        alert("บันทึกไม่สำเร็จ");
+      }
+    } catch (err) {
+      console.error("Toggle Registration Error:", err);
+      alert("เกิดข้อผิดพลาด");
+    } finally {
+      setUpdatingReg(false);
     }
   };
 
@@ -342,6 +378,52 @@ export default function DashboardLoader() {
                       setIsEditingQuota(true);
                     }}
                   />
+
+                  {/* Registration Toggle Card */}
+                  {((session?.user as any)?.role || "").toLowerCase() === "super_admin" && (
+                    <motion.div
+                      variants={item}
+                      className="group relative flex flex-col p-px rounded-3xl bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-md hover:shadow-xl"
+                    >
+                      <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-5 rounded-[1.7rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-inner ${regEnabled ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}>
+                              <Users size={18} />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
+                                รับสมัครสมาชิกทั่วไป
+                              </h4>
+                              <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
+                                URL: /register
+                              </p>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={handleToggleRegistration}
+                            disabled={updatingReg}
+                            className={`w-12 h-6 rounded-full transition-all relative ${regEnabled ? "bg-emerald-500" : "bg-rose-500"} disabled:opacity-50`}
+                          >
+                            <motion.div
+                              layout
+                              className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-md left-1"
+                              animate={{ x: regEnabled ? 24 : 0 }}
+                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            />
+                          </button>
+                        </div>
+
+                        <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold">
+                          <span className="text-zinc-500">สถานะ:</span>
+                          <span className={regEnabled ? "text-emerald-500 font-extrabold" : "text-rose-500 font-extrabold"}>
+                            {regEnabled ? "🟢 เปิดรับสมัครทั่วไป" : "🔴 ปิดรับสมัครชั่วคราว"}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               </div>
             </div>
