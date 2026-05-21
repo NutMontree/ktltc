@@ -120,7 +120,7 @@ export default function EDUAdmin() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden px-24 bg-slate-50/50 py-20 font-sans text-slate-800 dark:bg-neutral-950/40 dark:text-slate-200">
+    <section className="relative w-full overflow-hidden  bg-slate-50/50 py-20 font-sans text-slate-800 dark:bg-neutral-950/40 dark:text-slate-200">
       {/* Decorative Grid and Ambient Lights */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]" />
       <div className="pointer-events-none absolute -top-40 left-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-amber-500/10 blur-[120px] dark:bg-amber-500/5" />
