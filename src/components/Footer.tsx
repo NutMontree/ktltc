@@ -67,11 +67,22 @@ async function getVisitorCount() {
       .findOne({ _id: "visitor_count" as any });
 
     const rawCount = result?.count;
-    const parsed = typeof rawCount === "number" ? rawCount : parseInt(String(rawCount)) || 0;
-    return parsed > 0 ? parsed : 134001;
+    let parsed = typeof rawCount === "number" ? rawCount : parseInt(String(rawCount)) || 0;
+
+    // หากค่าเริ่มต้นยังไม่ได้ตั้งค่า หรือต่ำกว่า 127457 ให้ตั้งค่าเป็น 127457 ทันที
+    if (parsed < 127457) {
+      await db.collection("site_stats").updateOne(
+        { _id: "visitor_count" as any },
+        { $set: { count: 127457 } },
+        { upsert: true }
+      );
+      parsed = 127457;
+    }
+
+    return parsed;
   } catch (error) {
     console.error("Error fetching visitor count:", error);
-    return 134001; // ค่า Default กรณีดึงข้อมูลไม่สำเร็จ
+    return 127457; // ค่า Default กรณีดึงข้อมูลไม่สำเร็จ
   }
 }
 
@@ -80,9 +91,9 @@ export default async function Footer() {
   const navItems = await getFooterNavItems();
   const visitorCount = await getVisitorCount();
 
-  // แปลงยอดผู้เข้าชมเป็นอาร์เรย์ของตัวเลข (เช่น 000123) เพื่อทำกราฟิกแบบตัวเลขหมุน
+  // แปลงยอดผู้เข้าชมเป็นอาร์เรย์ของตัวเลข (เช่น 0127457) เพื่อทำกราฟิกแบบตัวเลขหมุน (แสดงผลเป็น 7 หลัก)
   const countStr = String(visitorCount);
-  const countDigits = (countStr.length < 6 ? countStr.padStart(6, "0") : countStr).split("");
+  const countDigits = (countStr.length < 7 ? countStr.padStart(7, "0") : countStr).split("");
 
   const parents = navItems.filter((item) => !item.parentId);
   const getChildren = (parentId: string) =>
