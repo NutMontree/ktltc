@@ -33,6 +33,13 @@ export async function GET(req: Request) {
       ];
     }
 
+    const status = searchParams.get("status");
+    if (status === "pending") {
+      query.isActive = false;
+    } else if (status === "active") {
+      query.isActive = true;
+    }
+
     const total = await db.collection("users").countDocuments(query);
     
     let usersQuery = db

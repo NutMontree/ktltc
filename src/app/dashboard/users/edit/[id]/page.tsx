@@ -44,6 +44,7 @@ interface UserFormData {
   passwordText?: string; // Add this!
   studentId?: string;
   groupCode?: string;
+  citizenId?: string; // Added citizenId
   work?: string;
   education?: string;
   currentCity?: string;
@@ -89,6 +90,7 @@ export default function EditUserPage() {
     passwordText: "",
     studentId: "",
     groupCode: "",
+    citizenId: "",
     work: "",
     education: "",
     currentCity: "",
@@ -127,7 +129,9 @@ export default function EditUserPage() {
     formData.role === "student" ||
     formData.role === "นักเรียน" ||
     formData.role === "นักศึกษา" ||
-    formData.role === "นักเรียน/นักศึกษา";
+    formData.role === "นักเรียน/นักศึกษา" ||
+    formData.role?.includes("นักเรียน") ||
+    formData.role?.includes("นักศึกษา");
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -161,6 +165,7 @@ export default function EditUserPage() {
             passwordText: data.passwordText || "",
             studentId: data.studentId || "",
             groupCode: data.groupCode || "",
+            citizenId: data.citizenId || "",
             work: data.work || "",
             education: data.education || "",
             currentCity: data.currentCity || "",
@@ -428,7 +433,7 @@ export default function EditUserPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-bold"
                     placeholder="กรุณากรอกชื่อ-นามสกุล"
                   />
                 </div>
@@ -456,6 +461,27 @@ export default function EditUserPage() {
                     />
                   </div>
                 </div>
+
+                {isStudent && (
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      เลขประจำตัวประชาชน (Citizen ID)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.citizenId || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          citizenId: e.target.value.replace(/[^0-9]/g, "").slice(0, 13),
+                        })
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      placeholder="เลขประจำตัวประชาชน 13 หลัก"
+                      maxLength={13}
+                    />
+                  </div>
+                )}
 
                 <div className="md:col-span-2 space-y-2">
                   <label className="text-xs font-bold text-slate-500 ml-1">

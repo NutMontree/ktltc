@@ -65,9 +65,12 @@ interface ActivityLog {
 export default function SuperAdminPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'teacher' | 'student' | 'staff'>('all');
+  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingPending, setLoadingPending] = useState(true);
 
   // Initial loading handled within components
   const [adminProfile, setAdminProfile] = useState<{
@@ -279,11 +282,16 @@ export default function SuperAdminPage() {
 
   const fetchData = async (p = 1, q = searchQuery) => {
     try {
-      if (p === 1) setLoading(true);
-      else setIsFetchingMore(true);
+      if (p === 1) {
+        setLoading(true);
+        setLoadingPending(true);
+      } else {
+        setIsFetchingMore(true);
+      }
 
-      const [usersRes, summaryRes, logsRes] = await Promise.all([
-        fetch(`/api/admin/users?page=${p}&search=${q}&_t=${Date.now()}`),
+      const [usersRes, pendingRes, summaryRes, logsRes] = await Promise.all([
+        fetch(`/api/admin/users?page=${p}&search=${q}&status=active&_t=${Date.now()}`),
+        p === 1 ? fetch(`/api/admin/users?all=true&status=pending&search=${q}&_t=${Date.now()}`) : Promise.resolve(null),
         p === 1 ? fetch("/api/admin/reports/summary?_t=" + Date.now()) : Promise.resolve(null),
         p === 1 ? fetch("/api/admin/logs?_t=" + Date.now()) : Promise.resolve(null),
       ]);
@@ -298,6 +306,11 @@ export default function SuperAdminPage() {
         setPage(p);
       }
 
+      if (pendingRes && pendingRes.ok) {
+        const pendingData = await pendingRes.json();
+        setPendingUsers(pendingData.users || []);
+      }
+
       if (summaryRes && summaryRes.ok) setSummary(await summaryRes.json());
       if (logsRes && logsRes.ok) setLogs(await logsRes.json());
     } catch (error) {
@@ -305,6 +318,7 @@ export default function SuperAdminPage() {
       toast.error("โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่");
     } finally {
       setLoading(false);
+      setLoadingPending(false);
       setIsFetchingMore(false);
     }
   };
@@ -654,6 +668,234 @@ export default function SuperAdminPage() {
           ))}
         </div>
 
+        {/* Pending Users Table */}
+        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl rounded-4xl border border-slate-100 dark:border-zinc-800 shadow-3xl overflow-hidden">
+          <div className="p-5 border-b border-slate-50 dark:border-zinc-800/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-amber-500/5">
+            <div className="flex items-center gap-3">
+              <div className="w-2.5 h-8 bg-amber-500 rounded-full animate-pulse" />
+              <div>
+                <h2 className="text-lg md:text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                  รายชื่อผู้ใช้งานรออนุมัติสิทธิ์ (Pending Approval)
+                </h2>
+                <p className="text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest mt-0.5">
+                  ต้องอนุมัติโดย Super Admin เพื่อเข้าใช้งานระบบ
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 rounded-2xl border border-amber-500/20 shrink-0">
+              <span className="text-xs font-black text-amber-600 dark:text-amber-500 uppercase tabular-nums">
+                รออนุมัติ {pendingUsers.length} คน
+              </span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto overflow-y-visible">
+            {loadingPending ? (
+              <div className="p-12 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <RefreshCcw className="w-8 h-8 text-amber-500 animate-spin" />
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+                    กำลังโหลดข้อมูลผู้รออนุมัติ...
+                  </span>
+                </div>
+              </div>
+            ) : pendingUsers.length === 0 ? (
+              <div className="p-12 text-center flex flex-col items-center justify-center gap-3">
+                <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/20 rounded-full flex items-center justify-center border border-emerald-100 dark:border-emerald-800/30">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                </div>
+                <h3 className="text-base font-bold text-slate-700 dark:text-zinc-300">
+                  ไม่มีรายชื่อรออนุมัติสิทธิ์ในขณะนี้
+                </h3>
+                <p className="text-xs text-slate-400 dark:text-zinc-500">
+                  นักเรียนนักศึกษาจะได้รับการอนุมัติอัตโนมัติ ส่วนครูและบุคคลภายนอกจะมาแสดงที่นี่เมื่อสมัครเข้ามาใหม่
+                </p>
+              </div>
+            ) : (
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-slate-50/50 dark:bg-zinc-950/50 text-slate-400 dark:text-zinc-500 text-xs uppercase font-bold tracking-widest">
+                    <th className="p-4 text-center w-24">ลำดับ</th>
+                    <th className="p-4">ข้อมูลผู้สมัคร</th>
+                    <th className="p-4 text-center">สิทธิ์ที่ขอ</th>
+                    <th className="p-4 text-center">สังกัด / แผนก</th>
+                    <th className="p-4 text-right">การจัดการ</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 dark:divide-zinc-800/50">
+                  <AnimatePresence mode="popLayout">
+                    {pendingUsers.map((user, index) => (
+                      <motion.tr
+                        key={user._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        layout
+                        className="hover:bg-amber-50/20 dark:hover:bg-amber-500/2 transition-colors group"
+                      >
+                        <td className="p-4 text-center">
+                          <span className="font-black text-slate-800 dark:text-white text-xl italic tabular-nums leading-none">
+                            {(index + 1).toString().padStart(2, "0")}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <div>
+                            <div className="font-bold text-slate-800 dark:text-white text-base tracking-tight uppercase group-hover:text-amber-600 transition-colors leading-tight">
+                              {user.name}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-black text-amber-600 lowercase italic opacity-60">
+                                @{user.username}
+                              </span>
+                              {user.phone && (
+                                <span className="text-[10px] font-bold text-slate-400">
+                                  • โทร: {user.phone}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4 text-center">
+                          <select
+                            value={user.role || "user"}
+                            onChange={(e) => changeRole(user._id, e.target.value, user.name)}
+                            className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                          >
+                            {roles.map(roleKey => (
+                              <option key={roleKey} value={roleKey}>
+                                {roleLabels[roleKey] || roleKey.toUpperCase()}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="p-4 text-center">
+                          <select
+                            value={user.department || "ไม่มีสังกัด"}
+                            onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
+                            className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
+                          >
+                            <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                            <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                            <optgroup label="1. ฝ่ายบริหารทรัพยากร">
+                              <option value="งานบริหารทั่วไป">งานบริหารทั่วไป</option>
+                              <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
+                                งานบริหารและพัฒนาทรัพยากรบุคคล
+                              </option>
+                              <option value="งานการเงิน">งานการเงิน</option>
+                              <option value="งานการบัญชี">งานการบัญชี</option>
+                              <option value="งานพัสดุ">งานพัสดุ</option>
+                              <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
+                              <option value="งานทะเบียน">งานทะเบียน</option>
+                            </optgroup>
+                            <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
+                              <option value="งานพัฒนายุทธศาสตร์ แผนงานโครงการและงบประมาณ">
+                                งานพัฒนายุทธศาสตร์ แผนงานโครงการและงบประมาณ
+                              </option>
+                              <option value="งานมาตรฐานและการประกันคุณภาพการศึกษา">
+                                งานมาตรฐานและการประกันคุณภาพการศึกษา
+                              </option>
+                              <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
+                                งานศูนย์ดิจิทัลและสื่อสารองค์กร
+                              </option>
+                              <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
+                                งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
+                              </option>
+                              <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
+                                งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
+                              </option>
+                              <option value="งานติดตามและประเมินผลการอาชีวศึกษา">งานติดตามและประเมินผลการอาชีวศึกษา</option>
+                            </optgroup>
+                            <optgroup label="3. ฝ่ายกิจการนักเรียน นักศึกษา">
+                              <option value="งานกิจกรรมนักเรียนนักศึกษา">
+                                งานกิจกรรมนักเรียนนักศึกษา
+                              </option>
+                              <option value="งานครูที่ปรึกษาและการแนะแนว">
+                                งานครูที่ปรึกษาและการแนะแนว
+                              </option>
+                              <option value="งานปกครองและความปลอดภัยนักเรียน นักศึกษา">
+                                งานปกครองและความปลอดภัยนักเรียน นักศึกษา
+                              </option>
+                              <option value="งานสวัสดิการนักเรียนนักศึกษา">
+                                งานสวัสดิการนักเรียนนักศึกษา
+                              </option>
+                              <option value="งานโครงการพิเศษและการบริการชุมชน">
+                                งานโครงการพิเศษและการบริการชุมชน
+                              </option>
+                            </optgroup>
+                            <optgroup label="4. ฝ่ายวิชาการ">
+                              <option value="งานแผนกวิชา.../ภาควิชา.../คณะวิชา...">
+                                งานแผนกวิชา.../ภาควิชา.../คณะวิชา...
+                              </option>
+                              <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
+                                งานพัฒนาหลักสูตรและการจัดการเรียนรู้
+                              </option>
+                              <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
+                              <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
+                                งานวิทยบริการและเทคโนโลยีการศึกษา
+                              </option>
+                              <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
+                                งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
+                              </option>
+                              <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
+                                งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
+                              </option>
+                              <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
+                                งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
+                              </option>
+                            </optgroup>
+                            <optgroup label="5. แผนกวิชา">
+                              <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
+                              <option value="การบัญชี">การบัญชี</option>
+                              <option value="การตลาด">การตลาด</option>
+                              <option value="การตลาด/โลจิสติก์">การตลาด/โลจิสติก์</option>
+                              <option value="เทคโนโลยีธุรกิจดิจิทัล">เทคโนโลยีธุรกิจดิจิทัล</option>
+                              <option value="การโรงแรม">การโรงแรม</option>
+                              <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
+                              <option value="ช่างอิเล็กทรอนิกส์">ช่างอิเล็กทรอนิกส์</option>
+                              <option value="ช่างยนต์">ช่างยนต์</option>
+                              <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
+                              <option value="ช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
+                              <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
+                              <option value="ช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
+                              <option value="ช่างก่อสร้าง">ช่างก่อสร้าง</option>
+                            </optgroup>
+                          </select>
+                        </td>
+                        <td className="p-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => toggleActive(user._id, false, user.name)}
+                              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-emerald-500/10"
+                              title="อนุมัติสิทธิ์เข้าใช้งาน"
+                            >
+                              <CheckCircle2 size={14} />
+                              <span>อนุมัติ</span>
+                            </button>
+                            <button
+                              onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
+                              className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
+                              title="แก้ไขข้อมูลก่อนอนุมัติ"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button
+                              onClick={() => deleteUser(user._id, user.name)}
+                              className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm"
+                              title="ปฏิเสธและลบออกจากระบบ"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
         {/* Users Management Grid */}
         <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl rounded-4xl border border-slate-100 dark:border-zinc-800 shadow-3xl overflow-hidden">
           <div className="p-4 border-b border-slate-50 dark:border-zinc-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -713,34 +955,43 @@ export default function SuperAdminPage() {
                   </tr>
                 ) : (
                   <AnimatePresence mode="popLayout">
-                    {users.map((user, index) => (
-                      <motion.tr
-                        key={user._id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        layout
-                        className="hover:bg-blue-50/30 dark:hover:bg-blue-500/2 transition-colors group"
-                      >
-                        <td className="p-4">
-                          <div className="flex flex-col items-center gap-1">
-                            <button
-                              onClick={() => moveOrder(user._id, user.orderIndex || 0, "up")}
-                              className="text-slate-300 dark:text-zinc-700 hover:text-blue-500 transition-colors"
-                            >
-                              <ChevronUp size={16} />
-                            </button>
-                            <span className="font-black text-slate-800 dark:text-white text-xl italic tabular-nums leading-none">
-                              {(index + 1).toString().padStart(2, "0")}
-                            </span>
-                            <button
-                              onClick={() => moveOrder(user._id, user.orderIndex || 0, "down")}
-                              className="text-slate-300 dark:text-zinc-700 hover:text-rose-500 transition-colors"
-                            >
-                              <ChevronDown size={16} />
-                            </button>
-                          </div>
-                        </td>
+                    {users
+                  .filter((u) => {
+                    if (selectedCategory === 'all') return true;
+                    if (selectedCategory === 'teacher') return u.role === 'teacher';
+                    if (selectedCategory === 'student') return u.role === 'student';
+                    if (selectedCategory === 'staff') return u.role === 'staff';
+                    return true;
+                  })
+                  .map((user, index) => (
+                    <motion.tr
+                      key={user._id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      layout
+                      className="hover:bg-blue-50/30 dark:hover:bg-blue-500/2 transition-colors group"
+                    >
+                      <td className="p-4">
+                        <div className="flex flex-col items-center gap-1">
+                          <button
+                            onClick={() => moveOrder(user._id, user.orderIndex || 0, "up")}
+                            className="text-slate-300 dark:text-zinc-700 hover:text-blue-500 transition-colors"
+                          >
+                            <ChevronUp size={16} />
+                          </button>
+                          <span className="font-black text-slate-800 dark:text-white text-xl italic tabular-nums leading-none">
+                            {(index + 1).toString().padStart(2, "0")}
+                          </span>
+                          <button
+                            onClick={() => moveOrder(user._id, user.orderIndex || 0, "down")}
+                            className="text-slate-300 dark:text-zinc-700 hover:text-rose-500 transition-colors"
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </div>
+                      </td>
+
                         <td className="p-4">
                           <div className="flex items-center gap-4">
                             <div>
@@ -866,16 +1117,14 @@ export default function SuperAdminPage() {
                             </optgroup>
                           </select>
                         </td>
-                        <td className="p-4 text-center">
-                          <button
-                            onClick={() => toggleActive(user._id, user.isActive, user.name)}
-                            className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
-                          >
-                            <div
-                              className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
-                            />
-                          </button>
-                        </td>
+                                <td className="p-4 text-center">
+          <button
+            onClick={() => toggleActive(user._id, user.isActive, user.name)}
+            className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
+          >
+            <div className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}/>
+          </button>
+        </td>
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-3  ">
                             <button
