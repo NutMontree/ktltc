@@ -689,13 +689,18 @@ export default function DashboardLoader() {
                         variants={item}
                       />
                     )}
-                    <ActionCard
-                      href="/dashboard/flagpole-settings"
-                      title="ตั้งค่าเวลาเข้าแถว"
-                      icon={Settings}
-                      desc="จัดการกฎและเวลาเข้าแถวเสาธงของนักเรียน"
-                      variants={item}
-                    />
+                    {(permissions?.manage_flagpole_settings ||
+                      ["super_admin", "admin", "deputy_student_affairs"].includes(
+                        ((session?.user as any)?.role || "").toLowerCase(),
+                      )) && (
+                      <ActionCard
+                        href="/dashboard/flagpole-settings"
+                        title="ตั้งค่าเวลาเข้าแถว"
+                        icon={Settings}
+                        desc="จัดการกฎและเวลาเข้าแถวเสาธงของนักเรียน"
+                        variants={item}
+                      />
+                    )}
                   </>
                 )}
               </div>

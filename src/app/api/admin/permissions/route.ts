@@ -38,6 +38,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: true,
     student_dashboard: true,
     manage_flagpole_data: true,
+    manage_flagpole_settings: true,
   },
   admin: {
     access_dashboard: true,
@@ -57,6 +58,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: true,
     manage_flagpole_data: true,
+    manage_flagpole_settings: true,
   },
   editor: {
     access_dashboard: true,
@@ -76,6 +78,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   hr: {
     access_dashboard: true,
@@ -93,6 +96,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: true,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   director: {
     access_dashboard: true,
@@ -110,6 +114,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   deputy_resource: {
     access_dashboard: true,
@@ -127,6 +132,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   deputy_strategy: {
     access_dashboard: true,
@@ -144,6 +150,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   deputy_academic: {
     access_dashboard: true,
@@ -161,6 +168,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   deputy_student_affairs: {
     access_dashboard: true,
@@ -178,6 +186,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: true,
     manage_flagpole_data: true,
+    manage_flagpole_settings: true,
   },
   teacher: {
     access_dashboard: false,
@@ -195,6 +204,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   janitor: {
     access_dashboard: false,
@@ -212,6 +222,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   staff: {
     access_dashboard: false,
@@ -229,6 +240,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   student: {
     access_dashboard: false,
@@ -246,6 +258,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: true,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   },
   user: {
     access_dashboard: false,
@@ -263,6 +276,7 @@ const DEFAULT_PERMISSIONS = {
     manage_roles_advanced: false,
     student_dashboard: false,
     manage_flagpole_data: false,
+    manage_flagpole_settings: false,
   }
 };
 
@@ -510,6 +524,7 @@ export async function POST(req: Request) {
       manage_pages: false,
       student_dashboard: false,
       manage_flagpole_data: false,
+      manage_flagpole_settings: false,
     };
 
     await db.collection("role_permissions").insertOne({

@@ -69,6 +69,7 @@ interface NavbarClientProps {
     manage_navbar?: boolean;
     student_dashboard?: boolean;
     manage_flagpole_data?: boolean;
+    manage_flagpole_settings?: boolean;
   } | null;
 }
 

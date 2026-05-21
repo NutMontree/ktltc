@@ -86,6 +86,12 @@ const FEATURE_LABELS: {
     color: "text-amber-500",
     href: "/dashboard/flagpole-data-management",
   },
+  manage_flagpole_settings: {
+    label: "ตั้งค่าเวลาเข้าแถว",
+    icon: FiCalendar,
+    color: "text-rose-500",
+    href: "/dashboard/flagpole-settings",
+  },
 };
 
 const ADVANCED_FEATURE_LABELS: {
