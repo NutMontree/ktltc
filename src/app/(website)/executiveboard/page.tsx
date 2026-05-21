@@ -29,6 +29,17 @@ export default function ExecutiveBoard() {
         const res = await fetch("/api/users/all");
         if (res.ok) {
           const data = await res.json();
+          const getExecutiveRoleName = (r: string) => {
+            switch (r) {
+              case "director": return "ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์";
+              case "deputy_resource": return "รอง ผอ. (บริหารทรัพยากร)";
+              case "deputy_strategy": return "รอง ผอ. (ยุทธศาสตร์)";
+              case "deputy_academic": return "รอง ผอ. (วิชาการ)";
+              case "deputy_student_affairs": return "รอง ผอ. (กิจการนักเรียน)";
+              default: return "ผู้บริหาร";
+            }
+          };
+
           const executives = (data.users || [])
             .filter(
               (u: any) =>
@@ -36,7 +47,7 @@ export default function ExecutiveBoard() {
             )
             .map((u: any) => ({
               title: u.name || "ไม่ระบุชื่อ",
-              secondary: u.position || "ผู้บริหาร",
+              secondary: u.position || getExecutiveRoleName(u.role),
               description: u.description || "",
               img: u.image || "",
               role: u.role,

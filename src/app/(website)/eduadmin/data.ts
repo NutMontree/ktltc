@@ -62,3 +62,54 @@ export const Data1 = [
     img: `/images/ผู้บริหาร/5.webp`,
   },
 ];
+
+export const DataCommittee = [
+  {
+    title: `นายวิทยา บุญยืน`,
+    secondary: `ประธานกรรมการ`,
+    description: `ผู้ทรงคุณวุฒิด้านการบริหารการศึกษา`,
+    img: `/images/error.webp`,
+  },
+  {
+    title: `นางสาวทักษิณา ชมจันทร์`,
+    secondary: `กรรมการและเลขานุการ`,
+    description: `ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์`,
+    img: `/images/ผู้บริหาร/1.webp`,
+  },
+  {
+    title: `นายสมชาย รักษาสัตย์`,
+    secondary: `กรรมการผู้แทนครู`,
+    description: `ผู้แทนครูและบุคลากรทางการศึกษา`,
+    img: `/images/error.webp`,
+  },
+  {
+    title: `นายประสิทธิ์ สุวรรณภูมิ`,
+    secondary: `กรรมการผู้แทนองค์กรปกครองส่วนท้องถิ่น`,
+    description: `ผู้แทนองค์การบริหารส่วนจังหวัดศรีสะเกษ`,
+    img: `/images/error.webp`,
+  },
+  {
+    title: `นายธีระ คำศิลา`,
+    secondary: `กรรมการผู้แทนผู้ปกครอง`,
+    description: `ผู้แทนผู้ปกครองนักเรียน นักศึกษา`,
+    img: `/images/error.webp`,
+  },
+  {
+    title: `นางสาวกัลยา พลแสน`,
+    secondary: `กรรมการผู้แทนนักเรียน นักศึกษา`,
+    description: `ผู้แทนนักเรียน นักศึกษาของวิทยาลัย`,
+    img: `/images/error.webp`,
+  },
+  {
+    title: `นายอนันต์ เพียงแก้ว`,
+    secondary: `กรรมการผู้แทนศิษย์เก่า`,
+    description: `ผู้แทนศิษย์เก่าวิทยาลัยเทคนิคกันทรลักษ์`,
+    img: `/images/error.webp`,
+  },
+  {
+    title: `นางรัตนา บุญประกอบ`,
+    secondary: `กรรมการผู้ทรงคุณวุฒิ`,
+    description: `ผู้ทรงคุณวุฒิด้านการเงินและบัญชี`,
+    img: `/images/error.webp`,
+  },
+];

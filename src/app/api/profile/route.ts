@@ -64,7 +64,10 @@ export async function PATCH(req: Request) {
     const fields = [
       'name', 'email', 'phone', 'lineId', 'department', 'position', 
       'faction', 'description', 'work', 'education', 'currentCity', 
-      'hometown', 'relationship', 'program'
+      'hometown', 'relationship', 'program',
+      'addressHouse', 'addressVillage', 'addressSubdistrict', 'addressDistrict', 'addressProvince', 'addressZipcode',
+      'positionNumber', 'affiliation', 'govStartDate', 'retirementDate', 'retirementFiscalYear',
+      'respDeptHead', 'respWorkHead', 'respOther'
     ];
 
     fields.forEach(field => {

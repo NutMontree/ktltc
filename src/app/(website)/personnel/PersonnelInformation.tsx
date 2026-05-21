@@ -25,16 +25,56 @@ export const Personnel1 = () => {
         const res = await fetch("/api/users/all");
         if (res.ok) {
           const data = await res.json();
-          const mappedUsers = (data.users || []).map((u: any) => ({
-            title: u.name,
-            secondary: u.role === "director" || String(u.role).startsWith("deputy") ? "ผู้บริหาร" : "",
-            position: u.position || "",
-            department: u.department || "",
-            faction: u.faction || "",
-            description: u.description || "",
-            img: u.image || "",
-            fullUrl: u.coverImage || u.image || "" 
-          }));
+          const getRoleThaiName = (r: string) => {
+            switch (r) {
+              case "super_admin": return "ผู้ดูแลระบบสูงสุด";
+              case "admin": return "ผู้ดูแลระบบ";
+              case "editor": return "บรรณาธิการ";
+              case "hr": return "ฝ่ายบุคคล";
+              case "director": return "ผู้อำนวยการ";
+              case "deputy_resource": return "รอง ผอ. (บริหารทรัพยากร)";
+              case "deputy_strategy": return "รอง ผอ. (ยุทธศาสตร์)";
+              case "deputy_academic": return "รอง ผอ. (วิชาการ)";
+              case "deputy_student_affairs": return "รอง ผอ. (กิจการนักเรียน)";
+              case "teacher": return "ครู";
+              case "janitor": return "แม่บ้าน/นักการ";
+              case "staff": return "เจ้าหน้าที่";
+              default: return "สมาชิก";
+            }
+          };
+
+          const mappedUsers = (data.users || [])
+            .filter((u: any) => [
+              "super_admin", "admin", "editor", "hr", "director",
+              "deputy_resource", "deputy_strategy", "deputy_academic",
+              "deputy_student_affairs", "teacher", "janitor", "staff"
+            ].includes((u.role || "").toLowerCase()))
+            .map((u: any) => ({
+              title: u.name,
+              secondary: getRoleThaiName((u.role || "").toLowerCase()),
+              position: u.position || "",
+              department: u.department || "",
+              faction: u.faction || "",
+              description: u.description || "",
+              img: u.image || "",
+              fullUrl: u.coverImage || u.image || "",
+              addressHouse: u.addressHouse || "",
+              addressVillage: u.addressVillage || "",
+              addressSubdistrict: u.addressSubdistrict || "",
+              addressDistrict: u.addressDistrict || "",
+              addressProvince: u.addressProvince || "",
+              addressZipcode: u.addressZipcode || "",
+              positionNumber: u.positionNumber || "",
+              affiliation: u.affiliation || "",
+              govStartDate: u.govStartDate || "",
+              retirementDate: u.retirementDate || "",
+              retirementFiscalYear: u.retirementFiscalYear || "",
+              respDeptHead: u.respDeptHead || "",
+              respWorkHead: u.respWorkHead || "",
+              respOther: u.respOther || "",
+              phone: u.phone || "",
+              email: u.email || "",
+            }));
           setDbUsers(mappedUsers);
         }
       } catch (error) {

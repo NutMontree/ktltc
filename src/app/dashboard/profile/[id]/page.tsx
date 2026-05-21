@@ -281,6 +281,20 @@ export default function FriendProfilePage({
     currentCity: "",
     hometown: "",
     relationship: "",
+    addressHouse: "",
+    addressVillage: "",
+    addressSubdistrict: "",
+    addressDistrict: "",
+    addressProvince: "",
+    addressZipcode: "",
+    positionNumber: "",
+    affiliation: "",
+    govStartDate: "",
+    retirementDate: "",
+    retirementFiscalYear: "",
+    respDeptHead: "",
+    respWorkHead: "",
+    respOther: "",
   });
 
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -2341,6 +2355,201 @@ export default function FriendProfilePage({
                   </div>
                 </div>
               );
+            case "ข้อมูลข้าราชการ/บุคลากร":
+              return (
+                <div className="space-y-8">
+                  {/* ที่อยู่ปัจจุบัน */}
+                  <div className="space-y-4">
+                    <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
+                      <GlobalOutlined className="text-sm" /> ข้อมูลที่อยู่ปัจจุบัน
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <GlobalOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.addressHouse || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">บ้านเลขที่ หมู่ที่ ซอย</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <GlobalOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.addressVillage || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">อาคาร หมู่บ้าน ถนน</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <GlobalOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {[formData.addressSubdistrict, formData.addressDistrict, formData.addressProvince].filter(Boolean).join(" ") || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">ตำบล/แขวง อำเภอ/เขต จังหวัด</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <GlobalOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.addressZipcode || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">รหัสไปรษณีย์</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ข้อมูลตำแหน่งและสังกัด */}
+                  <div className="space-y-4">
+                    <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
+                      <SafetyCertificateOutlined className="text-sm" /> ข้อมูลตำแหน่งและสังกัด
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <SafetyCertificateOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.positionNumber || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">เลขที่ตำแหน่ง</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <UserOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.position || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">ตำแหน่ง</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 sm:col-span-2">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <DatabaseOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.affiliation || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">สังกัด (กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ประวัติการรับราชการและเกษียณ */}
+                  <div className="space-y-4">
+                    <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
+                      <DatabaseOutlined className="text-sm" /> ข้อมูลประวัติการรับราชการและเกษียณ
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <DatabaseOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.govStartDate ? new Date(formData.govStartDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">วันเริ่มเข้ารับราชการ</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <DatabaseOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.retirementDate ? new Date(formData.retirementDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">วันที่ครบเกษียณอายุ</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                          <DatabaseOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.retirementFiscalYear ? `ปีงบประมาณ พ.ศ. ${formData.retirementFiscalYear}` : "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">เกษียณปีงบประมาณ</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* หน้าที่รับผิดชอบ */}
+                  <div className="space-y-4">
+                    <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
+                      <BookOutlined className="text-sm" /> หน้าที่รับผิดชอบ
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                          <BookOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.respDeptHead || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                          <BookOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.respWorkHead || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                          <BookOutlined />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                            {formData.respOther || "-"}
+                          </p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* แก้ไขข้อมูล */}
+                  {isMyProfile && (
+                    <div className="pt-4 border-t dark:border-zinc-800 flex justify-end">
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all"
+                      >
+                        <EditOutlined /> แก้ไขข้อมูลทั้งหมด
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
             default:
               return null;
           }
@@ -2358,6 +2567,7 @@ export default function FriendProfilePage({
                   "การทำงานและวุฒิการศึกษา",
                   "สถานที่ที่เคยอาศัย",
                   "ข้อมูลติดต่อและข้อมูลพื้นฐาน",
+                  "ข้อมูลข้าราชการ/บุคลากร",
                 ].map((item) => (
                   <div
                     key={item}
@@ -3045,7 +3255,7 @@ export default function FriendProfilePage({
                 />
               </div>
             </div>
-            <div className="space-y-1">
+             <div className="space-y-1">
               <label className="text-xs font-black text-zinc-500 uppercase">สถานะความสัมพันธ์</label>
               <select
                 value={formData.relationship}
@@ -3059,6 +3269,171 @@ export default function FriendProfilePage({
                 <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
                 <option value="หย่าร้าง">หย่าร้าง</option>
               </select>
+            </div>
+
+            {/* --- ข้อมูลเพิ่มเติมตามคำขอ --- */}
+            <div className="border-t dark:border-zinc-800 pt-6 mt-4">
+              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                <GlobalOutlined /> ข้อมูลที่อยู่ปัจจุบัน
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">บ้านเลขที่ หมู่ที่ ซอย</label>
+                  <input
+                    value={formData.addressHouse || ""}
+                    onChange={(e) => setFormData({ ...formData, addressHouse: e.target.value })}
+                    placeholder="เช่น 123 ม.4 ซ.โชคดี"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">อาคาร หมู่บ้าน ถนน</label>
+                  <input
+                    value={formData.addressVillage || ""}
+                    onChange={(e) => setFormData({ ...formData, addressVillage: e.target.value })}
+                    placeholder="เช่น อาคารทองคำ ถ.สุขุมวิท"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">ตำบล/แขวง</label>
+                  <input
+                    value={formData.addressSubdistrict || ""}
+                    onChange={(e) => setFormData({ ...formData, addressSubdistrict: e.target.value })}
+                    placeholder="ตำบล..."
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">อำเภอ/เขต</label>
+                  <input
+                    value={formData.addressDistrict || ""}
+                    onChange={(e) => setFormData({ ...formData, addressDistrict: e.target.value })}
+                    placeholder="อำเภอ..."
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">จังหวัด</label>
+                  <input
+                    value={formData.addressProvince || ""}
+                    onChange={(e) => setFormData({ ...formData, addressProvince: e.target.value })}
+                    placeholder="จังหวัด..."
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="mt-4 space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">รหัสไปรษณีย์</label>
+                <input
+                  value={formData.addressZipcode || ""}
+                  onChange={(e) => setFormData({ ...formData, addressZipcode: e.target.value })}
+                  placeholder="เช่น 10400"
+                  maxLength={5}
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                <SafetyCertificateOutlined /> ข้อมูลตำแหน่งและสังกัด
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">เลขที่ตำแหน่ง</label>
+                  <input
+                    value={formData.positionNumber || ""}
+                    onChange={(e) => setFormData({ ...formData, positionNumber: e.target.value })}
+                    placeholder="เช่น 1845-02"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">สังกัด</label>
+                  <input
+                    value={formData.affiliation || ""}
+                    onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
+                    placeholder="กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน..."
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                <DatabaseOutlined /> ข้อมูลประวัติการรับราชการและเกษียณ
+              </h4>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">วันเดือนปีที่เริ่มเข้ารับราชการ</label>
+                  <input
+                    type="date"
+                    value={formData.govStartDate || ""}
+                    onChange={(e) => setFormData({ ...formData, govStartDate: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">วันที่ครบเกษียณอายุ</label>
+                    <input
+                      type="date"
+                      value={formData.retirementDate || ""}
+                      onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">เกษียณปีงบประมาณ (พ.ศ.)</label>
+                    <input
+                      type="number"
+                      value={formData.retirementFiscalYear || ""}
+                      onChange={(e) => setFormData({ ...formData, retirementFiscalYear: e.target.value })}
+                      placeholder="เช่น 2575"
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                <BookOutlined /> ข้อมูลหน้าที่รับผิดชอบ
+              </h4>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</label>
+                  <input
+                    value={formData.respDeptHead || ""}
+                    onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
+                    placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</label>
+                  <input
+                    value={formData.respWorkHead || ""}
+                    onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
+                    placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</label>
+                  <input
+                    value={formData.respOther || ""}
+                    onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
+                    placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
