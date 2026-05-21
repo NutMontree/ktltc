@@ -96,15 +96,15 @@ export default function AboutContact() {
     },
     {
       name: "Official Website",
-      label: "www.ktl.ac.th",
-      url: "http://www.ktl.ac.th",
+      label: "ktltc.ac.th",
+      url: "https://ktltc.ac.th/",
       icon: <Globe className="w-5 h-5" />,
       bgClass: "bg-slate-700 hover:bg-slate-800 text-white"
     },
     {
       name: "YouTube Channel",
       label: "วิทยาลัยเทคนิคกันทรลักษ์ KTLTC",
-      url: "https://www.youtube.com",
+      url: "https://www.youtube.com/@ktltc2566",
       icon: <Youtube className="w-5 h-5" />,
       bgClass: "bg-red-600 hover:bg-red-700 text-white"
     }
@@ -333,6 +333,110 @@ export default function AboutContact() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Video Introduction Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
+          <Card className="bg-white dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 p-6 md:p-8 shadow-md">
+            
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 shadow-lg border border-slate-200/60 dark:border-slate-800 max-w-4xl mx-auto">
+              <iframe
+                src="https://www.youtube.com/embed/tEqHeRdAiD0"
+                title="วีดิทัศน์แนะนำวิทยาลัยเทคนิคกันทรลักษ์"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+              ></iframe>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Facebook Page Plugin Grid Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
+          <Card className="bg-white dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 p-6 md:p-8 shadow-md">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-xs font-black tracking-wider uppercase mb-3 inline-block">
+                Facebook Department Network
+              </span>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">เพจเครือข่ายสาขาวิชาและชมรมกิจกรรม</h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">
+                ติดตามข่าวสารอัปเดตอย่างใกล้ชิดจากเพจ Facebook ประจำแผนกวิชาเรียนและกลุ่มกิจกรรมภายในวิทยาลัยเทคนิคกันทรลักษ์
+              </p>
+            </div>
+
+            {/* 1. Compact Row - แผนกวิชาต่างๆ */}
+            <div className="mb-12">
+              <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-6 border-l-4 border-blue-600 pl-3">
+                แผนกวิชา / สาขาการเรียนการสอน
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                {[
+                  { title: "แผนกวิชาช่างอิเล็กทรอนิกส์", url: "https://www.facebook.com/profile.php?id=100063483313526" },
+                  { title: "แผนกช่างไฟฟ้ากำลัง", url: "https://www.facebook.com/ktltc.ac.th.en" },
+                  { title: "แผนกวิชาช่างเชื่อมโลหะ", url: "https://www.facebook.com/profile.php?id=100068997166818" },
+                  { title: "แผนกวิชาช่างกลโรงงาน", url: "https://www.facebook.com/profile.php?id=100057195379923" },
+                  { title: "แผนกวิชาสามัญสัมพันธ์ (วิทยาศาสตร์)", url: "https://www.facebook.com/ScienceKTL" }
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-800 shadow-xs flex flex-col items-center">
+                    <p className="text-xs font-black text-slate-500 dark:text-slate-400 mb-3 truncate w-full text-center">{item.title}</p>
+                    <div className="w-full h-[130px] rounded-xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40">
+                      <iframe 
+                        src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(item.url)}&tabs=&width=340&height=130&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true`}
+                        width="100%" 
+                        height="130" 
+                        style={{ border: "none", overflow: "hidden" }} 
+                        scrolling="no" 
+                        frameBorder="0" 
+                        allowFullScreen={true}
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                      ></iframe>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. Timeline Row - ชมรมและหน่วยงานกิจกรรม */}
+            <div>
+              <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-6 border-l-4 border-emerald-600 pl-3">
+                ชมรมกิจกรรม / องค์การนักวิชาชีพ
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                  { title: "องค์การวิชาชีพในอนาคตแห่งประเทศไทย (อวท.)", url: "https://www.facebook.com/profile.php?id=100065239134417" },
+                  { title: "ชมรม TO BE NUMBER ONE", url: "https://www.facebook.com/profile.php?id=61567041267941" },
+                  { title: "แผนกวิชาการโรงแรม", url: "https://www.facebook.com/profile.php?id=100088379594921" }
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-slate-50 dark:bg-slate-950 rounded-3xl p-5 border border-slate-200/60 dark:border-slate-800 shadow-xs flex flex-col">
+                    <p className="text-sm font-black text-slate-600 dark:text-slate-300 mb-4 text-center truncate">{item.title}</p>
+                    <div className="w-full h-[500px] rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 shadow-inner">
+                      <iframe 
+                        src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(item.url)}&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true`}
+                        width="100%" 
+                        height="500" 
+                        style={{ border: "none", overflow: "hidden" }} 
+                        scrolling="no" 
+                        frameBorder="0" 
+                        allowFullScreen={true}
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                      ></iframe>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </motion.div>
 
         {/* Social Media Section */}
         <motion.div

@@ -320,6 +320,19 @@ function MobileMenu(_a) {
               },
               "\u0E2B\u0E19\u0E49\u0E32\u0E41\u0E23\u0E01",
             ),
+            React.createElement(
+              link_1["default"],
+              {
+                href: "/about",
+                onClick: closeMenu,
+                className:
+                  "block w-full p-4 rounded-xl font-bold text-lg transition-all shadow-sm " +
+                  (pathname === "/about"
+                    ? "bg-blue-600 text-white shadow-blue-500/30"
+                    : "bg-zinc-50 text-zinc-800 border border-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:border-zinc-800"),
+              },
+              "เกี่ยวกับเรา / ติดต่อเรา",
+            ),
             safeMenuTree.map(function (item) {
               var hasChildren = item.children && item.children.length > 0;
               var isActive = openSubMenuId === item._id;
