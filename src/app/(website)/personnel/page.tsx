@@ -225,17 +225,17 @@ export default function Personnel() {
     indicator:
       "text-lg text-slate-400 data-[open=true]:text-amber-500 data-[open=true]:rotate-90 transition-transform duration-300",
     content:
-      "text-small px-6 pb-8 pt-4 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-lg rounded-b-[24px] border-x border-b border-white/60 dark:border-neutral-800/60 -mt-2",
+      "text-small   pb-8 pt-4 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-lg rounded-b-[24px] border-x border-b border-white/60 dark:border-neutral-800/60 -mt-2",
   };
 
   return (
-    <section className="dark:bg-transparent pb-20 pt-10 font-sans">
+    <section className="dark:bg-transparent  font-sans">
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="container mx-auto px-4 max-w-[1400px]"
+        className="mx-auto max-w-[1400px]"
       >
         {/* --- Header Section --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">

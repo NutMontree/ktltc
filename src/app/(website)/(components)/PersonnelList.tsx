@@ -4,7 +4,15 @@ import React, { useEffect, useState } from "react";
 import { Image } from "@heroui/image";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { motion, AnimatePresence } from "framer-motion";
-import { SettingOutlined, UserOutlined, BuildFilled, LoadingOutlined, PhoneOutlined, MailOutlined, MessageOutlined } from "@ant-design/icons";
+import {
+  SettingOutlined,
+  UserOutlined,
+  BuildFilled,
+  LoadingOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
 
 interface User {
   _id: string;
@@ -36,7 +44,9 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
         if (res.ok) {
           const data = await res.json();
           // Sort by orderIndex if available
-          const sortedUsers = (data.users || []).sort((a: any, b: any) => (a.orderIndex || 0) - (b.orderIndex || 0));
+          const sortedUsers = (data.users || []).sort(
+            (a: any, b: any) => (a.orderIndex || 0) - (b.orderIndex || 0),
+          );
           setUsers(sortedUsers);
         }
       } catch (error) {
@@ -76,7 +86,9 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
     return (
       <div className="flex flex-col items-center justify-center py-20 min-h-[300px] border border-dashed border-slate-300 dark:border-zinc-800 rounded-3xl mx-4">
         <UserOutlined className="text-5xl text-slate-300 dark:text-zinc-700 mb-4" />
-        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">ยังไม่มีข้อมูลบุคลากร</h3>
+        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+          ยังไม่มีข้อมูลบุคลากร
+        </h3>
         <p className="text-slate-500 dark:text-zinc-500 text-center px-6">
           กรุณาเพิ่มข้อมูลบุคลากรและตั้งค่าสังกัดเป็น <br />
           <span className="font-bold text-[#DAA520]">{departmentName}</span> ในระบบแอดมิน
@@ -91,18 +103,17 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      // Use flex for dynamic centering and filling
-      className="flex flex-wrap justify-center gap-8 px-4"
+      className="flex flex-wrap justify-center gap-8"
     >
       <AnimatePresence>
         {users.map((user) => (
-          <motion.div 
-            key={user._id} 
-            variants={itemVar} 
-            layout="position" 
+          <motion.div
+            key={user._id}
+            variants={itemVar}
+            layout="position"
             className="group w-full max-w-[320px]"
           >
-            <BackgroundGradient className="h-full rounded-[30px] bg-white p-6 shadow-xl transition-all hover:shadow-2xl dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
+            <BackgroundGradient className="h-full rounded-[30px] bg-white p-4 shadow-xl transition-all hover:shadow-2xl dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
               <div className="flex h-full flex-col">
                 {/* Image Container - Square only as requested */}
                 <div className="relative mb-6 aspect-square w-full overflow-hidden rounded-2xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-700/50">
@@ -118,7 +129,9 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
                     ) : (
                       <div className="flex flex-col items-center gap-2">
                         <UserOutlined className="text-6xl text-slate-200 dark:text-zinc-700" />
-                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">No Image</span>
+                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+                          No Image
+                        </span>
                       </div>
                     )}
                   </div>
@@ -164,13 +177,17 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
                     {user.phone ? (
                       <p className="flex items-center gap-2">
                         <PhoneOutlined className="text-amber-500 shrink-0" />
-                        <span className="font-bold">โทร:</span> <a href={`tel:${user.phone}`} className="hover:underline">{user.phone}</a>
+                        <span className="font-bold">โทร:</span>{" "}
+                        <a href={`tel:${user.phone}`} className="hover:underline">
+                          {user.phone}
+                        </a>
                       </p>
                     ) : null}
                     {user.email ? (
                       <p className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                         <MailOutlined className="text-amber-500 shrink-0" />
-                        <span className="font-bold">อีเมล:</span> <span className="truncate">{user.email}</span>
+                        <span className="font-bold">อีเมล:</span>{" "}
+                        <span className="truncate">{user.email}</span>
                       </p>
                     ) : null}
                     {user.lineId ? (
@@ -182,7 +199,8 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
                     {!user.phone && !user.email && !user.lineId && (
                       <p className="flex items-center gap-2 opacity-75">
                         <MailOutlined className="text-amber-500 shrink-0" />
-                        <span className="font-bold">ติดต่อวิทยาลัย:</span> <span>info@ktltc.ac.th</span>
+                        <span className="font-bold">ติดต่อวิทยาลัย:</span>{" "}
+                        <span>info@ktltc.ac.th</span>
                       </p>
                     )}
                   </div>
@@ -192,7 +210,7 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
                 <div className="mt-6 pt-4 border-t border-slate-50 dark:border-zinc-800 flex justify-center">
                   <span className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-[10px] font-black text-white shadow-lg dark:bg-zinc-100 dark:text-slate-900 uppercase tracking-tighter">
                     <BuildFilled className="text-amber-500" />
-                    <span>{departmentCode || 'KTLTC PERSONNEL'}</span>
+                    <span>{departmentCode || "KTLTC PERSONNEL"}</span>
                   </span>
                 </div>
               </div>

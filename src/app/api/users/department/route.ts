@@ -17,7 +17,11 @@ export async function GET(req: Request) {
 
     const users = await db
       .collection("users")
-      .find({ department: departmentStr, isActive: true })
+      .find({
+        department: departmentStr,
+        isActive: true,
+        role: { $nin: ["student", "user", "member", "members"] }
+      })
       .project({ password: 0 }) 
       .toArray();
 

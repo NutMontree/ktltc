@@ -27,31 +27,57 @@ export const Personnel1 = () => {
           const data = await res.json();
           const getRoleThaiName = (r: string) => {
             switch (r) {
-              case "super_admin": return "ผู้ดูแลระบบสูงสุด";
-              case "admin": return "ผู้ดูแลระบบ";
-              case "editor": return "บรรณาธิการ";
-              case "hr": return "ฝ่ายบุคคล";
-              case "director": return "ผู้อำนวยการ";
-              case "deputy_resource": return "รอง ผอ. (บริหารทรัพยากร)";
-              case "deputy_strategy": return "รอง ผอ. (ยุทธศาสตร์)";
-              case "deputy_academic": return "รอง ผอ. (วิชาการ)";
-              case "deputy_student_affairs": return "รอง ผอ. (กิจการนักเรียน)";
-              case "teacher": return "ครู";
-              case "janitor": return "แม่บ้าน/นักการ";
-              case "staff": return "เจ้าหน้าที่";
-              default: return "สมาชิก";
+              case "super_admin":
+                return "ผู้ดูแลระบบสูงสุด";
+              case "admin":
+                return "ผู้ดูแลระบบ";
+              case "editor":
+                return "บรรณาธิการ";
+              case "hr":
+                return "ฝ่ายบุคคล";
+              case "director":
+                return "ผู้อำนวยการ";
+              case "deputy_resource":
+                return "รอง ผอ. (บริหารทรัพยากร)";
+              case "deputy_strategy":
+                return "รอง ผอ. (ยุทธศาสตร์)";
+              case "deputy_academic":
+                return "รอง ผอ. (วิชาการ)";
+              case "deputy_student_affairs":
+                return "รอง ผอ. (กิจการนักเรียน)";
+              case "teacher":
+                return "ครู";
+              case "janitor":
+                return "แม่บ้าน/นักการ";
+              case "staff":
+                return "เจ้าหน้าที่";
+              default:
+                return "สมาชิก";
             }
           };
 
           const mappedUsers = (data.users || [])
-            .filter((u: any) => [
-              "super_admin", "admin", "editor", "hr", "director",
-              "deputy_resource", "deputy_strategy", "deputy_academic",
-              "deputy_student_affairs", "teacher", "janitor", "staff"
-            ].includes((u.role || "").toLowerCase()))
+            .filter((u: any) =>
+              [
+                "super_admin",
+                "admin",
+                "editor",
+                "hr",
+                "director",
+                "deputy_resource",
+                "deputy_strategy",
+                "deputy_academic",
+                "deputy_student_affairs",
+                "teacher",
+                "janitor",
+                "staff",
+              ].includes((u.role || "").toLowerCase()),
+            )
             .map((u: any) => ({
               title: u.name,
               secondary: getRoleThaiName((u.role || "").toLowerCase()),
+              roleKey: (u.role || "").toLowerCase(),
+              orderIndex: u.orderIndex,
               position: u.position || "",
               department: u.department || "",
               faction: u.faction || "",
@@ -76,7 +102,45 @@ export const Personnel1 = () => {
               email: u.email || "",
               lineId: u.lineId || "",
             }));
-          setDbUsers(mappedUsers);
+
+          const sortedUsers = [...mappedUsers].sort((a, b) => {
+            const roleOrder: Record<string, number> = {
+              director: 1,
+              deputy_resource: 2,
+              deputy_strategy: 2,
+              deputy_academic: 2,
+              deputy_student_affairs: 2,
+              teacher: 3,
+              staff: 4,
+              janitor: 5,
+              super_admin: 6,
+              admin: 6,
+              hr: 6,
+              editor: 6,
+            };
+
+            const roleA = roleOrder[a.roleKey] || 99;
+            const roleB = roleOrder[b.roleKey] || 99;
+
+            if (roleA !== roleB) {
+              return roleA - roleB;
+            }
+
+            // ถ้า Role เท่ากัน ให้จัดตำแหน่งที่เป็น "หัวหน้า" หรือ "ผู้อำนวยการ" หรือ "รอง" ขึ้นก่อน
+            const isHeadA = a.position?.includes("หัวหน้า") || a.position?.includes("ผู้อำนวยการ") || a.position?.includes("รอง") ? 0 : 1;
+            const isHeadB = b.position?.includes("หัวหน้า") || b.position?.includes("ผู้อำนวยการ") || b.position?.includes("รอง") ? 0 : 1;
+            if (isHeadA !== isHeadB) return isHeadA - isHeadB;
+
+            // ตามด้วยลำดับ orderIndex
+            if (a.orderIndex !== b.orderIndex) {
+              return (a.orderIndex || 999) - (b.orderIndex || 999);
+            }
+
+            // สุดท้ายเรียงตามตัวอักษรของชื่อภาษาไทย
+            return a.title.localeCompare(b.title, "th");
+          });
+
+          setDbUsers(sortedUsers);
         }
       } catch (error) {
         console.error("Failed to fetch all users", error);
@@ -104,16 +168,14 @@ export const Personnel1 = () => {
   }
 
   return (
-    <section className="max:w-7xl mx-auto ">
+    <section className="max:w-7xl mx-auto px-2">
       <div className="">
         {/* --- 1. Search Section --- */}
         <div className="mb-12 flex flex-col items-center">
           <h1 className="text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
             ค้นหารายชื่อ<span className="text-[#DAA520]">บุคลากร</span>
           </h1>
-          <p className="mt-2 text-slate-500 dark:text-slate-400">
-            Personnel Information Directory
-          </p>
+          <p className="mt-2 text-slate-500 dark:text-slate-400">Personnel Information Directory</p>
 
           <div className="max-w relative w-full">
             <div className="">
@@ -129,10 +191,7 @@ export const Personnel1 = () => {
         </div>
 
         {/* --- 2. Gallery Grid with Animation --- */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-        >
+        <motion.div layout className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <AnimatePresence mode="popLayout">
             {filteredImgs.length > 0 ? (
               filteredImgs.map((img, index) => (
@@ -164,9 +223,7 @@ export const Personnel1 = () => {
                 <h3 className="text-lg font-semibold text-slate-600 dark:text-slate-300">
                   ไม่พบรายชื่อที่ค้นหา
                 </h3>
-                <p className="text-slate-400">
-                  ลองตรวจสอบคำสะกด หรือค้นหาด้วยคีย์เวิร์ดอื่น
-                </p>
+                <p className="text-slate-400">ลองตรวจสอบคำสะกด หรือค้นหาด้วยคีย์เวิร์ดอื่น</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -180,7 +237,7 @@ export const Personnel1 = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
             onClick={onImgCloseClick} // คลิกพื้นหลังเพื่อปิด
           >
             <motion.div
