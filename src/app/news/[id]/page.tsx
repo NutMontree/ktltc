@@ -517,51 +517,36 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                   </span>
                 </h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* แสดงรูปจาก thumbnails ก่อนถ้ามี (และยังไม่แสดงซ้ำ) */}
-                {news.thumbnails?.map((img, idx) => (
-                  <div
-                    key={`thumb-${idx}`}
-                    className="break-inside-avoid relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group"
-                  >
-                    <Image
-                      src={img}
-                      alt={`Thumbnail ${idx + 1}`}
-                      width={800}
-                      height={600}
-                      unoptimized
-                      className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
-                    />
-                  </div>
-                ))}
+              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
+                {(() => {
+                  const allMedia = [...(news.thumbnails || []), ...(news.images || [])];
+                  const uniqueMedia = Array.from(new Set(allMedia));
 
-                {/* แสดงรูปจาก images */}
-                {news.images?.map((img, idx) => (
-                  <div
-                    key={`img-${idx}`}
-                    className="break-inside-avoid relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group"
-                  >
-                    {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (
-                      <video
-                        src={img}
-                        width={800}
-                        height={600}
-                        className="w-full h-auto transition-transform duration-700"
-                        controls
-                        playsInline
-                      />
-                    ) : (
-                      <Image
-                        src={img}
-                        alt={`Gallery ${idx + 1}`}
-                        width={800}
-                        height={600}
-                        unoptimized
-                        className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
-                      />
-                    )}
-                  </div>
-                ))}
+                  return uniqueMedia.map((img, idx) => (
+                    <div
+                      key={`media-${idx}`}
+                      className="break-inside-avoid w-full mb-4 flex justify-center items-start overflow-hidden rounded-xl group cursor-pointer"
+                    >
+                      {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (
+                        <video
+                          src={img}
+                          className="w-full h-auto rounded-xl transition-transform duration-500 group-hover:scale-105"
+                          controls
+                          playsInline
+                        />
+                      ) : (
+                        <Image
+                          src={img}
+                          alt={`Gallery Media ${idx + 1}`}
+                          width={800}
+                          height={600}
+                          unoptimized
+                          className="w-full h-auto object-contain rounded-xl transition-transform duration-500 group-hover:scale-105"
+                        />
+                      )}
+                    </div>
+                  ));
+                })()}
               </div>
             </section>
           )}
