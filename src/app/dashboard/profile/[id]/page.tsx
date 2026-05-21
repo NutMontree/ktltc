@@ -3248,21 +3248,22 @@ export default function FriendProfilePage({
                   <option value="งานวิทยบริการและเทคโนโลยีการศึกษา" />
                   <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา" />
                   <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ" />
-                  <option value="สามัญสัมพันธ์" />
-                  <option value="การบัญชี" />
-                  <option value="การตลาด" />
-                  <option value="การตลาด/โลจิสติก์" />
-                  <option value="เทคโนโลยีธุรกิจดิจิทัล" />
-                  <option value="การโรงแรม" />
-                  <option value="เทคนิคพื้นฐาน" />
-                  <option value="ช่างอิเล็กทรอนิกส์" />
-                  <option value="ช่างยนต์" />
-                  <option value="ยานยนต์ไฟฟ้า" />
-                  <option value="ช่างไฟฟ้ากำลัง" />
-                  <option value="ช่างกลโรงงาน" />
-                  <option value="ช่างเชื่อมโลหะ" />
-                  <option value="ช่างก่อสร้าง" />
-                  <option value="ก่อสร้างโยธา" />
+                  <option value="แผนกวิชาช่างยนต์" />
+                  <option value="แผนกวิชาช่างกลโรงงาน" />
+                  <option value="แผนกวิชาช่างเชื่อมโลหะ" />
+                  <option value="แผนกวิชาช่างไฟฟ้ากำลัง" />
+                  <option value="แผนกวิชาช่างอิเล็กทรอนิกส์" />
+                  <option value="แผนกวิชาช่างเทคนิคพื้นฐาน" />
+                  <option value="แผนกวิชาช่างก่อสร้าง" />
+                  <option value="แผนกวิชาการบัญชี" />
+                  <option value="แผนกวิชาการตลาด" />
+                  <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล" />
+                  <option value="แผนกวิชาการโรงแรม" />
+                  <option value="แผนกวิชาสามัญสัมพันธ์" />
+                  <option value="แผนกวิชายานยนต์ไฟฟ้า" />
+                  <option value="แผนกวิชาการตลาด/โลจิสติก์" />
+                  <option value="การจัดการสำนักงานดิจิทัล" />
+                  <option value="การจัดการโลจิสติกส์และซัพพลายเชน" />
                   {profileOptions.departments.map((opt) => (
                     <option key={`db-${opt}`} value={opt} />
                   ))}

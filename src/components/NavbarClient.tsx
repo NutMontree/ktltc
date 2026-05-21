@@ -61,6 +61,7 @@ import {
   BarChart2,
   Award,
   MoreHorizontal,
+  BatteryCharging,
   LucideIcon,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
@@ -105,8 +106,9 @@ const menuIconMap: Record<string, LucideIcon> = {
   "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล": Monitor,
   "แผนกวิชาการโรงแรม": BedDouble,
   "แผนกวิชาสามัญสัมพันธ์": BookOpen,
-  "แผนกวิชายานยนต์ไฟฟ้า": Zap,
+  "แผนกวิชายานยนต์ไฟฟ้า": BatteryCharging,
   "แผนกวิชาการตลาด/โลจิสติก์": Truck,
+  "โลจิสติก์": Truck,
   // เมนูลัด
   "ศูนย์ราชการสะดวก": Star,
   "ระบบ ศธ. ออนไลน์": Globe,
