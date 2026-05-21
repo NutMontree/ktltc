@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Image } from "@heroui/image";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { motion, AnimatePresence } from "framer-motion";
-import { SettingOutlined, UserOutlined, BuildFilled, LoadingOutlined } from "@ant-design/icons";
+import { SettingOutlined, UserOutlined, BuildFilled, LoadingOutlined, PhoneOutlined, MailOutlined, MessageOutlined } from "@ant-design/icons";
 
 interface User {
   _id: string;
@@ -14,6 +14,9 @@ interface User {
   faction?: string;
   description?: string;
   image?: string;
+  phone?: string;
+  email?: string;
+  lineId?: string;
 }
 
 interface PersonnelListProps {
@@ -152,6 +155,34 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
                     {user.description && (
                       <p className="mt-2 text-[11px] leading-relaxed opacity-60 line-clamp-3">
                         {user.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Contact Info (Direct Channels) */}
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-zinc-800 text-left text-xs space-y-1.5 text-slate-600 dark:text-slate-400">
+                    {user.phone ? (
+                      <p className="flex items-center gap-2">
+                        <PhoneOutlined className="text-amber-500 shrink-0" />
+                        <span className="font-bold">โทร:</span> <a href={`tel:${user.phone}`} className="hover:underline">{user.phone}</a>
+                      </p>
+                    ) : null}
+                    {user.email ? (
+                      <p className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                        <MailOutlined className="text-amber-500 shrink-0" />
+                        <span className="font-bold">อีเมล:</span> <span className="truncate">{user.email}</span>
+                      </p>
+                    ) : null}
+                    {user.lineId ? (
+                      <p className="flex items-center gap-2">
+                        <MessageOutlined className="text-amber-500 shrink-0" />
+                        <span className="font-bold">Line:</span> <span>{user.lineId}</span>
+                      </p>
+                    ) : null}
+                    {!user.phone && !user.email && !user.lineId && (
+                      <p className="flex items-center gap-2 opacity-75">
+                        <MailOutlined className="text-amber-500 shrink-0" />
+                        <span className="font-bold">ติดต่อวิทยาลัย:</span> <span>info@ktltc.ac.th</span>
                       </p>
                     )}
                   </div>

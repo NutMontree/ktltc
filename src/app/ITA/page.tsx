@@ -277,6 +277,10 @@ const CategorySection = ({
                 {group.items.map((item: any) => {
                   const oitCode = `O${item.key}`;
                   const dbEntry = dbItems?.find((d) => d.oitCode === oitCode);
+                  const hasData = dbEntry && (
+                    (dbEntry.description && dbEntry.description.trim() !== "") || 
+                    (dbEntry.links && dbEntry.links.length > 0)
+                  );
 
                   return (
                     <AccordionItem
@@ -287,7 +291,32 @@ const CategorySection = ({
                           {item.key}
                         </div>
                       }
-                      title={<span>{item.title.substring(item.title.indexOf(" ") + 1)}</span>}
+                      title={
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-slate-800 dark:text-slate-100">
+                            {item.title.substring(item.title.indexOf(" ") + 1)}
+                          </span>
+                          {hasData ? (
+                            <Chip
+                              size="sm"
+                              color="success"
+                              variant="flat"
+                              className="font-bold text-[11px] border border-emerald-200 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800/30"
+                            >
+                              บันทึกข้อมูลแล้ว
+                            </Chip>
+                          ) : (
+                            <Chip
+                              size="sm"
+                              color="warning"
+                              variant="flat"
+                              className="font-bold text-[11px] border border-amber-200 bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/30"
+                            >
+                              ยังไม่ได้บันทึกข้อมูล
+                            </Chip>
+                          )}
+                        </div>
+                      }
                       subtitle={item.note}
                     >
                       <div className="rounded-xl border border-slate-100/50 bg-slate-50 p-4 md:p-6 dark:border-slate-800/50 dark:bg-slate-900/50 font-medium">

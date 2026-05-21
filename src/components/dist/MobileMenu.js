@@ -26,9 +26,7 @@ var __awaiter =
         }
       }
       function step(result) {
-        result.done
-          ? resolve(result.value)
-          : adopt(result.value).then(fulfilled, rejected);
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
       }
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -427,8 +425,7 @@ function MobileMenu(_a) {
             React.createElement(
               "div",
               {
-                className:
-                  "pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4",
+                className: "pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4",
               },
               user
                 ? // --- กรณีล็อกอินแล้ว ---
@@ -454,8 +451,7 @@ function MobileMenu(_a) {
                         React.createElement(
                           "span",
                           {
-                            className:
-                              "font-bold text-zinc-800 dark:text-white text-lg",
+                            className: "font-bold text-zinc-800 dark:text-white text-lg",
                           },
                           user.name,
                         ),
@@ -506,7 +502,7 @@ function MobileMenu(_a) {
                       href: "/login",
                       onClick: closeMenu,
                       className:
-                        "block w-full text-center py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 active:scale-95 transition-transform hover:shadow-blue-500/40",
+                        "block w-full text-center py-4 rounded-xl bg-linear-to-r from-blue-600 to-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 active:scale-95 transition-transform hover:shadow-blue-500/40",
                     },
                     "\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E23\u0E30\u0E1A\u0E1A / Admin",
                   ),

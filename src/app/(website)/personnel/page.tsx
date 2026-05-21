@@ -46,13 +46,7 @@ import DVEDS from "../academic/DVEDS";
 import TMW from "../academic/TMW";
 
 // --- Helper Component: กรอบรองหลังไอคอน ---
-const IconBox = ({
-  colorClass,
-  children,
-}: {
-  colorClass: string;
-  children: React.ReactNode;
-}) => (
+const IconBox = ({ colorClass, children }: { colorClass: string; children: React.ReactNode }) => (
   <div
     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${colorClass}`}
   >
@@ -74,92 +68,79 @@ const academicDepartments = [
     name: "การบัญชี",
     code: "Accounting",
     icon: <CalculatorOutlined />,
-    colorClass:
-      "bg-teal-50 text-teal-600 dark:bg-teal-900/20 dark:text-teal-400",
+    colorClass: "bg-teal-50 text-teal-600 dark:bg-teal-900/20 dark:text-teal-400",
   },
   {
     name: "การตลาด",
     code: "Marketing",
     icon: <ShopOutlined />,
-    colorClass:
-      "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400",
+    colorClass: "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400",
   },
   {
     name: "การตลาด/โลจิสติก์",
     code: "Logistics",
     icon: <AppstoreOutlined />,
-    colorClass:
-      "bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400",
+    colorClass: "bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400",
   },
   {
     name: "เทคโนโลยีธุรกิจดิจิทัล",
     code: "Digital Tech",
     icon: <LaptopOutlined />,
-    colorClass:
-      "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400",
+    colorClass: "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400",
   },
   {
     name: "การโรงแรม",
     code: "Hotel",
     icon: <CoffeeOutlined />,
-    colorClass:
-      "bg-red-50 text-[#8D6E63] dark:bg-red-900/20 dark:text-[#A1887F]",
+    colorClass: "bg-red-50 text-[#8D6E63] dark:bg-red-900/20 dark:text-[#A1887F]",
   },
   {
     name: "เทคนิคพื้นฐาน",
     code: "Basic Tech",
     icon: <ToolOutlined />,
-    colorClass:
-      "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400",
+    colorClass: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400",
   },
   {
     name: "ช่างอิเล็กทรอนิกส์",
     code: "Electronics",
     icon: <WifiOutlined />,
-    colorClass:
-      "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
+    colorClass: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
   },
   {
     name: "ช่างยนต์",
     code: "Mechanic",
     icon: <CarOutlined />,
-    colorClass:
-      "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
+    colorClass: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
   },
   {
     name: "ยานยนต์ไฟฟ้า",
     code: "EV",
     icon: <ThunderboltOutlined />,
-    colorClass:
-      "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400",
+    colorClass: "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400",
   },
   {
     name: "ช่างไฟฟ้ากำลัง",
     code: "Electrical Power",
     icon: <ThunderboltOutlined />,
-    colorClass:
-      "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
+    colorClass: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
   },
   {
     name: "ช่างกลโรงงาน",
     code: "Machine Shop",
     icon: <SettingOutlined />,
-    colorClass:
-      "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+    colorClass: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
   },
   {
     name: "ช่างเชื่อมโลหะ",
     code: "Welding",
     icon: <FireOutlined />,
-    colorClass:
-      "bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400",
+    colorClass: "bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400",
   },
   {
     name: "ช่างก่อสร้าง",
     code: "Construction",
     icon: <BuildOutlined />,
-    colorClass:
-      "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400",
+    colorClass: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400",
   },
 ];
 
@@ -199,7 +180,11 @@ const divisions: Record<string, SubDept[]> = {
     { name: "งานพัฒนาหลักสูตรและการจัดการเรียนรู้", icon: <BookOutlined />, component: <CDW /> },
     { name: "งานวัดผลและประเมินผล", icon: <BarChartOutlined />, component: <TMW /> }, // Using TMW for measurement
     { name: "งานวิทยบริการและเทคโนโลยีการศึกษา", icon: <ReadOutlined />, component: <ARAL /> },
-    { name: "งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ", icon: <SolutionOutlined />, component: <DVEDS /> },
+    {
+      name: "งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ",
+      icon: <SolutionOutlined />,
+      component: <DVEDS />,
+    },
     { name: "งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา", icon: <CheckCircleOutlined /> },
     { name: "งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ", icon: <CheckCircleOutlined /> },
   ],
@@ -232,12 +217,15 @@ export default function Personnel() {
 
   // Styles สำหรับ Accordion
   const itemClasses = {
-    base: "py-0 w-full mb-4 group data-[open=true]:shadow-lg transition-shadow duration-300",
-    title: "font-bold text-lg text-slate-800 dark:text-slate-100",
+    base: "py-0 w-full mb-6 group transition-all duration-300 data-[open=true]:drop-shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:data-[open=true]:drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)]",
+    title:
+      "font-black text-lg text-slate-800 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors",
     trigger:
-      "px-6 py-5 bg-white dark:bg-zinc-900/80 backdrop-blur-xl hover:bg-slate-50/80 rounded-2xl border border-slate-200/60 dark:border-zinc-800 shadow-sm transition-all duration-300",
-    indicator: "text-lg text-slate-400 data-[open=true]:text-[#DAA520] data-[open=true]:rotate-90",
-    content: "text-small px-6 pb-8 pt-4 bg-white/50 dark:bg-zinc-900/50 rounded-b-2xl border-x border-b border-slate-200/60 dark:border-zinc-800 -mt-2",
+      "px-6 py-5 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-lg hover:bg-white/90 dark:hover:bg-neutral-900/90 rounded-[24px] border border-white/60 dark:border-neutral-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 group-data-[open=true]:rounded-b-none group-data-[open=true]:border-b-0",
+    indicator:
+      "text-lg text-slate-400 data-[open=true]:text-amber-500 data-[open=true]:rotate-90 transition-transform duration-300",
+    content:
+      "text-small px-6 pb-8 pt-4 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-lg rounded-b-[24px] border-x border-b border-white/60 dark:border-neutral-800/60 -mt-2",
   };
 
   return (
@@ -251,42 +239,46 @@ export default function Personnel() {
       >
         {/* --- Header Section --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">
-          <div className="inline-flex items-center justify-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-bold text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
-            <TeamOutlined className="mr-2" /> โครงสร้างและบุคลากรของเรา
+          <div className="inline-flex items-center justify-center rounded-full border border-amber-200 bg-amber-50/80 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-amber-700 shadow-sm backdrop-blur-sm dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400">
+            <TeamOutlined className="mr-2 text-amber-500" /> โครงสร้างและบุคลากรของเรา
           </div>
-          <h1 className="mt-4 text-4xl font-extrabold text-slate-800 md:text-5xl dark:text-white tracking-tight">
-            ข้อมูล<span className="text-[#DAA520]">บุคลากร</span>
+          <h1 className="mt-4 text-4xl font-black text-slate-900 md:text-5xl dark:text-white tracking-tight leading-tight">
+            ข้อมูล
+            <span className="bg-linear-to-r from-amber-600 via-yellow-500 to-amber-500 bg-clip-text text-transparent ml-2 font-black">
+              บุคลากร
+            </span>
           </h1>
-          <p className="mt-3 text-lg text-slate-500 dark:text-slate-400">
+          <div className="mx-auto mt-6 h-1 w-20 rounded-full bg-linear-to-r from-amber-500 to-yellow-400" />
+          <p className="mt-6 text-lg font-medium text-slate-500 dark:text-slate-400">
             Personnel Information Directory
           </p>
         </motion.div>
 
         {/* --- Dynamic Categories Tabs --- */}
-        <motion.div
-          variants={itemVar}
-          className="mb-10 w-full overflow-x-auto pb-4 scrollbar-hide"
-        >
-          <div className="flex w-max min-w-full justify-center gap-2 p-1 border-b border-slate-200 dark:border-neutral-800">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`relative px-5 py-3 text-sm font-bold transition-all rounded-t-2xl whitespace-nowrap ${
-                  activeTab === tab
-                    ? "text-[#DAA520] bg-yellow-500/10"
-                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-neutral-800"
-                }`}
-              >
-                {tab}
-                {activeTab === tab && (
-                  <motion.div
-                    layoutId="activeTabBottom"
-                    className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#DAA520] rounded-t-sm"
-                  />
-                )}
-              </button>
-            ))}
+        <motion.div variants={itemVar} className="mb-16 w-full overflow-x-auto pb-4 hide-scrollbar">
+          <div className="flex w-max min-w-full justify-center">
+            <div className="inline-flex gap-1 p-1.5 rounded-full border border-slate-200/60 bg-white/60 shadow-sm backdrop-blur-xl dark:border-neutral-800/60 dark:bg-neutral-900/60">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`relative px-5 py-2.5 text-sm font-black transition-colors duration-300 rounded-full whitespace-nowrap ${
+                    activeTab === tab
+                      ? "text-white"
+                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                  }`}
+                >
+                  {activeTab === tab && (
+                    <motion.div
+                      layoutId="activeTabPill"
+                      className="absolute inset-0 rounded-full bg-linear-to-r from-amber-600 to-yellow-500 shadow-md"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{tab}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </motion.div>
 
@@ -307,27 +299,16 @@ export default function Personnel() {
               )}
 
               {activeTab === "แผนกวิชา" && (
-                <Accordion
-                  variant="splitted"
-                  className="gap-3 px-0"
-                  itemClasses={itemClasses}
-                >
+                <Accordion variant="splitted" className="gap-3 px-0" itemClasses={itemClasses}>
                   {academicDepartments.map((dept, index) => (
                     <AccordionItem
                       key={String(index)}
                       aria-label={dept.name}
-                      startContent={
-                        <IconBox colorClass={dept.colorClass}>
-                          {dept.icon}
-                        </IconBox>
-                      }
+                      startContent={<IconBox colorClass={dept.colorClass}>{dept.icon}</IconBox>}
                       title={`แผนกวิชา${dept.name}`}
                     >
                       <div className="pt-2">
-                        <PersonnelList
-                          departmentName={dept.name}
-                          departmentCode={dept.code}
-                        />
+                        <PersonnelList departmentName={dept.name} departmentCode={dept.code} />
                       </div>
                     </AccordionItem>
                   ))}
@@ -338,11 +319,7 @@ export default function Personnel() {
                 activeTab === "ฝ่ายยุทธศาสตร์และแผนงาน" ||
                 activeTab === "ฝ่ายกิจการนักเรียน นักศึกษา" ||
                 activeTab === "ฝ่ายวิชาการ") && (
-                <Accordion
-                  variant="splitted"
-                  className="gap-3 px-0"
-                  itemClasses={itemClasses}
-                >
+                <Accordion variant="splitted" className="gap-3 px-0" itemClasses={itemClasses}>
                   {divisions[activeTab].map((subDept, index) => (
                     <AccordionItem
                       key={String(index)}
@@ -358,18 +335,15 @@ export default function Personnel() {
                         {/* Render Duties Component if available */}
                         {subDept.component && (
                           <div className="mb-8 relative">
-                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-[#DAA520]/20 to-transparent rounded-full" />
-                             <div className="pl-6">
-                               {subDept.component}
-                             </div>
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-[#DAA520]/20 to-transparent rounded-full" />
+                            <div className="pl-6">{subDept.component}</div>
                           </div>
                         )}
-                        
-                        <div className={`${subDept.component ? "pt-8 border-t border-slate-100 dark:border-zinc-800" : ""}`}>
-                          <PersonnelList
-                            departmentName={subDept.name}
-                            departmentCode={activeTab}
-                          />
+
+                        <div
+                          className={`${subDept.component ? "pt-8 border-t border-slate-100 dark:border-zinc-800" : ""}`}
+                        >
+                          <PersonnelList departmentName={subDept.name} departmentCode={activeTab} />
                         </div>
                       </div>
                     </AccordionItem>

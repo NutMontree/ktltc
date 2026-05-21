@@ -39,14 +39,12 @@ var SuveryDetailModal = function (_a) {
     return React.createElement(
       "div",
       {
-        className:
-          "flex flex-col " + (fullWidth ? "col-span-full" : "col-span-1"),
+        className: "flex flex-col " + (fullWidth ? "col-span-full" : "col-span-1"),
       },
       React.createElement(
         "span",
         {
-          className:
-            "text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1",
+          className: "text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1",
         },
         label,
       ),
@@ -129,8 +127,7 @@ var SuveryDetailModal = function (_a) {
             React.createElement(
               "p",
               {
-                className:
-                  "text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1",
+                className: "text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1",
               },
               React.createElement(lucide_react_1.Calendar, { size: 12 }),
               " \u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E40\u0E21\u0E37\u0E48\u0E2D:",
@@ -159,7 +156,7 @@ var SuveryDetailModal = function (_a) {
           "div",
           {
             className:
-              "mb-8 p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-white border border-gray-100 dark:from-gray-800 dark:to-gray-800/50 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4",
+              "mb-8 p-4 rounded-2xl bg-linear-to-r from-gray-50 to-white border border-gray-100 dark:from-gray-800 dark:to-gray-800/50 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4",
           },
           React.createElement(
             "div",
@@ -190,19 +187,16 @@ var SuveryDetailModal = function (_a) {
           ),
         ),
         React.createElement(SectionHeader, {
-          title:
-            "\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E48\u0E27\u0E19\u0E15\u0E31\u0E27",
+          title: "\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E2A\u0E48\u0E27\u0E19\u0E15\u0E31\u0E27",
           icon: lucide_react_1.User,
         }),
         React.createElement(
           "div",
           {
-            className:
-              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 mb-2",
+            className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 mb-2",
           },
           React.createElement(DataRow, {
-            label:
-              "\u0E23\u0E2B\u0E31\u0E2A\u0E19\u0E31\u0E01\u0E28\u0E36\u0E01\u0E29\u0E32",
+            label: "\u0E23\u0E2B\u0E31\u0E2A\u0E19\u0E31\u0E01\u0E28\u0E36\u0E01\u0E29\u0E32",
             value: suvery.studentId,
           }),
           React.createElement(DataRow, {
@@ -293,8 +287,7 @@ var SuveryDetailModal = function (_a) {
             value: suvery.graduationYear,
           }),
           React.createElement(DataRow, {
-            label:
-              "\u0E40\u0E01\u0E23\u0E14\u0E40\u0E09\u0E25\u0E35\u0E48\u0E22 (GPA)",
+            label: "\u0E40\u0E01\u0E23\u0E14\u0E40\u0E09\u0E25\u0E35\u0E48\u0E22 (GPA)",
             value: suvery.gpa,
           }),
         ),
@@ -310,17 +303,14 @@ var SuveryDetailModal = function (_a) {
             React.createElement(
               "div",
               {
-                className:
-                  "grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 mb-2",
+                className: "grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 mb-2",
               },
               React.createElement(DataRow, {
-                label:
-                  "\u0E15\u0E33\u0E41\u0E2B\u0E19\u0E48\u0E07\u0E07\u0E32\u0E19",
+                label: "\u0E15\u0E33\u0E41\u0E2B\u0E19\u0E48\u0E07\u0E07\u0E32\u0E19",
                 value: suvery.jobTitle,
               }),
               React.createElement(DataRow, {
-                label:
-                  "\u0E2A\u0E16\u0E32\u0E19\u0E17\u0E35\u0E48\u0E17\u0E33\u0E07\u0E32\u0E19",
+                label: "\u0E2A\u0E16\u0E32\u0E19\u0E17\u0E35\u0E48\u0E17\u0E33\u0E07\u0E32\u0E19",
                 value: suvery.workplaceName,
               }),
               React.createElement(DataRow, {
@@ -329,8 +319,7 @@ var SuveryDetailModal = function (_a) {
                 value: suvery.employmentType,
               }),
               React.createElement(DataRow, {
-                label:
-                  "\u0E1B\u0E23\u0E30\u0E40\u0E20\u0E17\u0E2D\u0E37\u0E48\u0E19\u0E46",
+                label: "\u0E1B\u0E23\u0E30\u0E40\u0E20\u0E17\u0E2D\u0E37\u0E48\u0E19\u0E46",
                 value: suvery.employmentTypeOther,
               }),
               React.createElement(DataRow, {
@@ -338,8 +327,7 @@ var SuveryDetailModal = function (_a) {
                 value: suvery.salaryRange,
               }),
               React.createElement(DataRow, {
-                label:
-                  "\u0E23\u0E32\u0E22\u0E44\u0E14\u0E49 (\u0E23\u0E30\u0E1A\u0E38)",
+                label: "\u0E23\u0E32\u0E22\u0E44\u0E14\u0E49 (\u0E23\u0E30\u0E1A\u0E38)",
                 value: suvery.salaryRangeOther,
               }),
               React.createElement(DataRow, {
@@ -348,8 +336,7 @@ var SuveryDetailModal = function (_a) {
                 value: suvery.jobMatch,
               }),
               React.createElement(DataRow, {
-                label:
-                  "\u0E04\u0E27\u0E32\u0E21\u0E1E\u0E36\u0E07\u0E1E\u0E2D\u0E43\u0E08",
+                label: "\u0E04\u0E27\u0E32\u0E21\u0E1E\u0E36\u0E07\u0E1E\u0E2D\u0E43\u0E08",
                 value: suvery.jobSatisfaction,
               }),
               React.createElement(DataRow, {
@@ -384,12 +371,10 @@ var SuveryDetailModal = function (_a) {
             React.createElement(
               "div",
               {
-                className:
-                  "grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 mb-2",
+                className: "grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 mb-2",
               },
               React.createElement(DataRow, {
-                label:
-                  "\u0E04\u0E27\u0E32\u0E21\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23",
+                label: "\u0E04\u0E27\u0E32\u0E21\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23",
                 value: suvery.furtherStudyIntention,
               }),
               React.createElement(DataRow, {
@@ -423,12 +408,10 @@ var SuveryDetailModal = function (_a) {
             React.createElement(
               "div",
               {
-                className:
-                  "grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 mb-2",
+                className: "grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 mb-2",
               },
               React.createElement(DataRow, {
-                label:
-                  "\u0E40\u0E2B\u0E15\u0E38\u0E1C\u0E25\u0E2B\u0E25\u0E31\u0E01",
+                label: "\u0E40\u0E2B\u0E15\u0E38\u0E1C\u0E25\u0E2B\u0E25\u0E31\u0E01",
                 value: suvery.notWorkingReasonGroup,
               }),
               React.createElement(DataRow, {
@@ -442,8 +425,7 @@ var SuveryDetailModal = function (_a) {
                 value: suvery.unemployedReason,
               }),
               React.createElement(DataRow, {
-                label:
-                  "\u0E2A\u0E32\u0E40\u0E2B\u0E15\u0E38\u0E2D\u0E37\u0E48\u0E19",
+                label: "\u0E2A\u0E32\u0E40\u0E2B\u0E15\u0E38\u0E2D\u0E37\u0E48\u0E19",
                 value: suvery.unemployedReasonOther,
               }),
             ),

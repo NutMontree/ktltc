@@ -131,17 +131,19 @@ export const ImgPost = (props: { img: any; onBgClick: any }) => {
         </div>
 
         {/* 5. ข้อมูลติดต่อ */}
-        {(img.phone || img.email) && (
-          <div className="space-y-3 pt-2">
-            <h5 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
-              <PhoneOutlined /> ช่องทางการติดต่อ
-            </h5>
-            <div className="pl-5 text-sm space-y-1">
-              {img.phone && <p><span className="text-zinc-400">เบอร์โทรศัพท์:</span> <a href={`tel:${img.phone}`} className="text-blue-600 font-bold hover:underline">{img.phone}</a></p>}
-              {img.email && <p><span className="text-zinc-400">อีเมลติดต่อ:</span> <span className="font-bold text-zinc-950 dark:text-white">{img.email}</span></p>}
-            </div>
+        <div className="space-y-3 pt-2">
+          <h5 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
+            <PhoneOutlined /> ช่องทางการติดต่อ
+          </h5>
+          <div className="pl-5 text-sm space-y-1">
+            {img.phone && <p><span className="text-zinc-400">เบอร์โทรศัพท์:</span> <a href={`tel:${img.phone}`} className="text-blue-600 font-bold hover:underline">{img.phone}</a></p>}
+            {img.email && <p><span className="text-zinc-400">อีเมลติดต่อ:</span> <span className="font-bold text-zinc-950 dark:text-white">{img.email}</span></p>}
+            {img.lineId && <p><span className="text-zinc-400">Line ID:</span> <span className="font-bold text-zinc-950 dark:text-white">{img.lineId}</span></p>}
+            {!img.phone && !img.email && !img.lineId && (
+              <p><span className="text-zinc-400">ติดต่อวิทยาลัย:</span> <a href="mailto:info@ktltc.ac.th" className="text-blue-600 font-bold hover:underline">info@ktltc.ac.th</a> หรือ โทร <a href="tel:045-810-777" className="text-blue-600 font-bold hover:underline">045-810-777</a></p>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

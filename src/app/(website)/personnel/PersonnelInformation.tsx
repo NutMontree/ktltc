@@ -74,6 +74,7 @@ export const Personnel1 = () => {
               respOther: u.respOther || "",
               phone: u.phone || "",
               email: u.email || "",
+              lineId: u.lineId || "",
             }));
           setDbUsers(mappedUsers);
         }
@@ -130,7 +131,7 @@ export const Personnel1 = () => {
         {/* --- 2. Gallery Grid with Animation --- */}
         <motion.div
           layout
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
           <AnimatePresence mode="popLayout">
             {filteredImgs.length > 0 ? (
