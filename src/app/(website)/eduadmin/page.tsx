@@ -120,12 +120,11 @@ export default function EDUAdmin() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-slate-50/50 py-20 font-sans text-slate-800 dark:bg-neutral-950/40 dark:text-slate-200">
-      {/* Decorative Grid and Ambient Lights */}
+    <section className="relative w-full overflow-hidden px-24 bg-slate-50/50 py-20 font-sans text-slate-800 dark:bg-neutral-950/40 dark:text-slate-200">
+      {/* Decorative Grid and Ambient Lights */}asdasds
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]" />
       <div className="pointer-events-none absolute -top-40 left-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-amber-500/10 blur-[120px] dark:bg-amber-500/5" />
       <div className="pointer-events-none absolute top-80 right-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-yellow-500/10 blur-[140px] dark:bg-yellow-500/5" />
-
       <div className="container mx-auto max-w-[1400px] px-4 relative z-10">
         {/* --- Header --- */}
         <motion.div
@@ -278,13 +277,17 @@ export default function EDUAdmin() {
                         {director.phone && (
                           <span className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-neutral-800/50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-neutral-800">
                             <Phone className="w-3.5 h-3.5 text-amber-500" />
-                            <span className="font-bold">โทร:</span> <a href={`tel:${director.phone}`} className="hover:underline">{director.phone}</a>
+                            <span className="font-bold">โทร:</span>{" "}
+                            <a href={`tel:${director.phone}`} className="hover:underline">
+                              {director.phone}
+                            </a>
                           </span>
                         )}
                         {director.email && (
                           <span className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-neutral-800/50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-neutral-800 max-w-[220px] truncate">
                             <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                            <span className="font-bold">อีเมล:</span> <span className="truncate">{director.email}</span>
+                            <span className="font-bold">อีเมล:</span>{" "}
+                            <span className="truncate">{director.email}</span>
                           </span>
                         )}
                         {director.lineId && (
@@ -374,13 +377,17 @@ export default function EDUAdmin() {
                             {item.phone && (
                               <p className="flex items-center gap-2">
                                 <Phone className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                                <span className="font-bold">โทร:</span> <a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a>
+                                <span className="font-bold">โทร:</span>{" "}
+                                <a href={`tel:${item.phone}`} className="hover:underline">
+                                  {item.phone}
+                                </a>
                               </p>
                             )}
                             {item.email && (
                               <p className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                                 <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                                <span className="font-bold">อีเมล:</span> <span className="truncate">{item.email}</span>
+                                <span className="font-bold">อีเมล:</span>{" "}
+                                <span className="truncate">{item.email}</span>
                               </p>
                             )}
                             {item.lineId && (
@@ -443,13 +450,17 @@ export default function EDUAdmin() {
                           {member.phone && (
                             <p className="flex items-center gap-2">
                               <Phone className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                              <span className="font-bold">โทร:</span> <a href={`tel:${member.phone}`} className="hover:underline">{member.phone}</a>
+                              <span className="font-bold">โทร:</span>{" "}
+                              <a href={`tel:${member.phone}`} className="hover:underline">
+                                {member.phone}
+                              </a>
                             </p>
                           )}
                           {member.email && (
                             <p className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                               <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                              <span className="font-bold">อีเมล:</span> <span className="truncate">{member.email}</span>
+                              <span className="font-bold">อีเมล:</span>{" "}
+                              <span className="truncate">{member.email}</span>
                             </p>
                           )}
                           {member.lineId && (
@@ -530,7 +541,9 @@ export default function EDUAdmin() {
                               {former.phone && (
                                 <p className="flex items-center gap-2">
                                   <Phone className="w-3 h-3 text-amber-500 shrink-0" />
-                                  <a href={`tel:${former.phone}`} className="hover:underline">{former.phone}</a>
+                                  <a href={`tel:${former.phone}`} className="hover:underline">
+                                    {former.phone}
+                                  </a>
                                 </p>
                               )}
                               {former.email && (
@@ -551,7 +564,6 @@ export default function EDUAdmin() {
           )}
         </AnimatePresence>
       </div>
-
       {/* --- Detail Modal --- */}
       <AnimatePresence>
         {selectedExec && (
@@ -708,7 +720,10 @@ export default function EDUAdmin() {
                         {selectedExec.phone && (
                           <p className="flex items-center gap-2">
                             <span className="text-slate-400 font-bold">เบอร์โทรศัพท์:</span>
-                            <a href={`tel:${selectedExec.phone}`} className="text-amber-600 font-bold hover:underline">
+                            <a
+                              href={`tel:${selectedExec.phone}`}
+                              className="text-amber-600 font-bold hover:underline"
+                            >
                               {selectedExec.phone}
                             </a>
                           </p>
@@ -730,7 +745,9 @@ export default function EDUAdmin() {
                           </p>
                         )}
                         {!selectedExec.phone && !selectedExec.email && !selectedExec.lineId && (
-                          <p className="text-slate-400 italic text-xs">ไม่ได้ระบุช่องทางการติดต่อ</p>
+                          <p className="text-slate-400 italic text-xs">
+                            ไม่ได้ระบุช่องทางการติดต่อ
+                          </p>
                         )}
                       </div>
                     </div>

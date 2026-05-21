@@ -133,10 +133,10 @@ export default function ExecutiveBoard() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="mb-12 text-center"
+          className="mb-12 text-center "
         >
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50/80 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-amber-700 shadow-sm backdrop-blur-sm dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400">
-            <Users className="w-3.5 h-3.5 text-amber-500" /> ทำเนียบผู้บริหาร
+            <Users className="w-3.5 h-3.5 text-amber-500 " /> ทำเนียบผู้บริหาร
           </div>
           <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-5xl lg:text-6xl dark:text-white">
             ทำเนียบ
@@ -278,13 +278,17 @@ export default function ExecutiveBoard() {
                         {director.phone && (
                           <span className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-neutral-800/50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-neutral-800">
                             <Phone className="w-3.5 h-3.5 text-amber-500" />
-                            <span className="font-bold">โทร:</span> <a href={`tel:${director.phone}`} className="hover:underline">{director.phone}</a>
+                            <span className="font-bold">โทร:</span>{" "}
+                            <a href={`tel:${director.phone}`} className="hover:underline">
+                              {director.phone}
+                            </a>
                           </span>
                         )}
                         {director.email && (
                           <span className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-neutral-800/50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-neutral-800 max-w-[220px] truncate">
                             <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                            <span className="font-bold">อีเมล:</span> <span className="truncate">{director.email}</span>
+                            <span className="font-bold">อีเมล:</span>{" "}
+                            <span className="truncate">{director.email}</span>
                           </span>
                         )}
                         {director.lineId && (
@@ -374,13 +378,17 @@ export default function ExecutiveBoard() {
                             {item.phone && (
                               <p className="flex items-center gap-2">
                                 <Phone className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                                <span className="font-bold">โทร:</span> <a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a>
+                                <span className="font-bold">โทร:</span>{" "}
+                                <a href={`tel:${item.phone}`} className="hover:underline">
+                                  {item.phone}
+                                </a>
                               </p>
                             )}
                             {item.email && (
                               <p className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                                 <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                                <span className="font-bold">อีเมล:</span> <span className="truncate">{item.email}</span>
+                                <span className="font-bold">อีเมล:</span>{" "}
+                                <span className="truncate">{item.email}</span>
                               </p>
                             )}
                             {item.lineId && (
@@ -443,13 +451,17 @@ export default function ExecutiveBoard() {
                           {member.phone && (
                             <p className="flex items-center gap-2">
                               <Phone className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                              <span className="font-bold">โทร:</span> <a href={`tel:${member.phone}`} className="hover:underline">{member.phone}</a>
+                              <span className="font-bold">โทร:</span>{" "}
+                              <a href={`tel:${member.phone}`} className="hover:underline">
+                                {member.phone}
+                              </a>
                             </p>
                           )}
                           {member.email && (
                             <p className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                               <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                              <span className="font-bold">อีเมล:</span> <span className="truncate">{member.email}</span>
+                              <span className="font-bold">อีเมล:</span>{" "}
+                              <span className="truncate">{member.email}</span>
                             </p>
                           )}
                           {member.lineId && (
@@ -530,7 +542,9 @@ export default function ExecutiveBoard() {
                               {former.phone && (
                                 <p className="flex items-center gap-2">
                                   <Phone className="w-3 h-3 text-amber-500 shrink-0" />
-                                  <a href={`tel:${former.phone}`} className="hover:underline">{former.phone}</a>
+                                  <a href={`tel:${former.phone}`} className="hover:underline">
+                                    {former.phone}
+                                  </a>
                                 </p>
                               )}
                               {former.email && (
@@ -708,23 +722,34 @@ export default function ExecutiveBoard() {
                         {selectedExec.phone && (
                           <p className="flex items-center gap-2">
                             <span className="text-slate-400 font-bold">เบอร์โทรศัพท์:</span>
-                            <a href={`tel:${selectedExec.phone}`} className="text-amber-600 font-bold hover:underline">{selectedExec.phone}</a>
+                            <a
+                              href={`tel:${selectedExec.phone}`}
+                              className="text-amber-600 font-bold hover:underline"
+                            >
+                              {selectedExec.phone}
+                            </a>
                           </p>
                         )}
                         {selectedExec.email && (
                           <p className="flex items-center gap-2">
                             <span className="text-slate-400 font-bold">อีเมลติดต่อ:</span>
-                            <span className="font-bold text-slate-900 dark:text-white">{selectedExec.email}</span>
+                            <span className="font-bold text-slate-900 dark:text-white">
+                              {selectedExec.email}
+                            </span>
                           </p>
                         )}
                         {selectedExec.lineId && (
                           <p className="flex items-center gap-2">
                             <span className="text-slate-400 font-bold">Line ID:</span>
-                            <span className="font-bold text-slate-900 dark:text-white">{selectedExec.lineId}</span>
+                            <span className="font-bold text-slate-900 dark:text-white">
+                              {selectedExec.lineId}
+                            </span>
                           </p>
                         )}
                         {!selectedExec.phone && !selectedExec.email && !selectedExec.lineId && (
-                          <p className="text-slate-400 italic text-xs">ไม่ได้ระบุช่องทางการติดต่อ</p>
+                          <p className="text-slate-400 italic text-xs">
+                            ไม่ได้ระบุช่องทางการติดต่อ
+                          </p>
                         )}
                       </div>
                     </div>
