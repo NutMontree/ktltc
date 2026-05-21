@@ -154,24 +154,17 @@ interface NewsItem {
 }
 
 // ฟังก์ชันสำหรับ SEO Metadata
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const news = await getNewsDetail(id);
   const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://ktltc.ac.th";
+    process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://ktltc.ac.th";
   const pageUrl = `${baseUrl}/news/${id}`;
   const plainTextContent = news?.content?.replace(/<[^>]+>/g, "").trim() || "";
   const description =
-    plainTextContent.slice(0, 160) ||
-    "ข่าวสารและกิจกรรมจากวิทยาลัยเทคนิคกันทรลักษ์";
+    plainTextContent.slice(0, 160) || "ข่าวสารและกิจกรรมจากวิทยาลัยเทคนิคกันทรลักษ์";
   const imageUrl =
-    // Prefer an image (not video) for Open Graph. 
+    // Prefer an image (not video) for Open Graph.
     (news?.thumbnails || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
     (news?.images || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
     (news?.announcementImages || []).find((u) => !/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u)) ||
@@ -245,21 +238,15 @@ async function getAdjacentNews(currentNews: NewsItem) {
       .toArray();
 
     return {
-      prev:
-        prevNews.length > 0 ? JSON.parse(JSON.stringify(prevNews[0])) : null,
-      next:
-        nextNews.length > 0 ? JSON.parse(JSON.stringify(nextNews[0])) : null,
+      prev: prevNews.length > 0 ? JSON.parse(JSON.stringify(prevNews[0])) : null,
+      next: nextNews.length > 0 ? JSON.parse(JSON.stringify(nextNews[0])) : null,
     };
   } catch {
     return { prev: null, next: null };
   }
 }
 
-export default async function NewsDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const news = await getNewsDetail(id);
 
@@ -287,15 +274,10 @@ export default async function NewsDetailPage({
       ? [news.category]
       : ["ข่าวทั่วไป"];
 
-  const authorName =
-    news.userName ||
-    news.author?.name ||
-    "เธ‡เธฒเธ™เธจเธนเธ™เธขเนŒเธ‚เน‰เธญเธกเธนเธฅ";
+  const authorName = news.userName || news.author?.name || "งานศูนย์ดิจิทัลและสื่อสารองค์กร";
   const authorImage = news.userImage || news.author?.image || null;
   const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://ktltc.ac.th";
+    process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://ktltc.ac.th";
   const pageUrl = `${baseUrl}/news/${id}`;
 
   return (
@@ -331,7 +313,7 @@ export default async function NewsDetailPage({
               <div className="relative group/meta">
                 {/* Decorative border bottom */}
                 <div className="absolute -bottom-4 left-0 w-24 h-1 bg-blue-600 rounded-full transition-all duration-500 group-hover/meta:w-32"></div>
-                
+
                 <div className="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
                   {/* Date Item */}
                   <div className="flex items-center gap-3 group transition-colors">
@@ -339,7 +321,9 @@ export default async function NewsDetailPage({
                       <IconCalendar />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">วันที่เผยแพร่</span>
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">
+                        วันที่เผยแพร่
+                      </span>
                       <time className="text-slate-800 dark:text-zinc-200 font-semibold leading-tight">
                         {new Date(news.createdAt).toLocaleDateString("th-TH", {
                           timeZone: "Asia/Bangkok",
@@ -360,14 +344,17 @@ export default async function NewsDetailPage({
                       <IconClock />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">เวลาโพสต์</span>
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">
+                        เวลาโพสต์
+                      </span>
                       <time className="text-slate-800 dark:text-zinc-200 font-semibold leading-tight">
                         {new Date(news.createdAt).toLocaleTimeString("th-TH", {
                           timeZone: "Asia/Bangkok",
                           hour: "2-digit",
                           minute: "2-digit",
                           hour12: false,
-                        })} น.
+                        })}{" "}
+                        น.
                       </time>
                     </div>
                   </div>
@@ -394,7 +381,9 @@ export default async function NewsDetailPage({
                       </div>
                     )}
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">เขียนโดย</span>
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-tighter">
+                        เขียนโดย
+                      </span>
                       <span className="text-slate-800 dark:text-zinc-200 font-bold leading-tight group-hover:text-blue-600 transition-colors">
                         {authorName}
                       </span>
@@ -429,9 +418,7 @@ export default async function NewsDetailPage({
             <section className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="h-6 w-1.5 bg-red-600 rounded-full"></div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  วิดีโอประกอบ
-                </h3>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">วิดีโอประกอบ</h3>
               </div>
               <div
                 className={`grid gap-6 ${news.videoEmbeds.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
@@ -472,9 +459,7 @@ export default async function NewsDetailPage({
                       <h4 className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 truncate">
                         {link.label}
                       </h4>
-                      <p className="text-xs text-slate-400 truncate mt-1 font-mono">
-                        {link.url}
-                      </p>
+                      <p className="text-xs text-slate-400 truncate mt-1 font-mono">{link.url}</p>
                     </div>
                     <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 dark:bg-zinc-800 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:rotate-45">
                       <IconExternalLink />
@@ -501,12 +486,7 @@ export default async function NewsDetailPage({
                     className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800"
                   >
                     {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (
-                      <video
-                        src={img}
-                        className="w-full h-auto"
-                        controls
-                        playsInline
-                      />
+                      <video src={img} className="w-full h-auto" controls playsInline />
                     ) : (
                       <Image
                         src={img}
@@ -525,7 +505,8 @@ export default async function NewsDetailPage({
           )}
 
           {/* --- Gallery Section --- */}
-          {((news.images && news.images.length > 0) || (news.thumbnails && news.thumbnails.length > 0)) && (
+          {((news.images && news.images.length > 0) ||
+            (news.thumbnails && news.thumbnails.length > 0)) && (
             <section className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="h-6 w-1.5 bg-blue-600 rounded-full"></div>
@@ -536,9 +517,7 @@ export default async function NewsDetailPage({
                   </span>
                 </h3>
               </div>
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* แสดงรูปจาก thumbnails ก่อนถ้ามี (และยังไม่แสดงซ้ำ) */}
                 {news.thumbnails?.map((img, idx) => (
                   <div
