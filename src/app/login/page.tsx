@@ -95,7 +95,12 @@ export default function LoginPage() {
           }
         } else {
           // สิทธิ์ปกติ (user)
-          if (callbackUrl && !callbackUrl.startsWith("/dashboard") && !callbackUrl.startsWith("/manage-roles") && !callbackUrl.startsWith("/attendance-")) {
+          if (
+            callbackUrl &&
+            !callbackUrl.startsWith("/dashboard") &&
+            !callbackUrl.startsWith("/manage-roles") &&
+            !callbackUrl.startsWith("/attendance-")
+          ) {
             window.location.href = callbackUrl;
           } else {
             window.location.href = "/";
@@ -228,7 +233,8 @@ export default function LoginPage() {
                   รหัสผ่าน
                 </label>
                 <Link
-                  href="https://www.allmaster.store/contactus"
+                  // href="https://www.allmaster.store/contactus"
+                  href="https://line.me/ti/p/p-xwfjMXJM"
                   className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors pr-1"
                 >
                   ลืมรหัสผ่าน?

@@ -31,17 +31,7 @@ import { useRef } from "react";
 interface UserFormData {
   name: string;
   email: string;
-  role:
-    | "super_admin"
-    | "admin"
-    | "hr"
-    | "director"
-    | "editor"
-    | "user"
-    | "staff"
-    | "teacher"
-    | "janitor"
-    | "student";
+  role: string;
   department: string;
   position?: string;
   faction?: string;
@@ -52,6 +42,28 @@ interface UserFormData {
   image?: string; // Added image
   coverImage?: string; // Added coverImage
   passwordText?: string; // Add this!
+  studentId?: string;
+  groupCode?: string;
+  work?: string;
+  education?: string;
+  currentCity?: string;
+  hometown?: string;
+  relationship?: string;
+  addressHouse?: string;
+  addressVillage?: string;
+  addressSubdistrict?: string;
+  addressDistrict?: string;
+  addressProvince?: string;
+  addressZipcode?: string;
+  positionNumber?: string;
+  affiliation?: string;
+  govStartDate?: string;
+  retirementDate?: string;
+  retirementFiscalYear?: string;
+  respDeptHead?: string;
+  respWorkHead?: string;
+  respOther?: string;
+  program?: string;
 }
 
 export default function EditUserPage() {
@@ -75,6 +87,28 @@ export default function EditUserPage() {
     image: "",
     coverImage: "",
     passwordText: "",
+    studentId: "",
+    groupCode: "",
+    work: "",
+    education: "",
+    currentCity: "",
+    hometown: "",
+    relationship: "",
+    addressHouse: "",
+    addressVillage: "",
+    addressSubdistrict: "",
+    addressDistrict: "",
+    addressProvince: "",
+    addressZipcode: "",
+    positionNumber: "",
+    affiliation: "",
+    govStartDate: "",
+    retirementDate: "",
+    retirementFiscalYear: "",
+    respDeptHead: "",
+    respWorkHead: "",
+    respOther: "",
+    program: "",
   });
 
   const [username, setUsername] = useState("");
@@ -88,6 +122,12 @@ export default function EditUserPage() {
     name: string;
     role?: string;
   } | null>(null);
+
+  const isStudent =
+    formData.role === "student" ||
+    formData.role === "นักเรียน" ||
+    formData.role === "นักศึกษา" ||
+    formData.role === "นักเรียน/นักศึกษา";
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -119,6 +159,28 @@ export default function EditUserPage() {
             image: data.image || "",
             coverImage: data.coverImage || "",
             passwordText: data.passwordText || "",
+            studentId: data.studentId || "",
+            groupCode: data.groupCode || "",
+            work: data.work || "",
+            education: data.education || "",
+            currentCity: data.currentCity || "",
+            hometown: data.hometown || "",
+            relationship: data.relationship || "",
+            addressHouse: data.addressHouse || "",
+            addressVillage: data.addressVillage || "",
+            addressSubdistrict: data.addressSubdistrict || "",
+            addressDistrict: data.addressDistrict || "",
+            addressProvince: data.addressProvince || "",
+            addressZipcode: data.addressZipcode || "",
+            positionNumber: data.positionNumber || "",
+            affiliation: data.affiliation || "",
+            govStartDate: data.govStartDate || "",
+            retirementDate: data.retirementDate || "",
+            retirementFiscalYear: data.retirementFiscalYear || "",
+            respDeptHead: data.respDeptHead || "",
+            respWorkHead: data.respWorkHead || "",
+            respOther: data.respOther || "",
+            program: data.program || "",
           });
           setUsername(data.username || "ไม่ระบุ");
         } else {
@@ -450,67 +512,374 @@ export default function EditUserPage() {
                   </div>
                 </div>
 
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-xs font-bold text-slate-500 ml-1">
-                    ตำแหน่งหลัก{" "}
-                    <span className="font-normal text-slate-400">
-                      (เช่น หัวหน้าแผนกวิชา, ครู คศ.3)
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                {!isStudent && (
+                  <>
+                    <div className="md:col-span-2 space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">
+                        ตำแหน่งหลัก{" "}
+                        <span className="font-normal text-slate-400">
+                          (เช่น หัวหน้าแผนกวิชา, ครู คศ.3)
+                        </span>
+                      </label>
+                      <div className="relative">
+                        <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          value={formData.position}
+                          onChange={(e) =>
+                            setFormData({ ...formData, position: e.target.value })
+                          }
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                          placeholder="กรอกตำแหน่ง"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">
+                        ฝ่ายงานย่อย{" "}
+                        <span className="font-normal text-slate-400">
+                          (เช่น งานวิทยบริการฯ)
+                        </span>
+                      </label>
+                      <div className="relative">
+                        <FiActivity className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          value={formData.faction}
+                          onChange={(e) =>
+                            setFormData({ ...formData, faction: e.target.value })
+                          }
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                          placeholder="กรอกฝ่ายงานย่อย"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">
+                        คำอธิบาย / วิทยฐานะ
+                      </label>
+                      <div className="relative">
+                        <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          value={formData.description}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              description: e.target.value,
+                            })
+                          }
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                          placeholder="เช่น พนักงานราชการ ครู"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {isStudent && (
+              <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 space-y-6">
+                <div className="flex items-center gap-2 mb-2 text-blue-600">
+                  <FiUser className="w-5 h-5" />
+                  <h3 className="font-bold uppercase tracking-wider text-sm">
+                    ข้อมูลนักเรียน/นักศึกษา
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      รหัสนักศึกษา
+                    </label>
                     <input
                       type="text"
-                      value={formData.position}
-                      onChange={(e) =>
-                        setFormData({ ...formData, position: e.target.value })
-                      }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                      placeholder="กรอกตำแหน่ง"
+                      value={formData.studentId || ""}
+                      onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      placeholder="รหัสนักศึกษา"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      รหัสกลุ่ม
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.groupCode || ""}
+                      onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      placeholder="รหัสกลุ่ม"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!isStudent && (
+              <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 space-y-6">
+                <div className="flex items-center gap-2 mb-2 text-blue-600">
+                  <FiUser className="w-5 h-5" />
+                  <h3 className="font-bold uppercase tracking-wider text-sm">
+                    ข้อมูลบุคลากรเพิ่มเติม
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      สาขาวิชา / หลักสูตร
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.program || ""}
+                      onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      placeholder="เช่น เทคโนโลยีธุรกิจดิจิทัล"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      สถานะความสัมพันธ์
+                    </label>
+                    <select
+                      value={formData.relationship || ""}
+                      onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                    >
+                      <option value="">ไม่ระบุ</option>
+                      <option value="โสด">โสด</option>
+                      <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
+                      <option value="หมั้นแล้ว">หมั้นแล้ว</option>
+                      <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
+                      <option value="หย่าร้าง">หย่าร้าง</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      ที่ทำงาน (เดิม/ปัจจุบัน)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.work || ""}
+                      onChange={(e) => setFormData({ ...formData, work: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      การศึกษา
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.education || ""}
+                      onChange={(e) => setFormData({ ...formData, education: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 ml-1">
-                    ฝ่ายงานย่อย{" "}
-                    <span className="font-normal text-slate-400">
-                      (เช่น งานวิทยบริการฯ)
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <FiActivity className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={formData.faction}
-                      onChange={(e) =>
-                        setFormData({ ...formData, faction: e.target.value })
-                      }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                      placeholder="กรอกฝ่ายงานย่อย"
-                    />
+                {/* ข้อมูลตำแหน่งและสังกัด */}
+                <div className="border-t border-slate-100 pt-6">
+                  <h4 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <SafetyCertificateOutlined className="text-blue-500" /> ข้อมูลตำแหน่งและสังกัด
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">เลขที่ตำแหน่ง</label>
+                      <input
+                        type="text"
+                        value={formData.positionNumber || ""}
+                        onChange={(e) => setFormData({ ...formData, positionNumber: e.target.value })}
+                        placeholder="เช่น 1845-02"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">สังกัด</label>
+                      <input
+                        type="text"
+                        value={formData.affiliation || ""}
+                        onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
+                        placeholder="กองการศึกษา..."
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 ml-1">
-                    คำอธิบาย / วิทยฐานะ
-                  </label>
-                  <div className="relative">
-                    <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                      placeholder="เช่น พนักงานราชการ ครู"
-                    />
+                {/* ข้อมูลประวัติการรับราชการและเกษียณ */}
+                <div className="border-t border-slate-100 pt-6">
+                  <h4 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <SafetyCertificateOutlined className="text-blue-500" /> ข้อมูลประวัติการรับราชการและเกษียณ
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">วันเริ่มเข้ารับราชการ</label>
+                      <input
+                        type="date"
+                        value={formData.govStartDate || ""}
+                        onChange={(e) => setFormData({ ...formData, govStartDate: e.target.value })}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">วันที่ครบเกษียณอายุ</label>
+                      <input
+                        type="date"
+                        value={formData.retirementDate || ""}
+                        onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">เกษียณปีงบประมาณ (พ.ศ.)</label>
+                      <input
+                        type="number"
+                        value={formData.retirementFiscalYear || ""}
+                        onChange={(e) => setFormData({ ...formData, retirementFiscalYear: e.target.value })}
+                        placeholder="เช่น 2575"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
                   </div>
+                </div>
+
+                {/* ข้อมูลหน้าที่รับผิดชอบ */}
+                <div className="border-t border-slate-100 pt-6">
+                  <h4 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <SafetyCertificateOutlined className="text-blue-500" /> ข้อมูลหน้าที่รับผิดชอบ
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</label>
+                      <input
+                        type="text"
+                        value={formData.respDeptHead || ""}
+                        onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
+                        placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</label>
+                      <input
+                        type="text"
+                        value={formData.respWorkHead || ""}
+                        onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
+                        placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 ml-1">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</label>
+                      <input
+                        type="text"
+                        value={formData.respOther || ""}
+                        onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
+                        placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 space-y-6">
+              <div className="flex items-center gap-2 mb-2 text-blue-600">
+                <FiUser className="w-5 h-5" />
+                <h3 className="font-bold uppercase tracking-wider text-sm">
+                  ข้อมูลที่อยู่ปัจจุบัน
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">บ้านเลขที่ หมู่ที่ ซอย</label>
+                  <input
+                    type="text"
+                    value={formData.addressHouse || ""}
+                    onChange={(e) => setFormData({ ...formData, addressHouse: e.target.value })}
+                    placeholder="เช่น 123 ม.4 ซ.โชคดี"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">อาคาร หมู่บ้าน ถนน</label>
+                  <input
+                    type="text"
+                    value={formData.addressVillage || ""}
+                    onChange={(e) => setFormData({ ...formData, addressVillage: e.target.value })}
+                    placeholder="เช่น อาคารทองคำ ถ.สุขุมวิท"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">ตำบล/แขวง</label>
+                  <input
+                    type="text"
+                    value={formData.addressSubdistrict || ""}
+                    onChange={(e) => setFormData({ ...formData, addressSubdistrict: e.target.value })}
+                    placeholder="ตำบล..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">อำเภอ/เขต</label>
+                  <input
+                    type="text"
+                    value={formData.addressDistrict || ""}
+                    onChange={(e) => setFormData({ ...formData, addressDistrict: e.target.value })}
+                    placeholder="อำเภอ..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">จังหวัด</label>
+                  <input
+                    type="text"
+                    value={formData.addressProvince || ""}
+                    onChange={(e) => setFormData({ ...formData, addressProvince: e.target.value })}
+                    placeholder="จังหวัด..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">รหัสไปรษณีย์</label>
+                  <input
+                    type="text"
+                    value={formData.addressZipcode || ""}
+                    onChange={(e) => setFormData({ ...formData, addressZipcode: e.target.value })}
+                    placeholder="เช่น 10400"
+                    maxLength={5}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">เมืองปัจจุบัน</label>
+                  <input
+                    type="text"
+                    value={formData.currentCity || ""}
+                    onChange={(e) => setFormData({ ...formData, currentCity: e.target.value })}
+                    placeholder="เช่น กรุงเทพมหานคร"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1">บ้านเกิด</label>
+                  <input
+                    type="text"
+                    value={formData.hometown || ""}
+                    onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
+                    placeholder="เช่น นนทบุรี"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  />
                 </div>
               </div>
             </div>

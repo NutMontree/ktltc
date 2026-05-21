@@ -67,7 +67,7 @@ export async function PATCH(req: Request) {
       'hometown', 'relationship', 'program',
       'addressHouse', 'addressVillage', 'addressSubdistrict', 'addressDistrict', 'addressProvince', 'addressZipcode',
       'positionNumber', 'affiliation', 'govStartDate', 'retirementDate', 'retirementFiscalYear',
-      'respDeptHead', 'respWorkHead', 'respOther'
+      'respDeptHead', 'respWorkHead', 'respOther', 'studentId', 'groupCode'
     ];
 
     fields.forEach(field => {

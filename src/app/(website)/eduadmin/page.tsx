@@ -365,7 +365,7 @@ export default function EDUAdmin() {
                 className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-md hover:shadow-xl hover:border-yellow-200 transition-all duration-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-yellow-900/50"
               >
                 {/* Image — fixed aspect ratio, object-cover fills the box */}
-                <div className="relative w-full aspect-[3/4] overflow-hidden bg-slate-100 dark:bg-neutral-800">
+                <div className="relative w-full aspect-3/4 overflow-hidden bg-slate-100 dark:bg-neutral-800">
                   {member.img && member.img !== '/images/error.webp' ? (
                     <img
                       src={member.img}
@@ -428,7 +428,7 @@ export default function EDUAdmin() {
 
               <div className="flex flex-col md:flex-row max-h-[90vh]">
                 {/* Left: Photo */}
-                <div className="w-full md:w-2/5 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-zinc-800 dark:to-zinc-900 p-8 flex flex-col items-center justify-center gap-4 shrink-0">
+                <div className="w-full md:w-2/5 bg-linear-to-br from-yellow-50 to-orange-50 dark:from-zinc-800 dark:to-zinc-900 p-8 flex flex-col items-center justify-center gap-4 shrink-0">
                   <div className="w-44 h-44 rounded-full overflow-hidden shadow-2xl border-4 border-white dark:border-zinc-700 bg-white dark:bg-zinc-800 flex items-center justify-center">
                     {selectedExec.img ? (
                       <img src={selectedExec.img} alt={selectedExec.title} className="w-full h-full object-cover object-top" />

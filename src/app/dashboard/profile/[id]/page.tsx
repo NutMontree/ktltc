@@ -295,6 +295,8 @@ export default function FriendProfilePage({
     respDeptHead: "",
     respWorkHead: "",
     respOther: "",
+    studentId: "",
+    groupCode: "",
   });
 
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -876,6 +878,7 @@ export default function FriendProfilePage({
   if (!formData) return null;
 
   const isMyProfile = session?.user && (session.user as any).id === id;
+  const isStudent = formData.role === "นักเรียน/นักศึกษา" || formData.role === "นักเรียน" || formData.role === "นักศึกษา" || formData.role === "student" || formData.role?.includes("นักเรียน");
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -920,15 +923,17 @@ export default function FriendProfilePage({
                   )}
 
                   <div className="space-y-3 py-2 border-t dark:border-zinc-800 mt-2 pt-4">
-                    <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                      <SafetyCertificateOutlined className="text-zinc-400 text-xl" />
-                      <span className="text-sm">
-                        ตำแหน่ง{" "}
-                        <b className="text-zinc-900 dark:text-white">
-                          {formData.position || "-"}
-                        </b>
-                      </span>
-                    </div>
+                    {!isStudent && (
+                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                        <SafetyCertificateOutlined className="text-zinc-400 text-xl" />
+                        <span className="text-sm">
+                          ตำแหน่ง{" "}
+                          <b className="text-zinc-900 dark:text-white">
+                            {formData.position || "-"}
+                          </b>
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
                       <UserOutlined className="text-zinc-400 text-xl" />
                       <span className="text-sm">
@@ -938,15 +943,17 @@ export default function FriendProfilePage({
                         </b>
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                      <DatabaseOutlined className="text-zinc-400 text-xl" />
-                      <span className="text-sm">
-                        ฝ่าย{" "}
-                        <b className="text-zinc-900 dark:text-white">
-                          {formData.faction || "-"}
-                        </b>
-                      </span>
-                    </div>
+                    {!isStudent && (
+                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                        <DatabaseOutlined className="text-zinc-400 text-xl" />
+                        <span className="text-sm">
+                          ฝ่าย{" "}
+                          <b className="text-zinc-900 dark:text-white">
+                            {formData.faction || "-"}
+                          </b>
+                        </span>
+                      </div>
+                    )}
                     {formData.currentCity && (
                       <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
                         <GlobalOutlined className="text-zinc-400 text-xl" />
@@ -2053,30 +2060,76 @@ export default function FriendProfilePage({
             case "ข้อมูลภาพรวม":
               return (
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between group/item">
-                    <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
-                      <SafetyCertificateOutlined className="text-xl text-zinc-400" />
-                      <span>
-                        ทำงานที่{" "}
-                        <b className="text-zinc-900 dark:text-white">
-                          {formData.position || "-"}
-                        </b>{" "}
-                        ฝ่าย{" "}
-                        <b className="text-zinc-900 dark:text-white">
-                          {formData.faction || "-"}
-                        </b>
-                      </span>
+                  {isStudent && (
+                    <>
+                      <div className="flex items-center justify-between group/item">
+                        <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                          <UserOutlined className="text-xl text-zinc-400" />
+                          <span>
+                            รหัสนักศึกษา{" "}
+                            <b className="text-zinc-900 dark:text-white">
+                              {formData.studentId || "-"}
+                            </b>
+                          </span>
+                        </div>
+                          {isMyProfile && (
+                            <button 
+                              onClick={() => setActiveModal("profile")}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                            >
+                              <EditOutlined />
+                              <span>แก้ไข</span>
+                            </button>
+                          )}
+                      </div>
+                      <div className="flex items-center justify-between group/item">
+                        <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                          <TeamOutlined className="text-xl text-zinc-400" />
+                          <span>
+                            รหัสกลุ่ม{" "}
+                            <b className="text-zinc-900 dark:text-white">
+                              {formData.groupCode || "-"}
+                            </b>
+                          </span>
+                        </div>
+                          {isMyProfile && (
+                            <button 
+                              onClick={() => setActiveModal("profile")}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                            >
+                              <EditOutlined />
+                              <span>แก้ไข</span>
+                            </button>
+                          )}
+                      </div>
+                    </>
+                  )}
+                  {!isStudent && (
+                    <div className="flex items-center justify-between group/item">
+                      <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                        <SafetyCertificateOutlined className="text-xl text-zinc-400" />
+                        <span>
+                          ทำงานที่{" "}
+                          <b className="text-zinc-900 dark:text-white">
+                            {formData.position || "-"}
+                          </b>{" "}
+                          ฝ่าย{" "}
+                          <b className="text-zinc-900 dark:text-white">
+                            {formData.faction || "-"}
+                          </b>
+                        </span>
+                      </div>
+                        {isMyProfile && (
+                          <button 
+                            onClick={() => setActiveModal("profile")}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          >
+                            <EditOutlined />
+                            <span>แก้ไข</span>
+                          </button>
+                        )}
                     </div>
-                      {isMyProfile && (
-                        <button 
-                          onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                          <EditOutlined />
-                          <span>แก้ไข</span>
-                        </button>
-                      )}
-                  </div>
+                  )}
                   <div className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
                       <UserOutlined className="text-xl text-zinc-400" />
@@ -2097,7 +2150,7 @@ export default function FriendProfilePage({
                         </button>
                       )}
                   </div>
-                  {formData.work && (
+                  {!isStudent && formData.work && (
                     <div className="flex items-center justify-between group/item">
                       <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
                         <DatabaseOutlined className="text-xl text-zinc-400" />
@@ -2324,35 +2377,37 @@ export default function FriendProfilePage({
                     </div>
                   </div>
                   <hr className="dark:border-zinc-800" />
-                  <div className="grid gap-6">
-                    <h3 className="text-zinc-500 text-xs font-bold uppercase">
-                      ข้อมูลพื้นฐาน
-                    </h3>
-                    <div className="flex items-center justify-between group/item">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                          <UserOutlined />
+                  {!isStudent && (
+                    <div className="grid gap-6">
+                      <h3 className="text-zinc-500 text-xs font-bold uppercase">
+                        ข้อมูลพื้นฐาน
+                      </h3>
+                      <div className="flex items-center justify-between group/item">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                            <UserOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold">
+                              {formData.relationship || "ไม่ระบุ"}
+                            </p>
+                            <p className="text-xs text-zinc-400">
+                              สถานะความสัมพันธ์
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold">
-                            {formData.relationship || "ไม่ระบุ"}
-                          </p>
-                          <p className="text-xs text-zinc-400">
-                            สถานะความสัมพันธ์
-                          </p>
-                        </div>
+                        {isMyProfile && (
+                          <button 
+                            onClick={() => setActiveModal("profile")}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          >
+                            <EditOutlined />
+                            <span>แก้ไข</span>
+                          </button>
+                        )}
                       </div>
-                      {isMyProfile && (
-                        <button 
-                          onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                          <EditOutlined />
-                          <span>แก้ไข</span>
-                        </button>
-                      )}
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             case "ข้อมูลข้าราชการ/บุคลากร":
@@ -2412,130 +2467,136 @@ export default function FriendProfilePage({
                   </div>
 
                   {/* ข้อมูลตำแหน่งและสังกัด */}
-                  <div className="space-y-4">
-                    <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
-                      <SafetyCertificateOutlined className="text-sm" /> ข้อมูลตำแหน่งและสังกัด
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-                          <SafetyCertificateOutlined />
+                  {!isStudent && (
+                    <div className="space-y-4">
+                      <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
+                        <SafetyCertificateOutlined className="text-sm" /> ข้อมูลตำแหน่งและสังกัด
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                            <SafetyCertificateOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.positionNumber || "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">เลขที่ตำแหน่ง</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.positionNumber || "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">เลขที่ตำแหน่ง</p>
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                            <UserOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.position || "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">ตำแหน่ง</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-                          <UserOutlined />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.position || "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">ตำแหน่ง</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 sm:col-span-2">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-                          <DatabaseOutlined />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.affiliation || "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">สังกัด (กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน)</p>
+                        <div className="flex items-center gap-3 sm:col-span-2">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                            <DatabaseOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.affiliation || "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">สังกัด (กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน)</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* ประวัติการรับราชการและเกษียณ */}
-                  <div className="space-y-4">
-                    <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
-                      <DatabaseOutlined className="text-sm" /> ข้อมูลประวัติการรับราชการและเกษียณ
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-                          <DatabaseOutlined />
+                  {!isStudent && (
+                    <div className="space-y-4">
+                      <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
+                        <DatabaseOutlined className="text-sm" /> ข้อมูลประวัติการรับราชการและเกษียณ
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                            <DatabaseOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.govStartDate ? new Date(formData.govStartDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">วันเริ่มเข้ารับราชการ</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.govStartDate ? new Date(formData.govStartDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">วันเริ่มเข้ารับราชการ</p>
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                            <DatabaseOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.retirementDate ? new Date(formData.retirementDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">วันที่ครบเกษียณอายุ</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-                          <DatabaseOutlined />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.retirementDate ? new Date(formData.retirementDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">วันที่ครบเกษียณอายุ</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-                          <DatabaseOutlined />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.retirementFiscalYear ? `ปีงบประมาณ พ.ศ. ${formData.retirementFiscalYear}` : "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">เกษียณปีงบประมาณ</p>
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                            <DatabaseOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.retirementFiscalYear ? `ปีงบประมาณ พ.ศ. ${formData.retirementFiscalYear}` : "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">เกษียณปีงบประมาณ</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* หน้าที่รับผิดชอบ */}
-                  <div className="space-y-4">
-                    <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
-                      <BookOutlined className="text-sm" /> หน้าที่รับผิดชอบ
-                    </h3>
+                  {!isStudent && (
                     <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                          <BookOutlined />
+                      <h3 className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider flex items-center gap-2 pb-2 border-b dark:border-zinc-800">
+                        <BookOutlined className="text-sm" /> หน้าที่รับผิดชอบ
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                            <BookOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.respDeptHead || "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.respDeptHead || "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</p>
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                            <BookOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.respWorkHead || "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                          <BookOutlined />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.respWorkHead || "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                          <BookOutlined />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {formData.respOther || "-"}
-                          </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</p>
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                            <BookOutlined />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                              {formData.respOther || "-"}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* แก้ไขข้อมูล */}
                   {isMyProfile && (
@@ -2568,7 +2629,10 @@ export default function FriendProfilePage({
                   "สถานที่ที่เคยอาศัย",
                   "ข้อมูลติดต่อและข้อมูลพื้นฐาน",
                   "ข้อมูลข้าราชการ/บุคลากร",
-                ].map((item) => (
+                ].filter(item => {
+                  if (isStudent && item === "การทำงานและวุฒิการศึกษา") return false;
+                  return true;
+                }).map((item) => (
                   <div
                     key={item}
                     onClick={() => setActiveAboutTab(item)}
@@ -3106,25 +3170,47 @@ export default function FriendProfilePage({
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">ตำแหน่ง</label>
-                <input
-                  list="positions-list"
-                  value={formData.position}
-                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                  placeholder="พิมพ์หรือเลือกตำแหน่ง..."
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-                <datalist id="positions-list">
-                  {POSITIONS.map((opt) => (
-                    <option key={opt} value={opt} />
-                  ))}
-                  {profileOptions.positions.map((opt) => (
-                    <option key={`db-${opt}`} value={opt} />
-                  ))}
-                </datalist>
+            {isStudent && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">รหัสนักศึกษา</label>
+                  <input
+                    value={formData.studentId || ""}
+                    onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">รหัสกลุ่ม</label>
+                  <input
+                    value={formData.groupCode || ""}
+                    onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              {!isStudent && (
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">ตำแหน่ง</label>
+                  <input
+                    list="positions-list"
+                    value={formData.position}
+                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                    placeholder="พิมพ์หรือเลือกตำแหน่ง..."
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                  <datalist id="positions-list">
+                    {POSITIONS.map((opt) => (
+                      <option key={opt} value={opt} />
+                    ))}
+                    {profileOptions.positions.map((opt) => (
+                      <option key={`db-${opt}`} value={opt} />
+                    ))}
+                  </datalist>
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="text-xs font-black text-zinc-500 uppercase">แผนก / สังกัด</label>
                 <input
@@ -3181,35 +3267,39 @@ export default function FriendProfilePage({
                   ))}
                 </datalist>
               </div>
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">สาขาวิชา / หลักสูตร</label>
-                <input
-                  value={formData.program}
-                  onChange={(e) => setFormData({ ...formData, program: e.target.value })}
-                  placeholder="เช่น สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล"
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              {!isStudent && (
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">สาขาวิชา / หลักสูตร</label>
+                  <input
+                    value={formData.program}
+                    onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                    placeholder="เช่น สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">ฝ่าย</label>
-                <input
-                  list="factions-list"
-                  value={formData.faction}
-                  onChange={(e) => setFormData({ ...formData, faction: e.target.value })}
-                  placeholder="พิมพ์หรือเลือกฝ่าย..."
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-                <datalist id="factions-list">
-                  {FACTIONS.map((opt) => (
-                    <option key={opt} value={opt} />
-                  ))}
-                  {profileOptions.factions.map((opt) => (
-                    <option key={`db-${opt}`} value={opt} />
-                  ))}
-                </datalist>
-              </div>
+              {!isStudent && (
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">ฝ่าย</label>
+                  <input
+                    list="factions-list"
+                    value={formData.faction}
+                    onChange={(e) => setFormData({ ...formData, faction: e.target.value })}
+                    placeholder="พิมพ์หรือเลือกฝ่าย..."
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                  <datalist id="factions-list">
+                    {FACTIONS.map((opt) => (
+                      <option key={opt} value={opt} />
+                    ))}
+                    {profileOptions.factions.map((opt) => (
+                      <option key={`db-${opt}`} value={opt} />
+                    ))}
+                  </datalist>
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="text-xs font-black text-zinc-500 uppercase">อีเมล</label>
                 <input
@@ -3219,24 +3309,26 @@ export default function FriendProfilePage({
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">ที่ทำงาน (เดิม/ปัจจุบัน)</label>
-                <input
-                  value={formData.work}
-                  onChange={(e) => setFormData({ ...formData, work: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
+            {!isStudent && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">ที่ทำงาน (เดิม/ปัจจุบัน)</label>
+                  <input
+                    value={formData.work}
+                    onChange={(e) => setFormData({ ...formData, work: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">การศึกษา</label>
+                  <input
+                    value={formData.education}
+                    onChange={(e) => setFormData({ ...formData, education: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">การศึกษา</label>
-                <input
-                  value={formData.education}
-                  onChange={(e) => setFormData({ ...formData, education: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs font-black text-zinc-500 uppercase">เมืองปัจจุบัน</label>
@@ -3255,21 +3347,23 @@ export default function FriendProfilePage({
                 />
               </div>
             </div>
-             <div className="space-y-1">
-              <label className="text-xs font-black text-zinc-500 uppercase">สถานะความสัมพันธ์</label>
-              <select
-                value={formData.relationship}
-                onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">ไม่ระบุ</option>
-                <option value="โสด">โสด</option>
-                <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
-                <option value="หมั้นแล้ว">หมั้นแล้ว</option>
-                <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
-                <option value="หย่าร้าง">หย่าร้าง</option>
-              </select>
-            </div>
+            {!isStudent && (
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">สถานะความสัมพันธ์</label>
+                <select
+                  value={formData.relationship}
+                  onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">ไม่ระบุ</option>
+                  <option value="โสด">โสด</option>
+                  <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
+                  <option value="หมั้นแล้ว">หมั้นแล้ว</option>
+                  <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
+                  <option value="หย่าร้าง">หย่าร้าง</option>
+                </select>
+              </div>
+            )}
 
             {/* --- ข้อมูลเพิ่มเติมตามคำขอ --- */}
             <div className="border-t dark:border-zinc-800 pt-6 mt-4">
@@ -3337,104 +3431,110 @@ export default function FriendProfilePage({
               </div>
             </div>
 
-            <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                <SafetyCertificateOutlined /> ข้อมูลตำแหน่งและสังกัด
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">เลขที่ตำแหน่ง</label>
-                  <input
-                    value={formData.positionNumber || ""}
-                    onChange={(e) => setFormData({ ...formData, positionNumber: e.target.value })}
-                    placeholder="เช่น 1845-02"
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">สังกัด</label>
-                  <input
-                    value={formData.affiliation || ""}
-                    onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
-                    placeholder="กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน..."
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                <DatabaseOutlined /> ข้อมูลประวัติการรับราชการและเกษียณ
-              </h4>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">วันเดือนปีที่เริ่มเข้ารับราชการ</label>
-                  <input
-                    type="date"
-                    value={formData.govStartDate || ""}
-                    onChange={(e) => setFormData({ ...formData, govStartDate: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+            {!isStudent && (
+              <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                  <SafetyCertificateOutlined /> ข้อมูลตำแหน่งและสังกัด
+                </h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">วันที่ครบเกษียณอายุ</label>
+                    <label className="text-xs font-black text-zinc-500 uppercase">เลขที่ตำแหน่ง</label>
                     <input
-                      type="date"
-                      value={formData.retirementDate || ""}
-                      onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                      value={formData.positionNumber || ""}
+                      onChange={(e) => setFormData({ ...formData, positionNumber: e.target.value })}
+                      placeholder="เช่น 1845-02"
                       className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">เกษียณปีงบประมาณ (พ.ศ.)</label>
+                    <label className="text-xs font-black text-zinc-500 uppercase">สังกัด</label>
                     <input
-                      type="number"
-                      value={formData.retirementFiscalYear || ""}
-                      onChange={(e) => setFormData({ ...formData, retirementFiscalYear: e.target.value })}
-                      placeholder="เช่น 2575"
+                      value={formData.affiliation || ""}
+                      onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
+                      placeholder="กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน..."
                       className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                <BookOutlined /> ข้อมูลหน้าที่รับผิดชอบ
-              </h4>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</label>
-                  <input
-                    value={formData.respDeptHead || ""}
-                    onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
-                    placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</label>
-                  <input
-                    value={formData.respWorkHead || ""}
-                    onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
-                    placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</label>
-                  <input
-                    value={formData.respOther || ""}
-                    onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
-                    placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
+            {!isStudent && (
+              <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                  <DatabaseOutlined /> ข้อมูลประวัติการรับราชการและเกษียณ
+                </h4>
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">วันเดือนปีที่เริ่มเข้ารับราชการ</label>
+                    <input
+                      type="date"
+                      value={formData.govStartDate || ""}
+                      onChange={(e) => setFormData({ ...formData, govStartDate: e.target.value })}
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">วันที่ครบเกษียณอายุ</label>
+                      <input
+                        type="date"
+                        value={formData.retirementDate || ""}
+                        onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">เกษียณปีงบประมาณ (พ.ศ.)</label>
+                      <input
+                        type="number"
+                        value={formData.retirementFiscalYear || ""}
+                        onChange={(e) => setFormData({ ...formData, retirementFiscalYear: e.target.value })}
+                        placeholder="เช่น 2575"
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {!isStudent && (
+              <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                  <BookOutlined /> ข้อมูลหน้าที่รับผิดชอบ
+                </h4>
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</label>
+                    <input
+                      value={formData.respDeptHead || ""}
+                      onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
+                      placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</label>
+                    <input
+                      value={formData.respWorkHead || ""}
+                      onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
+                      placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</label>
+                    <input
+                      value={formData.respOther || ""}
+                      onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
+                      placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </ProfileModal>
