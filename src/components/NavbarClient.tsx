@@ -26,8 +26,108 @@ import {
   Settings,
   Newspaper,
   MessageSquare,
+  BookOpen,
+  Eye,
+  Users,
+  GitBranch,
+  Info,
+  Building,
+  Building2,
+  GraduationCap,
+  Package,
+  Wallet,
+  MapPin,
+  Briefcase,
+  Target,
+  Car,
+  Wrench,
+  Flame,
+  Zap,
+  Cpu,
+  Hammer,
+  HardHat,
+  Calculator,
+  ShoppingCart,
+  TrendingUp,
+  Monitor,
+  BedDouble,
+  Truck,
+  Star,
+  Globe,
+  PlayCircle,
+  ImageIcon,
+  Search,
+  UserPlus,
+  BarChart2,
+  Award,
+  MoreHorizontal,
+  LucideIcon,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
+
+/**
+ * getMenuIcon: คืนค่า Lucide Icon component ที่สอดคล้องกับชื่อเมนู
+ */
+const menuIconMap: Record<string, LucideIcon> = {
+  // ประวัติสถานศึกษา
+  "ประวัติสถานศึกษา": BookOpen,
+  // ปรัชญา วิสัยทัศน์ ฯลฯ
+  "ปรัชญา วิสัยทัศน์ เอกลักษณ์ อัตลักษณ์": Eye,
+  "ทำเนียบผู้บริหาร": Users,
+  "โครงสร้างการบริหารงานสถานศึกษา": GitBranch,
+  "คณะกรรมการบริหารสถานศึกษา": UserCog,
+  // ข้อมูลพื้นฐาน 9 ประการ
+  "ข้อมูลพื้นฐาน 9 ประการ": Info,
+  "ข้อมูลสถานศึกษา": Building,
+  "ข้อมูลบุคลากร": Users,
+  "ข้อมูลนักเรียน นักศึกษา": GraduationCap,
+  "ข้อมูลหลักสูตร": BookOpen,
+  "ข้อมูลครุภัณฑ์": Package,
+  "ข้อมูลงบประมาณ": Wallet,
+  "ข้อมูลอาคารสถานที่": Building2,
+  "ข้อมูลตลาดแรงงาน": Briefcase,
+  "ข้อมูลจังหวัด": MapPin,
+  // หน่วยงานภายใน
+  "ฝ่ายบริหารทรัพยากร": Settings,
+  "ฝ่ายยุทธศาสตร์และแผนงาน": Target,
+  "ฝ่ายกิจการนักเรียน นักศึกษา": GraduationCap,
+  "ฝ่ายวิชาการ": BookOpen,
+  // แผนกวิชา
+  "แผนกวิชาช่างยนต์": Car,
+  "แผนกวิชาช่างกลโรงงาน": Wrench,
+  "แผนกวิชาช่างเชื่อมโลหะ": Flame,
+  "แผนกวิชาช่างไฟฟ้ากำลัง": Zap,
+  "แผนกวิชาช่างอิเล็กทรอนิกส์": Cpu,
+  "แผนกวิชาช่างเทคนิคพื้นฐาน": Hammer,
+  "แผนกวิชาช่างก่อสร้าง": HardHat,
+  "แผนกวิชาการบัญชี": Calculator,
+  "แผนกวิชาการตลาด": ShoppingCart,
+  "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล": Monitor,
+  "แผนกวิชาการโรงแรม": BedDouble,
+  "แผนกวิชาสามัญสัมพันธ์": BookOpen,
+  "แผนกวิชายานยนต์ไฟฟ้า": Zap,
+  "แผนกวิชาการตลาด/โลจิสติก์": Truck,
+  // เมนูลัด
+  "ศูนย์ราชการสะดวก": Star,
+  "ระบบ ศธ. ออนไลน์": Globe,
+  "ตรวจสอบผลการเรียน": GraduationCap,
+  "รับงานอิเล็กทรอนิกส์": FileText,
+  "สมัครเรียนออนไลน์": UserPlus,
+  "บทเรียนอนไลน์": PlayCircle,
+  "ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ": ImageIcon,
+  "ศูนย์กำลังคนอาชีวศึกษา (V-COP)": Users,
+  "รายงานประจำของสถานศึกษา (SAR)": BarChart2,
+  "Performance Agreement: PA": Award,
+  "อื่น ๆ": MoreHorizontal,
+  // generic fallbacks
+  "ข่าวสาร": Newspaper,
+  "ติดต่อ": MessageSquare,
+  "เกี่ยวกับ": Info,
+};
+
+function getMenuIcon(label: string): LucideIcon {
+  return menuIconMap[label] ?? FileText;
+}
 
 /**
  * NavbarClient.tsx: คอมโพเนนต์แถบเมนูฝั่ง Client (จัดการ UI และ Interaction)
@@ -336,17 +436,37 @@ export default function NavbarClient({
                           : "opacity-0 translate-y-3 scale-95 pointer-events-none"
                       }`}
                     >
-                      <div className="bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] min-w-[240px] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5">
-                        {item.children!.map((child) => (
-                          <Link
-                            key={child._id}
-                            href={ensureAbsolute(child.path) || "#"}
-                            onClick={() => setActiveMenuId(null)}
-                            className="block px-4 py-3 text-[14px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
+                      <div
+                        className={`bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${
+                          item.children!.length > 8
+                            ? "min-w-[460px] w-[460px]"
+                            : "min-w-[240px]"
+                        }`}
+                      >
+                        <div
+                          className={
+                            item.children!.length > 8
+                              ? "grid grid-cols-2 gap-x-1"
+                              : "flex flex-col"
+                          }
+                        >
+                          {item.children!.map((child) => {
+                            const ChildIcon = getMenuIcon(child.label);
+                            return (
+                              <Link
+                                key={child._id}
+                                href={ensureAbsolute(child.path) || "#"}
+                                onClick={() => setActiveMenuId(null)}
+                                className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all group"
+                              >
+                                <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                  <ChildIcon size={14} />
+                                </span>
+                                <span className="leading-snug">{child.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
                         {/* ปุ่มติดตั้ง PWA เฉพาะในเมนู 'อื่นๆ' */}
                         {item.label === "อื่นๆ" && deferredPrompt && (
                           <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800/60">
