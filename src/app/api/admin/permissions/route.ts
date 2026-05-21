@@ -36,6 +36,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: true,
     manage_attendance_settings: true,
     manage_roles_advanced: true,
+    student_dashboard: true,
+    manage_flagpole_data: true,
   },
   admin: {
     access_dashboard: true,
@@ -53,6 +55,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: false,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: true,
+    manage_flagpole_data: true,
   },
   editor: {
     access_dashboard: true,
@@ -70,6 +74,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: false,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   hr: {
     access_dashboard: true,
@@ -85,6 +91,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: true,
     manage_attendance_settings: true,
     manage_roles_advanced: true,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   director: {
     access_dashboard: true,
@@ -100,6 +108,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: true,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   deputy_resource: {
     access_dashboard: true,
@@ -115,6 +125,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: true,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   deputy_strategy: {
     access_dashboard: true,
@@ -130,6 +142,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: true,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   deputy_academic: {
     access_dashboard: true,
@@ -145,6 +159,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: true,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   deputy_student_affairs: {
     access_dashboard: true,
@@ -160,6 +176,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: true,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: true,
+    manage_flagpole_data: true,
   },
   teacher: {
     access_dashboard: false,
@@ -175,6 +193,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: false,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   janitor: {
     access_dashboard: false,
@@ -190,6 +210,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: false,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   staff: {
     access_dashboard: false,
@@ -205,6 +227,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: false,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   },
   student: {
     access_dashboard: false,
@@ -220,6 +244,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: false,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: true,
+    manage_flagpole_data: false,
   },
   user: {
     access_dashboard: false,
@@ -235,6 +261,8 @@ const DEFAULT_PERMISSIONS = {
     manage_attendance_leave_approvals: false,
     manage_attendance_settings: false,
     manage_roles_advanced: false,
+    student_dashboard: false,
+    manage_flagpole_data: false,
   }
 };
 
@@ -480,6 +508,8 @@ export async function POST(req: Request) {
       manage_system: false,
       manage_qa: false,
       manage_pages: false,
+      student_dashboard: false,
+      manage_flagpole_data: false,
     };
 
     await db.collection("role_permissions").insertOne({

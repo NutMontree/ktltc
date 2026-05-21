@@ -74,6 +74,18 @@ const FEATURE_LABELS: {
     href: "",
     isSuperAdminOnly: true,
   },
+  student_dashboard: {
+    label: "เมนู สำหรับนักเรียน นักศึกษา",
+    icon: FiUsers,
+    color: "text-indigo-500",
+    href: "/dashboard",
+  },
+  manage_flagpole_data: {
+    label: "แก้ไขข้อมูลการเข้าแถว",
+    icon: FiEdit3,
+    color: "text-amber-500",
+    href: "/dashboard/flagpole-data-management",
+  },
 };
 
 const ADVANCED_FEATURE_LABELS: {

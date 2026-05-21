@@ -27,6 +27,8 @@ export async function GET() {
       manage_attendance: ["super_admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role),
       manage_qa: ["super_admin", "admin"].includes(role),
       manage_system: ["super_admin"].includes(role),
+      student_dashboard: ["super_admin", "admin", "deputy_student_affairs", "student"].includes(role),
+      manage_flagpole_data: ["super_admin", "admin", "deputy_student_affairs"].includes(role),
       ...(dbPermission?.permissions || {}) // เอาค่าจาก DB มาทับถ้ามี
     };
 

@@ -638,7 +638,8 @@ export default function DashboardLoader() {
           )}
 
           {/* --- Student Section --- */}
-          {(((session?.user as any)?.role || "").toLowerCase() === "student" ||
+          {(permissions?.student_dashboard ||
+            ((session?.user as any)?.role || "").toLowerCase() === "student" ||
             ["super_admin", "admin"].includes(
               ((session?.user as any)?.role || "").toLowerCase(),
             )) && (
@@ -658,9 +659,9 @@ export default function DashboardLoader() {
                   desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
                   variants={item}
                 />
-                {["super_admin", "admin"].includes(
+                {(["super_admin", "admin", "deputy_student_affairs"].includes(
                   ((session?.user as any)?.role || "").toLowerCase(),
-                ) && (
+                ) || (permissions?.student_dashboard && ((session?.user as any)?.role || "").toLowerCase() !== "student")) && (
                   <>
                     <ActionCard
                       href="/dashboard/flagpole-dashboard"
@@ -676,13 +677,18 @@ export default function DashboardLoader() {
                       desc="ตรวจสอบ แก้ไข และออกรายงานสรุปประวัติเข้าแถวนักศึกษา"
                       variants={item}
                     />
-                    <ActionCard
-                      href="/dashboard/flagpole-data-management"
-                      title="แก้ไขข้อมูลการเข้าแถว"
-                      icon={ClipboardList}
-                      desc="เครื่องมือปรับแก้พิกัด ระยะห่าง และวันเวลาลงชื่อของนักเรียน"
-                      variants={item}
-                    />
+                    {(permissions?.manage_flagpole_data ||
+                      ["super_admin", "admin", "deputy_student_affairs"].includes(
+                        ((session?.user as any)?.role || "").toLowerCase(),
+                      )) && (
+                      <ActionCard
+                        href="/dashboard/flagpole-data-management"
+                        title="แก้ไขข้อมูลการเข้าแถว"
+                        icon={ClipboardList}
+                        desc="เครื่องมือปรับแก้พิกัด ระยะห่าง และวันเวลาลงชื่อของนักเรียน"
+                        variants={item}
+                      />
+                    )}
                     <ActionCard
                       href="/dashboard/flagpole-settings"
                       title="ตั้งค่าเวลาเข้าแถว"

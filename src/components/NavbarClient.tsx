@@ -67,6 +67,8 @@ interface NavbarClientProps {
     manage_roles_advanced?: boolean;
     manage_home?: boolean;
     manage_navbar?: boolean;
+    student_dashboard?: boolean;
+    manage_flagpole_data?: boolean;
   } | null;
 }
 
@@ -552,7 +554,7 @@ export default function NavbarClient({
                               คลังไฟล์งาน (Drive)
                             </Link>
                           )}
-                          {role?.toLowerCase() === "student" && (
+                          {(role?.toLowerCase() === "student" || permissions?.student_dashboard) && (
                             <Link
                               href="/student/flagpole"
                               className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
