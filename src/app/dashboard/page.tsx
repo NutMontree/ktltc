@@ -388,7 +388,9 @@ export default function DashboardLoader() {
                       <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-5 rounded-[1.7rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-inner ${regEnabled ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}>
+                            <div
+                              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-inner ${regEnabled ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
+                            >
                               <Users size={18} />
                             </div>
                             <div>
@@ -417,7 +419,13 @@ export default function DashboardLoader() {
 
                         <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold">
                           <span className="text-zinc-500">สถานะ:</span>
-                          <span className={regEnabled ? "text-emerald-500 font-extrabold" : "text-rose-500 font-extrabold"}>
+                          <span
+                            className={
+                              regEnabled
+                                ? "text-emerald-500 font-extrabold"
+                                : "text-rose-500 font-extrabold"
+                            }
+                          >
                             {regEnabled ? "🟢 เปิดรับสมัครทั่วไป" : "🔴 ปิดรับสมัครชั่วคราว"}
                           </span>
                         </div>
@@ -501,9 +509,19 @@ export default function DashboardLoader() {
           </div>
 
           {/* --- OIT Section --- */}
-          {["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(
-            ((session?.user as any)?.role || "").toLowerCase()
-          ) && (
+          {[
+            "super_admin",
+            "admin",
+            "editor",
+            "hr",
+            "director",
+            "deputy_resource",
+            "deputy_strategy",
+            "deputy_academic",
+            "deputy_student_affairs",
+            "teacher",
+            "staff",
+          ].includes(((session?.user as any)?.role || "").toLowerCase()) && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
@@ -733,7 +751,7 @@ export default function DashboardLoader() {
                 </h2>
               </motion.div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 <ActionCard
                   href="/student/flagpole"
                   title="เช็คชื่อเข้าแถว"
@@ -743,7 +761,9 @@ export default function DashboardLoader() {
                 />
                 {(["super_admin", "admin", "deputy_student_affairs"].includes(
                   ((session?.user as any)?.role || "").toLowerCase(),
-                ) || (permissions?.student_dashboard && ((session?.user as any)?.role || "").toLowerCase() !== "student")) && (
+                ) ||
+                  (permissions?.student_dashboard &&
+                    ((session?.user as any)?.role || "").toLowerCase() !== "student")) && (
                   <>
                     <ActionCard
                       href="/dashboard/flagpole-dashboard"
