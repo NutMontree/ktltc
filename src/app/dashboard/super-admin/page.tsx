@@ -65,7 +65,7 @@ interface ActivityLog {
 export default function SuperAdminPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'teacher' | 'student' | 'staff'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -90,6 +90,7 @@ export default function SuperAdminPage() {
 
   const [roles, setRoles] = useState<string[]>([]);
   const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
+  const [roleCounts, setRoleCounts] = useState<Record<string, number>>({});
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [autoApproveSignup, setAutoApproveSignup] = useState(false);
@@ -280,7 +281,7 @@ export default function SuperAdminPage() {
     }
   };
 
-  const fetchData = async (p = 1, q = searchQuery) => {
+  const fetchData = async (p = 1, q = searchQuery, cat = selectedCategory) => {
     try {
       if (p === 1) {
         setLoading(true);
@@ -290,7 +291,7 @@ export default function SuperAdminPage() {
       }
 
       const [usersRes, pendingRes, summaryRes, logsRes] = await Promise.all([
-        fetch(`/api/admin/users?page=${p}&search=${q}&status=active&_t=${Date.now()}`),
+        fetch(`/api/admin/users?page=${p}&search=${q}&status=active&role=${cat}&_t=${Date.now()}`),
         p === 1 ? fetch(`/api/admin/users?all=true&status=pending&search=${q}&_t=${Date.now()}`) : Promise.resolve(null),
         p === 1 ? fetch("/api/admin/reports/summary?_t=" + Date.now()) : Promise.resolve(null),
         p === 1 ? fetch("/api/admin/logs?_t=" + Date.now()) : Promise.resolve(null),
@@ -304,6 +305,9 @@ export default function SuperAdminPage() {
         setTotal(data.total || 0);
         setHasMore(data.hasMore || false);
         setPage(p);
+        if (data.roleCounts) {
+          setRoleCounts(data.roleCounts);
+        }
       }
 
       if (pendingRes && pendingRes.ok) {
@@ -323,21 +327,26 @@ export default function SuperAdminPage() {
     }
   };
 
+  const handleCategoryChange = (cat: string) => {
+    setSelectedCategory(cat);
+    fetchData(1, searchQuery, cat);
+  };
+
   const handleSearch = (val: string) => {
     setSearchQuery(val);
-    fetchData(1, val);
+    fetchData(1, val, selectedCategory);
   };
 
   const handleLoadMore = () => {
     if (!hasMore || isFetchingMore) return;
-    fetchData(page + 1, searchQuery);
+    fetchData(page + 1, searchQuery, selectedCategory);
   };
 
   useEffect(() => {
     fetchAdminProfile();
     fetchRoles();
     fetchSignupSetting();
-    fetchData();
+    fetchData(1, "", "all");
   }, []);
 
   const changeDepartment = async (targetId: string, newDept: string, targetName: string) => {
@@ -929,6 +938,53 @@ export default function SuperAdminPage() {
             </div>
           </div>
 
+          {/* Category Tabs */}
+          <div className="px-4 pt-2 pb-0 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => handleCategoryChange('all')}
+              className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
+                selectedCategory === 'all'
+                  ? 'bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20'
+                  : 'bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600'
+              }`}
+            >
+              <span className="text-sm">👥</span>
+              <span>ทั้งหมด</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
+                selectedCategory === 'all'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
+              }`}>
+                {Object.values(roleCounts).reduce((a, b) => a + b, 0)}
+              </span>
+            </button>
+            {roles.map((roleKey) => {
+              const isActive = selectedCategory === roleKey;
+              const count = roleCounts[roleKey] || 0;
+              if (count === 0) return null;
+              return (
+                <button
+                  key={roleKey}
+                  onClick={() => handleCategoryChange(roleKey)}
+                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
+                    isActive
+                      ? 'bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20'
+                      : 'bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600'
+                  }`}
+                >
+                  <span>{roleLabels[roleKey] || roleKey}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : 'bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           <div className="overflow-x-auto overflow-y-visible">
             <table className="w-full text-left">
               <thead>
@@ -958,10 +1014,7 @@ export default function SuperAdminPage() {
                     {users
                   .filter((u) => {
                     if (selectedCategory === 'all') return true;
-                    if (selectedCategory === 'teacher') return u.role === 'teacher';
-                    if (selectedCategory === 'student') return u.role === 'student';
-                    if (selectedCategory === 'staff') return u.role === 'staff';
-                    return true;
+                    return u.role === selectedCategory;
                   })
                   .map((user, index) => (
                     <motion.tr
@@ -1117,14 +1170,14 @@ export default function SuperAdminPage() {
                             </optgroup>
                           </select>
                         </td>
-                                <td className="p-4 text-center">
-          <button
-            onClick={() => toggleActive(user._id, user.isActive, user.name)}
-            className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
-          >
-            <div className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}/>
-          </button>
-        </td>
+                      <td className="p-4 text-center">
+                          <button
+                            onClick={() => toggleActive(user._id, user.isActive, user.name)}
+                            className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
+                          >
+                            <div className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}/>
+                          </button>
+                        </td>
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-3  ">
                             <button

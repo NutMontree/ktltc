@@ -40,7 +40,23 @@ export async function GET(req: Request) {
       query.isActive = true;
     }
 
+    const role = searchParams.get("role");
+    if (role && role !== "all") {
+      query.role = role;
+    }
+
     const total = await db.collection("users").countDocuments(query);
+
+    // Get active user counts grouped by role for dashboard tabs
+    const roleCounts = await db.collection("users").aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: "$role", count: { $sum: 1 } } }
+    ]).toArray();
+
+    const roleCountsMap = roleCounts.reduce((acc: any, curr: any) => {
+      acc[curr._id || "user"] = curr.count;
+      return acc;
+    }, {});
     
     let usersQuery = db
       .collection("users")
@@ -59,7 +75,8 @@ export async function GET(req: Request) {
       total,
       page,
       limit,
-      hasMore: total > page * limit
+      hasMore: total > page * limit,
+      roleCounts: roleCountsMap
     });
   } catch (error) {
     console.error("Admin Users API Error:", error);

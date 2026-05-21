@@ -65,6 +65,10 @@ interface UserFormData {
   respWorkHead?: string;
   respOther?: string;
   program?: string;
+  academicLevel?: string;
+  learnerType?: string;
+  studentStatus?: string;
+  classGroupId?: string;
 }
 
 export default function EditUserPage() {
@@ -111,6 +115,10 @@ export default function EditUserPage() {
     respWorkHead: "",
     respOther: "",
     program: "",
+    academicLevel: "",
+    learnerType: "ทวิภาคี",
+    studentStatus: "กำลังศึกษา",
+    classGroupId: "",
   });
 
   const [username, setUsername] = useState("");
@@ -164,7 +172,8 @@ export default function EditUserPage() {
             coverImage: data.coverImage || "",
             passwordText: data.passwordText || "",
             studentId: data.studentId || "",
-            groupCode: data.groupCode || "",
+            groupCode: data.groupCode || data.classGroupId || "",
+            classGroupId: data.classGroupId || data.groupCode || "",
             citizenId: data.citizenId || "",
             work: data.work || "",
             education: data.education || "",
@@ -186,8 +195,11 @@ export default function EditUserPage() {
             respWorkHead: data.respWorkHead || "",
             respOther: data.respOther || "",
             program: data.program || "",
+            academicLevel: data.academicLevel || "",
+            learnerType: data.learnerType || "ทวิภาคี",
+            studentStatus: data.studentStatus || "กำลังศึกษา",
           });
-          setUsername(data.username || "ไม่ระบุ");
+          setUsername(data.username || "");
         } else {
           toast.error("ไม่พบข้อมูลผู้ใช้ในระบบ");
           router.push("/dashboard/super-admin");
@@ -243,6 +255,7 @@ export default function EditUserPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          classGroupId: formData.groupCode,
           username: username.toLowerCase().trim(), // ส่ง Username ที่อาจถูกแก้ไขไปด้วย
           password: newPassword || undefined, // ส่งรหัสผ่านใหม่ไปถ้ามีการกรอก
         }),
@@ -630,15 +643,61 @@ export default function EditUserPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 ml-1">
-                      รหัสกลุ่ม
+                      รหัสกลุ่มเรียน
                     </label>
                     <input
                       type="text"
                       value={formData.groupCode || ""}
                       onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                      placeholder="รหัสกลุ่ม"
+                      placeholder="ระบุรหัส เช่น 6932040001"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      ระดับชั้นปีการศึกษา
+                    </label>
+                    <select
+                      value={formData.academicLevel || ""}
+                      onChange={(e) => setFormData({ ...formData, academicLevel: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-semibold"
+                    >
+                      <option value="">- เลือกระดับชั้นปีการศึกษา -</option>
+                      <option value="ปวช 1">ปวช. ปีที่ 1</option>
+                      <option value="ปวช 2">ปวช. ปีที่ 2</option>
+                      <option value="ปวช 3">ปวช. ปีที่ 3</option>
+                      <option value="ปวส 1">ปวส. ปีที่ 1</option>
+                      <option value="ปวส 2">ปวส. ปีที่ 2</option>
+                      <option value="จบการศึกษา">จบการศึกษา</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      ประเภทผู้เรียน
+                    </label>
+                    <select
+                      value={formData.learnerType || "ทวิภาคี"}
+                      onChange={(e) => setFormData({ ...formData, learnerType: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-semibold"
+                    >
+                      <option value="ทวิภาคี">ทวิภาคี</option>
+                      <option value="ปกติ">ปกติ</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-bold text-slate-500 ml-1">
+                      สถานะนักศึกษา
+                    </label>
+                    <select
+                      value={formData.studentStatus || "กำลังศึกษา"}
+                      onChange={(e) => setFormData({ ...formData, studentStatus: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-semibold"
+                    >
+                      <option value="กำลังศึกษา">กำลังศึกษา</option>
+                      <option value="สำเร็จการศึกษา">สำเร็จการศึกษา</option>
+                      <option value="พ้นสภาพนักศึกษา">พ้นสภาพนักศึกษา</option>
+                      <option value="รักษาสถานภาพ">รักษาสถานภาพ</option>
+                    </select>
                   </div>
                 </div>
               </div>
