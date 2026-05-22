@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn, getSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Lock, Command, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { User, Lock, Command, Eye, EyeOff, ArrowRight, X, School, GraduationCap, ChevronRight } from "lucide-react";
 
 async function recordActivity(data: { userName: string; action: string; details: string }) {
   try {
@@ -27,6 +27,19 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsRegisterModalOpen(false);
+      }
+    };
+    if (isRegisterModalOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isRegisterModalOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -304,20 +317,13 @@ export default function LoginPage() {
                 <span className="text-slate-500 dark:text-zinc-400 font-medium">
                   ยังไม่มีบัญชีใช่หรือไม่?
                 </span>
-                <div className="flex items-center gap-2">
-                  <Link
-                    href="/register"
-                    className="px-4 py-2 bg-slate-100 dark:bg-zinc-900 border border-slate-200/50 dark:border-zinc-800/80 text-slate-700 dark:text-zinc-300 rounded-xl hover:bg-slate-200 dark:hover:bg-zinc-800 transition-all hover:scale-105 active:scale-95 shadow-sm text-xs"
-                  >
-                    สมัครสมาชิกทั่วไป
-                  </Link>
-                  <Link
-                    href="/register/student"
-                    className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all hover:scale-105 active:scale-95 shadow-md shadow-amber-500/10 text-xs flex items-center gap-1.5"
-                  >
-                    <span>สมัครนักศึกษา 🎓</span>
-                  </Link>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsRegisterModalOpen(true)}
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-xl transition-all hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20 text-xs font-bold"
+                >
+                  สมัครสมาชิก
+                </button>
               </div>
 
               <div className="pt-4 border-t border-slate-100 dark:border-zinc-900/50">
@@ -347,6 +353,99 @@ export default function LoginPage() {
           </motion.div>
         </div>
       </div>
+
+      {/* Registration Choice Modal */}
+      <AnimatePresence>
+        {isRegisterModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsRegisterModalOpen(false)}
+              className="absolute inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-sm"
+            />
+
+            {/* Modal Dialog Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="w-full max-w-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden z-10"
+            >
+              {/* Decorative Accent Gradient Line */}
+              <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500" />
+              
+              <div className="p-6 sm:p-8">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                      เลือกประเภทการสมัครสมาชิก
+                    </h3>
+                    <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium mt-1">
+                      กรุณาเลือกประเภทบัญชีที่คุณต้องการสร้างในระบบ
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsRegisterModalOpen(false)}
+                    className="p-2 text-slate-400 hover:text-slate-600 dark:text-zinc-500 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Choices */}
+                <div className="space-y-4">
+                  {/* Option: Teacher */}
+                  <Link
+                    href="/register"
+                    onClick={() => setIsRegisterModalOpen(false)}
+                    className="flex items-center gap-4 p-5 rounded-2xl border border-slate-100 dark:border-zinc-800/80 bg-slate-50/50 dark:bg-zinc-950/30 hover:bg-blue-50/40 dark:hover:bg-blue-950/20 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all hover:scale-[1.02] active:scale-[0.99] group shadow-xs"
+                  >
+                    <div className="p-3.5 bg-blue-100 dark:bg-blue-950/60 rounded-2xl text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                      <School size={26} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h4 className="font-bold text-slate-800 dark:text-zinc-100 text-base sm:text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        สมัครสมาชิก ครู / บุคลากร
+                      </h4>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400 font-medium mt-0.5 leading-relaxed">
+                        สำหรับครูผู้สอน หัวหน้างาน และเจ้าหน้าที่เพื่อเข้าใช้งานระบบบริหารจัดการ
+                      </p>
+                    </div>
+                    <ChevronRight size={18} className="text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                  </Link>
+
+                  {/* Option: Student */}
+                  <Link
+                    href="/register/student"
+                    onClick={() => setIsRegisterModalOpen(false)}
+                    className="flex items-center gap-4 p-5 rounded-2xl border border-slate-100 dark:border-zinc-800/80 bg-slate-50/50 dark:bg-zinc-950/30 hover:bg-amber-50/40 dark:hover:bg-amber-950/20 hover:border-amber-200 dark:hover:border-amber-900/50 transition-all hover:scale-[1.02] active:scale-[0.99] group shadow-xs"
+                  >
+                    <div className="p-3.5 bg-amber-100 dark:bg-amber-950/60 rounded-2xl text-amber-600 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                      <GraduationCap size={26} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h4 className="font-bold text-slate-800 dark:text-zinc-100 text-base sm:text-lg group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                        <span>สมัครนักศึกษา</span>
+                        <span className="text-sm">🎓</span>
+                      </h4>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400 font-medium mt-0.5 leading-relaxed">
+                        สำหรับนักเรียน นักศึกษา เพื่อรายงานตัว เช็คชื่อ และติดตามกิจกรรมต่างๆ
+                      </p>
+                    </div>
+                    <ChevronRight size={18} className="text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all" />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

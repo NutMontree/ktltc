@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { DEPARTMENT_GROUPS } from "../../../../constants/departments";
 import FullPageLoader from "@/components/FullPageLoader";
 import {
   UserOutlined,
@@ -3223,47 +3224,9 @@ export default function FriendProfilePage({
                 <datalist id="departments-list">
                   <option value="ไม่มีสังกัด" />
                   <option value="ผู้บริหารสถานศึกษา" />
-                  <option value="งานบริหารงานทั่วไป" />
-                  <option value="งานบริหารและพัฒนาทรัพยากรบุคคล" />
-                  <option value="งานการเงิน" />
-                  <option value="งานการบัญชี" />
-                  <option value="งานพัสดุ" />
-                  <option value="งานอาคารสถานที่" />
-                  <option value="งานทะเบียน" />
-                  <option value="งานแม่บ้าน/นักการ" />
-                  <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ" />
-                  <option value="งานมาตรฐานและการประกันคุณภาพ" />
-                  <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร" />
-                  <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์" />
-                  <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ" />
-                  <option value="งานติดตามและประเมินผล" />
-                  <option value="งานกิจกรรมนักเรียนนักศึกษา" />
-                  <option value="งานครูที่ปรึกษาและการแนะแนว" />
-                  <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา" />
-                  <option value="งานสวัสดิการนักเรียนนักศึกษา" />
-                  <option value="งานโครงการพิเศษและการบริการ" />
-                  <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้" />
-                  <option value="งานวัดผลและประเมินผล" />
-                  <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ" />
-                  <option value="งานวิทยบริการและเทคโนโลยีการศึกษา" />
-                  <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา" />
-                  <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ" />
-                  <option value="แผนกวิชาช่างยนต์" />
-                  <option value="แผนกวิชาช่างกลโรงงาน" />
-                  <option value="แผนกวิชาช่างเชื่อมโลหะ" />
-                  <option value="แผนกวิชาช่างไฟฟ้ากำลัง" />
-                  <option value="แผนกวิชาช่างอิเล็กทรอนิกส์" />
-                  <option value="แผนกวิชาช่างเทคนิคพื้นฐาน" />
-                  <option value="แผนกวิชาช่างก่อสร้าง" />
-                  <option value="แผนกวิชาการบัญชี" />
-                  <option value="แผนกวิชาการตลาด" />
-                  <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล" />
-                  <option value="แผนกวิชาการโรงแรม" />
-                  <option value="แผนกวิชาสามัญสัมพันธ์" />
-                  <option value="แผนกวิชายานยนต์ไฟฟ้า" />
-                  <option value="แผนกวิชาการตลาด/โลจิสติก์" />
-                  <option value="การจัดการสำนักงานดิจิทัล" />
-                  <option value="การจัดการโลจิสติกส์และซัพพลายเชน" />
+                  {DEPARTMENT_GROUPS.flatMap((group) => group.options).map((opt) => (
+                    <option key={opt.value} value={opt.value} />
+                  ))}
                   {profileOptions.departments.map((opt) => (
                     <option key={`db-${opt}`} value={opt} />
                   ))}

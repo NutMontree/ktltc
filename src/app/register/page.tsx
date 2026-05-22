@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { DEPARTMENT_GROUPS } from "../../constants/departments";
 import {
   ArrowLeft,
   User,
@@ -395,86 +396,15 @@ export default function RegisterPage() {
                           >
                             <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
                             <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                            <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                              <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
-                              <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
-                                งานบริหารและพัฒนาทรัพยากรบุคคล
-                              </option>
-                              <option value="งานการเงิน">งานการเงิน</option>
-                              <option value="งานการบัญชี">งานการบัญชี</option>
-                              <option value="งานพัสดุ">งานพัสดุ</option>
-                              <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
-                              <option value="งานทะเบียน">งานทะเบียน</option>
-                              <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
-                            </optgroup>
-                            <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
-                              <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
-                                งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
-                              </option>
-                              <option value="งานมาตรฐานและการประกันคุณภาพ">
-                                งานมาตรฐานและการประกันคุณภาพ
-                              </option>
-                              <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
-                                งานศูนย์ดิจิทัลและสื่อสารองค์กร
-                              </option>
-                              <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
-                                งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
-                              </option>
-                              <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
-                                งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
-                              </option>
-                              <option value="งานติดตามและประเมินผล">งานติดตามและประเมินผล</option>
-                            </optgroup>
-                            <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
-                              <option value="งานกิจกรรมนักเรียนนักศึกษา">
-                                งานกิจกรรมนักเรียนนักศึกษา
-                              </option>
-                              <option value="งานครูที่ปรึกษาและการแนะแนว">
-                                งานครูที่ปรึกษาและการแนะแนว
-                              </option>
-                              <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
-                                งานปกครองและความปลอดภัยนักเรียนนักศึกษา
-                              </option>
-                              <option value="งานสวัสดิการนักเรียนนักศึกษา">
-                                งานสวัสดิการนักเรียนนักศึกษา
-                              </option>
-                              <option value="งานโครงการพิเศษและการบริการ">
-                                งานโครงการพิเศษและการบริการ
-                              </option>
-                            </optgroup>
-                            <optgroup label="4. ฝ่ายวิชาการ">
-                              <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
-                                งานพัฒนาหลักสูตรและการจัดการเรียนรู้
-                              </option>
-                              <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
-                              <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
-                                งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
-                              </option>
-                              <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
-                                งานวิทยบริการและเทคโนโลยีการศึกษา
-                              </option>
-                              <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
-                                งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
-                              </option>
-                              <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
-                                งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
-                              </option>
-                            </optgroup>
-                            <optgroup label="5. แผนกวิชา">
-                              <option value="สามัญสัมพันธ์">สามัญสัมพันธ์</option>
-                              <option value="การบัญชี">การบัญชี</option>
-                              <option value="การตลาด">การตลาด</option>
-                              <option value="การตลาด/โลจิสติก์">การตลาด/โลจิสติก์</option>
-                              <option value="เทคโนโลยีธุรกิจดิจิทัล">เทคโนโลยีธุรกิจดิจิทัล</option>
-                              <option value="การโรงแรม">การโรงแรม</option>
-                              <option value="เทคนิคพื้นฐาน">เทคนิคพื้นฐาน</option>
-                              <option value="ช่างอิเล็กทรอนิกส์">ช่างอิเล็กทรอนิกส์</option>
-                              <option value="ช่างยนต์">ช่างยนต์</option>
-                              <option value="ยานยนต์ไฟฟ้า">ยานยนต์ไฟฟ้า</option>
-                              <option value="ช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
-                              <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
-                              <option value="ช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
-                            </optgroup>
+                            {DEPARTMENT_GROUPS.map((group) => (
+                              <optgroup key={group.label} label={group.label}>
+                                {group.options.map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ))}
                           </select>
                         </div>
                       </div>

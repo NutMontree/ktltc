@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
 import Link from "next/link";
+import { DEPARTMENT_GROUPS } from "../../../../../constants/departments";
 import {
   FiArrowLeft,
   FiSave,
@@ -1109,81 +1110,15 @@ export default function EditUserPage() {
                     <option value="ผู้บริหารสถานศึกษา">
                       ผู้บริหารสถานศึกษา
                     </option>
-
-                    <optgroup label="ฝ่ายบริหารทรัพยากร">
-                      <option value="งานบริหารงานทั่วไป">
-                        งานบริหารงานทั่วไป
-                      </option>
-                      <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
-                        งานบริหารและพัฒนาทรัพยากรบุคคล
-                      </option>
-                      <option value="งานการเงิน">งานการเงิน</option>
-                      <option value="งานการบัญชี">งานการบัญชี</option>
-                      <option value="งานพัสดุ">งานพัสดุ</option>
-                      <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
-                      <option value="งานแม่บ้าน/นักการ">
-                        งานแม่บ้าน/นักการ
-                      </option>
-                      <option value="งานทะเบียน">งานทะเบียน</option>
-                    </optgroup>
-
-                    <optgroup label="ฝ่ายยุทธศาสตร์และแผนงาน">
-                      <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
-                        งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
-                      </option>
-                      <option value="งานมาตรฐานและการประกันคุณภาพ">
-                        งานมาตรฐานและการประกันคุณภาพ
-                      </option>
-                      <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
-                        งานศูนย์ดิจิทัลและสื่อสารองค์กร
-                      </option>
-                      <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
-                        งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
-                      </option>
-                      <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
-                        งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
-                      </option>
-                      <option value="งานติดตามและประเมินผล">
-                        งานติดตามและประเมินผล
-                      </option>
-                    </optgroup>
-
-                    <optgroup label="ฝ่ายกิจการนักเรียน นักศึกษา">
-                      <option value="งานกิจกรรมนักเรียนนักศึกษา">
-                        งานกิจกรรมนักเรียนนักศึกษา
-                      </option>
-                      <option value="งานครูที่ปรึกษาและการแนะแนว">
-                        งานครูที่ปรึกษาและการแนะแนว
-                      </option>
-                      <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
-                        งานปกครองและความปลอดภัยนักเรียนนักศึกษา
-                      </option>
-                      <option value="งานสวัสดิการนักเรียนนักศึกษา">
-                        งานสวัสดิการนักเรียนนักศึกษา
-                      </option>
-                      <option value="งานโครงการพิเศษและการบริการ">
-                        งานโครงการพิเศษและการบริการ
-                      </option>
-                    </optgroup>
-
-                    <optgroup label="แผนกวิชา">
-                      <option value="แผนกวิชาช่างยนต์">แผนกวิชาช่างยนต์</option>
-                      <option value="แผนกวิชาช่างกลโรงงาน">แผนกวิชาช่างกลโรงงาน</option>
-                      <option value="แผนกวิชาช่างเชื่อมโลหะ">แผนกวิชาช่างเชื่อมโลหะ</option>
-                      <option value="แผนกวิชาช่างไฟฟ้ากำลัง">แผนกวิชาช่างไฟฟ้ากำลัง</option>
-                      <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">แผนกวิชาช่างอิเล็กทรอนิกส์</option>
-                      <option value="แผนกวิชาช่างเทคนิคพื้นฐาน">แผนกวิชาช่างเทคนิคพื้นฐาน</option>
-                      <option value="แผนกวิชาช่างก่อสร้าง">แผนกวิชาช่างก่อสร้าง</option>
-                      <option value="แผนกวิชาการบัญชี">แผนกวิชาการบัญชี</option>
-                      <option value="แผนกวิชาการตลาด">แผนกวิชาการตลาด</option>
-                      <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล</option>
-                      <option value="แผนกวิชาการโรงแรม">แผนกวิชาการโรงแรม</option>
-                      <option value="แผนกวิชาสามัญสัมพันธ์">แผนกวิชาสามัญสัมพันธ์</option>
-                      <option value="แผนกวิชายานยนต์ไฟฟ้า">แผนกวิชายานยนต์ไฟฟ้า</option>
-                      <option value="แผนกวิชาการตลาด/โลจิสติก์">แผนกวิชาการตลาด/โลจิสติก์</option>
-                      <option value="การจัดการสำนักงานดิจิทัล">การจัดการสำนักงานดิจิทัล</option>
-                      <option value="การจัดการโลจิสติกส์และซัพพลายเชน">การจัดการโลจิสติกส์และซัพพลายเชน</option>
-                    </optgroup>
+                    {DEPARTMENT_GROUPS.map((group) => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
                   </select>
                 </div>
 
