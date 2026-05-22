@@ -3847,6 +3847,8 @@ function DVETeacherWorkspace() {
 function DVEPortalContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const role = ((session?.user as any)?.role || "").toLowerCase();
+  const canAccessDvePortal = role === "teacher" || role === "super_admin";
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -3854,14 +3856,22 @@ function DVEPortalContent() {
     }
   }, [status, router]);
 
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    if (!canAccessDvePortal) {
+      router.replace("/dashboard");
+    }
+  }, [status, role, canAccessDvePortal, router]);
+
   if (status === "loading") {
     return <DVELoader />;
   }
 
   if (!session) return null;
-
-  const role = ((session?.user as any)?.role || "").toLowerCase();
-  const isTeacher = ["super_admin", "admin", "editor", "teacher"].includes(role);
+  if (!canAccessDvePortal) {
+    return <DVELoader />;
+  }
 
   return (
     <div className="min-h-screen bg-[#f0f2f5] dark:bg-zinc-950 transition-colors duration-500 pb-20">
@@ -3884,7 +3894,7 @@ function DVEPortalContent() {
         }}
       />
       <div className="max-w-[1200px] mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        {isTeacher ? <DVETeacherWorkspace /> : <DVEStudentPortal />}
+        <DVETeacherWorkspace />
       </div>
     </div>
   );

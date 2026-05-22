@@ -7,6 +7,51 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 
+function normalizeDept(value: string) {
+  return (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
+}
+
+function getDeptFromClassGroup(classGroupId: string): string {
+  if (!classGroupId) return "";
+  const clean = classGroupId.replace(/[^0-9a-zA-Zก-ฮ]/g, "").trim();
+  if (clean.startsWith("ชย") || clean.startsWith("ชยธ")) return "แผนกวิชาช่างยนต์";
+  if (clean.startsWith("ชฟ") || clean.startsWith("สชฟ")) return "แผนกวิชาช่างไฟฟ้ากำลัง";
+  if (clean.startsWith("ชอ") || clean.startsWith("สชอ")) return "แผนกวิชาช่างอิเล็กทรอนิกส์";
+  if (clean.startsWith("บช")) return "แผนกวิชาการบัญชี";
+  if (clean.startsWith("ตล")) return "แผนกวิชาการตลาด";
+  if (clean.startsWith("รแ") || clean.startsWith("กร") || clean.startsWith("ก.ร")) return "แผนกวิชาการโรงแรม";
+  if (clean.includes("30201") || clean.includes("20201")) return "แผนกวิชาการบัญชี";
+  if (clean.includes("30202") || clean.includes("20202")) return "แผนกวิชาการตลาด";
+  if (clean.includes("30701") || clean.includes("20701")) return "แผนกวิชาการโรงแรม";
+  if (clean.includes("31910") || clean.includes("31911") || clean.includes("21910") || clean.includes("21911")) {
+    return "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล";
+  }
+  return "";
+}
+
+async function resolveStudentDept(db: any, userId: string) {
+  const uDoc = await db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
+  if (!uDoc) return "";
+  return (uDoc.department || "").trim() || getDeptFromClassGroup(uDoc.classGroupId || "");
+}
+
+async function isOwnedSubject(db: any, subjectId: string, userId: string) {
+  if (!ObjectId.isValid(subjectId)) return false;
+  const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
+  return !!subject && subject.teacherId === userId;
+}
+
+async function isStudentAllowedSubject(db: any, subjectId: string, userId: string) {
+  if (!ObjectId.isValid(subjectId)) return false;
+  const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
+  if (!subject) return false;
+  const studentDept = await resolveStudentDept(db, userId);
+  if (!studentDept) return false;
+  const subjectDept = normalizeDept(subject.department || "");
+  const studentDeptNorm = normalizeDept(studentDept);
+  return subjectDept.includes(studentDeptNorm) || studentDeptNorm.includes(subjectDept);
+}
+
 export async function GET(req: Request) {
   try {
     const session = await auth();
@@ -16,7 +61,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const subjectId = searchParams.get("subjectId")?.trim();
-    const date = searchParams.get("date")?.trim(); // YYYY-MM-DD
+    const date = searchParams.get("date")?.trim();
     const classGroupId = searchParams.get("classGroupId")?.trim();
 
     if (!subjectId) {
@@ -25,29 +70,30 @@ export async function GET(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-
     const role = ((session.user as any)?.role || "").toLowerCase();
     const userId = (session.user as any)?.id || "";
 
-    const query: any = { subjectId };
-
     if (role === "student") {
-      // Students can only see their own attendance logs
+      if (!(await isStudentAllowedSubject(db, subjectId, userId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    } else if (!(await isOwnedSubject(db, subjectId, userId))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const query: any = { subjectId };
+    if (role === "student") {
       query.studentId = userId;
     } else {
-      // Teachers can filter by date and class group
       if (date) query.date = date;
       if (classGroupId) query.classGroupId = { $regex: classGroupId, $options: "i" };
     }
 
-    const logs = await db.collection("dve_attendances")
-      .find(query)
-      .sort({ date: -1, studentName: 1 })
-      .toArray();
+    const logs = await db.collection("dve_attendances").find(query).sort({ date: -1, studentName: 1 }).toArray();
 
     return NextResponse.json({
       success: true,
-      attendances: logs.map(l => ({
+      attendances: logs.map((l) => ({
         id: l._id.toString(),
         subjectId: l.subjectId,
         studentId: l.studentId,
@@ -64,7 +110,7 @@ export async function GET(req: Request) {
         unitSequence: l.unitSequence !== undefined ? l.unitSequence : "",
         checkedBy: l.checkedBy,
         updatedAt: l.updatedAt,
-      }))
+      })),
     });
   } catch (error: any) {
     console.error("[DVE Attendances GET API] Error:", error);
@@ -75,13 +121,15 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
     const role = ((session.user as any)?.role || "").toLowerCase();
+    const userId = (session.user as any)?.id || "";
 
     const body = await req.json();
-    const { subjectId, date, records } = body; // records: Array of student attendance updates
+    const { subjectId, date, records } = body;
 
     if (!subjectId || !date || !Array.isArray(records)) {
       return NextResponse.json({ error: "Missing required fields or invalid records format" }, { status: 400 });
@@ -90,31 +138,32 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const isStudent = role === "student";
-    const isAllowedRole = ALLOWED_ROLES.includes(role);
+    if (role === "student") {
+      if (!(await isStudentAllowedSubject(db, subjectId, userId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
 
-    if (!isAllowedRole && !isStudent) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    // Authenticate student cannot check in others
-    if (isStudent) {
-      const isCheckingOthers = records.some((rec: any) => rec.studentId !== (session.user as any).id);
+      const isCheckingOthers = records.some((rec: any) => rec.studentId !== userId);
       if (isCheckingOthers) {
         return NextResponse.json({ error: "Forbidden: Students can only check in themselves" }, { status: 403 });
       }
-    }
-
-    // Authenticate owner if teacher
-    if (role === "teacher") {
-      const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
-      if (subject && subject.teacherId !== (session.user as any).id) {
-        return NextResponse.json({ error: "Forbidden: Not the owner" }, { status: 403 });
-      }
+    } else if (!(await isOwnedSubject(db, subjectId, userId))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const bulkOps = records.map((rec: any) => {
-      const { studentId, studentName, studentIdNum, classGroupId, status, assignmentStatus, score, unitId, unitTitle, unitSequence } = rec;
+      const {
+        studentId,
+        studentName,
+        studentIdNum,
+        classGroupId,
+        status,
+        assignmentStatus,
+        score,
+        unitId,
+        unitTitle,
+        unitSequence,
+      } = rec;
 
       return {
         updateOne: {
@@ -122,7 +171,7 @@ export async function POST(req: Request) {
             subjectId,
             date,
             studentId,
-            unitId: unitId || ""
+            unitId: unitId || "",
           },
           update: {
             $set: {
@@ -136,12 +185,12 @@ export async function POST(req: Request) {
               unitId: unitId || "",
               unitTitle: unitTitle || "",
               unitSequence: unitSequence !== undefined ? unitSequence : "",
-              checkedBy: isStudent ? "student_self_study" : (session.user as any).id,
-              updatedAt: new Date()
-            }
+              checkedBy: role === "student" ? "student_self_study" : userId,
+              updatedAt: new Date(),
+            },
           },
-          upsert: true
-        }
+          upsert: true,
+        },
       };
     });
 
@@ -151,9 +200,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: isStudent 
-        ? "เช็คชื่อเข้าเรียนแบบเรียนรู้ด้วยตัวเองเสร็จสิ้น" 
-        : `บันทึกข้อมูลการเช็คชื่อเข้าเรียน ${bulkOps.length} คน เรียบร้อยแล้ว`
+      message:
+        role === "student"
+          ? "เช็คชื่อเข้าสู่ระบบเรียนรู้ด้วยตนเองสำเร็จ"
+          : `บันทึกข้อมูลการเช็คชื่อเข้าเรียน ${bulkOps.length} คน เรียบร้อยแล้ว`,
     });
   } catch (error: any) {
     console.error("[DVE Attendances POST API] Error:", error);
@@ -172,7 +222,7 @@ export async function DELETE(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const subjectId = searchParams.get("subjectId")?.trim();
-    const date = searchParams.get("date")?.trim(); // YYYY-MM-DD
+    const date = searchParams.get("date")?.trim();
     const classGroupId = searchParams.get("classGroupId")?.trim();
 
     if (!subjectId || !date) {
@@ -181,13 +231,10 @@ export async function DELETE(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    const userId = (session.user as any)?.id || "";
 
-    // Authenticate owner if teacher
-    if (role === "teacher") {
-      const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
-      if (subject && subject.teacherId !== (session.user as any).id) {
-        return NextResponse.json({ error: "Forbidden: Not the owner" }, { status: 403 });
-      }
+    if (!(await isOwnedSubject(db, subjectId, userId))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const query: any = { subjectId, date };
@@ -199,11 +246,10 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `ล้างประวัติการเช็คชื่อทั้งหมดจำนวน ${result.deletedCount} รายการเรียบร้อยแล้ว`
+      message: `ล้างประวัติการเช็คชื่อทั้งหมดจำนวน ${result.deletedCount} รายการเรียบร้อยแล้ว`,
     });
   } catch (error: any) {
     console.error("[DVE Attendances DELETE API] Error:", error);
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
   }
 }
-

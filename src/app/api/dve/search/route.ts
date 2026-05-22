@@ -2,9 +2,78 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
-import { DEPARTMENTS } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
+
+function toUserProfile(uDoc: any) {
+  if (!uDoc) return null;
+  return {
+    id: uDoc._id.toString(),
+    name: uDoc.name,
+    role: uDoc.role,
+    department: uDoc.department || "",
+    studentId: uDoc.studentId || "",
+    classGroupId: uDoc.classGroupId || "",
+  };
+}
+
+function getDeptFromClassGroup(classGroupId: string): string {
+  if (!classGroupId) return "";
+  const clean = classGroupId.replace(/[^0-9a-zA-Zก-ฮ]/g, "").trim();
+
+  if (clean.startsWith("ชย") || clean.startsWith("ชยธ")) return "แผนกวิชาช่างยนต์";
+  if (clean.startsWith("ชฟ") || clean.startsWith("สชฟ")) return "แผนกวิชาช่างไฟฟ้ากำลัง";
+  if (clean.startsWith("ชอ") || clean.startsWith("สชอ")) return "แผนกวิชาช่างอิเล็กทรอนิกส์";
+  if (clean.startsWith("บช")) return "แผนกวิชาการบัญชี";
+  if (clean.startsWith("ตล")) return "แผนกวิชาการตลาด";
+  if (clean.startsWith("รแ") || clean.startsWith("กร") || clean.startsWith("ก.ร")) return "แผนกวิชาการโรงแรม";
+
+  if (clean.includes("30101") || clean.includes("20101")) return "แผนกวิชาช่างยนต์";
+  if (clean.includes("30102") || clean.includes("20102")) return "แผนกวิชากลโรงงาน";
+  if (clean.includes("30103") || clean.includes("20103")) return "แผนกวิชาช่างเชื่อมโลหะ";
+  if (clean.includes("30104") || clean.includes("20104")) return "แผนกวิชาช่างไฟฟ้ากำลัง";
+  if (clean.includes("30105") || clean.includes("20105")) return "แผนกวิชาช่างอิเล็กทรอนิกส์";
+  if (clean.includes("30120") || clean.includes("30121") || clean.includes("20120") || clean.includes("20121")) return "แผนกวิชาก่อสร้าง";
+  if (clean.includes("30201") || clean.includes("20201")) return "แผนกวิชาการบัญชี";
+  if (clean.includes("30202") || clean.includes("20202")) return "แผนกวิชาการตลาด";
+  if (clean.includes("30701") || clean.includes("20701")) return "แผนกวิชาการโรงแรม";
+
+  if (
+    clean.includes("31910") ||
+    clean.includes("31911") ||
+    clean.includes("21910") ||
+    clean.includes("21911") ||
+    clean.includes("31905") ||
+    clean.includes("31901") ||
+    clean.includes("31401") ||
+    clean.includes("21919") ||
+    clean.includes("69219") ||
+    clean.includes("68219") ||
+    clean.includes("69319") ||
+    clean.includes("69314") ||
+    clean.includes("62127")
+  ) {
+    return "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล";
+  }
+
+  return "";
+}
+
+function normalizeDept(value: string) {
+  return (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
+}
+
+function resolveStudentDept(userProfile: any) {
+  const dept = (userProfile?.department || "").trim();
+  if (dept) return dept;
+  return getDeptFromClassGroup(userProfile?.classGroupId || "");
+}
+
+function deptMatches(a: string, b: string) {
+  const aa = normalizeDept(a);
+  const bb = normalizeDept(b);
+  return !!aa && !!bb && (aa.includes(bb) || bb.includes(aa));
+}
 
 export async function GET(req: Request) {
   try {
@@ -16,124 +85,258 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const department = searchParams.get("department")?.trim();
     const teacherId = searchParams.get("teacherId")?.trim();
+    const userRole = ((session.user as any)?.role || "").toLowerCase();
+    const userId = (session.user as any)?.id || "";
+    const isStudent = userRole === "student";
+    const isOwnerScoped = !isStudent;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // 1. If no query, return distinct departments and all teachers
-    if (!department && !teacherId) {
-      const combinedDepts = DEPARTMENTS.filter(
-        (d) => d.startsWith("แผนกวิชา") || d.includes("การจัดการ")
-      );
+    let userProfile: any = null;
+    if (userId && ObjectId.isValid(userId)) {
+      const uDoc = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+      userProfile = toUserProfile(uDoc);
+    }
 
-      const teachers = await db.collection("users")
-        .find({ role: "teacher" })
-        .project({ _id: 1, name: 1, department: 1 })
-        .sort({ name: 1 })
+    const studentDept = isStudent ? resolveStudentDept(userProfile) : "";
+
+    if (!department && !teacherId) {
+      if (isStudent) {
+        const teachers = studentDept
+          ? await db
+              .collection("users")
+              .find({ role: "teacher", department: { $regex: studentDept, $options: "i" } })
+              .project({ _id: 1, name: 1, department: 1 })
+              .sort({ name: 1 })
+              .toArray()
+          : [];
+
+        return NextResponse.json({
+          success: true,
+          departments: studentDept ? [studentDept] : [],
+          teachers: teachers.map((t) => ({ id: t._id.toString(), name: t.name, department: t.department })),
+          userProfile,
+        });
+      }
+
+      const ownedSubjects = await db
+        .collection("dve_subjects")
+        .find({ teacherId: userId })
+        .project({ department: 1 })
         .toArray();
 
-      // Fetch currently logged in user profile from DB
-      const userId = (session.user as any)?.id;
-      let userProfile = null;
-      if (userId && ObjectId.isValid(userId)) {
-        const uDoc = await db.collection("users").findOne({ _id: new ObjectId(userId) });
-        if (uDoc) {
-          userProfile = {
-            id: uDoc._id.toString(),
-            name: uDoc.name,
-            role: uDoc.role,
-            department: uDoc.department || "",
-            studentId: uDoc.studentId || "",
-            classGroupId: uDoc.classGroupId || ""
-          };
-        }
-      }
+      const departmentSet = new Set<string>();
+      ownedSubjects.forEach((subject) => {
+        if (subject.department) departmentSet.add(subject.department);
+      });
+      if (userProfile?.department) departmentSet.add(userProfile.department);
 
       return NextResponse.json({
         success: true,
-        departments: combinedDepts,
-        teachers: teachers.map(t => ({ id: t._id.toString(), name: t.name, department: t.department })),
-        userProfile
+        departments: Array.from(departmentSet),
+        teachers: userProfile ? [{ id: userProfile.id, name: userProfile.name, department: userProfile.department }] : [],
+        userProfile,
       });
     }
 
-    // 2. If department is provided, return teachers from that department and subjects
     if (department && !teacherId) {
-      // Find subjects matching the department
-      const subjects = await db.collection("dve_subjects")
+      if (isStudent) {
+        if (!studentDept || !deptMatches(department, studentDept)) {
+          return NextResponse.json({
+            success: true,
+            teachers: [],
+            subjects: [],
+          });
+        }
+
+        const teachers = await db
+          .collection("users")
+          .find({ role: "teacher", department: { $regex: studentDept, $options: "i" } })
+          .project({ _id: 1, name: 1, department: 1 })
+          .sort({ name: 1 })
+          .toArray();
+
+        const subjects = await db
+          .collection("dve_subjects")
+          .find({ department: { $regex: studentDept, $options: "i" } })
+          .sort({ name: 1 })
+          .toArray();
+
+        return NextResponse.json({
+          success: true,
+          teachers: teachers.map((t) => ({ id: t._id.toString(), name: t.name, department: t.department })),
+          subjects: subjects.map((s) => ({
+            id: s._id.toString(),
+            code: s.code,
+            name: s.name,
+            curriculum: s.curriculum,
+            teacherId: s.teacherId,
+            teacherName: s.teacherName,
+          })),
+        });
+      }
+
+      if (isOwnerScoped) {
+        const subjects = await db
+          .collection("dve_subjects")
+          .find({ teacherId: userId, department: { $regex: department, $options: "i" } })
+          .sort({ name: 1 })
+          .toArray();
+
+        return NextResponse.json({
+          success: true,
+          teachers: userProfile ? [{ id: userProfile.id, name: userProfile.name, department: userProfile.department }] : [],
+          subjects: subjects.map((s) => ({
+            id: s._id.toString(),
+            code: s.code,
+            name: s.name,
+            curriculum: s.curriculum,
+            teacherId: s.teacherId,
+            teacherName: s.teacherName,
+          })),
+        });
+      }
+
+      const subjects = await db
+        .collection("dve_subjects")
         .find({ department: { $regex: department, $options: "i" } })
         .sort({ name: 1 })
         .toArray();
 
-      // Find teachers in users collection matching this department
-      const deptTeachers = await db.collection("users")
+      const deptTeachers = await db
+        .collection("users")
         .find({ role: "teacher", department: { $regex: department, $options: "i" } })
         .project({ _id: 1, name: 1, department: 1 })
         .toArray();
 
-      // Find teachers who actually own subjects in this department (even if their user profile department is different)
       const teacherIdsFromSubjects = subjects
-        .map(s => s.teacherId)
+        .map((s) => s.teacherId)
         .filter((id): id is string => typeof id === "string");
 
       const subjectTeacherObjectIds = teacherIdsFromSubjects
-        .map(id => {
-          try { return new ObjectId(id); } catch (e) { return null; }
+        .map((id) => {
+          try {
+            return new ObjectId(id);
+          } catch {
+            return null;
+          }
         })
         .filter((id): id is ObjectId => id !== null);
 
-      const subjectTeachers = subjectTeacherObjectIds.length > 0
-        ? await db.collection("users")
-            .find({ role: "teacher", _id: { $in: subjectTeacherObjectIds } })
-            .project({ _id: 1, name: 1, department: 1 })
-            .toArray()
-        : [];
+      const subjectTeachers =
+        subjectTeacherObjectIds.length > 0
+          ? await db
+              .collection("users")
+              .find({ role: "teacher", _id: { $in: subjectTeacherObjectIds } })
+              .project({ _id: 1, name: 1, department: 1 })
+              .toArray()
+          : [];
 
-      // Combine both sets of teachers uniquely
-      const uniqueTeachersMap = new Map();
-      deptTeachers.forEach(t => uniqueTeachersMap.set(t._id.toString(), t));
-      subjectTeachers.forEach(t => uniqueTeachersMap.set(t._id.toString(), t));
-      
-      const teachersList = Array.from(uniqueTeachersMap.values())
-        .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      const uniqueTeachersMap = new Map<string, any>();
+      deptTeachers.forEach((t) => uniqueTeachersMap.set(t._id.toString(), t));
+      subjectTeachers.forEach((t) => uniqueTeachersMap.set(t._id.toString(), t));
+
+      const teachersList = Array.from(uniqueTeachersMap.values()).sort((a, b) =>
+        (a.name || "").localeCompare(b.name || ""),
+      );
 
       return NextResponse.json({
         success: true,
-        teachers: teachersList.map(t => ({ id: t._id.toString(), name: t.name, department: t.department })),
-        subjects: subjects.map(s => ({
+        teachers: teachersList.map((t) => ({ id: t._id.toString(), name: t.name, department: t.department })),
+        subjects: subjects.map((s) => ({
           id: s._id.toString(),
           code: s.code,
           name: s.name,
           curriculum: s.curriculum,
           teacherId: s.teacherId,
-          teacherName: s.teacherName
-        }))
+          teacherName: s.teacherName,
+        })),
       });
     }
 
-    // 3. If teacherId is provided, return subjects by that teacher
     if (teacherId) {
-      const subjects = await db.collection("dve_subjects")
-        .find({ teacherId: teacherId })
+      if (isStudent) {
+        if (!studentDept || !ObjectId.isValid(teacherId)) {
+          return NextResponse.json({ success: true, subjects: [] });
+        }
+
+        const teacher = await db.collection("users").findOne({
+          _id: new ObjectId(teacherId),
+          role: "teacher",
+          department: { $regex: studentDept, $options: "i" },
+        });
+        if (!teacher) {
+          return NextResponse.json({ success: true, subjects: [] });
+        }
+
+        const subjects = await db
+          .collection("dve_subjects")
+          .find({ teacherId, department: { $regex: studentDept, $options: "i" } })
+          .sort({ name: 1 })
+          .toArray();
+
+        return NextResponse.json({
+          success: true,
+          subjects: subjects.map((s) => ({
+            id: s._id.toString(),
+            code: s.code,
+            name: s.name,
+            curriculum: s.curriculum,
+            department: s.department,
+            teacherId: s.teacherId,
+            teacherName: s.teacherName,
+          })),
+        });
+      }
+
+      if (isOwnerScoped) {
+        if (teacherId !== userId) {
+          return NextResponse.json({ success: true, subjects: [] });
+        }
+
+        const subjects = await db
+          .collection("dve_subjects")
+          .find({ teacherId: userId })
+          .sort({ name: 1 })
+          .toArray();
+
+        return NextResponse.json({
+          success: true,
+          subjects: subjects.map((s) => ({
+            id: s._id.toString(),
+            code: s.code,
+            name: s.name,
+            curriculum: s.curriculum,
+            department: s.department,
+            teacherId: s.teacherId,
+            teacherName: s.teacherName,
+          })),
+        });
+      }
+
+      const subjects = await db
+        .collection("dve_subjects")
+        .find({ teacherId })
         .sort({ name: 1 })
         .toArray();
 
       return NextResponse.json({
         success: true,
-        subjects: subjects.map(s => ({
+        subjects: subjects.map((s) => ({
           id: s._id.toString(),
           code: s.code,
           name: s.name,
           curriculum: s.curriculum,
           department: s.department,
           teacherId: s.teacherId,
-          teacherName: s.teacherName
-        }))
+          teacherName: s.teacherName,
+        })),
       });
     }
 
     return NextResponse.json({ success: false, error: "Invalid parameters" }, { status: 400 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("[DVE Search API] Error:", error);
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
   }

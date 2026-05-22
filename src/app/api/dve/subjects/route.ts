@@ -7,6 +7,74 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 
+function getDeptFromClassGroup(classGroupId: string): string {
+  if (!classGroupId) return "";
+  const clean = classGroupId.replace(/[^0-9a-zA-Zก-ฮ]/g, "").trim();
+
+  if (clean.startsWith("ชย") || clean.startsWith("ชยธ")) return "แผนกวิชาช่างยนต์";
+  if (clean.startsWith("ชฟ") || clean.startsWith("สชฟ")) return "แผนกวิชาช่างไฟฟ้ากำลัง";
+  if (clean.startsWith("ชอ") || clean.startsWith("สชอ")) return "แผนกวิชาช่างอิเล็กทรอนิกส์";
+  if (clean.startsWith("บช")) return "แผนกวิชาการบัญชี";
+  if (clean.startsWith("ตล")) return "แผนกวิชาการตลาด";
+  if (clean.startsWith("รแ") || clean.startsWith("กร") || clean.startsWith("ก.ร")) return "แผนกวิชาการโรงแรม";
+
+  if (clean.includes("30101") || clean.includes("20101")) return "แผนกวิชาช่างยนต์";
+  if (clean.includes("30102") || clean.includes("20102")) return "แผนกวิชากลโรงงาน";
+  if (clean.includes("30103") || clean.includes("20103")) return "แผนกวิชาช่างเชื่อมโลหะ";
+  if (clean.includes("30104") || clean.includes("20104")) return "แผนกวิชาช่างไฟฟ้ากำลัง";
+  if (clean.includes("30105") || clean.includes("20105")) return "แผนกวิชาช่างอิเล็กทรอนิกส์";
+  if (clean.includes("30120") || clean.includes("30121") || clean.includes("20120") || clean.includes("20121")) return "แผนกวิชาก่อสร้าง";
+  if (clean.includes("30201") || clean.includes("20201")) return "แผนกวิชาการบัญชี";
+  if (clean.includes("30202") || clean.includes("20202")) return "แผนกวิชาการตลาด";
+  if (clean.includes("30701") || clean.includes("20701")) return "แผนกวิชาการโรงแรม";
+
+  if (
+    clean.includes("31910") ||
+    clean.includes("31911") ||
+    clean.includes("21910") ||
+    clean.includes("21911") ||
+    clean.includes("31905") ||
+    clean.includes("31901") ||
+    clean.includes("31401") ||
+    clean.includes("21919") ||
+    clean.includes("69219") ||
+    clean.includes("68219") ||
+    clean.includes("69319") ||
+    clean.includes("69314") ||
+    clean.includes("62127")
+  ) {
+    return "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล";
+  }
+
+  return "";
+}
+
+function normalizeDept(value: string) {
+  return (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
+}
+
+async function resolveStudentDept(db: any, userId: string) {
+  const uDoc = await db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
+  if (!uDoc) return "";
+  return (uDoc.department || "").trim() || getDeptFromClassGroup(uDoc.classGroupId || "");
+}
+
+async function isOwnedSubject(db: any, subjectId: string, userId: string) {
+  if (!ObjectId.isValid(subjectId)) return false;
+  const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
+  return !!subject && subject.teacherId === userId;
+}
+
+async function isStudentAllowedSubject(db: any, subjectId: string, userId: string) {
+  if (!ObjectId.isValid(subjectId)) return false;
+  const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
+  if (!subject) return false;
+  const studentDept = await resolveStudentDept(db, userId);
+  if (!studentDept) return false;
+  return normalizeDept(subject.department || "").includes(normalizeDept(studentDept)) ||
+    normalizeDept(studentDept).includes(normalizeDept(subject.department || ""));
+}
+
 export async function GET(req: Request) {
   try {
     const session = await auth();
@@ -20,16 +88,28 @@ export async function GET(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    const userRole = ((session.user as any)?.role || "").toLowerCase();
+    const userId = (session.user as any)?.id || "";
 
-    // 1. Fetch single subject details
     if (id) {
       if (!ObjectId.isValid(id)) {
         return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
       }
+
       const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(id) });
       if (!subject) {
         return NextResponse.json({ error: "Subject not found" }, { status: 404 });
       }
+
+      if (userRole === "student") {
+        const allowed = await isStudentAllowedSubject(db, id, userId);
+        if (!allowed) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+      } else if (subject.teacherId !== userId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+
       return NextResponse.json({
         success: true,
         subject: {
@@ -46,14 +126,36 @@ export async function GET(req: Request) {
       });
     }
 
-    // 2. Fetch list of subjects
-    const userRole = ((session.user as any)?.role || "").toLowerCase();
-    const userId = (session.user as any)?.id || "";
+    if (userRole === "student") {
+      const studentDept = await resolveStudentDept(db, userId);
+      if (!studentDept) {
+        return NextResponse.json({ success: true, subjects: [] });
+      }
+
+      const subjects = await db
+        .collection("dve_subjects")
+        .find({ department: { $regex: studentDept, $options: "i" } })
+        .sort({ createdAt: -1 })
+        .toArray();
+
+      return NextResponse.json({
+        success: true,
+        subjects: subjects.map((s) => ({
+          id: s._id.toString(),
+          code: s.code,
+          name: s.name,
+          department: s.department,
+          curriculum: s.curriculum,
+          semester: s.semester,
+          academicYear: s.academicYear,
+          teacherId: s.teacherId,
+          teacherName: s.teacherName,
+        })),
+      });
+    }
 
     const query: any = {};
-
-    // If user is a teacher and not admin, restrict list to their own subjects
-    if (userRole === "teacher") {
+    if (userRole !== "student") {
       query.teacherId = userId;
     } else if (department) {
       query.department = { $regex: department, $options: "i" };
@@ -151,28 +253,26 @@ export async function PUT(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    const userId = (session.user as any).id || "";
 
-    // Check ownership if not admin
-    if (role === "teacher") {
-      const existing = await db.collection("dve_subjects").findOne({ _id: new ObjectId(id) });
-      if (existing && existing.teacherId !== (session.user as any).id) {
-        return NextResponse.json({ error: "Forbidden: You are not the owner" }, { status: 403 });
-      }
+    if (!(await isOwnedSubject(db, id, userId))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const updateDoc = {
-      $set: {
-        code,
-        name,
-        department,
-        curriculum,
-        semester,
-        academicYear,
-        updatedAt: new Date(),
+    await db.collection("dve_subjects").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          code,
+          name,
+          department,
+          curriculum,
+          semester,
+          academicYear,
+          updatedAt: new Date(),
+        },
       },
-    };
-
-    await db.collection("dve_subjects").updateOne({ _id: new ObjectId(id) }, updateDoc);
+    );
 
     return NextResponse.json({
       success: true,
@@ -202,19 +302,13 @@ export async function DELETE(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    const userId = (session.user as any).id || "";
 
-    // Check ownership if not admin
-    if (role === "teacher") {
-      const existing = await db.collection("dve_subjects").findOne({ _id: new ObjectId(id) });
-      if (existing && existing.teacherId !== (session.user as any).id) {
-        return NextResponse.json({ error: "Forbidden: You are not the owner" }, { status: 403 });
-      }
+    if (!(await isOwnedSubject(db, id, userId))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Delete DVE Subject
     await db.collection("dve_subjects").deleteOne({ _id: new ObjectId(id) });
-
-    // Cascade Delete associated Units, Quizzes, Attendances
     await db.collection("dve_units").deleteMany({ subjectId: id });
     await db.collection("dve_quizzes").deleteMany({ subjectId: id });
     await db.collection("dve_attendances").deleteMany({ subjectId: id });

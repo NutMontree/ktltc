@@ -895,7 +895,7 @@ export default function NavbarClient({
                             </Link>
                           )}
 
-                          {isSuperAdmin && (
+                          {["teacher", "super_admin"].includes(role?.toLowerCase() || "") && (
                             <Link
                               href="/dashboard/dve"
                               onClick={closeAllMenus}
@@ -909,7 +909,7 @@ export default function NavbarClient({
                           )}
                           {isSuperAdmin && (
                             <Link
-                              href="/dashboard/dve"
+                              href="/dashboard/dve/student"
                               onClick={closeAllMenus}
                               className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 rounded-2xl transition-all group"
                             >
