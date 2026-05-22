@@ -2800,15 +2800,7 @@ export default function FriendProfilePage({
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white tracking-tight truncate">
                   {formData.name}
                 </h1>
-                <p className="text-zinc-500 dark:text-zinc-400 font-bold text-lg mt-1 mb-4 flex items-center justify-center sm:justify-start gap-2 truncate">
-                  <span className="text-blue-600 dark:text-blue-400">
-                    @{formData.username}
-                  </span>
-                  <span className="w-1 h-1 rounded-full bg-zinc-300" />
-                  <span className="opacity-80">
-                    {formData.position || "สมาชิก"}
-                  </span>
-                </p>
+
                 <div className="flex items-center justify-center sm:justify-start -space-x-2">
                   {allUsers
                     .filter(
