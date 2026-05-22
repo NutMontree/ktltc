@@ -71,9 +71,9 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // 2.5 ตรวจสอบว่าระบบเปิดให้สมัครสมาชิกหรือไม่
+    // 2.5 ตรวจสอบว่าระบบเปิดให้สมัครสมาชิกหรือไม่ (ยกเว้นนักเรียน ที่อนุญาตให้ลงทะเบียนได้เสมอ)
     const regSetting = await db.collection("site_settings").findOne({ key: "registration_enabled" });
-    if (regSetting && regSetting.value === "false") {
+    if (regSetting && regSetting.value === "false" && role !== "student") {
       console.log("[Register] Blocked: General registration is currently closed.");
       return NextResponse.json(
         { error: "ขณะนี้วิทยาลัยปิดรับสมัครสมาชิกทั่วไปชั่วคราว กรุณาติดต่อผู้ดูแลระบบ" },

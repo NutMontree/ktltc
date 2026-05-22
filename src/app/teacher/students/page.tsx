@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   GraduationCap,
   Users,
@@ -42,11 +42,11 @@ interface Student {
   email?: string | null;
 }
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 24 } },
 };
-const container = {
+const container: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.04 } },
 };
@@ -84,8 +84,19 @@ export default function TeacherStudentsPage() {
     }
   }, [isTeacher, userDept]);
 
+  // Automatically fetch students when selectedDept changes
+  useEffect(() => {
+    if (selectedDept) {
+      fetchStudents(selectedDept, "");
+    } else {
+      setStudents([]);
+      setClassGroups([]);
+      setHasFetched(false);
+    }
+  }, [selectedDept]);
+
   const allDepts = useMemo(() => {
-    return DEPARTMENT_GROUPS.flatMap((g) => g.options).map((o) => o.value);
+    return DEPARTMENT_GROUPS.find((g) => g.label === "5. แผนกวิชา")?.options.map((o) => o.value) || [];
   }, []);
 
   const fetchStudents = async (dept?: string, group?: string) => {
@@ -101,9 +112,7 @@ export default function TeacherStudentsPage() {
 
     try {
       const params = new URLSearchParams({ department: deptToUse });
-      const groupToUse = group ?? selectedGroup;
-      if (groupToUse) params.append("classGroupId", groupToUse);
-
+      // We fetch all students of the department to allow super fast client-side filtering by group!
       const res = await fetch(`/api/teacher/students?${params.toString()}`);
       const data = await res.json();
       if (res.ok && data.success) {
@@ -120,13 +129,19 @@ export default function TeacherStudentsPage() {
     }
   };
 
-  // Filtered students by name search
+  // Filtered students by class group and name search
   const filtered = useMemo(() => {
-    if (!searchName.trim()) return students;
-    return students.filter((s) =>
-      s.name.toLowerCase().includes(searchName.toLowerCase())
-    );
-  }, [students, searchName]);
+    let result = students;
+    if (selectedGroup) {
+      result = result.filter((s) => s.classGroupId === selectedGroup);
+    }
+    if (searchName.trim()) {
+      result = result.filter((s) =>
+        s.name.toLowerCase().includes(searchName.toLowerCase())
+      );
+    }
+    return result;
+  }, [students, selectedGroup, searchName]);
 
   // Group by classGroupId
   const grouped = useMemo(() => {
@@ -216,14 +231,10 @@ export default function TeacherStudentsPage() {
                   className="w-full appearance-none bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:opacity-60 disabled:cursor-not-allowed pr-8"
                 >
                   <option value="">— เลือกแผนกวิชา —</option>
-                  {DEPARTMENT_GROUPS.map((group) => (
-                    <optgroup key={group.label} label={group.label}>
-                      {group.options.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </optgroup>
+                  {DEPARTMENT_GROUPS.find((g) => g.label === "5. แผนกวิชา")?.options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
                   ))}
                 </select>
                 <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
@@ -480,6 +491,16 @@ export default function TeacherStudentsPage() {
                                       <span className="truncate">{student.email}</span>
                                     </p>
                                   )}
+                                </div>
+
+                                {/* Flagpole report shortcut */}
+                                <div className="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-zinc-800/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-between">
+                                  <Link
+                                    href={`/dashboard/flagpole-reports?search=${encodeURIComponent(student.name)}`}
+                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-750 dark:hover:text-indigo-300 hover:underline"
+                                  >
+                                    <Clock className="w-3 h-3" /> ดูประวัติ / เช็คชื่อเข้าแถว
+                                  </Link>
                                 </div>
                               </div>
                             </div>
