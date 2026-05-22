@@ -5,7 +5,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { DEPARTMENT_GROUPS } from "../../constants/departments";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import {
   Users,
   Search,

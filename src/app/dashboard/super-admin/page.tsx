@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { DEPARTMENT_GROUPS } from "../../../constants/departments";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import {
   Users,
   Activity,

@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { DEPARTMENT_GROUPS } from "../../../../constants/departments";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import FullPageLoader from "@/components/FullPageLoader";
 import {
   UserOutlined,

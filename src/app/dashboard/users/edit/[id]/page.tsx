@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
 import Link from "next/link";
-import { DEPARTMENT_GROUPS } from "../../../../../constants/departments";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import {
   FiArrowLeft,
   FiSave,

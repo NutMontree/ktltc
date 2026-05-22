@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { DEPARTMENT_GROUPS } from "../../constants/departments";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import {
   ArrowLeft,
   User,

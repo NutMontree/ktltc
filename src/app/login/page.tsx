@@ -376,7 +376,7 @@ export default function LoginPage() {
               className="w-full max-w-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden z-10"
             >
               {/* Decorative Accent Gradient Line */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500" />
+              <div className="h-1.5 w-full bg-linear-to-r from-blue-500 via-indigo-500 to-amber-500" />
               
               <div className="p-6 sm:p-8">
                 {/* Header */}
