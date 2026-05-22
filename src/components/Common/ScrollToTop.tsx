@@ -7,18 +7,15 @@ export default function ScrollToTop() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // เมื่อมีการเปลี่ยนหน้า (Pathname เปลี่ยน) ให้เลื่อนขึ้นบนสุดทันที
-    // ใช้ window.scrollTo(0, 0) เพื่อความรวดเร็ว
-    // และใส่ setTimeout เล็กน้อยเพื่อให้แน่ใจว่า DOM เรนเดอร์เสร็จแล้ว
-    const timer = setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "instant" as any, // "instant" หรือ "auto" จะไม่เลื่อนแบบ Smooth
-      });
+    const timer = window.setTimeout(() => {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      } catch {
+        window.scrollTo(0, 0);
+      }
     }, 10);
 
-    return () => clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, [pathname]);
 
   return null;

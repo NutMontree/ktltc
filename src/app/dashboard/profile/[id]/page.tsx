@@ -610,7 +610,11 @@ export default function FriendProfilePage({
 
   useEffect(() => {
     if (!loading) {
-      window.scrollTo({ top: 0, behavior: "instant" });
+      try {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      } catch {
+        window.scrollTo(0, 0);
+      }
     }
   }, [loading]);
 
