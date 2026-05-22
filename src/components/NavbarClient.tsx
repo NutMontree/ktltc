@@ -71,62 +71,62 @@ import NotificationBell from "./NotificationBell";
  */
 const menuIconMap: Record<string, LucideIcon> = {
   // ประวัติสถานศึกษา
-  "ประวัติสถานศึกษา": BookOpen,
+  ประวัติสถานศึกษา: BookOpen,
   // ปรัชญา วิสัยทัศน์ ฯลฯ
   "ปรัชญา วิสัยทัศน์ เอกลักษณ์ อัตลักษณ์": Eye,
-  "ทำเนียบผู้บริหาร": Users,
-  "โครงสร้างการบริหารงานสถานศึกษา": GitBranch,
-  "คณะกรรมการบริหารสถานศึกษา": UserCog,
+  ทำเนียบผู้บริหาร: Users,
+  โครงสร้างการบริหารงานสถานศึกษา: GitBranch,
+  คณะกรรมการบริหารสถานศึกษา: UserCog,
   // ข้อมูลพื้นฐาน 9 ประการ
   "ข้อมูลพื้นฐาน 9 ประการ": Info,
-  "ข้อมูลสถานศึกษา": Building,
-  "ข้อมูลบุคลากร": Users,
+  ข้อมูลสถานศึกษา: Building,
+  ข้อมูลบุคลากร: Users,
   "ข้อมูลนักเรียน นักศึกษา": GraduationCap,
-  "ข้อมูลหลักสูตร": BookOpen,
-  "ข้อมูลครุภัณฑ์": Package,
-  "ข้อมูลงบประมาณ": Wallet,
-  "ข้อมูลอาคารสถานที่": Building2,
-  "ข้อมูลตลาดแรงงาน": Briefcase,
-  "ข้อมูลจังหวัด": MapPin,
+  ข้อมูลหลักสูตร: BookOpen,
+  ข้อมูลครุภัณฑ์: Package,
+  ข้อมูลงบประมาณ: Wallet,
+  ข้อมูลอาคารสถานที่: Building2,
+  ข้อมูลตลาดแรงงาน: Briefcase,
+  ข้อมูลจังหวัด: MapPin,
   // หน่วยงานภายใน
-  "ฝ่ายบริหารทรัพยากร": Settings,
-  "ฝ่ายยุทธศาสตร์และแผนงาน": Target,
+  ฝ่ายบริหารทรัพยากร: Settings,
+  ฝ่ายยุทธศาสตร์และแผนงาน: Target,
   "ฝ่ายกิจการนักเรียน นักศึกษา": GraduationCap,
-  "ฝ่ายวิชาการ": BookOpen,
+  ฝ่ายวิชาการ: BookOpen,
   // แผนกวิชา
-  "แผนกวิชาช่างยนต์": Car,
-  "แผนกวิชาช่างกลโรงงาน": Wrench,
-  "แผนกวิชาช่างเชื่อมโลหะ": Flame,
-  "แผนกวิชาช่างไฟฟ้ากำลัง": Zap,
-  "แผนกวิชาช่างอิเล็กทรอนิกส์": Cpu,
-  "แผนกวิชาช่างเทคนิคพื้นฐาน": Hammer,
-  "แผนกวิชาช่างก่อสร้าง": HardHat,
-  "แผนกวิชาการบัญชี": Calculator,
-  "แผนกวิชาการตลาด": ShoppingCart,
-  "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล": Monitor,
-  "แผนกวิชาการโรงแรม": BedDouble,
-  "แผนกวิชาสามัญสัมพันธ์": BookOpen,
-  "แผนกวิชายานยนต์ไฟฟ้า": BatteryCharging,
+  แผนกวิชาช่างยนต์: Car,
+  แผนกวิชาช่างกลโรงงาน: Wrench,
+  แผนกวิชาช่างเชื่อมโลหะ: Flame,
+  แผนกวิชาช่างไฟฟ้ากำลัง: Zap,
+  แผนกวิชาช่างอิเล็กทรอนิกส์: Cpu,
+  แผนกวิชาช่างเทคนิคพื้นฐาน: Hammer,
+  แผนกวิชาช่างก่อสร้าง: HardHat,
+  แผนกวิชาการบัญชี: Calculator,
+  แผนกวิชาการตลาด: ShoppingCart,
+  แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล: Monitor,
+  แผนกวิชาการโรงแรม: BedDouble,
+  แผนกวิชาสามัญสัมพันธ์: BookOpen,
+  แผนกวิชายานยนต์ไฟฟ้า: BatteryCharging,
   "แผนกวิชาการตลาด/โลจิสติก์": Truck,
-  "โลจิสติก์": Truck,
-  "การจัดการสำนักงานดิจิทัล": Monitor,
-  "การจัดการโลจิสติกส์และซัพพลายเชน": Truck,
+  โลจิสติก์: Truck,
+  การจัดการสำนักงานดิจิทัล: Monitor,
+  การจัดการโลจิสติกส์และซัพพลายเชน: Truck,
   // เมนูลัด
-  "ศูนย์ราชการสะดวก": Star,
+  ศูนย์ราชการสะดวก: Star,
   "ระบบ ศธ. ออนไลน์": Globe,
-  "ตรวจสอบผลการเรียน": GraduationCap,
-  "รับงานอิเล็กทรอนิกส์": FileText,
-  "สมัครเรียนออนไลน์": UserPlus,
-  "บทเรียนอนไลน์": PlayCircle,
-  "ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ": ImageIcon,
+  ตรวจสอบผลการเรียน: GraduationCap,
+  รับงานอิเล็กทรอนิกส์: FileText,
+  สมัครเรียนออนไลน์: UserPlus,
+  บทเรียนอนไลน์: PlayCircle,
+  ระบบสืบค้นข้อมูลคลังเก็บรูปภาพ: ImageIcon,
   "ศูนย์กำลังคนอาชีวศึกษา (V-COP)": Users,
   "รายงานประจำของสถานศึกษา (SAR)": BarChart2,
   "Performance Agreement: PA": Award,
   "อื่น ๆ": MoreHorizontal,
   // generic fallbacks
-  "ข่าวสาร": Newspaper,
-  "ติดต่อ": MessageSquare,
-  "เกี่ยวกับ": Info,
+  ข่าวสาร: Newspaper,
+  ติดต่อ: MessageSquare,
+  เกี่ยวกับ: Info,
 };
 
 function getMenuIcon(label: string): LucideIcon {
@@ -442,16 +442,12 @@ export default function NavbarClient({
                     >
                       <div
                         className={`bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${
-                          item.children!.length > 8
-                            ? "min-w-[460px] w-[460px]"
-                            : "min-w-[240px]"
+                          item.children!.length > 8 ? "min-w-[460px] w-[460px]" : "min-w-[240px]"
                         }`}
                       >
                         <div
                           className={
-                            item.children!.length > 8
-                              ? "grid grid-cols-2 gap-x-1"
-                              : "flex flex-col"
+                            item.children!.length > 8 ? "grid grid-cols-2 gap-x-1" : "flex flex-col"
                           }
                         >
                           {item.children!.map((child) => {
@@ -639,12 +635,144 @@ export default function NavbarClient({
                           </Link>
                         )}
 
-                        <Link
+                        {/* ส่วนการจัดการระบบ (Admin & Executive Section) */}
+                        {(canManageAttendance ||
+                          canManageUsers ||
+                          canManageSystem ||
+                          canManageNews ||
+                          canManageQA) && (
+                          <div>
+                            {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                              <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                                <Shield className="w-3 h-3" /> ระบบจัดการ
+                              </h4>
+                            )}
+
+                            {/* การ์ดเมนูเฉพาะ Super Admin */}
+                            {isSuperAdmin && (
+                              <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
+                                <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
+                                  <Shield size={12} /> เฉพาะ Super Admin
+                                </p>
+                                <Link
+                                  href="/dashboard/super-admin"
+                                  className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                >
+                                  <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
+                                </Link>
+                                <Link
+                                  href="/dashboard/permissions"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                                >
+                                  <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
+                                </Link>
+                              </div>
+                            )}
+
+                            {/* ระบบลงเวลาและรายงาน (Attendance & Reports) */}
+                            {/* {(isSuperAdmin ||
+                              canManageAttendanceDashboard ||
+                              canManageAttendanceReport ||
+                              canManageAttendanceWorkReports ||
+                              canManageAttendanceLeaveApprovals ||
+                              canManageRolesAdvanced ||
+                              canManageAttendanceSettings) && (
+                              <div className="space-y-0.5">
+                                {(isSuperAdmin || canManageAttendanceDashboard) && (
+                                  <Link
+                                    href="/attendance-dashboard"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
+                                  >
+                                    <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
+                                      <Bell size={14} />
+                                    </div>
+                                    ภาพรวมลงเวลาบุคลากร
+                                  </Link>
+                                )}
+                                {isSuperAdmin && (
+                                  <>
+                                    <Link
+                                      href="/dashboard/data-management"
+                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                    >
+                                      <ClipboardList size={14} className="opacity-40" />{" "}
+                                      แก้ไขข้อมูลการลงเวลา
+                                    </Link>
+                                    <Link
+                                      href="/work-reports-management"
+                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                    >
+                                      <FileText size={14} className="opacity-40" />{" "}
+                                      แก้ไขรายงานการทำงาน
+                                    </Link>
+                                  </>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceReport) && (
+                                  <Link
+                                    href="/attendance-report"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <Clock size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceWorkReports) && (
+                                  <Link
+                                    href="/work-reports"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <FileText size={14} className="opacity-40" />{" "}
+                                    ระบบรายงานการปฏิบัติงาน
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
+                                  <Link
+                                    href="/leave-approvals"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <CalendarCheck size={14} className="opacity-40" />{" "}
+                                    ระบบอนุมัติการลางาน
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageRolesAdvanced) && (
+                                  <Link
+                                    href="/manage-roles"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <UserCog size={14} className="opacity-40" /> จัดการ
+                                    สิทธิ์บุคลากร
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceSettings) && (
+                                  <Link
+                                    href="/attendance-settings"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <Settings size={14} className="opacity-40" /> ตั้งค่าระบบลงเวลา
+                                  </Link>
+                                )}
+                              </div>
+                            )} */}
+                          </div>
+                        )}
+
+                        {/* <Link
                           href="/"
                           className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
                         >
                           <Home className="w-5 h-5" /> หน้าแรก
-                        </Link>
+                        </Link> */}
+
+                        {canAccessDashboard && (
+                          <Link
+                            href="/dashboard"
+                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                          >
+                            <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
+                              <Command size={16} />
+                            </div>
+                            เข้าสู่ระบบ Dashboard
+                          </Link>
+                        )}
 
                         <div className="space-y-0.5">
                           <Link
@@ -657,17 +785,20 @@ export default function NavbarClient({
                             ระบบแชท / กล่องข้อความ
                           </Link>
 
-                          {canAccessDashboard && (
+                          {["super_admin", "admin", "editor", "teacher"].includes(
+                            role?.toLowerCase() || "",
+                          ) && (
                             <Link
-                              href="/dashboard"
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                              href="/teacher/students"
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
                             >
-                              <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
-                                <Command size={16} />
+                              <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
+                                <GraduationCap size={16} />
                               </div>
-                              เข้าสู่ระบบ Dashboard
+                              รายชื่อนักเรียนประจำแผนก
                             </Link>
                           )}
+
                           {!["student"].includes(role?.toLowerCase() || "") && (
                             <Link
                               href="/dashboard/drive"
@@ -679,7 +810,8 @@ export default function NavbarClient({
                               คลังไฟล์งาน (Drive)
                             </Link>
                           )}
-                          {(role?.toLowerCase() === "student" || permissions?.student_dashboard) && (
+                          {(role?.toLowerCase() === "student" ||
+                            permissions?.student_dashboard) && (
                             <Link
                               href="/student/flagpole"
                               className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
@@ -692,125 +824,6 @@ export default function NavbarClient({
                           )}
                         </div>
                       </div>
-
-                      {/* ส่วนการจัดการระบบ (Admin & Executive Section) */}
-                      {(canManageAttendance ||
-                        canManageUsers ||
-                        canManageSystem ||
-                        canManageNews ||
-                        canManageQA) && (
-                        <div>
-                          {!["user", "student"].includes(role?.toLowerCase() || "") && (
-                            <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                              <Shield className="w-3 h-3" /> ระบบจัดการ
-                            </h4>
-                          )}
-
-                          {/* การ์ดเมนูเฉพาะ Super Admin */}
-                          {isSuperAdmin && (
-                            <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
-                              <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
-                                <Shield size={12} /> เฉพาะ Super Admin
-                              </p>
-                              <Link
-                                href="/dashboard/super-admin"
-                                className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
-                              >
-                                <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
-                              </Link>
-                              <Link
-                                href="/dashboard/permissions"
-                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-                              >
-                                <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
-                              </Link>
-                            </div>
-                          )}
-
-                          {/* ระบบลงเวลาและรายงาน (Attendance & Reports) */}
-                          {(isSuperAdmin ||
-                            canManageAttendanceDashboard ||
-                            canManageAttendanceReport ||
-                            canManageAttendanceWorkReports ||
-                            canManageAttendanceLeaveApprovals ||
-                            canManageRolesAdvanced ||
-                            canManageAttendanceSettings) && (
-                            <div className="space-y-0.5">
-                              {(isSuperAdmin || canManageAttendanceDashboard) && (
-                                <Link
-                                  href="/attendance-dashboard"
-                                  className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
-                                >
-                                  <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
-                                    <Bell size={14} />
-                                  </div>
-                                  ภาพรวมลงเวลาบุคลากร
-                                </Link>
-                              )}
-                              {isSuperAdmin && (
-                                <>
-                                  <Link
-                                    href="/dashboard/data-management"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <ClipboardList size={14} className="opacity-40" />{" "}
-                                    แก้ไขข้อมูลการลงเวลา
-                                  </Link>
-                                  <Link
-                                    href="/work-reports-management"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <FileText size={14} className="opacity-40" />{" "}
-                                    แก้ไขรายงานการทำงาน
-                                  </Link>
-                                </>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceReport) && (
-                                <Link
-                                  href="/attendance-report"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <Clock size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceWorkReports) && (
-                                <Link
-                                  href="/work-reports"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <FileText size={14} className="opacity-40" />{" "}
-                                  ระบบรายงานการปฏิบัติงาน
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
-                                <Link
-                                  href="/leave-approvals"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <CalendarCheck size={14} className="opacity-40" />{" "}
-                                  ระบบอนุมัติการลางาน
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageRolesAdvanced) && (
-                                <Link
-                                  href="/manage-roles"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <UserCog size={14} className="opacity-40" /> จัดการ สิทธิ์บุคลากร
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceSettings) && (
-                                <Link
-                                  href="/attendance-settings"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <Settings size={14} className="opacity-40" /> ตั้งค่าระบบลงเวลา
-                                </Link>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
 
                     {/* ส่วนท้ายเมนู (Footer) */}

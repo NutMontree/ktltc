@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import {
   Search,
   FileText,
@@ -28,7 +28,7 @@ import {
   MapIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast";
 import * as XLSX from "xlsx";
@@ -40,9 +40,14 @@ const STATUS_TH: Record<string, string> = {
   Late: "มาสาย",
 };
 
-export default function FlagpoleReportsManagementPage() {
+function FlagpoleReportsManagementContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams ? (searchParams.get("search") || "") : "";
+
+  const role = (session?.user as any)?.role?.toLowerCase();
+  const isAdmin = ["super_admin", "admin"].includes(role);
 
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +73,7 @@ export default function FlagpoleReportsManagementPage() {
     const d = new Date();
     return d.toISOString().split("T")[0];
   });
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState("all");
 
   // การยืนยันสิทธิ์เข้าใช้งานฝั่งแอดมิน
@@ -77,7 +82,7 @@ export default function FlagpoleReportsManagementPage() {
       router.replace("/login");
     } else if (status === "authenticated") {
       const role = (session?.user as any)?.role?.toLowerCase();
-      if (!["super_admin", "admin"].includes(role)) {
+      if (!["super_admin", "admin", "editor", "teacher"].includes(role)) {
         router.replace("/");
       }
     }
@@ -326,13 +331,15 @@ export default function FlagpoleReportsManagementPage() {
               <FileText size={16} /> ดาวน์โหลดประวัติ (Excel)
             </button>
 
-            <button
-              onClick={handleDeleteAll}
-              disabled={actionLoading}
-              className="flex items-center gap-2 px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl shadow-md text-xs font-black transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-            >
-              <Trash2 size={16} /> ล้างประวัติทั้งหมด
-            </button>
+            {isAdmin && (
+              <button
+                onClick={handleDeleteAll}
+                disabled={actionLoading}
+                className="flex items-center gap-2 px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl shadow-md text-xs font-black transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+              >
+                <Trash2 size={16} /> ล้างประวัติทั้งหมด
+              </button>
+            )}
           </div>
         </div>
 
@@ -441,16 +448,18 @@ export default function FlagpoleReportsManagementPage() {
                   <th className="px-8 py-5.5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800">
                     สถานะการเช็คแถว
                   </th>
-                  <th className="px-8 py-5.5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">
-                    จัดการข้อมูล
-                  </th>
+                  {isAdmin && (
+                    <th className="px-8 py-5.5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">
+                      จัดการข้อมูล
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
                 <AnimatePresence mode="popLayout">
                   {filteredReports.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-20 text-center">
+                      <td colSpan={isAdmin ? 7 : 6} className="py-20 text-center">
                         <AlertCircle
                           size={48}
                           className="text-slate-200 dark:text-neutral-800 mx-auto mb-4"
@@ -582,24 +591,26 @@ export default function FlagpoleReportsManagementPage() {
                             {report.status === "Present" ? "ตรงเวลา" : "มาสาย"}
                           </span>
                         </td>
-                        <td className="px-8 py-5 border-b border-slate-50 dark:border-zinc-800/50 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => handleEditInit(report)}
-                              className="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
-                              title="แก้ไขสถานะ"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(report.id)}
-                              className="p-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors cursor-pointer"
-                              title="ลบบันทึกเข้าแถว"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
+                        {isAdmin && (
+                          <td className="px-8 py-5 border-b border-slate-50 dark:border-zinc-800/50 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => handleEditInit(report)}
+                                className="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors cursor-pointer"
+                                title="แก้ไขสถานะ"
+                              >
+                                <Edit2 size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(report.id)}
+                                className="p-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors cursor-pointer"
+                                title="ลบบันทึกเข้าแถว"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        )}
                       </motion.tr>
                     ))
                   )}
@@ -774,5 +785,22 @@ export default function FlagpoleReportsManagementPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function FlagpoleReportsManagementPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-zinc-950 gap-4 text-left">
+          <Loader2 className="animate-spin text-indigo-500 w-10 h-10" />
+          <p className="text-zinc-500 font-bold uppercase tracking-wider text-xs">
+            กำลังเตรียมรายงานการเข้าแถวเสาธง...
+          </p>
+        </div>
+      }
+    >
+      <FlagpoleReportsManagementContent />
+    </Suspense>
   );
 }

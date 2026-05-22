@@ -737,6 +737,33 @@ export default function DashboardLoader() {
             </div>
           )}
 
+          {/* --- Teacher Section --- */}
+          {["super_admin", "admin", "editor", "teacher"].includes(
+            ((session?.user as any)?.role || "").toLowerCase()
+          ) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 flex items-center gap-4">
+                  <Users className="w-4 h-4" /> สำหรับครูและอาจารย์ผู้สอน
+                  <span className="h-px bg-violet-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  เครื่องมือจัดการและตรวจสอบข้อมูลนักเรียนในที่ปรึกษา / ประจำแผนกวิชา
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                <ActionCard
+                  href="/teacher/students"
+                  title="รายชื่อนักเรียนประจำแผนก"
+                  icon={Users}
+                  desc="ตรวจสอบประวัตินักเรียน แยกตามห้องเรียนและกลุ่มเรียน"
+                  variants={item}
+                />
+              </div>
+            </div>
+          )}
+
           {/* --- Student Section --- */}
           {(permissions?.student_dashboard ||
             ((session?.user as any)?.role || "").toLowerCase() === "student" ||

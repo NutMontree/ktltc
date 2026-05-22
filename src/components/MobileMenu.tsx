@@ -26,6 +26,7 @@ import {
   Globe,
   HardDrive,
   Menu,
+  GraduationCap,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -298,6 +299,16 @@ export default function MobileMenu({
                           className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/chat" ? "bg-sky-600 text-white shadow-lg shadow-sky-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
                         >
                           <MessageSquare className="w-5 h-5" /> ระบบแชท / กล่องข้อความ
+                        </Link>
+                      )}
+
+                      {["super_admin", "admin", "editor", "teacher"].includes(roleLower) && (
+                        <Link
+                          href="/teacher/students"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/teacher/students" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
+                          <GraduationCap className="w-5 h-5" /> รายชื่อนักเรียนประจำแผนก
                         </Link>
                       )}
 
