@@ -24,7 +24,6 @@
 .DS_Store
 *.pem
 deploy.log
-git-sync.log
 .last_built_commit
 
 # debug
