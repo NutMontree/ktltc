@@ -230,7 +230,7 @@ export default function StudentVerifyPage() {
   const isCitizenIdInputValid = citizenIdInput.replace(/[^0-9]/g, "").length === 13;
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-50 via-slate-50 to-slate-100 text-slate-800 py-12 px-4 relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-50 via-slate-50 to-slate-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 text-slate-800 dark:text-zinc-100 py-12 px-4 relative overflow-hidden transition-colors duration-500">
       <Toaster position="bottom-right" reverseOrder={false} />
 
       {/* Custom Global Holographic and Cybernetic Styles */}
@@ -282,7 +282,7 @@ export default function StudentVerifyPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-655 border border-blue-100 rounded-full text-xs font-black uppercase tracking-wider shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 dark:bg-blue-950/50 text-blue-655 dark:text-blue-400 border border-blue-100 dark:border-blue-900 rounded-full text-xs font-black uppercase tracking-wider shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
             <span>KTLTC Central Directory Verification Portal</span>
@@ -291,7 +291,7 @@ export default function StudentVerifyPage() {
           <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-black tracking-tight leading-none text-slate-900"
+            className="text-4xl md:text-6xl font-black tracking-tight leading-none text-slate-900 dark:text-white"
           >
             ระบบยืนยันตัวตน{" "}
             <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-indigo-655 to-blue-500">
@@ -310,7 +310,7 @@ export default function StudentVerifyPage() {
         </div>
 
         {/* Soft Iridescent Gradient Outline Wrapper (Frosted Light Crystal Glass Console) */}
-        <div className="max-w-3xl mx-auto bg-linear-to-r from-blue-300 via-indigo-200 to-blue-200 p-[1.5px] rounded-[32px] shadow-[0_20px_50px_rgba(8,112,184,0.06)] relative overflow-hidden group">
+        <div className="max-w-3xl mx-auto bg-linear-to-r from-blue-300 via-indigo-200 to-blue-200 dark:from-blue-900 dark:via-indigo-900 dark:to-blue-900 p-[1.5px] rounded-[32px] shadow-[0_20px_50px_rgba(8,112,184,0.06)] dark:shadow-[0_20px_50px_rgba(8,112,184,0.12)] relative overflow-hidden group">
           {/* Biometric Laser Scanner Animation sweeps down when query is loading */}
           {isLoading && (
             <motion.div
@@ -325,9 +325,9 @@ export default function StudentVerifyPage() {
             />
           )}
 
-          <div className="bg-white/85 backdrop-blur-2xl rounded-[30.5px] p-6 md:p-8 relative">
+          <div className="bg-white/85 dark:bg-zinc-900/90 backdrop-blur-2xl rounded-[30.5px] p-6 md:p-8 relative">
             {/* Segmented Sliding Tabs Control (SaaS Style) */}
-            <div className="flex bg-slate-100/70 p-1.5 rounded-[22px] max-w-lg mx-auto mb-8 border border-slate-200/50 backdrop-blur-xl">
+            <div className="flex bg-slate-100/70 dark:bg-zinc-800/70 p-1.5 rounded-[22px] max-w-lg mx-auto mb-8 border border-slate-200/50 dark:border-zinc-700/50 backdrop-blur-xl">
               <button
                 type="button"
                 onClick={() => {
@@ -336,14 +336,14 @@ export default function StudentVerifyPage() {
                 }}
                 className={`flex-1 flex items-center justify-center gap-2.5 py-3.5 rounded-[18px] text-xs font-black transition-all duration-350 relative cursor-pointer ${
                   searchMode === "name"
-                    ? "text-blue-650 font-extrabold"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "text-blue-650 dark:text-blue-400 font-extrabold"
+                    : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
                 }`}
               >
                 {searchMode === "name" && (
                   <motion.div
                     layoutId="activeTabPill"
-                    className="absolute inset-0 bg-white border border-slate-200/40 shadow-md rounded-[18px]"
+                    className="absolute inset-0 bg-white dark:bg-zinc-700 border border-slate-200/40 dark:border-zinc-600 shadow-md rounded-[18px]"
                     transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   />
                 )}
@@ -359,14 +359,14 @@ export default function StudentVerifyPage() {
                 }}
                 className={`flex-1 flex items-center justify-center gap-2.5 py-3.5 rounded-[18px] text-xs font-black transition-all duration-350 relative cursor-pointer ${
                   searchMode === "citizenId"
-                    ? "text-blue-650 font-extrabold"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "text-blue-650 dark:text-blue-400 font-extrabold"
+                    : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
                 }`}
               >
                 {searchMode === "citizenId" && (
                   <motion.div
                     layoutId="activeTabPill"
-                    className="absolute inset-0 bg-white border border-slate-200/40 shadow-md rounded-[18px]"
+                    className="absolute inset-0 bg-white dark:bg-zinc-700 border border-slate-200/40 dark:border-zinc-600 shadow-md rounded-[18px]"
                     transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   />
                 )}
@@ -397,7 +397,7 @@ export default function StudentVerifyPage() {
                         value={nameInput}
                         onChange={(e) => setNameInput(e.target.value)}
                         disabled={isLoading}
-                        className="w-full bg-slate-50/50 border border-slate-200/80 rounded-2xl pl-12 pr-12 py-4 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400"
+                        className="w-full bg-slate-50/50 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-2xl pl-12 pr-12 py-4 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-500"
                       />
                       <Search className="w-4 h-4 text-slate-400 group-focus-within/input:text-blue-600 absolute left-4 top-1/2 -translate-y-1/2 transition-colors" />
 
@@ -434,7 +434,7 @@ export default function StudentVerifyPage() {
                         value={citizenIdInput}
                         onChange={handleCitizenIdChange}
                         disabled={isLoading}
-                        className="w-full bg-slate-50/50 border border-slate-200/80 rounded-2xl pl-12 pr-12 py-4 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-mono font-bold tracking-widest placeholder:font-sans placeholder:font-medium placeholder:tracking-normal placeholder:text-slate-400"
+                        className="w-full bg-slate-50/50 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-2xl pl-12 pr-12 py-4 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-mono font-bold tracking-widest placeholder:font-sans placeholder:font-medium placeholder:tracking-normal placeholder:text-slate-400 dark:placeholder:text-zinc-500"
                       />
                       <ShieldCheck className="w-4 h-4 text-slate-400 group-focus-within/input:text-blue-600 absolute left-4 top-1/2 -translate-y-1/2 transition-colors" />
 
@@ -456,7 +456,7 @@ export default function StudentVerifyPage() {
               </AnimatePresence>
 
               {/* PDPA secure small notice */}
-              <div className="flex gap-2.5 items-start p-3.5 bg-amber-50/40 border border-amber-200/50 rounded-2xl text-[10px] text-amber-700 font-medium">
+              <div className="flex gap-2.5 items-start p-3.5 bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/40 rounded-2xl text-[10px] text-amber-700 dark:text-amber-400 font-medium">
                 <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <span>
                   <strong>คุ้มครองข้อมูล PDPA:</strong> รายละเอียดที่มีความละเอียดอ่อนสูง เช่น
@@ -481,12 +481,12 @@ export default function StudentVerifyPage() {
               </AnimatePresence>
 
               {/* Redesigned Control buttons - Professional light style */}
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-stretch pt-5 border-t border-slate-100 mt-6">
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-stretch pt-5 border-t border-slate-100 dark:border-zinc-700 mt-6">
                 <button
                   type="button"
                   onClick={handleClear}
                   disabled={isLoading || (!nameInput && !citizenIdInput)}
-                  className="w-full sm:w-1/3 py-4 bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-600! hover:border-rose-250 text-slate-700! rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 active:scale-98 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full sm:w-1/3 py-4 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600! hover:border-rose-250 text-slate-700! dark:text-zinc-300 rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 active:scale-98 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
                 >
                   <span>รีเซ็ต</span>
                 </button>
@@ -529,21 +529,21 @@ export default function StudentVerifyPage() {
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                     คู่มือการใช้งานระบบสืบค้นด่วน
                   </span>
-                  <h2 className="text-xl font-black text-slate-800">
+                  <h2 className="text-xl font-black text-slate-800 dark:text-zinc-100">
                     3 ขั้นตอนง่าย ๆ ในการตรวจสอบรายชื่อผู้เรียน
                   </h2>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-3">
                   {/* Step 1 Card */}
-                  <div className="bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-3xl p-5 shadow-[0_5px_15px_rgba(0,0,0,0.01)] flex flex-col items-center text-center space-y-3 group hover:border-blue-300 transition-all duration-350 relative overflow-hidden">
+                  <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-slate-200/60 dark:border-zinc-700/60 rounded-3xl p-5 shadow-[0_5px_15px_rgba(0,0,0,0.01)] flex flex-col items-center text-center space-y-3 group hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-350 relative overflow-hidden">
                     <span className="text-6xl font-black text-blue-500/5 group-hover:text-blue-555/10 transition-colors duration-500 absolute right-6 top-2 select-none font-mono">
                       01
                     </span>
-                    <div className="w-10 h-10 bg-slate-55 text-blue-600 border border-slate-100 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 bg-slate-55 text-blue-600 border border-slate-100 dark:border-zinc-700 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                       <Fingerprint className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-black text-slate-800 leading-none relative z-10">
+                    <span className="text-xs font-black text-slate-800 dark:text-zinc-100 leading-none relative z-10">
                       1. เลือกรูปแบบค้นหา
                     </span>
                     <p className="text-[10px] text-slate-450 font-semibold leading-relaxed relative z-10">
@@ -553,14 +553,14 @@ export default function StudentVerifyPage() {
                   </div>
 
                   {/* Step 2 Card */}
-                  <div className="bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-3xl p-5 shadow-[0_5px_15px_rgba(0,0,0,0.01)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-300 transition-all duration-350 relative overflow-hidden">
+                  <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-slate-200/60 dark:border-zinc-700/60 rounded-3xl p-5 shadow-[0_5px_15px_rgba(0,0,0,0.01)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-350 relative overflow-hidden">
                     <span className="text-6xl font-black text-blue-500/5 group-hover:text-blue-555/10 transition-colors duration-500 absolute right-6 top-2 select-none font-mono">
                       02
                     </span>
-                    <div className="w-10 h-10 bg-slate-55 text-indigo-600 border border-slate-100 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 bg-slate-55 text-indigo-600 border border-slate-100 dark:border-zinc-700 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                       <Search className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-black text-slate-800 leading-none relative z-10">
+                    <span className="text-xs font-black text-slate-800 dark:text-zinc-100 leading-none relative z-10">
                       2. ป้อนคีย์เวิร์ด
                     </span>
                     <p className="text-[10px] text-slate-450 font-semibold leading-relaxed relative z-10">
@@ -570,14 +570,14 @@ export default function StudentVerifyPage() {
                   </div>
 
                   {/* Step 3 Card */}
-                  <div className="bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-3xl p-5 shadow-[0_5px_15px_rgba(0,0,0,0.01)] flex flex-col items-center text-center space-y-3 group hover:border-purple-300 transition-all duration-350 relative overflow-hidden">
+                  <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-slate-200/60 dark:border-zinc-700/60 rounded-3xl p-5 shadow-[0_5px_15px_rgba(0,0,0,0.01)] flex flex-col items-center text-center space-y-3 group hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-350 relative overflow-hidden">
                     <span className="text-6xl font-black text-blue-500/5 group-hover:text-blue-555/10 transition-colors duration-500 absolute right-6 top-2 select-none font-mono">
                       03
                     </span>
                     <div className="w-10 h-10 bg-slate-55 text-purple-600 border border-slate-100 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                       <Award className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-black text-slate-800 leading-none relative z-10">
+                    <span className="text-xs font-black text-slate-800 dark:text-zinc-100 leading-none relative z-10">
                       3. ดูใบยืนยันสิทธิ์
                     </span>
                     <p className="text-[10px] text-slate-450 font-semibold leading-relaxed relative z-10">
@@ -604,7 +604,7 @@ export default function StudentVerifyPage() {
                     กำลังตรวจสอบสถิติทะเบียนและเชื่อมฐานข้อมูล...
                   </span>
                 </div>
-                <div className="h-44 bg-slate-100/60 border border-slate-200/50 rounded-3xl animate-pulse" />
+                <div className="h-44 bg-slate-100/60 dark:bg-zinc-800/60 border border-slate-200/50 dark:border-zinc-700 rounded-3xl animate-pulse" />
               </motion.div>
             )}
 
@@ -618,8 +618,8 @@ export default function StudentVerifyPage() {
                 className="space-y-6"
               >
                 {/* Result header summary */}
-                <div className="flex items-center justify-between border-b border-slate-200 pb-3.5">
-                  <span className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-zinc-700 pb-3.5">
+                  <span className="text-sm font-black text-slate-800 dark:text-zinc-100 flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-emerald-500 animate-bounce" />
                     ยืนยันสถานะความเป็นผู้เรียนสำเร็จ (พบข้อมูล {students.length} รายการ)
                   </span>
@@ -651,7 +651,7 @@ export default function StudentVerifyPage() {
                           />
 
                           {/* Upper Certificate crest seal banner */}
-                          <div className="flex items-center justify-between mb-5 border-b border-slate-200/80 pb-3 text-xs relative z-10">
+                          <div className="flex items-center justify-between mb-5 border-b border-slate-200/80 dark:border-zinc-700 pb-3 text-xs relative z-10">
                             <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">
                               <Award className="w-3.5 h-3.5 text-slate-400" />
                               <span>Official Central Registry Record</span>
@@ -720,7 +720,7 @@ export default function StudentVerifyPage() {
 
                               <div className="space-y-2">
                                 <div>
-                                  <h3 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight leading-tight flex items-center gap-2">
+                                  <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-zinc-100 tracking-tight leading-tight flex items-center gap-2">
                                     {student.name}
                                   </h3>
                                 </div>
@@ -746,7 +746,7 @@ export default function StudentVerifyPage() {
                             </div>
 
                             {/* Academic department summary matrix & Secure digital barcode */}
-                            <div className="w-full md:w-auto border-t md:border-t-0 border-slate-200 pt-4 md:pt-0 flex md:flex-row gap-6 justify-between md:justify-end items-center">
+                            <div className="w-full md:w-auto border-t md:border-t-0 border-slate-200 dark:border-zinc-700 pt-4 md:pt-0 flex md:flex-row gap-6 justify-between md:justify-end items-center">
                               {/* Digital Barcode Graphic */}
                               <div className="hidden sm:flex flex-col gap-0.5 opacity-25 hover:opacity-40 transition-opacity">
                                 <div className="flex gap-[2px]">
@@ -768,7 +768,7 @@ export default function StudentVerifyPage() {
                                   <span className="block text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none mb-1.5">
                                     แผนกวิชา / สาขา
                                   </span>
-                                  <span className="text-xs font-black text-slate-700 flex items-center justify-end gap-1.5">
+                                  <span className="text-xs font-black text-slate-700 dark:text-zinc-200 flex items-center justify-end gap-1.5">
                                     <Building2 className="w-3.5 h-3.5 text-slate-400" />
                                     {student.department}
                                   </span>
@@ -778,7 +778,7 @@ export default function StudentVerifyPage() {
                                   <span className="block text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none mb-1.5">
                                     รหัสกลุ่มเรียนสังกัด
                                   </span>
-                                  <span className="text-xs font-black text-slate-650 flex items-center justify-end gap-1.5">
+                                  <span className="text-xs font-black text-slate-650 dark:text-zinc-300 flex items-center justify-end gap-1.5">
                                     <BookOpen className="w-3.5 h-3.5 text-slate-400" />
                                     {student.classGroupId}
                                   </span>
@@ -788,16 +788,16 @@ export default function StudentVerifyPage() {
                           </div>
 
                           {/* Lower: Contact and Masked Confidential details Capsules */}
-                          <div className="mt-6 pt-4.5 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-3 relative z-10">
+                          <div className="mt-6 pt-4.5 border-t border-slate-200 dark:border-zinc-700 grid grid-cols-1 md:grid-cols-3 gap-3 relative z-10">
                             {/* Citizen ID Secure Tag */}
-                            <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl group/btn hover:bg-slate-100/50 transition-colors">
+                            <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-2xl group/btn hover:bg-slate-100/50 dark:hover:bg-zinc-700/50 transition-colors">
                               <div className="flex items-center gap-2">
                                 <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
                                 <div>
                                   <span className="block text-[8px] font-bold text-slate-400 leading-none mb-0.5">
                                     รหัสบัธรประชาชน (PDPA)
                                   </span>
-                                  <span className="text-[11px] font-bold font-mono tracking-wider text-slate-700">
+                                  <span className="text-[11px] font-bold font-mono tracking-wider text-slate-700 dark:text-zinc-200">
                                     {student.citizenId}
                                   </span>
                                 </div>
@@ -811,26 +811,26 @@ export default function StudentVerifyPage() {
                                     `${student.id}-citizen`,
                                   )
                                 }
-                                className="w-7 h-7 flex items-center justify-center hover:bg-slate-200 rounded-lg transition-all cursor-pointer opacity-50 group-hover/btn:opacity-100"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-zinc-600 rounded-lg transition-all cursor-pointer opacity-50 group-hover/btn:opacity-100"
                                 title="คัดลอกรหัสประจำตัวประชาชน"
                               >
                                 {copiedStates[`${student.id}-citizen`] ? (
                                   <Check className="w-3.5 h-3.5 text-emerald-500" />
                                 ) : (
-                                  <Copy className="w-3.5 h-3.5 text-slate-455" />
+                                  <Copy className="w-3.5 h-3.5 text-slate-455 dark:text-zinc-400" />
                                 )}
                               </button>
                             </div>
 
                             {/* Phone Secure Tag */}
-                            <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl group/btn hover:bg-slate-100/50 transition-colors">
+                            <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-2xl group/btn hover:bg-slate-100/50 dark:hover:bg-zinc-700/50 transition-colors">
                               <div className="flex items-center gap-2">
                                 <Phone className="w-4 h-4 text-slate-400 shrink-0" />
                                 <div>
                                   <span className="block text-[8px] font-bold text-slate-400 leading-none mb-0.5">
                                     เบอร์โทรศัพท์สำรอง
                                   </span>
-                                  <span className="text-[11px] font-bold text-slate-700">
+                                  <span className="text-[11px] font-bold text-slate-700 dark:text-zinc-200">
                                     {student.phone}
                                   </span>
                                 </div>
@@ -844,19 +844,19 @@ export default function StudentVerifyPage() {
                                     `${student.id}-phone`,
                                   )
                                 }
-                                className="w-7 h-7 flex items-center justify-center hover:bg-slate-200 rounded-lg transition-all cursor-pointer opacity-50 group-hover/btn:opacity-100"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-zinc-600 rounded-lg transition-all cursor-pointer opacity-50 group-hover/btn:opacity-100"
                                 title="คัดลอกเบอร์โทรศัพท์"
                               >
                                 {copiedStates[`${student.id}-phone`] ? (
                                   <Check className="w-3.5 h-3.5 text-emerald-500" />
                                 ) : (
-                                  <Copy className="w-3.5 h-3.5 text-slate-455" />
+                                  <Copy className="w-3.5 h-3.5 text-slate-455 dark:text-zinc-400" />
                                 )}
                               </button>
                             </div>
 
                             {/* Email Secure Tag */}
-                            <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl group/btn hover:bg-slate-100/50 transition-colors">
+                            <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-2xl group/btn hover:bg-slate-100/50 dark:hover:bg-zinc-700/50 transition-colors">
                               <div className="flex items-center gap-2">
                                 <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                                 <div className="overflow-hidden">
@@ -864,7 +864,7 @@ export default function StudentVerifyPage() {
                                     อีเมลการเรียนทางการ
                                   </span>
                                   <span
-                                    className="text-[11px] font-bold text-slate-700 truncate block max-w-[150px]"
+                                    className="text-[11px] font-bold text-slate-700 dark:text-zinc-200 truncate block max-w-[150px]"
                                     title={student.email}
                                   >
                                     {student.email}
@@ -897,7 +897,7 @@ export default function StudentVerifyPage() {
                             <button
                               type="button"
                               onClick={() => toggleFlagpoleHistory(student.id)}
-                              className="w-full py-3.5 bg-linear-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-100/80 text-blue-700 hover:text-blue-800 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-md"
+                              className="w-full py-3.5 bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/50 dark:hover:to-indigo-900/50 border border-blue-100/80 dark:border-blue-900/60 text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-md"
                             >
                               <Award className="w-4 h-4 text-blue-600 animate-pulse" />
                               <span>
@@ -970,7 +970,7 @@ export default function StudentVerifyPage() {
                                         return (
                                           <div
                                             key={history.id}
-                                            className="flex items-center justify-between p-3 bg-slate-50/70 border border-slate-200/50 rounded-xl text-xs hover:bg-slate-50 transition-colors gap-3"
+                                            className="flex items-center justify-between p-3 bg-slate-50/70 dark:bg-zinc-800/70 border border-slate-200/50 dark:border-zinc-700/50 rounded-xl text-xs hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors gap-3"
                                           >
                                             <div className="flex items-center gap-3">
                                               {/* Check-in photo thumbnail with dynamic zoom hover */}
@@ -988,7 +988,7 @@ export default function StudentVerifyPage() {
                                                 </div>
                                               ) : (
                                                 <div
-                                                  className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200/50 flex items-center justify-center shrink-0 text-slate-350"
+                                                  className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-zinc-700 border border-slate-200/50 dark:border-zinc-600 flex items-center justify-center shrink-0 text-slate-350"
                                                   title="ไม่มีรูปภาพเช็คชื่อ"
                                                 >
                                                   <User className="w-5 h-5" />
@@ -996,7 +996,7 @@ export default function StudentVerifyPage() {
                                               )}
 
                                               <div className="space-y-1 text-left">
-                                                <span className="font-extrabold text-slate-700 block">
+                                                <span className="font-extrabold text-slate-700 dark:text-zinc-200 block">
                                                   {thaiDate}
                                                 </span>
                                                 {formattedTime && (
@@ -1032,7 +1032,7 @@ export default function StudentVerifyPage() {
                                       })}
                                     </div>
                                   ) : (
-                                    <div className="text-center py-8 space-y-2 bg-slate-50/50 rounded-2xl border border-slate-200/30">
+                                    <div className="text-center py-8 space-y-2 bg-slate-50/50 dark:bg-zinc-800/50 rounded-2xl border border-slate-200/30 dark:border-zinc-700/30">
                                       <Info className="w-6 h-6 text-slate-350 mx-auto" />
                                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">
                                         ไม่พบประวัติการเข้าแถวของนักเรียนรายนี้
@@ -1058,14 +1058,14 @@ export default function StudentVerifyPage() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
-                className="bg-white border border-slate-200 rounded-[32px] p-8 shadow-[0_15px_30px_rgba(0,0,0,0.02)] text-center space-y-4 max-w-lg mx-auto"
+                className="bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-[32px] p-8 shadow-[0_15px_30px_rgba(0,0,0,0.02)] text-center space-y-4 max-w-lg mx-auto"
               >
                 <div className="w-14 h-14 bg-rose-50 text-rose-500 border border-rose-100 rounded-full flex items-center justify-center mx-auto shadow-sm">
                   <HelpCircle className="w-7 h-7 animate-bounce" />
                 </div>
 
                 <div className="space-y-1.5">
-                  <h3 className="text-lg font-black text-slate-800">
+                  <h3 className="text-lg font-black text-slate-800 dark:text-zinc-100">
                     ไม่พบประวัติทะเบียนนักเรียน นักศึกษา
                   </h3>
                   <p className="text-xs text-slate-450 leading-relaxed font-semibold max-w-sm mx-auto">
@@ -1074,7 +1074,7 @@ export default function StudentVerifyPage() {
                   </p>
                 </div>
 
-                <div className="text-[10px] text-slate-400 font-bold border-t border-slate-100 pt-4 max-w-xs mx-auto">
+                <div className="text-[10px] text-slate-400 font-bold border-t border-slate-100 dark:border-zinc-700 pt-4 max-w-xs mx-auto">
                   💡 คำแนะนำ: หากมั่นใจว่าข้อมูลถูกต้อง
                   กรุณาติดต่อฝ่ายงานส่งเสริมการศึกษา/งานทะเบียนวิทยาลัย
                 </div>

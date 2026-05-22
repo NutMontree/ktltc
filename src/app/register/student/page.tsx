@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import {
   ArrowLeft,
   User,
@@ -18,6 +19,7 @@ import {
   Info,
   MessageCircle,
   ShieldAlert,
+  Building2,
 } from "lucide-react";
 
 export default function StudentRegisterPage() {
@@ -29,6 +31,7 @@ export default function StudentRegisterPage() {
     lineId: "",
     classGroupId: "",
     academicLevel: "ปวช 1",
+    department: "",
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -51,6 +54,7 @@ export default function StudentRegisterPage() {
     if (!formData.phone.trim()) return setErrorMsg("กรุณาระบุเบอร์โทรศัพท์มือถือ");
     if (!formData.lineId.trim()) return setErrorMsg("กรุณาระบุไอดีไลน์ (LINE ID)");
     if (!formData.classGroupId.trim()) return setErrorMsg("กรุณาระบุรหัสกลุ่มเรียน");
+    if (!formData.department) return setErrorMsg("กรุณาเลือกแผนกวิชาที่สังกัด");
 
     if (formData.citizenId.length !== 13 || isNaN(Number(formData.citizenId))) {
       return setErrorMsg("รหัสประจำตัวประชาชนต้องเป็นตัวเลข 13 หลักเท่านั้น");
@@ -66,10 +70,10 @@ export default function StudentRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          username: formData.citizenId.trim(), // Automatically use citizenId as username
-          password: formData.phone.trim(), // Automatically use phone as password
-          role: "student", // Force role to student
-          department: "แผนกนักเรียน/นักศึกษา", // Default value
+          username: formData.citizenId.trim(),
+          password: formData.phone.trim(),
+          role: "student",
+          department: formData.department,
         }),
       });
       const data = await res.json();
@@ -364,6 +368,31 @@ export default function StudentRegisterPage() {
                         placeholder="ระบุรหัส เช่น 6932040001"
                         required
                       />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                      แผนกวิชาที่สังกัด
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-amber-500 transition-colors">
+                        <Building2 size={18} />
+                      </div>
+                      <select
+                        name="department"
+                        value={formData.department}
+                        onChange={handleChange}
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-sm font-bold shadow-sm hover:shadow-md cursor-pointer appearance-none"
+                        required
+                      >
+                        <option value="">— เลือกแผนกวิชาของคุณ —</option>
+                        {DEPARTMENT_GROUPS.find((g) => g.label === "5. แผนกวิชา")?.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 

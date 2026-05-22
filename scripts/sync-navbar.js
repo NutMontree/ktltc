@@ -1,32 +1,27 @@
-import clientPromise from "@/lib/db";
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+const fs = require('fs');
+const { MongoClient, ObjectId } = require('mongodb');
 
-/**
- * GET /api/temp-navbar-personnel-seed
- *
- * Seed / sync "ข้อมูลบุคลากร" navbar parent + all department children.
- * Run once from browser while logged in as super_admin.
- * Safe to re-run – uses upsert by label+parentId.
- */
-export async function GET() {
+async function syncNavbar() {
+  console.log("Starting navbar sync script...");
+  const envFile = fs.readFileSync('.env', 'utf8');
+  const match = envFile.match(/MONGODB_URI=(.*)/);
+  if (!match) {
+    console.error("MONGODB_URI not found in .env");
+    process.exit(1);
+  }
+  const uri = match[1].trim();
+  const client = new MongoClient(uri);
+
   try {
-    const session = await auth();
-    const role = (session?.user as any)?.role?.toLowerCase();
-
-    if (role !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
-
-    const client = await clientPromise;
+    await client.connect();
     const db = client.db("ktltc_db");
     const col = db.collection("navbar");
 
-    // 1. หาหรือสร้าง parent "ข้อมูลบุคลากร"
+    // 1. Find or create the parent item "ข้อมูลบุคลากร"
     let parent = await col.findOne({ label: "ข้อมูลบุคลากร", parentId: null });
 
     if (!parent) {
-      // นับจำนวน parent ที่มีอยู่เพื่อกำหนด order ถัดไป
+      console.log("Parent 'ข้อมูลบุคลากร' not found. Creating...");
       const count = await col.countDocuments({ parentId: null });
       const inserted = await col.insertOne({
         label: "ข้อมูลบุคลากร",
@@ -39,12 +34,14 @@ export async function GET() {
     }
 
     if (!parent) {
-      return NextResponse.json({ error: "Could not create parent menu" }, { status: 500 });
+      console.error("Could not find or create parent item");
+      process.exit(1);
     }
 
     const parentId = parent._id.toString();
+    console.log(`Parent 'ข้อมูลบุคลากร' resolved with ID: ${parentId}`);
 
-    // 2. รายการเมนูย่อยทั้งหมดของ "ข้อมูลบุคลากร"
+    // 2. Define the exact departments (standardized list including the two new ones)
     const departments = [
       { label: "ทำเนียบผู้บริหาร",               path: "/executiveboard",  order: 1 },
       { label: "แผนกวิชาช่างยนต์",                path: "/mechanic",        order: 2 },
@@ -65,19 +62,16 @@ export async function GET() {
       { label: "การจัดการโลจิสติกส์และซัพพลายเชน",   path: "/supply-chain",    order: 17 },
     ];
 
-    const results: string[] = [];
-
+    // 3. Sync each department menu item
     for (const dept of departments) {
-      // ตรวจว่ามีอยู่แล้วหรือไม่
       const existing = await col.findOne({ label: dept.label, parentId });
 
       if (existing) {
-        // อัปเดต path และ order ให้ถูกต้อง
         await col.updateOne(
           { _id: existing._id },
           { $set: { path: dept.path, order: dept.order, parentId, updatedAt: new Date() } }
         );
-        results.push(`✅ updated: ${dept.label}`);
+        console.log(`✅ Updated: ${dept.label} -> order: ${dept.order}`);
       } else {
         await col.insertOne({
           label: dept.label,
@@ -86,26 +80,24 @@ export async function GET() {
           parentId,
           createdAt: new Date(),
         });
-        results.push(`➕ created: ${dept.label}`);
+        console.log(`➕ Created new: ${dept.label} -> order: ${dept.order}`);
       }
     }
 
-    // 3. ลบรายการที่ไม่อยู่ในรายการข้างบน (เพื่อ sync ให้ตรงเสมอ)
+    // 4. Delete items under "ข้อมูลบุคลากร" that are no longer valid (standardization cleanup)
     const validLabels = departments.map((d) => d.label);
     const deleteResult = await col.deleteMany({
       parentId,
       label: { $nin: validLabels },
     });
+    console.log(`🗑️ Cleaned up: Deleted ${deleteResult.deletedCount} outdated sub-menu items.`);
 
-    return NextResponse.json({
-      success: true,
-      parentId,
-      results,
-      deleted: deleteResult.deletedCount,
-      message: `Sync สำเร็จ: ${results.length} รายการ, ลบออก: ${deleteResult.deletedCount} รายการ`,
-    });
+    console.log("🎉 Navbar personnel sync successfully completed!");
   } catch (error) {
-    console.error("Seed navbar personnel error:", error);
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    console.error("❌ Error running sync-navbar script:", error);
+  } finally {
+    await client.close();
   }
 }
+
+syncNavbar();
