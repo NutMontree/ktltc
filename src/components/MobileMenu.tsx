@@ -159,9 +159,12 @@ export default function MobileMenu({
   };
 
   return (
-    <>
+    <div className="mobile-menu-root shrink-0">
       {/* ปุ่มกดเปิดเมนู (Hamburger Button) */}
       <button
+        type="button"
+        aria-label="เปิดเมนู"
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(true)}
         className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 shadow-sm"
       >
@@ -177,7 +180,7 @@ export default function MobileMenu({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeMenu}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-998"
+              className="mobile-menu-root fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999]"
             />
 
             {/* ส่วนของเมนูข้าง (Menu Drawer) */}
@@ -186,7 +189,7 @@ export default function MobileMenu({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-zinc-950 z-999 shadow-2xl flex flex-col"
+              className="mobile-menu-root fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-zinc-950 z-[10000] shadow-2xl flex flex-col"
             >
               {/* ส่วนหัวเมนู (Drawer Header) */}
               <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
@@ -393,6 +396,6 @@ export default function MobileMenu({
           </>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }

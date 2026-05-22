@@ -48,8 +48,8 @@ export async function GET() {
     const session = await auth();
     const role = ((session?.user as any)?.role || "").toLowerCase();
     
-    // Auth Guard: Only super_admin, admin, or editor can trigger
-    const allowed = ["super_admin", "admin", "editor"];
+    // Auth Guard: Only super_admin, admin, editor, or teacher can trigger
+    const allowed = ["super_admin", "admin", "editor", "teacher"];
     if (!session || !allowed.includes(role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }

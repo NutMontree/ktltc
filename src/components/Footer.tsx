@@ -1,18 +1,13 @@
 import Link from "next/link";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedinIn,
-} from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import clientPromise from "@/lib/db";
 import VisitorTracker from "./VisitorTracker";
 import Image from "next/image";
 
 /**
  * Footer.tsx (Server Component): ส่วนท้ายของเว็บไซต์
- * 
- * หน้าที่: 
+ *
+ * หน้าที่:
  * 1. แสดงข้อมูลการติดต่อและโลโก้วิทยาลัย
  * 2. แสดงเมนูลิงก์สำคัญที่ดึงมาจากฐานข้อมูล
  * 3. แสดงยอดผู้เข้าชมเว็บไซต์ (Visitor Count)
@@ -33,11 +28,7 @@ async function getFooterNavItems() {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const items = await db
-      .collection("navbar")
-      .find({})
-      .sort({ order: 1 })
-      .toArray();
+    const items = await db.collection("navbar").find({}).sort({ order: 1 }).toArray();
 
     if (!items || items.length === 0) {
       console.warn("⚠️ [Footer] No nav items found in database. Using fallback.");
@@ -62,20 +53,16 @@ async function getVisitorCount() {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const result = await db
-      .collection("site_stats")
-      .findOne({ _id: "visitor_count" as any });
+    const result = await db.collection("site_stats").findOne({ _id: "visitor_count" as any });
 
     const rawCount = result?.count;
     let parsed = typeof rawCount === "number" ? rawCount : parseInt(String(rawCount)) || 0;
 
     // หากค่าเริ่มต้นยังไม่ได้ตั้งค่า หรือต่ำกว่า 127457 ให้ตั้งค่าเป็น 127457 ทันที
     if (parsed < 127457) {
-      await db.collection("site_stats").updateOne(
-        { _id: "visitor_count" as any },
-        { $set: { count: 127457 } },
-        { upsert: true }
-      );
+      await db
+        .collection("site_stats")
+        .updateOne({ _id: "visitor_count" as any }, { $set: { count: 127457 } }, { upsert: true });
       parsed = 127457;
     }
 
@@ -96,8 +83,7 @@ export default async function Footer() {
   const countDigits = (countStr.length < 7 ? countStr.padStart(7, "0") : countStr).split("");
 
   const parents = navItems.filter((item) => !item.parentId);
-  const getChildren = (parentId: string) =>
-    navItems.filter((item) => item.parentId === parentId);
+  const getChildren = (parentId: string) => navItems.filter((item) => item.parentId === parentId);
 
   return (
     <footer className="bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-8 border-t border-slate-800 overflow-hidden">
@@ -105,25 +91,16 @@ export default async function Footer() {
       <VisitorTracker />
 
       <div className="max-w-[1600px] mx-auto px-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-1">
           {/* Column 1: โลโก้และข้อมูลติดต่อ */}
           <div className="lg:col-span-1 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 shadow-sm">
-                <Image
-                  src="/images/favicon.ico"
-                  alt="KTL Logo"
-                  width={48}
-                  height={48}
-                />
+                <Image src="/images/favicon.ico" alt="KTL Logo" width={48} height={48} />
               </div>
               <div>
-                <h2 className="font-bold text-lg leading-tight text-white">
-                  KTL-TC
-                </h2>
-                <p className="text-[10px] text-slate-400">
-                  KANTHARALAK TECHNICAL COLLEGE
-                </p>
+                <h2 className="font-bold text-lg leading-tight text-white">KTL-TC</h2>
+                <p className="text-[10px] text-slate-400">KANTHARALAK TECHNICAL COLLEGE</p>
               </div>
             </div>
 
@@ -149,10 +126,7 @@ export default async function Footer() {
               <div key={parent._id}>
                 <h3 className="font-bold text-base mb-6 border-l-2 border-blue-700 pl-3 text-white">
                   {parent.path && parent.path !== "#" ? (
-                    <Link
-                      href={parent.path}
-                      className="hover:text-blue-400 transition-colors"
-                    >
+                    <Link href={parent.path} className="hover:text-blue-400 transition-colors">
                       {parent.label}
                     </Link>
                   ) : (
@@ -220,17 +194,11 @@ export default async function Footer() {
           </p>
           {/* --- ลิงก์นโยบายต่างๆ --- */}
           <div className="flex items-center gap-4 pt-2">
-            <Link
-              href="/service"
-              className="hover:text-slate-300 transition-colors"
-            >
+            <Link href="/service" className="hover:text-slate-300 transition-colors">
               เงื่อนไขการให้บริการ
             </Link>
             <span className="text-slate-700">·</span>
-            <Link
-              href="/policy"
-              className="hover:text-slate-300 transition-colors"
-            >
+            <Link href="/policy" className="hover:text-slate-300 transition-colors">
               นโยบายความเป็นส่วนตัว
             </Link>
           </div>
@@ -243,13 +211,7 @@ export default async function Footer() {
 /**
  * FooterLink: คอมโพเนนต์ย่อยสำหรับลิงก์ใน Footer
  */
-function FooterLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li>
       <Link
@@ -265,17 +227,11 @@ function FooterLink({
 /**
  * SocialIcon: คอมโพเนนต์ย่อยสำหรับปุ่ม Social Media
  */
-function SocialIcon({
-  icon,
-  href = "#",
-}: {
-  icon: React.ReactNode;
-  href?: string;
-}) {
+function SocialIcon({ icon, href = "#" }: { icon: React.ReactNode; href?: string }) {
   return (
     <a
       href={href}
-      target={href !== "#" ? "_blank" : "_self"} 
+      target={href !== "#" ? "_blank" : "_self"}
       rel={href !== "#" ? "noopener noreferrer" : undefined}
       className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-blue-700 hover:text-white hover:scale-110 transition-all duration-300 border border-slate-700"
     >
@@ -283,4 +239,3 @@ function SocialIcon({
     </a>
   );
 }
-

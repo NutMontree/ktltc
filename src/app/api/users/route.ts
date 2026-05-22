@@ -29,8 +29,10 @@ export async function GET() {
       );
     }
 
-    // เช็ค Role: จำกัดเฉพาะ super_admin
-    if (payload.role !== "super_admin") {
+    // เช็ค Role: อนุญาตเฉพาะ super_admin, admin, teacher, hr, director และ editor
+    const allowedRoles = ["super_admin", "admin", "teacher", "hr", "director", "editor"];
+    const userRole = String(payload.role || "").toLowerCase().trim();
+    if (!allowedRoles.includes(userRole)) {
       return NextResponse.json(
         { error: "คุณไม่มีสิทธิ์เข้าถึงข้อมูลนี้" },
         { status: 403 },

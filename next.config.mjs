@@ -61,7 +61,7 @@ const nextConfig = {
     "*": ["public/images/**/*", "public/pdf/**/*", "public/uploads/**/*"],
   },
 
-  serverExternalPackages: ["sharp", "mongodb"],
+  serverExternalPackages: ["sharp", "mongodb", "tesseract.js"],
 
   images: {
     unoptimized: false,

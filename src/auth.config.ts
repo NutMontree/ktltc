@@ -88,9 +88,14 @@ const callbacks: NextAuthConfig["callbacks"] = {
       const role = (auth?.user as any)?.role?.toLowerCase();
 
       // สิทธิ์พื้นฐานอย่าง 'student' หรือ 'user' ไม่มีสิทธิ์เข้าถึงหน้าควบคุมระบบ (Dashboard/Admin) ใดๆ ทั้งสิ้น
-      // ยกเว้นหน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat) และหน้าสมาชิก (/dashboard/members)
+      // ยกเว้นหน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat), หน้าสมาชิก (/dashboard/members) และหน้าทวิภาคี (/dashboard/dve)
       if (role === "student" || role === "user") {
-        if (!pathname.startsWith("/dashboard/profile") && !pathname.startsWith("/dashboard/chat") && !pathname.startsWith("/dashboard/members")) {
+        if (
+          !pathname.startsWith("/dashboard/profile") &&
+          !pathname.startsWith("/dashboard/chat") &&
+          !pathname.startsWith("/dashboard/members") &&
+          !pathname.startsWith("/dashboard/dve")
+        ) {
           return Response.redirect(new URL("/", nextUrl));
         }
       }
@@ -118,18 +123,25 @@ const callbacks: NextAuthConfig["callbacks"] = {
 
         if (callbackUrl) {
           if (role === "student") {
-            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student, หน้าโปรไฟล์, หน้าแชท หรือหน้าสมาชิก ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าแรก
-            if (callbackUrl.startsWith("/student") || callbackUrl.startsWith("/dashboard/profile") || callbackUrl.startsWith("/dashboard/chat") || callbackUrl.startsWith("/dashboard/members")) {
+            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student, หน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก หรือทวิภาคี ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าแรก
+            if (
+              callbackUrl.startsWith("/student") ||
+              callbackUrl.startsWith("/dashboard/profile") ||
+              callbackUrl.startsWith("/dashboard/chat") ||
+              callbackUrl.startsWith("/dashboard/members") ||
+              callbackUrl.startsWith("/dashboard/dve")
+            ) {
               return Response.redirect(new URL(callbackUrl, nextUrl));
             }
             return Response.redirect(new URL("/", nextUrl));
           }
-          // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin) ยกเว้นหน้าโปรไฟล์, หน้าแชท และหน้าสมาชิก
+          // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin) ยกเว้นหน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก และหน้าทวิภาคี
           if (
             role === "user" &&
             !callbackUrl.startsWith("/dashboard/profile") &&
             !callbackUrl.startsWith("/dashboard/chat") &&
             !callbackUrl.startsWith("/dashboard/members") &&
+            !callbackUrl.startsWith("/dashboard/dve") &&
             (callbackUrl.startsWith("/dashboard") ||
               callbackUrl.startsWith("/manage-roles") ||
               callbackUrl.startsWith("/attendance-"))
