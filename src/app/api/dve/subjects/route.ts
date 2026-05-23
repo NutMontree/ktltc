@@ -53,6 +53,10 @@ function normalizeDept(value: string) {
   return (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
 }
 
+function escapeRegex(text: string): string {
+  return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 async function resolveStudentDept(db: any, userId: string) {
   const uDoc = await db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
   if (!uDoc) return "";
@@ -134,7 +138,7 @@ export async function GET(req: Request) {
 
       const subjects = await db
         .collection("dve_subjects")
-        .find({ department: { $regex: studentDept, $options: "i" } })
+        .find({ department: { $regex: escapeRegex(studentDept), $options: "i" } })
         .sort({ createdAt: -1 })
         .toArray();
 
@@ -158,7 +162,7 @@ export async function GET(req: Request) {
     if (userRole !== "student") {
       query.teacherId = userId;
     } else if (department) {
-      query.department = { $regex: department, $options: "i" };
+      query.department = { $regex: escapeRegex(department), $options: "i" };
     }
 
     const subjects = await db

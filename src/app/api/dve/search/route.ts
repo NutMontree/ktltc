@@ -75,6 +75,10 @@ function deptMatches(a: string, b: string) {
   return !!aa && !!bb && (aa.includes(bb) || bb.includes(aa));
 }
 
+function escapeRegex(text: string): string {
+  return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 export async function GET(req: Request) {
   try {
     const session = await auth();
@@ -106,7 +110,7 @@ export async function GET(req: Request) {
         const teachers = studentDept
           ? await db
               .collection("users")
-              .find({ role: "teacher", department: { $regex: studentDept, $options: "i" } })
+              .find({ role: "teacher", department: { $regex: escapeRegex(studentDept), $options: "i" } })
               .project({ _id: 1, name: 1, department: 1 })
               .sort({ name: 1 })
               .toArray()
@@ -152,14 +156,14 @@ export async function GET(req: Request) {
 
         const teachers = await db
           .collection("users")
-          .find({ role: "teacher", department: { $regex: studentDept, $options: "i" } })
+          .find({ role: "teacher", department: { $regex: escapeRegex(studentDept), $options: "i" } })
           .project({ _id: 1, name: 1, department: 1 })
           .sort({ name: 1 })
           .toArray();
 
         const subjects = await db
           .collection("dve_subjects")
-          .find({ department: { $regex: studentDept, $options: "i" } })
+          .find({ department: { $regex: escapeRegex(studentDept), $options: "i" } })
           .sort({ name: 1 })
           .toArray();
 
@@ -180,7 +184,7 @@ export async function GET(req: Request) {
       if (isOwnerScoped) {
         const subjects = await db
           .collection("dve_subjects")
-          .find({ teacherId: userId, department: { $regex: department, $options: "i" } })
+          .find({ teacherId: userId, department: { $regex: escapeRegex(department), $options: "i" } })
           .sort({ name: 1 })
           .toArray();
 
@@ -200,13 +204,13 @@ export async function GET(req: Request) {
 
       const subjects = await db
         .collection("dve_subjects")
-        .find({ department: { $regex: department, $options: "i" } })
+        .find({ department: { $regex: escapeRegex(department), $options: "i" } })
         .sort({ name: 1 })
         .toArray();
 
       const deptTeachers = await db
         .collection("users")
-        .find({ role: "teacher", department: { $regex: department, $options: "i" } })
+        .find({ role: "teacher", department: { $regex: escapeRegex(department), $options: "i" } })
         .project({ _id: 1, name: 1, department: 1 })
         .toArray();
 
@@ -264,7 +268,7 @@ export async function GET(req: Request) {
         const teacher = await db.collection("users").findOne({
           _id: new ObjectId(teacherId),
           role: "teacher",
-          department: { $regex: studentDept, $options: "i" },
+          department: { $regex: escapeRegex(studentDept), $options: "i" },
         });
         if (!teacher) {
           return NextResponse.json({ success: true, subjects: [] });
@@ -272,7 +276,7 @@ export async function GET(req: Request) {
 
         const subjects = await db
           .collection("dve_subjects")
-          .find({ teacherId, department: { $regex: studentDept, $options: "i" } })
+          .find({ teacherId, department: { $regex: escapeRegex(studentDept), $options: "i" } })
           .sort({ name: 1 })
           .toArray();
 

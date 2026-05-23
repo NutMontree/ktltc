@@ -37,6 +37,10 @@ const formatMaskedEmail = (rawEmail: string): string => {
   return `${local.substring(0, 2)}***${local.substring(local.length - 1)}@${domain}`;
 };
 
+function escapeRegex(text: string): string {
+  return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -68,7 +72,7 @@ export async function GET(req: Request) {
       query.citizenId = sanitizedId;
     } else if (name) {
       // Support sub-string searches on name
-      query.name = { $regex: name, $options: "i" };
+      query.name = { $regex: escapeRegex(name), $options: "i" };
     }
 
     const students = await db

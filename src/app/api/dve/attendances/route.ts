@@ -11,6 +11,10 @@ function normalizeDept(value: string) {
   return (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
 }
 
+function escapeRegex(text: string): string {
+  return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 function getDeptFromClassGroup(classGroupId: string): string {
   if (!classGroupId) return "";
   const clean = classGroupId.replace(/[^0-9a-zA-Zก-ฮ]/g, "").trim();
@@ -86,7 +90,7 @@ export async function GET(req: Request) {
       query.studentId = userId;
     } else {
       if (date) query.date = date;
-      if (classGroupId) query.classGroupId = { $regex: classGroupId, $options: "i" };
+      if (classGroupId) query.classGroupId = { $regex: escapeRegex(classGroupId), $options: "i" };
     }
 
     const logs = await db.collection("dve_attendances").find(query).sort({ date: -1, studentName: 1 }).toArray();

@@ -6,6 +6,10 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 
+function escapeRegex(text: string): string {
+  return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 export async function GET(req: Request) {
   try {
     const session = await auth();
@@ -35,11 +39,11 @@ export async function GET(req: Request) {
 
     const query: any = {
       role: "student",
-      department: { $regex: department, $options: "i" },
+      department: { $regex: escapeRegex(department), $options: "i" },
     };
 
-    if (classGroupId) query.classGroupId = { $regex: classGroupId, $options: "i" };
-    if (academicLevel) query.academicLevel = { $regex: academicLevel, $options: "i" };
+    if (classGroupId) query.classGroupId = { $regex: escapeRegex(classGroupId), $options: "i" };
+    if (academicLevel) query.academicLevel = { $regex: escapeRegex(academicLevel), $options: "i" };
 
     const students = await db
       .collection("users")
@@ -64,7 +68,7 @@ export async function GET(req: Request) {
       .collection("users")
       .distinct("classGroupId", {
         role: "student",
-        department: { $regex: department, $options: "i" },
+        department: { $regex: escapeRegex(department), $options: "i" },
       });
 
     const result = students.map((s: any) => ({

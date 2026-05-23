@@ -53,6 +53,10 @@ function normalizeDept(dept: string): string {
   return (dept || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
 }
 
+function escapeRegex(text: string): string {
+  return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 async function resolveStudentDoc(db: any, userId: string) {
   if (!ObjectId.isValid(userId)) return null;
   return db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
@@ -121,7 +125,7 @@ export async function GET(req: Request) {
 
     const ownedSubject = await db.collection("dve_subjects").findOne({
       teacherId: userId,
-      department: { $regex: department, $options: "i" },
+      department: { $regex: escapeRegex(department), $options: "i" },
     });
     if (!ownedSubject) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -129,7 +133,7 @@ export async function GET(req: Request) {
 
     const query: any = { role: "student" };
     if (classGroupId) {
-      query.classGroupId = { $regex: classGroupId, $options: "i" };
+      query.classGroupId = { $regex: escapeRegex(classGroupId), $options: "i" };
     }
 
     const students = await db
