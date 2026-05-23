@@ -609,7 +609,7 @@ export function DVEStudentPortal() {
   const submittedAssignments = attendances.filter((a) => a.assignmentStatus === "Submitted").length;
 
   return (
-    <div className="space-y-6 px-24 md:px-0">
+    <div className="max-w-[1200px] mx-auto space-y-6 px-2 sm:px-4 py-4 sm:py-8">
       {/* Student Portal Banner */}
       <div className="relative overflow-hidden rounded-[30px] bg-linear-to-br from-emerald-500 to-teal-700 text-white p-8 shadow-xl shadow-emerald-500/10">
         <div className="absolute top-0 right-0 p-8 opacity-10">
