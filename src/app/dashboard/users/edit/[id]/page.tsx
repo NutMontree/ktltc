@@ -57,6 +57,12 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     faction: "",
     isActive: true,
     studentId: "",
+    classGroupId: "",
+    citizenId: "",
+    academicLevel: "",
+    studentStatus: "กำลังศึกษา",
+    learnerType: "ทวิภาคี",
+    isInternship: false,
     groupCode: "",
     positionNumber: "",
     affiliation: "",
@@ -99,7 +105,13 @@ export default function EditUserPage({ params }: EditUserPageProps) {
           faction: data.faction || "",
           isActive: typeof data.isActive === "boolean" ? data.isActive : true,
           studentId: data.studentId || "",
-          groupCode: data.groupCode || "",
+          classGroupId: data.classGroupId || data.groupCode || "",
+          citizenId: data.citizenId || "",
+          academicLevel: data.academicLevel || "",
+          studentStatus: data.studentStatus || "กำลังศึกษา",
+          learnerType: data.learnerType || "ทวิภาคี",
+          isInternship: typeof data.isInternship === "boolean" ? data.isInternship : false,
+          groupCode: data.classGroupId || data.groupCode || "",
           positionNumber: data.positionNumber || "",
           affiliation: data.affiliation || "",
           govStartDate: data.govStartDate || "",
@@ -619,45 +631,162 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
                       {/* Scenario 1: Student role */}
                       {formData.role === "student" && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                          {/* Student ID */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                              รหัสนักเรียน / นักศึกษา (Student ID)
-                            </label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <School size={16} />
-                              </span>
-                              <input
-                                type="text"
-                                name="studentId"
-                                value={formData.studentId}
-                                onChange={handleInputChange}
-                                placeholder="กรอกรหัสประจำตัวนักเรียน 10 หลัก..."
-                                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                              />
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            {/* Student ID */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                รหัสนักเรียน / นักศึกษา (Student ID)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <School size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="studentId"
+                                  value={formData.studentId}
+                                  onChange={handleInputChange}
+                                  placeholder="กรอกรหัสประจำตัวนักเรียน 10 หลัก..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Citizen ID */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                เลขประจำตัวประชาชน (Citizen ID)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <UserIcon size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="citizenId"
+                                  value={formData.citizenId}
+                                  onChange={handleInputChange}
+                                  placeholder="กรอกเลขบัตรประชาชน 13 หลัก..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Class Group ID */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                รหัสกลุ่มเรียน / รหัสชั้นเรียน (Group Code)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Terminal size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="classGroupId"
+                                  value={formData.classGroupId}
+                                  onChange={handleInputChange}
+                                  placeholder="เช่น 6631020001, 652010102..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Academic Level */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                ระดับชั้นการศึกษา (Academic Level)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Layers size={16} />
+                                </span>
+                                <select
+                                  name="academicLevel"
+                                  value={formData.academicLevel}
+                                  onChange={handleInputChange}
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all cursor-pointer appearance-none shadow-inner"
+                                >
+                                  <option value="">-- เลือกระดับชั้น --</option>
+                                  <option value="ปวช. 1">ปวช. 1</option>
+                                  <option value="ปวช. 2">ปวช. 2</option>
+                                  <option value="ปวช. 3">ปวช. 3</option>
+                                  <option value="ปวส. 1">ปวส. 1</option>
+                                  <option value="ปวส. 2">ปวส. 2</option>
+                                  <option value="ปริญญาตรี">ปริญญาตรี</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* Learner Type */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                ประเภทผู้เรียน (Learner Type)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <UserIcon size={16} />
+                                </span>
+                                <select
+                                  name="learnerType"
+                                  value={formData.learnerType}
+                                  onChange={handleInputChange}
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all cursor-pointer appearance-none shadow-inner"
+                                >
+                                  <option value="ทวิภาคี">ทวิภาคี (DVE)</option>
+                                  <option value="ปกติ">ปกติ (Normal)</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* Student Status */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                สถานภาพนักเรียน (Student Status)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Briefcase size={16} />
+                                </span>
+                                <select
+                                  name="studentStatus"
+                                  value={formData.studentStatus}
+                                  onChange={handleInputChange}
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all cursor-pointer appearance-none shadow-inner"
+                                >
+                                  <option value="กำลังศึกษา">กำลังศึกษา</option>
+                                  <option value="สำเร็จการศึกษา">สำเร็จการศึกษา</option>
+                                  <option value="พ้นสภาพ">พ้นสภาพ</option>
+                                  <option value="ลาพักการเรียน">ลาพักการเรียน</option>
+                                </select>
+                              </div>
                             </div>
                           </div>
 
-                          {/* Group Code */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                              รหัสกลุ่มเรียน / รหัสชั้นเรียน (Group Code)
-                            </label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <Terminal size={16} />
-                              </span>
-                              <input
-                                type="text"
-                                name="groupCode"
-                                value={formData.groupCode}
-                                onChange={handleInputChange}
-                                placeholder="เช่น 6631020001, 652010102..."
-                                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                              />
+                          {/* Internship Toggle Switch */}
+                          <div className="p-5 bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 rounded-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                              <h4 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2">
+                                <Briefcase size={14} className="text-blue-500" />
+                                <span>สถานะการฝึกงาน / ฝึกประสบการณ์วิชาชีพ (Internship Status)</span>
+                              </h4>
+                              <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-bold mt-1 max-w-[480px]">
+                                สลับสวิตช์เพื่อระบุว่านักศึกษารายนี้อยู่ในสถานะกำลังฝึกงานภายนอกสถานประกอบการหรือไม่ (มีผลกับการแสดงผลข้อมูลทวิภาคี DVE)
+                              </p>
                             </div>
+                            
+                            <button
+                              type="button"
+                              onClick={() => setFormData(prev => ({ ...prev, isInternship: !prev.isInternship }))}
+                              className={`w-full sm:w-auto px-6 py-3 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${
+                                formData.isInternship
+                                  ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30"
+                                  : "bg-slate-100 border-slate-200 text-slate-400 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 hover:bg-slate-200/50"
+                              }`}
+                            >
+                              {formData.isInternship ? "กำลังฝึกงานอยู่ 💼" : "เรียนปกติในวิทยาลัย 🏫"}
+                            </button>
                           </div>
                         </div>
                       )}
