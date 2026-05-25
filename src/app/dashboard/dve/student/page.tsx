@@ -607,26 +607,73 @@ export function DVEStudentPortal() {
       : 100;
   const submittedAssignments = attendances.filter((a) => a.assignmentStatus === "Submitted").length;
 
+  const getRoleThaiLabel = (role?: string) => {
+    if (!role) return "นักเรียน / นักศึกษา";
+    const r = role.toLowerCase();
+    if (r === "super_admin") return "ผู้ดูแลระบบสูงสุด (Super Admin)";
+    if (r === "admin") return "ผู้ดูแลระบบ (Admin)";
+    if (r === "teacher") return "อาจารย์ / ครูผู้สอน (Teacher)";
+    if (r === "student") return "นักเรียน / นักศึกษา (Student)";
+    return role.toUpperCase();
+  };
+
   return (
     <div className="max-w-[1200px] mx-auto space-y-6 px-2 sm:px-4 py-4 sm:py-8">
       {/* Student Portal Banner */}
-      <div className="relative overflow-hidden rounded-[30px] bg-linear-to-br from-emerald-500 to-teal-700 text-white p-8 shadow-xl shadow-emerald-500/10">
+      <div className="relative overflow-hidden rounded-[30px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-8 sm:p-10 shadow-xl shadow-emerald-500/10">
         <div className="absolute top-0 right-0 p-8 opacity-10">
-          <GraduationCap size={160} />
+          <GraduationCap size={180} />
         </div>
-        <div className="relative z-10 max-w-2xl">
-          <span className="bg-white/20 backdrop-blur-md text-[10px] uppercase font-black tracking-widest px-3 py-1 rounded-full text-white/90">
-            Student Learning Hub
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-black mt-3 tracking-tight">
-            ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)
-          </h1>
-          <p className="text-white/80 font-bold mt-2 text-sm sm:text-base leading-relaxed">
-            ยินดีต้อนรับสู่ระบบฝึกอาชีพทวิภาคี ค้นหาบทเรียน ดาวน์โหลดสื่อส่งงาน
-            และติดตามประวัติคะแนนของท่านได้ที่นี่
-          </p>
+        
+        {/* Decorative elements */}
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+        <div className="absolute right-1/4 top-1/4 w-32 h-32 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="space-y-4 max-w-2xl">
+            <span className="bg-white/20 backdrop-blur-md text-[10px] uppercase font-black tracking-widest px-3.5 py-1.5 rounded-full text-white/95 border border-white/10 shadow-xs">
+              Student Learning Hub
+            </span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
+              ศูนย์การศึกษาระบบทวิภาคี <span className="text-emerald-350 block sm:inline">(DVE Portal)</span>
+            </h1>
+            <p className="text-white/80 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
+              ยินดีต้อนรับสู่ระบบฝึกอาชีพทวิภาคี ค้นหาบทเรียน ดาวน์โหลดสื่อส่งงาน
+              และติดตามประวัติคะแนนของท่านได้ที่นี่
+            </p>
+          </div>
+
+          {/* 🌟 Highly Prominent & Premium Glassmorphic Welcome Card */}
+          {session?.user && (
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 flex items-center gap-4 shadow-2xl min-w-[280px] sm:min-w-[340px] transform hover:scale-[1.02] transition-transform duration-300">
+              {/* User Avatar Image / Thumbnail */}
+              <div className="w-14 h-14 rounded-xl overflow-hidden bg-linear-to-tr from-emerald-400 to-teal-400 text-white flex items-center justify-center font-black text-2xl shadow-lg border border-white/30 shrink-0">
+                {session.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt={session.user.name || "User Thumbnail"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"
+                )}
+              </div>
+              <div className="space-y-1 overflow-hidden">
+                <span className="text-[9px] font-black uppercase text-emerald-250 tracking-widest block">
+                  ยินดีต้อนรับผู้ใช้งาน
+                </span>
+                <h2 className="text-lg sm:text-xl font-black text-white truncate leading-tight">
+                  {session.user.name}
+                </h2>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/30 border border-emerald-400/20 text-[9px] font-black text-emerald-100 uppercase tracking-wider">
+                  {getRoleThaiLabel((session.user as any).role)}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
 
       {/* Smart Search Filters */}
       <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
