@@ -8,7 +8,6 @@ async function getWorker(): Promise<Worker> {
     workerPromise = (async () => {
       try {
         const worker = await createWorker("tha+eng", 1, {
-          langPath: "https://cdn.jsdelivr.net/npm/tesseract.js-data@1.0.1",
           logger: (m) => {
             if (process.env.NODE_ENV === "development") {
               console.log("[DVE OCR Worker]", m);
