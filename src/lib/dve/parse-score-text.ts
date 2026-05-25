@@ -21,7 +21,12 @@ export function parseScoreFromText(text: string): Pick<ExtractedScore, "score" |
 
   // Preprocess common Thai OCR errors:
   // - "ก" (Kor Kai) often visually merges from "/" and "1", so "1ก" is actually "1/1"
-  const preprocessed = normalized.replace(/(\d+)\s*ก/g, "$1/1");
+  // - "+" is often read instead of "1"
+  // - Curly quotes like "”" or "“" are often read instead of "1"
+  const preprocessed = normalized
+    .replace(/(\d+)\s*ก/g, "$1/1")
+    .replace(/\+/g, "1")
+    .replace(/[””“]/g, "1");
 
   const googleTotal = preprocessed.match(/คะแนนรวม[\s\S]{0,120}?(\d+)\s*[\/|\\lI]\s*(\d+)/i);
   if (googleTotal) {
