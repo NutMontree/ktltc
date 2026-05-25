@@ -87,7 +87,9 @@ export async function GET(req: Request) {
         id: q._id.toString(),
         subjectId: q.subjectId,
         title: q.title,
-        googleFormUrl: q.googleFormUrl,
+        googleFormUrl: q.googleFormUrl || "",
+        isBuiltIn: !!q.isBuiltIn,
+        questions: q.questions || [],
         deadline: q.deadline || "",
         createdAt: q.createdAt,
       })),
@@ -108,9 +110,9 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { subjectId, title, googleFormUrl, deadline } = body;
+    const { subjectId, title, googleFormUrl, deadline, isBuiltIn, questions } = body;
 
-    if (!subjectId || !title || !googleFormUrl) {
+    if (!subjectId || !title || (!isBuiltIn && !googleFormUrl)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -125,7 +127,9 @@ export async function POST(req: Request) {
     const result = await db.collection("dve_quizzes").insertOne({
       subjectId,
       title,
-      googleFormUrl,
+      googleFormUrl: googleFormUrl || "",
+      isBuiltIn: !!isBuiltIn,
+      questions: questions || [],
       deadline: deadline || "",
       createdAt: new Date(),
     });
@@ -151,12 +155,12 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, title, googleFormUrl, deadline } = body;
+    const { id, title, googleFormUrl, deadline, isBuiltIn, questions } = body;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
     }
-    if (!title || !googleFormUrl) {
+    if (!title || (!isBuiltIn && !googleFormUrl)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -176,7 +180,9 @@ export async function PUT(req: Request) {
       {
         $set: {
           title,
-          googleFormUrl,
+          googleFormUrl: googleFormUrl || "",
+          isBuiltIn: !!isBuiltIn,
+          questions: questions || [],
           deadline: deadline || "",
           updatedAt: new Date(),
         },

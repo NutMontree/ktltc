@@ -47,7 +47,7 @@ export default function CookieConsent() {
     <div
       role="dialog"
       aria-label="cookie consent"
-      className="fixed bottom-0 left-0 right-0 z-[9999] p-4 md:p-6 animate-in slide-in-from-bottom-4 duration-500"
+      className="fixed bottom-0 left-0 right-0 z-9999 p-4 md:p-6 animate-in slide-in-from-bottom-4 duration-500"
     >
       <div className="mx-auto max-w-4xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl shadow-black/10 dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/40 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
@@ -58,7 +58,8 @@ export default function CookieConsent() {
                 เว็บไซต์นี้ใช้คุกกี้
               </p>
               <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                เราใช้คุกกี้เพื่อพัฒนาประสบการณ์การใช้งาน วิเคราะห์การเข้าชม และให้บริการที่เหมาะสมกับคุณ
+                เราใช้คุกกี้เพื่อพัฒนาประสบการณ์การใช้งาน วิเคราะห์การเข้าชม
+                และให้บริการที่เหมาะสมกับคุณ
                 <span className="ml-1 font-medium text-blue-600 dark:text-blue-400">
                   วิทยาลัยเทคนิคกันทรลักษ์ (KTLTC)
                 </span>

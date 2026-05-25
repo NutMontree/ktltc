@@ -296,7 +296,7 @@ function MobileMenu(_a) {
       React.createElement(
         "div",
         {
-          className: "fixed top-16 left-0 w-full h-[calc(100vh-4rem)] z-[9999]",
+          className: "fixed top-16 left-0 w-full h-[calc(100vh-4rem)] z-9999",
         },
         React.createElement(
           "div",

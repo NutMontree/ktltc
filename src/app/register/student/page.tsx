@@ -25,6 +25,7 @@ import {
 export default function StudentRegisterPage() {
   const [formData, setFormData] = useState({
     name: "",
+    studentIdNum: "",
     citizenId: "",
     email: "",
     phone: "",
@@ -49,6 +50,7 @@ export default function StudentRegisterPage() {
 
     // Validation checks for empty fields
     if (!formData.name.trim()) return setErrorMsg("กรุณาระบุชื่อ-นามสกุลจริง");
+    if (!formData.studentIdNum.trim()) return setErrorMsg("กรุณาระบุรหัสนักศึกษา");
     if (!formData.citizenId.trim()) return setErrorMsg("กรุณาระบุรหัสประจำตัวประชาชน");
     if (!formData.email.trim()) return setErrorMsg("กรุณาระบุอีเมล");
     if (!formData.phone.trim()) return setErrorMsg("กรุณาระบุเบอร์โทรศัพท์มือถือ");
@@ -70,7 +72,7 @@ export default function StudentRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          username: formData.citizenId.trim(),
+          username: formData.studentIdNum.trim(),
           password: formData.phone.trim(),
           role: "student",
           department: formData.department,
@@ -237,7 +239,7 @@ export default function StudentRegisterPage() {
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
                     ระบบได้ยกเลิกช่องกรอก Username และรหัสผ่าน เพื่อป้องกันการสะกดผิดหรือลืมข้อมูล โดยตั้งค่าบัญชีดังนี้:
                     <br />
-                    1. 🔑 <strong>ชื่อผู้ใช้งาน (User):</strong> จะใช้ <span className="text-amber-600 dark:text-amber-400 font-black">เลขประจำตัวประชาชน 13 หลัก</span> ที่ท่านกรอกด้านล่าง
+                    1. 🔑 <strong>ชื่อผู้ใช้งาน (User):</strong> จะใช้ <span className="text-amber-600 dark:text-amber-400 font-black">รหัสนักศึกษา</span> ที่ท่านกรอกด้านล่าง
                     <br />
                     2. 🔒 <strong>รหัสผ่าน (Password):</strong> จะใช้ <span className="text-amber-600 dark:text-amber-400 font-black">เบอร์โทรศัพท์มือถือ</span> ของท่าน
                   </p>
@@ -283,6 +285,26 @@ export default function StudentRegisterPage() {
                         onChange={handleChange}
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
                         placeholder="133xxxxxxxxxx"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                      รหัสนักศึกษา
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-amber-500 transition-colors">
+                        <User size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        name="studentIdNum"
+                        value={formData.studentIdNum}
+                        onChange={handleChange}
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
+                        placeholder="เช่น 66209010001"
                         required
                       />
                     </div>

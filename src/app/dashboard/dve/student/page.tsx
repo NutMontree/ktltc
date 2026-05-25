@@ -140,6 +140,13 @@ export function DVEStudentPortal() {
   const [attendances, setAttendances] = useState<any[]>([]);
   const [loadingSubjectData, setLoadingSubjectData] = useState(false);
 
+  // Student in-app quiz states
+  const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
+  const [quizAnswers, setQuizAnswers] = useState<any[]>([]);
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
+  const [submittingQuiz, setSubmittingQuiz] = useState(false);
+  const [quizResult, setQuizResult] = useState<{ score: number; maxScore: number } | null>(null);
+
   // DVE Virtual Study Room timer states
   const [activeStudyUnit, setActiveStudyUnit] = useState<any>(null);
   const [studySecondsElapsed, setStudySecondsElapsed] = useState<number>(0);
@@ -293,7 +300,23 @@ export function DVEStudentPortal() {
     }
   };
 
-  const handleOpenQuizFormGlobal = async (url: string) => {
+  const handleOpenQuizFormGlobal = async (quiz: any) => {
+    if (!quiz) return;
+
+    if (quiz.isBuiltIn) {
+      setActiveQuiz(quiz);
+      const initialAnswers = (quiz.questions || []).map((q: any) => ({
+        questionId: q.id,
+        answer: q.type === "checkboxes" ? [] : "",
+      }));
+      setQuizAnswers(initialAnswers);
+      setQuizResult(null);
+      setIsQuizModalOpen(true);
+      return;
+    }
+
+    // External Google Form URL logic
+    const url = quiz.googleFormUrl || "";
     window.open(url, "_blank");
     if (!session?.user || !activeSubject) return;
     try {
@@ -339,6 +362,65 @@ export function DVEStudentPortal() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleSubmitQuiz = async () => {
+    if (!activeQuiz || !session?.user) return;
+
+    // Validate that all questions are answered
+    for (const q of activeQuiz.questions || []) {
+      const studentAnsObj = quizAnswers.find((a) => a.questionId === q.id);
+      if (
+        !studentAnsObj ||
+        (q.type !== "checkboxes" && String(studentAnsObj.answer).trim() === "") ||
+        (q.type === "checkboxes" &&
+          (!Array.isArray(studentAnsObj.answer) || studentAnsObj.answer.length === 0))
+      ) {
+        message.warning(`กรุณาตอบคำถามข้อ "${q.text}" ให้เรียบร้อยก่อนส่ง`);
+        return;
+      }
+    }
+
+    setSubmittingQuiz(true);
+    try {
+      const res = await fetch("/api/dve/quizzes/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quizId: activeQuiz.id,
+          answers: quizAnswers,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          message.success("ส่งกระดาษคำตอบสำเร็จแล้ว!");
+          setQuizResult({
+            score: data.score,
+            maxScore: data.maxScore,
+          });
+
+          // Refresh attendances log in background to sync the new score in DVE portal
+          if (activeSubject) {
+            const attRes = await fetch(`/api/dve/attendances?subjectId=${activeSubject.id}`);
+            if (attRes.ok) {
+              const attData = await attRes.json();
+              if (attData.success) setAttendances(attData.attendances || []);
+            }
+          }
+        } else {
+          message.error(data.error || "ส่งข้อสอบล้มเหลว");
+        }
+      } else {
+        message.error("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("เกิดข้อผิดพลาดระหว่างส่งข้อสอบ");
+    } finally {
+      setSubmittingQuiz(false);
     }
   };
 
@@ -422,9 +504,9 @@ export function DVEStudentPortal() {
         // Check if there is a quiz available for this subject
         if (quizzes && quizzes.length > 0) {
           const targetQuiz = quizzes[0];
-          message.loading("📝 เรียนจบเวลาแล้ว! กำลังพาท่านไปยังแบบทดสอบประเมินผล...", 3);
+          message.loading("📝 เรียนจบเวลาแล้ว! กำลังเตรียมแบบทดสอบประเมินผล...", 3);
           setTimeout(() => {
-            window.open(targetQuiz.googleFormUrl, "_blank");
+            handleOpenQuizFormGlobal(targetQuiz);
           }, 3000);
         }
       } else {
@@ -444,11 +526,25 @@ export function DVEStudentPortal() {
     let timer: NodeJS.Timeout;
     if (activeStudyUnit) {
       const studyLimitSeconds = (activeStudyUnit.studyMinutes || 0) * 60;
+      const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
+      const user = session?.user as any;
+      
+      // ตรวจสอบว่านักเรียนคนนี้มีบันทึกการเข้าเรียนในหน่วยการเรียนรู้นี้แล้วหรือไม่
+      const alreadyCheckedIn = attendances.some(
+        (a) => a.unitId === currentUnitId && a.studentId === user?.id
+      );
 
-      // If no timer set, mark completed immediately and check in automatically
-      if (studyLimitSeconds <= 0) {
+      // หากเคยเช็คชื่อไปแล้ว (มีข้อมูลในระบบ) หรือหน่วยนี้ไม่ได้ตั้งเวลาไว้ ให้ข้ามการจับเวลาไปเลย
+      if (alreadyCheckedIn || studyLimitSeconds <= 0) {
         setIsStudyCompleted(true);
-        handleAutoCheckin(activeStudyUnit);
+        if (studyLimitSeconds > 0) {
+          setStudySecondsElapsed(studyLimitSeconds); // เติมหลอดเวลาให้เต็ม
+        }
+        
+        // ถ้าไม่เคยเช็คชื่อ (กรณีไม่มีเวลา) ถึงจะให้บันทึกอัตโนมัติ
+        if (!alreadyCheckedIn) {
+          handleAutoCheckin(activeStudyUnit);
+        }
       } else {
         timer = setInterval(() => {
           setStudySecondsElapsed((prev) => {
@@ -469,7 +565,7 @@ export function DVEStudentPortal() {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [activeStudyUnit]);
+  }, [activeStudyUnit, attendances, session]);
 
   // Load subject contents once selected
   const handleSubjectSelect = async (subjectId: string) => {
@@ -624,7 +720,7 @@ export function DVEStudentPortal() {
         <div className="absolute top-0 right-0 p-8 opacity-10">
           <GraduationCap size={180} />
         </div>
-        
+
         {/* Decorative elements */}
         <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-white/5 blur-2xl pointer-events-none" />
         <div className="absolute right-1/4 top-1/4 w-32 h-32 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
@@ -635,7 +731,8 @@ export function DVEStudentPortal() {
               Student Learning Hub
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-              ศูนย์การศึกษาระบบทวิภาคี <span className="text-emerald-350 block sm:inline">(DVE Portal)</span>
+              ศูนย์การศึกษาระบบทวิภาคี{" "}
+              <span className="text-emerald-350 block sm:inline">(DVE Portal)</span>
             </h1>
             <p className="text-white/80 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
               ยินดีต้อนรับสู่ระบบฝึกอาชีพทวิภาคี ค้นหาบทเรียน ดาวน์โหลดสื่อส่งงาน
@@ -654,8 +751,10 @@ export function DVEStudentPortal() {
                     alt={session.user.name || "User Thumbnail"}
                     className="w-full h-full object-cover"
                   />
+                ) : session.user.name ? (
+                  session.user.name.charAt(0).toUpperCase()
                 ) : (
-                  session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"
+                  "U"
                 )}
               </div>
               <div className="space-y-1 overflow-hidden">
@@ -673,7 +772,6 @@ export function DVEStudentPortal() {
           )}
         </div>
       </div>
-
 
       {/* Smart Search Filters */}
       <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
@@ -1258,7 +1356,7 @@ export function DVEStudentPortal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md"
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md"
           >
             <motion.div
               initial={{ scale: 0.95, y: 30 }}
@@ -1484,12 +1582,12 @@ export function DVEStudentPortal() {
                             `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${activeStudyUnit.studyMinutes} นาทีก่อนทำแบบทดสอบประเมิน`,
                           );
                         } else {
-                          handleOpenQuizFormGlobal(quizzes[0].googleFormUrl);
+                          handleOpenQuizFormGlobal(quizzes[0]);
                         }
                       }}
                     >
-                      เริ่มทำแบบทดสอบประเมิน
-                      <ExternalLink size={12} />
+                      {quizzes[0].isBuiltIn ? "เริ่มทำข้อสอบท้ายบทเรียน" : "เริ่มทำแบบทดสอบประเมิน"}
+                      {quizzes[0].isBuiltIn ? <ArrowRight size={12} /> : <ExternalLink size={12} />}
                     </button>
                   </div>
                 )}
@@ -1519,6 +1617,334 @@ export function DVEStudentPortal() {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 📝 In-App Google Forms Replica Quiz Filler Modal */}
+      <AnimatePresence>
+        {isQuizModalOpen && activeQuiz && (
+          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                if (
+                  !quizResult &&
+                  !confirm("คุณต้องการปิดข้อสอบนี้ใช่หรือไม่? (คำตอบที่ตอบไว้จะสูญหาย)")
+                )
+                  return;
+                setIsQuizModalOpen(false);
+              }}
+              className="absolute inset-0 bg-slate-900/50 dark:bg-zinc-950/80 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-2xl bg-[#f0ebf8] dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden text-left flex flex-col my-8 border dark:border-zinc-800"
+            >
+              {/* iconic Google Forms top purple bar */}
+              <div className="h-2.5 w-full bg-[#673ab7]" />
+
+              <div className="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
+                {!quizResult ? (
+                  <>
+                    {/* Header Card */}
+                    <div className="p-6 bg-white dark:bg-zinc-950 rounded-xl shadow-xs border-t-8 border-[#673ab7] space-y-3">
+                      <h2 className="text-xl font-black text-zinc-900 dark:text-white">
+                        {activeQuiz.title}
+                      </h2>
+                      <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-zinc-400">
+                        <span className="px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400">
+                          แบบทดสอบระบบเก็บคะแนนอัตโนมัติ
+                        </span>
+                        {activeQuiz.deadline && (
+                          <span className="text-amber-500">เดดไลน์ส่ง: {activeQuiz.deadline}</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold border-t dark:border-zinc-900 pt-3">
+                        คำแนะนำ: กรุณาอ่านโจทย์และเลือกคำตอบที่ถูกต้องที่สุดให้ครบทุกข้อ
+                        ระบบจะตรวจคะแนนและบันทึกคะแนนเข้าสู่สมุดเกรดอัตโนมัติเมื่อท่านส่งข้อสอบ
+                      </p>
+                    </div>
+
+                    {/* Questions cards */}
+                    <div className="space-y-4">
+                      {(activeQuiz.questions || []).map((q: any, qIdx: number) => {
+                        const studentAnsObj = quizAnswers.find((a) => a.questionId === q.id);
+                        const currentAnswer = studentAnsObj ? studentAnsObj.answer : "";
+
+                        return (
+                          <div
+                            key={q.id}
+                            className="p-6 bg-white dark:bg-zinc-950 rounded-xl shadow-xs border dark:border-zinc-850 space-y-4 transition-all hover:border-[#673ab7]/30"
+                          >
+                            <div className="flex justify-between items-start gap-3">
+                              <h3 className="text-sm font-black text-zinc-800 dark:text-zinc-100">
+                                {qIdx + 1}. {q.text} <span className="text-rose-500">*</span>
+                              </h3>
+                              <span className="text-[10px] font-black text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20 px-2 py-0.5 rounded shrink-0 leading-none">
+                                {q.points} คะแนน
+                              </span>
+                            </div>
+
+                            {/* Multiple Choice Options */}
+                            {q.type === "multiple_choice" && (
+                              <div className="space-y-2.5">
+                                {(q.options || []).map((opt: string, oIdx: number) => (
+                                  <label
+                                    key={oIdx}
+                                    className="flex items-center gap-3 p-2.5 rounded-lg border border-slate-100 dark:border-zinc-900 hover:bg-purple-50/20 dark:hover:bg-purple-950/5 cursor-pointer transition-colors text-xs font-bold text-zinc-700 dark:text-zinc-350"
+                                  >
+                                    <input
+                                      type="radio"
+                                      name={`ans_${q.id}`}
+                                      checked={currentAnswer === opt}
+                                      onChange={() => {
+                                        const updated = quizAnswers.map((a) =>
+                                          a.questionId === q.id ? { ...a, answer: opt } : a,
+                                        );
+                                        setQuizAnswers(updated);
+                                      }}
+                                      className="w-4 h-4 accent-[#673ab7] cursor-pointer shrink-0"
+                                    />
+                                    {opt}
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Checkboxes Options */}
+                            {q.type === "checkboxes" && (
+                              <div className="space-y-2.5">
+                                {(q.options || []).map((opt: string, oIdx: number) => {
+                                  const currentArr = Array.isArray(currentAnswer)
+                                    ? currentAnswer
+                                    : [];
+                                  const isChecked = currentArr.includes(opt);
+
+                                  return (
+                                    <label
+                                      key={oIdx}
+                                      className="flex items-center gap-3 p-2.5 rounded-lg border border-slate-100 dark:border-zinc-900 hover:bg-purple-50/20 dark:hover:bg-purple-950/5 cursor-pointer transition-colors text-xs font-bold text-zinc-700 dark:text-zinc-350"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={(e) => {
+                                          let nextArr = [...currentArr];
+                                          if (e.target.checked) {
+                                            nextArr.push(opt);
+                                          } else {
+                                            nextArr = nextArr.filter((v) => v !== opt);
+                                          }
+                                          const updated = quizAnswers.map((a) =>
+                                            a.questionId === q.id ? { ...a, answer: nextArr } : a,
+                                          );
+                                          setQuizAnswers(updated);
+                                        }}
+                                        className="w-4 h-4 accent-[#673ab7] rounded cursor-pointer shrink-0"
+                                      />
+                                      {opt}
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {/* Short Answer text input */}
+                            {q.type === "short_answer" && (
+                              <div>
+                                <input
+                                  type="text"
+                                  placeholder="พิมพ์คำตอบของคุณที่นี่..."
+                                  value={(currentAnswer as string) || ""}
+                                  onChange={(e) => {
+                                    const updated = quizAnswers.map((a) =>
+                                      a.questionId === q.id ? { ...a, answer: e.target.value } : a,
+                                    );
+                                    setQuizAnswers(updated);
+                                  }}
+                                  className="w-full h-10 border-0 border-b border-zinc-200 dark:border-zinc-800 bg-transparent py-2 text-xs font-bold text-zinc-800 dark:text-white focus:outline-hidden focus:border-[#673ab7] transition-all"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Form Controls */}
+                    <div className="flex justify-end gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm("คุณต้องการออกจากแบบทดสอบใช่หรือไม่?")) {
+                            setIsQuizModalOpen(false);
+                          }
+                        }}
+                        className="px-5 py-2.5 rounded-xl text-xs font-black text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 border-0 bg-transparent cursor-pointer"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSubmitQuiz}
+                        disabled={submittingQuiz}
+                        className="px-6 py-2.5 rounded-xl bg-[#673ab7] hover:bg-[#5e35b1] text-white text-xs font-black shadow-md cursor-pointer border-0 flex items-center gap-1.5"
+                      >
+                        {submittingQuiz ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            กำลังส่งข้อสอบ...
+                          </>
+                        ) : (
+                          "ส่งแบบทดสอบ (Submit)"
+                        )}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  /* 🎉 Visual Congratulations Screen & Real-time Auto-Grading */
+                  <div className="space-y-6">
+                    <div className="p-6 bg-white dark:bg-zinc-950 rounded-xl shadow-xs border-t-8 border-emerald-500 text-center space-y-4">
+                      <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-3xl mx-auto">
+                        🎉
+                      </div>
+                      <div className="space-y-1">
+                        <h2 className="text-lg font-black text-zinc-900 dark:text-white">
+                          ส่งกระดาษคำตอบเรียบร้อยแล้ว!
+                        </h2>
+                        <p className="text-xs text-zinc-400 font-bold">
+                          ระบบประมวลผลการสอบและบันทึกคะแนนสะสมเข้าสู่รายงานฝึกงานเรียบร้อยแล้ว
+                        </p>
+                      </div>
+
+                      {/* circular score badge */}
+                      <div className="p-4 bg-purple-50 dark:bg-purple-950/20 rounded-2xl max-w-xs mx-auto border dark:border-purple-900/30">
+                        <span className="text-[10px] uppercase font-black tracking-wider text-purple-600 dark:text-purple-400 block mb-1">
+                          คะแนนที่คุณสอบได้
+                        </span>
+                        <div className="text-3xl font-black text-purple-700 dark:text-purple-300 tabular-nums">
+                          {quizResult.score}{" "}
+                          <span className="text-sm text-zinc-400">
+                            / {quizResult.maxScore} คะแนน
+                          </span>
+                        </div>
+                        <span className="text-[9px] text-zinc-400 font-bold block mt-1">
+                          (คิดเป็นเกรดสำเร็จรูป:{" "}
+                          {Math.round((quizResult.score / (quizResult.maxScore || 1)) * 100)}%)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Detailed Review Sheet */}
+                    <div className="space-y-3">
+                      <h3 className="text-xs font-black text-zinc-500 dark:text-zinc-400 block">
+                        แผ่นตรวจคำตอบของคุณ:
+                      </h3>
+                      <div className="space-y-3 max-h-[30vh] overflow-y-auto pr-1">
+                        {(activeQuiz.questions || []).map((q: any, qIdx: number) => {
+                          const studentAnsObj = quizAnswers.find((a) => a.questionId === q.id);
+                          const studentAns = studentAnsObj ? studentAnsObj.answer : "";
+
+                          let isCorrect = false;
+                          if (q.type === "multiple_choice" || q.type === "short_answer") {
+                            isCorrect =
+                              String(studentAns || "")
+                                .trim()
+                                .toLowerCase() ===
+                              String(q.correctAnswer || "")
+                                .trim()
+                                .toLowerCase();
+                          } else if (q.type === "checkboxes") {
+                            const sArr = Array.isArray(studentAns)
+                              ? studentAns
+                                  .map((v) =>
+                                    String(v || "")
+                                      .trim()
+                                      .toLowerCase(),
+                                  )
+                                  .sort()
+                              : [];
+                            const cArr = Array.isArray(q.correctAnswer)
+                              ? q.correctAnswer
+                                  .map((v: any) =>
+                                    String(v || "")
+                                      .trim()
+                                      .toLowerCase(),
+                                  )
+                                  .sort()
+                              : [
+                                  String(q.correctAnswer || "")
+                                    .trim()
+                                    .toLowerCase(),
+                                ];
+                            isCorrect =
+                              sArr.length === cArr.length && sArr.every((v, i) => v === cArr[i]);
+                          }
+
+                          return (
+                            <div
+                              key={q.id}
+                              className="p-4 bg-white dark:bg-zinc-950 border dark:border-zinc-850 rounded-xl space-y-2"
+                            >
+                              <div className="flex justify-between items-start gap-2">
+                                <span className="text-xs font-black text-zinc-800 dark:text-zinc-200">
+                                  {qIdx + 1}. {q.text}
+                                </span>
+                                <span
+                                  className={`text-[10px] font-black px-1.5 py-0.5 rounded ${isCorrect ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}
+                                >
+                                  {isCorrect ? `+${q.points} คะแนน` : "0 คะแนน"}
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 text-[10px] pt-1.5 border-t border-slate-100 dark:border-zinc-900">
+                                <div>
+                                  <span className="text-zinc-400 font-bold block">
+                                    คำตอบของคุณ:
+                                  </span>
+                                  <span
+                                    className={`font-black ${isCorrect ? "text-emerald-600" : "text-rose-500"}`}
+                                  >
+                                    {Array.isArray(studentAns)
+                                      ? studentAns.join(", ")
+                                      : String(studentAns || "ไม่ได้ระบุ")}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-zinc-400 font-bold block">
+                                    เฉลยที่ถูกต้อง:
+                                  </span>
+                                  <span className="text-zinc-600 dark:text-zinc-300 font-black">
+                                    {Array.isArray(q.correctAnswer)
+                                      ? q.correctAnswer.join(", ")
+                                      : String(q.correctAnswer || "ไม่ระบุเฉลย")}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Close action */}
+                    <div className="flex justify-center pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsQuizModalOpen(false)}
+                        className="px-8 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-900 text-white dark:bg-zinc-700 dark:hover:bg-zinc-650 text-xs font-black shadow-md cursor-pointer border-0"
+                      >
+                        เสร็จสิ้นและปิดหน้าต่าง
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
