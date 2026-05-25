@@ -36615,3 +36615,15 @@ To https://github.com/NutMontree/ktltc.git
 [Mon May 25 08:08:04 PM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
 [Mon May 25 08:10:01 PM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
 [Mon May 25 08:10:02 PM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 6e2dca56] Auto-commit from Lenovo machine [2026-05-25 20:10:02]
+ 1 file changed, 12 insertions(+)
+[Mon May 25 08:10:02 PM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Mon May 25 08:10:02 PM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   c6efa6d3..6e2dca56  main -> main
+[Mon May 25 08:10:04 PM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Mon May 25 08:10:04 PM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Mon May 25 08:12:01 PM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Mon May 25 08:12:02 PM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
