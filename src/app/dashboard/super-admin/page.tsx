@@ -66,7 +66,7 @@ interface ActivityLog {
 export default function SuperAdminPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -123,7 +123,7 @@ export default function SuperAdminPage() {
         toast.success(
           newValue
             ? "ตั้งค่าสำเร็จ: ผู้สมัครใหม่สามารถเข้าใช้งานได้ทันที 🔓"
-            : "ตั้งค่าสำเร็จ: ผู้สมัครใหม่ต้องรออนุมัติจาก Super Admin 🔒"
+            : "ตั้งค่าสำเร็จ: ผู้สมัครใหม่ต้องรออนุมัติจาก Super Admin 🔒",
         );
       } else {
         const err = await res.json();
@@ -293,7 +293,9 @@ export default function SuperAdminPage() {
 
       const [usersRes, pendingRes, summaryRes, logsRes] = await Promise.all([
         fetch(`/api/admin/users?page=${p}&search=${q}&status=active&role=${cat}&_t=${Date.now()}`),
-        p === 1 ? fetch(`/api/admin/users?all=true&status=pending&search=${q}&_t=${Date.now()}`) : Promise.resolve(null),
+        p === 1
+          ? fetch(`/api/admin/users?all=true&status=pending&search=${q}&_t=${Date.now()}`)
+          : Promise.resolve(null),
         p === 1 ? fetch("/api/admin/reports/summary?_t=" + Date.now()) : Promise.resolve(null),
         p === 1 ? fetch("/api/admin/logs?_t=" + Date.now()) : Promise.resolve(null),
       ]);
@@ -467,16 +469,35 @@ export default function SuperAdminPage() {
   };
 
   const moveOrder = async (id: string, currentOrder: number, direction: "up" | "down") => {
-    const newOrder = direction === "up" ? currentOrder - 1 : currentOrder + 1;
+    const currentIndex = users.findIndex((u) => u._id === id);
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= users.length) return;
+
+    const reorderedUsers = [...users];
+    const temp = reorderedUsers[currentIndex];
+    reorderedUsers[currentIndex] = reorderedUsers[targetIndex];
+    reorderedUsers[targetIndex] = temp;
+
+    // อัปเดต state ทันทีเพื่อให้ UI ลื่นไหล (Optimistic Update)
+    setUsers(reorderedUsers);
+
     try {
-      const res = await fetch(`/api/users/${id}`, {
-        method: "PATCH",
+      const res = await fetch("/api/admin/users/reorder", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderIndex: newOrder }),
+        body: JSON.stringify({ users: reorderedUsers }),
       });
-      if (res.ok) fetchData();
+      if (res.ok) {
+        toast.success("ปรับลำดับสมาชิกเรียบร้อย ⚡");
+      } else {
+        toast.error("ไม่สามารถบันทึกลำดับได้");
+        fetchData(page, searchQuery, selectedCategory);
+      }
     } catch (error) {
-      toast.error("ไม่สามารถเปลี่ยนลำดับได้");
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      fetchData(page, searchQuery, selectedCategory);
     }
   };
 
@@ -570,27 +591,27 @@ export default function SuperAdminPage() {
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="flex items-center gap-2">
-                <Link
-                    href="/manage-roles"
-                    className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all shadow-lg text-slate-700 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest"
-                >
-                    <UserPlus size={16} className="text-blue-500" />
-                    <span className="hidden sm:inline">จัดการรายบุคคล</span>
-                </Link>
-                <Link
-                    href="/dashboard/permissions"
-                    className="flex items-center gap-2 px-6 py-4 bg-rose-600 text-white rounded-3xl hover:bg-rose-700 transition-all shadow-xl shadow-rose-500/20 font-bold text-xs uppercase tracking-widest"
-                >
-                    <Lock size={16} />
-                    <span className="hidden sm:inline">Permissions Matrix</span>
-                </Link>
-                <button
-                    onClick={() => setIsSettingsModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-3xl transition-all shadow-lg shadow-amber-500/20 font-bold text-xs uppercase tracking-widest"
-                >
-                    <Settings size={16} />
-                    <span>อนุมัติสมาชิก</span>
-                </button>
+              <Link
+                href="/manage-roles"
+                className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all shadow-lg text-slate-700 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest"
+              >
+                <UserPlus size={16} className="text-blue-500" />
+                <span className="hidden sm:inline">จัดการรายบุคคล</span>
+              </Link>
+              <Link
+                href="/dashboard/permissions"
+                className="flex items-center gap-2 px-6 py-4 bg-rose-600 text-white rounded-3xl hover:bg-rose-700 transition-all shadow-xl shadow-rose-500/20 font-bold text-xs uppercase tracking-widest"
+              >
+                <Lock size={16} />
+                <span className="hidden sm:inline">Permissions Matrix</span>
+              </Link>
+              <button
+                onClick={() => setIsSettingsModalOpen(true)}
+                className="flex items-center gap-2 px-6 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-3xl transition-all shadow-lg shadow-amber-500/20 font-bold text-xs uppercase tracking-widest"
+              >
+                <Settings size={16} />
+                <span>อนุมัติสมาชิก</span>
+              </button>
             </div>
             <button
               onClick={handleExportCSV}
@@ -718,7 +739,8 @@ export default function SuperAdminPage() {
                   ไม่มีรายชื่อรออนุมัติสิทธิ์ในขณะนี้
                 </h3>
                 <p className="text-xs text-slate-400 dark:text-zinc-500">
-                  นักเรียนนักศึกษาจะได้รับการอนุมัติอัตโนมัติ ส่วนครูและบุคคลภายนอกจะมาแสดงที่นี่เมื่อสมัครเข้ามาใหม่
+                  นักเรียนนักศึกษาจะได้รับการอนุมัติอัตโนมัติ
+                  ส่วนครูและบุคคลภายนอกจะมาแสดงที่นี่เมื่อสมัครเข้ามาใหม่
                 </p>
               </div>
             ) : (
@@ -771,7 +793,7 @@ export default function SuperAdminPage() {
                             onChange={(e) => changeRole(user._id, e.target.value, user.name)}
                             className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
                           >
-                            {roles.map(roleKey => (
+                            {roles.map((roleKey) => (
                               <option key={roleKey} value={roleKey}>
                                 {roleLabels[roleKey] || roleKey.toUpperCase()}
                               </option>
@@ -868,20 +890,22 @@ export default function SuperAdminPage() {
           {/* Category Tabs */}
           <div className="px-4 pt-2 pb-0 flex items-center gap-2 overflow-x-auto scrollbar-hide">
             <button
-              onClick={() => handleCategoryChange('all')}
+              onClick={() => handleCategoryChange("all")}
               className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
-                selectedCategory === 'all'
-                  ? 'bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20'
-                  : 'bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600'
+                selectedCategory === "all"
+                  ? "bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20"
+                  : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
               }`}
             >
               <span className="text-sm">👥</span>
               <span>ทั้งหมด</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
-                selectedCategory === 'all'
-                  ? 'bg-white/20 text-white'
-                  : 'bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
-              }`}>
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
+                  selectedCategory === "all"
+                    ? "bg-white/20 text-white"
+                    : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
+                }`}
+              >
                 {Object.values(roleCounts).reduce((a, b) => a + b, 0)}
               </span>
             </button>
@@ -895,16 +919,18 @@ export default function SuperAdminPage() {
                   onClick={() => handleCategoryChange(roleKey)}
                   className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
                     isActive
-                      ? 'bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20'
-                      : 'bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600'
+                      ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20"
+                      : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
                   }`}
                 >
                   <span>{roleLabels[roleKey] || roleKey}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
-                    isActive
-                      ? 'bg-white/20 text-white'
-                      : 'bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
-                  }`}>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
+                      isActive
+                        ? "bg-white/20 text-white"
+                        : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
+                    }`}
+                  >
                     {count}
                   </span>
                 </button>
@@ -913,155 +939,310 @@ export default function SuperAdminPage() {
           </div>
 
           <div className="overflow-x-auto overflow-y-visible">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-slate-50/50 dark:bg-zinc-950/50 text-slate-400 dark:text-zinc-500 text-xs uppercase font-bold tracking-widest">
-                  <th className="p-4 text-center w-24">ลำดับ</th>
-                  <th className="p-4">ข้อมูลบุคลากร</th>
-                  <th className="p-4 text-center">สิทธิ์การใช้งาน</th>
-                  <th className="p-4 text-center">สังกัด / แผนก</th>
-                  <th className="p-4 text-center">สถานะ</th>
-                  <th className="p-4 text-right">การจัดการ</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 dark:divide-zinc-800/50">
-                {loading && users.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="p-12 text-center">
-                      <div className="flex flex-col items-center gap-3">
-                        <RefreshCcw className="w-8 h-8 text-blue-500 animate-spin" />
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
-                          กำลังโหลดข้อมูลบุคลากร...
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  <AnimatePresence mode="popLayout">
-                    {users
-                  .filter((u) => {
-                    if (selectedCategory === 'all') return true;
-                    return u.role === selectedCategory;
-                  })
-                  .map((user, index) => (
-                    <motion.tr
-                      key={user._id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      layout
-                      className="hover:bg-blue-50/30 dark:hover:bg-blue-500/2 transition-colors group"
-                    >
-                      <td className="p-4">
-                        <div className="flex flex-col items-center gap-1">
-                          <button
-                            onClick={() => moveOrder(user._id, user.orderIndex || 0, "up")}
-                            className="text-slate-300 dark:text-zinc-700 hover:text-blue-500 transition-colors"
+            {loading && users.length === 0 ? (
+              <div className="p-12 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <RefreshCcw className="w-8 h-8 text-blue-500 animate-spin" />
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+                    กำลังโหลดข้อมูลบุคลากร...
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* 🖥️ Desktop Table View */}
+                <table className="hidden md:table w-full text-left">
+                  <thead>
+                    <tr className="bg-slate-50/50 dark:bg-zinc-950/50 text-slate-400 dark:text-zinc-500 text-xs uppercase font-bold tracking-widest">
+                      <th className="p-4 text-center w-24">ลำดับ</th>
+                      <th className="p-4">ข้อมูลบุคลากร</th>
+                      <th className="p-4 text-center">สิทธิ์การใช้งาน</th>
+                      <th className="p-4 text-center">สังกัด / แผนก</th>
+                      <th className="p-4 text-center">สถานะ</th>
+                      <th className="p-4 text-right">การจัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50 dark:divide-zinc-800/50">
+                    <AnimatePresence mode="popLayout">
+                      {users
+                        .filter((u) => {
+                          if (selectedCategory === "all") return true;
+                          return u.role === selectedCategory;
+                        })
+                        .map((user, index) => (
+                          <motion.tr
+                            key={user._id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            layout
+                            className="hover:bg-blue-50/30 dark:hover:bg-blue-500/2 transition-colors group"
                           >
-                            <ChevronUp size={16} />
-                          </button>
-                          <span className="font-black text-slate-800 dark:text-white text-xl italic tabular-nums leading-none">
-                            {(index + 1).toString().padStart(2, "0")}
-                          </span>
-                          <button
-                            onClick={() => moveOrder(user._id, user.orderIndex || 0, "down")}
-                            className="text-slate-300 dark:text-zinc-700 hover:text-rose-500 transition-colors"
-                          >
-                            <ChevronDown size={16} />
-                          </button>
-                        </div>
-                      </td>
-
-                        <td className="p-4">
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <div className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors leading-tight">
-                                {user.name}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
-                                  @{user.username}
+                            <td className="p-4">
+                              <div className="flex flex-col items-center gap-1">
+                                <button
+                                  onClick={() => moveOrder(user._id, user.orderIndex || 0, "up")}
+                                  className="text-slate-300 dark:text-zinc-700 hover:text-blue-500 transition-colors"
+                                >
+                                  <ChevronUp size={16} />
+                                </button>
+                                <span className="font-black text-slate-800 dark:text-white text-xl italic tabular-nums leading-none">
+                                  {(index + 1).toString().padStart(2, "0")}
                                 </span>
-                                {!user.isActive && (
-                                  <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
-                                    รอนุมัติ
-                                  </span>
-                                )}
+                                <button
+                                  onClick={() => moveOrder(user._id, user.orderIndex || 0, "down")}
+                                  className="text-slate-300 dark:text-zinc-700 hover:text-rose-500 transition-colors"
+                                >
+                                  <ChevronDown size={16} />
+                                </button>
                               </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-4 text-center">
-                          <select
-                            value={user.role || "user"}
-                            onChange={(e) => changeRole(user._id, e.target.value, user.name)}
-                            className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
-                          >
-                            {roles.map(roleKey => (
-                                <option key={roleKey} value={roleKey}>
+                            </td>
+
+                            <td className="p-4">
+                              <div className="flex items-center gap-4">
+                                <div>
+                                  <div className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors leading-tight">
+                                    {user.name}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
+                                      @{user.username}
+                                    </span>
+                                    {!user.isActive && (
+                                      <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
+                                        รอนุมัติ
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4 text-center">
+                              <select
+                                value={user.role || "user"}
+                                onChange={(e) => changeRole(user._id, e.target.value, user.name)}
+                                className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                              >
+                                {roles.map((roleKey) => (
+                                  <option key={roleKey} value={roleKey}>
                                     {roleLabels[roleKey] || roleKey.toUpperCase()}
-                                </option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="p-4 text-center">
-                          <select
-                            value={user.department || "ไม่มีสังกัด"}
-                            onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
-                            className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
-                          >
-                            <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                            <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                            {DEPARTMENT_GROUPS.map((group) => (
-                              <optgroup key={group.label} label={group.label}>
-                                {group.options.map((opt) => (
-                                  <option key={opt.value} value={opt.value}>
-                                    {opt.label}
                                   </option>
                                 ))}
-                              </optgroup>
-                            ))}
-                          </select>
+                              </select>
+                            </td>
+                            <td className="p-4 text-center">
+                              <select
+                                value={user.department || "ไม่มีสังกัด"}
+                                onChange={(e) =>
+                                  changeDepartment(user._id, e.target.value, user.name)
+                                }
+                                className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
+                              >
+                                <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                                <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                                {DEPARTMENT_GROUPS.map((group) => (
+                                  <optgroup key={group.label} label={group.label}>
+                                    {group.options.map((opt) => (
+                                      <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="p-4 text-center">
+                              <button
+                                onClick={() => toggleActive(user._id, user.isActive, user.name)}
+                                className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
+                              >
+                                <div
+                                  className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
+                                />
+                              </button>
+                            </td>
+                            <td className="p-4 text-right">
+                              <div className="flex items-center justify-end gap-3  ">
+                                <button
+                                  onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
+                                  className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
+                                  title="แก้ไขข้อมูล"
+                                >
+                                  <Edit3 size={16} />
+                                </button>
+                                <button
+                                  onClick={() => deleteUser(user._id, user.name)}
+                                  className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm"
+                                  title="ลบผู้ใช้ออกจากระบบ"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        ))}
+                    </AnimatePresence>
+                    {!loading && users.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="p-12 text-center">
+                          <span className="text-slate-400 font-bold italic">
+                            ไม่พบข้อมูลที่ค้นหา
+                          </span>
                         </td>
-                      <td className="p-4 text-center">
-                          <button
-                            onClick={() => toggleActive(user._id, user.isActive, user.name)}
-                            className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
-                          >
-                            <div className={`h-5 w-5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}/>
-                          </button>
-                        </td>
-                        <td className="p-4 text-right">
-                          <div className="flex items-center justify-end gap-3  ">
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+
+                {/* 📱 Mobile Grid/Card View (md:hidden) */}
+                <div className="block md:hidden divide-y divide-slate-100 dark:divide-zinc-800/40">
+                  <AnimatePresence mode="popLayout">
+                    {users
+                      .filter((u) => {
+                        if (selectedCategory === "all") return true;
+                        return u.role === selectedCategory;
+                      })
+                      .map((user, index) => (
+                        <motion.div
+                          key={user._id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          layout
+                          className="p-2 space-y-2 hover:bg-blue-50/10 dark:hover:bg-blue-500/2 transition-colors"
+                        >
+                          {/* Top bar: Order index, Name and Action Buttons */}
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="flex items-center gap-3">
+                              {/* Order Indicator & Up/Down Sort Button */}
+                              <div className="flex items-center bg-slate-100 dark:bg-zinc-850 px-2 py-1 rounded-xl gap-1.5 border border-slate-200/50 dark:border-zinc-800">
+                                <span className="font-black text-slate-800 dark:text-white text-xs italic tabular-nums leading-none">
+                                  {(index + 1).toString().padStart(2, "0")}
+                                </span>
+                                <div className="flex flex-col gap-0.5 border-l border-slate-200 dark:border-zinc-700 pl-1">
+                                  <button
+                                    onClick={() => moveOrder(user._id, user.orderIndex || 0, "up")}
+                                    className="text-slate-400 dark:text-zinc-650 hover:text-blue-500 transition-colors p-0.5"
+                                  >
+                                    <ChevronUp size={10} />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      moveOrder(user._id, user.orderIndex || 0, "down")
+                                    }
+                                    className="text-slate-400 dark:text-zinc-650 hover:text-rose-500 transition-colors p-0.5"
+                                  >
+                                    <ChevronDown size={10} />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="font-bold text-slate-800 dark:text-white text-sm sm:text-base tracking-tight uppercase leading-tight">
+                                  {user.name}
+                                </div>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
+                                    @{user.username}
+                                  </span>
+                                  {!user.isActive && (
+                                    <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
+                                      รอนุมัติ
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
+                                className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm cursor-pointer"
+                                title="แก้ไขข้อมูล"
+                              >
+                                <Edit3 size={14} />
+                              </button>
+                              <button
+                                onClick={() => deleteUser(user._id, user.name)}
+                                className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm cursor-pointer"
+                                title="ลบผู้ใช้ออกจากระบบ"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Middle inputs: Role selection and Department dropdowns */}
+                          <div className="grid grid-cols-2 gap-3 pt-1">
+                            <div className="space-y-1">
+                              <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                                สิทธิ์การใช้งาน
+                              </span>
+                              <select
+                                value={user.role || "user"}
+                                onChange={(e) => changeRole(user._id, e.target.value, user.name)}
+                                className={`w-full text-xs font-bold border-2 rounded-2xl px-3 py-2 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                              >
+                                {roles.map((roleKey) => (
+                                  <option key={roleKey} value={roleKey}>
+                                    {roleLabels[roleKey] || roleKey.toUpperCase()}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div className="space-y-1">
+                              <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                                สังกัด / แผนก
+                              </span>
+                              <select
+                                value={user.department || "ไม่มีสังกัด"}
+                                onChange={(e) =>
+                                  changeDepartment(user._id, e.target.value, user.name)
+                                }
+                                className="w-full text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-3 py-2 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer"
+                              >
+                                <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                                <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                                {DEPARTMENT_GROUPS.map((group) => (
+                                  <optgroup key={group.label} label={group.label}>
+                                    {group.options.map((opt) => (
+                                      <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Bottom Row: Status Activation Switch */}
+                          <div className="flex justify-between items-center bg-slate-50 dark:bg-zinc-900/30 p-2.5 rounded-2xl border border-slate-100 dark:border-zinc-800/40">
+                            <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                              สถานะการใช้งาน
+                            </span>
                             <button
-                              onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
-                              className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
-                              title="แก้ไขข้อมูล"
+                              onClick={() => toggleActive(user._id, user.isActive, user.name)}
+                              className={`h-7 w-12 rounded-full transition-all relative p-0.5 shadow-inner cursor-pointer ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
                             >
-                              <Edit3 size={16} />
-                            </button>
-                            <button
-                              onClick={() => deleteUser(user._id, user.name)}
-                              className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm"
-                              title="ลบผู้ใช้ออกจากระบบ"
-                            >
-                              <Trash2 size={16} />
+                              <div
+                                className={`h-4.5 w-4.5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
+                              />
                             </button>
                           </div>
-                        </td>
-                      </motion.tr>
-                    ))}
+                        </motion.div>
+                      ))}
                   </AnimatePresence>
-                )}
-                {!loading && users.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="p-12 text-center">
-                      <span className="text-slate-400 font-bold italic">ไม่พบข้อมูลที่ค้นหา</span>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  {!loading && users.length === 0 && (
+                    <div className="p-12 text-center text-slate-450 font-bold italic">
+                      ไม่พบข้อมูลที่ค้นหา
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex flex-col items-center gap-4 py-8 bg-slate-50/50 dark:bg-zinc-950/30 border-t border-slate-100 dark:border-zinc-800/50 transition-all">
@@ -1277,13 +1458,12 @@ export default function SuperAdminPage() {
               <div className="space-y-6">
                 {/* Explanation text */}
                 <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed font-bold">
-                  ระบบได้เปิดใช้งานการควบคุมการสมัครสมาชิกแบบแยกประเภทโดยอัตโนมัติ เพื่อรักษาความปลอดภัยของข้อมูลวิทยาลัยตามรายละเอียดด้านล่าง:
+                  ระบบได้เปิดใช้งานการควบคุมการสมัครสมาชิกแบบแยกประเภทโดยอัตโนมัติ
+                  เพื่อรักษาความปลอดภัยของข้อมูลวิทยาลัยตามรายละเอียดด้านล่าง:
                 </p>
 
                 {/* Policy 1: Student (Auto-Approve) */}
-                <div
-                  className="flex items-start gap-4 p-5 rounded-3xl border-2 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/10 shadow-lg shadow-emerald-500/5"
-                >
+                <div className="flex items-start gap-4 p-5 rounded-3xl border-2 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/10 shadow-lg shadow-emerald-500/5">
                   <div className="p-3 rounded-2xl bg-emerald-500 text-white">
                     <CheckCircle2 size={20} />
                   </div>
@@ -1297,15 +1477,15 @@ export default function SuperAdminPage() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
-                      นักเรียน/นักศึกษาที่ลงทะเบียนผ่านพอร์ทัลนักศึกษาจะสามารถเข้าใช้ระบบเพื่อตรวจสอบงาน ดูไฟล์ และปฏิบัติหน้าที่ทวิภาคีได้<strong>ทันทีหลังกรอกข้อมูลสำเร็จ</strong>โดยไม่ต้องรอแอดมินอนุมัติ เพื่อลดความซ้ำซ้อนและอำนวยความสะดวกสูงสุด
+                      นักเรียน/นักศึกษาที่ลงทะเบียนผ่านพอร์ทัลนักศึกษาจะสามารถเข้าใช้ระบบเพื่อตรวจสอบงาน
+                      ดูไฟล์ และปฏิบัติหน้าที่ทวิภาคีได้<strong>ทันทีหลังกรอกข้อมูลสำเร็จ</strong>
+                      โดยไม่ต้องรอแอดมินอนุมัติ เพื่อลดความซ้ำซ้อนและอำนวยความสะดวกสูงสุด
                     </p>
                   </div>
                 </div>
 
                 {/* Policy 2: Teachers & External Users (Admin Approval) */}
-                <div
-                  className="flex items-start gap-4 p-5 rounded-3xl border-2 border-rose-500/30 bg-rose-500/5 dark:bg-rose-950/10 shadow-lg shadow-rose-500/5"
-                >
+                <div className="flex items-start gap-4 p-5 rounded-3xl border-2 border-rose-500/30 bg-rose-500/5 dark:bg-rose-950/10 shadow-lg shadow-rose-500/5">
                   <div className="p-3 rounded-2xl bg-rose-500 text-white">
                     <Lock size={20} />
                   </div>
@@ -1319,7 +1499,12 @@ export default function SuperAdminPage() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
-                      สิทธิ์ครู/บุคลากร (Teacher / Staff) และบุคคลทั่วไป (General User) <strong>จะต้องรอการอนุมัติสิทธิ์การเข้าใช้งานจาก Super Admin ด้วยตนเองเท่านั้น</strong> โดยคุณสามารถค้นหาชื่อของพวกเขาในตารางด้านหลัง และกดปุ่มเพื่อเปลี่ยนสถานะเป็นเปิดใช้งาน
+                      สิทธิ์ครู/บุคลากร (Teacher / Staff) และบุคคลทั่วไป (General User){" "}
+                      <strong>
+                        จะต้องรอการอนุมัติสิทธิ์การเข้าใช้งานจาก Super Admin ด้วยตนเองเท่านั้น
+                      </strong>{" "}
+                      โดยคุณสามารถค้นหาชื่อของพวกเขาในตารางด้านหลัง
+                      และกดปุ่มเพื่อเปลี่ยนสถานะเป็นเปิดใช้งาน
                     </p>
                   </div>
                 </div>
@@ -1330,7 +1515,10 @@ export default function SuperAdminPage() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
                   <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
-                    สถานะการบังคับใช้: <strong className="text-rose-500">นโยบายความปลอดภัยของระบบเปิดใช้งานอยู่</strong>
+                    สถานะการบังคับใช้:{" "}
+                    <strong className="text-rose-500">
+                      นโยบายความปลอดภัยของระบบเปิดใช้งานอยู่
+                    </strong>
                   </span>
                 </div>
 
