@@ -35665,3 +35665,17 @@ To https://github.com/NutMontree/ktltc.git
 [Mon May 25 05:30:04 PM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
 [Mon May 25 05:32:01 PM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
 [Mon May 25 05:32:01 PM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main e31bc516] Auto-commit from Lenovo machine [2026-05-25 17:32:01]
+ 1 file changed, 12 insertions(+)
+[Mon May 25 05:32:01 PM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Mon May 25 05:32:02 PM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+remote: fatal error in commit_refs        
+To https://github.com/NutMontree/ktltc.git
+ ! [remote rejected]   main -> main (failure)
+error: failed to push some refs to 'https://github.com/NutMontree/ktltc.git'
+[Mon May 25 05:32:05 PM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Mon May 25 05:32:05 PM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Mon May 25 05:34:01 PM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Mon May 25 05:34:02 PM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
