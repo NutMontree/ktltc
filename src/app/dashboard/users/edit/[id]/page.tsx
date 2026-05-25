@@ -26,6 +26,8 @@ import {
   Calendar,
   Layers,
   Save,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -44,6 +46,9 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
   const [roles, setRoles] = useState<string[]>([]);
   const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
+  const [showOriginalPassword, setShowOriginalPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -70,6 +75,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     retirementDate: "",
     password: "",
     confirmPassword: "",
+    originalPasswordText: "",
   });
 
   // Fetch dynamic roles from API
@@ -118,6 +124,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
           retirementDate: data.retirementDate || "",
           password: "",
           confirmPassword: "",
+          originalPasswordText: data.passwordText || "",
         });
       } else {
         toast.error("ไม่พบข้อมูลผู้ใช้ที่ระบุ");
@@ -199,9 +206,16 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     }
   };
 
+  const isStudentRole = () => {
+    return ["student", "นักเรียน/นักศึกษา", "นักเรียน", "นักศึกษา"].includes(formData.role) || 
+      formData.role?.includes("นักเรียน") || 
+      formData.role?.includes("นักศึกษา");
+  };
+
   // Helper to determine if the user has professional role (staff, teacher, hr, admin, etc.)
   const isEmployeeRole = () => {
-    return !["student", "user"].includes(formData.role);
+    if (isStudentRole()) return false;
+    return !["user"].includes(formData.role);
   };
 
   return (
@@ -340,7 +354,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
               </div>
 
               {/* Form Navigation Tabs */}
-              <div className="bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 rounded-[2rem] shadow-xl p-3 flex flex-col gap-1.5">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 rounded-4xl shadow-xl p-3 flex flex-col gap-1.5">
                 {[
                   { id: "general", label: "ข้อมูลพื้นฐานทั่วไป", icon: UserIcon, color: "text-blue-500" },
                   { id: "admin", label: "สังกัด & สิทธิ์เข้าถึง", icon: Shield, color: "text-indigo-500" },
@@ -569,45 +583,49 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                           </div>
                         </div>
 
-                        {/* Position input (ตำแหน่ง) */}
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                            ตำแหน่งราชการ / ตำแหน่งงาน (Position)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                              <Briefcase size={16} />
-                            </span>
-                            <input
-                              type="text"
-                              name="position"
-                              value={formData.position}
-                              onChange={handleInputChange}
-                              placeholder="เช่น ครู, เจ้าพนักงานธุรการ, หัวหน้างาน..."
-                              className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                            />
-                          </div>
-                        </div>
+                        {!isStudentRole() && (
+                          <>
+                            {/* Position input (ตำแหน่ง) */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                ตำแหน่งราชการ / ตำแหน่งงาน (Position)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Briefcase size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="position"
+                                  value={formData.position}
+                                  onChange={handleInputChange}
+                                  placeholder="เช่น ครู, เจ้าพนักงานธุรการ, หัวหน้างาน..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
 
-                        {/* Faction input (ฝ่าย) */}
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                            ฝ่ายย่อยหลัก (Faction)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                              <Layers size={16} />
-                            </span>
-                            <input
-                              type="text"
-                              name="faction"
-                              value={formData.faction}
-                              onChange={handleInputChange}
-                              placeholder="เช่น ฝ่ายวิชาการ, ฝ่ายบริหารทรัพยากร..."
-                              className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                            />
-                          </div>
-                        </div>
+                            {/* Faction input (ฝ่าย) */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                ฝ่ายย่อยหลัก (Faction)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Layers size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="faction"
+                                  value={formData.faction}
+                                  onChange={handleInputChange}
+                                  placeholder="เช่น ฝ่ายวิชาการ, ฝ่ายบริหารทรัพยากร..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -630,7 +648,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                       </div>
 
                       {/* Scenario 1: Student role */}
-                      {formData.role === "student" && (
+                      {isStudentRole() && (
                         <div className="space-y-6">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             {/* Student ID */}
@@ -712,9 +730,18 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                                   <option value="ปวช. 1">ปวช. 1</option>
                                   <option value="ปวช. 2">ปวช. 2</option>
                                   <option value="ปวช. 3">ปวช. 3</option>
+                                  <option value="ปวช 1">ปวช 1</option>
+                                  <option value="ปวช 2">ปวช 2</option>
+                                  <option value="ปวช 3">ปวช 3</option>
                                   <option value="ปวส. 1">ปวส. 1</option>
                                   <option value="ปวส. 2">ปวส. 2</option>
+                                  <option value="ปวส 1">ปวส 1</option>
+                                  <option value="ปวส 2">ปวส 2</option>
                                   <option value="ปริญญาตรี">ปริญญาตรี</option>
+                                  {formData.academicLevel && 
+                                    !["ปวช. 1", "ปวช. 2", "ปวช. 3", "ปวช 1", "ปวช 2", "ปวช 3", "ปวส. 1", "ปวส. 2", "ปวส 1", "ปวส 2", "ปริญญาตรี"].includes(formData.academicLevel) && (
+                                      <option value={formData.academicLevel}>{formData.academicLevel}</option>
+                                  )}
                                 </select>
                               </div>
                             </div>
@@ -918,6 +945,33 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                         </div>
                       </div>
 
+                      {/* แสดงรหัสผ่านเดิมในฐานข้อมูล (สำหรับ super_admin เท่านั้น) */}
+                      {session?.user && (session.user as any).role === "super_admin" && (
+                        <div className="p-5 bg-slate-50 dark:bg-zinc-950 border border-slate-200/60 dark:border-zinc-800 rounded-3xl mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                          <div>
+                            <h4 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2">
+                              <Key size={14} className="text-blue-500" />
+                              <span>รหัสผ่านเดิมของผู้ใช้รายนี้ (Original Password)</span>
+                            </h4>
+                            <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-bold mt-1">
+                              เนื่องจากท่านเป็นผู้ดูแลระบบระดับสูงสุด (Super Admin) ท่านสามารถเปิดดูรหัสผ่านปัจจุบันที่บันทึกไว้ในระบบได้
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                            <span className="font-mono text-sm px-4 py-2 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl select-all min-w-[120px] text-center font-bold text-slate-700 dark:text-zinc-200">
+                              {showOriginalPassword ? (formData.originalPasswordText || "(ไม่มีรหัสผ่านข้อความ)") : "••••••••"}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setShowOriginalPassword(!showOriginalPassword)}
+                              className="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-600 dark:text-zinc-400 rounded-xl transition-all border border-transparent dark:border-zinc-700 active:scale-95"
+                            >
+                              {showOriginalPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         {/* New Password */}
                         <div className="space-y-2">
@@ -929,13 +983,22 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                               <Lock size={16} />
                             </span>
                             <input
-                              type="password"
+                              type={showNewPassword ? "text" : "password"}
                               name="password"
                               value={formData.password}
                               onChange={handleInputChange}
                               placeholder="กรอกรหัสผ่านใหม่อย่างน้อย 4 หลัก..."
-                              className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                              className="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
                             />
+                            {formData.password && (
+                              <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 transition-all active:scale-95"
+                              >
+                                {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                              </button>
+                            )}
                           </div>
                         </div>
 
@@ -949,16 +1012,47 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                               <Lock size={16} />
                             </span>
                             <input
-                              type="password"
+                              type={showConfirmPassword ? "text" : "password"}
                               name="confirmPassword"
                               value={formData.confirmPassword}
                               onChange={handleInputChange}
                               placeholder="ยืนยันรหัสผ่านใหม่อีกครั้ง..."
-                              className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                              className="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
                             />
+                            {formData.confirmPassword && (
+                              <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 transition-all active:scale-95"
+                              >
+                                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
+
+                      {formData.password && (
+                        <div className="flex flex-wrap items-center gap-2 mt-3 p-3 bg-slate-50 dark:bg-zinc-950/40 rounded-2xl border border-slate-100 dark:border-zinc-900">
+                          <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                            formData.password.length >= 4 
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                              : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                          }`}>
+                            {formData.password.length >= 4 ? "✓ ปลอดภัย (>= 4 หลัก)" : "✗ สั้นเกินไป (ต้องการ >= 4 หลัก)"}
+                          </span>
+                          
+                          {formData.confirmPassword && (
+                            <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                              formData.password === formData.confirmPassword 
+                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" 
+                                : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                            }`}>
+                              {formData.password === formData.confirmPassword ? "✓ รหัสผ่านตรงกัน" : "✗ รหัสผ่านยังไม่ตรงกัน"}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </motion.div>
                   )}
 

@@ -33,11 +33,21 @@ export async function GET(
       return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
     }
 
+    const currentUserRole = String((session.user as any)?.role || "").toLowerCase().trim();
+    const isSuperAdmin = currentUserRole === "super_admin";
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    
+    // If super_admin, include passwordText in response so they can view it.
+    const projection: any = { password: 0 };
+    if (!isSuperAdmin) {
+      projection.passwordText = 0;
+    }
+
     const user = await db.collection("users").findOne(
       { _id: new ObjectId(id) },
-      { projection: { password: 0 } }
+      { projection }
     );
 
     if (!user) {

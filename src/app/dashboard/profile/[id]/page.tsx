@@ -39,7 +39,9 @@ import {
   LeftOutlined,
   RightOutlined,
   FileImageOutlined,
-  BookOutlined
+  BookOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined
 } from "@ant-design/icons";
 import { Dropdown, Popover, message, Popconfirm, Modal } from "antd";
 import { useSession, signIn } from "next-auth/react";
@@ -233,6 +235,7 @@ export default function FriendProfilePage({
   const [activeTab, setActiveTab] = useState("โพสต์");
   const [activeAboutTab, setActiveAboutTab] = useState("ข้อมูลภาพรวม");
   const [showSettings, setShowSettings] = useState(false);
+  const [showFullStudentId, setShowFullStudentId] = useState(false);
 
   // Post states
   const [postText, setPostText] = useState("");
@@ -298,6 +301,10 @@ export default function FriendProfilePage({
     respOther: "",
     studentId: "",
     groupCode: "",
+    academicLevel: "",
+    learnerType: "",
+    studentStatus: "",
+    isInternship: false,
   });
 
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -2061,6 +2068,17 @@ export default function FriendProfilePage({
 
       case "เกี่ยวกับ": {
         const renderAboutContent = () => {
+          const userRole = (session?.user as any)?.role;
+          const displayStudentId = () => {
+            if (!formData.studentId) return "-";
+            if (isMyProfile && showFullStudentId) {
+              return formData.studentId;
+            }
+            if (formData.studentId.length > 5) {
+              return formData.studentId.slice(0, 6) + "xxxxx";
+            }
+            return "xxxxx";
+          };
           switch (activeAboutTab) {
             case "ข้อมูลภาพรวม":
               return (
@@ -2070,12 +2088,28 @@ export default function FriendProfilePage({
                       <div className="flex items-center justify-between group/item">
                         <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
                           <UserOutlined className="text-xl text-zinc-400" />
-                          <span>
-                            รหัสนักศึกษา{" "}
-                            <b className="text-zinc-900 dark:text-white">
-                              {formData.studentId || "-"}
-                            </b>
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span>
+                              รหัสนักศึกษา{" "}
+                              <b className="text-zinc-900 dark:text-white font-mono tracking-wider">
+                                {displayStudentId()}
+                              </b>
+                            </span>
+                            {isMyProfile && (
+                              <button
+                                type="button"
+                                onClick={() => setShowFullStudentId(!showFullStudentId)}
+                                className="w-6 h-6 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-blue-600 transition-all active:scale-90 shadow-sm border border-zinc-200 dark:border-zinc-700"
+                                title={showFullStudentId ? "ซ่อนรหัสนักศึกษา" : "แสดงรหัสนักศึกษา"}
+                              >
+                                {showFullStudentId ? (
+                                  <EyeInvisibleOutlined className="text-xs" />
+                                ) : (
+                                  <EyeOutlined className="text-xs" />
+                                )}
+                              </button>
+                            )}
+                          </div>
                         </div>
                           {isMyProfile && (
                             <button 
@@ -2106,6 +2140,64 @@ export default function FriendProfilePage({
                               <span>แก้ไข</span>
                             </button>
                           )}
+                      </div>
+                      {formData.academicLevel && (
+                        <div className="flex items-center justify-between group/item">
+                          <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                            <BookOutlined className="text-xl text-zinc-400" />
+                            <span>
+                              ระดับชั้น / ชั้นปี{" "}
+                              <b className="text-zinc-900 dark:text-white">
+                                {formData.academicLevel}
+                              </b>
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      {formData.learnerType && (
+                        <div className="flex items-center justify-between group/item">
+                          <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                            <GlobalOutlined className="text-xl text-zinc-400" />
+                            <span>
+                              ประเภทผู้เรียน{" "}
+                              <b className="text-zinc-900 dark:text-white">
+                                {formData.learnerType}
+                              </b>
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      {formData.studentStatus && (
+                        <div className="flex items-center justify-between group/item">
+                          <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                            <SmileOutlined className="text-xl text-zinc-400" />
+                            <span>
+                              สถานภาพนักเรียน{" "}
+                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
+                                formData.studentStatus === "กำลังศึกษา" 
+                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                  : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                              }`}>
+                                {formData.studentStatus}
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between group/item">
+                        <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                          <SafetyCertificateOutlined className="text-xl text-zinc-400" />
+                          <span>
+                            สถานะทวิภาคี{" "}
+                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
+                              formData.isInternship 
+                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                            }`}>
+                              {formData.isInternship ? "กำลังฝึกงานอยู่ 💼" : "เรียนปกติในวิทยาลัย 🏫"}
+                            </span>
+                          </span>
+                        </div>
                       </div>
                     </>
                   )}
