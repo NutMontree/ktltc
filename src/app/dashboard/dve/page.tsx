@@ -64,8 +64,6 @@ async function fetchExtractedScore(imageUrl: string): Promise<DveExtractScoreRes
 
 function formatScoreForStorage(extracted: DveExtractScoreResult | null): string {
   if (!extracted?.score) return "";
-  if (extracted.score.includes("/")) return extracted.score;
-  if (extracted.maxScore) return `${extracted.score}/${extracted.maxScore}`;
   return extracted.score;
 }
 

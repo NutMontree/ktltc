@@ -62,8 +62,6 @@ async function fetchExtractedScore(imageUrl: string): Promise<DveExtractScoreRes
 
 function formatScoreForStorage(extracted: DveExtractScoreResult | null): string {
   if (!extracted?.score) return "";
-  if (extracted.score.includes("/")) return extracted.score;
-  if (extracted.maxScore) return `${extracted.score}/${extracted.maxScore}`;
   return extracted.score;
 }
 
@@ -153,6 +151,18 @@ export function DVEStudentPortal() {
   const [isStudyCompleted, setIsStudyCompleted] = useState<boolean>(false);
   const [isSubmittingAttendance, setIsSubmittingAttendance] = useState<boolean>(false);
   const [uploadingRecordId, setUploadingRecordId] = useState<string | null>(null);
+
+  // Image proof modal state
+  const [imageModalAtt, setImageModalAtt] = useState<any | null>(null);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const openImageModal = (att: any) => {
+    setImageModalAtt(att);
+    setImageModalOpen(true);
+  };
+  const closeImageModal = () => {
+    setImageModalOpen(false);
+    setImageModalAtt(null);
+  };
 
   const handleStudentImageUpload = async (attRecord: any, file: File) => {
     if (!file || !session?.user || !activeSubject) return;
@@ -528,10 +538,10 @@ export function DVEStudentPortal() {
       const studyLimitSeconds = (activeStudyUnit.studyMinutes || 0) * 60;
       const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
       const user = session?.user as any;
-      
+
       // ตรวจสอบว่านักเรียนคนนี้มีบันทึกการเข้าเรียนในหน่วยการเรียนรู้นี้แล้วหรือไม่
       const alreadyCheckedIn = attendances.some(
-        (a) => a.unitId === currentUnitId && a.studentId === user?.id
+        (a) => a.unitId === currentUnitId && a.studentId === user?.id,
       );
 
       // หากเคยเช็คชื่อไปแล้ว (มีข้อมูลในระบบ) หรือหน่วยนี้ไม่ได้ตั้งเวลาไว้ ให้ข้ามการจับเวลาไปเลย
@@ -540,7 +550,7 @@ export function DVEStudentPortal() {
         if (studyLimitSeconds > 0) {
           setStudySecondsElapsed(studyLimitSeconds); // เติมหลอดเวลาให้เต็ม
         }
-        
+
         // ถ้าไม่เคยเช็คชื่อ (กรณีไม่มีเวลา) ถึงจะให้บันทึกอัตโนมัติ
         if (!alreadyCheckedIn) {
           handleAutoCheckin(activeStudyUnit);
@@ -1082,58 +1092,30 @@ export function DVEStudentPortal() {
                                         <span>กำลังอัปโหลด...</span>
                                       </div>
                                     ) : att.imageUrl ? (
-                                      <div className="flex items-center gap-2 justify-center">
-                                        <a
-                                          href={att.imageUrl}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          title="ดูรูปภาพหลักฐานคะแนน"
-                                        >
-                                          <img
-                                            src={att.imageUrl}
-                                            alt="Score evidence"
-                                            className="w-10 h-10 object-cover rounded-lg border border-zinc-200 dark:border-zinc-700 hover:scale-105 transition-transform"
-                                          />
-                                        </a>
-                                        <div>
-                                          <input
-                                            type="file"
-                                            accept="image/*"
-                                            id={`change-file-${att.id || att.date}`}
-                                            style={{ display: "none" }}
-                                            onChange={(e) => {
-                                              const file = e.target.files?.[0];
-                                              if (file) handleStudentImageUpload(att, file);
-                                            }}
-                                          />
-                                          <label
-                                            htmlFor={`change-file-${att.id || att.date}`}
-                                            className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-[10px] font-black rounded-lg cursor-pointer transition-colors border-0"
-                                          >
-                                            เปลี่ยนรูป
-                                          </label>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div className="flex justify-center">
-                                        <input
-                                          type="file"
-                                          accept="image/*"
-                                          id={`upload-file-${att.id || att.date}`}
-                                          style={{ display: "none" }}
-                                          onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) handleStudentImageUpload(att, file);
-                                          }}
+                                      <button
+                                        type="button"
+                                        onClick={() => openImageModal(att)}
+                                        className="group flex items-center gap-2 hover:opacity-80 transition-opacity"
+                                        title="ดูและจัดการรูปหลักฐานคะแนน"
+                                      >
+                                        <img
+                                          src={att.imageUrl}
+                                          alt="หลักฐานคะแนน"
+                                          className="w-10 h-10 object-cover rounded-lg border border-zinc-200 dark:border-zinc-700 group-hover:scale-105 transition-transform"
                                         />
-                                        <label
-                                          htmlFor={`upload-file-${att.id || att.date}`}
-                                          className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1"
-                                        >
-                                          <Upload size={12} />
-                                          📎 อัปโหลดรูปคะแนน
-                                        </label>
-                                      </div>
+                                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold">
+                                          เปลี่ยน
+                                        </span>
+                                      </button>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={() => openImageModal(att)}
+                                        className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1"
+                                      >
+                                        <Upload size={12} />
+                                        📎 อัปโหลดรูปคะแนน
+                                      </button>
                                     )}
                                   </div>
                                 </td>
@@ -1283,57 +1265,29 @@ export function DVEStudentPortal() {
                                     <span>กำลังอัปโหลด...</span>
                                   </div>
                                 ) : att.imageUrl ? (
-                                  <div className="flex items-center gap-3">
-                                    <a
-                                      href={att.imageUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      <img
-                                        src={att.imageUrl}
-                                        alt="Score evidence"
-                                        className="w-12 h-12 object-cover rounded-lg border border-zinc-200 dark:border-zinc-700 hover:scale-105 transition-transform"
-                                      />
-                                    </a>
-                                    <div>
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        id={`mob-change-file-${att.id || att.date}`}
-                                        style={{ display: "none" }}
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) handleStudentImageUpload(att, file);
-                                        }}
-                                      />
-                                      <label
-                                        htmlFor={`mob-change-file-${att.id || att.date}`}
-                                        className="px-2.5 py-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-[10px] font-black rounded-lg cursor-pointer transition-colors block text-center"
-                                      >
-                                        เปลี่ยนรูป
-                                      </label>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="w-full sm:w-auto">
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      id={`mob-upload-file-${att.id || att.date}`}
-                                      style={{ display: "none" }}
-                                      onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) handleStudentImageUpload(att, file);
-                                      }}
+                                  <button
+                                    type="button"
+                                    onClick={() => openImageModal(att)}
+                                    className="group flex items-center gap-3 hover:opacity-80 transition-opacity"
+                                  >
+                                    <img
+                                      src={att.imageUrl}
+                                      alt="หลักฐานคะแนน"
+                                      className="w-12 h-12 object-cover rounded-lg border border-zinc-200 dark:border-zinc-700 group-hover:scale-105 transition-transform"
                                     />
-                                    <label
-                                      htmlFor={`mob-upload-file-${att.id || att.date}`}
-                                      className="w-full justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1"
-                                    >
-                                      <Upload size={12} />
-                                      📎 อัปโหลดรูปคะแนน
-                                    </label>
-                                  </div>
+                                    <span className="px-2.5 py-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-[10px] font-black rounded-lg transition-colors">
+                                      เปลี่ยนรูป
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => openImageModal(att)}
+                                    className="w-full justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1"
+                                  >
+                                    <Upload size={12} />
+                                    📎 อัปโหลดรูปคะแนน
+                                  </button>
                                 )}
                               </div>
                             </div>
@@ -1945,6 +1899,118 @@ export function DVEStudentPortal() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== IMAGE PROOF MODAL ===== */}
+      <AnimatePresence>
+        {imageModalOpen && imageModalAtt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-zinc-950/70 backdrop-blur-sm"
+              onClick={closeImageModal}
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ scale: 0.92, y: 24, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.92, y: 24, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 320, damping: 28 }}
+              className="relative z-10 w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="bg-linear-to-r from-emerald-500 to-teal-600 px-5 py-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] font-black text-white/70 uppercase tracking-widest">
+                    หลักฐานคะแนน
+                  </p>
+                  <h3 className="text-sm font-black text-white leading-tight mt-0.5">
+                    {imageModalAtt.unitTitle
+                      ? `หน่วยที่ ${imageModalAtt.unitSequence}: ${imageModalAtt.unitTitle}`
+                      : "เช็คชื่อในชั้นเรียน"}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={closeImageModal}
+                  className="p-2 bg-white/20 hover:bg-white/35 rounded-full transition-all border-0 cursor-pointer text-white flex items-center justify-center"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-5 space-y-4">
+                {/* Image preview */}
+                {imageModalAtt.imageUrl ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-full rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800">
+                      <img
+                        src={imageModalAtt.imageUrl}
+                        alt="หลักฐานคะแนน"
+                        className="w-full max-h-64 object-contain"
+                      />
+                    </div>
+                    <a
+                      href={imageModalAtt.imageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                    >
+                      <ExternalLink size={11} />
+                      เปิดรูปขนาดเต็มในแท็บใหม่
+                    </a>
+                  </div>
+                ) : (
+                  <div className="w-full h-36 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-2 text-zinc-400">
+                    <Upload size={24} className="opacity-40" />
+                    <span className="text-xs font-bold">ยังไม่มีรูปหลักฐานคะแนน</span>
+                  </div>
+                )}
+
+                {/* Upload / Replace button */}
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="modal-image-upload"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleStudentImageUpload(imageModalAtt, file);
+                        closeImageModal();
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor="modal-image-upload"
+                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-xs cursor-pointer transition-all border-0
+                      ${
+                        imageModalAtt.imageUrl
+                          ? "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                          : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/20"
+                      }`}
+                  >
+                    <Upload size={14} />
+                    {imageModalAtt.imageUrl
+                      ? "📸 เปลี่ยนรูปหลักฐานคะแนน"
+                      : "📎 อัปโหลดรูปหลักฐานคะแนน"}
+                  </label>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -7,9 +7,10 @@ export type ExtractedScore = {
   rawText?: string;
 };
 
-export function formatScoreDisplay(score: string | null, maxScore: string | null): string | null {
+export function formatScoreDisplay(score: string | null, _maxScore: string | null): string | null {
+  // Always return only the raw score string, ignoring any maxScore.
+  // This ensures the UI displays just the extracted score without the "maxScore" part.
   if (!score) return null;
-  if (maxScore) return `${score}/${maxScore}`;
   return score;
 }
 
