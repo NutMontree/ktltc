@@ -1,5 +1,6 @@
 import { createWorker, type Worker } from "tesseract.js";
 import { buildExtractedFromOcrText, type ExtractedScore } from "./parse-score-text";
+import path from "path";
 
 let workerPromise: Promise<Worker> | null = null;
 
@@ -8,6 +9,8 @@ async function getWorker(): Promise<Worker> {
     workerPromise = (async () => {
       try {
         const worker = await createWorker("tha+eng", 1, {
+          langPath: path.join(process.cwd(), "tessdata"),
+          gzip: false,
           logger: (m) => {
             if (process.env.NODE_ENV === "development") {
               console.log("[DVE OCR Worker]", m);

@@ -42,7 +42,9 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"general" | "admin" | "custom" | "security">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "admin" | "custom" | "security">(
+    "general",
+  );
 
   const [roles, setRoles] = useState<string[]>([]);
   const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
@@ -178,7 +180,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     try {
       setSaving(true);
       const updatePayload: any = { ...formData };
-      
+
       // If password field is empty, delete it so database retains original password
       if (!updatePayload.password) {
         delete updatePayload.password;
@@ -207,9 +209,11 @@ export default function EditUserPage({ params }: EditUserPageProps) {
   };
 
   const isStudentRole = () => {
-    return ["student", "นักเรียน/นักศึกษา", "นักเรียน", "นักศึกษา"].includes(formData.role) || 
-      formData.role?.includes("นักเรียน") || 
-      formData.role?.includes("นักศึกษา");
+    return (
+      ["student", "นักเรียน/นักศึกษา", "นักเรียน", "นักศึกษา"].includes(formData.role) ||
+      formData.role?.includes("นักเรียน") ||
+      formData.role?.includes("นักศึกษา")
+    );
   };
 
   // Helper to determine if the user has professional role (staff, teacher, hr, admin, etc.)
@@ -225,7 +229,6 @@ export default function EditUserPage({ params }: EditUserPageProps) {
       <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-500/3 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-4xl mx-auto space-y-6 relative z-10">
-        
         {/* Header Action bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 p-4 rounded-3xl shadow-xl">
           <div className="flex items-center gap-3">
@@ -238,7 +241,9 @@ export default function EditUserPage({ params }: EditUserPageProps) {
             <div>
               <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2">
                 <span>แก้ไขบัญชีผู้ใช้งาน</span>
-                <span className="text-blue-500 text-xs font-bold bg-blue-500/10 px-2 py-0.5 rounded-md">ADMIN PORTAL</span>
+                <span className="text-blue-500 text-xs font-bold bg-blue-500/10 px-2 py-0.5 rounded-md">
+                  ADMIN PORTAL
+                </span>
               </h1>
               <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-0.5 mt-0.5">
                 แก้ไขข้อมูลสิทธิ์และรหัสผ่านบุคลากรวิทยาลัย
@@ -294,14 +299,13 @@ export default function EditUserPage({ params }: EditUserPageProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            
             {/* Sidebar Controls / User Details card */}
             <div className="md:col-span-4 flex flex-col gap-6">
               <div className="bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 rounded-[2.5rem] shadow-xl p-6 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-6 opacity-5 dark:opacity-10 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
                   <UserIcon size={120} />
                 </div>
-                
+
                 <div className="flex flex-col items-center text-center space-y-4 relative z-10">
                   <div className="w-20 h-20 rounded-3xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-lg border border-blue-500/20">
                     <UserIcon size={36} />
@@ -317,7 +321,9 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
                   {/* Status Indicator */}
                   <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${formData.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`} />
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full ${formData.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`}
+                    />
                     <span className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest">
                       สถานะ: {formData.isActive ? "เปิดใช้งาน" : "ระงับการใช้งาน"}
                     </span>
@@ -333,7 +339,9 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                         : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20"
                     }`}
                   >
-                    {formData.isActive ? "ระงับสิทธิ์เข้าใช้ระบบ 🔒" : "เปิดอนุมัติสิทธิ์เข้าใช้งาน 🔓"}
+                    {formData.isActive
+                      ? "ระงับสิทธิ์เข้าใช้ระบบ 🔒"
+                      : "เปิดอนุมัติสิทธิ์เข้าใช้งาน 🔓"}
                   </button>
                 </div>
 
@@ -346,7 +354,10 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                   </div>
                   <div className="flex justify-between font-bold">
                     <span>สังกัด/แผนก</span>
-                    <span className="text-slate-800 dark:text-zinc-200 truncate max-w-[150px]" title={formData.department}>
+                    <span
+                      className="text-slate-800 dark:text-zinc-200 truncate max-w-[150px]"
+                      title={formData.department}
+                    >
                       {formData.department}
                     </span>
                   </div>
@@ -356,10 +367,30 @@ export default function EditUserPage({ params }: EditUserPageProps) {
               {/* Form Navigation Tabs */}
               <div className="bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 rounded-4xl shadow-xl p-3 flex flex-col gap-1.5">
                 {[
-                  { id: "general", label: "ข้อมูลพื้นฐานทั่วไป", icon: UserIcon, color: "text-blue-500" },
-                  { id: "admin", label: "สังกัด & สิทธิ์เข้าถึง", icon: Shield, color: "text-indigo-500" },
-                  { id: "custom", label: "ข้อมูลเฉพาะเจาะจง", icon: Layers, color: "text-amber-500" },
-                  { id: "security", label: "รหัสผ่าน & ความปลอดภัย", icon: Key, color: "text-rose-500" },
+                  {
+                    id: "general",
+                    label: "ข้อมูลพื้นฐานทั่วไป",
+                    icon: UserIcon,
+                    color: "text-blue-500",
+                  },
+                  {
+                    id: "admin",
+                    label: "สังกัด & สิทธิ์เข้าถึง",
+                    icon: Shield,
+                    color: "text-indigo-500",
+                  },
+                  {
+                    id: "custom",
+                    label: "ข้อมูลเฉพาะเจาะจง",
+                    icon: Layers,
+                    color: "text-amber-500",
+                  },
+                  {
+                    id: "security",
+                    label: "รหัสผ่าน & ความปลอดภัย",
+                    icon: Key,
+                    color: "text-rose-500",
+                  },
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -384,11 +415,13 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
             {/* Main Editor Form Panel */}
             <div className="md:col-span-8">
-              <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 rounded-[2.5rem] shadow-xl p-6 sm:p-8 min-h-[500px] flex flex-col relative overflow-hidden">
+              <form
+                onSubmit={handleSubmit}
+                className="bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 rounded-[2.5rem] shadow-xl p-6 sm:p-8 min-h-[500px] flex flex-col relative overflow-hidden"
+              >
                 <div className="absolute top-[-20%] left-[-20%] w-[50%] h-[50%] bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
 
                 <AnimatePresence mode="wait">
-                  
                   {/* TAB 1: General Info */}
                   {activeTab === "general" && (
                     <motion.div
@@ -528,7 +561,6 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        
                         {/* Role Selector */}
                         <div className="space-y-2">
                           <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
@@ -665,7 +697,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                                   name="studentId"
                                   value={formData.studentId}
                                   onChange={handleInputChange}
-                                  placeholder="กรอกรหัสประจำตัวนักเรียน 10 หลัก..."
+                                  placeholder="กรอกรหัสประจำตัวนักเรียน 11 หลัก..."
                                   className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
                                 />
                               </div>
@@ -738,10 +770,24 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                                   <option value="ปวส 1">ปวส 1</option>
                                   <option value="ปวส 2">ปวส 2</option>
                                   <option value="ปริญญาตรี">ปริญญาตรี</option>
-                                  {formData.academicLevel && 
-                                    !["ปวช. 1", "ปวช. 2", "ปวช. 3", "ปวช 1", "ปวช 2", "ปวช 3", "ปวส. 1", "ปวส. 2", "ปวส 1", "ปวส 2", "ปริญญาตรี"].includes(formData.academicLevel) && (
-                                      <option value={formData.academicLevel}>{formData.academicLevel}</option>
-                                  )}
+                                  {formData.academicLevel &&
+                                    ![
+                                      "ปวช. 1",
+                                      "ปวช. 2",
+                                      "ปวช. 3",
+                                      "ปวช 1",
+                                      "ปวช 2",
+                                      "ปวช 3",
+                                      "ปวส. 1",
+                                      "ปวส. 2",
+                                      "ปวส 1",
+                                      "ปวส 2",
+                                      "ปริญญาตรี",
+                                    ].includes(formData.academicLevel) && (
+                                      <option value={formData.academicLevel}>
+                                        {formData.academicLevel}
+                                      </option>
+                                    )}
                                 </select>
                               </div>
                             </div>
@@ -796,23 +842,33 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                             <div>
                               <h4 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2">
                                 <Briefcase size={14} className="text-blue-500" />
-                                <span>สถานะการฝึกงาน / ฝึกประสบการณ์วิชาชีพ (Internship Status)</span>
+                                <span>
+                                  สถานะการฝึกงาน / ฝึกประสบการณ์วิชาชีพ (Internship Status)
+                                </span>
                               </h4>
                               <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-bold mt-1 max-w-[480px]">
-                                สลับสวิตช์เพื่อระบุว่านักศึกษารายนี้อยู่ในสถานะกำลังฝึกงานภายนอกสถานประกอบการหรือไม่ (มีผลกับการแสดงผลข้อมูลทวิภาคี DVE)
+                                สลับสวิตช์เพื่อระบุว่านักศึกษารายนี้อยู่ในสถานะกำลังฝึกงานภายนอกสถานประกอบการหรือไม่
+                                (มีผลกับการแสดงผลข้อมูลทวิภาคี DVE)
                               </p>
                             </div>
-                            
+
                             <button
                               type="button"
-                              onClick={() => setFormData(prev => ({ ...prev, isInternship: !prev.isInternship }))}
+                              onClick={() =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  isInternship: !prev.isInternship,
+                                }))
+                              }
                               className={`w-full sm:w-auto px-6 py-3 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${
                                 formData.isInternship
                                   ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30"
                                   : "bg-slate-100 border-slate-200 text-slate-400 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 hover:bg-slate-200/50"
                               }`}
                             >
-                              {formData.isInternship ? "กำลังฝึกงานอยู่ 💼" : "เรียนปกติในวิทยาลัย 🏫"}
+                              {formData.isInternship
+                                ? "กำลังฝึกงานอยู่ 💼"
+                                : "เรียนปกติในวิทยาลัย 🏫"}
                             </button>
                           </div>
                         </div>
@@ -911,7 +967,8 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                             ไม่มีข้อมูลเฉพาะที่จะต้องแสดง
                           </h4>
                           <p className="text-[10px] text-slate-400 dark:text-zinc-500 max-w-[320px] mx-auto leading-relaxed">
-                            เนื่องจากสิทธิ์ผู้ใช้ของบุคคลนี้เป็น "บุคคลทั่วไป" ระบบจึงไม่ต้องการฟิลด์กรอกข้อมูลทางการศึกษาหรือประวัติการรับราชการเพิ่มเติม
+                            เนื่องจากสิทธิ์ผู้ใช้ของบุคคลนี้เป็น "บุคคลทั่วไป"
+                            ระบบจึงไม่ต้องการฟิลด์กรอกข้อมูลทางการศึกษาหรือประวัติการรับราชการเพิ่มเติม
                           </p>
                         </div>
                       )}
@@ -938,9 +995,12 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                       <div className="p-4 bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 rounded-3xl flex items-start gap-3.5 mb-6">
                         <Lock className="text-amber-500 shrink-0 mt-0.5" size={16} />
                         <div className="text-xs">
-                          <h4 className="font-black text-amber-600 dark:text-amber-500 uppercase tracking-tight">ข้อแนะนำความปลอดภัย</h4>
+                          <h4 className="font-black text-amber-600 dark:text-amber-500 uppercase tracking-tight">
+                            ข้อแนะนำความปลอดภัย
+                          </h4>
                           <p className="text-slate-500 dark:text-zinc-400 leading-relaxed font-bold mt-1">
-                            หากไม่ต้องการเปลี่ยนรหัสผ่านของสมาชิกรายนี้ ให้เว้นช่องป้อนข้อมูลทั้ง 2 ช่องด้านล่างนี้ว่างไว้ ระบบจะไม่เข้าไปยุ่งกับรหัสผ่านเดิมของผู้ใช้
+                            หากไม่ต้องการเปลี่ยนรหัสผ่านของสมาชิกรายนี้ ให้เว้นช่องป้อนข้อมูลทั้ง 2
+                            ช่องด้านล่างนี้ว่างไว้ ระบบจะไม่เข้าไปยุ่งกับรหัสผ่านเดิมของผู้ใช้
                           </p>
                         </div>
                       </div>
@@ -954,12 +1014,15 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                               <span>รหัสผ่านเดิมของผู้ใช้รายนี้ (Original Password)</span>
                             </h4>
                             <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-bold mt-1">
-                              เนื่องจากท่านเป็นผู้ดูแลระบบระดับสูงสุด (Super Admin) ท่านสามารถเปิดดูรหัสผ่านปัจจุบันที่บันทึกไว้ในระบบได้
+                              เนื่องจากท่านเป็นผู้ดูแลระบบระดับสูงสุด (Super Admin)
+                              ท่านสามารถเปิดดูรหัสผ่านปัจจุบันที่บันทึกไว้ในระบบได้
                             </p>
                           </div>
                           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                             <span className="font-mono text-sm px-4 py-2 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl select-all min-w-[120px] text-center font-bold text-slate-700 dark:text-zinc-200">
-                              {showOriginalPassword ? (formData.originalPasswordText || "(ไม่มีรหัสผ่านข้อความ)") : "••••••••"}
+                              {showOriginalPassword
+                                ? formData.originalPasswordText || "(ไม่มีรหัสผ่านข้อความ)"
+                                : "••••••••"}
                             </span>
                             <button
                               type="button"
@@ -1034,41 +1097,48 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
                       {formData.password && (
                         <div className="flex flex-wrap items-center gap-2 mt-3 p-3 bg-slate-50 dark:bg-zinc-950/40 rounded-2xl border border-slate-100 dark:border-zinc-900">
-                          <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                            formData.password.length >= 4 
-                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
-                              : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                          }`}>
-                            {formData.password.length >= 4 ? "✓ ปลอดภัย (>= 4 หลัก)" : "✗ สั้นเกินไป (ต้องการ >= 4 หลัก)"}
+                          <span
+                            className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                              formData.password.length >= 4
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                            }`}
+                          >
+                            {formData.password.length >= 4
+                              ? "✓ ปลอดภัย (>= 4 หลัก)"
+                              : "✗ สั้นเกินไป (ต้องการ >= 4 หลัก)"}
                           </span>
-                          
+
                           {formData.confirmPassword && (
-                            <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                              formData.password === formData.confirmPassword 
-                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" 
-                                : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                            }`}>
-                              {formData.password === formData.confirmPassword ? "✓ รหัสผ่านตรงกัน" : "✗ รหัสผ่านยังไม่ตรงกัน"}
+                            <span
+                              className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                                formData.password === formData.confirmPassword
+                                  ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                  : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                              }`}
+                            >
+                              {formData.password === formData.confirmPassword
+                                ? "✓ รหัสผ่านตรงกัน"
+                                : "✗ รหัสผ่านยังไม่ตรงกัน"}
                             </span>
                           )}
                         </div>
                       )}
                     </motion.div>
                   )}
-
                 </AnimatePresence>
 
                 {/* Subtext info */}
                 <div className="mt-auto pt-6 border-t border-slate-50 dark:border-zinc-800/60 flex items-center justify-between text-[10px] text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-widest">
-                  <span className="flex items-center gap-1.5"><AlertCircle size={12} /> ข้อมูลจะอัปเดตทันทีหลังกดปุ่มบันทึก</span>
+                  <span className="flex items-center gap-1.5">
+                    <AlertCircle size={12} /> ข้อมูลจะอัปเดตทันทีหลังกดปุ่มบันทึก
+                  </span>
                   <span>v2.0 • KTLTC SECURE</span>
                 </div>
               </form>
             </div>
-
           </div>
         )}
-
       </div>
     </div>
   );

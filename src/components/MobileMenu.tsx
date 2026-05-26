@@ -346,7 +346,9 @@ export default function MobileMenu({
                         </Link>
                       )}
 
-                      {(permissions?.access_dve_teacher || isSuperAdmin || roleLower === "teacher") && (
+                      {(permissions?.access_dve_teacher ||
+                        isSuperAdmin ||
+                        roleLower === "teacher") && (
                         <Link
                           href="/dashboard/dve"
                           onClick={closeMenu}
@@ -356,13 +358,15 @@ export default function MobileMenu({
                         </Link>
                       )}
 
-                      {(permissions?.access_dve_student || roleLower === "student" || isSuperAdmin) && (
+                      {(permissions?.access_dve_student ||
+                        roleLower === "student" ||
+                        isSuperAdmin) && (
                         <Link
                           href="/dashboard/dve/student"
                           onClick={closeMenu}
                           className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/dve/student" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
                         >
-                          <BookOpen className="w-5 h-5" /> แดชบอร์ด (นักเรียน/นักศึกษา)
+                          <BookOpen className="w-5 h-5" /> ศูนย์การศึกษาระบบทวิภาคี
                         </Link>
                       )}
 

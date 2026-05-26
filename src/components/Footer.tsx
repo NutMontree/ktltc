@@ -189,7 +189,7 @@ export default async function Footer() {
               rel="noopener noreferrer"
               className="font-bold text-white hover:text-blue-400 transition-colors ml-1"
             >
-              All M Min
+              AllMaster
             </a>
           </p>
           {/* --- ลิงก์นโยบายต่างๆ --- */}

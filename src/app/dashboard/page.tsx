@@ -26,6 +26,7 @@ import {
   ClipboardList,
   UserCog,
   CalendarCheck,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -773,9 +774,12 @@ export default function DashboardLoader() {
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 flex items-center gap-4">
-                  <Clock className="w-4 h-4" /> สำหรับนักเรียน นักศึกษา
+                  <Clock className="w-4 h-4" /> สำหรับนักเรียน นักศึกษา (Student Workspace)
                   <span className="h-px bg-indigo-500/10 flex-1" />
                 </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  พื้นที่เข้าใช้งานการเช็คชื่อเข้าเรียน ตารางเรียน และระบบแชทติดต่อสื่อสาร
+                </span>
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -786,6 +790,23 @@ export default function DashboardLoader() {
                   desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
                   variants={item}
                 />
+
+                <ActionCard
+                  href="/dashboard/dve/student"
+                  title="ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)"
+                  icon={BookOpen}
+                  desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
+                  variants={item}
+                />
+
+                <ActionCard
+                  href="/dashboard/chat"
+                  title="กล่องข้อความ"
+                  icon={MessageSquare}
+                  desc="ระบบติดต่อสื่อสาร ส่งข้อความ และคุยแชทประสานงานอาจารย์"
+                  variants={item}
+                />
+
                 {(["super_admin", "admin", "deputy_student_affairs"].includes(
                   ((session?.user as any)?.role || "").toLowerCase(),
                 ) ||

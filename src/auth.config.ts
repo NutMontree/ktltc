@@ -88,13 +88,16 @@ const callbacks: NextAuthConfig["callbacks"] = {
       const role = (auth?.user as any)?.role?.toLowerCase();
 
       // สิทธิ์พื้นฐานอย่าง 'student' หรือ 'user' ไม่มีสิทธิ์เข้าถึงหน้าควบคุมระบบ (Dashboard/Admin) ใดๆ ทั้งสิ้น
-      // ยกเว้นหน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat), หน้าสมาชิก (/dashboard/members) และหน้าทวิภาคี (/dashboard/dve)
+      // ยกเว้นหน้าแรกแดชบอร์ด (/dashboard), หน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat), หน้าสมาชิก (/dashboard/members), หน้าทวิภาคี (/dashboard/dve) และหน้าภาพรวมเสาธง (/dashboard/flagpole-dashboard)
       if (role === "student" || role === "user") {
         if (
+          pathname !== "/dashboard" &&
+          pathname !== "/dashboard/" &&
           !pathname.startsWith("/dashboard/profile") &&
           !pathname.startsWith("/dashboard/chat") &&
           !pathname.startsWith("/dashboard/members") &&
-          !pathname.startsWith("/dashboard/dve")
+          !pathname.startsWith("/dashboard/dve") &&
+          !pathname.startsWith("/dashboard/flagpole-dashboard")
         ) {
           return Response.redirect(new URL("/", nextUrl));
         }
@@ -123,25 +126,31 @@ const callbacks: NextAuthConfig["callbacks"] = {
 
         if (callbackUrl) {
           if (role === "student") {
-            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student, หน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก หรือทวิภาคี ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าแรก
+            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student, หน้าแรกแดชบอร์ด, หน้าภาพรวมเสาธง, หน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก หรือทวิภาคี ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าแรก
             if (
               callbackUrl.startsWith("/student") ||
               callbackUrl.startsWith("/dashboard/profile") ||
               callbackUrl.startsWith("/dashboard/chat") ||
               callbackUrl.startsWith("/dashboard/members") ||
-              callbackUrl.startsWith("/dashboard/dve")
+              callbackUrl.startsWith("/dashboard/dve") ||
+              callbackUrl.startsWith("/dashboard/flagpole-dashboard") ||
+              callbackUrl === "/dashboard" ||
+              callbackUrl === "/dashboard/"
             ) {
               return Response.redirect(new URL(callbackUrl, nextUrl));
             }
             return Response.redirect(new URL("/", nextUrl));
           }
-          // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin) ยกเว้นหน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก และหน้าทวิภาคี
+          // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin) ยกเว้นหน้าแรกแดชบอร์ด, หน้าภาพรวมเสาธง, หน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก และหน้าทวิภาคี
           if (
             role === "user" &&
             !callbackUrl.startsWith("/dashboard/profile") &&
             !callbackUrl.startsWith("/dashboard/chat") &&
             !callbackUrl.startsWith("/dashboard/members") &&
             !callbackUrl.startsWith("/dashboard/dve") &&
+            !callbackUrl.startsWith("/dashboard/flagpole-dashboard") &&
+            callbackUrl !== "/dashboard" &&
+            callbackUrl !== "/dashboard/" &&
             (callbackUrl.startsWith("/dashboard") ||
               callbackUrl.startsWith("/manage-roles") ||
               callbackUrl.startsWith("/attendance-"))

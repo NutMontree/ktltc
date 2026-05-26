@@ -768,7 +768,7 @@ export default function NavbarClient({
                               <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
                                 <BookOpen size={16} />
                               </div>
-                              แดชบอร์ด (นักเรียน/นักศึกษา)
+                              ศูนย์การศึกษาระบบทวิภาคี
                             </Link>
                           )}
                         </div>
