@@ -1417,7 +1417,7 @@ function DVETeacherWorkspace() {
 
                     {studentRoster.length > 0 && (
                       <>
-                        <label className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 cursor-pointer select-none border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 rounded-lg">
+                    <label className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 cursor-pointer select-none border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 rounded-lg">
                           <input
                             type="checkbox"
                             className="accent-emerald-500 w-3.5 h-3.5"
@@ -1425,15 +1425,6 @@ function DVETeacherWorkspace() {
                             onChange={(e) => setShowOnlyAttended(e.target.checked)}
                           />
                           แสดงเฉพาะคนเข้าเรียนจริงวันนี้ (ผ่าน Auto Check-in)
-                        </label>
-                        <label className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 cursor-pointer select-none border border-indigo-500/20 bg-indigo-500/5 px-2.5 py-1 rounded-lg">
-                          <input
-                            type="checkbox"
-                            className="accent-indigo-500 w-3.5 h-3.5"
-                            checked={showOnlyInternship}
-                            onChange={(e) => setShowOnlyInternship(e.target.checked)}
-                          />
-                          💼 กรองเฉพาะเด็กฝึกงาน / ฝึกประสบการณ์วิชาชีพ
                         </label>
                       </>
                     )}
@@ -1649,18 +1640,6 @@ function DVETeacherWorkspace() {
                                         )}
                                         <div className="flex flex-col gap-1">
                                           <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">{student.name}</span>
-                                          <button
-                                            type="button"
-                                            onClick={() => handleToggleInternship(student)}
-                                            title="คลิกเพื่อสลับสถานะ (ออกฝึกงาน / เรียนปกติ)"
-                                            className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[10px] font-black border transition-all duration-350 hover:scale-105 active:scale-95 cursor-pointer shadow-sm w-fit ${
-                                              student.isInternship
-                                                ? "bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
-                                                : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
-                                            }`}
-                                          >
-                                            {student.isInternship ? "💼 สถานะ: ออกฝึกงาน" : "🏫 สถานะ: เรียนปกติ"}
-                                          </button>
                                         </div>
                                       </div>
                                       
@@ -1793,18 +1772,6 @@ function DVETeacherWorkspace() {
                                 <div className="min-w-0 flex-1">
                                   <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm leading-tight flex items-center gap-1.5 flex-wrap">
                                     <span className="truncate">{student.name}</span>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleToggleInternship(student)}
-                                      title="คลิกเพื่อสลับสถานะ (ออกฝึกงาน / เรียนปกติ)"
-                                      className={`inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black border transition-all duration-350 hover:scale-105 active:scale-95 cursor-pointer shadow-sm shrink-0 ${
-                                        student.isInternship
-                                          ? "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:border-emerald-500/50"
-                                          : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-850 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-750 hover:border-zinc-400"
-                                      }`}
-                                    >
-                                      {student.isInternship ? "💼 ออกฝึกงาน" : "🏫 เรียนปกติ"}
-                                    </button>
                                   </h4>
                                   <p className="text-[10px] text-zinc-500 font-bold mt-0.5">
                                     ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม: {student.classGroupId}

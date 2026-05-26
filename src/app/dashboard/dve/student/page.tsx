@@ -152,9 +152,12 @@ export function DVEStudentPortal() {
   const [isSubmittingAttendance, setIsSubmittingAttendance] = useState<boolean>(false);
   const [uploadingRecordId, setUploadingRecordId] = useState<string | null>(null);
 
-  // Image proof modal state
+  // Submission modal state
   const [imageModalAtt, setImageModalAtt] = useState<any | null>(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  // File preview sub-modal state (opens inside submission modal)
+  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  const [filePreviewName, setFilePreviewName] = useState<string | null>(null);
   const openImageModal = (att: any) => {
     setImageModalAtt(att);
     setImageModalOpen(true);
@@ -162,6 +165,8 @@ export function DVEStudentPortal() {
   const closeImageModal = () => {
     setImageModalOpen(false);
     setImageModalAtt(null);
+    setFilePreviewUrl(null);
+    setFilePreviewName(null);
   };
 
   const handleStudentWorkUpload = async (quizId: string, file: File) => {
@@ -1960,131 +1965,148 @@ export function DVEStudentPortal() {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3.5">
+                    <div className="space-y-3">
                       {quizzes.map((quiz) => {
                         const isUploadedFile = !!quiz.fileUrl;
                         const isUploading = uploadingRecordId === quiz.id;
+                        // Built-in system quizzes: score comes from quiz submission system, no file upload needed
+                        const isBuiltIn = quiz.isBuiltIn;
 
                         return (
                           <div
                             key={quiz.id}
-                            className="bg-zinc-50 dark:bg-zinc-850/45 border border-zinc-150 dark:border-zinc-800 rounded-2xl p-4.5 space-y-4 hover:border-zinc-200 dark:hover:border-zinc-700/80 transition-all flex flex-col"
+                            className={`border rounded-2xl transition-all ${
+                              isBuiltIn
+                                ? "bg-purple-50/40 dark:bg-purple-950/10 border-purple-200/50 dark:border-purple-800/30"
+                                : "bg-zinc-50 dark:bg-zinc-850/30 border-zinc-150 dark:border-zinc-800 hover:border-emerald-200 dark:hover:border-emerald-800/50"
+                            }`}
                           >
-                            {/* Quiz Title & Indicator Row */}
-                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 text-left">
-                              <div className="space-y-1">
-                                <h5 className="text-xs font-black text-zinc-800 dark:text-zinc-200 leading-normal">
-                                  {quiz.title}
-                                </h5>
-                                <div className="flex flex-wrap gap-1.5 items-center">
-                                  <span
-                                    className={`inline-block text-[9px] font-black px-2 py-0.5 rounded-md ${
-                                      quiz.isBuiltIn
-                                        ? "bg-purple-500/10 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400"
-                                        : "bg-amber-500/10 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
-                                    }`}
-                                  >
-                                    {quiz.isBuiltIn ? "ควิซประเมินผลในระบบ" : "หัวข้อควิซภายนอก/งานมอบหมาย"}
+                            {/* Header: Quiz Title + Status */}
+                            <div className="flex items-start justify-between gap-3 p-4 pb-3">
+                              <div className="space-y-1.5 flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className={`inline-block text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                                    isBuiltIn
+                                      ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
+                                      : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                                  }`}>
+                                    {isBuiltIn ? "🧠 ควิซในระบบ" : "🔗 งานภายนอก"}
                                   </span>
                                   {quiz.deadline && (
-                                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
-                                      กำหนดส่ง: {formatThaiDateDisplay(quiz.deadline)}
+                                    <span className="text-[8px] text-zinc-400 font-bold bg-zinc-100 dark:bg-zinc-800/70 px-2 py-0.5 rounded-full">
+                                      📅 กำหนดส่ง: {formatThaiDateDisplay(quiz.deadline)}
                                     </span>
                                   )}
                                 </div>
+                                <h5 className="text-xs font-black text-zinc-800 dark:text-zinc-150 leading-normal">
+                                  {quiz.title}
+                                </h5>
                               </div>
 
-                              {/* Submitted status badge */}
                               <div className="shrink-0">
                                 {quiz.isSubmitted ? (
-                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.8 rounded-full text-[9px] font-black bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-500/25 shadow-2xs">
-                                    <CheckCircle size={10} />
-                                    <span>ส่งงานเรียบร้อย</span>
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black bg-emerald-500 text-white shadow-sm">
+                                    <CheckCircle size={9} />
+                                    <span>ส่งแล้ว</span>
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.8 rounded-full text-[9px] font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border dark:border-zinc-750">
-                                    <Clock size={10} />
-                                    <span>ยังไม่ส่งงาน</span>
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black bg-zinc-200 dark:bg-zinc-750 text-zinc-500 dark:text-zinc-400">
+                                    <Clock size={9} />
+                                    <span>ยังไม่ส่ง</span>
                                   </span>
                                 )}
                               </div>
                             </div>
 
-                            {/* Submitted file list / detail card */}
-                            {quiz.fileUrl && (
-                              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800/80 rounded-xl p-3 flex items-center justify-between gap-3 text-left">
-                                <div className="flex items-center gap-2 overflow-hidden">
-                                  <FolderOpen size={16} className="text-emerald-500 shrink-0" />
-                                  <span className="text-[11px] text-zinc-650 dark:text-zinc-300 font-black truncate max-w-[280px]">
-                                    {quiz.fileName || "เอกสารหลักฐานแนบ"}
-                                  </span>
+                            {/* Built-in quiz: show score info only, no file upload */}
+                            {isBuiltIn ? (
+                              <div className="mx-4 mb-4 bg-white dark:bg-zinc-900 border border-purple-100 dark:border-purple-900/40 rounded-xl p-3 flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
+                                  <Award size={14} className="text-purple-600 dark:text-purple-400" />
                                 </div>
-                                <a
-                                  href={quiz.fileUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-750 text-zinc-600 dark:text-zinc-300 text-[10px] font-black rounded-lg transition-all cursor-pointer border-0 shrink-0"
-                                >
-                                  <Download size={10} />
-                                  <span>เปิดดูไฟล์</span>
-                                </a>
+                                <div>
+                                  <p className="text-[10px] font-black text-zinc-700 dark:text-zinc-300">
+                                    คะแนนของควิซนี้บันทึกจากระบบตรวจอัตโนมัติ
+                                  </p>
+                                  <p className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold mt-0.5">
+                                    ไม่ต้องแนบไฟล์เพิ่มเติม — ระบบจะคำนวณคะแนนให้อัตโนมัติ
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="border-t border-dashed border-zinc-200 dark:border-zinc-800/80 mx-3 pt-3 pb-4 px-1 space-y-3">
+                                {/* Uploaded file row */}
+                                {isUploadedFile && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFilePreviewUrl(quiz.fileUrl);
+                                      setFilePreviewName(quiz.fileName || "เอกสารหลักฐานแนบ");
+                                    }}
+                                    className="w-full flex items-center gap-3 bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-400 dark:hover:border-emerald-600/70 rounded-xl px-3 py-2.5 transition-all group cursor-pointer"
+                                  >
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                      <FolderOpen size={15} className="text-emerald-600 dark:text-emerald-400" />
+                                    </div>
+                                    <span className="text-[11px] text-zinc-700 dark:text-zinc-300 font-black truncate flex-1 text-left">
+                                      {quiz.fileName || "เอกสารหลักฐานแนบ"}
+                                    </span>
+                                    <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-lg shrink-0 border border-emerald-200 dark:border-emerald-800/50 group-hover:bg-emerald-100 transition-colors">
+                                      🔍 ดูไฟล์
+                                    </span>
+                                  </button>
+                                )}
+
+                                {/* Upload controls row */}
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                  <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500">
+                                    {isUploadedFile ? "🔄 เปลี่ยน/อัปเดตไฟล์:" : "📎 แนบไฟล์งานยืนยัน:"}
+                                  </span>
+                                  <div className="flex gap-2 flex-wrap">
+                                    {isUploading ? (
+                                      <div className="flex items-center gap-1.5 text-xs text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg">
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-500" />
+                                        <span>กำลังอัปโหลด...</span>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        {quiz.googleFormUrl && (
+                                          <a
+                                            href={quiz.googleFormUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20 hover:bg-violet-500/20 transition-all"
+                                          >
+                                            <ExternalLink size={10} />
+                                            <span>เปิดทำควิซภายนอก</span>
+                                          </a>
+                                        )}
+                                        <input
+                                          type="file"
+                                          id={`quiz-upload-${quiz.id}`}
+                                          className="hidden"
+                                          onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleStudentWorkUpload(quiz.id, file);
+                                          }}
+                                        />
+                                        <label
+                                          htmlFor={`quiz-upload-${quiz.id}`}
+                                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black cursor-pointer border transition-all ${
+                                            isUploadedFile
+                                              ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                              : "bg-emerald-500 hover:bg-emerald-600 border-emerald-500 text-white shadow-sm"
+                                          }`}
+                                        >
+                                          <Upload size={10} />
+                                          <span>{isUploadedFile ? "เปลี่ยนไฟล์" : "อัปโหลดไฟล์งาน"}</span>
+                                        </label>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             )}
-
-                            {/* Submission Upload control button */}
-                            <div className="pt-1.5 border-t border-dashed border-zinc-150 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                              <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500">
-                                {isUploadedFile ? "เปลี่ยนไฟล์งานหรืออัปเดตใหม่:" : "แนบรูปภาพหรือเอกสารยืนยัน:"}
-                              </span>
-
-                              <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
-                                {isUploading ? (
-                                  <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                                    <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-                                    <span>กำลังอัปโหลด...</span>
-                                  </div>
-                                ) : (
-                                  <>
-                                    {/* Link to external Google Form if available */}
-                                    {!quiz.isBuiltIn && quiz.googleFormUrl && (
-                                      <a
-                                        href={quiz.googleFormUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black bg-purple-500/10 text-purple-600 border border-purple-500/20 hover:bg-purple-500/20 transition-all cursor-pointer shrink-0"
-                                      >
-                                        <ExternalLink size={10} />
-                                        <span>เปิดทำควิซภายนอก</span>
-                                      </a>
-                                    )}
-
-                                    {/* Upload trigger label button */}
-                                    <input
-                                      type="file"
-                                      id={`quiz-upload-${quiz.id}`}
-                                      className="hidden"
-                                      onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) {
-                                          handleStudentWorkUpload(quiz.id, file);
-                                        }
-                                      }}
-                                    />
-                                    <label
-                                      htmlFor={`quiz-upload-${quiz.id}`}
-                                      className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black cursor-pointer border transition-all text-center shrink-0 ${
-                                        isUploadedFile
-                                          ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                                          : "bg-emerald-500 hover:bg-emerald-600 border-emerald-500 hover:border-emerald-600 text-white shadow-xs"
-                                      }`}
-                                    >
-                                      <Upload size={11} />
-                                      <span>{isUploadedFile ? "อัปโหลดเปลี่ยนไฟล์ใหม่" : "อัปโหลดไฟล์งาน"}</span>
-                                    </label>
-                                  </>
-                                )}
-                              </div>
-                            </div>
                           </div>
                         );
                       })}
@@ -2092,6 +2114,71 @@ export function DVEStudentPortal() {
                   )}
                 </div>
               </div>
+
+              {/* File Preview Sub-modal (overlay inside main modal) */}
+              {filePreviewUrl && (
+                <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex flex-col rounded-2xl overflow-hidden">
+                  <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-zinc-900 border-b border-zinc-800/80 shrink-0">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <FolderOpen size={15} className="text-emerald-400 shrink-0" />
+                      <span className="text-xs font-black text-zinc-200 truncate">{filePreviewName}</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a
+                        href={filePreviewUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black bg-zinc-700 hover:bg-zinc-600 text-zinc-200 transition-colors border border-zinc-700"
+                      >
+                        <ExternalLink size={10} />
+                        <span>เปิดในแท็บใหม่</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => { setFilePreviewUrl(null); setFilePreviewName(null); }}
+                        className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors text-xs font-black cursor-pointer border-0"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-hidden flex items-center justify-center p-4 bg-zinc-950/60 min-h-0">
+                    {/\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(filePreviewUrl) ? (
+                      <img
+                        src={filePreviewUrl}
+                        alt={filePreviewName || "ไฟล์แนบ"}
+                        className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                      />
+                    ) : /\.(pdf)(\?|$)/i.test(filePreviewUrl) ? (
+                      <iframe
+                        src={filePreviewUrl}
+                        title={filePreviewName || "ไฟล์แนบ"}
+                        className="w-full h-full rounded-xl bg-white"
+                        style={{ minHeight: "300px" }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center gap-4 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center">
+                          <FolderOpen size={28} className="text-emerald-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-zinc-200">{filePreviewName}</p>
+                          <p className="text-xs text-zinc-500 mt-1 font-bold">ไม่สามารถแสดงตัวอย่างได้</p>
+                        </div>
+                        <a
+                          href={filePreviewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black transition-colors"
+                        >
+                          <Download size={13} />
+                          ดาวน์โหลดไฟล์
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Footer */}
               <div className="px-6 py-4.5 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-150 dark:border-zinc-800/80 flex justify-end shrink-0">
