@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { title, message, targetDepartments, targetRoles, targetAll } = body;
+    const { title, message, targetDepartments, targetRoles, targetAll, targetUrl } = body;
 
     if (!title || !message) {
       return NextResponse.json({ error: "Title and message are required" }, { status: 400 });
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
       from: senderId,
       fromName: sender?.name || "ผู้ดูแลระบบสูงสุด",
       fromImage: sender?.image || null,
-      targetUrl: "/dashboard/notifications",
+      targetUrl: targetUrl || "/dashboard/notifications",
       createdAt: new Date(),
     }));
 

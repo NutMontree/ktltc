@@ -42,7 +42,7 @@ import {
   BookOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Popover, message, Popconfirm, Modal } from "antd";
 import { useSession, signIn } from "next-auth/react";
@@ -72,14 +72,9 @@ import { CSS } from "@dnd-kit/utilities";
 
 // Sortable Item Component for dnd-kit
 const SortableItem = ({ item, idx, onRemove }: any) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -153,9 +148,7 @@ const ProfileModal = ({
           className="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
         >
           <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
-            <h3 className="text-xl font-black text-zinc-900 dark:text-white">
-              {title}
-            </h3>
+            <h3 className="text-xl font-black text-zinc-900 dark:text-white">{title}</h3>
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200"
@@ -163,9 +156,7 @@ const ProfileModal = ({
               <CloseOutlined className="w-5 h-5" />
             </button>
           </div>
-          <div className="p-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
-            {children}
-          </div>
+          <div className="p-6 max-h-[70vh] overflow-y-auto custom-scrollbar">{children}</div>
           <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-800/50 flex justify-end gap-3">
             <button
               onClick={onClose}
@@ -188,11 +179,7 @@ const ProfileModal = ({
   </AnimatePresence>
 );
 
-export default function FriendProfilePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function FriendProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const { data: session } = useSession();
@@ -244,9 +231,7 @@ export default function FriendProfilePage({
 
   // Post states
   const [postText, setPostText] = useState("");
-  const [postImagePreviews, setPostImagePreviews] = useState<
-    { id: string; src: string }[]
-  >([]);
+  const [postImagePreviews, setPostImagePreviews] = useState<{ id: string; src: string }[]>([]);
   const [isPosting, setIsPosting] = useState(false);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [openPostMenuId, setOpenPostMenuId] = useState<string | null>(null);
@@ -327,10 +312,13 @@ export default function FriendProfilePage({
   const [shareText, setShareText] = useState("");
   const [shareTargetId, setShareTargetId] = useState<string | null>(null);
 
-  const [friendStatus, setFriendStatus] = useState<"none" | "request_sent" | "request_received" | "friends" | "me">("none");
+  const [friendStatus, setFriendStatus] = useState<
+    "none" | "request_sent" | "request_received" | "friends" | "me"
+  >("none");
   const [friendRequestId, setFriendRequestId] = useState<string | null>(null);
   const [postAudience, setPostAudience] = useState<"public" | "friends" | "private">("public");
   const [showAudienceMenu, setShowAudienceMenu] = useState(false);
+  const [imageViewer, setImageViewer] = useState<{ src: string; label: string } | null>(null);
 
   const startCamera = async () => {
     setShowCamera(true);
@@ -369,9 +357,7 @@ export default function FriendProfilePage({
     }
   };
 
-  const handleCommentImageSelect = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleCommentImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -391,7 +377,6 @@ export default function FriendProfilePage({
       console.error("Image compression error:", error);
     }
   };
-
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -588,11 +573,19 @@ export default function FriendProfilePage({
         const data = await allUsersRes.json();
         setAllUsers(data.users || []);
       }
-      
+
       await fetchFriendStatus();
 
       // Fetch validation status for students viewing their own profile
-      if (userId === id && profileData && (profileData.role === "นักเรียน/นักศึกษา" || profileData.role === "นักเรียน" || profileData.role === "นักศึกษา" || profileData.role === "student" || profileData.role?.includes("นักเรียน"))) {
+      if (
+        userId === id &&
+        profileData &&
+        (profileData.role === "นักเรียน/นักศึกษา" ||
+          profileData.role === "นักเรียน" ||
+          profileData.role === "นักศึกษา" ||
+          profileData.role === "student" ||
+          profileData.role?.includes("นักเรียน"))
+      ) {
         try {
           setLoadingValidation(true);
           const validationRes = await fetch("/api/student/validation-status");
@@ -660,8 +653,7 @@ export default function FriendProfilePage({
           prev
             ? {
                 ...prev,
-                index:
-                  (prev.index - 1 + prev.images.length) % prev.images.length,
+                index: (prev.index - 1 + prev.images.length) % prev.images.length,
               }
             : null,
         );
@@ -703,10 +695,7 @@ export default function FriendProfilePage({
     }
   };
 
-  const handleCommentSubmit = async (
-    postId: string,
-    parentId: string | null = null,
-  ) => {
+  const handleCommentSubmit = async (postId: string, parentId: string | null = null) => {
     if (!session) {
       alert("กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น");
       signIn();
@@ -809,7 +798,7 @@ export default function FriendProfilePage({
           type: "SHARE",
           shareText,
           targetId: shareTargetId || userId,
-          audience: postAudience
+          audience: postAudience,
         }),
       });
       if (res.ok) {
@@ -836,7 +825,10 @@ export default function FriendProfilePage({
           const compressedFile = await imageCompression(file, options);
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPostImagePreviews((prev) => [...prev, { id: Math.random().toString(36).substring(7), src: reader.result as string }]);
+            setPostImagePreviews((prev) => [
+              ...prev,
+              { id: Math.random().toString(36).substring(7), src: reader.result as string },
+            ]);
           };
           reader.readAsDataURL(compressedFile);
         } catch (error) {
@@ -851,13 +843,20 @@ export default function FriendProfilePage({
   };
 
   const handleCreatePost = async () => {
-    if (!session) { alert("กรุณาเข้าสู่ระบบก่อนโพสต์"); signIn(); return; }
+    if (!session) {
+      alert("กรุณาเข้าสู่ระบบก่อนโพสต์");
+      signIn();
+      return;
+    }
     if (!postText.trim() && postImagePreviews.length === 0) return;
     setIsPosting(true);
     try {
       const imageUrls: string[] = [];
       for (const item of postImagePreviews) {
-        if (item.src.startsWith("http")) { imageUrls.push(item.src); continue; }
+        if (item.src.startsWith("http")) {
+          imageUrls.push(item.src);
+          continue;
+        }
         const formData = new FormData();
         // Convert base64 to Blob
         const fetchRes = await fetch(item.src);
@@ -915,7 +914,12 @@ export default function FriendProfilePage({
   if (!formData) return null;
 
   const isMyProfile = session?.user && (session.user as any).id === id;
-  const isStudent = formData.role === "นักเรียน/นักศึกษา" || formData.role === "นักเรียน" || formData.role === "นักศึกษา" || formData.role === "student" || formData.role?.includes("นักเรียน");
+  const isStudent =
+    formData.role === "นักเรียน/นักศึกษา" ||
+    formData.role === "นักเรียน" ||
+    formData.role === "นักศึกษา" ||
+    formData.role === "student" ||
+    formData.role?.includes("นักเรียน");
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -933,17 +937,17 @@ export default function FriendProfilePage({
             <div className="lg:col-span-5 space-y-4">
               {/* Intro Section */}
               <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-900 dark:text-white mb-4">
-                  แนะนำตัว
-                </h2>
+                <h2 className="text-xl font-black text-zinc-900 dark:text-white mb-4">แนะนำตัว</h2>
                 <div className="space-y-4">
                   {/* Validation Status Indicator for Students */}
                   {isMyProfile && isStudent && (
-                    <div className={`p-4 rounded-xl border ${
-                      validationStatus?.isValid
-                        ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
-                        : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
-                    }`}>
+                    <div
+                      className={`p-4 rounded-xl border ${
+                        validationStatus?.isValid
+                          ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
+                          : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
+                      }`}
+                    >
                       {loadingValidation ? (
                         <div className="flex items-center gap-2 text-sm text-zinc-500">
                           <div className="w-4 h-4 border-2 border-zinc-300 border-t-blue-600 rounded-full animate-spin" />
@@ -957,7 +961,8 @@ export default function FriendProfilePage({
                               ข้อมูลส่วนตัวถูกต้องครบถ้วน
                             </p>
                             <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                              รหัสบัตรประจำตัวประชาชน, รหัสนักศึกษา, และรหัสกลุ่มเรียนถูกต้องตามรูปแบบ
+                              รหัสบัตรประจำตัวประชาชน, รหัสนักศึกษา,
+                              และรหัสกลุ่มเรียนถูกต้องตามรูปแบบ
                             </p>
                           </div>
                         </div>
@@ -976,7 +981,10 @@ export default function FriendProfilePage({
                           </div>
                           <ul className="ml-7 space-y-1">
                             {validationStatus.errors.map((error: string, idx: number) => (
-                              <li key={idx} className="text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
+                              <li
+                                key={idx}
+                                className="text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2"
+                              >
                                 <span className="text-rose-500">•</span>
                                 {error}
                               </li>
@@ -1041,9 +1049,7 @@ export default function FriendProfilePage({
                         <DatabaseOutlined className="text-zinc-400 text-xl" />
                         <span className="text-sm">
                           ฝ่าย{" "}
-                          <b className="text-zinc-900 dark:text-white">
-                            {formData.faction || "-"}
-                          </b>
+                          <b className="text-zinc-900 dark:text-white">{formData.faction || "-"}</b>
                         </span>
                       </div>
                     )}
@@ -1052,9 +1058,7 @@ export default function FriendProfilePage({
                         <GlobalOutlined className="text-zinc-400 text-xl" />
                         <span className="text-sm">
                           อาศัยอยู่ที่{" "}
-                          <b className="text-zinc-900 dark:text-white">
-                            {formData.currentCity}
-                          </b>
+                          <b className="text-zinc-900 dark:text-white">{formData.currentCity}</b>
                         </span>
                       </div>
                     )}
@@ -1091,7 +1095,8 @@ export default function FriendProfilePage({
                         />
                       </div>
                     ))}
-                  {userPosts.filter((p) => (p.images && p.images.length > 0) || p.image).length === 0 && (
+                  {userPosts.filter((p) => (p.images && p.images.length > 0) || p.image).length ===
+                    0 && (
                     <div className="col-span-3 py-10 text-center text-zinc-400 text-xs italic">
                       ยังไม่มีรูปภาพ
                     </div>
@@ -1117,9 +1122,8 @@ export default function FriendProfilePage({
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   {allUsers
-                    .filter(
-                      (u) =>
-                        (formData?.friends || []).some(fId => String(fId) === String(u._id))
+                    .filter((u) =>
+                      (formData?.friends || []).some((fId) => String(fId) === String(u._id)),
                     )
                     .slice(0, 9)
                     .map((u) => (
@@ -1166,22 +1170,29 @@ export default function FriendProfilePage({
                   </div>
                   <div
                     onClick={() => {
-                      if (!session) { alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้"); signIn(); return; }
+                      if (!session) {
+                        alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้");
+                        signIn();
+                        return;
+                      }
                       setActiveModal("post");
                     }}
                     className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2.5 text-zinc-500 font-medium cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                   >
-                    {isMyProfile 
+                    {isMyProfile
                       ? `${session?.user?.name?.split(" ")[0]} คุณกำลังคิดอะไรอยู่?`
-                      : `เขียนอะไรบางอย่างให้ ${formData.name?.split(" ")[0]}...`
-                    }
+                      : `เขียนอะไรบางอย่างให้ ${formData.name?.split(" ")[0]}...`}
                   </div>
                 </div>
                 <hr className="my-4 border-zinc-50 dark:border-zinc-800" />
                 <div className="flex justify-center">
                   <div
                     onClick={() => {
-                      if (!session) { alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้"); signIn(); return; }
+                      if (!session) {
+                        alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้");
+                        signIn();
+                        return;
+                      }
                       setActiveModal("post");
                       setTimeout(() => postImageInputRef.current?.click(), 100);
                     }}
@@ -1197,19 +1208,23 @@ export default function FriendProfilePage({
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-2">
                     <TeamOutlined className="text-zinc-500" />
-                    <h3 className="text-sm font-black text-zinc-900 dark:text-white">คนที่คุณอาจจะรู้จัก</h3>
+                    <h3 className="text-sm font-black text-zinc-900 dark:text-white">
+                      คนที่คุณอาจจะรู้จัก
+                    </h3>
                   </div>
                   <button className="text-zinc-400 hover:text-zinc-600 transition-colors">
                     <EllipsisOutlined />
                   </button>
                 </div>
-                
+
                 <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar snap-x">
                   {allUsers
                     .filter((u) => {
                       const myId = (session?.user as any)?.id;
                       const isMe = String(u._id) === String(myId);
-                      const isAlreadyFriend = (formData?.friends || []).some((fId: any) => String(fId) === String(u._id));
+                      const isAlreadyFriend = (formData?.friends || []).some(
+                        (fId: any) => String(fId) === String(u._id),
+                      );
                       const isDismissed = dismissedUsers.includes(String(u._id));
                       return !isMe && !isAlreadyFriend && !isDismissed;
                     })
@@ -1218,7 +1233,9 @@ export default function FriendProfilePage({
                     .map((u) => {
                       const myFriendsIds = (formData?.friends || []).map((fId: any) => String(fId));
                       const uFriendsIds = (u.friends || []).map((fId: any) => String(fId));
-                      const mutualCount = uFriendsIds.filter((fId: any) => myFriendsIds.includes(fId)).length;
+                      const mutualCount = uFriendsIds.filter((fId: any) =>
+                        myFriendsIds.includes(fId),
+                      ).length;
 
                       return (
                         <div
@@ -1271,9 +1288,9 @@ export default function FriendProfilePage({
                       );
                     })}
                 </div>
-                
+
                 <div className="mt-2 text-center">
-                  <button 
+                  <button
                     onClick={() => router.push("/dashboard/members")}
                     className="text-blue-600 font-black text-xs hover:underline"
                   >
@@ -1292,9 +1309,19 @@ export default function FriendProfilePage({
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center border dark:border-zinc-700">
-                          {(post.authorImage || post.userImage || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.image : null)) ? (
+                          {post.authorImage ||
+                          post.userImage ||
+                          (String(post.authorId?.$oid || post.authorId || "") === id
+                            ? formData.image
+                            : null) ? (
                             <img
-                              src={post.authorImage || post.userImage || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.image : "")}
+                              src={
+                                post.authorImage ||
+                                post.userImage ||
+                                (String(post.authorId?.$oid || post.authorId || "") === id
+                                  ? formData.image
+                                  : "")
+                              }
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -1302,28 +1329,49 @@ export default function FriendProfilePage({
                           )}
                         </div>
                         <div>
-                          <h4 className="font-black text-sm text-zinc-900 dark:text-white hover:underline cursor-pointer" onClick={() => router.push(`/dashboard/profile/${post.authorId?.$oid || post.authorId || id}`)}>
-                            {post.authorName || post.userName || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.name : "สมาชิก")}
+                          <h4
+                            className="font-black text-sm text-zinc-900 dark:text-white hover:underline cursor-pointer"
+                            onClick={() =>
+                              router.push(
+                                `/dashboard/profile/${post.authorId?.$oid || post.authorId || id}`,
+                              )
+                            }
+                          >
+                            {post.authorName ||
+                              post.userName ||
+                              (String(post.authorId?.$oid || post.authorId || "") === id
+                                ? formData.name
+                                : "สมาชิก")}
                           </h4>
                           <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider flex items-center gap-1">
                             {new Date(post.createdAt).toLocaleString("th-TH")} •
                             {post.audience === "friends" ? (
-                              <><TeamOutlined className="text-[8px]" /> เพื่อน</>
+                              <>
+                                <TeamOutlined className="text-[8px]" /> เพื่อน
+                              </>
                             ) : post.audience === "private" ? (
-                              <><LockOutlined className="text-[8px]" /> เฉพาะฉัน</>
+                              <>
+                                <LockOutlined className="text-[8px]" /> เฉพาะฉัน
+                              </>
                             ) : (
-                              <><GlobalOutlined className="text-[8px]" /> สาธารณะ</>
+                              <>
+                                <GlobalOutlined className="text-[8px]" /> สาธารณะ
+                              </>
                             )}
                           </p>
                         </div>
                       </div>
 
-                      {(String(post.authorId?.$oid || post.authorId || "") === String((session?.user as any)?.id) || 
-                        String(post.userId?.$oid || post.userId || "") === String((session?.user as any)?.id) || 
+                      {(String(post.authorId?.$oid || post.authorId || "") ===
+                        String((session?.user as any)?.id) ||
+                        String(post.userId?.$oid || post.userId || "") ===
+                          String((session?.user as any)?.id) ||
                         isMyProfile) && (
                         <div className="relative">
                           <button
-                            onClick={() => setOpenPostMenuId(openPostMenuId === post._id ? null : post._id)}
+                            onClick={() =>
+                              setOpenPostMenuId(openPostMenuId === post._id ? null : post._id)
+                            }
                             className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-all text-zinc-600 dark:text-zinc-300 border-2 border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 z-10"
                           >
                             <EllipsisOutlined className="text-2xl" />
@@ -1337,30 +1385,40 @@ export default function FriendProfilePage({
                                 exit={{ opacity: 0, y: 5 }}
                                 className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl shadow-2xl z-40 py-2 overflow-hidden"
                               >
-                                  {(String(post.authorId?.$oid || post.authorId || "") === String((session?.user as any)?.id)) && (
-                                    <div
-                                      onClick={() => {
-                                        setEditingPostId(post._id);
-                                        setPostText(post.content);
-                                        const images = post.images || (post.image ? [post.image] : []);
-                                        setPostImagePreviews(images.map((src: string, idx: number) => ({ id: `img-${idx}`, preview: src, src })));
-                                        setActiveModal("post");
-                                        setOpenPostMenuId(null);
-                                      }}
-                                      className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
-                                    >
-                                      <EditOutlined /> <span className="text-sm font-bold">แก้ไขโพสต์</span>
-                                    </div>
-                                  )}
+                                {String(post.authorId?.$oid || post.authorId || "") ===
+                                  String((session?.user as any)?.id) && (
                                   <div
                                     onClick={() => {
-                                      handleDeletePost(post._id);
+                                      setEditingPostId(post._id);
+                                      setPostText(post.content);
+                                      const images =
+                                        post.images || (post.image ? [post.image] : []);
+                                      setPostImagePreviews(
+                                        images.map((src: string, idx: number) => ({
+                                          id: `img-${idx}`,
+                                          preview: src,
+                                          src,
+                                        })),
+                                      );
+                                      setActiveModal("post");
                                       setOpenPostMenuId(null);
                                     }}
-                                    className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
+                                    className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
                                   >
-                                    <DeleteOutlined /> <span className="text-sm font-bold">ลบโพสต์</span>
+                                    <EditOutlined />{" "}
+                                    <span className="text-sm font-bold">แก้ไขโพสต์</span>
                                   </div>
+                                )}
+                                <div
+                                  onClick={() => {
+                                    handleDeletePost(post._id);
+                                    setOpenPostMenuId(null);
+                                  }}
+                                  className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
+                                >
+                                  <DeleteOutlined />{" "}
+                                  <span className="text-sm font-bold">ลบโพสต์</span>
+                                </div>
                               </motion.div>
                             )}
                           </AnimatePresence>
@@ -1368,17 +1426,14 @@ export default function FriendProfilePage({
                       )}
                     </div>
                     <div className="text-sm text-zinc-800 dark:text-zinc-300 leading-relaxed mb-4 whitespace-pre-wrap">
-                      {expandedPosts.includes(post._id) ||
-                      (post.content?.length || 0) <= 200 ? (
+                      {expandedPosts.includes(post._id) || (post.content?.length || 0) <= 200 ? (
                         renderContentWithLinks(post.content)
                       ) : (
                         <>
                           {renderContentWithLinks(post.content.slice(0, 200))}
                           ...{" "}
                           <span
-                            onClick={() =>
-                              setExpandedPosts((prev) => [...prev, post._id])
-                            }
+                            onClick={() => setExpandedPosts((prev) => [...prev, post._id])}
                             className="text-zinc-500 font-black cursor-pointer hover:underline ml-1"
                           >
                             ดูเพิ่มเติม
@@ -1390,44 +1445,51 @@ export default function FriendProfilePage({
                     {/* Shared Post Content */}
                     {post.sharedPostData && (
                       <div className="border dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-800/30 p-4 mb-4">
-                         <div className="flex items-center gap-2 mb-3">
-                            <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden border dark:border-zinc-600">
-                               {(post.sharedPostData.authorImage) && (
-                                 <img src={post.sharedPostData.authorImage} className="w-full h-full object-cover" />
-                               )}
-                            </div>
-                            <div>
-                               <span className="font-black text-xs text-zinc-900 dark:text-white block hover:underline cursor-pointer">
-                                 {post.sharedPostData.authorName}
-                               </span>
-                               <span className="text-[10px] text-zinc-400 font-bold">
-                                 {post.sharedPostData.createdAt ? new Date(post.sharedPostData.createdAt).toLocaleDateString("th-TH") : "เมื่อสักครู่"}
-                               </span>
-                            </div>
-                         </div>
-                         <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-3">{post.sharedPostData.content}</p>
-                         {(post.sharedPostData.image || post.sharedPostData.images?.length > 0) && (
-                            <div className="rounded-lg overflow-hidden border dark:border-zinc-700 max-h-[400px] bg-zinc-200 dark:bg-zinc-800">
-                               <img src={post.sharedPostData.image || post.sharedPostData.images[0]} className="w-full h-full object-cover" />
-                            </div>
-                         )}
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden border dark:border-zinc-600">
+                            {post.sharedPostData.authorImage && (
+                              <img
+                                src={post.sharedPostData.authorImage}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <span className="font-black text-xs text-zinc-900 dark:text-white block hover:underline cursor-pointer">
+                              {post.sharedPostData.authorName}
+                            </span>
+                            <span className="text-[10px] text-zinc-400 font-bold">
+                              {post.sharedPostData.createdAt
+                                ? new Date(post.sharedPostData.createdAt).toLocaleDateString(
+                                    "th-TH",
+                                  )
+                                : "เมื่อสักครู่"}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-3">
+                          {post.sharedPostData.content}
+                        </p>
+                        {(post.sharedPostData.image || post.sharedPostData.images?.length > 0) && (
+                          <div className="rounded-lg overflow-hidden border dark:border-zinc-700 max-h-[400px] bg-zinc-200 dark:bg-zinc-800">
+                            <img
+                              src={post.sharedPostData.image || post.sharedPostData.images[0]}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                     {/* Image Grid */}
                     {(post.images || post.image) && (
                       <div
                         className={`w-full rounded-xl overflow-hidden border dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 mb-4 grid gap-1 
-                          ${
-                            (post.images?.length || 1) === 1
-                              ? "grid-cols-1"
-                              : "grid-cols-2"
-                          }`}
+                          ${(post.images?.length || 1) === 1 ? "grid-cols-1" : "grid-cols-2"}`}
                       >
                         {(post.images || [post.image])
                           .slice(0, 4)
                           .map((img: string, idx: number, arr: string[]) => {
-                            const totalImages = (post.images || [post.image])
-                              .length;
+                            const totalImages = (post.images || [post.image]).length;
                             return (
                               <div
                                 key={idx}
@@ -1450,7 +1512,9 @@ export default function FriendProfilePage({
                                     })
                                   }
                                   className={`w-full cursor-pointer hover:scale-[1.01] transition-transform duration-500 ${
-                                    totalImages === 1 ? "h-auto object-contain" : "h-full object-cover"
+                                    totalImages === 1
+                                      ? "h-auto object-contain"
+                                      : "h-full object-cover"
                                   }`}
                                   alt={`Post ${idx}`}
                                 />
@@ -1480,10 +1544,12 @@ export default function FriendProfilePage({
 
                     <div className="flex items-center justify-between px-2 py-1 mb-2 min-h-[32px]">
                       {(post.likes?.length || 0) > 0 ? (
-                        <button 
+                        <button
                           onClick={() => {
                             if (post.likes?.length > 0) {
-                              const likedUsers = allUsers.filter(u => post.likes.includes(String(u._id?.$oid || u._id)));
+                              const likedUsers = allUsers.filter((u) =>
+                                post.likes.includes(String(u._id?.$oid || u._id)),
+                              );
                               setLikersList(likedUsers);
                               setShowLikersModal(true);
                             }
@@ -1492,14 +1558,16 @@ export default function FriendProfilePage({
                         >
                           <div className="flex -space-x-1 items-center">
                             <div className="w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 shadow-sm z-10">
-                              <LikeFilled style={{ color: 'white' }} className="text-[10px]" />
+                              <LikeFilled style={{ color: "white" }} className="text-[10px]" />
                             </div>
                           </div>
                           <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
                             {post.likes?.length || 0}
                           </span>
                         </button>
-                      ) : <div />}
+                      ) : (
+                        <div />
+                      )}
                       <div className="flex items-center gap-4 text-zinc-500 text-sm font-bold">
                         {(post.comments?.length || 0) > 0 && (
                           <span>{post.comments?.length} ความคิดเห็น</span>
@@ -1523,9 +1591,7 @@ export default function FriendProfilePage({
                       </button>
                       <button
                         onClick={() =>
-                          setCommentingPostId(
-                            commentingPostId === post._id ? null : post._id,
-                          )
+                          setCommentingPostId(commentingPostId === post._id ? null : post._id)
                         }
                         className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 font-bold text-sm text-zinc-500 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
                       >
@@ -1542,8 +1608,7 @@ export default function FriendProfilePage({
                       </button>
                     </div>
 
-                    {(post.comments?.length > 0 ||
-                      commentingPostId === post._id) && (
+                    {(post.comments?.length > 0 || commentingPostId === post._id) && (
                       <div className="mt-4 pt-4 border-t dark:border-zinc-800">
                         {/* Comment List */}
                         <div className="space-y-4 mb-6">
@@ -1553,18 +1618,15 @@ export default function FriendProfilePage({
                               const commentId = comment.id || comment._id;
                               const isCommentOwner =
                                 String(comment.userId) === String((session?.user as any)?.id) ||
-                                (comment.userId?.$oid && String(comment.userId.$oid) === String((session?.user as any)?.id));
+                                (comment.userId?.$oid &&
+                                  String(comment.userId.$oid) ===
+                                    String((session?.user as any)?.id));
                               const isEditing = editingCommentId === commentId;
                               const replies =
-                                post.comments?.filter(
-                                  (c: any) => c.parentId === commentId,
-                                ) || [];
+                                post.comments?.filter((c: any) => c.parentId === commentId) || [];
 
                               return (
-                                <div
-                                  key={comment.id || idx}
-                                  className="space-y-3"
-                                >
+                                <div key={comment.id || idx} className="space-y-3">
                                   {/* Main Comment */}
                                   <div className="flex gap-2 group/comment">
                                     <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 shadow-sm border dark:border-zinc-700">
@@ -1586,9 +1648,7 @@ export default function FriendProfilePage({
                                             <textarea
                                               value={editingCommentText}
                                               onChange={(e) =>
-                                                setEditingCommentText(
-                                                  e.target.value,
-                                                )
+                                                setEditingCommentText(e.target.value)
                                               }
                                               className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-xl px-3 py-2 outline-none text-sm resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
                                               rows={2}
@@ -1596,19 +1656,14 @@ export default function FriendProfilePage({
                                             <div className="flex gap-2">
                                               <button
                                                 onClick={() =>
-                                                  handleUpdateComment(
-                                                    post._id,
-                                                    commentId,
-                                                  )
+                                                  handleUpdateComment(post._id, commentId)
                                                 }
                                                 className="px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95"
                                               >
                                                 บันทึก
                                               </button>
                                               <button
-                                                onClick={() =>
-                                                  setEditingCommentId(null)
-                                                }
+                                                onClick={() => setEditingCommentId(null)}
                                                 className="px-4 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-full text-xs font-bold hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-all active:scale-95"
                                               >
                                                 ยกเลิก
@@ -1639,12 +1694,14 @@ export default function FriendProfilePage({
                                                 </div>
                                               )}
 
-                                              {(comment.likes?.length || 0) >
-                                                0 && (
+                                              {(comment.likes?.length || 0) > 0 && (
                                                 <div className="absolute -bottom-1.5 -right-2 flex items-center bg-white dark:bg-zinc-800 rounded-full shadow-md border dark:border-zinc-700 px-1 py-0.5 scale-75 origin-left">
                                                   <div className="flex -space-x-1">
                                                     <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center ring-1 ring-white dark:ring-zinc-800">
-                                                      <LikeFilled style={{ color: 'white' }} className="text-[8px]" />
+                                                      <LikeFilled
+                                                        style={{ color: "white" }}
+                                                        className="text-[8px]"
+                                                      />
                                                     </div>
                                                   </div>
                                                   <span className="text-[10px] font-bold text-zinc-500 ml-1">
@@ -1664,26 +1721,17 @@ export default function FriendProfilePage({
                                                         label: "แก้ไขคอมเม้น",
                                                         icon: <EditOutlined />,
                                                         onClick: () => {
-                                                          setEditingCommentId(
-                                                            commentId,
-                                                          );
-                                                          setEditingCommentText(
-                                                            comment.text,
-                                                          );
+                                                          setEditingCommentId(commentId);
+                                                          setEditingCommentText(comment.text);
                                                         },
                                                       },
                                                       {
                                                         key: "delete",
                                                         label: "ลบคอมเม้น",
-                                                        icon: (
-                                                          <DeleteOutlined />
-                                                        ),
+                                                        icon: <DeleteOutlined />,
                                                         danger: true,
                                                         onClick: () =>
-                                                          handleDeleteComment(
-                                                            post._id,
-                                                            commentId,
-                                                          ),
+                                                          handleDeleteComment(post._id, commentId),
                                                       },
                                                     ],
                                                   }}
@@ -1704,19 +1752,12 @@ export default function FriendProfilePage({
                                         <div className="flex items-center gap-4 pl-3 text-[11px] font-black text-zinc-500 dark:text-zinc-400">
                                           <span className="hover:underline cursor-pointer">
                                             {formatDistanceToNow(
-                                              new Date(
-                                                comment.createdAt || Date.now(),
-                                              ),
+                                              new Date(comment.createdAt || Date.now()),
                                               { addSuffix: false, locale: th },
                                             )}
                                           </span>
                                           <span
-                                            onClick={() =>
-                                              handleLikeComment(
-                                                post._id,
-                                                commentId,
-                                              )
-                                            }
+                                            onClick={() => handleLikeComment(post._id, commentId)}
                                             className={`hover:underline cursor-pointer ${comment.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : "text-zinc-600 dark:text-zinc-300"}`}
                                           >
                                             ถูกใจ
@@ -1743,155 +1784,169 @@ export default function FriendProfilePage({
                                     <div className="pl-10 space-y-3 relative">
                                       <div className="absolute left-4 top-0 bottom-4 w-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
 
-                                      {replies.map(
-                                        (reply: any, replyIdx: number) => (
-                                          <div
-                                            key={
-                                              reply.id || `reply-${replyIdx}`
-                                            }
-                                            className="flex gap-2 group/reply relative"
-                                          >
-                                            <div className="absolute -left-6 top-4 w-6 h-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
+                                      {replies.map((reply: any, replyIdx: number) => (
+                                        <div
+                                          key={reply.id || `reply-${replyIdx}`}
+                                          className="flex gap-2 group/reply relative"
+                                        >
+                                          <div className="absolute -left-6 top-4 w-6 h-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
 
-                                            <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 border dark:border-zinc-700">
-                                              {reply.userImage ? (
-                                                <img
-                                                  src={reply.userImage}
-                                                  className="w-full h-full object-cover"
-                                                />
-                                              ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                  <UserOutlined className="text-zinc-300 text-[8px]" />
-                                                </div>
-                                              )}
-                                            </div>
-                                            <div className="flex-1 space-y-1">
-                                              <div className="flex items-center gap-2 group">
-                                                <div className="bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl px-3 py-1.5 shadow-xs max-w-[90%]">
-                                                  <p className="text-[10px] font-black text-zinc-900 dark:text-white mb-0.5">
-                                                    {reply.userName}
-                                                  </p>
-                                                  {editingCommentId === (reply.id || reply._id) ? (
-                                                    <div className="flex-1 flex flex-col gap-2 min-w-[200px] py-1">
-                                                      <textarea
-                                                        autoFocus
-                                                        value={editingCommentText}
-                                                        onChange={(e) => setEditingCommentText(e.target.value)}
-                                                        onKeyDown={(e) => {
-                                                          if (e.key === "Enter" && !e.shiftKey) {
-                                                            e.preventDefault();
-                                                            handleUpdateComment(post._id, reply.id || reply._id);
-                                                          } else if (e.key === "Escape") {
-                                                            setEditingCommentId(null);
-                                                          }
-                                                        }}
-                                                        className="w-full bg-white dark:bg-zinc-900 rounded-lg px-3 py-1.5 outline-none text-xs resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
-                                                        rows={2}
-                                                      />
-                                                      <div className="flex gap-2">
-                                                        <button
-                                                          onClick={() => handleUpdateComment(post._id, reply.id || reply._id)}
-                                                          className="px-3 py-1 bg-blue-600 text-white rounded-full text-[10px] font-bold hover:bg-blue-700"
-                                                        >
-                                                          บันทึก
-                                                        </button>
-                                                        <button
-                                                          onClick={() => setEditingCommentId(null)}
-                                                          className="px-3 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-full text-[10px] font-bold"
-                                                        >
-                                                          ยกเลิก
-                                                        </button>
-                                                      </div>
-                                                    </div>
-                                                  ) : (
-                                                    <>
-                                                      <p className="text-[12px] text-zinc-700 dark:text-zinc-300 leading-tight">
-                                                        {reply.text}
-                                                      </p>
-                                                      {reply.image && (
-                                                        <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
-                                                          <img
-                                                            src={reply.image}
-                                                            className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
-                                                            onClick={() =>
-                                                              setSelectedImage({
-                                                                images: [reply.image],
-                                                                index: 0,
-                                                              })
-                                                            }
-                                                          />
-                                                        </div>
-                                                      )}
-                                                    </>
-                                                  )}
-                                                </div>
-                                                {(String(reply.userId) === String((session?.user as any)?.id) || 
-                                                  (reply.userId?.$oid && String(reply.userId.$oid) === String((session?.user as any)?.id))) && (
-                                                  <Dropdown
-                                                    menu={{
-                                                      items: [
-                                                        {
-                                                          key: "edit",
-                                                          label: "แก้ไข",
-                                                          icon: <EditOutlined />,
-                                                          onClick: () => {
-                                                            setEditingCommentId(reply.id || reply._id);
-                                                            setEditingCommentText(reply.text);
-                                                          }
-                                                        },
-                                                        {
-                                                          key: "delete",
-                                                          label: "ลบ",
-                                                          icon: <DeleteOutlined />,
-                                                          danger: true,
-                                                          onClick: () => handleDeleteComment(post._id, reply.id || reply._id)
+                                          <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 border dark:border-zinc-700">
+                                            {reply.userImage ? (
+                                              <img
+                                                src={reply.userImage}
+                                                className="w-full h-full object-cover"
+                                              />
+                                            ) : (
+                                              <div className="w-full h-full flex items-center justify-center">
+                                                <UserOutlined className="text-zinc-300 text-[8px]" />
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div className="flex-1 space-y-1">
+                                            <div className="flex items-center gap-2 group">
+                                              <div className="bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl px-3 py-1.5 shadow-xs max-w-[90%]">
+                                                <p className="text-[10px] font-black text-zinc-900 dark:text-white mb-0.5">
+                                                  {reply.userName}
+                                                </p>
+                                                {editingCommentId === (reply.id || reply._id) ? (
+                                                  <div className="flex-1 flex flex-col gap-2 min-w-[200px] py-1">
+                                                    <textarea
+                                                      autoFocus
+                                                      value={editingCommentText}
+                                                      onChange={(e) =>
+                                                        setEditingCommentText(e.target.value)
+                                                      }
+                                                      onKeyDown={(e) => {
+                                                        if (e.key === "Enter" && !e.shiftKey) {
+                                                          e.preventDefault();
+                                                          handleUpdateComment(
+                                                            post._id,
+                                                            reply.id || reply._id,
+                                                          );
+                                                        } else if (e.key === "Escape") {
+                                                          setEditingCommentId(null);
                                                         }
-                                                      ]
-                                                    }}
-                                                    trigger={['click']}
-                                                  >
-                                                    <button className="w-7 h-7 rounded-full bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700 flex items-center justify-center transition-all shadow-sm">
-                                                      <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400" />
-                                                    </button>
-                                                  </Dropdown>
+                                                      }}
+                                                      className="w-full bg-white dark:bg-zinc-900 rounded-lg px-3 py-1.5 outline-none text-xs resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
+                                                      rows={2}
+                                                    />
+                                                    <div className="flex gap-2">
+                                                      <button
+                                                        onClick={() =>
+                                                          handleUpdateComment(
+                                                            post._id,
+                                                            reply.id || reply._id,
+                                                          )
+                                                        }
+                                                        className="px-3 py-1 bg-blue-600 text-white rounded-full text-[10px] font-bold hover:bg-blue-700"
+                                                      >
+                                                        บันทึก
+                                                      </button>
+                                                      <button
+                                                        onClick={() => setEditingCommentId(null)}
+                                                        className="px-3 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-full text-[10px] font-bold"
+                                                      >
+                                                        ยกเลิก
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                ) : (
+                                                  <>
+                                                    <p className="text-[12px] text-zinc-700 dark:text-zinc-300 leading-tight">
+                                                      {reply.text}
+                                                    </p>
+                                                    {reply.image && (
+                                                      <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
+                                                        <img
+                                                          src={reply.image}
+                                                          className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
+                                                          onClick={() =>
+                                                            setSelectedImage({
+                                                              images: [reply.image],
+                                                              index: 0,
+                                                            })
+                                                          }
+                                                        />
+                                                      </div>
+                                                    )}
+                                                  </>
                                                 )}
                                               </div>
-                                              <div className="flex items-center gap-4 pl-2 text-[10px] font-black text-zinc-500 dark:text-zinc-400">
-                                                <span>
-                                                  {formatDistanceToNow(
-                                                    new Date(
-                                                      reply.createdAt ||
-                                                        Date.now(),
-                                                    ),
-                                                    {
-                                                      addSuffix: false,
-                                                      locale: th,
-                                                    },
-                                                  )}
-                                                </span>
-                                                <span 
-                                                  onClick={() => handleLikeComment(post._id, reply.id || reply._id)}
-                                                  className={`hover:underline cursor-pointer ${reply.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : ""}`}
-                                                >
-                                                  ถูกใจ
-                                                </span>
-                                                <span 
-                                                  onClick={() => {
-                                                    setReplyingTo({
-                                                      postId: post._id,
-                                                      commentId: commentId,
-                                                    });
-                                                    setNewCommentText("");
+                                              {(String(reply.userId) ===
+                                                String((session?.user as any)?.id) ||
+                                                (reply.userId?.$oid &&
+                                                  String(reply.userId.$oid) ===
+                                                    String((session?.user as any)?.id))) && (
+                                                <Dropdown
+                                                  menu={{
+                                                    items: [
+                                                      {
+                                                        key: "edit",
+                                                        label: "แก้ไข",
+                                                        icon: <EditOutlined />,
+                                                        onClick: () => {
+                                                          setEditingCommentId(
+                                                            reply.id || reply._id,
+                                                          );
+                                                          setEditingCommentText(reply.text);
+                                                        },
+                                                      },
+                                                      {
+                                                        key: "delete",
+                                                        label: "ลบ",
+                                                        icon: <DeleteOutlined />,
+                                                        danger: true,
+                                                        onClick: () =>
+                                                          handleDeleteComment(
+                                                            post._id,
+                                                            reply.id || reply._id,
+                                                          ),
+                                                      },
+                                                    ],
                                                   }}
-                                                  className="hover:underline cursor-pointer"
+                                                  trigger={["click"]}
                                                 >
-                                                  ตอบกลับ
-                                                </span>
-                                              </div>
+                                                  <button className="w-7 h-7 rounded-full bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700 flex items-center justify-center transition-all shadow-sm">
+                                                    <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400" />
+                                                  </button>
+                                                </Dropdown>
+                                              )}
+                                            </div>
+                                            <div className="flex items-center gap-4 pl-2 text-[10px] font-black text-zinc-500 dark:text-zinc-400">
+                                              <span>
+                                                {formatDistanceToNow(
+                                                  new Date(reply.createdAt || Date.now()),
+                                                  {
+                                                    addSuffix: false,
+                                                    locale: th,
+                                                  },
+                                                )}
+                                              </span>
+                                              <span
+                                                onClick={() =>
+                                                  handleLikeComment(post._id, reply.id || reply._id)
+                                                }
+                                                className={`hover:underline cursor-pointer ${reply.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : ""}`}
+                                              >
+                                                ถูกใจ
+                                              </span>
+                                              <span
+                                                onClick={() => {
+                                                  setReplyingTo({
+                                                    postId: post._id,
+                                                    commentId: commentId,
+                                                  });
+                                                  setNewCommentText("");
+                                                }}
+                                                className="hover:underline cursor-pointer"
+                                              >
+                                                ตอบกลับ
+                                              </span>
                                             </div>
                                           </div>
-                                        ),
-                                      )}
+                                        </div>
+                                      ))}
                                     </div>
                                   )}
 
@@ -1919,17 +1974,10 @@ export default function FriendProfilePage({
                                             <input
                                               autoFocus
                                               value={newCommentText}
-                                              onChange={(e) =>
-                                                setNewCommentText(
-                                                  e.target.value,
-                                                )
-                                              }
+                                              onChange={(e) => setNewCommentText(e.target.value)}
                                               onKeyDown={(e) =>
                                                 e.key === "Enter" &&
-                                                handleCommentSubmit(
-                                                  post._id,
-                                                  commentId,
-                                                )
+                                                handleCommentSubmit(post._id, commentId)
                                               }
                                               placeholder="เขียนตอบกลับ..."
                                               className="flex-1 bg-transparent outline-none text-[13px] placeholder:text-zinc-400 min-w-[100px]"
@@ -1941,9 +1989,7 @@ export default function FriendProfilePage({
                                                   className="w-full h-full object-cover rounded-lg border-2 border-white dark:border-zinc-700 shadow-sm"
                                                 />
                                                 <button
-                                                  onClick={() =>
-                                                    setCommentImage(null)
-                                                  }
+                                                  onClick={() => setCommentImage(null)}
                                                   className="absolute -top-2 -right-2 w-6 h-6 bg-zinc-800 text-white rounded-full flex items-center justify-center text-[12px] hover:bg-zinc-700 shadow-md transition-all"
                                                 >
                                                   <CloseOutlined />
@@ -1974,10 +2020,7 @@ export default function FriendProfilePage({
                                                         key={emoji}
                                                         className="text-xl cursor-pointer hover:scale-125 transition-transform"
                                                         onClick={() =>
-                                                          setNewCommentText(
-                                                            (prev) =>
-                                                              prev + emoji,
-                                                          )
+                                                          setNewCommentText((prev) => prev + emoji)
                                                         }
                                                       >
                                                         {emoji}
@@ -2003,10 +2046,7 @@ export default function FriendProfilePage({
                                             </div>
                                             <button
                                               onClick={() =>
-                                                handleCommentSubmit(
-                                                  post._id,
-                                                  commentId,
-                                                )
+                                                handleCommentSubmit(post._id, commentId)
                                               }
                                               className={`transition-all ${newCommentText.trim() || commentImage ? "text-blue-600 scale-110" : "text-zinc-300"}`}
                                             >
@@ -2046,12 +2086,9 @@ export default function FriendProfilePage({
                             <div className="flex-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl px-4 py-2 relative border dark:border-zinc-700/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all">
                               <input
                                 value={newCommentText}
-                                onChange={(e) =>
-                                  setNewCommentText(e.target.value)
-                                }
+                                onChange={(e) => setNewCommentText(e.target.value)}
                                 onKeyDown={(e) =>
-                                  e.key === "Enter" &&
-                                  handleCommentSubmit(post._id)
+                                  e.key === "Enter" && handleCommentSubmit(post._id)
                                 }
                                 placeholder={`แสดงความคิดเห็นในนาม ${session?.user?.name}`}
                                 className="w-full bg-transparent outline-none text-[13px] py-1 placeholder:text-zinc-400"
@@ -2093,9 +2130,7 @@ export default function FriendProfilePage({
                                             key={emoji}
                                             className="text-xl cursor-pointer hover:scale-125 transition-transform"
                                             onClick={() =>
-                                              setNewCommentText(
-                                                (prev) => prev + emoji,
-                                              )
+                                              setNewCommentText((prev) => prev + emoji)
                                             }
                                           >
                                             {emoji}
@@ -2113,9 +2148,7 @@ export default function FriendProfilePage({
                                     className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm"
                                   />
                                   <PictureOutlined
-                                    onClick={() =>
-                                      commentImageInputRef.current?.click()
-                                    }
+                                    onClick={() => commentImageInputRef.current?.click()}
                                     className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm"
                                   />
                                 </div>
@@ -2136,9 +2169,7 @@ export default function FriendProfilePage({
 
                 {userPosts.length === 0 && (
                   <div className="p-10 text-center bg-white dark:bg-zinc-900 rounded-xl border dark:border-zinc-800">
-                    <p className="text-zinc-400 font-bold italic">
-                      ไม่มีโพสต์ที่จะแสดงในขณะนี้
-                    </p>
+                    <p className="text-zinc-400 font-bold italic">ไม่มีโพสต์ที่จะแสดงในขณะนี้</p>
                   </div>
                 )}
               </div>
@@ -2215,15 +2246,15 @@ export default function FriendProfilePage({
                             )}
                           </div>
                         </div>
-                          {isMyProfile && (
-                            <button 
-                              onClick={() => setActiveModal("profile")}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                            >
-                              <EditOutlined />
-                              <span>แก้ไข</span>
-                            </button>
-                          )}
+                        {isMyProfile && (
+                          <button
+                            onClick={() => setActiveModal("profile")}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          >
+                            <EditOutlined />
+                            <span>แก้ไข</span>
+                          </button>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between group/item">
@@ -2241,7 +2272,11 @@ export default function FriendProfilePage({
                                 type="button"
                                 onClick={() => setShowFullCitizenId(!showFullCitizenId)}
                                 className="w-6 h-6 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-blue-600 transition-all active:scale-90 shadow-sm border border-zinc-200 dark:border-zinc-700"
-                                title={showFullCitizenId ? "ซ่อนเลขประจำตัวประชาชน" : "แสดงเลขประจำตัวประชาชน"}
+                                title={
+                                  showFullCitizenId
+                                    ? "ซ่อนเลขประจำตัวประชาชน"
+                                    : "แสดงเลขประจำตัวประชาชน"
+                                }
                               >
                                 {showFullCitizenId ? (
                                   <EyeInvisibleOutlined className="text-xs" />
@@ -2252,15 +2287,15 @@ export default function FriendProfilePage({
                             )}
                           </div>
                         </div>
-                          {isMyProfile && (
-                            <button 
-                              onClick={() => setActiveModal("profile")}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                            >
-                              <EditOutlined />
-                              <span>แก้ไข</span>
-                            </button>
-                          )}
+                        {isMyProfile && (
+                          <button
+                            onClick={() => setActiveModal("profile")}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          >
+                            <EditOutlined />
+                            <span>แก้ไข</span>
+                          </button>
+                        )}
                       </div>
                       <div className="flex items-center justify-between group/item">
                         <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
@@ -2272,15 +2307,15 @@ export default function FriendProfilePage({
                             </b>
                           </span>
                         </div>
-                          {isMyProfile && (
-                            <button 
-                              onClick={() => setActiveModal("profile")}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                            >
-                              <EditOutlined />
-                              <span>แก้ไข</span>
-                            </button>
-                          )}
+                        {isMyProfile && (
+                          <button
+                            onClick={() => setActiveModal("profile")}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          >
+                            <EditOutlined />
+                            <span>แก้ไข</span>
+                          </button>
+                        )}
                       </div>
                       {formData.academicLevel && (
                         <div className="flex items-center justify-between group/item">
@@ -2314,11 +2349,13 @@ export default function FriendProfilePage({
                             <SmileOutlined className="text-xl text-zinc-400" />
                             <span>
                               สถานภาพนักเรียน{" "}
-                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
-                                formData.studentStatus === "กำลังศึกษา" 
-                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                                  : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                              }`}>
+                              <span
+                                className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
+                                  formData.studentStatus === "กำลังศึกษา"
+                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                    : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                                }`}
+                              >
                                 {formData.studentStatus}
                               </span>
                             </span>
@@ -2330,12 +2367,16 @@ export default function FriendProfilePage({
                           <SafetyCertificateOutlined className="text-xl text-zinc-400" />
                           <span>
                             สถานะทวิภาคี{" "}
-                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
-                              formData.isInternship 
-                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                                : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                            }`}>
-                              {formData.isInternship ? "กำลังฝึกงานอยู่ 💼" : "เรียนปกติในวิทยาลัย 🏫"}
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
+                                formData.isInternship
+                                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                              }`}
+                            >
+                              {formData.isInternship
+                                ? "กำลังฝึกงานอยู่ 💼"
+                                : "เรียนปกติในวิทยาลัย 🏫"}
                             </span>
                           </span>
                         </div>
@@ -2352,20 +2393,18 @@ export default function FriendProfilePage({
                             {formData.position || "-"}
                           </b>{" "}
                           ฝ่าย{" "}
-                          <b className="text-zinc-900 dark:text-white">
-                            {formData.faction || "-"}
-                          </b>
+                          <b className="text-zinc-900 dark:text-white">{formData.faction || "-"}</b>
                         </span>
                       </div>
-                        {isMyProfile && (
-                          <button 
-                            onClick={() => setActiveModal("profile")}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                          >
-                            <EditOutlined />
-                            <span>แก้ไข</span>
-                          </button>
-                        )}
+                      {isMyProfile && (
+                        <button
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                     </div>
                   )}
                   <div className="flex items-center justify-between group/item">
@@ -2378,15 +2417,15 @@ export default function FriendProfilePage({
                         </b>
                       </span>
                     </div>
-                      {isMyProfile && (
-                        <button 
-                          onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                          <EditOutlined />
-                          <span>แก้ไข</span>
-                        </button>
-                      )}
+                    {isMyProfile && (
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                      >
+                        <EditOutlined />
+                        <span>แก้ไข</span>
+                      </button>
+                    )}
                   </div>
                   {!isStudent && formData.work && (
                     <div className="flex items-center justify-between group/item">
@@ -2394,13 +2433,11 @@ export default function FriendProfilePage({
                         <DatabaseOutlined className="text-xl text-zinc-400" />
                         <span>
                           เคยทำงานที่{" "}
-                          <b className="text-zinc-900 dark:text-white">
-                            {formData.work}
-                          </b>
+                          <b className="text-zinc-900 dark:text-white">{formData.work}</b>
                         </span>
                       </div>
                       {isMyProfile && (
-                        <button 
+                        <button
                           onClick={() => setActiveModal("profile")}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
                         >
@@ -2416,13 +2453,11 @@ export default function FriendProfilePage({
                         <GlobalOutlined className="text-xl text-zinc-400" />
                         <span>
                           อาศัยอยู่ที่{" "}
-                          <b className="text-zinc-900 dark:text-white">
-                            {formData.currentCity}
-                          </b>
+                          <b className="text-zinc-900 dark:text-white">{formData.currentCity}</b>
                         </span>
                       </div>
                       {isMyProfile && (
-                        <button 
+                        <button
                           onClick={() => setActiveModal("profile")}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
                         >
@@ -2449,15 +2484,15 @@ export default function FriendProfilePage({
                         <p className="text-xs text-zinc-400">สถานที่ทำงาน</p>
                       </div>
                     </div>
-                      {isMyProfile && (
-                        <button 
-                          onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                          <EditOutlined />
-                          <span>แก้ไข</span>
-                        </button>
-                      )}
+                    {isMyProfile && (
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                      >
+                        <EditOutlined />
+                        <span>แก้ไข</span>
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-4">
@@ -2466,23 +2501,20 @@ export default function FriendProfilePage({
                       </div>
                       <div>
                         <p className="text-sm font-bold">
-                          {formData.education ||
-                            "ยังไม่ได้เพิ่มประวัติการศึกษา"}
+                          {formData.education || "ยังไม่ได้เพิ่มประวัติการศึกษา"}
                         </p>
-                        <p className="text-xs text-zinc-400">
-                          มหาวิทยาลัย/โรงเรียน
-                        </p>
+                        <p className="text-xs text-zinc-400">มหาวิทยาลัย/โรงเรียน</p>
                       </div>
                     </div>
-                      {isMyProfile && (
-                        <button 
-                          onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                          <EditOutlined />
-                          <span>แก้ไข</span>
-                        </button>
-                      )}
+                    {isMyProfile && (
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                      >
+                        <EditOutlined />
+                        <span>แก้ไข</span>
+                      </button>
+                    )}
                   </div>
                   {formData.program && (
                     <div className="flex items-center justify-between group/item">
@@ -2491,21 +2523,19 @@ export default function FriendProfilePage({
                           <BookOutlined />
                         </div>
                         <div>
-                          <p className="text-sm font-bold">
-                            {formData.program}
-                          </p>
+                          <p className="text-sm font-bold">{formData.program}</p>
                           <p className="text-xs text-zinc-400">สาขาวิชา / หลักสูตร</p>
                         </div>
                       </div>
-                        {isMyProfile && (
-                          <button 
-                            onClick={() => setActiveModal("profile")}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                          >
-                            <EditOutlined />
-                            <span>แก้ไข</span>
-                          </button>
-                        )}
+                      {isMyProfile && (
+                        <button
+                          onClick={() => setActiveModal("profile")}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          <EditOutlined />
+                          <span>แก้ไข</span>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -2525,15 +2555,15 @@ export default function FriendProfilePage({
                         <p className="text-xs text-zinc-400">เมืองปัจจุบัน</p>
                       </div>
                     </div>
-                      {isMyProfile && (
-                        <button 
-                          onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                          <EditOutlined />
-                          <span>แก้ไข</span>
-                        </button>
-                      )}
+                    {isMyProfile && (
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                      >
+                        <EditOutlined />
+                        <span>แก้ไข</span>
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-4">
@@ -2547,15 +2577,15 @@ export default function FriendProfilePage({
                         <p className="text-xs text-zinc-400">บ้านเกิด</p>
                       </div>
                     </div>
-                      {isMyProfile && (
-                        <button 
-                          onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                          <EditOutlined />
-                          <span>แก้ไข</span>
-                        </button>
-                      )}
+                    {isMyProfile && (
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                      >
+                        <EditOutlined />
+                        <span>แก้ไข</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               );
@@ -2563,9 +2593,7 @@ export default function FriendProfilePage({
               return (
                 <div className="space-y-8">
                   <div className="grid gap-6">
-                    <h3 className="text-zinc-500 text-xs font-bold uppercase">
-                      ข้อมูลการติดต่อ
-                    </h3>
+                    <h3 className="text-zinc-500 text-xs font-bold uppercase">ข้อมูลการติดต่อ</h3>
                     <div className="flex items-center justify-between group/item">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
@@ -2604,7 +2632,7 @@ export default function FriendProfilePage({
                         </div>
                       </div>
                       {isMyProfile && (
-                        <button 
+                        <button
                           onClick={() => setActiveModal("profile")}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
                         >
@@ -2619,14 +2647,12 @@ export default function FriendProfilePage({
                           <MailOutlined />
                         </div>
                         <div>
-                          <p className="text-sm font-bold truncate">
-                            {formData.email || "-"}
-                          </p>
+                          <p className="text-sm font-bold truncate">{formData.email || "-"}</p>
                           <p className="text-xs text-zinc-400">อีเมล</p>
                         </div>
                       </div>
                       {isMyProfile && (
-                        <button 
+                        <button
                           onClick={() => setActiveModal("profile")}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
                         >
@@ -2639,9 +2665,7 @@ export default function FriendProfilePage({
                   <hr className="dark:border-zinc-800" />
                   {!isStudent && (
                     <div className="grid gap-6">
-                      <h3 className="text-zinc-500 text-xs font-bold uppercase">
-                        ข้อมูลพื้นฐาน
-                      </h3>
+                      <h3 className="text-zinc-500 text-xs font-bold uppercase">ข้อมูลพื้นฐาน</h3>
                       <div className="flex items-center justify-between group/item">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
@@ -2651,13 +2675,11 @@ export default function FriendProfilePage({
                             <p className="text-sm font-bold">
                               {formData.relationship || "ไม่ระบุ"}
                             </p>
-                            <p className="text-xs text-zinc-400">
-                              สถานะความสัมพันธ์
-                            </p>
+                            <p className="text-xs text-zinc-400">สถานะความสัมพันธ์</p>
                           </div>
                         </div>
                         {isMyProfile && (
-                          <button 
+                          <button
                             onClick={() => setActiveModal("profile")}
                             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
                           >
@@ -2687,7 +2709,9 @@ export default function FriendProfilePage({
                           <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                             {formData.addressHouse || "-"}
                           </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">บ้านเลขที่ หมู่ที่ ซอย</p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                            บ้านเลขที่ หมู่ที่ ซอย
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -2698,7 +2722,9 @@ export default function FriendProfilePage({
                           <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                             {formData.addressVillage || "-"}
                           </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">อาคาร หมู่บ้าน ถนน</p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                            อาคาร หมู่บ้าน ถนน
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -2707,9 +2733,17 @@ export default function FriendProfilePage({
                         </div>
                         <div>
                           <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                            {[formData.addressSubdistrict, formData.addressDistrict, formData.addressProvince].filter(Boolean).join(" ") || "-"}
+                            {[
+                              formData.addressSubdistrict,
+                              formData.addressDistrict,
+                              formData.addressProvince,
+                            ]
+                              .filter(Boolean)
+                              .join(" ") || "-"}
                           </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">ตำบล/แขวง อำเภอ/เขต จังหวัด</p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                            ตำบล/แขวง อำเภอ/เขต จังหวัด
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -2720,7 +2754,9 @@ export default function FriendProfilePage({
                           <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                             {formData.addressZipcode || "-"}
                           </p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase">รหัสไปรษณีย์</p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                            รหัสไปรษณีย์
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -2741,7 +2777,9 @@ export default function FriendProfilePage({
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                               {formData.positionNumber || "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">เลขที่ตำแหน่ง</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              เลขที่ตำแหน่ง
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
@@ -2763,7 +2801,9 @@ export default function FriendProfilePage({
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                               {formData.affiliation || "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">สังกัด (กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน)</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              สังกัด (กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน)
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -2783,9 +2823,17 @@ export default function FriendProfilePage({
                           </div>
                           <div>
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                              {formData.govStartDate ? new Date(formData.govStartDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
+                              {formData.govStartDate
+                                ? new Date(formData.govStartDate).toLocaleDateString("th-TH", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })
+                                : "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">วันเริ่มเข้ารับราชการ</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              วันเริ่มเข้ารับราชการ
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
@@ -2794,9 +2842,17 @@ export default function FriendProfilePage({
                           </div>
                           <div>
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                              {formData.retirementDate ? new Date(formData.retirementDate).toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' }) : "-"}
+                              {formData.retirementDate
+                                ? new Date(formData.retirementDate).toLocaleDateString("th-TH", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })
+                                : "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">วันที่ครบเกษียณอายุ</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              วันที่ครบเกษียณอายุ
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
@@ -2805,9 +2861,13 @@ export default function FriendProfilePage({
                           </div>
                           <div>
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                              {formData.retirementFiscalYear ? `ปีงบประมาณ พ.ศ. ${formData.retirementFiscalYear}` : "-"}
+                              {formData.retirementFiscalYear
+                                ? `ปีงบประมาณ พ.ศ. ${formData.retirementFiscalYear}`
+                                : "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">เกษียณปีงบประมาณ</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              เกษียณปีงบประมาณ
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -2829,7 +2889,9 @@ export default function FriendProfilePage({
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                               {formData.respDeptHead || "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -2840,7 +2902,9 @@ export default function FriendProfilePage({
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                               {formData.respWorkHead || "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              หน้าที่รับผิดชอบ เช่น หัวหน้างาน...
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -2851,7 +2915,9 @@ export default function FriendProfilePage({
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                               {formData.respOther || "-"}
                             </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase">
+                              หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -2878,9 +2944,7 @@ export default function FriendProfilePage({
 
         return (
           <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border dark:border-zinc-800 p-6 min-h-[500px]">
-            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-6">
-              เกี่ยวกับ
-            </h2>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-6">เกี่ยวกับ</h2>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
               <div className="md:col-span-4 border-r dark:border-zinc-800 pr-4 space-y-1">
                 {[
@@ -2889,18 +2953,20 @@ export default function FriendProfilePage({
                   "สถานที่ที่เคยอาศัย",
                   "ข้อมูลติดต่อและข้อมูลพื้นฐาน",
                   "ข้อมูลข้าราชการ/บุคลากร",
-                ].filter(item => {
-                  if (isStudent && item === "การทำงานและวุฒิการศึกษา") return false;
-                  return true;
-                }).map((item) => (
-                  <div
-                    key={item}
-                    onClick={() => setActiveAboutTab(item)}
-                    className={`px-4 py-3 rounded-lg font-bold text-sm cursor-pointer transition-all ${activeAboutTab === item ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
-                  >
-                    {item}
-                  </div>
-                ))}
+                ]
+                  .filter((item) => {
+                    if (isStudent && item === "การทำงานและวุฒิการศึกษา") return false;
+                    return true;
+                  })
+                  .map((item) => (
+                    <div
+                      key={item}
+                      onClick={() => setActiveAboutTab(item)}
+                      className={`px-4 py-3 rounded-lg font-bold text-sm cursor-pointer transition-all ${activeAboutTab === item ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
+                    >
+                      {item}
+                    </div>
+                  ))}
               </div>
               <div className="md:col-span-8">{renderAboutContent()}</div>
             </div>
@@ -2922,9 +2988,7 @@ export default function FriendProfilePage({
           <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border dark:border-zinc-800 p-6 min-h-[600px]">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <div>
-                <h2 className="text-2xl font-black text-zinc-900 dark:text-white">
-                  เพื่อน
-                </h2>
+                <h2 className="text-2xl font-black text-zinc-900 dark:text-white">เพื่อน</h2>
                 <p className="text-sm text-zinc-400 font-bold tracking-tight">
                   เพื่อนทั้งหมด {(formData?.friends || []).length} คน
                 </p>
@@ -3000,7 +3064,7 @@ export default function FriendProfilePage({
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 ))}
-              {userPosts.flatMap(p => p.images || (p.image ? [p.image] : [])).length === 0 && (
+              {userPosts.flatMap((p) => p.images || (p.image ? [p.image] : [])).length === 0 && (
                 <div className="col-span-full py-20 text-center">
                   <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FileImageOutlined className="text-zinc-300 text-2xl" />
@@ -3028,20 +3092,36 @@ export default function FriendProfilePage({
       >
         {/* Header Section */}
         <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-b-xl overflow-hidden mb-4 border-b dark:border-zinc-800">
-          <div className="h-[180px] sm:h-[300px] lg:h-[400px] relative bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+          {/* Cover Image */}
+          <div
+            className={`h-[180px] sm:h-[300px] lg:h-[400px] relative bg-zinc-200 dark:bg-zinc-800 overflow-hidden ${formData.coverImage ? "cursor-zoom-in" : ""}`}
+            onClick={() =>
+              formData.coverImage && setImageViewer({ src: formData.coverImage, label: "ภาพปก" })
+            }
+          >
             {formData.coverImage && (
               <img
                 src={formData.coverImage}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02]"
               />
             )}
             <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
+            {formData.coverImage && (
+              <div className="absolute bottom-3 right-3 bg-black/40 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
+                <EyeOutlined /> กดเพื่อดูภาพเต็ม
+              </div>
+            )}
           </div>
 
           <div className="px-2 pb-4 relative">
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 pt-10 -mt-12 sm:-mt-20 mb-6 px-2">
               <div className="relative group">
-                <div className="h-40 w-40 sm:h-44 sm:w-44 lg:h-48 lg:w-48 rounded-full overflow-hidden border-4 border-white dark:border-zinc-900 bg-white dark:bg-zinc-800 shadow-xl transition-transform group-hover:scale-[1.01]">
+                <div
+                  className="h-40 w-40 sm:h-44 sm:w-44 lg:h-48 lg:w-48 rounded-full overflow-hidden border-4 border-white dark:border-zinc-900 bg-white dark:bg-zinc-800 shadow-xl transition-transform group-hover:scale-[1.01] cursor-zoom-in"
+                  onClick={() =>
+                    formData.image && setImageViewer({ src: formData.image, label: "รูปโปรไฟล์" })
+                  }
+                >
                   {formData.image ? (
                     <img
                       src={formData.image}
@@ -3052,6 +3132,11 @@ export default function FriendProfilePage({
                     <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
                       <UserOutlined className="text-6xl" />
                     </div>
+                  )}
+                </div>
+                <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all pointer-events-none">
+                  {formData.image && (
+                    <EyeOutlined className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   )}
                 </div>
               </div>
@@ -3065,7 +3150,7 @@ export default function FriendProfilePage({
                     .filter(
                       (u) =>
                         String(u._id) !== String(id) &&
-                        (formData?.friends || []).some((fId: any) => String(fId) === String(u._id))
+                        (formData?.friends || []).some((fId: any) => String(fId) === String(u._id)),
                     )
                     .slice(0, 8)
                     .map((u) => (
@@ -3074,11 +3159,7 @@ export default function FriendProfilePage({
                         className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 overflow-hidden shadow-sm flex items-center justify-center"
                       >
                         {u.image ? (
-                          <img
-                            src={u.image}
-                            className="w-full h-full object-cover"
-                            alt="Friend"
-                          />
+                          <img src={u.image} className="w-full h-full object-cover" alt="Friend" />
                         ) : (
                           <UserOutlined className="text-[10px] text-zinc-400" />
                         )}
@@ -3117,9 +3198,7 @@ export default function FriendProfilePage({
                       </button>
                     )}
                     {friendStatus === "request_sent" && (
-                      <button
-                        className="px-6 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-black flex items-center gap-2 cursor-default"
-                      >
+                      <button className="px-6 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-black flex items-center gap-2 cursor-default">
                         <SafetyCertificateOutlined /> ส่งคำขอแล้ว
                       </button>
                     )}
@@ -3140,9 +3219,7 @@ export default function FriendProfilePage({
                         cancelText="ยกเลิก"
                         okButtonProps={{ danger: true }}
                       >
-                        <button
-                          className="px-6 py-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-black flex items-center gap-2 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 transition-all border border-blue-100 dark:border-blue-500/20 hover:border-rose-100 dark:hover:border-rose-500/20 shadow-sm"
-                        >
+                        <button className="px-6 py-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-black flex items-center gap-2 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 transition-all border border-blue-100 dark:border-blue-500/20 hover:border-rose-100 dark:hover:border-rose-500/20 shadow-sm">
                           <TeamOutlined /> เพื่อน
                         </button>
                       </Popconfirm>
@@ -3214,41 +3291,83 @@ export default function FriendProfilePage({
                 )}
               </div>
               <div className="flex-1">
-                <p className="font-black text-sm text-zinc-900 dark:text-white">{(session?.user as any)?.name}</p>
+                <p className="font-black text-sm text-zinc-900 dark:text-white">
+                  {(session?.user as any)?.name}
+                </p>
                 <div className="relative mt-1">
-                   <button 
-                    onClick={(e) => { e.preventDefault(); setShowAudienceMenu(!showAudienceMenu); }}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowAudienceMenu(!showAudienceMenu);
+                    }}
                     className="flex items-center gap-1.5 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-500 hover:bg-zinc-200 transition-colors"
                   >
-                    {postAudience === "public" ? <GlobalOutlined /> : postAudience === "friends" ? <TeamOutlined /> : <LockOutlined />}
-                    {postAudience === "public" ? "สาธารณะ" : postAudience === "friends" ? "เพื่อน" : "เฉพาะฉัน"} 
+                    {postAudience === "public" ? (
+                      <GlobalOutlined />
+                    ) : postAudience === "friends" ? (
+                      <TeamOutlined />
+                    ) : (
+                      <LockOutlined />
+                    )}
+                    {postAudience === "public"
+                      ? "สาธารณะ"
+                      : postAudience === "friends"
+                        ? "เพื่อน"
+                        : "เฉพาะฉัน"}
                     <DownOutlined className="text-[8px]" />
                   </button>
 
                   <AnimatePresence>
                     {showAudienceMenu && (
                       <>
-                        <div className="fixed inset-0 z-40" onClick={() => setShowAudienceMenu(false)} />
-                        <motion.div 
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setShowAudienceMenu(false)}
+                        />
+                        <motion.div
                           initial={{ opacity: 0, y: 5, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 5, scale: 0.95 }}
                           className="absolute left-0 mt-1 w-40 bg-white dark:bg-zinc-800 border dark:border-zinc-700 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden"
                         >
                           {[
-                            { id: "public", label: "สาธารณะ", desc: "ทุกคนเห็นได้", icon: <GlobalOutlined className="text-blue-500" /> },
-                            { id: "friends", label: "เพื่อน", desc: "เห็นได้เฉพาะเพื่อน", icon: <TeamOutlined className="text-green-500" /> },
-                            { id: "private", label: "เฉพาะฉัน", desc: "เห็นได้เฉพาะคุณ", icon: <LockOutlined className="text-zinc-500" /> },
+                            {
+                              id: "public",
+                              label: "สาธารณะ",
+                              desc: "ทุกคนเห็นได้",
+                              icon: <GlobalOutlined className="text-blue-500" />,
+                            },
+                            {
+                              id: "friends",
+                              label: "เพื่อน",
+                              desc: "เห็นได้เฉพาะเพื่อน",
+                              icon: <TeamOutlined className="text-green-500" />,
+                            },
+                            {
+                              id: "private",
+                              label: "เฉพาะฉัน",
+                              desc: "เห็นได้เฉพาะคุณ",
+                              icon: <LockOutlined className="text-zinc-500" />,
+                            },
                           ].map((opt) => (
-                            <div 
+                            <div
                               key={opt.id}
-                              onClick={() => { setPostAudience(opt.id as any); setShowAudienceMenu(false); }}
+                              onClick={() => {
+                                setPostAudience(opt.id as any);
+                                setShowAudienceMenu(false);
+                              }}
                               className={`px-3 py-2 flex items-start gap-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors ${postAudience === opt.id ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
                             >
                               <div className="mt-0.5">{opt.icon}</div>
                               <div className="flex flex-col">
-                                <span className={`text-[11px] font-black ${postAudience === opt.id ? "text-blue-600" : "text-zinc-700 dark:text-zinc-300"}`}>{opt.label}</span>
-                                <span className="text-[9px] text-zinc-400 font-bold">{opt.desc}</span>
+                                <span
+                                  className={`text-[11px] font-black ${postAudience === opt.id ? "text-blue-600" : "text-zinc-700 dark:text-zinc-300"}`}
+                                >
+                                  {opt.label}
+                                </span>
+                                <span className="text-[9px] text-zinc-400 font-bold">
+                                  {opt.desc}
+                                </span>
                               </div>
                             </div>
                           ))}
@@ -3269,20 +3388,30 @@ export default function FriendProfilePage({
 
             {sharingPost && (
               <div className="border dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-800/30 p-3">
-                 <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
-                       {(sharingPost.authorImage || sharingPost.userImage) && (
-                         <img src={sharingPost.authorImage || sharingPost.userImage} className="w-full h-full object-cover" />
-                       )}
-                    </div>
-                    <span className="font-black text-xs text-zinc-900 dark:text-white">{sharingPost.authorName || sharingPost.userName}</span>
-                 </div>
-                 <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-2">{sharingPost.content}</p>
-                 {(sharingPost.image || sharingPost.images?.length > 0) && (
-                   <div className="aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-700">
-                      <img src={sharingPost.image || sharingPost.images[0]} className="w-full h-full object-cover" />
-                   </div>
-                 )}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
+                    {(sharingPost.authorImage || sharingPost.userImage) && (
+                      <img
+                        src={sharingPost.authorImage || sharingPost.userImage}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <span className="font-black text-xs text-zinc-900 dark:text-white">
+                    {sharingPost.authorName || sharingPost.userName}
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-2">
+                  {sharingPost.content}
+                </p>
+                {(sharingPost.image || sharingPost.images?.length > 0) && (
+                  <div className="aspect-video rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-700">
+                    <img
+                      src={sharingPost.image || sharingPost.images[0]}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -3293,7 +3422,7 @@ export default function FriendProfilePage({
           title={
             <div className="flex items-center gap-3 p-1">
               <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <LikeFilled style={{ color: 'white' }} className="text-xs" />
+                <LikeFilled style={{ color: "white" }} className="text-xs" />
               </div>
               <span className="font-black text-lg tracking-tight">คนที่ถูกใจโพสต์นี้</span>
             </div>
@@ -3310,7 +3439,7 @@ export default function FriendProfilePage({
             {likersList.length > 0 ? (
               <div className="space-y-1">
                 {likersList.map((u) => (
-                  <div 
+                  <div
                     key={String(u._id)}
                     onClick={() => {
                       setShowLikersModal(false);
@@ -3330,15 +3459,19 @@ export default function FriendProfilePage({
                           )}
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 border-2 border-white dark:border-zinc-800 flex items-center justify-center shadow-sm">
-                          <LikeFilled style={{ color: 'white' }} className="text-[8px]" />
+                          <LikeFilled style={{ color: "white" }} className="text-[8px]" />
                         </div>
                       </div>
                       <div>
-                        <p className="font-black text-[15px] text-zinc-900 dark:text-white mb-0 group-hover:text-blue-600 transition-colors">{u.name}</p>
-                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">{u.position || u.role || "สมาชิก"}</p>
+                        <p className="font-black text-[15px] text-zinc-900 dark:text-white mb-0 group-hover:text-blue-600 transition-colors">
+                          {u.name}
+                        </p>
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
+                          {u.position || u.role || "สมาชิก"}
+                        </p>
                       </div>
                     </div>
-                    
+
                     <button className="px-4 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-xs font-black text-zinc-600 dark:text-zinc-300 transition-all hover:bg-blue-600 hover:text-white border dark:border-zinc-700">
                       ดูโปรไฟล์
                     </button>
@@ -3348,556 +3481,668 @@ export default function FriendProfilePage({
             ) : (
               <div className="py-20 text-center space-y-4">
                 <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mx-auto border-2 border-dashed border-zinc-200 dark:border-zinc-700">
-                   <UserOutlined className="text-3xl text-zinc-300" />
+                  <UserOutlined className="text-3xl text-zinc-300" />
                 </div>
-                <p className="text-zinc-400 font-bold uppercase tracking-[0.2em] text-[10px]">ไม่มีข้อมูลผู้ถูกใจ</p>
+                <p className="text-zinc-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                  ไม่มีข้อมูลผู้ถูกใจ
+                </p>
               </div>
             )}
           </div>
         </Modal>
 
-      <ProfileModal
-        isOpen={activeModal === "profile"}
-        title="แก้ไขข้อมูลโปรไฟล์"
-        onClose={() => setActiveModal(null)}
-        onSubmit={handleSubmit}
-        saving={saving}
-      >
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase text-zinc-400">รูปประจำตัว</label>
-              <div 
-                onClick={() => fileInputRef.current?.click()}
-                className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden"
-              >
-                {previewImage ? (
-                  <img src={previewImage} className="w-full h-full object-cover" />
-                ) : (
-                  <CameraOutlined className="text-3xl text-zinc-300" />
-                )}
-                <input type="file" ref={fileInputRef} onChange={handleImageChange} hidden accept="image/*" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase text-zinc-400">รูปหน้าปก</label>
-              <div 
-                onClick={() => coverInputRef.current?.click()}
-                className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden"
-              >
-                {previewCover ? (
-                  <img src={previewCover} className="w-full h-full object-cover" />
-                ) : (
-                  <PictureOutlined className="text-3xl text-zinc-300" />
-                )}
-                <input type="file" ref={coverInputRef} onChange={handleCoverChange} hidden accept="image/*" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="grid gap-4">
-            <div className="space-y-1">
-              <label className="text-xs font-black text-zinc-500 uppercase">ชื่อ-นามสกุล</label>
-              <input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+        <ProfileModal
+          isOpen={activeModal === "profile"}
+          title="แก้ไขข้อมูลโปรไฟล์"
+          onClose={() => setActiveModal(null)}
+          onSubmit={handleSubmit}
+          saving={saving}
+        >
+          <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">เบอร์โทรศัพท์</label>
-                <input
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">Line ID</label>
-                <input
-                  value={formData.lineId}
-                  onChange={(e) => setFormData({ ...formData, lineId: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            {isStudent && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">รหัสนักศึกษา</label>
-                  <input
-                    value={formData.studentId || ""}
-                    onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">รหัสกลุ่ม</label>
-                  <input
-                    value={formData.groupCode || ""}
-                    onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-            )}
-            <div className="grid grid-cols-2 gap-4">
-              {!isStudent && (
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">ตำแหน่ง</label>
-                  <input
-                    list="positions-list"
-                    value={formData.position}
-                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    placeholder="พิมพ์หรือเลือกตำแหน่ง..."
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                  <datalist id="positions-list">
-                    {POSITIONS.map((opt) => (
-                      <option key={opt} value={opt} />
-                    ))}
-                    {profileOptions.positions.map((opt) => (
-                      <option key={`db-${opt}`} value={opt} />
-                    ))}
-                  </datalist>
-                </div>
-              )}
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">แผนก / สังกัด</label>
-                <input
-                  list="departments-list"
-                  value={formData.department}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  placeholder="พิมพ์หรือเลือกแผนก..."
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-                <datalist id="departments-list">
-                  <option value="ไม่มีสังกัด" />
-                  <option value="ผู้บริหารสถานศึกษา" />
-                  {DEPARTMENT_GROUPS.flatMap((group) => group.options).map((opt) => (
-                    <option key={opt.value} value={opt.value} />
-                  ))}
-                  {profileOptions.departments.map((opt) => (
-                    <option key={`db-${opt}`} value={opt} />
-                  ))}
-                </datalist>
-              </div>
-              {!isStudent && (
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">สาขาวิชา / หลักสูตร</label>
-                  <input
-                    value={formData.program}
-                    onChange={(e) => setFormData({ ...formData, program: e.target.value })}
-                    placeholder="เช่น สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล"
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {!isStudent && (
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">ฝ่าย</label>
-                  <input
-                    list="factions-list"
-                    value={formData.faction}
-                    onChange={(e) => setFormData({ ...formData, faction: e.target.value })}
-                    placeholder="พิมพ์หรือเลือกฝ่าย..."
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                  <datalist id="factions-list">
-                    {FACTIONS.map((opt) => (
-                      <option key={opt} value={opt} />
-                    ))}
-                    {profileOptions.factions.map((opt) => (
-                      <option key={`db-${opt}`} value={opt} />
-                    ))}
-                  </datalist>
-                </div>
-              )}
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">อีเมล</label>
-                <input
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            {!isStudent && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">ที่ทำงาน (เดิม/ปัจจุบัน)</label>
-                  <input
-                    value={formData.work}
-                    onChange={(e) => setFormData({ ...formData, work: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">การศึกษา</label>
-                  <input
-                    value={formData.education}
-                    onChange={(e) => setFormData({ ...formData, education: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-            )}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">เมืองปัจจุบัน</label>
-                <input
-                  value={formData.currentCity}
-                  onChange={(e) => setFormData({ ...formData, currentCity: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">บ้านเกิด</label>
-                <input
-                  value={formData.hometown}
-                  onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            {!isStudent && (
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">สถานะความสัมพันธ์</label>
-                <select
-                  value={formData.relationship}
-                  onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase text-zinc-400">รูปประจำตัว</label>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden"
                 >
-                  <option value="">ไม่ระบุ</option>
-                  <option value="โสด">โสด</option>
-                  <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
-                  <option value="หมั้นแล้ว">หมั้นแล้ว</option>
-                  <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
-                  <option value="หย่าร้าง">หย่าร้าง</option>
-                </select>
-              </div>
-            )}
-
-            {/* --- ข้อมูลเพิ่มเติมตามคำขอ --- */}
-            <div className="border-t dark:border-zinc-800 pt-6 mt-4">
-              <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                <GlobalOutlined /> ข้อมูลที่อยู่ปัจจุบัน
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">บ้านเลขที่ หมู่ที่ ซอย</label>
+                  {previewImage ? (
+                    <img src={previewImage} className="w-full h-full object-cover" />
+                  ) : (
+                    <CameraOutlined className="text-3xl text-zinc-300" />
+                  )}
                   <input
-                    value={formData.addressHouse || ""}
-                    onChange={(e) => setFormData({ ...formData, addressHouse: e.target.value })}
-                    placeholder="เช่น 123 ม.4 ซ.โชคดี"
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">อาคาร หมู่บ้าน ถนน</label>
-                  <input
-                    value={formData.addressVillage || ""}
-                    onChange={(e) => setFormData({ ...formData, addressVillage: e.target.value })}
-                    placeholder="เช่น อาคารทองคำ ถ.สุขุมวิท"
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    hidden
+                    accept="image/*"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">ตำบล/แขวง</label>
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase text-zinc-400">รูปหน้าปก</label>
+                <div
+                  onClick={() => coverInputRef.current?.click()}
+                  className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden"
+                >
+                  {previewCover ? (
+                    <img src={previewCover} className="w-full h-full object-cover" />
+                  ) : (
+                    <PictureOutlined className="text-3xl text-zinc-300" />
+                  )}
                   <input
-                    value={formData.addressSubdistrict || ""}
-                    onChange={(e) => setFormData({ ...formData, addressSubdistrict: e.target.value })}
-                    placeholder="ตำบล..."
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    type="file"
+                    ref={coverInputRef}
+                    onChange={handleCoverChange}
+                    hidden
+                    accept="image/*"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">อำเภอ/เขต</label>
-                  <input
-                    value={formData.addressDistrict || ""}
-                    onChange={(e) => setFormData({ ...formData, addressDistrict: e.target.value })}
-                    placeholder="อำเภอ..."
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">จังหวัด</label>
-                  <input
-                    value={formData.addressProvince || ""}
-                    onChange={(e) => setFormData({ ...formData, addressProvince: e.target.value })}
-                    placeholder="จังหวัด..."
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              <div className="mt-4 space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">รหัสไปรษณีย์</label>
-                <input
-                  value={formData.addressZipcode || ""}
-                  onChange={(e) => setFormData({ ...formData, addressZipcode: e.target.value })}
-                  placeholder="เช่น 10400"
-                  maxLength={5}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
               </div>
             </div>
 
-            {!isStudent && (
-              <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+            <div className="grid gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">ชื่อ-นามสกุล</label>
+                <input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">
+                    เบอร์โทรศัพท์
+                  </label>
+                  <input
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">Line ID</label>
+                  <input
+                    value={formData.lineId}
+                    onChange={(e) => setFormData({ ...formData, lineId: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              {isStudent && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">
+                      รหัสนักศึกษา
+                    </label>
+                    <input
+                      value={formData.studentId || ""}
+                      onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">รหัสกลุ่ม</label>
+                    <input
+                      value={formData.groupCode || ""}
+                      onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                {!isStudent && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">ตำแหน่ง</label>
+                    <input
+                      list="positions-list"
+                      value={formData.position}
+                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                      placeholder="พิมพ์หรือเลือกตำแหน่ง..."
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                    <datalist id="positions-list">
+                      {POSITIONS.map((opt) => (
+                        <option key={opt} value={opt} />
+                      ))}
+                      {profileOptions.positions.map((opt) => (
+                        <option key={`db-${opt}`} value={opt} />
+                      ))}
+                    </datalist>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">
+                    แผนก / สังกัด
+                  </label>
+                  <input
+                    list="departments-list"
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    placeholder="พิมพ์หรือเลือกแผนก..."
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                  <datalist id="departments-list">
+                    <option value="ไม่มีสังกัด" />
+                    <option value="ผู้บริหารสถานศึกษา" />
+                    {DEPARTMENT_GROUPS.flatMap((group) => group.options).map((opt) => (
+                      <option key={opt.value} value={opt.value} />
+                    ))}
+                    {profileOptions.departments.map((opt) => (
+                      <option key={`db-${opt}`} value={opt} />
+                    ))}
+                  </datalist>
+                </div>
+                {!isStudent && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">
+                      สาขาวิชา / หลักสูตร
+                    </label>
+                    <input
+                      value={formData.program}
+                      onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                      placeholder="เช่น สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล"
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {!isStudent && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">ฝ่าย</label>
+                    <input
+                      list="factions-list"
+                      value={formData.faction}
+                      onChange={(e) => setFormData({ ...formData, faction: e.target.value })}
+                      placeholder="พิมพ์หรือเลือกฝ่าย..."
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                    <datalist id="factions-list">
+                      {FACTIONS.map((opt) => (
+                        <option key={opt} value={opt} />
+                      ))}
+                      {profileOptions.factions.map((opt) => (
+                        <option key={`db-${opt}`} value={opt} />
+                      ))}
+                    </datalist>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">อีเมล</label>
+                  <input
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              {!isStudent && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">
+                      ที่ทำงาน (เดิม/ปัจจุบัน)
+                    </label>
+                    <input
+                      value={formData.work}
+                      onChange={(e) => setFormData({ ...formData, work: e.target.value })}
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">การศึกษา</label>
+                    <input
+                      value={formData.education}
+                      onChange={(e) => setFormData({ ...formData, education: e.target.value })}
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">
+                    เมืองปัจจุบัน
+                  </label>
+                  <input
+                    value={formData.currentCity}
+                    onChange={(e) => setFormData({ ...formData, currentCity: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">บ้านเกิด</label>
+                  <input
+                    value={formData.hometown}
+                    onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              {!isStudent && (
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">
+                    สถานะความสัมพันธ์
+                  </label>
+                  <select
+                    value={formData.relationship}
+                    onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">ไม่ระบุ</option>
+                    <option value="โสด">โสด</option>
+                    <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
+                    <option value="หมั้นแล้ว">หมั้นแล้ว</option>
+                    <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
+                    <option value="หย่าร้าง">หย่าร้าง</option>
+                  </select>
+                </div>
+              )}
+
+              {/* --- ข้อมูลเพิ่มเติมตามคำขอ --- */}
+              <div className="border-t dark:border-zinc-800 pt-6 mt-4">
                 <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                  <SafetyCertificateOutlined /> ข้อมูลตำแหน่งและสังกัด
+                  <GlobalOutlined /> ข้อมูลที่อยู่ปัจจุบัน
                 </h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">เลขที่ตำแหน่ง</label>
+                    <label className="text-xs font-black text-zinc-500 uppercase">
+                      บ้านเลขที่ หมู่ที่ ซอย
+                    </label>
                     <input
-                      value={formData.positionNumber || ""}
-                      onChange={(e) => setFormData({ ...formData, positionNumber: e.target.value })}
-                      placeholder="เช่น 1845-02"
+                      value={formData.addressHouse || ""}
+                      onChange={(e) => setFormData({ ...formData, addressHouse: e.target.value })}
+                      placeholder="เช่น 123 ม.4 ซ.โชคดี"
                       className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">สังกัด</label>
+                    <label className="text-xs font-black text-zinc-500 uppercase">
+                      อาคาร หมู่บ้าน ถนน
+                    </label>
                     <input
-                      value={formData.affiliation || ""}
-                      onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
-                      placeholder="กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน..."
+                      value={formData.addressVillage || ""}
+                      onChange={(e) => setFormData({ ...formData, addressVillage: e.target.value })}
+                      placeholder="เช่น อาคารทองคำ ถ.สุขุมวิท"
                       className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
-              </div>
-            )}
-
-            {!isStudent && (
-              <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-                <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                  <DatabaseOutlined /> ข้อมูลประวัติการรับราชการและเกษียณ
-                </h4>
-                <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-2 mt-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">วันเดือนปีที่เริ่มเข้ารับราชการ</label>
+                    <label className="text-xs font-black text-zinc-500 uppercase">ตำบล/แขวง</label>
                     <input
-                      type="date"
-                      value={formData.govStartDate || ""}
-                      onChange={(e) => setFormData({ ...formData, govStartDate: e.target.value })}
+                      value={formData.addressSubdistrict || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, addressSubdistrict: e.target.value })
+                      }
+                      placeholder="ตำบล..."
                       className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">อำเภอ/เขต</label>
+                    <input
+                      value={formData.addressDistrict || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, addressDistrict: e.target.value })
+                      }
+                      placeholder="อำเภอ..."
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-zinc-500 uppercase">จังหวัด</label>
+                    <input
+                      value={formData.addressProvince || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, addressProvince: e.target.value })
+                      }
+                      placeholder="จังหวัด..."
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4 space-y-1">
+                  <label className="text-xs font-black text-zinc-500 uppercase">รหัสไปรษณีย์</label>
+                  <input
+                    value={formData.addressZipcode || ""}
+                    onChange={(e) => setFormData({ ...formData, addressZipcode: e.target.value })}
+                    placeholder="เช่น 10400"
+                    maxLength={5}
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {!isStudent && (
+                <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                  <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                    <SafetyCertificateOutlined /> ข้อมูลตำแหน่งและสังกัด
+                  </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">วันที่ครบเกษียณอายุ</label>
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        เลขที่ตำแหน่ง
+                      </label>
                       <input
-                        type="date"
-                        value={formData.retirementDate || ""}
-                        onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                        value={formData.positionNumber || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, positionNumber: e.target.value })
+                        }
+                        placeholder="เช่น 1845-02"
                         className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">เกษียณปีงบประมาณ (พ.ศ.)</label>
+                      <label className="text-xs font-black text-zinc-500 uppercase">สังกัด</label>
                       <input
-                        type="number"
-                        value={formData.retirementFiscalYear || ""}
-                        onChange={(e) => setFormData({ ...formData, retirementFiscalYear: e.target.value })}
-                        placeholder="เช่น 2575"
+                        value={formData.affiliation || ""}
+                        onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
+                        placeholder="กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน..."
                         className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {!isStudent && (
-              <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-                <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                  <BookOutlined /> ข้อมูลหน้าที่รับผิดชอบ
-                </h4>
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</label>
-                    <input
-                      value={formData.respDeptHead || ""}
-                      onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
-                      placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</label>
-                    <input
-                      value={formData.respWorkHead || ""}
-                      onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
-                      placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</label>
-                    <input
-                      value={formData.respOther || ""}
-                      onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
-                      placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
+              {!isStudent && (
+                <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                  <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                    <DatabaseOutlined /> ข้อมูลประวัติการรับราชการและเกษียณ
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        วันเดือนปีที่เริ่มเข้ารับราชการ
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.govStartDate || ""}
+                        onChange={(e) => setFormData({ ...formData, govStartDate: e.target.value })}
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-zinc-500 uppercase">
+                          วันที่ครบเกษียณอายุ
+                        </label>
+                        <input
+                          type="date"
+                          value={formData.retirementDate || ""}
+                          onChange={(e) =>
+                            setFormData({ ...formData, retirementDate: e.target.value })
+                          }
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-zinc-500 uppercase">
+                          เกษียณปีงบประมาณ (พ.ศ.)
+                        </label>
+                        <input
+                          type="number"
+                          value={formData.retirementFiscalYear || ""}
+                          onChange={(e) =>
+                            setFormData({ ...formData, retirementFiscalYear: e.target.value })
+                          }
+                          placeholder="เช่น 2575"
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {!isStudent && (
+                <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                  <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                    <BookOutlined /> ข้อมูลหน้าที่รับผิดชอบ
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก
+                      </label>
+                      <input
+                        value={formData.respDeptHead || ""}
+                        onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
+                        placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        หน้าที่รับผิดชอบ เช่น หัวหน้างาน...
+                      </label>
+                      <input
+                        value={formData.respWorkHead || ""}
+                        onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
+                        placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...
+                      </label>
+                      <input
+                        value={formData.respOther || ""}
+                        onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
+                        placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </ProfileModal>
+
+        <ProfileModal
+          isOpen={activeModal === "security"}
+          title="ความปลอดภัยและรหัสผ่าน"
+          onClose={() => setActiveModal(null)}
+          onSubmit={handleSubmit}
+          saving={saving}
+        >
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-xs font-black text-zinc-500 uppercase">รหัสผ่านใหม่</label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                placeholder="เว้นว่างไว้หากไม่ต้องการเปลี่ยน"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-black text-zinc-500 uppercase">
+                ยืนยันรหัสผ่านใหม่
+              </label>
+              <input
+                type="password"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                placeholder="ยืนยันรหัสผ่านอีกครั้ง"
+              />
+            </div>
+          </div>
+        </ProfileModal>
+
+        <ProfileModal
+          isOpen={activeModal === "intro"}
+          title="แก้ไขคำแนะนำตัว"
+          onClose={() => setActiveModal(null)}
+          onSubmit={handleSubmit}
+          saving={saving}
+        >
+          <div className="space-y-4">
+            <label className="text-xs font-black text-zinc-500 uppercase">คำแนะนำตัวสั้นๆ</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full h-32 bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 resize-none"
+              placeholder="เขียนอะไรบางอย่างเกี่ยวกับคุณ..."
+            />
+          </div>
+        </ProfileModal>
+
+        <ProfileModal
+          isOpen={activeModal === "post"}
+          title={editingPostId ? "แก้ไขโพสต์" : "สร้างโพสต์ใหม่"}
+          onClose={() => {
+            setActiveModal(null);
+            setEditingPostId(null);
+            setPostText("");
+            setPostImagePreviews([]);
+          }}
+          onSubmit={handleCreatePost}
+          saving={isPosting}
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                {previewImage && <img src={previewImage} className="w-full h-full object-cover" />}
               </div>
-            )}
-          </div>
-        </div>
-      </ProfileModal>
+              <div className="relative">
+                <p className="font-black text-zinc-900 dark:text-white">{formData.name}</p>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAudienceMenu(!showAudienceMenu);
+                  }}
+                  className="flex items-center gap-1.5 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md text-[10px] font-bold text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                >
+                  {postAudience === "public" ? (
+                    <GlobalOutlined />
+                  ) : postAudience === "friends" ? (
+                    <TeamOutlined />
+                  ) : (
+                    <LockOutlined />
+                  )}
+                  {postAudience === "public"
+                    ? "สาธารณะ"
+                    : postAudience === "friends"
+                      ? "เพื่อน"
+                      : "เฉพาะฉัน"}
+                  <DownOutlined className="text-[8px]" />
+                </button>
 
-      <ProfileModal
-        isOpen={activeModal === "security"}
-        title="ความปลอดภัยและรหัสผ่าน"
-        onClose={() => setActiveModal(null)}
-        onSubmit={handleSubmit}
-        saving={saving}
-      >
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-xs font-black text-zinc-500 uppercase">รหัสผ่านใหม่</label>
-            <input
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-              placeholder="เว้นว่างไว้หากไม่ต้องการเปลี่ยน"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-black text-zinc-500 uppercase">ยืนยันรหัสผ่านใหม่</label>
-            <input
-              type="password"
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-              placeholder="ยืนยันรหัสผ่านอีกครั้ง"
-            />
-          </div>
-        </div>
-      </ProfileModal>
-
-      <ProfileModal
-        isOpen={activeModal === "intro"}
-        title="แก้ไขคำแนะนำตัว"
-        onClose={() => setActiveModal(null)}
-        onSubmit={handleSubmit}
-        saving={saving}
-      >
-        <div className="space-y-4">
-          <label className="text-xs font-black text-zinc-500 uppercase">คำแนะนำตัวสั้นๆ</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full h-32 bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 resize-none"
-            placeholder="เขียนอะไรบางอย่างเกี่ยวกับคุณ..."
-          />
-        </div>
-      </ProfileModal>
-
-      <ProfileModal
-        isOpen={activeModal === "post"}
-        title={editingPostId ? "แก้ไขโพสต์" : "สร้างโพสต์ใหม่"}
-        onClose={() => {
-          setActiveModal(null);
-          setEditingPostId(null);
-          setPostText("");
-          setPostImagePreviews([]);
-        }}
-        onSubmit={handleCreatePost}
-        saving={isPosting}
-      >
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-              {previewImage && <img src={previewImage} className="w-full h-full object-cover" />}
-            </div>
-            <div className="relative">
-              <p className="font-black text-zinc-900 dark:text-white">{formData.name}</p>
-              <button 
-                onClick={(e) => { e.preventDefault(); setShowAudienceMenu(!showAudienceMenu); }}
-                className="flex items-center gap-1.5 px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md text-[10px] font-bold text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-              >
-                {postAudience === "public" ? <GlobalOutlined /> : postAudience === "friends" ? <TeamOutlined /> : <LockOutlined />}
-                {postAudience === "public" ? "สาธารณะ" : postAudience === "friends" ? "เพื่อน" : "เฉพาะฉัน"} 
-                <DownOutlined className="text-[8px]" />
-              </button>
-
-              <AnimatePresence>
-                {showAudienceMenu && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowAudienceMenu(false)} />
-                    <motion.div 
-                      initial={{ opacity: 0, y: 5, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                      className="absolute left-0 mt-1 w-40 bg-white dark:bg-zinc-800 border dark:border-zinc-700 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden"
-                    >
-                      {[
-                        { id: "public", label: "สาธารณะ", desc: "ทุกคนเห็นได้", icon: <GlobalOutlined className="text-blue-500" /> },
-                        { id: "friends", label: "เพื่อน", desc: "เห็นได้เฉพาะเพื่อน", icon: <TeamOutlined className="text-green-500" /> },
-                        { id: "private", label: "เฉพาะฉัน", desc: "เห็นได้เฉพาะคุณ", icon: <LockOutlined className="text-zinc-500" /> },
-                      ].map((opt) => (
-                        <div 
-                          key={opt.id}
-                          onClick={() => { setPostAudience(opt.id as any); setShowAudienceMenu(false); }}
-                          className={`px-3 py-2 flex items-start gap-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors ${postAudience === opt.id ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
-                        >
-                          <div className="mt-0.5">{opt.icon}</div>
-                          <div className="flex flex-col">
-                            <span className={`text-[11px] font-black ${postAudience === opt.id ? "text-blue-600" : "text-zinc-700 dark:text-zinc-300"}`}>{opt.label}</span>
-                            <span className="text-[9px] text-zinc-400 font-bold">{opt.desc}</span>
+                <AnimatePresence>
+                  {showAudienceMenu && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setShowAudienceMenu(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                        className="absolute left-0 mt-1 w-40 bg-white dark:bg-zinc-800 border dark:border-zinc-700 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden"
+                      >
+                        {[
+                          {
+                            id: "public",
+                            label: "สาธารณะ",
+                            desc: "ทุกคนเห็นได้",
+                            icon: <GlobalOutlined className="text-blue-500" />,
+                          },
+                          {
+                            id: "friends",
+                            label: "เพื่อน",
+                            desc: "เห็นได้เฉพาะเพื่อน",
+                            icon: <TeamOutlined className="text-green-500" />,
+                          },
+                          {
+                            id: "private",
+                            label: "เฉพาะฉัน",
+                            desc: "เห็นได้เฉพาะคุณ",
+                            icon: <LockOutlined className="text-zinc-500" />,
+                          },
+                        ].map((opt) => (
+                          <div
+                            key={opt.id}
+                            onClick={() => {
+                              setPostAudience(opt.id as any);
+                              setShowAudienceMenu(false);
+                            }}
+                            className={`px-3 py-2 flex items-start gap-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors ${postAudience === opt.id ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
+                          >
+                            <div className="mt-0.5">{opt.icon}</div>
+                            <div className="flex flex-col">
+                              <span
+                                className={`text-[11px] font-black ${postAudience === opt.id ? "text-blue-600" : "text-zinc-700 dark:text-zinc-300"}`}
+                              >
+                                {opt.label}
+                              </span>
+                              <span className="text-[9px] text-zinc-400 font-bold">{opt.desc}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
+                        ))}
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
-          
-          <textarea
-            autoFocus
-            value={postText}
-            onChange={(e) => setPostText(e.target.value)}
-            placeholder={isMyProfile ? `${formData.name?.split(" ")[0]} คุณกำลังคิดอะไรอยู่?` : `เขียนอะไรบางอย่างให้ ${formData.name?.split(" ")[0]}...`}
-            className="w-full min-h-[150px] bg-transparent border-none text-lg placeholder:text-zinc-400 focus:ring-0 resize-none dark:text-white"
-          />
 
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <div className="grid grid-cols-3 gap-2">
-              <SortableContext items={postImagePreviews.map(i => i.id)} strategy={rectSortingStrategy}>
-                {postImagePreviews.map((item, idx) => (
-                  <SortableItem key={item.id} item={item} idx={idx} onRemove={removeImage} />
-                ))}
-              </SortableContext>
-              
-              <button
-                onClick={() => postImageInputRef.current?.click()}
-                className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all text-zinc-400"
-              >
-                <PictureOutlined className="text-2xl mb-1" />
-                <span className="text-[10px] font-black uppercase">เพิ่มรูป</span>
-                <input type="file" ref={postImageInputRef} onChange={handlePostImageChange} multiple hidden accept="image/*" />
-              </button>
-            </div>
-          </DndContext>
-        </div>
-      </ProfileModal>
+            <textarea
+              autoFocus
+              value={postText}
+              onChange={(e) => setPostText(e.target.value)}
+              placeholder={
+                isMyProfile
+                  ? `${formData.name?.split(" ")[0]} คุณกำลังคิดอะไรอยู่?`
+                  : `เขียนอะไรบางอย่างให้ ${formData.name?.split(" ")[0]}...`
+              }
+              className="w-full min-h-[150px] bg-transparent border-none text-lg placeholder:text-zinc-400 focus:ring-0 resize-none dark:text-white"
+            />
+
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <div className="grid grid-cols-3 gap-2">
+                <SortableContext
+                  items={postImagePreviews.map((i) => i.id)}
+                  strategy={rectSortingStrategy}
+                >
+                  {postImagePreviews.map((item, idx) => (
+                    <SortableItem key={item.id} item={item} idx={idx} onRemove={removeImage} />
+                  ))}
+                </SortableContext>
+
+                <button
+                  onClick={() => postImageInputRef.current?.click()}
+                  className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all text-zinc-400"
+                >
+                  <PictureOutlined className="text-2xl mb-1" />
+                  <span className="text-[10px] font-black uppercase">เพิ่มรูป</span>
+                  <input
+                    type="file"
+                    ref={postImageInputRef}
+                    onChange={handlePostImageChange}
+                    multiple
+                    hidden
+                    accept="image/*"
+                  />
+                </button>
+              </div>
+            </DndContext>
+          </div>
+        </ProfileModal>
       </motion.div>
 
       <AnimatePresence>
@@ -3919,9 +4164,7 @@ export default function FriendProfilePage({
                       prev
                         ? {
                             ...prev,
-                            index:
-                              (prev.index - 1 + prev.images.length) %
-                              prev.images.length,
+                            index: (prev.index - 1 + prev.images.length) % prev.images.length,
                           }
                         : null,
                     );
@@ -4002,12 +4245,7 @@ export default function FriendProfilePage({
               className="relative w-full max-w-lg bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-zinc-800"
             >
               <div className="relative aspect-video bg-black">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
+                <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
                 <canvas ref={canvasRef} className="hidden" />
                 <div className="absolute inset-0 border-20 border-black/20 pointer-events-none" />
               </div>
@@ -4028,6 +4266,49 @@ export default function FriendProfilePage({
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Full-Screen Image Viewer Modal ===== */}
+      <AnimatePresence>
+        {imageViewer && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-black/95 backdrop-blur-sm"
+            onClick={() => setImageViewer(null)}
+          >
+            {/* Header */}
+            <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-linear-to-b from-black/80 to-transparent z-10">
+              <span className="text-white font-black text-sm uppercase tracking-widest opacity-80">
+                {imageViewer.label}
+              </span>
+              <button
+                onClick={() => setImageViewer(null)}
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all active:scale-95"
+              >
+                <CloseOutlined />
+              </button>
+            </div>
+
+            {/* Image */}
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src={imageViewer.src}
+              alt={imageViewer.label}
+              className="max-w-[95vw] max-h-[90vh] object-contain rounded-xl shadow-2xl select-none"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Footer hint */}
+            <div className="absolute bottom-6 text-white/40 text-[11px] font-medium tracking-widest uppercase">
+              กดที่ใดก็ได้เพื่อปิด
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

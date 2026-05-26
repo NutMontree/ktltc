@@ -97,7 +97,8 @@ const callbacks: NextAuthConfig["callbacks"] = {
           !pathname.startsWith("/dashboard/chat") &&
           !pathname.startsWith("/dashboard/members") &&
           !pathname.startsWith("/dashboard/dve") &&
-          !pathname.startsWith("/dashboard/flagpole-dashboard")
+          !pathname.startsWith("/dashboard/flagpole-dashboard") &&
+          !pathname.startsWith("/dashboard/notifications")
         ) {
           return Response.redirect(new URL("/", nextUrl));
         }
@@ -126,7 +127,7 @@ const callbacks: NextAuthConfig["callbacks"] = {
 
         if (callbackUrl) {
           if (role === "student") {
-            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student, หน้าแรกแดชบอร์ด, หน้าภาพรวมเสาธง, หน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก หรือทวิภาคี ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าแรก
+            // ถ้านักเรียนมี callbackUrl ไปที่หน้า student, หน้าแรกแดชบอร์ด, หน้าภาพรวมเสาธง, หน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก, ทวิภาคี หรือการแจ้งเตือน ให้เข้าได้ หรือถ้าไม่ใช่ ให้ดีดไปหน้าแรก
             if (
               callbackUrl.startsWith("/student") ||
               callbackUrl.startsWith("/dashboard/profile") ||
@@ -134,6 +135,7 @@ const callbacks: NextAuthConfig["callbacks"] = {
               callbackUrl.startsWith("/dashboard/members") ||
               callbackUrl.startsWith("/dashboard/dve") ||
               callbackUrl.startsWith("/dashboard/flagpole-dashboard") ||
+              callbackUrl.startsWith("/dashboard/notifications") ||
               callbackUrl === "/dashboard" ||
               callbackUrl === "/dashboard/"
             ) {
@@ -149,6 +151,7 @@ const callbacks: NextAuthConfig["callbacks"] = {
             !callbackUrl.startsWith("/dashboard/members") &&
             !callbackUrl.startsWith("/dashboard/dve") &&
             !callbackUrl.startsWith("/dashboard/flagpole-dashboard") &&
+            !callbackUrl.startsWith("/dashboard/notifications") &&
             callbackUrl !== "/dashboard" &&
             callbackUrl !== "/dashboard/" &&
             (callbackUrl.startsWith("/dashboard") ||

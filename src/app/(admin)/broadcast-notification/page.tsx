@@ -16,6 +16,7 @@ import {
   X,
   ChevronDown,
   Search,
+  Link,
 } from "lucide-react";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import { UserRoles } from "@/models/User";
@@ -31,6 +32,7 @@ export default function BroadcastNotificationPage() {
 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [targetUrl, setTargetUrl] = useState("");
   const [targetAll, setTargetAll] = useState(false);
   const [selectedDepartments, setSelectedDepartments] = useState<Set<string>>(new Set());
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set());
@@ -136,6 +138,7 @@ export default function BroadcastNotificationPage() {
         body: JSON.stringify({
           title: title.trim(),
           message: message.trim(),
+          targetUrl: targetUrl.trim() || undefined,
           targetAll,
           targetDepartments: Array.from(selectedDepartments),
           targetRoles: Array.from(selectedRoles),
@@ -148,6 +151,7 @@ export default function BroadcastNotificationPage() {
         toast.success(data.message);
         setTitle("");
         setMessage("");
+        setTargetUrl("");
         setTargetAll(false);
         setSelectedDepartments(new Set());
         setSelectedRoles(new Set());
@@ -227,6 +231,46 @@ export default function BroadcastNotificationPage() {
                 rows={6}
                 className="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-slate-700 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all resize-none"
               />
+            </div>
+
+            {/* Target URL */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-zinc-400 flex items-center gap-2">
+                <Link className="w-3.5 h-3.5" />
+                URL ปลายทาง (เมื่อกดเปิดการแจ้งเตือน)
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {[
+                  { label: "โปรไฟล์", value: "/dashboard/profile/me" },
+                  { label: "แดชบอร์ด", value: "/dashboard" },
+                  { label: "การแจ้งเตือน", value: "/dashboard/notifications" },
+                  { label: "แชท", value: "/dashboard/chat" },
+                  { label: "สมาชิก", value: "/dashboard/members" },
+                ].map((shortcut) => (
+                  <button
+                    key={shortcut.value}
+                    type="button"
+                    onClick={() => setTargetUrl(shortcut.value)}
+                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wide transition-all border cursor-pointer ${
+                      targetUrl === shortcut.value
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 border-slate-200 dark:border-zinc-700 hover:border-purple-400 dark:hover:border-purple-600"
+                    }`}
+                  >
+                    {shortcut.label}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                value={targetUrl}
+                onChange={(e) => setTargetUrl(e.target.value)}
+                placeholder="เช่น /dashboard/profile/me หรือเว้นว่างไว้ (ไปหน้าการแจ้งเตือน)"
+                className="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm font-mono text-slate-700 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+              />
+              <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                ถ้าเว้นว่าง จะไปที่หน้าการแจ้งเตือน (/dashboard/notifications) โดยอัตโนมัติ
+              </p>
             </div>
           </div>
         </motion.div>

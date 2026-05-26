@@ -43,7 +43,13 @@ export default function MembersPage() {
 
       if (usersRes.ok) {
         const data = await usersRes.json();
-        setUsers(data.users || []);
+        const arr: User[] = data.users || [];
+        // สุ่มลำดับด้วย Fisher-Yates
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        setUsers(arr);
       }
 
       if (profileRes && profileRes.ok) {
