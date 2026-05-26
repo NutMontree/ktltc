@@ -8,7 +8,7 @@ import path from "path";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
     // 1. รับค่า Path ของไฟล์ที่ต้องการ (เช่น uploads/image.jpg)
