@@ -215,14 +215,16 @@ export default function LoginPage() {
               </div>
               <div className="flex-1">
                 <h4 className="text-sm font-black text-amber-600 dark:text-amber-400 mb-1 leading-none">
-                  ข้อกำหนดสำหรับ นักเรียน นักศึกษา
+                  ข้อกำหนดสำหรับ 
+                  <strong className="text-[#ff0000] text-sm"> นักเรียน นักศึกษา</strong>
                 </h4>
                 <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
-                  ระบบกำหนดข้อมูลสำหรับการเข้าสู่ระบบบัญชีผู้ใช้ (สำหรับนักเรียน/นักศึกษา) ดังนี้:
+            
+                  1. 🔑 <strong>ชื่อผู้ใช้งาน:</strong>
+                  <strong className="text-[#003fff] text-sm"> รหัสนักศึกษา</strong>
                   <br />
-                  1. 🔑 <strong>ชื่อผู้ใช้งาน (Username):</strong> รหัสนักศึกษา ที่ท่านกรอกด้านล่าง
-                  <br />
-                  2. 🔒 <strong>รหัสผ่าน (Password):</strong> เบอร์โทรศัพท์มือถือ ของท่าน
+                  2. 🔒 <strong>รหัสผ่าน:</strong>
+                  <strong className="text-[#003fff] text-sm"> เบอร์โทรศัพท์มือถือ</strong>
                 </p>
               </div>
             </div>
@@ -260,7 +262,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-11 pr-4 py-4 bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600 font-medium shadow-sm hover:shadow-md"
-                  placeholder="ชื่อผู้ใช้งาน หรือ เลขประจำตัวประชาชน 13 หลัก"
+                  placeholder="ชื่อผู้ใช้งาน สำหรับครู รหัสนักศึกษา สำหรับนักเรียน"
                   autoComplete="username"
                   required
                 />
