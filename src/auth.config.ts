@@ -88,8 +88,13 @@ const callbacks: NextAuthConfig["callbacks"] = {
       const role = (auth?.user as any)?.role?.toLowerCase();
 
       // สิทธิ์พื้นฐานอย่าง 'student' หรือ 'user' ไม่มีสิทธิ์เข้าถึงหน้าควบคุมระบบ (Dashboard/Admin) ใดๆ ทั้งสิ้น
-      // ยกเว้นหน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat), หน้าสมาชิก (/dashboard/members) และหน้าทวิภาคี (/dashboard/dve)
+      // ยกเว้นหน้า Dashboard หลัก (/dashboard), หน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat), หน้าสมาชิก (/dashboard/members) และหน้าทวิภาคี (/dashboard/dve)
       if (role === "student" || role === "user") {
+        // อนุญาตให้เข้า /dashboard หลัก
+        if (pathname === "/dashboard") {
+          return true;
+        }
+
         if (
           !pathname.startsWith("/dashboard/profile") &&
           !pathname.startsWith("/dashboard/chat") &&
