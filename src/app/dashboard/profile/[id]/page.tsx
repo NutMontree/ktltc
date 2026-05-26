@@ -914,6 +914,7 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
   if (!formData) return null;
 
   const isMyProfile = session?.user && (session.user as any).id === id;
+  const isSuperAdmin = (session?.user as any)?.role === "super_admin";
   const isStudent =
     formData.role === "นักเรียน/นักศึกษา" ||
     formData.role === "นักเรียน" ||
@@ -2330,7 +2331,7 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                           </div>
                         </div>
                       )}
-                      {formData.learnerType && (
+                      {/* {formData.learnerType && (
                         <div className="flex items-center justify-between group/item">
                           <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
                             <GlobalOutlined className="text-xl text-zinc-400" />
@@ -2342,7 +2343,7 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                             </span>
                           </div>
                         </div>
-                      )}
+                      )} */}
                       {formData.studentStatus && (
                         <div className="flex items-center justify-between group/item">
                           <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
@@ -3572,24 +3573,170 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
               {isStudent && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  {/* หัวข้อ */}
+                  <div className="border-t dark:border-zinc-800 pt-4">
+                    <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
+                      <SafetyCertificateOutlined /> ข้อมูลนักเรียน/นักศึกษา
+                    </h4>
+                  </div>
+
+                  {/* รหัสบัตรประชาชน */}
                   <div className="space-y-1">
                     <label className="text-xs font-black text-zinc-500 uppercase">
-                      รหัสนักศึกษา
+                      รหัสบัตรประจำตัวประชาชน (13 หลัก)
                     </label>
                     <input
-                      value={formData.studentId || ""}
-                      onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                      value={formData.citizenId || ""}
+                      onChange={(e) => setFormData({ ...formData, citizenId: e.target.value })}
+                      placeholder="เช่น 1234567890123"
+                      maxLength={13}
                       className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+
+                  {/* รหัสนักศึกษา + รหัสกลุ่ม */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        รหัสนักศึกษา (11 หลัก)
+                      </label>
+                      <input
+                        value={formData.studentId || ""}
+                        onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                        placeholder="เช่น 00000000000"
+                        maxLength={11}
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        รหัสกลุ่มเรียน (9 หลัก)
+                      </label>
+                      <input
+                        value={formData.groupCode || ""}
+                        onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
+                        placeholder="เช่น 000000000"
+                        maxLength={9}
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* ระดับการศึกษา + ประเภทผู้เรียน */}
+                  {/* <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        ระดับการศึกษา
+                        {!isSuperAdmin && (
+                          <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                            🔒 super admin เท่านั้น
+                          </span>
+                        )}
+                      </label>
+                      <input
+                        value={formData.academicLevel || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, academicLevel: e.target.value })
+                        }
+                        placeholder="เช่น ปวช. / ปวส."
+                        disabled={!isSuperAdmin}
+                        className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${
+                          isSuperAdmin
+                            ? "bg-zinc-100 dark:bg-zinc-800"
+                            : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
+                        }`}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-zinc-500 uppercase">
+                        ประเภทผู้เรียน
+                        {!isSuperAdmin && (
+                          <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                            🔒 super admin เท่านั้น
+                          </span>
+                        )}
+                      </label>
+                      <input
+                        value={formData.learnerType || ""}
+                        onChange={(e) => setFormData({ ...formData, learnerType: e.target.value })}
+                        placeholder="เช่น ปกติ / ทวิภาคี"
+                        disabled={!isSuperAdmin}
+                        className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${
+                          isSuperAdmin
+                            ? "bg-zinc-100 dark:bg-zinc-800"
+                            : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
+                        }`}
+                      />
+                    </div>
+                  </div> */}
+
+                  {/* สถานภาพนักเรียน — super_admin only */}
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">รหัสกลุ่ม</label>
-                    <input
-                      value={formData.groupCode || ""}
-                      onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
+                    <label className="text-xs font-black text-zinc-500 uppercase flex items-center gap-1.5">
+                      สถานภาพนักเรียน
+                      {!isSuperAdmin && (
+                        <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                          🔒 super admin เท่านั้น
+                        </span>
+                      )}
+                    </label>
+                    <select
+                      value={formData.studentStatus || ""}
+                      onChange={(e) => setFormData({ ...formData, studentStatus: e.target.value })}
+                      disabled={!isSuperAdmin}
+                      className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${
+                        isSuperAdmin
+                          ? "bg-zinc-100 dark:bg-zinc-800"
+                          : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
+                      }`}
+                    >
+                      <option value="">ไม่ระบุ</option>
+                      <option value="กำลังศึกษา">กำลังศึกษา</option>
+                      <option value="จบการศึกษา">จบการศึกษา</option>
+                      <option value="พักการศึกษา">พักการศึกษา</option>
+                      <option value="ลาออก">ลาออก</option>
+                    </select>
+                  </div>
+
+                  {/* ฝึกงาน — super_admin only */}
+                  <div
+                    className={`flex items-center justify-between p-3 rounded-xl border ${
+                      isSuperAdmin
+                        ? "bg-zinc-50 dark:bg-zinc-800/50 dark:border-zinc-700"
+                        : "bg-zinc-50/50 dark:bg-zinc-900/50 dark:border-zinc-800 opacity-60"
+                    }`}
+                  >
+                    <div>
+                      <p className="text-sm font-black text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                        สถานะทวิภาคี / ฝึกงาน
+                        {!isSuperAdmin && (
+                          <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                            🔒 super admin เท่านั้น
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-0.5">
+                        เปิดหากกำลังฝึกงานอยู่ในปัจจุบัน
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        isSuperAdmin &&
+                        setFormData({ ...formData, isInternship: !formData.isInternship })
+                      }
+                      disabled={!isSuperAdmin}
+                      className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
+                        formData.isInternship ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"
+                      } ${!isSuperAdmin ? "cursor-not-allowed" : "cursor-pointer"}`}
+                    >
+                      <div
+                        className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${
+                          formData.isInternship ? "left-6" : "left-0.5"
+                        }`}
+                      />
+                    </button>
                   </div>
                 </div>
               )}

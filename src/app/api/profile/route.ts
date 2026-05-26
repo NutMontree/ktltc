@@ -67,7 +67,10 @@ export async function PATCH(req: Request) {
       'hometown', 'relationship', 'program',
       'addressHouse', 'addressVillage', 'addressSubdistrict', 'addressDistrict', 'addressProvince', 'addressZipcode',
       'positionNumber', 'affiliation', 'govStartDate', 'retirementDate', 'retirementFiscalYear',
-      'respDeptHead', 'respWorkHead', 'respOther', 'studentId', 'groupCode'
+      'respDeptHead', 'respWorkHead', 'respOther',
+      // Student fields
+      'citizenId', 'studentId', 'groupCode', 'classroomName',
+      'academicLevel', 'learnerType', 'studentStatus', 'isInternship'
     ];
 
     fields.forEach(field => {
