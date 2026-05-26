@@ -27,6 +27,8 @@ import {
   UserCog,
   CalendarCheck,
   BookOpen,
+  ShieldCheck,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -621,6 +623,20 @@ export default function DashboardLoader() {
                   title="ตั้งค่าระบบลงเวลา"
                   icon={Settings}
                   desc="กำหนดตารางเวลาทำงานและเกณฑ์สาย"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/student-data-validation"
+                  title="ตรวจสอบข้อมูลนักเรียน"
+                  icon={ShieldCheck}
+                  desc="ตรวจสอบความถูกต้องของข้อมูลส่วนตัวนักเรียน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/broadcast-notification"
+                  title="ส่งข้อความแจ้งเตือน"
+                  icon={Bell}
+                  desc="ส่งข้อความแจ้งเตือนถึงแผนก/บทบาทที่เลือก"
                   variants={item}
                 />
               </div>

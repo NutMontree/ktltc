@@ -41,7 +41,8 @@ import {
   FileImageOutlined,
   BookOutlined,
   EyeOutlined,
-  EyeInvisibleOutlined
+  EyeInvisibleOutlined,
+  ExclamationCircleOutlined
 } from "@ant-design/icons";
 import { Dropdown, Popover, message, Popconfirm, Modal } from "antd";
 import { useSession, signIn } from "next-auth/react";
@@ -238,6 +239,8 @@ export default function FriendProfilePage({
   const [showFullStudentId, setShowFullStudentId] = useState(false);
   const [showFullPhone, setShowFullPhone] = useState(false);
   const [showFullCitizenId, setShowFullCitizenId] = useState(false);
+  const [validationStatus, setValidationStatus] = useState<any>(null);
+  const [loadingValidation, setLoadingValidation] = useState(false);
 
   // Post states
   const [postText, setPostText] = useState("");
@@ -566,8 +569,10 @@ export default function FriendProfilePage({
         fetch("/api/users/all"),
       ]);
 
+      let profileData = null;
       if (profileRes.ok) {
         const data = await profileRes.json();
+        profileData = data;
         setFormData({
           ...data,
           password: "",
@@ -585,6 +590,22 @@ export default function FriendProfilePage({
       }
       
       await fetchFriendStatus();
+
+      // Fetch validation status for students viewing their own profile
+      if (userId === id && profileData && (profileData.role === "นักเรียน/นักศึกษา" || profileData.role === "นักเรียน" || profileData.role === "นักศึกษา" || profileData.role === "student" || profileData.role?.includes("นักเรียน"))) {
+        try {
+          setLoadingValidation(true);
+          const validationRes = await fetch("/api/student/validation-status");
+          if (validationRes.ok) {
+            const validationData = await validationRes.json();
+            setValidationStatus(validationData);
+          }
+        } catch (error) {
+          console.error("Fetch validation status error:", error);
+        } finally {
+          setLoadingValidation(false);
+        }
+      }
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
@@ -916,6 +937,62 @@ export default function FriendProfilePage({
                   แนะนำตัว
                 </h2>
                 <div className="space-y-4">
+                  {/* Validation Status Indicator for Students */}
+                  {isMyProfile && isStudent && (
+                    <div className={`p-4 rounded-xl border ${
+                      validationStatus?.isValid
+                        ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
+                        : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
+                    }`}>
+                      {loadingValidation ? (
+                        <div className="flex items-center gap-2 text-sm text-zinc-500">
+                          <div className="w-4 h-4 border-2 border-zinc-300 border-t-blue-600 rounded-full animate-spin" />
+                          กำลังตรวจสอบข้อมูล...
+                        </div>
+                      ) : validationStatus?.isValid ? (
+                        <div className="flex items-start gap-3">
+                          <CheckCircleFilled className="text-emerald-600 dark:text-emerald-400 text-xl mt-0.5" />
+                          <div>
+                            <p className="font-bold text-emerald-800 dark:text-emerald-200 text-sm">
+                              ข้อมูลส่วนตัวถูกต้องครบถ้วน
+                            </p>
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
+                              รหัสบัตรประจำตัวประชาชน, รหัสนักศึกษา, และรหัสกลุ่มเรียนถูกต้องตามรูปแบบ
+                            </p>
+                          </div>
+                        </div>
+                      ) : validationStatus?.errors && validationStatus.errors.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-3">
+                            <ExclamationCircleOutlined className="text-rose-600 dark:text-rose-400 text-xl mt-0.5" />
+                            <div>
+                              <p className="font-bold text-rose-800 dark:text-rose-200 text-sm">
+                                ข้อมูลส่วนตัวไม่ครบถ้วนหรือไม่ถูกต้อง
+                              </p>
+                              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">
+                                กรุณาแก้ไขข้อมูลดังนี้:
+                              </p>
+                            </div>
+                          </div>
+                          <ul className="ml-7 space-y-1">
+                            {validationStatus.errors.map((error: string, idx: number) => (
+                              <li key={idx} className="text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
+                                <span className="text-rose-500">•</span>
+                                {error}
+                              </li>
+                            ))}
+                          </ul>
+                          <button
+                            onClick={() => setActiveModal("profile")}
+                            className="w-full mt-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-black text-xs transition-all"
+                          >
+                            แก้ไขข้อมูลทันที
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
                   <p className="text-center text-zinc-600 dark:text-zinc-400 italic">
                     &quot;
                     {formData.description || "เขียนอะไรบางอย่างเกี่ยวกับคุณ..."}
