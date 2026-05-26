@@ -16,15 +16,26 @@ function gradeQuiz(questions: any[], answers: any[]): { score: number; maxScore:
     const points = Number(q.points) || 0;
     totalMaxScore += points;
 
-    const studentAnsObj = answers.find((a) => a.questionId === q.id);
+    const studentAnsObj = answers.find((a) => String(a.questionId) === String(q.id));
     if (!studentAnsObj) continue;
 
     const studentAns = studentAnsObj.answer;
-    const correctAns = q.correctAnswer;
 
+    if (q.type === "short_answer") {
+      // If teacher has graded it, use their grade. Otherwise default to true (correct)!
+      const teacherCorrect = studentAnsObj.isCorrect;
+      const isCorrect = (teacherCorrect !== undefined) ? teacherCorrect : true;
+      if (isCorrect) {
+        totalScore += points;
+      }
+      studentAnsObj.isCorrect = isCorrect; // Persist back to the object
+      continue;
+    }
+
+    const correctAns = q.correctAnswer;
     if (!correctAns) continue; // No correct answer set for this question
 
-    if (q.type === "multiple_choice" || q.type === "short_answer") {
+    if (q.type === "multiple_choice") {
       const sVal = String(studentAns || "").trim().toLowerCase();
       const cVal = String(correctAns || "").trim().toLowerCase();
       if (sVal === cVal && sVal !== "") {
@@ -238,3 +249,75 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth();
+    const role = ((session?.user as any)?.role || "").toLowerCase();
+
+    if (!session || !ALLOWED_ROLES.includes(role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { submissionId, questionId, isCorrect } = body;
+
+    if (!submissionId || !ObjectId.isValid(submissionId) || !questionId) {
+      return NextResponse.json({ error: "Missing or invalid payload" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Fetch submission
+    const submission = await db.collection("dve_quiz_submissions").findOne({
+      _id: new ObjectId(submissionId)
+    });
+    if (!submission) {
+      return NextResponse.json({ error: "Submission not found" }, { status: 404 });
+    }
+
+    // Fetch quiz details
+    const quiz = await db.collection("dve_quizzes").findOne({
+      _id: new ObjectId(submission.quizId)
+    });
+    if (!quiz) {
+      return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
+    }
+
+    // Update the specific question's correctness in answers array
+    const updatedAnswers = (submission.answers || []).map((ans: any) => {
+      if (String(ans.questionId) === String(questionId)) {
+        return { ...ans, isCorrect };
+      }
+      return ans;
+    });
+
+    // Re-calculate the score using the updated answers
+    const { score, maxScore } = gradeQuiz(quiz.questions || [], updatedAnswers);
+
+    // Update submission in database
+    await db.collection("dve_quiz_submissions").updateOne(
+      { _id: new ObjectId(submissionId) },
+      { $set: { answers: updatedAnswers, score, maxScore, updatedAt: new Date() } }
+    );
+
+    // Update student's DVE attendance record score
+    const subjectId = quiz.subjectId;
+    await db.collection("dve_attendances").updateOne(
+      { studentId: submission.studentId, subjectId },
+      { $set: { score, maxScore, updatedAt: new Date() } }
+    );
+
+    return NextResponse.json({
+      success: true,
+      message: "อัปเดตผลการตรวจเรียบร้อยแล้ว",
+      score,
+      maxScore
+    });
+  } catch (error: any) {
+    console.error("[DVE Submissions PATCH API] Error:", error);
+    return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
+  }
+}
+

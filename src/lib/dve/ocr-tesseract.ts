@@ -9,7 +9,7 @@ async function getWorker(): Promise<Worker> {
     workerPromise = (async () => {
       try {
         const worker = await createWorker("tha+eng", 1, {
-          langPath: path.join(process.cwd(), "tessdata"),
+          langPath: path.join(process.cwd(), "public", "tessdata"),
           gzip: false,
           logger: (m) => {
             if (process.env.NODE_ENV === "development") {
