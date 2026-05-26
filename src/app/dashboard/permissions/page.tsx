@@ -92,6 +92,18 @@ const FEATURE_LABELS: {
     color: "text-rose-500",
     href: "/dashboard/flagpole-settings",
   },
+  access_dve_teacher: { 
+    label: "เมนู DVE สำหรับอาจารย์", 
+    icon: FiLayout, 
+    color: "text-emerald-500", 
+    href: "/dashboard/dve",
+  },
+  access_dve_student: { 
+    label: "เมนู DVE สำหรับนักเรียน/นักศึกษา", 
+    icon: FiUsers, 
+    color: "text-indigo-500", 
+    href: "/dashboard/dve/student",
+  },
 };
 
 const ADVANCED_FEATURE_LABELS: {

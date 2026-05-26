@@ -20,7 +20,8 @@ export async function POST(req: Request) {
       role,
       citizenId,
       classGroupId,
-      academicLevel
+      academicLevel,
+      studentIdNum
     } = body;
 
     // Debug log (remove in production)
@@ -141,6 +142,7 @@ export async function POST(req: Request) {
     // เพิ่มข้อมูลเฉพาะสำหรับนักเรียน / นักศึกษา (student)
     if (role === "student") {
       newUser.citizenId = citizenId;
+      newUser.studentIdNum = studentIdNum;
       newUser.classGroupId = classGroupId;
       newUser.academicLevel = academicLevel;
       newUser.studentStatus = "กำลังศึกษา"; // ล็อคสถานะเป็นกำลังศึกษา

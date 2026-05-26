@@ -68,7 +68,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // 3. ตรวจสอบสถานะบัญชี (ถ้าโดนระงับ isActive จะเป็น false)
           if (user.isActive === false) {
             console.warn(`[AUTH] Account disabled: "${cleanUsername}"`);
-            throw new Error("บัญชีของคุณถูกระงับการใช้งาน");
+            if (user.role && user.role.toLowerCase() === "student") {
+              throw new Error("บัญชีนักเรียนของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ");
+            } else {
+              throw new Error("บัญชีของคุณยังไม่ได้รับการอนุมัติการเข้าใช้งาน กรุณารอการอนุมัติจากผู้ดูแลระบบ");
+            }
           }
 
           // 4. ถ้าผ่านทุกขั้นตอน ส่งข้อมูล User กลับไปเก็บใน Session

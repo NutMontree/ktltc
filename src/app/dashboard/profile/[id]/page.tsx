@@ -236,6 +236,8 @@ export default function FriendProfilePage({
   const [activeAboutTab, setActiveAboutTab] = useState("ข้อมูลภาพรวม");
   const [showSettings, setShowSettings] = useState(false);
   const [showFullStudentId, setShowFullStudentId] = useState(false);
+  const [showFullPhone, setShowFullPhone] = useState(false);
+  const [showFullCitizenId, setShowFullCitizenId] = useState(false);
 
   // Post states
   const [postText, setPostText] = useState("");
@@ -300,6 +302,8 @@ export default function FriendProfilePage({
     respWorkHead: "",
     respOther: "",
     studentId: "",
+    studentIdNum: "",
+    citizenId: "",
     groupCode: "",
     academicLevel: "",
     learnerType: "",
@@ -2069,16 +2073,39 @@ export default function FriendProfilePage({
       case "เกี่ยวกับ": {
         const renderAboutContent = () => {
           const userRole = (session?.user as any)?.role;
-          const displayStudentId = () => {
-            if (!formData.studentId) return "-";
-            if (isMyProfile && showFullStudentId) {
-              return formData.studentId;
-            }
-            if (formData.studentId.length > 5) {
-              return formData.studentId.slice(0, 6) + "xxxxx";
-            }
-            return "xxxxx";
+
+          const maskSensitiveData = (val: string) => {
+            if (!val) return "-";
+            const str = val.trim();
+            if (str.length <= 5) return str;
+            return `${str.slice(0, 3)}${"x".repeat(str.length - 5)}${str.slice(-2)}`;
           };
+
+          const displayStudentId = () => {
+            const rawId = formData.studentIdNum || formData.studentId;
+            if (!rawId) return "-";
+            if (isMyProfile && showFullStudentId) {
+              return rawId;
+            }
+            return maskSensitiveData(rawId);
+          };
+
+          const displayPhone = () => {
+            if (!formData.phone) return "-";
+            if (isMyProfile && showFullPhone) {
+              return formData.phone;
+            }
+            return maskSensitiveData(formData.phone);
+          };
+
+          const displayCitizenId = () => {
+            if (!formData.citizenId) return "-";
+            if (isMyProfile && showFullCitizenId) {
+              return formData.citizenId;
+            }
+            return maskSensitiveData(formData.citizenId);
+          };
+
           switch (activeAboutTab) {
             case "ข้อมูลภาพรวม":
               return (
@@ -2103,6 +2130,43 @@ export default function FriendProfilePage({
                                 title={showFullStudentId ? "ซ่อนรหัสนักศึกษา" : "แสดงรหัสนักศึกษา"}
                               >
                                 {showFullStudentId ? (
+                                  <EyeInvisibleOutlined className="text-xs" />
+                                ) : (
+                                  <EyeOutlined className="text-xs" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                          {isMyProfile && (
+                            <button 
+                              onClick={() => setActiveModal("profile")}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                            >
+                              <EditOutlined />
+                              <span>แก้ไข</span>
+                            </button>
+                          )}
+                      </div>
+
+                      <div className="flex items-center justify-between group/item">
+                        <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
+                          <SafetyCertificateOutlined className="text-xl text-zinc-400" />
+                          <div className="flex items-center gap-2">
+                            <span>
+                              เลขประจำตัวประชาชน{" "}
+                              <b className="text-zinc-900 dark:text-white font-mono tracking-wider">
+                                {displayCitizenId()}
+                              </b>
+                            </span>
+                            {isMyProfile && (
+                              <button
+                                type="button"
+                                onClick={() => setShowFullCitizenId(!showFullCitizenId)}
+                                className="w-6 h-6 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-blue-600 transition-all active:scale-90 shadow-sm border border-zinc-200 dark:border-zinc-700"
+                                title={showFullCitizenId ? "ซ่อนเลขประจำตัวประชาชน" : "แสดงเลขประจำตัวประชาชน"}
+                              >
+                                {showFullCitizenId ? (
                                   <EyeInvisibleOutlined className="text-xs" />
                                 ) : (
                                   <EyeOutlined className="text-xs" />
@@ -2430,14 +2494,36 @@ export default function FriendProfilePage({
                         <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                           <PhoneOutlined />
                         </div>
-                        <div>
-                          <a
-                            href={`tel:${formData.phone}`}
-                            className="text-sm font-bold text-blue-600 hover:underline"
-                          >
-                            {formData.phone || "-"}
-                          </a>
-                          <p className="text-xs text-zinc-400">โทรศัพท์</p>
+                        <div className="flex items-center gap-2">
+                          <div>
+                            {isMyProfile && showFullPhone ? (
+                              <a
+                                href={`tel:${formData.phone}`}
+                                className="text-sm font-bold text-blue-600 hover:underline"
+                              >
+                                {displayPhone()}
+                              </a>
+                            ) : (
+                              <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                                {displayPhone()}
+                              </span>
+                            )}
+                            <p className="text-xs text-zinc-400">โทรศัพท์</p>
+                          </div>
+                          {isMyProfile && (
+                            <button
+                              type="button"
+                              onClick={() => setShowFullPhone(!showFullPhone)}
+                              className="w-6 h-6 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-blue-600 transition-all active:scale-90 shadow-sm border border-zinc-200 dark:border-zinc-700"
+                              title={showFullPhone ? "ซ่อนเบอร์โทรศัพท์" : "แสดงเบอร์โทรศัพท์"}
+                            >
+                              {showFullPhone ? (
+                                <EyeInvisibleOutlined className="text-xs" />
+                              ) : (
+                                <EyeOutlined className="text-xs" />
+                              )}
+                            </button>
+                          )}
                         </div>
                       </div>
                       {isMyProfile && (

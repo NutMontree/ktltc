@@ -174,6 +174,8 @@ interface NavbarClientProps {
     student_dashboard?: boolean;
     manage_flagpole_data?: boolean;
     manage_flagpole_settings?: boolean;
+    access_dve_teacher?: boolean;
+    access_dve_student?: boolean;
   } | null;
 }
 
@@ -188,11 +190,6 @@ export default function NavbarClient({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
-
-  const closeAllMenus = () => {
-    setActiveMenuId(null);
-    setIsUserDropdownOpen(false);
-  };
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const pathname = usePathname();
 
@@ -273,11 +270,7 @@ export default function NavbarClient({
   const isAdmin = role?.toLowerCase() === "admin";
 
   useEffect(() => {
-    closeAllMenus();
-  }, [pathname]);
-
-  useEffect(() => {
-    // จัดการ Event เวลา Scroll เพื่อเปลี่ยนหน้าตา Navbar (Floating Effect)
+    // จัดการ Event เมื่อ Scroll เพื่อเปลี่ยนหน้าตา Navbar (Floating Effect)
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
 
     // ฉีด CSS Styles สำหรับ Custom Scrollbar
@@ -297,20 +290,16 @@ export default function NavbarClient({
       document.head.appendChild(style);
     }
 
-    // ปิดเมนูเมื่อคลิกนอกพื้นที่ (Click เท่านั้น — ไม่ใช้ hover)
+    // ปิดเมนูเมื่อคลิกนอกพื้นที่ (Click Outside)
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement;
       if (
         !target.closest(".desktop-menu-container") &&
-        !target.closest(".user-dropdown-container") &&
-        !target.closest(".mobile-menu-root")
+        !target.closest(".user-dropdown-container")
       ) {
-        closeAllMenus();
+        setActiveMenuId(null);
+        setIsUserDropdownOpen(false);
       }
-    };
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeAllMenus();
     };
 
     // จัดการระบบ PWA Install
@@ -324,15 +313,15 @@ export default function NavbarClient({
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
       window.removeEventListener("appinstalled", handleAppInstalled);
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [deferredPrompt]);
 
@@ -344,7 +333,7 @@ export default function NavbarClient({
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") setDeferredPrompt(null);
-    closeAllMenus();
+    setActiveMenuId(null);
   };
 
   /**
@@ -422,38 +411,27 @@ export default function NavbarClient({
                 pathname === ensureAbsolute(item.path) || activeMenuId === item._id;
 
               return (
-                <div key={item._id} className="relative">
-                  {hasChildren ? (
-                    <button
-                      type="button"
-                      aria-expanded={activeMenuId === item._id}
-                      onClick={() =>
-                        setActiveMenuId((prev) => (prev === item._id ? null : item._id))
-                      }
-                      className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none cursor-pointer ${
-                        isActiveNode
-                          ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
-                          : "text-zinc-600 dark:text-zinc-400"
-                      }`}
-                    >
-                      <span className="px-1">{item.label}</span>
+                <div
+                  key={item._id}
+                  className="relative"
+                  onMouseEnter={() => setActiveMenuId(item._id)}
+                  onMouseLeave={() => setActiveMenuId(null)}
+                >
+                  <Link
+                    href={hasChildren ? "#" : ensureAbsolute(item.path) || "#"}
+                    className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${
+                      isActiveNode
+                        ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
+                        : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
+                    }`}
+                  >
+                    <span className="px-1">{item.label}</span>
+                    {hasChildren && (
                       <ChevronDown
                         className={`w-4 h-4 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
                       />
-                    </button>
-                  ) : (
-                    <Link
-                      href={ensureAbsolute(item.path) || "#"}
-                      onClick={closeAllMenus}
-                      className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${
-                        isActiveNode
-                          ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
-                          : "text-zinc-600 dark:text-zinc-400"
-                      }`}
-                    >
-                      <span className="px-1">{item.label}</span>
-                    </Link>
-                  )}
+                    )}
+                  </Link>
 
                   {/* Mega Menu / Dropdown Content */}
                   {hasChildren && (
@@ -480,7 +458,7 @@ export default function NavbarClient({
                               <Link
                                 key={child._id}
                                 href={ensureAbsolute(child.path) || "#"}
-                                onClick={closeAllMenus}
+                                onClick={() => setActiveMenuId(null)}
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all group"
                               >
                                 <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
@@ -527,48 +505,16 @@ export default function NavbarClient({
             <div className="hidden lg:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
 
             {userId ? (
-              <div className="relative user-dropdown-container">
-                {/* ปุ่มแสดงโปรไฟล์ผู้ใช้สำหรับมือถือ */}
+              <div
+                className="relative user-dropdown-container"
+              >
+                {/* ปุ่มแสดงโปรไฟล์ผู้ใช้ (User Profile Button) */}
                 <button
-                  type="button"
-                  aria-expanded={isUserDropdownOpen}
                   onClick={() => {
-                    setIsUserDropdownOpen((open) => !open);
+                    setIsUserDropdownOpen(!isUserDropdownOpen);
                     setActiveMenuId(null);
                   }}
-                  className={`lg:hidden flex items-center p-1 rounded-full border transition-all duration-300 outline-none ${
-                    isUserDropdownOpen
-                      ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
-                      : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
-                  }`}
-                  aria-label="โปรไฟล์"
-                >
-                  <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
-                    {image ? (
-                      <Image
-                        src={image}
-                        alt={username || "User"}
-                        fill
-                        sizes="36px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
-                        {(username || "U").charAt(0)}
-                      </div>
-                    )}
-                  </div>
-                </button>
-
-                {/* ปุ่มแสดงโปรไฟล์ผู้ใช้ (Desktop — กดเปิด/ปิดเท่านั้น) */}
-                <button
-                  type="button"
-                  aria-expanded={isUserDropdownOpen}
-                  onClick={() => {
-                    setIsUserDropdownOpen((open) => !open);
-                    setActiveMenuId(null);
-                  }}
-                  className={`hidden lg:flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${
+                  className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${
                     isUserDropdownOpen
                       ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
                       : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
@@ -605,20 +551,11 @@ export default function NavbarClient({
                   />
                 </button>
 
-                {isUserDropdownOpen && (
-                  <button
-                    type="button"
-                    aria-label="ปิดเมนู"
-                    className="fixed inset-0 z-55 cursor-default bg-transparent"
-                    onClick={closeAllMenus}
-                  />
-                )}
-
-                {/* เมนู Dropdown สำหรับผู้ใช้ (Desktop) */}
+                {/* เมนู Dropdown สำหรับผู้ใช้ (User Dropdown Menu) */}
                 <div
-                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right z-60 ${
+                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${
                     isUserDropdownOpen
-                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
                       : "opacity-0 translate-y-3 scale-95 pointer-events-none"
                   }`}
                 >
@@ -655,13 +592,13 @@ export default function NavbarClient({
                       <div className="grid grid-cols-2 gap-2">
                         <Link
                           href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
-                          onClick={closeAllMenus}
-                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm transition-all"
+                          onClick={() => setIsUserDropdownOpen(false)}
+                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all"
                         >
                           <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
                         </Link>
                         <button
-                          onClick={handleLogout}
+                          onClick={() => { handleLogout(); setIsUserDropdownOpen(false); }}
                           className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all"
                         >
                           <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
@@ -680,8 +617,8 @@ export default function NavbarClient({
                         {canManageNews && (
                           <Link
                             href="/dashboard/news"
-                            onClick={closeAllMenus}
-                            className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 overflow-hidden"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                           >
                             <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform duration-500">
                               <Newspaper size={48} strokeWidth={1.5} />
@@ -721,119 +658,28 @@ export default function NavbarClient({
                                 </p>
                                 <Link
                                   href="/dashboard/super-admin"
-                                  onClick={closeAllMenus}
-                                  className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 rounded-xl transition-all"
+                                  onClick={() => setIsUserDropdownOpen(false)}
+                                  className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                                 >
                                   <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
                                 </Link>
                                 <Link
                                   href="/dashboard/permissions"
-                                  onClick={closeAllMenus}
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 rounded-xl transition-all"
+                                  onClick={() => setIsUserDropdownOpen(false)}
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
                                 >
                                   <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
                                 </Link>
                               </div>
                             )}
-
-                            {/* ระบบลงเวลาและรายงาน (Attendance & Reports) */}
-                            {/* {(isSuperAdmin ||
-                              canManageAttendanceDashboard ||
-                              canManageAttendanceReport ||
-                              canManageAttendanceWorkReports ||
-                              canManageAttendanceLeaveApprovals ||
-                              canManageRolesAdvanced ||
-                              canManageAttendanceSettings) && (
-                              <div className="space-y-0.5">
-                                {(isSuperAdmin || canManageAttendanceDashboard) && (
-                                  <Link
-                                    href="/attendance-dashboard"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
-                                  >
-                                    <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
-                                      <Bell size={14} />
-                                    </div>
-                                    ภาพรวมลงเวลาบุคลากร
-                                  </Link>
-                                )}
-                                {isSuperAdmin && (
-                                  <>
-                                    <Link
-                                      href="/dashboard/data-management"
-                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                    >
-                                      <ClipboardList size={14} className="opacity-40" />{" "}
-                                      แก้ไขข้อมูลการลงเวลา
-                                    </Link>
-                                    <Link
-                                      href="/work-reports-management"
-                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                    >
-                                      <FileText size={14} className="opacity-40" />{" "}
-                                      แก้ไขรายงานการทำงาน
-                                    </Link>
-                                  </>
-                                )}
-                                {(isSuperAdmin || canManageAttendanceReport) && (
-                                  <Link
-                                    href="/attendance-report"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <Clock size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
-                                  </Link>
-                                )}
-                                {(isSuperAdmin || canManageAttendanceWorkReports) && (
-                                  <Link
-                                    href="/work-reports"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <FileText size={14} className="opacity-40" />{" "}
-                                    ระบบรายงานการปฏิบัติงาน
-                                  </Link>
-                                )}
-                                {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
-                                  <Link
-                                    href="/leave-approvals"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <CalendarCheck size={14} className="opacity-40" />{" "}
-                                    ระบบอนุมัติการลางาน
-                                  </Link>
-                                )}
-                                {(isSuperAdmin || canManageRolesAdvanced) && (
-                                  <Link
-                                    href="/manage-roles"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <UserCog size={14} className="opacity-40" /> จัดการ
-                                    สิทธิ์บุคลากร
-                                  </Link>
-                                )}
-                                {(isSuperAdmin || canManageAttendanceSettings) && (
-                                  <Link
-                                    href="/attendance-settings"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <Settings size={14} className="opacity-40" /> ตั้งค่าระบบลงเวลา
-                                  </Link>
-                                )}
-                              </div>
-                            )} */}
                           </div>
                         )}
-
-                        {/* <Link
-                          href="/"
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <Home className="w-5 h-5" /> หน้าแรก
-                        </Link> */}
 
                         {canAccessDashboard && (
                           <Link
                             href="/dashboard"
-                            onClick={closeAllMenus}
-                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 rounded-2xl transition-all group"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
                           >
                             <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
                               <Command size={16} />
@@ -845,8 +691,8 @@ export default function NavbarClient({
                         <div className="space-y-0.5">
                           <Link
                             href="/dashboard/chat"
-                            onClick={closeAllMenus}
-                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-sky-700 dark:text-sky-300 rounded-2xl transition-all group"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-2xl transition-all group"
                           >
                             <div className="p-1.5 rounded-xl bg-sky-100 dark:bg-sky-900/30 group-hover:bg-sky-200 dark:group-hover:bg-sky-900/50 transition-colors shadow-sm">
                               <MessageSquare size={16} />
@@ -859,8 +705,8 @@ export default function NavbarClient({
                           ) && (
                             <Link
                               href="/teacher/students"
-                              onClick={closeAllMenus}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 rounded-2xl transition-all group"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
                             >
                               <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
                                 <GraduationCap size={16} />
@@ -872,8 +718,8 @@ export default function NavbarClient({
                           {!["student"].includes(role?.toLowerCase() || "") && (
                             <Link
                               href="/dashboard/drive"
-                              onClick={closeAllMenus}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 rounded-2xl transition-all group"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
                             >
                               <div className="p-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors shadow-sm">
                                 <HardDrive size={16} />
@@ -885,8 +731,8 @@ export default function NavbarClient({
                             permissions?.student_dashboard) && (
                             <Link
                               href="/student/flagpole"
-                              onClick={closeAllMenus}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 rounded-2xl transition-all group"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
                             >
                               <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
                                 <Clock size={16} />
@@ -895,28 +741,29 @@ export default function NavbarClient({
                             </Link>
                           )}
 
-                          {["teacher", "super_admin"].includes(role?.toLowerCase() || "") && (
+                          {(permissions?.access_dve_teacher || isSuperAdmin || role?.toLowerCase() === "teacher") && (
                             <Link
                               href="/dashboard/dve"
-                              onClick={closeAllMenus}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 rounded-2xl transition-all group"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-2xl transition-all group"
                             >
                               <div className="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors shadow-sm">
                                 <BookOpen size={16} />
                               </div>
-                              ศูนย์ฝึกทวิภาคี (DVE Portal)
+                              ศูนย์ฝึกทวีภาคี (DVE Portal)
                             </Link>
                           )}
-                          {isSuperAdmin && (
+
+                          {(permissions?.access_dve_student || role?.toLowerCase() === "student" || isSuperAdmin) && (
                             <Link
                               href="/dashboard/dve/student"
-                              onClick={closeAllMenus}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 rounded-2xl transition-all group"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
                             >
-                              <div className="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors shadow-sm">
+                              <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
                                 <BookOpen size={16} />
                               </div>
-                              ศูนย์ฝึกทวิภาคี เด็กฝึกงาน (DVE Portal)
+                              แดชบอร์ด (นักเรียน/นักศึกษา)
                             </Link>
                           )}
                         </div>
@@ -944,7 +791,7 @@ export default function NavbarClient({
             )}
 
             {/* ปุ่ม Mobile Menu (แสดงเฉพาะบนจอเล็ก) */}
-            <div className="lg:hidden sm:pl-2 relative z-10001">
+            <div className="lg:hidden sm:pl-2">
               <MobileMenu
                 menuTree={filteredMenuTree}
                 image={image}

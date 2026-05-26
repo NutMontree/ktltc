@@ -57,11 +57,13 @@ export default function StudentRegisterPage() {
     if (!formData.lineId.trim()) return setErrorMsg("กรุณาระบุไอดีไลน์ (LINE ID)");
     if (!formData.classGroupId.trim()) return setErrorMsg("กรุณาระบุรหัสกลุ่มเรียน");
     if (!formData.department) return setErrorMsg("กรุณาเลือกแผนกวิชาที่สังกัด");
+    if (!formData.academicLevel) return setErrorMsg("กรุณาเลือกระดับชั้นปีการศึกษา");
 
-    if (formData.citizenId.length !== 13 || isNaN(Number(formData.citizenId))) {
-      return setErrorMsg("รหัสประจำตัวประชาชนต้องเป็นตัวเลข 13 หลักเท่านั้น");
+    // Strict regex validation for citizenId and phone
+    if (!/^\d{13}$/.test(formData.citizenId.trim())) {
+      return setErrorMsg("รหัสประจำตัวประชาชนต้องประกอบด้วยตัวเลข 13 หลักเท่านั้น");
     }
-    if (formData.phone.length < 9 || isNaN(Number(formData.phone))) {
+    if (!/^\d+$/.test(formData.phone.trim())) {
       return setErrorMsg("เบอร์โทรศัพท์มือถือต้องประกอบด้วยตัวเลขเท่านั้น");
     }
 
@@ -74,6 +76,7 @@ export default function StudentRegisterPage() {
           ...formData,
           username: formData.studentIdNum.trim(),
           password: formData.phone.trim(),
+          studentIdNum: formData.studentIdNum.trim(),
           role: "student",
           department: formData.department,
         }),
@@ -237,11 +240,11 @@ export default function StudentRegisterPage() {
                     ระบบบัญชีผู้ใช้เข้าเรียนแบบย่อ (Simplified Student Portal Login)
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
-                    ระบบได้ยกเลิกช่องกรอก Username และรหัสผ่าน เพื่อป้องกันการสะกดผิดหรือลืมข้อมูล โดยตั้งค่าบัญชีดังนี้:
+                    ระบบกำหนดข้อมูลสำหรับการเข้าสู่ระบบบัญชีผู้ใช้ (สำหรับนักเรียน/นักศึกษา) ดังนี้:
                     <br />
-                    1. 🔑 <strong>ชื่อผู้ใช้งาน (User):</strong> จะใช้ <span className="text-amber-600 dark:text-amber-400 font-black">รหัสนักศึกษา</span> ที่ท่านกรอกด้านล่าง
+                    1. 🔑 <strong>ชื่อผู้ใช้งาน (Username):</strong> รหัสนักศึกษา (studentIdNum) ที่ท่านกรอกด้านล่าง
                     <br />
-                    2. 🔒 <strong>รหัสผ่าน (Password):</strong> จะใช้ <span className="text-amber-600 dark:text-amber-400 font-black">เบอร์โทรศัพท์มือถือ</span> ของท่าน
+                    2. 🔒 <strong>รหัสผ่าน (Password):</strong> เบอร์โทรศัพท์มือถือ (phone) ของท่าน
                   </p>
                 </div>
               </div>

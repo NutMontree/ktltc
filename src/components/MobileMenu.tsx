@@ -27,6 +27,7 @@ import {
   HardDrive,
   Menu,
   GraduationCap,
+  BookOpen,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -189,7 +190,7 @@ export default function MobileMenu({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="mobile-menu-root fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-zinc-950 z-[10000] shadow-2xl flex flex-col"
+              className="mobile-menu-root fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-zinc-950 z-10000 shadow-2xl flex flex-col"
             >
               {/* ส่วนหัวเมนู (Drawer Header) */}
               <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
@@ -342,6 +343,26 @@ export default function MobileMenu({
                           className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/student/flagpole" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
                         >
                           <Activity className="w-5 h-5" /> เช็คชื่อเข้าแถว
+                        </Link>
+                      )}
+
+                      {(permissions?.access_dve_teacher || isSuperAdmin || roleLower === "teacher") && (
+                        <Link
+                          href="/dashboard/dve"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/dve" ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
+                          <BookOpen className="w-5 h-5" /> ศูนย์ฝึกทวีภาคี (DVE Portal)
+                        </Link>
+                      )}
+
+                      {(permissions?.access_dve_student || roleLower === "student" || isSuperAdmin) && (
+                        <Link
+                          href="/dashboard/dve/student"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/dve/student" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
+                          <BookOpen className="w-5 h-5" /> แดชบอร์ด (นักเรียน/นักศึกษา)
                         </Link>
                       )}
 

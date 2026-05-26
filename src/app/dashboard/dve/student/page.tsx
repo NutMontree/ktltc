@@ -613,7 +613,7 @@ export function DVEStudentPortal() {
   };
 
   // Filter teachers/subjects when department changes
-  const handleDepartmentChange = async (dept: string, autoSelectSubjectId?: string) => {
+  const handleDepartmentChange = async (dept: string) => {
     setSearchState({ department: dept, teacherId: "", subjectId: "" });
     setActiveSubject(null);
     try {
@@ -626,12 +626,6 @@ export function DVEStudentPortal() {
             teachers: data.teachers || [],
             subjects: data.subjects || [],
           }));
-
-          // Auto select first subject if available
-          if (data.subjects && data.subjects.length > 0) {
-            const targetSubjectId = autoSelectSubjectId || data.subjects[0].id;
-            handleSubjectSelect(targetSubjectId);
-          }
         }
       }
     } catch (err) {
@@ -679,18 +673,7 @@ export function DVEStudentPortal() {
               teachers: data.teachers || [],
             }));
 
-            // Auto-select department & subject from user profile
-            const userDept = data.userProfile?.department;
-            if (userDept) {
-              const matchedDept = (data.departments || []).find(
-                (d: string) =>
-                  d.toLowerCase().includes(userDept.toLowerCase()) ||
-                  userDept.toLowerCase().includes(d.toLowerCase()),
-              );
-              if (matchedDept) {
-                handleDepartmentChange(matchedDept);
-              }
-            }
+            // Do not auto-select department from user profile to keep page clean
           }
         }
       } catch (err) {
@@ -834,7 +817,7 @@ export function DVEStudentPortal() {
                 label: `[${s.code}] ${s.name} (${s.curriculum})`,
                 value: s.id,
               }))}
-              disabled={!searchState.teacherId && !searchState.department}
+              disabled={!searchState.teacherId || !searchState.department}
             />
           </div>
         </div>
@@ -843,7 +826,7 @@ export function DVEStudentPortal() {
       <AnimatePresence mode="wait">
         {loadingSubjectData && <DVELoader />}
 
-        {!loadingSubjectData && activeSubject && (
+        {!loadingSubjectData && searchState.department && searchState.teacherId && searchState.subjectId && activeSubject ? (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1300,6 +1283,27 @@ export function DVEStudentPortal() {
               </div>
             </div>
           </motion.div>
+        ) : (
+          !loadingSubjectData && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 15 }}
+              className="text-center py-20 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-3xl max-w-2xl mx-auto flex flex-col items-center justify-center gap-4 shadow-sm"
+            >
+              <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center">
+                <BookOpen size={28} />
+              </div>
+              <div className="space-y-2 px-6">
+                <h3 className="text-base font-black text-zinc-900 dark:text-white">
+                  กรุณาเลือกข้อมูลเพื่อแสดงรายละเอียดรายวิชา
+                </h3>
+                <p className="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto font-medium">
+                  กรุณาเลือก <b>แผนกวิชา</b>, <b>อาจารย์ผู้สอน</b> และ <b>รายวิชาทวิภาคี</b> ให้ครบทั้ง 3 รายการด้านบน เพื่อเปิดหอเรียนรู้เสมือนจริง ดาวน์โหลดเอกสารประกอบ และเช็คชื่อเข้าเรียนครับ
+                </p>
+              </div>
+            </motion.div>
+          )
         )}
       </AnimatePresence>
 
