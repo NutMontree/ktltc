@@ -875,6 +875,25 @@ function DVETeacherWorkspace() {
     }
   };
 
+  const handleDeleteIndividualAttendance = async (studentId: string) => {
+    const { subjectId, classGroupId, date } = checkinFilter;
+    if (!subjectId || !date) return;
+
+    try {
+      const url = `/api/dve/attendances?subjectId=${subjectId}&date=${date}&studentId=${studentId}${classGroupId ? `&classGroupId=${classGroupId}` : ""}`;
+      const res = await fetch(url, { method: "DELETE" });
+      if (res.ok) {
+        message.success("ลบข้อมูลการเข้าเรียนเรียบร้อยแล้ว");
+        handleLoadRoster();
+      } else {
+        message.error("ไม่สามารถลบข้อมูลได้");
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("เกิดข้อผิดพลาดในการลบข้อมูล");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Teacher Workspace Header */}
@@ -1522,7 +1541,7 @@ function DVETeacherWorkspace() {
 
                 {studentRoster.length > 0 && (
                   <div className="flex gap-2 flex-wrap w-full sm:w-auto">
-                    <Popconfirm
+                    {/* <Popconfirm
                       title="คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลการเช็คชื่อทั้งหมดในวันนี้สำหรับกลุ่มเรียนนี้?"
                       onConfirm={handleClearAttendance}
                       okText="ใช่, ลบเลย"
@@ -1536,7 +1555,7 @@ function DVETeacherWorkspace() {
                       >
                         {clearingAttendance ? "กำลังลบ..." : "🗑️ ล้างข้อมูลการเข้าเรียนวันนี้"}
                       </button>
-                    </Popconfirm>
+                    </Popconfirm> */}
 
                     <button
                       onClick={handleBulkSaveAttendance}
@@ -1789,6 +1808,22 @@ function DVETeacherWorkspace() {
                                         <Edit2 size={12} />
                                         <span>แก้ไข</span>
                                       </button>
+
+                                      <Popconfirm
+                                        title={`คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลการเข้าเรียนของ ${student.name}?`}
+                                        onConfirm={() => handleDeleteIndividualAttendance(student.id)}
+                                        okText="ใช่, ลบ"
+                                        cancelText="ยกเลิก"
+                                        okButtonProps={{ danger: true }}
+                                      >
+                                        <button
+                                          type="button"
+                                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+                                        >
+                                          <Trash2 size={12} />
+                                          <span>ลบ</span>
+                                        </button>
+                                      </Popconfirm>
                                     </div>
                                   </td>
                                 </tr>
@@ -1889,26 +1924,44 @@ function DVETeacherWorkspace() {
                                     คะแนน: <span className="font-black text-indigo-600 dark:text-indigo-400">{rec.score || "-"}</span>
                                   </span>
                                 </div>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setEditingStudent({
-                                      id: student.id,
-                                      name: student.name,
-                                      studentIdNum: student.studentIdNum,
-                                      classGroupId: student.classGroupId,
-                                      status: rec.status,
-                                      assignmentStatus: rec.assignmentStatus,
-                                      score: rec.score,
-                                      imageUrl: rec.imageUrl,
-                                      unitId: rec.unitId,
-                                    });
-                                  }}
-                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
-                                >
-                                  <Edit2 size={11} />
-                                  <span>แก้ไข</span>
-                                </button>
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingStudent({
+                                        id: student.id,
+                                        name: student.name,
+                                        studentIdNum: student.studentIdNum,
+                                        classGroupId: student.classGroupId,
+                                        status: rec.status,
+                                        assignmentStatus: rec.assignmentStatus,
+                                        score: rec.score,
+                                        imageUrl: rec.imageUrl,
+                                        unitId: rec.unitId,
+                                      });
+                                    }}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+                                  >
+                                    <Edit2 size={11} />
+                                    <span>แก้ไข</span>
+                                  </button>
+
+                                  <Popconfirm
+                                    title={`คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลของ ${student.name}?`}
+                                    onConfirm={() => handleDeleteIndividualAttendance(student.id)}
+                                    okText="ใช่, ลบ"
+                                    cancelText="ยกเลิก"
+                                    okButtonProps={{ danger: true }}
+                                  >
+                                    <button
+                                      type="button"
+                                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+                                    >
+                                      <Trash2 size={11} />
+                                      <span>ลบ</span>
+                                    </button>
+                                  </Popconfirm>
+                                </div>
                               </div>
                             </div>
                           );

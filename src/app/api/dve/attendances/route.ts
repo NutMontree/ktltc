@@ -228,6 +228,7 @@ export async function DELETE(req: Request) {
     const subjectId = searchParams.get("subjectId")?.trim();
     const date = searchParams.get("date")?.trim();
     const classGroupId = searchParams.get("classGroupId")?.trim();
+    const studentId = searchParams.get("studentId")?.trim();
 
     if (!subjectId || !date) {
       return NextResponse.json({ error: "Missing required parameters subjectId or date" }, { status: 400 });
@@ -245,13 +246,23 @@ export async function DELETE(req: Request) {
     if (classGroupId) {
       query.classGroupId = classGroupId;
     }
+    if (studentId) {
+      query.studentId = studentId;
+    }
 
-    const result = await db.collection("dve_attendances").deleteMany(query);
-
-    return NextResponse.json({
-      success: true,
-      message: `ล้างประวัติการเช็คชื่อทั้งหมดจำนวน ${result.deletedCount} รายการเรียบร้อยแล้ว`,
-    });
+    if (studentId) {
+      await db.collection("dve_attendances").deleteOne(query);
+      return NextResponse.json({
+        success: true,
+        message: "ลบประวัติการเช็คชื่อรายบุคคลเรียบร้อยแล้ว",
+      });
+    } else {
+      const result = await db.collection("dve_attendances").deleteMany(query);
+      return NextResponse.json({
+        success: true,
+        message: `ล้างประวัติการเช็คชื่อทั้งหมดจำนวน ${result.deletedCount} รายการเรียบร้อยแล้ว`,
+      });
+    }
   } catch (error: any) {
     console.error("[DVE Attendances DELETE API] Error:", error);
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
