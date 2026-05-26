@@ -505,9 +505,7 @@ export default function NavbarClient({
             <div className="hidden lg:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
 
             {userId ? (
-              <div
-                className="relative user-dropdown-container"
-              >
+              <div className="relative user-dropdown-container">
                 {/* ปุ่มแสดงโปรไฟล์ผู้ใช้ (User Profile Button) */}
                 <button
                   onClick={() => {
@@ -598,7 +596,10 @@ export default function NavbarClient({
                           <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
                         </Link>
                         <button
-                          onClick={() => { handleLogout(); setIsUserDropdownOpen(false); }}
+                          onClick={() => {
+                            handleLogout();
+                            setIsUserDropdownOpen(false);
+                          }}
                           className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all"
                         >
                           <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
@@ -741,7 +742,9 @@ export default function NavbarClient({
                             </Link>
                           )}
 
-                          {(permissions?.access_dve_teacher || isSuperAdmin || role?.toLowerCase() === "teacher") && (
+                          {(permissions?.access_dve_teacher ||
+                            isSuperAdmin ||
+                            role?.toLowerCase() === "teacher") && (
                             <Link
                               href="/dashboard/dve"
                               onClick={() => setIsUserDropdownOpen(false)}
@@ -754,7 +757,9 @@ export default function NavbarClient({
                             </Link>
                           )}
 
-                          {(permissions?.access_dve_student || role?.toLowerCase() === "student" || isSuperAdmin) && (
+                          {(permissions?.access_dve_student ||
+                            role?.toLowerCase() === "student" ||
+                            isSuperAdmin) && (
                             <Link
                               href="/dashboard/dve/student"
                               onClick={() => setIsUserDropdownOpen(false)}
