@@ -237,14 +237,15 @@ export default function StudentRegisterPage() {
                 </div>
                 <div className="flex-1">
                   <h4 className="text-sm font-black text-amber-600 dark:text-amber-400 mb-1 leading-none">
-                    ระบบบัญชีผู้ใช้เข้าเรียนแบบย่อ (Simplified Student Portal Login)
+                    ข้อกำหนดสำหรับ นักเรียน นักศึกษา
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
                     ระบบกำหนดข้อมูลสำหรับการเข้าสู่ระบบบัญชีผู้ใช้ (สำหรับนักเรียน/นักศึกษา) ดังนี้:
                     <br />
-                    1. 🔑 <strong>ชื่อผู้ใช้งาน (Username):</strong> รหัสนักศึกษา (studentIdNum) ที่ท่านกรอกด้านล่าง
+                    1. 🔑 <strong>ชื่อผู้ใช้งาน (Username):</strong> รหัสนักศึกษา
+                    ที่ท่านกรอกด้านล่าง
                     <br />
-                    2. 🔒 <strong>รหัสผ่าน (Password):</strong> เบอร์โทรศัพท์มือถือ (phone) ของท่าน
+                    2. 🔒 <strong>รหัสผ่าน (Password):</strong> เบอร์โทรศัพท์มือถือ ของท่าน
                   </p>
                 </div>
               </div>
@@ -412,11 +413,13 @@ export default function StudentRegisterPage() {
                         required
                       >
                         <option value="">— เลือกแผนกวิชาของคุณ —</option>
-                        {DEPARTMENT_GROUPS.find((g) => g.label === "5. แผนกวิชา")?.options.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
+                        {DEPARTMENT_GROUPS.find((g) => g.label === "5. แผนกวิชา")?.options.map(
+                          (opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ),
+                        )}
                       </select>
                     </div>
                   </div>

@@ -5,7 +5,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn, getSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Lock, Command, Eye, EyeOff, ArrowRight, X, School, GraduationCap, ChevronRight } from "lucide-react";
+import {
+  User,
+  Lock,
+  Command,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  X,
+  School,
+  GraduationCap,
+  ChevronRight,
+  ShieldAlert,
+} from "lucide-react";
 
 async function recordActivity(data: { userName: string; action: string; details: string }) {
   try {
@@ -184,7 +196,6 @@ export default function LoginPage() {
               KTLTC
             </span>
           </div>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -195,6 +206,27 @@ export default function LoginPage() {
               กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ
             </p>
           </motion.div>
+
+          <div>
+            {/* Login Info Tip Card */}
+            <div className="p-5 bg-amber-500/5 dark:bg-amber-500/10 border-2 border-dashed border-amber-500/20 rounded-3xl flex gap-4 items-start mb-6">
+              <div className="p-3 bg-amber-500 text-white rounded-2xl shadow-lg shadow-amber-500/30">
+                <ShieldAlert size={20} />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-black text-amber-600 dark:text-amber-400 mb-1 leading-none">
+                  ข้อกำหนดสำหรับ นักเรียน นักศึกษา
+                </h4>
+                <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
+                  ระบบกำหนดข้อมูลสำหรับการเข้าสู่ระบบบัญชีผู้ใช้ (สำหรับนักเรียน/นักศึกษา) ดังนี้:
+                  <br />
+                  1. 🔑 <strong>ชื่อผู้ใช้งาน (Username):</strong> รหัสนักศึกษา ที่ท่านกรอกด้านล่าง
+                  <br />
+                  2. 🔒 <strong>รหัสผ่าน (Password):</strong> เบอร์โทรศัพท์มือถือ ของท่าน
+                </p>
+              </div>
+            </div>
+          </div>
 
           <AnimatePresence>
             {error && (
@@ -210,7 +242,6 @@ export default function LoginPage() {
               </motion.div>
             )}
           </AnimatePresence>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -305,7 +336,6 @@ export default function LoginPage() {
               </button>
             </motion.div>
           </form>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -377,7 +407,7 @@ export default function LoginPage() {
             >
               {/* Decorative Accent Gradient Line */}
               <div className="h-1.5 w-full bg-linear-to-r from-blue-500 via-indigo-500 to-amber-500" />
-              
+
               <div className="p-6 sm:p-8">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6">
@@ -417,7 +447,10 @@ export default function LoginPage() {
                         สำหรับครูผู้สอน หัวหน้างาน และเจ้าหน้าที่เพื่อเข้าใช้งานระบบบริหารจัดการ
                       </p>
                     </div>
-                    <ChevronRight size={18} className="text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                    <ChevronRight
+                      size={18}
+                      className="text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all"
+                    />
                   </Link>
 
                   {/* Option: Student */}
@@ -438,7 +471,10 @@ export default function LoginPage() {
                         สำหรับนักเรียน นักศึกษา เพื่อรายงานตัว เช็คชื่อ และติดตามกิจกรรมต่างๆ
                       </p>
                     </div>
-                    <ChevronRight size={18} className="text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all" />
+                    <ChevronRight
+                      size={18}
+                      className="text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all"
+                    />
                   </Link>
                 </div>
               </div>
