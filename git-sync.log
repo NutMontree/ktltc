@@ -39159,3 +39159,975 @@ To https://github.com/NutMontree/ktltc.git
 [Tue May 26 03:12:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
 [Tue May 26 03:14:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
 [Tue May 26 03:14:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 29fff4cb] Auto-commit from Lenovo machine [2026-05-26 03:14:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:14:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:14:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   53fd4b4b..29fff4cb  main -> main
+[Tue May 26 03:14:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:14:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:16:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:16:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 58f6fd9e] Auto-commit from Lenovo machine [2026-05-26 03:16:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:16:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:16:01 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   631f82e5..58f6fd9e  main -> main
+[Tue May 26 03:16:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:16:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:18:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:18:03 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main e58f82ed] Auto-commit from Lenovo machine [2026-05-26 03:18:03]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:18:03 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:18:03 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   58f6fd9e..e58f82ed  main -> main
+[Tue May 26 03:18:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:18:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:20:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:20:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main ef076cdd] Auto-commit from Lenovo machine [2026-05-26 03:20:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:20:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:20:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   e58f82ed..ef076cdd  main -> main
+[Tue May 26 03:20:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:20:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:22:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:22:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main b776a652] Auto-commit from Lenovo machine [2026-05-26 03:22:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:22:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:22:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   ef076cdd..b776a652  main -> main
+[Tue May 26 03:22:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:22:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:24:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:24:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main a688d62d] Auto-commit from Lenovo machine [2026-05-26 03:24:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:24:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:24:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   b776a652..a688d62d  main -> main
+[Tue May 26 03:24:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:24:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:26:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:26:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main b0693a76] Auto-commit from Lenovo machine [2026-05-26 03:26:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:26:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:26:01 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   a688d62d..b0693a76  main -> main
+[Tue May 26 03:26:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:26:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:28:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:28:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main e25f20a0] Auto-commit from Lenovo machine [2026-05-26 03:28:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:28:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:28:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   b0693a76..e25f20a0  main -> main
+[Tue May 26 03:28:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:28:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:30:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:30:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main ce748096] Auto-commit from Lenovo machine [2026-05-26 03:30:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:30:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:30:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   e25f20a0..ce748096  main -> main
+[Tue May 26 03:30:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:30:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:32:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:32:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main f6f4042b] Auto-commit from Lenovo machine [2026-05-26 03:32:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:32:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:32:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   ce748096..f6f4042b  main -> main
+[Tue May 26 03:32:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:32:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:34:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:34:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 2ba500d2] Auto-commit from Lenovo machine [2026-05-26 03:34:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:34:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:34:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   f6f4042b..2ba500d2  main -> main
+[Tue May 26 03:34:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:34:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:36:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:36:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main f4a434b5] Auto-commit from Lenovo machine [2026-05-26 03:36:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:36:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:36:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   2ba500d2..f4a434b5  main -> main
+[Tue May 26 03:36:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:36:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:38:02 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:38:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 97518aaa] Auto-commit from Lenovo machine [2026-05-26 03:38:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:38:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:38:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   f4a434b5..97518aaa  main -> main
+[Tue May 26 03:38:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:38:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:40:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:40:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 14008dbb] Auto-commit from Lenovo machine [2026-05-26 03:40:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:40:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:40:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   97518aaa..14008dbb  main -> main
+[Tue May 26 03:40:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:40:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:42:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:42:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main b3e4bfde] Auto-commit from Lenovo machine [2026-05-26 03:42:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:42:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:42:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   14008dbb..b3e4bfde  main -> main
+[Tue May 26 03:42:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:42:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:44:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:44:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 44d43bbc] Auto-commit from Lenovo machine [2026-05-26 03:44:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:44:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:44:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   b3e4bfde..44d43bbc  main -> main
+[Tue May 26 03:44:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:44:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:46:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:46:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 02e50320] Auto-commit from Lenovo machine [2026-05-26 03:46:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:46:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:46:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   44d43bbc..02e50320  main -> main
+[Tue May 26 03:46:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:46:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:48:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:48:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 4029ff88] Auto-commit from Lenovo machine [2026-05-26 03:48:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:48:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:48:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   02e50320..4029ff88  main -> main
+[Tue May 26 03:48:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:48:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:50:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:50:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 2c64b3a7] Auto-commit from Lenovo machine [2026-05-26 03:50:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:50:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:50:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   4029ff88..2c64b3a7  main -> main
+[Tue May 26 03:50:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:50:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:52:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:52:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 8fc7ac73] Auto-commit from Lenovo machine [2026-05-26 03:52:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:52:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:52:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   2c64b3a7..8fc7ac73  main -> main
+[Tue May 26 03:52:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:52:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:54:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:54:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main d1e153c9] Auto-commit from Lenovo machine [2026-05-26 03:54:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:54:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:54:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   8fc7ac73..d1e153c9  main -> main
+[Tue May 26 03:54:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:54:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:56:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:56:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 64d9795a] Auto-commit from Lenovo machine [2026-05-26 03:56:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:56:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:56:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   d1e153c9..64d9795a  main -> main
+[Tue May 26 03:56:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:56:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 03:58:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 03:58:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 96a3055b] Auto-commit from Lenovo machine [2026-05-26 03:58:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 03:58:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 03:58:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   64d9795a..96a3055b  main -> main
+[Tue May 26 03:58:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 03:58:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:00:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:00:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 6934a33e] Auto-commit from Lenovo machine [2026-05-26 04:00:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:00:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:00:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   96a3055b..6934a33e  main -> main
+[Tue May 26 04:00:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:00:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:02:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:02:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main dc65d18b] Auto-commit from Lenovo machine [2026-05-26 04:02:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:02:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:02:01 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   6934a33e..dc65d18b  main -> main
+[Tue May 26 04:02:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:02:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:04:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:04:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 0c2bb48a] Auto-commit from Lenovo machine [2026-05-26 04:04:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:04:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:04:01 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   dc65d18b..0c2bb48a  main -> main
+[Tue May 26 04:04:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:04:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:06:02 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:06:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main a50bee2e] Auto-commit from Lenovo machine [2026-05-26 04:06:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:06:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:06:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   0c2bb48a..a50bee2e  main -> main
+[Tue May 26 04:06:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:06:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:08:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:08:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 024032e6] Auto-commit from Lenovo machine [2026-05-26 04:08:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:08:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:08:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   a50bee2e..024032e6  main -> main
+[Tue May 26 04:08:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:08:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:10:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:10:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 70ca9d09] Auto-commit from Lenovo machine [2026-05-26 04:10:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:10:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:10:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   024032e6..70ca9d09  main -> main
+[Tue May 26 04:10:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:10:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:12:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:12:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main db73c717] Auto-commit from Lenovo machine [2026-05-26 04:12:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:12:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:12:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   70ca9d09..db73c717  main -> main
+[Tue May 26 04:12:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:12:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:14:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:14:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 43508c3f] Auto-commit from Lenovo machine [2026-05-26 04:14:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:14:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:14:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   db73c717..43508c3f  main -> main
+[Tue May 26 04:14:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:14:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:16:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:16:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 71d67f7c] Auto-commit from Lenovo machine [2026-05-26 04:16:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:16:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:16:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   43508c3f..71d67f7c  main -> main
+[Tue May 26 04:16:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:16:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:18:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:18:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 5a0f6a22] Auto-commit from Lenovo machine [2026-05-26 04:18:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:18:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:18:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   71d67f7c..5a0f6a22  main -> main
+[Tue May 26 04:18:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:18:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:20:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:20:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 739606f7] Auto-commit from Lenovo machine [2026-05-26 04:20:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:20:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:20:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   5a0f6a22..739606f7  main -> main
+[Tue May 26 04:20:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:20:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:22:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:22:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main a7d45813] Auto-commit from Lenovo machine [2026-05-26 04:22:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:22:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:22:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   739606f7..a7d45813  main -> main
+[Tue May 26 04:22:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:22:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:24:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:24:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 0c5f912a] Auto-commit from Lenovo machine [2026-05-26 04:24:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:24:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:24:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   a7d45813..0c5f912a  main -> main
+[Tue May 26 04:24:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:24:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:26:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:26:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main e27076e9] Auto-commit from Lenovo machine [2026-05-26 04:26:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:26:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:26:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   0c5f912a..e27076e9  main -> main
+[Tue May 26 04:26:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:26:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:28:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:28:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 47ed9308] Auto-commit from Lenovo machine [2026-05-26 04:28:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:28:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:28:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   e27076e9..47ed9308  main -> main
+[Tue May 26 04:28:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:28:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:30:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:30:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 6567107b] Auto-commit from Lenovo machine [2026-05-26 04:30:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:30:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:30:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   47ed9308..6567107b  main -> main
+[Tue May 26 04:30:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:30:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:32:02 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:32:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 74892f6c] Auto-commit from Lenovo machine [2026-05-26 04:32:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:32:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:32:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   6567107b..74892f6c  main -> main
+[Tue May 26 04:32:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:32:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:34:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:34:03 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 1f2f16ac] Auto-commit from Lenovo machine [2026-05-26 04:34:03]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:34:03 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:34:03 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   74892f6c..1f2f16ac  main -> main
+[Tue May 26 04:34:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:34:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:36:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:36:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 53202d70] Auto-commit from Lenovo machine [2026-05-26 04:36:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:36:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:36:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   1f2f16ac..53202d70  main -> main
+[Tue May 26 04:36:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:36:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:38:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:38:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main f1b0982c] Auto-commit from Lenovo machine [2026-05-26 04:38:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:38:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:38:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   53202d70..f1b0982c  main -> main
+[Tue May 26 04:38:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:38:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:40:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:40:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 5711ed72] Auto-commit from Lenovo machine [2026-05-26 04:40:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:40:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:40:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   f1b0982c..5711ed72  main -> main
+[Tue May 26 04:40:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:40:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:42:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:42:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 2f196a5c] Auto-commit from Lenovo machine [2026-05-26 04:42:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:42:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:42:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   5711ed72..2f196a5c  main -> main
+[Tue May 26 04:42:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:42:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:44:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:44:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main b1f4556d] Auto-commit from Lenovo machine [2026-05-26 04:44:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:44:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:44:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   2f196a5c..b1f4556d  main -> main
+[Tue May 26 04:44:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:44:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:46:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:46:03 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main b4d3f70f] Auto-commit from Lenovo machine [2026-05-26 04:46:03]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:46:03 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:46:03 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   b1f4556d..b4d3f70f  main -> main
+[Tue May 26 04:46:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:46:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:48:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:48:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 1e02657e] Auto-commit from Lenovo machine [2026-05-26 04:48:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:48:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:48:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   b4d3f70f..1e02657e  main -> main
+[Tue May 26 04:48:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:48:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:50:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:50:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main e0b60c30] Auto-commit from Lenovo machine [2026-05-26 04:50:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:50:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:50:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   1e02657e..e0b60c30  main -> main
+[Tue May 26 04:50:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:50:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:52:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:52:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 2f75ad0f] Auto-commit from Lenovo machine [2026-05-26 04:52:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:52:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:52:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   e0b60c30..2f75ad0f  main -> main
+[Tue May 26 04:52:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:52:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:54:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:54:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 76fa18f5] Auto-commit from Lenovo machine [2026-05-26 04:54:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:54:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:54:01 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   2f75ad0f..76fa18f5  main -> main
+[Tue May 26 04:54:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:54:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:56:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:56:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 434204f1] Auto-commit from Lenovo machine [2026-05-26 04:56:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:56:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:56:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   76fa18f5..434204f1  main -> main
+[Tue May 26 04:56:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:56:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 04:58:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 04:58:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main e2f4267b] Auto-commit from Lenovo machine [2026-05-26 04:58:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 04:58:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 04:58:01 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   434204f1..e2f4267b  main -> main
+[Tue May 26 04:58:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 04:58:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:00:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:00:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 9b9ad9b9] Auto-commit from Lenovo machine [2026-05-26 05:00:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:00:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:00:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   e2f4267b..9b9ad9b9  main -> main
+[Tue May 26 05:00:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:00:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:02:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:02:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main ad4a35e3] Auto-commit from Lenovo machine [2026-05-26 05:02:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:02:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:02:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   9b9ad9b9..ad4a35e3  main -> main
+[Tue May 26 05:02:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:02:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:04:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:04:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main f8ff897b] Auto-commit from Lenovo machine [2026-05-26 05:04:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:04:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:04:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   ad4a35e3..f8ff897b  main -> main
+[Tue May 26 05:04:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:04:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:06:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:06:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main c5f5177d] Auto-commit from Lenovo machine [2026-05-26 05:06:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:06:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:06:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   f8ff897b..c5f5177d  main -> main
+[Tue May 26 05:06:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:06:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:08:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:08:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 28658804] Auto-commit from Lenovo machine [2026-05-26 05:08:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:08:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:08:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   c5f5177d..28658804  main -> main
+[Tue May 26 05:08:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:08:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:10:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:10:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main bde03d51] Auto-commit from Lenovo machine [2026-05-26 05:10:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:10:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:10:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   28658804..bde03d51  main -> main
+[Tue May 26 05:10:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:10:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:12:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:12:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 366caa5b] Auto-commit from Lenovo machine [2026-05-26 05:12:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:12:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:12:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   bde03d51..366caa5b  main -> main
+[Tue May 26 05:12:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:12:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:14:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:14:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 77ff71d0] Auto-commit from Lenovo machine [2026-05-26 05:14:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:14:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:14:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   366caa5b..77ff71d0  main -> main
+[Tue May 26 05:14:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:14:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:16:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:16:03 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 2a8505e4] Auto-commit from Lenovo machine [2026-05-26 05:16:03]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:16:03 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:16:03 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   77ff71d0..2a8505e4  main -> main
+[Tue May 26 05:16:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:16:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:18:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:18:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 543069bf] Auto-commit from Lenovo machine [2026-05-26 05:18:03]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:18:03 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:18:03 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   2a8505e4..543069bf  main -> main
+[Tue May 26 05:18:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:18:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:20:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:20:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 6933f3a0] Auto-commit from Lenovo machine [2026-05-26 05:20:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:20:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:20:01 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   543069bf..6933f3a0  main -> main
+[Tue May 26 05:20:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:20:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:22:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:22:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 1c1e89c3] Auto-commit from Lenovo machine [2026-05-26 05:22:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:22:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:22:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   6933f3a0..1c1e89c3  main -> main
+[Tue May 26 05:22:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:22:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:24:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:24:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main ae18a82e] Auto-commit from Lenovo machine [2026-05-26 05:24:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:24:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:24:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   1c1e89c3..ae18a82e  main -> main
+[Tue May 26 05:24:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:24:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:26:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:26:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 1f2fb074] Auto-commit from Lenovo machine [2026-05-26 05:26:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:26:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:26:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   ae18a82e..1f2fb074  main -> main
+[Tue May 26 05:26:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:26:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:28:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:28:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 9e820abd] Auto-commit from Lenovo machine [2026-05-26 05:28:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:28:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:28:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   1f2fb074..9e820abd  main -> main
+[Tue May 26 05:28:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:28:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:30:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:30:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main aaaa9fe0] Auto-commit from Lenovo machine [2026-05-26 05:30:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:30:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:30:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   9e820abd..aaaa9fe0  main -> main
+[Tue May 26 05:30:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:30:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:32:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:32:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main aa69115c] Auto-commit from Lenovo machine [2026-05-26 05:32:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:32:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:32:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   aaaa9fe0..aa69115c  main -> main
+[Tue May 26 05:32:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:32:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:34:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:34:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 663badd9] Auto-commit from Lenovo machine [2026-05-26 05:34:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:34:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:34:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   aa69115c..663badd9  main -> main
+[Tue May 26 05:34:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:34:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:36:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:36:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 8e037648] Auto-commit from Lenovo machine [2026-05-26 05:36:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:36:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:36:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   663badd9..8e037648  main -> main
+[Tue May 26 05:36:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:36:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:38:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:38:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 766d6227] Auto-commit from Lenovo machine [2026-05-26 05:38:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:38:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:38:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   8e037648..766d6227  main -> main
+[Tue May 26 05:38:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:38:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:40:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:40:03 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 45bfce6d] Auto-commit from Lenovo machine [2026-05-26 05:40:03]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:40:03 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:40:03 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   766d6227..45bfce6d  main -> main
+[Tue May 26 05:40:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:40:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:42:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:42:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 25d1acdd] Auto-commit from Lenovo machine [2026-05-26 05:42:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:42:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:42:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   45bfce6d..25d1acdd  main -> main
+[Tue May 26 05:42:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:42:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:44:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:44:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main eb511e72] Auto-commit from Lenovo machine [2026-05-26 05:44:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:44:01 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:44:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   25d1acdd..eb511e72  main -> main
+[Tue May 26 05:44:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:44:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:46:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:46:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main dace8e42] Auto-commit from Lenovo machine [2026-05-26 05:46:01]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:46:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:46:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   eb511e72..dace8e42  main -> main
+[Tue May 26 05:46:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:46:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:48:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:48:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 2870a4a6] Auto-commit from Lenovo machine [2026-05-26 05:48:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:48:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:48:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   dace8e42..2870a4a6  main -> main
+[Tue May 26 05:48:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:48:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:50:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:50:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main a59ec25d] Auto-commit from Lenovo machine [2026-05-26 05:50:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:50:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:50:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   2870a4a6..a59ec25d  main -> main
+[Tue May 26 05:50:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:50:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:52:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:52:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 3e369c67] Auto-commit from Lenovo machine [2026-05-26 05:52:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:52:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:52:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   a59ec25d..3e369c67  main -> main
+[Tue May 26 05:52:05 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:52:05 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:54:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:54:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 6de6035a] Auto-commit from Lenovo machine [2026-05-26 05:54:02]
+ 1 file changed, 12 insertions(+)
+[Tue May 26 05:54:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 05:54:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+   3e369c67..6de6035a  main -> main
+[Tue May 26 05:54:04 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 05:54:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 05:56:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 05:56:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
