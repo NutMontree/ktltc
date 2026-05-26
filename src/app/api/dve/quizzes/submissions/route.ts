@@ -199,18 +199,38 @@ export async function GET(req: Request) {
       .sort({ submittedAt: -1 })
       .toArray();
 
+    // Enrich submissions with classGroupId from users collection
+    const enriched = await Promise.all(
+      submissions.map(async (s) => {
+        let classGroupId = "";
+        try {
+          if (s.studentId && ObjectId.isValid(s.studentId)) {
+            const userDoc = await db.collection("users").findOne(
+              { _id: new ObjectId(s.studentId) },
+              { projection: { classGroupId: 1 } }
+            );
+            classGroupId = userDoc?.classGroupId || "";
+          }
+        } catch (_) {}
+        return {
+          id: s._id.toString(),
+          quizId: s.quizId,
+          studentId: s.studentId,
+          studentName: s.studentName,
+          classGroupId,
+          answers: s.answers || [],
+          score: s.score || 0,
+          maxScore: s.maxScore || 0,
+          fileUrl: s.fileUrl || "",
+          fileName: s.fileName || "",
+          submittedAt: s.submittedAt,
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      submissions: submissions.map((s) => ({
-        id: s._id.toString(),
-        quizId: s.quizId,
-        studentId: s.studentId,
-        studentName: s.studentName,
-        answers: s.answers || [],
-        score: s.score || 0,
-        maxScore: s.maxScore || 0,
-        submittedAt: s.submittedAt,
-      }))
+      submissions: enriched,
     });
 
   } catch (error: any) {

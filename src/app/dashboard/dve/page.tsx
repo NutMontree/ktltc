@@ -33,6 +33,9 @@ import {
   Sparkles,
   Image as ImageIcon,
   Briefcase,
+  FileText,
+  Eye,
+  Filter,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker } from "antd";
@@ -239,10 +242,14 @@ function DVETeacherWorkspace() {
   // Quiz submissions view states
   const [submissionsQuizId, setSubmissionsQuizId] = useState<string | null>(null);
   const [submissionsQuizTitle, setSubmissionsQuizTitle] = useState("");
+  const [submissionsIsBuiltIn, setSubmissionsIsBuiltIn] = useState(false);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [isSubmissionsModalOpen, setIsSubmissionsModalOpen] = useState(false);
   const [expandedSubmissionId, setExpandedSubmissionId] = useState<string | null>(null);
+  const [submissionsClassFilter, setSubmissionsClassFilter] = useState<string>("all");
+  const [submissionsPreviewUrl, setSubmissionsPreviewUrl] = useState<string | null>(null);
+  const [submissionsPreviewName, setSubmissionsPreviewName] = useState<string | null>(null);
 
   // Checklist / Attendances checkin states
   const [checkinFilter, setCheckinFilter] = useState({
@@ -545,9 +552,13 @@ function DVETeacherWorkspace() {
     }
   };
 
-  const handleLoadSubmissions = async (quizId: string, quizTitle: string) => {
+  const handleLoadSubmissions = async (quizId: string, quizTitle: string, isBuiltIn: boolean) => {
     setSubmissionsQuizId(quizId);
     setSubmissionsQuizTitle(quizTitle);
+    setSubmissionsIsBuiltIn(isBuiltIn);
+    setSubmissionsClassFilter("all");
+    setSubmissionsPreviewUrl(null);
+    setSubmissionsPreviewName(null);
     setLoadingSubmissions(true);
     setIsSubmissionsModalOpen(true);
     try {
@@ -1231,14 +1242,14 @@ function DVETeacherWorkspace() {
                               <span
                                 className={`px-2 py-0.5 rounded-full text-[9px] font-black leading-none border ${quiz.isBuiltIn ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-blue-500/10 text-blue-600 border-blue-500/20"}`}
                               >
-                                {quiz.isBuiltIn ? "สร้างในแอป (Built-In)" : "ลิงก์ Google Form"}
+                                {quiz.isBuiltIn ? "🧠 ควิซในแอป" : "🔗 Google Form"}
                               </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-zinc-400">
                               {!quiz.isBuiltIn ? (
                                 <span className="flex items-center gap-1">
                                   <ExternalLink size={10} />
-                                  {quiz.googleFormUrl.substring(0, 45)}...
+                                  {quiz.googleFormUrl ? quiz.googleFormUrl.substring(0, 45) + "..." : "ไม่มีลิงก์"}
                                 </span>
                               ) : (
                                 <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
@@ -1256,14 +1267,14 @@ function DVETeacherWorkspace() {
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0">
-                            {quiz.isBuiltIn && (
-                              <button
-                                onClick={() => handleLoadSubmissions(quiz.id, quiz.title)}
-                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black transition-all shadow-sm"
-                              >
-                                ดูผลคะแนน
-                              </button>
-                            )}
+                            {/* View submissions — available for ALL quiz types */}
+                            <button
+                              onClick={() => handleLoadSubmissions(quiz.id, quiz.title, !!quiz.isBuiltIn)}
+                              className="px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-600 hover:text-white border border-indigo-500/20 hover:border-indigo-500 rounded-lg text-xs font-black transition-all shadow-sm flex items-center gap-1"
+                            >
+                              <Eye size={12} />
+                              ดูงานที่ส่ง
+                            </button>
                             <button
                               onClick={() => {
                                 setQuizForm({
@@ -3003,7 +3014,7 @@ function DVETeacherWorkspace() {
                   )}
 
                   <div className="flex flex-col gap-1.5 border-t dark:border-zinc-800 pt-4">
-                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    <label className="text-xs font-black text-zinc-500 dark:border-zinc-400">
                       วันหมดเขตส่งกระดาษคำตอบ (เดดไลน์)
                     </label>
                     <input
@@ -3045,241 +3056,253 @@ function DVETeacherWorkspace() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsSubmissionsModalOpen(false)}
+              onClick={() => { setIsSubmissionsModalOpen(false); setSubmissionsPreviewUrl(null); }}
               className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-4xl bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-left"
+              className="relative w-full max-w-5xl bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-left flex flex-col"
+              style={{ maxHeight: "90vh" }}
             >
-              <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-center bg-emerald-500/5">
-                <div className="space-y-0.5">
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-start gap-4 bg-indigo-500/5 shrink-0">
+                <div className="space-y-1">
                   <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                    <ClipboardList size={18} className="text-emerald-500" />
-                    ผลการสอบ: {submissionsQuizTitle}
+                    <Eye size={18} className="text-indigo-500" />
+                    เธเธฒเธเธ—เธตเนเธเธฑเธเน€เธฃเธตเธขเธเธชเนเธ: {submissionsQuizTitle}
                   </h3>
-                  <p className="text-[10px] text-zinc-400 font-bold">
-                    ดูรายชื่อนักเรียน คะแนนสอบ และกระดาษคำตอบแบบละเอียด
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${submissionsIsBuiltIn ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800" : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800"}`}>
+                      {submissionsIsBuiltIn ? "๐ง  เธเธงเธดเธเนเธเธฃเธฐเธเธ" : "๐”— Google Form / เธเธฒเธเธ เธฒเธขเธเธญเธ"}
+                    </span>
+                    <span className="text-[10px] text-zinc-400 font-bold">เธฃเธงเธก {submissions.length} เธเธ</span>
+                  </div>
                 </div>
                 <button
-                  onClick={() => setIsSubmissionsModalOpen(false)}
-                  className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-bold text-zinc-500 cursor-pointer border-0 bg-transparent"
+                  type="button"
+                  onClick={() => { setIsSubmissionsModalOpen(false); setSubmissionsPreviewUrl(null); }}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer border-0 bg-transparent shrink-0"
                 >
-                  ปิด
+                  <X size={16} />
                 </button>
               </div>
 
-              <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* Modal Body */}
+              <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-6">
                 {loadingSubmissions ? (
                   <div className="flex flex-col justify-center items-center py-16 gap-3">
-                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
-                    <span className="text-xs text-zinc-400 font-bold">
-                      กำลังโหลดประวัติการส่งข้อสอบ...
-                    </span>
+                    <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                    <span className="text-xs text-zinc-400 font-bold">เธเธณเธฅเธฑเธเนเธซเธฅเธ”เธเนเธญเธกเธนเธฅเธเธฒเธเธ—เธตเนเธชเนเธ...</span>
                   </div>
                 ) : submissions.length === 0 ? (
                   <div className="text-center py-16 text-zinc-400 dark:text-zinc-500 text-sm font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
                     <Users size={36} className="text-zinc-300 dark:text-zinc-700" />
-                    ยังไม่มีนักเรียนส่งกระดาษคำตอบสำหรับแบบทดสอบนี้
+                    เธขเธฑเธเนเธกเนเธกเธตเธเธฑเธเน€เธฃเธตเธขเธเธชเนเธเธเธฒเธเธชเธณเธซเธฃเธฑเธเนเธเธเธ—เธ”เธชเธญเธเธเธตเน
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <div className="overflow-x-auto border dark:border-zinc-800 rounded-xl">
-                      <table className="w-full text-left border-collapse">
-                        <thead>
-                          <tr className="bg-zinc-50 dark:bg-zinc-850 border-b dark:border-zinc-800 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                            <th className="p-3">ลำดับ</th>
-                            <th className="p-3">ชื่อ-นามสกุลนักศึกษา</th>
-                            <th className="p-3">คะแนนสอบ</th>
-                            <th className="p-3">วันที่ส่งข้อสอบ</th>
-                            <th className="p-3 text-center">งาน/เอกสารเพิ่มเติม</th>
-                            <th className="p-3 text-right">การจัดการ</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {submissions.map((sub, sIdx) => {
-                            const isExpanded = expandedSubmissionId === sub.id;
-                            return (
-                              <React.Fragment key={sub.id}>
-                                <tr className="border-b dark:border-zinc-800/80 hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                                  <td className="p-3 tabular-nums text-zinc-400">{sIdx + 1}</td>
-                                  <td className="p-3 font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                                    <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[10px] font-black uppercase">
-                                      {sub.studentName.charAt(0)}
-                                    </div>
-                                    {sub.studentName}
-                                  </td>
-                                  <td className="p-3">
-                                    <span
-                                      className={`px-2.5 py-0.5 rounded-full text-xs font-black tabular-nums border ${sub.score === sub.maxScore ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200/50 dark:border-zinc-750"}`}
-                                    >
-                                      {sub.score} / {sub.maxScore}
-                                    </span>
-                                  </td>
-                                  <td className="p-3 text-[10px] text-zinc-400 tabular-nums">
-                                    {new Date(sub.submittedAt).toLocaleString("th-TH")}
-                                  </td>
-                                  <td className="p-3 text-center">
-                                    {sub.fileUrl ? (
-                                      <a
-                                        href={sub.fileUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-lg transition-all border border-emerald-500/20 cursor-pointer"
-                                      >
-                                        <Download size={10} />
-                                        <span>ดาวน์โหลดไฟล์งาน</span>
-                                      </a>
-                                    ) : (
-                                      <span className="text-[10px] text-zinc-400 italic">ไม่มีไฟล์แนบ</span>
-                                    )}
-                                  </td>
-                                  <td className="p-3 text-right">
-                                    <button
-                                      onClick={() =>
-                                        setExpandedSubmissionId(isExpanded ? null : sub.id)
-                                      }
-                                      className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md text-[10px] font-black transition-all border-0 cursor-pointer text-zinc-600 dark:text-zinc-300"
-                                    >
-                                      {isExpanded ? "ซ่อนคำตอบ" : "ตรวจคำตอบย่อย"}
-                                    </button>
-                                  </td>
-                                </tr>
-                                {isExpanded && (
-                                  <tr>
-                                    <td
-                                      colSpan={5}
-                                      className="p-4 bg-zinc-50/50 dark:bg-zinc-950/40 border-b dark:border-zinc-850"
-                                    >
-                                      <div className="space-y-3 pl-4 border-l-2 border-emerald-500">
-                                        <h4 className="text-xs font-black text-zinc-800 dark:text-zinc-200 mb-2">
-                                          รายละเอียดข้อคำตอบของนักศึกษา:
-                                        </h4>
-                                        {(() => {
-                                          const activeQuiz = quizzes.find(
-                                            (q) => q.id === submissionsQuizId,
-                                          );
-                                          if (!activeQuiz || !activeQuiz.questions) {
-                                            return (
-                                              <span className="text-[10px] text-zinc-400 font-bold">
-                                                ไม่พบรายละเอียดโจทย์วิเคราะห์ย่อย
-                                              </span>
-                                            );
-                                          }
-                                          return activeQuiz.questions.map(
-                                            (question: any, qIndex: number) => {
-                                              const studentAnswerObj = sub.answers.find(
-                                                (a: any) => a.questionId === question.id,
-                                              );
-                                              const studentAnswer = studentAnswerObj
-                                                ? studentAnswerObj.answer
-                                                : "ไม่ได้ตอบ";
-
-                                              let isCorrect = false;
-                                              if (
-                                                question.type === "multiple_choice" ||
-                                                question.type === "short_answer"
-                                              ) {
-                                                isCorrect =
-                                                  String(studentAnswer || "")
-                                                    .trim()
-                                                    .toLowerCase() ===
-                                                  String(question.correctAnswer || "")
-                                                    .trim()
-                                                    .toLowerCase();
-                                              } else if (question.type === "checkboxes") {
-                                                const sArr = Array.isArray(studentAnswer)
-                                                  ? studentAnswer
-                                                      .map((v: any) =>
-                                                        String(v || "")
-                                                          .trim()
-                                                          .toLowerCase(),
-                                                      )
-                                                      .sort()
-                                                  : [];
-                                                const cArr = Array.isArray(question.correctAnswer)
-                                                  ? question.correctAnswer
-                                                      .map((v: any) =>
-                                                        String(v || "")
-                                                          .trim()
-                                                          .toLowerCase(),
-                                                      )
-                                                      .sort()
-                                                  : [
-                                                      String(question.correctAnswer || "")
-                                                        .trim()
-                                                        .toLowerCase(),
-                                                    ];
-                                                isCorrect =
-                                                  sArr.length === cArr.length &&
-                                                  sArr.every((v, i) => v === cArr[i]);
+                  <>
+                    {Object.entries(
+                      submissions.reduce((acc: Record<string, any[]>, sub: any) => {
+                        const grp = sub.classGroupId || "เนเธกเนเธฃเธฐเธเธธเธซเนเธญเธ";
+                        acc[grp] = [...(acc[grp] || []), sub];
+                        return acc;
+                      }, {})
+                    ).map(([groupId, groupSubs]) => (
+                      <div key={groupId} className="space-y-2">
+                        <h4 className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b dark:border-zinc-800 pb-2 flex items-center gap-2">
+                          <Users size={12} />
+                          เธซเนเธญเธ / เธเธฅเธธเนเธกเน€เธฃเธตเธขเธ: {groupId}
+                          <span className="text-zinc-400 font-bold normal-case tracking-normal">({groupSubs.length} เธเธ)</span>
+                        </h4>
+                        <div className="overflow-hidden border dark:border-zinc-800 rounded-xl">
+                          <table className="w-full text-xs border-collapse">
+                            <thead>
+                              <tr className="bg-zinc-50 dark:bg-zinc-800 text-[9px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                                <th className="p-3 text-left">#</th>
+                                <th className="p-3 text-left">เธเธทเนเธญเธเธฑเธเธจเธถเธเธฉเธฒ</th>
+                                {submissionsIsBuiltIn && <th className="p-3 text-center">เธเธฐเนเธเธ</th>}
+                                <th className="p-3 text-center">เนเธเธฅเน/เน€เธญเธเธชเธฒเธฃเธ—เธตเนเนเธเธ</th>
+                                <th className="p-3 text-center">เธงเธฑเธเธ—เธตเนเธชเนเธ</th>
+                                {submissionsIsBuiltIn && <th className="p-3 text-right">เธ•เธฃเธงเธเธเธณเธ•เธญเธ</th>}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                              {groupSubs.map((sub: any, idx: number) => {
+                                const isExpanded = expandedSubmissionId === sub.id;
+                                return (
+                                  <React.Fragment key={sub.id}>
+                                    <tr className="hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10 transition-colors">
+                                      <td className="p-3 text-zinc-400 text-[10px] tabular-nums">{idx + 1}</td>
+                                      <td className="p-3">
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-black shrink-0">
+                                            {(sub.studentName || "?").charAt(0)}
+                                          </div>
+                                          <span className="font-black text-zinc-800 dark:text-zinc-200">{sub.studentName}</span>
+                                        </div>
+                                      </td>
+                                      {submissionsIsBuiltIn && (
+                                        <td className="p-3 text-center">
+                                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tabular-nums border ${sub.maxScore > 0 && sub.score === sub.maxScore ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/50" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"}`}>
+                                            {sub.maxScore > 0 ? `${sub.score} / ${sub.maxScore}` : "โ€”"}
+                                          </span>
+                                        </td>
+                                      )}
+                                      <td className="p-3 text-center">
+                                        {sub.fileUrl ? (
+                                          <button
+                                            type="button"
+                                            onClick={() => { setSubmissionsPreviewUrl(sub.fileUrl); setSubmissionsPreviewName(sub.fileName || "เนเธเธฅเนเนเธเธ"); }}
+                                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-black rounded-lg transition-all border border-emerald-200 dark:border-emerald-800/50 cursor-pointer"
+                                          >
+                                            <Eye size={10} className="shrink-0" />
+                                            <span className="truncate max-w-[140px]">{sub.fileName || "เธ”เธนเนเธเธฅเน"}</span>
+                                          </button>
+                                        ) : (
+                                          <span className="text-[10px] text-zinc-400 italic font-bold">เนเธกเนเธกเธตเนเธเธฅเนเนเธเธ</span>
+                                        )}
+                                      </td>
+                                      <td className="p-3 text-center text-[9px] text-zinc-400 tabular-nums">
+                                        {new Date(sub.submittedAt).toLocaleDateString("th-TH", { day: "2-digit", month: "short" })}
+                                        <br />
+                                        <span className="text-zinc-300 dark:text-zinc-600">{new Date(sub.submittedAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</span>
+                                      </td>
+                                      {submissionsIsBuiltIn && (
+                                        <td className="p-3 text-right">
+                                          <button
+                                            type="button"
+                                            onClick={() => setExpandedSubmissionId(isExpanded ? null : sub.id)}
+                                            className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg text-[10px] font-black transition-all border-0 cursor-pointer text-zinc-600 dark:text-zinc-300"
+                                          >
+                                            {isExpanded ? "เธเนเธญเธ" : "เธ•เธฃเธงเธเธเธณเธ•เธญเธ"}
+                                          </button>
+                                        </td>
+                                      )}
+                                    </tr>
+                                    {isExpanded && submissionsIsBuiltIn && (
+                                      <tr>
+                                        <td colSpan={6} className="p-4 bg-indigo-50/30 dark:bg-indigo-950/10">
+                                          <div className="space-y-2 pl-3 border-l-2 border-indigo-400">
+                                            <h5 className="text-[10px] font-black text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wider">เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เธเธณเธ•เธญเธ:</h5>
+                                            {(() => {
+                                              const activeQuiz = quizzes.find((q: any) => q.id === submissionsQuizId);
+                                              if (!activeQuiz?.questions?.length) {
+                                                return <span className="text-[10px] text-zinc-400 font-bold">เนเธกเนเธเธเธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เนเธเธ—เธขเน</span>;
                                               }
-
-                                              return (
-                                                <div
-                                                  key={question.id}
-                                                  className="p-3 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl space-y-1"
-                                                >
-                                                  <div className="flex justify-between items-start gap-2">
-                                                    <span className="text-xs font-black text-zinc-800 dark:text-zinc-200">
-                                                      {qIndex + 1}. {question.text}
-                                                    </span>
-                                                    <span
-                                                      className={`text-[10px] font-black px-1.5 py-0.5 rounded ${isCorrect ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}
-                                                    >
-                                                      {isCorrect
-                                                        ? `+${question.points} คะแนน`
-                                                        : "0 คะแนน"}
-                                                    </span>
-                                                  </div>
-                                                  <div className="grid grid-cols-2 gap-2 text-[10px] mt-1 pt-1 border-t border-slate-100 dark:border-zinc-850">
-                                                    <div>
-                                                      <span className="text-zinc-400 font-bold block">
-                                                        คำตอบที่นักศึกษาตอบ:
-                                                      </span>
-                                                      <span
-                                                        className={`font-black ${isCorrect ? "text-emerald-600" : "text-rose-500"}`}
-                                                      >
-                                                        {Array.isArray(studentAnswer)
-                                                          ? studentAnswer.join(", ")
-                                                          : String(studentAnswer)}
+                                              return activeQuiz.questions.map((question: any, qIndex: number) => {
+                                                const studentAnswerObj = sub.answers?.find((a: any) => a.questionId === question.id);
+                                                const studentAnswer = studentAnswerObj ? studentAnswerObj.answer : "เนเธกเนเนเธ”เนเธ•เธญเธ";
+                                                let isCorrect = false;
+                                                if (question.type === "multiple_choice" || question.type === "short_answer") {
+                                                  isCorrect = String(studentAnswer || "").trim().toLowerCase() === String(question.correctAnswer || "").trim().toLowerCase() && String(studentAnswer || "").trim() !== "";
+                                                } else if (question.type === "checkboxes") {
+                                                  const sArr = Array.isArray(studentAnswer) ? studentAnswer.map((v: any) => String(v || "").trim().toLowerCase()).sort() : [];
+                                                  const cArr = Array.isArray(question.correctAnswer) ? question.correctAnswer.map((v: any) => String(v || "").trim().toLowerCase()).sort() : [String(question.correctAnswer || "").trim().toLowerCase()];
+                                                  isCorrect = sArr.length === cArr.length && sArr.every((v, i) => v === cArr[i]) && sArr.length > 0;
+                                                }
+                                                return (
+                                                  <div key={question.id} className="p-2.5 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl text-[11px]">
+                                                    <div className="flex justify-between items-start gap-2 mb-1.5">
+                                                      <span className="font-black text-zinc-800 dark:text-zinc-200">{qIndex + 1}. {question.text}</span>
+                                                      <span className={`shrink-0 font-black px-1.5 py-0.5 rounded text-[9px] ${isCorrect ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"}`}>
+                                                        {isCorrect ? `+${question.points}` : "0"} เธเธฐเนเธเธ
                                                       </span>
                                                     </div>
-                                                    <div>
-                                                      <span className="text-zinc-400 font-bold block">
-                                                        เฉลยคำตอบที่ถูกต้อง:
-                                                      </span>
-                                                      <span className="text-zinc-600 dark:text-zinc-300 font-black">
-                                                        {Array.isArray(question.correctAnswer)
-                                                          ? question.correctAnswer.join(", ")
-                                                          : String(
-                                                              question.correctAnswer ||
-                                                                "ไม่ได้ระบุเฉลย",
-                                                            )}
-                                                      </span>
+                                                    <div className="grid grid-cols-2 gap-2 border-t dark:border-zinc-800 pt-1.5 text-[10px]">
+                                                      <div>
+                                                        <span className="text-zinc-400 font-bold block">เธเธณเธ•เธญเธเธเธฑเธเธจเธถเธเธฉเธฒ:</span>
+                                                        <span className={`font-black ${isCorrect ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}>
+                                                          {Array.isArray(studentAnswer) ? studentAnswer.join(", ") : String(studentAnswer)}
+                                                        </span>
+                                                      </div>
+                                                      <div>
+                                                        <span className="text-zinc-400 font-bold block">เน€เธเธฅเธข:</span>
+                                                        <span className="font-black text-zinc-600 dark:text-zinc-300">
+                                                          {Array.isArray(question.correctAnswer) ? question.correctAnswer.join(", ") : String(question.correctAnswer || "เนเธกเนเนเธ”เนเธฃเธฐเธเธธ")}
+                                                        </span>
+                                                      </div>
                                                     </div>
                                                   </div>
-                                                </div>
-                                              );
-                                            },
-                                          );
-                                        })()}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )}
-                              </React.Fragment>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                                                );
+                                              });
+                                            })()}
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </React.Fragment>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ))}
+                  </>
                 )}
               </div>
+
+              {/* File Preview Sub-overlay */}
+              {submissionsPreviewUrl && (
+                <div className="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm flex flex-col rounded-2xl overflow-hidden">
+                  <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-zinc-900 border-b border-zinc-800 shrink-0">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <FileText size={14} className="text-indigo-400 shrink-0" />
+                      <span className="text-xs font-black text-zinc-200 truncate">{submissionsPreviewName}</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a
+                        href={submissionsPreviewUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black bg-zinc-700 hover:bg-zinc-600 text-zinc-200 transition-colors border border-zinc-600"
+                      >
+                        <ExternalLink size={10} />
+                        เน€เธเธดเธ”เนเธเนเธ—เนเธเนเธซเธกเน
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => { setSubmissionsPreviewUrl(null); setSubmissionsPreviewName(null); }}
+                        className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-black cursor-pointer border-0 text-sm"
+                      >
+                        โ•
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex items-center justify-center p-4 bg-zinc-950/60 overflow-hidden">
+                    {/\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|$)/i.test(submissionsPreviewUrl) ? (
+                      <img
+                        src={submissionsPreviewUrl}
+                        alt={submissionsPreviewName || "เนเธเธฅเน"}
+                        className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                      />
+                    ) : /\.(pdf)(\?|$)/i.test(submissionsPreviewUrl) ? (
+                      <iframe
+                        src={submissionsPreviewUrl}
+                        title="PDF Preview"
+                        className="w-full h-full rounded-xl bg-white"
+                        style={{ minHeight: "300px" }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center gap-4 text-center">
+                        <FileText size={32} className="text-indigo-400" />
+                        <p className="text-sm font-black text-zinc-200">{submissionsPreviewName}</p>
+                        <a
+                          href={submissionsPreviewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-black transition-colors"
+                        >
+                          <Download size={13} />
+                          เธ”เธฒเธงเธเนเนเธซเธฅเธ”เนเธเธฅเน
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </motion.div>
           </div>
         )}
