@@ -41235,3 +41235,20 @@ To https://github.com/NutMontree/ktltc.git
 [Tue May 26 08:58:04 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
 [Tue May 26 09:00:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
 [Tue May 26 09:00:02 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
+[main 54ed7251] Auto-commit from Lenovo machine [2026-05-26 09:00:02]
+ 3 files changed, 175 insertions(+), 13 deletions(-)
+[Tue May 26 09:00:02 AM UTC 2026] กำลัง Pull โค้ดล่าสุดจาก GitHub...
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+[Tue May 26 09:00:02 AM UTC 2026] กำลัง Push โค้ดขึ้น GitHub...
+To https://github.com/NutMontree/ktltc.git
+ ! [rejected]          main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/NutMontree/ktltc.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. If you want to integrate the remote changes,
+hint: use 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+[Tue May 26 09:00:03 AM UTC 2026] ✔ อัปโหลดข้อมูลและเชื่อมต่อ GitHub สำเร็จ!
+[Tue May 26 09:00:03 AM UTC 2026] --- สิ้นสุดการทำงาน Auto Sync ---
+[Tue May 26 09:02:01 AM UTC 2026] --- เริ่มต้นการทำงาน Auto Sync ---
+[Tue May 26 09:02:01 AM UTC 2026] พบไฟล์ที่มีการแก้ไข! กำลังเตรียมอัปโหลด...
