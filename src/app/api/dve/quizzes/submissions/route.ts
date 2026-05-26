@@ -54,10 +54,10 @@ export async function POST(req: Request) {
     const userId = (session.user as any).id || "";
     const userName = session.user.name || "Student";
     const body = await req.json();
-    const { quizId, answers } = body;
+    const { quizId, answers, fileUrl, fileName } = body;
 
-    if (!quizId || !ObjectId.isValid(quizId) || !Array.isArray(answers)) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    if (!quizId || !ObjectId.isValid(quizId)) {
+      return NextResponse.json({ error: "Missing or invalid quizId" }, { status: 400 });
     }
 
     const client = await clientPromise;
@@ -69,22 +69,62 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
     }
 
-    // Auto-grade submissions
-    const { score, maxScore } = gradeQuiz(quiz.questions || [], answers);
+    let score = 0;
+    let maxScore = 0;
+    const hasAnswers = Array.isArray(answers) && answers.length > 0;
+    if (hasAnswers) {
+      const graded = gradeQuiz(quiz.questions || [], answers);
+      score = graded.score;
+      maxScore = graded.maxScore;
+    }
 
-    // Save submission record
-    const submissionResult = await db.collection("dve_quiz_submissions").insertOne({
+    // Check for existing quiz submission by this student
+    const existingSubmission = await db.collection("dve_quiz_submissions").findOne({
       quizId,
       studentId: userId,
-      studentName: userName,
-      answers,
-      score,
-      maxScore,
-      submittedAt: new Date(),
     });
 
-    // Automatically update student's score inside DVE attendance
-    // Find matching attendance for student and subject
+    let scoreVal = score;
+    let maxScoreVal = maxScore;
+    let submissionId = "";
+
+    if (existingSubmission) {
+      submissionId = existingSubmission._id.toString();
+      const updateData: any = {};
+      if (hasAnswers) {
+        updateData.answers = answers;
+        updateData.score = score;
+        updateData.maxScore = maxScore;
+      } else {
+        scoreVal = existingSubmission.score || 0;
+        maxScoreVal = existingSubmission.maxScore || 0;
+      }
+      if (fileUrl) {
+        updateData.fileUrl = fileUrl;
+        updateData.fileName = fileName || "เอกสารเพิ่มเติม";
+      }
+      updateData.submittedAt = new Date();
+
+      await db.collection("dve_quiz_submissions").updateOne(
+        { _id: existingSubmission._id },
+        { $set: updateData }
+      );
+    } else {
+      const result = await db.collection("dve_quiz_submissions").insertOne({
+        quizId,
+        studentId: userId,
+        studentName: userName,
+        answers: answers || [],
+        score: score || 0,
+        maxScore: maxScore || 0,
+        fileUrl: fileUrl || "",
+        fileName: fileName || "",
+        submittedAt: new Date(),
+      });
+      submissionId = result.insertedId.toString();
+    }
+
+    // Automatically update student's score & file inside DVE attendance
     const subjectId = quiz.subjectId;
     const existingAttendance = await db.collection("dve_attendances").findOne({
       studentId: userId,
@@ -92,16 +132,18 @@ export async function POST(req: Request) {
     });
 
     if (existingAttendance) {
+      const updateFields: any = {
+        assignmentStatus: "Submitted",
+        score: scoreVal,
+        maxScore: maxScoreVal,
+        updatedAt: new Date()
+      };
+      if (fileUrl) {
+        updateFields.imageUrl = fileUrl;
+      }
       await db.collection("dve_attendances").updateOne(
         { _id: existingAttendance._id },
-        {
-          $set: {
-            assignmentStatus: "Submitted",
-            score: score,
-            maxScore: maxScore,
-            updatedAt: new Date()
-          }
-        }
+        { $set: updateFields }
       );
     } else {
       // Create a default attendance row with "Submitted" assignment status if none exists
@@ -111,8 +153,9 @@ export async function POST(req: Request) {
         subjectId: subjectId,
         status: "Present", // default status
         assignmentStatus: "Submitted",
-        score: score,
-        maxScore: maxScore,
+        imageUrl: fileUrl || "",
+        score: scoreVal,
+        maxScore: maxScoreVal,
         createdAt: new Date(),
         updatedAt: new Date()
       });
@@ -120,10 +163,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "ส่งแบบทดสอบสำเร็จ",
-      score,
-      maxScore,
-      submissionId: submissionResult.insertedId.toString()
+      message: "ส่งข้อมูลเรียบร้อยแล้ว",
+      score: scoreVal,
+      maxScore: maxScoreVal,
+      submissionId
     });
 
   } catch (error: any) {

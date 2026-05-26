@@ -164,98 +164,59 @@ export function DVEStudentPortal() {
     setImageModalAtt(null);
   };
 
-  const handleStudentImageUpload = async (attRecord: any, file: File) => {
+  const handleStudentWorkUpload = async (quizId: string, file: File) => {
     if (!file || !session?.user || !activeSubject) return;
 
-    const recordKey = attRecord.id || attRecord.date;
-    setUploadingRecordId(recordKey);
+    setUploadingRecordId(quizId);
     try {
-      // 1. Safe Client-side OCR with try-catch wrapper
-      let extracted: DveExtractScoreResult | null = null;
-      try {
-        message.loading({
-          content: "กำลังวิเคราะห์อ่านคะแนนจากรูปภาพ...",
-          key: "dve-ocr",
-          duration: 0,
-        });
-        const { extractScoreFromImageFile } = await import("@/lib/dve/extract-score-client");
-        extracted = await extractScoreFromImageFile(file);
-      } catch (ocrErr) {
-        console.warn(
-          "[DVE Student OCR] Client-side OCR failed, will fallback to server-side:",
-          ocrErr,
-        );
-      } finally {
-        message.destroy("dve-ocr");
-      }
-
-      // 2. Upload file to local server
       message.loading({
-        content: "กำลังอัปโหลดไฟล์หลักฐานไปยังเซิร์ฟเวอร์...",
-        key: "dve-ocr-upload",
+        content: "กำลังอัปโหลดไฟล์งานไปยังเซิร์ฟเวอร์...",
+        key: "dve-work-upload",
         duration: 0,
       });
       const res = await uploadFile(file, "dve_evidence");
-      message.destroy("dve-ocr-upload");
+      message.destroy("dve-work-upload");
 
       if (res && res.secure_url) {
-        // 3. Backend OCR fallback if client-side didn't extract any score
-        if (!extracted?.score) {
-          message.loading({
-            content: "กำลังดึงข้อมูลและอ่านคะแนนซ้ำจากเซิร์ฟเวอร์...",
-            key: "dve-ocr-retry",
-            duration: 0,
-          });
-          extracted = await fetchExtractedScore(res.secure_url);
-          message.destroy("dve-ocr-retry");
-        }
-
-        const scoreValue = formatScoreForStorage(extracted) || attRecord.score || "";
-
         const payload = {
-          subjectId: activeSubject.id,
-          date: attRecord.date,
-          records: [
-            {
-              studentId: attRecord.studentId,
-              studentName: attRecord.studentName,
-              studentIdNum: attRecord.studentIdNum,
-              classGroupId: attRecord.classGroupId,
-              status: attRecord.status,
-              assignmentStatus: "Submitted",
-              score: scoreValue,
-              imageUrl: res.secure_url,
-              unitId: attRecord.unitId || "",
-              unitTitle: attRecord.unitTitle || "",
-              unitSequence: attRecord.unitSequence !== undefined ? attRecord.unitSequence : "",
-            },
-          ],
+          quizId: quizId,
+          fileUrl: res.secure_url,
+          fileName: file.name,
         };
 
-        const saveRes = await fetch("/api/dve/attendances", {
+        const saveRes = await fetch("/api/dve/quizzes/submissions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
         if (saveRes.ok) {
-          if (extracted?.score) {
-            message.success(`อัปโหลดหลักฐานแล้ว — ${formatExtractedScoreMessage(extracted)}`);
-          } else {
-            message.warning(
-              `อัปโหลดรูปแล้ว — ${formatExtractedScoreMessage(extracted || { score: null })}`,
+          const data = await saveRes.json();
+          if (data.success) {
+            message.success("อัปโหลดไฟล์งานสำเร็จแล้ว!");
+            // Refresh quizzes list in local state
+            setQuizzes((prev) =>
+              prev.map((q) =>
+                q.id === quizId
+                  ? { ...q, isSubmitted: true, fileUrl: res.secure_url, fileName: file.name }
+                  : q,
+              ),
             );
-          }
-          const attRes = await fetch(`/api/dve/attendances?subjectId=${activeSubject.id}`);
-          if (attRes.ok) {
-            const attData = await attRes.json();
-            if (attData.success) setAttendances(attData.attendances || []);
+
+            // Refresh attendance list
+            const attRes = await fetch(`/api/dve/attendances?subjectId=${activeSubject.id}`);
+            if (attRes.ok) {
+              const attData = await attRes.json();
+              if (attData.success) setAttendances(attData.attendances || []);
+            }
+          } else {
+            message.error(data.error || "เกิดข้อผิดพลาดในการอัปโหลด");
           }
         } else {
-          message.error("บันทึกข้อมูลหลักฐานล้มเหลว");
+          message.error("บันทึกข้อมูลล้มเหลว");
         }
       } else {
-        message.error("อัปโหลดรูปภาพล้มเหลว");
+        message.error("อัปโหลดไฟล์งานล้มเหลว");
       }
     } catch (err) {
       console.error("Student upload error:", err);
@@ -329,7 +290,23 @@ export function DVEStudentPortal() {
     const url = quiz.googleFormUrl || "";
     window.open(url, "_blank");
     if (!session?.user || !activeSubject) return;
+
+    // Mark this quiz as submitted in local state
+    setQuizzes((prev) =>
+      prev.map((q) => (q.id === quiz.id ? { ...q, isSubmitted: true } : q)),
+    );
+
     try {
+      // Record a dummy submission in the database to prevent doing it again
+      fetch("/api/dve/quizzes/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quizId: quiz.id,
+          answers: [{ questionId: "external", answer: "clicked" }],
+        }),
+      }).catch(() => {});
+
       const todayStr = new Date().toLocaleDateString("en-CA");
       const user = session.user as any;
       const existingToday = attendances.find(
@@ -411,6 +388,11 @@ export function DVEStudentPortal() {
             score: data.score,
             maxScore: data.maxScore,
           });
+
+          // Mark this quiz as submitted in local state
+          setQuizzes((prev) =>
+            prev.map((q) => (q.id === activeQuiz.id ? { ...q, isSubmitted: true } : q)),
+          );
 
           // Refresh attendances log in background to sync the new score in DVE portal
           if (activeSubject) {
@@ -992,8 +974,8 @@ export function DVEStudentPortal() {
                             <th className="py-3">วันที่เรียน</th>
                             <th className="py-3 text-center">สถานะการเข้าเรียน</th>
                             <th className="py-3 text-center">สถานะการส่งงาน</th>
-                            <th className="py-3 text-center">หลักฐานคะแนน (รูปภาพ)</th>
-                            <th className="py-3 text-right">คะแนน / บันทึก</th>
+                            <th className="py-3 text-center">ส่งงาน/เอกสารเพิ่มเติม</th>
+                            <th className="py-3 text-right">คะแนนสอบรวม</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
@@ -1007,7 +989,7 @@ export function DVEStudentPortal() {
                                   year: "numeric",
                                 });
 
-                            const isUploading = uploadingRecordId === (att.id || att.date);
+                            const isUploading = uploadingRecordId !== null;
 
                             return (
                               <tr
@@ -1068,59 +1050,40 @@ export function DVEStudentPortal() {
                                   )}
                                 </td>
                                 <td className="py-4">
-                                  <div className="flex items-center justify-center gap-2">
+                                  <div className="flex items-center justify-center">
                                     {isUploading ? (
                                       <div className="flex items-center gap-1.5 text-xs text-zinc-555">
                                         <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-                                        <span>กำลังอัปโหลด...</span>
+                                        <span>กำลังโหลด...</span>
                                       </div>
-                                    ) : att.imageUrl ? (
-                                      <button
-                                        type="button"
-                                        onClick={() => openImageModal(att)}
-                                        className="group flex items-center gap-2 hover:opacity-80 transition-opacity"
-                                        title="ดูและจัดการรูปหลักฐานคะแนน"
-                                      >
-                                        <img
-                                          src={att.imageUrl}
-                                          alt="หลักฐานคะแนน"
-                                          className="w-10 h-10 object-cover rounded-lg border border-zinc-200 dark:border-zinc-700 group-hover:scale-105 transition-transform"
-                                        />
-                                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold">
-                                          เปลี่ยน
-                                        </span>
-                                      </button>
                                     ) : (
                                       <button
                                         type="button"
-                                        onClick={() => openImageModal(att)}
-                                        className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1"
+                                        onClick={() => {
+                                          setImageModalAtt({});
+                                          setImageModalOpen(true);
+                                        }}
+                                        className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1 shadow-2xs"
                                       >
-                                        <Upload size={12} />
-                                        📎 อัปโหลดรูปคะแนน
+                                        <Upload size={11} />
+                                        <span>📎 จัดการส่งงาน/เอกสาร</span>
+                                        {quizzes.filter(q => q.fileUrl).length > 0 && (
+                                          <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
+                                            {quizzes.filter(q => q.fileUrl).length}
+                                          </span>
+                                        )}
                                       </button>
                                     )}
                                   </div>
                                 </td>
                                 <td className="py-4 text-right">
-                                  <div className="flex flex-col items-end gap-1">
-                                    <input
-                                      key={`${att.id || att.date}-${att.score || ""}-${att.imageUrl || ""}`}
-                                      type="text"
-                                      placeholder="กรอกคะแนน"
-                                      className="w-20 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-2 py-1 text-xs text-right focus:outline-none dark:text-white"
-                                      defaultValue={att.score || ""}
-                                      onBlur={(e) => {
-                                        if (e.target.value !== (att.score || "")) {
-                                          handleSaveStudentScore(att, e.target.value);
-                                        }
-                                      }}
-                                    />
-                                    {att.imageUrl && att.score && (
-                                      <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
-                                        <Sparkles size={10} />
-                                        จากรูปหลักฐาน
+                                  <div className="flex items-center justify-end">
+                                    {att.score ? (
+                                      <span className="text-sm font-black text-zinc-850 dark:text-zinc-100 tabular-nums">
+                                        {att.score} คะแนน
                                       </span>
+                                    ) : (
+                                      <span className="text-xs text-zinc-400 font-bold">-</span>
                                     )}
                                   </div>
                                 </td>
@@ -1211,65 +1174,47 @@ export function DVEStudentPortal() {
 
                               <div className="space-y-1.5">
                                 <span className="text-zinc-400 block text-[10px] text-right">
-                                  คะแนน / บันทึก
+                                  คะแนนสอบรวม
                                 </span>
-                                <div className="flex flex-col items-end gap-1">
-                                  <input
-                                    key={`mob-${att.id || att.date}-${att.score || ""}-${att.imageUrl || ""}`}
-                                    type="text"
-                                    placeholder="กรอกคะแนน"
-                                    className="w-full max-w-[100px] border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-2 py-1 text-xs text-right focus:outline-none dark:text-white"
-                                    defaultValue={att.score || ""}
-                                    onBlur={(e) => {
-                                      if (e.target.value !== (att.score || "")) {
-                                        handleSaveStudentScore(att, e.target.value);
-                                      }
-                                    }}
-                                  />
-                                  {att.imageUrl && att.score && (
-                                    <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
-                                      <Sparkles size={8} />
-                                      จากรูปหลักฐาน
+                                <div className="flex items-center justify-end pt-1">
+                                  {att.score ? (
+                                    <span className="text-sm font-black text-zinc-850 dark:text-zinc-100 tabular-nums">
+                                      {att.score} คะแนน
                                     </span>
+                                  ) : (
+                                    <span className="text-xs text-zinc-450 font-bold">-</span>
                                   )}
                                 </div>
                               </div>
                             </div>
 
                             {/* Image upload / evidence block */}
-                            <div className="bg-zinc-100/50 dark:bg-zinc-850/40 rounded-xl p-3 border border-zinc-200/50 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                              <span className="text-[10px] font-black text-zinc-400">
-                                รูปภาพหลักฐานคะแนน:
+                            <div className="bg-zinc-150/45 dark:bg-zinc-850/40 rounded-xl p-3 border border-zinc-200/50 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                              <span className="text-[10px] font-black text-zinc-450">
+                                จัดส่งงาน/เอกสารเพิ่มเติม:
                               </span>
                               <div className="w-full sm:w-auto flex justify-end">
                                 {isUploading ? (
                                   <div className="flex items-center gap-1.5 text-xs text-zinc-555">
                                     <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-                                    <span>กำลังอัปโหลด...</span>
+                                    <span>กำลังโหลด...</span>
                                   </div>
-                                ) : att.imageUrl ? (
-                                  <button
-                                    type="button"
-                                    onClick={() => openImageModal(att)}
-                                    className="group flex items-center gap-3 hover:opacity-80 transition-opacity"
-                                  >
-                                    <img
-                                      src={att.imageUrl}
-                                      alt="หลักฐานคะแนน"
-                                      className="w-12 h-12 object-cover rounded-lg border border-zinc-200 dark:border-zinc-700 group-hover:scale-105 transition-transform"
-                                    />
-                                    <span className="px-2.5 py-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-[10px] font-black rounded-lg transition-colors">
-                                      เปลี่ยนรูป
-                                    </span>
-                                  </button>
                                 ) : (
                                   <button
                                     type="button"
-                                    onClick={() => openImageModal(att)}
-                                    className="w-full justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1"
+                                    onClick={() => {
+                                      setImageModalAtt({});
+                                      setImageModalOpen(true);
+                                    }}
+                                    className="w-full justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1 shadow-2xs"
                                   >
-                                    <Upload size={12} />
-                                    📎 อัปโหลดรูปคะแนน
+                                    <Upload size={11} />
+                                    <span>📎 ส่งงาน/เอกสารเพิ่มเติม</span>
+                                    {quizzes.filter(q => q.fileUrl).length > 0 && (
+                                      <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
+                                        {quizzes.filter(q => q.fileUrl).length}
+                                      </span>
+                                    )}
                                   </button>
                                 )}
                               </div>
@@ -1518,35 +1463,67 @@ export function DVEStudentPortal() {
 
                 {/* 📝 QUIZ REDIRECT */}
                 {quizzes && quizzes.length > 0 && (
-                  <div className="p-4 rounded-2xl bg-teal-500/5 dark:bg-teal-950/10 border border-teal-500/10 flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <div className="space-y-0.5 text-center sm:text-left">
-                      <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
-                        แบบทดสอบประเมินวิชาเรียน
-                      </span>
-                      <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
-                        {quizzes[0].title}
-                      </h4>
+                  <div className="space-y-3">
+                    <span className="text-[10px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider block">
+                      📝 แบบทดสอบประเมินและควิซวิชาเรียนทั้งหมด ({quizzes.length}):
+                    </span>
+                    <div className="space-y-2">
+                      {quizzes.map((quiz: any, qIdx: number) => {
+                        const isQuizSubmitted = !!quiz.isSubmitted;
+                        return (
+                          <div
+                            key={quiz.id || qIdx}
+                            className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${
+                              isQuizSubmitted
+                                ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
+                                : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
+                            }`}
+                          >
+                            <div className="space-y-0.5 text-center sm:text-left">
+                              <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
+                                แบบทดสอบ/ควิซวิชาเรียนที่ {qIdx + 1}
+                              </span>
+                              <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
+                                {quiz.title}
+                              </h4>
+                            </div>
+                            <button
+                              type="button"
+                              disabled={isQuizSubmitted}
+                              className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${
+                                isQuizSubmitted
+                                  ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
+                                  : isStudyCompleted
+                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                                    : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
+                              }`}
+                              onClick={() => {
+                                if (isQuizSubmitted) return;
+                                if (!isStudyCompleted) {
+                                  message.warning(
+                                    `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${activeStudyUnit.studyMinutes} นาทีก่อนทำแบบทดสอบประเมิน`,
+                                  );
+                                } else {
+                                  handleOpenQuizFormGlobal(quiz);
+                                }
+                              }}
+                            >
+                              {isQuizSubmitted ? (
+                                <>
+                                  <CheckCircle size={12} className="text-emerald-500" />
+                                  ทำแบบทดสอบแล้ว
+                                </>
+                              ) : (
+                                <>
+                                  {quiz.isBuiltIn ? "เริ่มทำข้อสอบท้ายบทเรียน" : "เริ่มทำแบบทดสอบประเมิน"}
+                                  {quiz.isBuiltIn ? <ArrowRight size={12} /> : <ExternalLink size={12} />}
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <button
-                      type="button"
-                      className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${
-                        isStudyCompleted
-                          ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
-                          : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
-                      }`}
-                      onClick={() => {
-                        if (!isStudyCompleted) {
-                          message.warning(
-                            `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${activeStudyUnit.studyMinutes} นาทีก่อนทำแบบทดสอบประเมิน`,
-                          );
-                        } else {
-                          handleOpenQuizFormGlobal(quizzes[0]);
-                        }
-                      }}
-                    >
-                      {quizzes[0].isBuiltIn ? "เริ่มทำข้อสอบท้ายบทเรียน" : "เริ่มทำแบบทดสอบประเมิน"}
-                      {quizzes[0].isBuiltIn ? <ArrowRight size={12} /> : <ExternalLink size={12} />}
-                    </button>
                   </div>
                 )}
               </div>
@@ -1906,9 +1883,9 @@ export function DVEStudentPortal() {
         )}
       </AnimatePresence>
 
-      {/* ===== IMAGE PROOF MODAL ===== */}
+      {/* ===== STUDENT ADDITIONAL SUBMISSIONS MODAL ===== */}
       <AnimatePresence>
-        {imageModalOpen && imageModalAtt && (
+        {imageModalOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1920,7 +1897,7 @@ export function DVEStudentPortal() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-zinc-950/70 backdrop-blur-sm"
+              className="absolute inset-0 bg-zinc-950/75 backdrop-blur-md"
               onClick={closeImageModal}
             />
 
@@ -1930,88 +1907,201 @@ export function DVEStudentPortal() {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.92, y: 24, opacity: 0 }}
               transition={{ type: "spring", stiffness: 320, damping: 28 }}
-              className="relative z-10 w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+              className="relative z-10 w-full max-w-xl bg-white dark:bg-zinc-900 rounded-[28px] shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[85vh]"
             >
               {/* Header */}
-              <div className="bg-linear-to-r from-emerald-500 to-teal-600 px-5 py-4 flex items-center justify-between">
-                <div>
-                  <p className="text-[9px] font-black text-white/70 uppercase tracking-widest">
-                    หลักฐานคะแนน
-                  </p>
-                  <h3 className="text-sm font-black text-white leading-tight mt-0.5">
-                    {imageModalAtt.unitTitle
-                      ? `หน่วยที่ ${imageModalAtt.unitSequence}: ${imageModalAtt.unitTitle}`
-                      : "เช็คชื่อในชั้นเรียน"}
+              <div className="bg-linear-to-r from-emerald-500 to-teal-650 px-6 py-5 flex items-center justify-between text-white shadow-xs shrink-0">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black text-emerald-100 uppercase tracking-widest block leading-none">
+                    Student Submission Portal
+                  </span>
+                  <h3 className="text-lg font-black text-white leading-tight">
+                    ส่งงานเพิ่มเติม หรือส่งเอกสารเพิ่มเติม
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={closeImageModal}
-                  className="p-2 bg-white/20 hover:bg-white/35 rounded-full transition-all border-0 cursor-pointer text-white flex items-center justify-center"
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all border-0 cursor-pointer text-white flex items-center justify-center"
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               </div>
 
               {/* Body */}
-              <div className="p-5 space-y-4">
-                {/* Image preview */}
-                {imageModalAtt.imageUrl ? (
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-full rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800">
-                      <img
-                        src={imageModalAtt.imageUrl}
-                        alt="หลักฐานคะแนน"
-                        className="w-full max-h-64 object-contain"
-                      />
-                    </div>
-                    <a
-                      href={imageModalAtt.imageUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
-                    >
-                      <ExternalLink size={11} />
-                      เปิดรูปขนาดเต็มในแท็บใหม่
-                    </a>
-                  </div>
-                ) : (
-                  <div className="w-full h-36 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center gap-2 text-zinc-400">
-                    <Upload size={24} className="opacity-40" />
-                    <span className="text-xs font-bold">ยังไม่มีรูปหลักฐานคะแนน</span>
+              <div className="p-6 overflow-y-auto space-y-6 flex-1">
+                {/* Active Subject Info */}
+                {activeSubject && (
+                  <div className="bg-emerald-500/5 dark:bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-4 flex flex-col gap-1 text-left">
+                    <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider leading-none">
+                      รายวิชาปัจจุบัน
+                    </span>
+                    <h4 className="text-sm font-black text-zinc-850 dark:text-zinc-150 leading-normal">
+                      [{activeSubject.code}] {activeSubject.name}
+                    </h4>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
+                      อาจารย์ผู้สอน: {activeSubject.teacherName || "ไม่ระบุ"}
+                    </p>
                   </div>
                 )}
 
-                {/* Upload / Replace button */}
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="modal-image-upload"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        handleStudentImageUpload(imageModalAtt, file);
-                        closeImageModal();
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor="modal-image-upload"
-                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-xs cursor-pointer transition-all border-0
-                      ${
-                        imageModalAtt.imageUrl
-                          ? "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                          : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/20"
-                      }`}
-                  >
-                    <Upload size={14} />
-                    {imageModalAtt.imageUrl
-                      ? "📸 เปลี่ยนรูปหลักฐานคะแนน"
-                      : "📎 อัปโหลดรูปหลักฐานคะแนน"}
-                  </label>
+                {/* Submissions List per Quiz Topic */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1.5 pl-1">
+                    <ClipboardList size={14} className="text-emerald-500" />
+                    หัวข้อการส่งงานและแบบทดสอบแยกตามหัวข้อ
+                  </h4>
+
+                  {quizzes.length === 0 ? (
+                    <div className="text-center py-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
+                      <ClipboardList size={32} className="text-zinc-350 dark:text-zinc-755 animate-pulse" />
+                      <p className="text-xs text-zinc-400 dark:text-zinc-555 font-black">
+                        ยังไม่มีหัวข้อแบบทดสอบหรือการส่งงานในวิชานี้
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3.5">
+                      {quizzes.map((quiz) => {
+                        const isUploadedFile = !!quiz.fileUrl;
+                        const isUploading = uploadingRecordId === quiz.id;
+
+                        return (
+                          <div
+                            key={quiz.id}
+                            className="bg-zinc-50 dark:bg-zinc-850/45 border border-zinc-150 dark:border-zinc-800 rounded-2xl p-4.5 space-y-4 hover:border-zinc-200 dark:hover:border-zinc-700/80 transition-all flex flex-col"
+                          >
+                            {/* Quiz Title & Indicator Row */}
+                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 text-left">
+                              <div className="space-y-1">
+                                <h5 className="text-xs font-black text-zinc-800 dark:text-zinc-200 leading-normal">
+                                  {quiz.title}
+                                </h5>
+                                <div className="flex flex-wrap gap-1.5 items-center">
+                                  <span
+                                    className={`inline-block text-[9px] font-black px-2 py-0.5 rounded-md ${
+                                      quiz.isBuiltIn
+                                        ? "bg-purple-500/10 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400"
+                                        : "bg-amber-500/10 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
+                                    }`}
+                                  >
+                                    {quiz.isBuiltIn ? "ควิซประเมินผลในระบบ" : "หัวข้อควิซภายนอก/งานมอบหมาย"}
+                                  </span>
+                                  {quiz.deadline && (
+                                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
+                                      กำหนดส่ง: {formatThaiDateDisplay(quiz.deadline)}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Submitted status badge */}
+                              <div className="shrink-0">
+                                {quiz.isSubmitted ? (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.8 rounded-full text-[9px] font-black bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-500/25 shadow-2xs">
+                                    <CheckCircle size={10} />
+                                    <span>ส่งงานเรียบร้อย</span>
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.8 rounded-full text-[9px] font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border dark:border-zinc-750">
+                                    <Clock size={10} />
+                                    <span>ยังไม่ส่งงาน</span>
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Submitted file list / detail card */}
+                            {quiz.fileUrl && (
+                              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800/80 rounded-xl p-3 flex items-center justify-between gap-3 text-left">
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                  <FolderOpen size={16} className="text-emerald-500 shrink-0" />
+                                  <span className="text-[11px] text-zinc-650 dark:text-zinc-300 font-black truncate max-w-[280px]">
+                                    {quiz.fileName || "เอกสารหลักฐานแนบ"}
+                                  </span>
+                                </div>
+                                <a
+                                  href={quiz.fileUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-750 text-zinc-600 dark:text-zinc-300 text-[10px] font-black rounded-lg transition-all cursor-pointer border-0 shrink-0"
+                                >
+                                  <Download size={10} />
+                                  <span>เปิดดูไฟล์</span>
+                                </a>
+                              </div>
+                            )}
+
+                            {/* Submission Upload control button */}
+                            <div className="pt-1.5 border-t border-dashed border-zinc-150 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                              <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500">
+                                {isUploadedFile ? "เปลี่ยนไฟล์งานหรืออัปเดตใหม่:" : "แนบรูปภาพหรือเอกสารยืนยัน:"}
+                              </span>
+
+                              <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+                                {isUploading ? (
+                                  <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                                    <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
+                                    <span>กำลังอัปโหลด...</span>
+                                  </div>
+                                ) : (
+                                  <>
+                                    {/* Link to external Google Form if available */}
+                                    {!quiz.isBuiltIn && quiz.googleFormUrl && (
+                                      <a
+                                        href={quiz.googleFormUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black bg-purple-500/10 text-purple-600 border border-purple-500/20 hover:bg-purple-500/20 transition-all cursor-pointer shrink-0"
+                                      >
+                                        <ExternalLink size={10} />
+                                        <span>เปิดทำควิซภายนอก</span>
+                                      </a>
+                                    )}
+
+                                    {/* Upload trigger label button */}
+                                    <input
+                                      type="file"
+                                      id={`quiz-upload-${quiz.id}`}
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                          handleStudentWorkUpload(quiz.id, file);
+                                        }
+                                      }}
+                                    />
+                                    <label
+                                      htmlFor={`quiz-upload-${quiz.id}`}
+                                      className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black cursor-pointer border transition-all text-center shrink-0 ${
+                                        isUploadedFile
+                                          ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                          : "bg-emerald-500 hover:bg-emerald-600 border-emerald-500 hover:border-emerald-600 text-white shadow-xs"
+                                      }`}
+                                    >
+                                      <Upload size={11} />
+                                      <span>{isUploadedFile ? "อัปโหลดเปลี่ยนไฟล์ใหม่" : "อัปโหลดไฟล์งาน"}</span>
+                                    </label>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4.5 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-150 dark:border-zinc-800/80 flex justify-end shrink-0">
+                <button
+                  type="button"
+                  onClick={closeImageModal}
+                  className="px-6 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-900 text-white dark:bg-zinc-750 dark:hover:bg-zinc-700 text-xs font-black shadow-xs cursor-pointer border-0"
+                >
+                  เสร็จสิ้นและปิดหน้าต่าง
+                </button>
               </div>
             </motion.div>
           </motion.div>

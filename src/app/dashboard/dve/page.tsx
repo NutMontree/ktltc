@@ -32,6 +32,7 @@ import {
   X,
   Sparkles,
   Image as ImageIcon,
+  Briefcase,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker } from "antd";
@@ -108,7 +109,9 @@ function DVELoader() {
 // -------------------------------------------------------------
 
 function maskSensitiveData(val: string) {
-  if (!val) return "-";
+  if (!val || val === "ไม่ระบุรหัส" || val.includes("ไม่ระบุ") || val.includes("ยังไม่กรอก")) {
+    return "ยังไม่กรอกรหัสนักศึกษา";
+  }
   const str = val.trim();
   if (str.length <= 5) return str;
   return `${str.slice(0, 3)}${"x".repeat(str.length - 5)}${str.slice(-2)}`;
@@ -120,9 +123,19 @@ function maskSensitiveData(val: string) {
 function DVETeacherWorkspace() {
   const { data: session } = useSession();
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<"subjects" | "quizzes" | "checkin">("subjects");
+  const [activeTab, setActiveTab] = useState<"subjects" | "quizzes" | "checkin" | "internship">("subjects");
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
+
+  // แท็บสถานะออกฝึกงาน (Internship Tab States)
+  const [internshipStudents, setInternshipStudents] = useState<any[]>([]);
+  const [loadingInternship, setLoadingInternship] = useState(false);
+  const [internshipFilter, setInternshipFilter] = useState({
+    department: "",
+    classGroupId: "",
+  });
+  const [internshipClassGroups, setInternshipClassGroups] = useState<string[]>([]);
+  const [internshipSearchQuery, setInternshipSearchQuery] = useState("");
 
   // Subject Modal states
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
@@ -269,6 +282,26 @@ function DVETeacherWorkspace() {
       return acc;
     }, {});
   }, [attendanceLogs]);
+
+  const internshipStats = useMemo(() => {
+    const total = internshipStudents.length;
+    const working = internshipStudents.filter((s) => s.isInternship).length;
+    const normal = total - working;
+    return { total, working, normal };
+  }, [internshipStudents]);
+
+  const displayedInternshipStudents = useMemo(() => {
+    let list = internshipStudents;
+    if (internshipSearchQuery.trim()) {
+      const q = internshipSearchQuery.toLowerCase().trim();
+      list = list.filter(
+        (s) =>
+          (s.name && s.name.toLowerCase().includes(q)) ||
+          (s.studentIdNum && s.studentIdNum.toLowerCase().includes(q)),
+      );
+    }
+    return list;
+  }, [internshipStudents, internshipSearchQuery]);
 
   let baseRoster = showOnlyAttended ? logs : studentRoster;
 
@@ -607,6 +640,9 @@ function DVETeacherWorkspace() {
       setStudentRoster((prev) =>
         prev.map((s) => (s.id === student.id ? { ...s, isInternship: newStatus } : s)),
       );
+      setInternshipStudents((prev) =>
+        prev.map((s) => (s.id === student.id ? { ...s, isInternship: newStatus } : s)),
+      );
 
       const res = await fetch("/api/dve/students", {
         method: "PATCH",
@@ -633,9 +669,52 @@ function DVETeacherWorkspace() {
       setStudentRoster((prev) =>
         prev.map((s) => (s.id === student.id ? { ...s, isInternship: student.isInternship } : s)),
       );
+      setInternshipStudents((prev) =>
+        prev.map((s) => (s.id === student.id ? { ...s, isInternship: student.isInternship } : s)),
+      );
       message.error(err.message || "ไม่สามารถสลับสถานะการฝึกงานได้");
     }
   };
+
+  const handleLoadInternshipStudents = async (dept: string, classGroupId: string = "") => {
+    if (!dept) return;
+    setLoadingInternship(true);
+    try {
+      const res = await fetch(
+        `/api/dve/students?department=${encodeURIComponent(dept)}&classGroupId=${classGroupId}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setInternshipStudents(data.students || []);
+          if (data.classGroups) {
+            setInternshipClassGroups(data.classGroups);
+          }
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("เกิดข้อผิดพลาดในการดึงข้อมูลนักศึกษาออกฝึกงาน");
+    } finally {
+      setLoadingInternship(false);
+    }
+  };
+
+  const departments = useMemo(() => {
+    return Array.from(new Set(subjects.map((s) => s.department).filter(Boolean))) as string[];
+  }, [subjects]);
+
+  useEffect(() => {
+    if (departments.length > 0 && !internshipFilter.department) {
+      setInternshipFilter((prev) => ({ ...prev, department: departments[0] }));
+    }
+  }, [departments, internshipFilter.department]);
+
+  useEffect(() => {
+    if (activeTab === "internship" && internshipFilter.department) {
+      handleLoadInternshipStudents(internshipFilter.department, internshipFilter.classGroupId);
+    }
+  }, [activeTab, internshipFilter.department, internshipFilter.classGroupId]);
 
   const handleExtractScoreFromImage = async (studentId: string, imageUrl: string): Promise<string | null> => {
     setExtractingScoreStudentId(studentId);
@@ -796,6 +875,15 @@ function DVETeacherWorkspace() {
         >
           <ClipboardList size={13} />
           เช็คชื่อ & งาน
+        </button>
+        <button
+          onClick={() => {
+            setActiveTab("internship");
+          }}
+          className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black transition-all grow sm:grow-0 whitespace-nowrap ${activeTab === "internship" ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
+        >
+          <Briefcase size={13} />
+          สถานะ: ออกฝึกงาน
         </button>
       </div>
 
@@ -1812,6 +1900,295 @@ function DVETeacherWorkspace() {
             </div>
           </motion.div>
         )}
+
+        {activeTab === "internship" && (
+          <motion.div
+            key="internship"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
+            className="space-y-6"
+          >
+            {/* 1. Statistics Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-blue-600">
+                  <Users size={72} strokeWidth={1.5} />
+                </div>
+                <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                  <Users size={24} />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 block uppercase tracking-wider">
+                    นักศึกษาในแผนกทั้งหมด
+                  </span>
+                  <span className="text-2xl font-black text-zinc-900 dark:text-white leading-none mt-1 inline-block">
+                    {internshipStats.total} <span className="text-xs font-bold text-zinc-400">คน</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-emerald-600">
+                  <Briefcase size={72} strokeWidth={1.5} />
+                </div>
+                <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
+                  <Briefcase size={24} />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 block uppercase tracking-wider">
+                    💼 กำลังออกฝึกงาน
+                  </span>
+                  <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 leading-none mt-1 inline-block">
+                    {internshipStats.working} <span className="text-xs font-bold text-zinc-400">คน</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-zinc-500">
+                  <BookOpen size={72} strokeWidth={1.5} />
+                </div>
+                <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 text-zinc-650 dark:text-zinc-400">
+                  <BookOpen size={24} />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 block uppercase tracking-wider">
+                    🏫 เรียนปกติที่วิทยาลัย
+                  </span>
+                  <span className="text-2xl font-black text-zinc-700 dark:text-zinc-300 leading-none mt-1 inline-block">
+                    {internshipStats.normal} <span className="text-xs font-bold text-zinc-400">คน</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Filter controls */}
+            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    เลือกแผนกวิชา
+                  </label>
+                  <Select
+                    placeholder="-- เลือกแผนกวิชา --"
+                    className="w-full h-11"
+                    value={internshipFilter.department || undefined}
+                    onChange={(val) => {
+                      setInternshipFilter((prev) => ({ ...prev, department: val, classGroupId: "" }));
+                      setInternshipStudents([]);
+                    }}
+                    options={departments.map((d) => ({ label: d, value: d }))}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    เลือกห้องเรียน / กลุ่มเรียน
+                  </label>
+                  <Select
+                    placeholder="-- แสดงทั้งหมด --"
+                    className="w-full h-11"
+                    value={internshipFilter.classGroupId || ""}
+                    onChange={(val) => {
+                      setInternshipFilter((prev) => ({ ...prev, classGroupId: val }));
+                    }}
+                    options={[
+                      { label: "แสดงทั้งหมด", value: "" },
+                      ...internshipClassGroups.map((c) => ({ label: c, value: c })),
+                    ]}
+                    disabled={!internshipFilter.department}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    ค้นหาชื่อ หรือ รหัสนักศึกษา
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="🔍 พิมพ์เพื่อค้นหา..."
+                    className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white placeholder-zinc-400 font-bold"
+                    value={internshipSearchQuery}
+                    onChange={(e) => setInternshipSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Students Table / Card view */}
+            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+              <div className="flex items-center justify-between gap-4 mb-6 border-b dark:border-zinc-800 pb-4">
+                <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                  <Briefcase size={18} className="text-emerald-500" />
+                  รายชื่อนักศึกษากับสถานะการออกฝึกงาน
+                </h3>
+                <span className="text-xs font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">
+                  แสดงผล {displayedInternshipStudents.length} คน
+                </span>
+              </div>
+
+              {loadingInternship ? (
+                <div className="flex justify-center py-20">
+                  <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
+                </div>
+              ) : internshipStudents.length === 0 ? (
+                <div className="text-center py-20 text-zinc-400 dark:text-zinc-500 text-sm font-bold border border-dashed dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-3 max-w-lg mx-auto">
+                  <Users size={36} className="text-zinc-200 dark:text-zinc-800" />
+                  <div className="space-y-1">
+                    <p className="text-zinc-800 dark:text-zinc-200 text-sm font-black">
+                      ไม่พบข้อมูลนักศึกษาในแผนกที่เลือก
+                    </p>
+                    <p className="text-zinc-400 font-medium text-xs leading-relaxed">
+                      กรุณาเลือกแผนกวิชาด้านบน เพื่อทำการดึงข้อมูลรายชื่อนักศึกษารับการตั้งค่าฝึกงานครับ
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {displayedInternshipStudents.length === 0 ? (
+                    <div className="text-center py-12 text-zinc-400 dark:text-zinc-500 font-bold text-xs border border-dashed dark:border-zinc-800 rounded-2xl">
+                      ไม่พบรายชื่อนักเรียนที่ตรงกับคำค้นหา
+                    </div>
+                  ) : (
+                    <>
+                      {/* Desktop Table View */}
+                      <div className="hidden sm:block overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead>
+                            <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 font-bold uppercase tracking-wider">
+                              <th className="py-4 px-2">รูปโปรไฟล์</th>
+                              <th className="py-4 px-2">รหัสนักศึกษา</th>
+                              <th className="py-4 px-2">ชื่อ - นามสกุล</th>
+                              <th className="py-4 px-2 text-center">กลุ่มเรียน / ห้อง</th>
+                              <th className="py-4 px-2 text-center">แผนกวิชา</th>
+                              <th className="py-4 px-2 text-right">การจัดการสถานะ (ออกฝึกงาน)</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
+                            {displayedInternshipStudents.map((student) => (
+                              <tr
+                                key={student.id}
+                                className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850/50 transition-colors"
+                              >
+                                <td className="py-4 px-2">
+                                  {student.image ? (
+                                    <img
+                                      src={student.image}
+                                      className="w-10 h-10 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-800 shadow-sm shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 shrink-0">
+                                      <User size={16} />
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="py-4 px-2 font-medium text-xs tracking-wider">
+                                  {maskSensitiveData(student.studentIdNum)}
+                                </td>
+                                <td className="py-4 px-2 text-sm text-zinc-900 dark:text-zinc-100">
+                                  {student.name}
+                                </td>
+                                <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
+                                  {student.classGroupId}
+                                </td>
+                                <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
+                                  {student.department}
+                                </td>
+                                <td className="py-4 px-2 text-right">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleInternship(student)}
+                                    className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${
+                                      student.isInternship
+                                        ? "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+                                        : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
+                                    }`}
+                                  >
+                                    {student.isInternship ? (
+                                      <>
+                                        <Briefcase size={12} className="mr-1.5" />
+                                        💼 ออกฝึกงานอยู่
+                                      </>
+                                    ) : (
+                                      <>
+                                        <BookOpen size={12} className="mr-1.5" />
+                                        🏫 เรียนปกติที่นี่
+                                      </>
+                                    )}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Mobile Card List View */}
+                      <div className="block sm:hidden space-y-4">
+                        {displayedInternshipStudents.map((student) => (
+                          <div
+                            key={student.id}
+                            className="p-4 bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 rounded-2xl space-y-4 shadow-xs"
+                          >
+                            <div className="flex items-center gap-3">
+                              {student.image ? (
+                                <img
+                                  src={student.image}
+                                  className="w-10 h-10 rounded-full object-cover shrink-0"
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                                  <User size={16} />
+                                </div>
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm leading-tight">
+                                  {student.name}
+                                </h4>
+                                <p className="text-[10px] text-zinc-500 font-bold mt-0.5">
+                                  ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม: {student.classGroupId}
+                                </p>
+                                <p className="text-[9px] text-zinc-400 font-bold mt-0.5">
+                                  {student.department}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between border-t dark:border-zinc-800/80 pt-3">
+                              <span className="text-[10px] font-bold text-zinc-400">สถานะฝึกงาน:</span>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleInternship(student)}
+                                className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${
+                                  student.isInternship
+                                    ? "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+                                    : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
+                                }`}
+                              >
+                                {student.isInternship ? (
+                                  <>
+                                    <Briefcase size={12} className="mr-1.5" />
+                                    💼 ออกฝึกงาน
+                                  </>
+                                ) : (
+                                  <>
+                                    <BookOpen size={12} className="mr-1.5" />
+                                    🏫 เรียนปกติ
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* -------------------------------------------------------------
@@ -2751,6 +3128,7 @@ function DVETeacherWorkspace() {
                             <th className="p-3">ชื่อ-นามสกุลนักศึกษา</th>
                             <th className="p-3">คะแนนสอบ</th>
                             <th className="p-3">วันที่ส่งข้อสอบ</th>
+                            <th className="p-3 text-center">งาน/เอกสารเพิ่มเติม</th>
                             <th className="p-3 text-right">การจัดการ</th>
                           </tr>
                         </thead>
@@ -2776,6 +3154,21 @@ function DVETeacherWorkspace() {
                                   </td>
                                   <td className="p-3 text-[10px] text-zinc-400 tabular-nums">
                                     {new Date(sub.submittedAt).toLocaleString("th-TH")}
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    {sub.fileUrl ? (
+                                      <a
+                                        href={sub.fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-lg transition-all border border-emerald-500/20 cursor-pointer"
+                                      >
+                                        <Download size={10} />
+                                        <span>ดาวน์โหลดไฟล์งาน</span>
+                                      </a>
+                                    ) : (
+                                      <span className="text-[10px] text-zinc-400 italic">ไม่มีไฟล์แนบ</span>
+                                    )}
                                   </td>
                                   <td className="p-3 text-right">
                                     <button

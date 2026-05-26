@@ -81,6 +81,23 @@ export async function GET(req: Request) {
 
     const quizzes = await db.collection("dve_quizzes").find({ subjectId }).sort({ createdAt: -1 }).toArray();
 
+    // Check student submissions in database
+    let studentSubmissionsMap: Record<string, any> = {};
+    if (role === "student") {
+      const subs = await db
+        .collection("dve_quiz_submissions")
+        .find({ studentId: userId, quizId: { $in: quizzes.map((q) => q._id.toString()) } })
+        .project({ quizId: 1, fileUrl: 1, fileName: 1 })
+        .toArray();
+      subs.forEach((s: any) => {
+        studentSubmissionsMap[s.quizId] = {
+          isSubmitted: true,
+          fileUrl: s.fileUrl || "",
+          fileName: s.fileName || "",
+        };
+      });
+    }
+
     return NextResponse.json({
       success: true,
       quizzes: quizzes.map((q) => ({
@@ -92,6 +109,9 @@ export async function GET(req: Request) {
         questions: q.questions || [],
         deadline: q.deadline || "",
         createdAt: q.createdAt,
+        isSubmitted: !!studentSubmissionsMap[q._id.toString()]?.isSubmitted,
+        fileUrl: studentSubmissionsMap[q._id.toString()]?.fileUrl || "",
+        fileName: studentSubmissionsMap[q._id.toString()]?.fileName || "",
       })),
     });
   } catch (error: any) {
