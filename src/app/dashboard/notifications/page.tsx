@@ -103,16 +103,11 @@ export default function NotificationsPage() {
       markAsRead(n._id);
     }
 
-    let url: string | undefined;
-
-    // เช็ค content patterns ก่อนเสมอ (มี priority สูงกว่า targetUrl)
-    if (n.type === "friend_request" || n.type === "friend_accept") {
-      url = `/dashboard/profile/${n.from}`;
-    } else if (n.title?.includes('ตรวจสอบข้อมูลส่วนตัว') || n.message?.includes('ตรวจสอบข้อมูลส่วนตัว')) {
-      url = '/dashboard/profile';
-    } else {
-      // ถ้าไม่ตรง pattern ไหน ให้ใช้ targetUrl ที่กำหนดไว้
-      url = n.targetUrl;
+    let url = n.targetUrl;
+    if (!url) {
+      if (n.type === "friend_request" || n.type === "friend_accept") {
+        url = `/dashboard/profile/${n.from}`;
+      }
     }
 
     if (url) {

@@ -51,13 +51,34 @@ export async function POST(req: Request) {
     // 3. วิเคราะห์ระยะทางและระบุสถานะพิกัด (Geofencing)
     let statusTag = "นอกพื้นที่ (Remote)";
     let distance = -1;
-    if (lat && lng) {
+
+    // ใช้ null/undefined check แทน falsy เพื่อรองรับพิกัด 0 (เส้นศูนย์สูตร)
+    if (lat != null && lng != null) {
       distance = calculateDistance(targetLat, targetLng, lat, lng);
       if (distance <= inSiteThreshold) {
         statusTag = "อยู่ในพื้นที่ (In-Site)";
       } else {
         statusTag = "นอกพื้นที่ (Remote/WFH)";
       }
+    } else {
+      // ไม่มีพิกัด GPS — ปฏิเสธการเช็คชื่อ
+      return NextResponse.json(
+        { success: false, message: "ไม่พบข้อมูลพิกัด GPS กรุณาเปิดสิทธิ์ตำแหน่งและลองใหม่อีกครั้ง" },
+        { status: 400 }
+      );
+    }
+
+    // ⛔ 3.1 Block การเช็คชื่อถ้านักเรียนอยู่นอกรัศมีพื้นที่เสาธง
+    if (distance > inSiteThreshold) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `คุณอยู่ห่างจากจุดเสาธงประมาณ ${Math.round(distance)} เมตร (รัศมีที่กำหนด: ${inSiteThreshold} เมตร) กรุณาเข้าใกล้บริเวณหน้าเสาธงก่อนเช็คชื่อ`,
+          distance: Math.round(distance),
+          maxDistance: inSiteThreshold,
+        },
+        { status: 403 }
+      );
     }
 
     // 4. คำนวณเวลาฝั่งประเทศไทย (ICT)
@@ -135,6 +156,7 @@ export async function POST(req: Request) {
         photoUrl,
         statusTag,
         deviceId,
+        distance,  // บันทึกระยะห่างจากเสาธง (เมตร) เพื่อแสดงในรายงาน
       },
       createdAt: serverTime,
     };
