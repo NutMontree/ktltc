@@ -22,6 +22,7 @@ export async function GET(req: Request) {
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
     const statusFilter = searchParams.get('status') || 'all'; // all, Present, Late
+    const searchQuery = searchParams.get('search') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const skip = (page - 1) * limit;
@@ -43,16 +44,25 @@ export async function GET(req: Request) {
       query.status = statusFilter;
     }
 
+    // สร้าง match pipeline สำหรับการค้นหา
+    const matchStage: any = {};
+    if (searchQuery) {
+      matchStage.$match = {
+        $or: [
+          { "userDetails.name": { $regex: searchQuery, $options: "i" } },
+          { "userDetails.academicLevel": { $regex: searchQuery, $options: "i" } },
+          { "userDetails.studentId": { $regex: searchQuery, $options: "i" } }
+        ]
+      };
+    }
+
     //Aggregate เพื่อ Join ข้อมูลผู้ใช้
     const totalCount = await db.collection("flagpole_attendances").countDocuments(query);
     const attendances = await db.collection("flagpole_attendances").aggregate([
       { $match: query },
-      { $sort: { "checkIn.time": -1 } },
-      { $skip: skip },
-      { $limit: limit },
       {
         $addFields: {
-          uId: { 
+          uId: {
             $cond: {
               if: { $ne: [{ $type: "$userId" }, "missing"] },
               then: { $toObjectId: "$userId" },
@@ -70,6 +80,11 @@ export async function GET(req: Request) {
         }
       },
       { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      // Add search filter after lookup
+      ...(searchQuery ? [{ $match: matchStage.$match }] : []),
+      { $sort: { "checkIn.time": -1 } },
+      { $skip: skip },
+      { $limit: limit },
       {
         $project: {
           id: { $toString: "$_id" },

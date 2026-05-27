@@ -37,6 +37,7 @@ export async function GET(req: Request) {
       time: item.checkIn?.time || null,
       address: item.checkIn?.address || null,
       photoUrl: item.checkIn?.photoUrl || null,
+      deviceId: item.checkIn?.deviceId || null,
     }));
 
     return NextResponse.json({ success: true, history: mappedHistory });

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { calculateDistance } from '@/lib/geoDistance';
 
 export const dynamic = 'force-dynamic';
 
@@ -158,12 +159,12 @@ export async function GET(req: Request) {
       trends = hourlyData;
     }
 
-    // 5. สถิติการเข้าแถวแบ่งตามระดับชั้นปีการศึกษา (Academic Level Stats)
+    // 5. สถิติการเข้าแถวแบ่งตามระดับชั้นปีการศึกษา (Academic Level Stats) - แบบละเอียด
     const departmentStats = await db.collection("flagpole_attendances").aggregate([
       { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
       {
         $addFields: {
-          uId: { 
+          uId: {
             $cond: {
               if: { $ne: [{ $type: "$userId" }, "missing"] },
               then: { $toObjectId: "$userId" },
@@ -184,10 +185,13 @@ export async function GET(req: Request) {
       {
         $group: {
           _id: { $ifNull: ["$userDetails.academicLevel", "ไม่ระบุชั้นปี"] },
-          count: { $sum: 1 }
+          total: { $sum: 1 },
+          present: { $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] } },
+          late: { $sum: { $cond: [{ $eq: ["$status", "Late"] }, 1, 0] } },
+          inZone: { $sum: { $cond: [{ $eq: ["$checkIn.statusTag", "อยู่ในพื้นที่ (In-Site)"] }, 1, 0] } }
         }
       },
-      { $sort: { count: -1 } }
+      { $sort: { total: -1 } }
     ]).toArray();
 
     // 6. ดึงพิกัด GPS นักเรียนเพื่อปักหมุดบนแผนที่หน้าเสาธง
@@ -237,15 +241,28 @@ export async function GET(req: Request) {
 
     const validMarkers = markers
       .filter(m => m.lat != null && m.lng != null)
-      .map(m => ({
-        ...m,
-        // inZone: true = อยู่ในรัศมีพื้นที่เสาธง (ใช้ statusTag เป็นหลัก, fallback ด้วย distance)
-        inZone: m.statusTag
-          ? m.statusTag.includes("In-Site")
-          : (m.distance != null && m.distance >= 0
-              ? m.distance <= (flagpoleSetting?.inSiteDistance ?? 200)
-              : true)  // ข้อมูลเก่าไม่มี distance ให้ถือว่าอยู่ในพื้นที่
-      }));
+      .map(m => {
+        // Recalculate distance from flagpole center for accuracy
+        const calculatedDistance = m.lat && m.lng ? calculateDistance(
+          flagpoleSetting?.lat ?? 14.754043,
+          flagpoleSetting?.lng ?? 104.65807,
+          m.lat,
+          m.lng
+        ) : null;
+
+        const threshold = flagpoleSetting?.inSiteDistance ?? 200;
+
+        // Use calculated distance for determining inZone status (more accurate)
+        const inZone = calculatedDistance !== null
+          ? calculatedDistance <= threshold
+          : (m.statusTag?.includes("In-Site") ?? false);
+
+        return {
+          ...m,
+          inZone,
+          calculatedDistance
+        };
+      });
 
 
 
