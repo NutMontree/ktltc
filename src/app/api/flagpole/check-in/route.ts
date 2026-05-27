@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     const targetLat = flagpoleSetting?.lat ?? COLLEGE_LOCATION.lat;
     const targetLng = flagpoleSetting?.lng ?? COLLEGE_LOCATION.lng;
 
-    // 3. วิเคราะห์ระยะทางและระบุสถานะพิกัด (Geofencing)
+    // 3. วิเคราะห์ระยะทางและระบุสถานะพิกัด (Geofencing) - ไม่บล็อกการเช็คชื่อ แต่บันทึกข้อมูลแม่นยำ
     let statusTag = "นอกพื้นที่ (Remote)";
     let distance = -1;
 
@@ -68,18 +68,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // ⛔ 3.1 Block การเช็คชื่อถ้านักเรียนอยู่นอกรัศมีพื้นที่เสาธง
-    if (distance > inSiteThreshold) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: `คุณอยู่ห่างจากจุดเสาธงประมาณ ${Math.round(distance)} เมตร (รัศมีที่กำหนด: ${inSiteThreshold} เมตร) กรุณาเข้าใกล้บริเวณหน้าเสาธงก่อนเช็คชื่อ`,
-          distance: Math.round(distance),
-          maxDistance: inSiteThreshold,
-        },
-        { status: 403 }
-      );
-    }
+    // ลบการบล็อกตามรัศมี - อนุญาตให้เช็คชื่อจากทุกที่ แต่บันทึกระยะห่างแม่นยำ
 
     // 4. คำนวณเวลาฝั่งประเทศไทย (ICT)
     const thTime = new Date(serverTime.getTime() + 7 * 60 * 60 * 1000);
