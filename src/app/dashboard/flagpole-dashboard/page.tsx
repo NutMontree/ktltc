@@ -51,7 +51,7 @@ const MapDashboard = dynamicImport(() => import("@/components/MapDashboard"), {
 });
 
 // Animated Number Component
-function AnimatedNumber({ value, duration = 0.5 }: { value: number; duration?: number }) {
+function AnimatedNumber({ value, duration = 1.5 }: { value: number; duration?: number }) {
   const [displayValue, setDisplayValue] = useState(value);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -86,7 +86,7 @@ function AnimatedNumber({ value, duration = 0.5 }: { value: number; duration?: n
         scale: isAnimating ? [1, 1.1, 1] : 1,
         color: isAnimating ? ["#1e293b", "#4f46e5", "#1e293b"] : "#1e293b",
       }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.8 }}
       className="inline-block"
     >
       {displayValue}
@@ -116,7 +116,7 @@ function DeltaBadge({ delta }: { delta: number }) {
       initial={{ opacity: 0, y: 10, scale: 0.5 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.5 }}
-      transition={{ duration: 0.5, type: "spring" }}
+      transition={{ duration: 1.0, type: "spring" }}
       className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg z-20"
     >
       +{delta}
@@ -605,7 +605,7 @@ export default function StudentFlagpoleDashboard() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.6 }}
                         className="flex items-center gap-4 group/row"
                       >
                         <div className="relative">
@@ -736,7 +736,7 @@ export default function StudentFlagpoleDashboard() {
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${(dept.total / (departmentStats.reduce((acc: number, d: any) => acc + d.total, 0) || 1)) * 100}%` }}
-                        transition={{ duration: 0.5, delay: 0.7 + (idx * 0.05) }}
+                        transition={{ duration: 1.0, delay: 0.7 + (idx * 0.05) }}
                         className="h-full bg-indigo-500 rounded-full"
                       />
                     </div>
