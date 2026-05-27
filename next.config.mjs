@@ -27,6 +27,42 @@ const nextConfig = {
   },
 
   async rewrites() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const isVercel = process.env.VERCEL === "1" || process.env.NEXT_PUBLIC_VERCEL_ENV !== undefined;
+    
+    // Proxy only if on Vercel and NEXT_PUBLIC_API_URL is configured to the tunnel (different from main domain)
+    const shouldProxy = isVercel && apiUrl && apiUrl !== "https://ktltc.ac.th" && apiUrl !== "https://ktltc.site";
+
+    if (shouldProxy) {
+      return [
+        {
+          source: "/uploads/:path*",
+          destination: `${apiUrl}/api/media/uploads/:path*`,
+        },
+        {
+          source: "/attendance_photos/:path*",
+          destination: `${apiUrl}/api/media/attendance_photos/:path*`,
+        },
+        {
+          source: "/images/:path*",
+          destination: `${apiUrl}/api/media/images/:path*`,
+        },
+        {
+          source: "/pdf/:path*",
+          destination: `${apiUrl}/api/media/pdf/:path*`,
+        },
+        {
+          source: "/ktltc_drive/:path*",
+          destination: `${apiUrl}/api/media/ktltc_drive/:path*`,
+        },
+        {
+          source: "/api/:path*",
+          destination: `${apiUrl}/api/:path*`,
+        },
+      ];
+    }
+
+    // Default local behavior
     return [
       {
         source: "/uploads/:path*",
