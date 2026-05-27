@@ -650,7 +650,7 @@ export default function StudentFlagpolePortal() {
                     <h3 className="text-lg font-black text-slate-800 dark:text-white mb-1">
                       เช็คชื่อกิจกรรมเสาธง
                       <br />
-                      <p>Test System 1</p>
+                      {/* <p>Test System 1</p> */}
                     </h3>
                     <p className="text-slate-400 text-xs font-bold leading-relaxed mb-6 max-w-[240px] mx-auto">
                       โปรดสแกนใบหน้าและบันทึกตำแหน่ง GPS
