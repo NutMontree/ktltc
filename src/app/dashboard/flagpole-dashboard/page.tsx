@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
   Users,
@@ -50,6 +50,50 @@ const MapDashboard = dynamicImport(() => import("@/components/MapDashboard"), {
   ),
 });
 
+// Animated Number Component
+function AnimatedNumber({ value, duration = 0.5 }: { value: number; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (value !== displayValue) {
+      setIsAnimating(true);
+      const startValue = displayValue;
+      const endValue = value;
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / (duration * 1000), 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+
+        setDisplayValue(Math.round(startValue + (endValue - startValue) * easeProgress));
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setIsAnimating(false);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }
+  }, [value, displayValue, duration]);
+
+  return (
+    <motion.span
+      animate={{
+        scale: isAnimating ? [1, 1.1, 1] : 1,
+        color: isAnimating ? ["#1e293b", "#4f46e5", "#1e293b"] : "#1e293b",
+      }}
+      transition={{ duration: 0.3 }}
+      className="inline-block"
+    >
+      {displayValue}
+    </motion.span>
+  );
+}
+
 export default function StudentFlagpoleDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -94,7 +138,6 @@ export default function StudentFlagpoleDashboard() {
   useEffect(() => {
     async function fetchStats() {
       if (status !== "authenticated") return;
-      setLoading(true);
       try {
         const res = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&_t=${Date.now()}`);
         const json = await res.json();
@@ -116,6 +159,9 @@ export default function StudentFlagpoleDashboard() {
       }
     }
     fetchStats();
+    // Poll every 5 seconds for real-time updates
+    const interval = setInterval(fetchStats, 5000);
+    return () => clearInterval(interval);
   }, [selectedDate, trendRange, status]);
 
   const total = realTotal || data.reduce((acc, curr) => acc + curr.value, 0);
@@ -257,7 +303,7 @@ export default function StudentFlagpoleDashboard() {
                     </p>
                     <div className="flex items-baseline gap-2">
                       <h2 className="text-5xl font-black text-slate-800 dark:text-white tracking-tighter leading-none">
-                        {stat.val}
+                        <AnimatedNumber value={stat.val} />
                       </h2>
                       <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                         {stat.unit}
@@ -493,62 +539,76 @@ export default function StudentFlagpoleDashboard() {
               </div>
 
               <div className="space-y-5">
-                {recentCheckIns.length > 0 ? (
-                  recentCheckIns.map((item, idx) => {
-                    const isInZone = item.statusTag
-                      ? item.statusTag.includes("In-Site")
-                      : true; // ข้อมูลเก่าไม่มี statusTag ให้ถือว่าอยู่ในพื้นที่
-                    return (
-                    <div key={idx} className="flex items-center gap-4 group/row">
-                      <div className="relative">
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-zinc-800" />
-                        ) : (
-                          <div className="w-10 h-10 bg-slate-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-400 text-xs font-black">
-                            {item.name.charAt(0)}
-                          </div>
-                        )}
-                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-zinc-900 ${item.status === 'Late' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
-                          {item.name}
-                        </p>
-                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                          <p className="text-[9px] text-slate-400 font-bold uppercase truncate">
-                            {item.department}
-                          </p>
-                          {/* Zone badge */}
-                          <span className={`inline-flex items-center text-[8px] font-black px-1.5 py-0.5 rounded-md border ${
-                            isInZone
-                              ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30'
-                              : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30'
-                          }`}>
-                            {isInZone ? '✅ ในพื้นที่' : '⚠️ นอกพื้นที่'}
-                          </span>
-                          {item.distance != null && item.distance >= 0 && (
-                            <span className="text-[8px] text-slate-400 font-bold">
-                              {Math.round(item.distance)}ม.
-                            </span>
+                <AnimatePresence mode="popLayout">
+                  {recentCheckIns.length > 0 ? (
+                    recentCheckIns.map((item, idx) => {
+                      const isInZone = item.statusTag
+                        ? item.statusTag.includes("In-Site")
+                        : true; // ข้อมูลเก่าไม่มี statusTag ให้ถือว่าอยู่ในพื้นที่
+                      return (
+                      <motion.div
+                        key={item._id || idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex items-center gap-4 group/row"
+                      >
+                        <div className="relative">
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-zinc-800" />
+                          ) : (
+                            <div className="w-10 h-10 bg-slate-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-400 text-xs font-black">
+                              {item.name.charAt(0)}
+                            </div>
                           )}
+                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-zinc-900 ${item.status === 'Late' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 tabular-nums">
-                          {new Date(item.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                        <p className="text-[8px] text-slate-400 font-black uppercase tracking-tighter">
-                          น.
-                        </p>
-                      </div>
-                    </div>
-                    );
-                  })
-                ) : (
-                  <div className="py-10 text-center space-y-3">
-                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">ไม่มีข้อมูลการลงเวลาเช็คแถว</p>
-                  </div>
-                )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
+                            {item.name}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <p className="text-[9px] text-slate-400 font-bold uppercase truncate">
+                              {item.department}
+                            </p>
+                            {/* Zone badge */}
+                            <span className={`inline-flex items-center text-[8px] font-black px-1.5 py-0.5 rounded-md border ${
+                              isInZone
+                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30'
+                                : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30'
+                            }`}>
+                              {isInZone ? '✅ ในพื้นที่' : '⚠️ นอกพื้นที่'}
+                            </span>
+                            {item.distance != null && item.distance >= 0 && (
+                              <span className="text-[8px] text-slate-400 font-bold">
+                                {Math.round(item.distance)}ม.
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 tabular-nums">
+                            {new Date(item.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          <p className="text-[8px] text-slate-400 font-black uppercase tracking-tighter">
+                            น.
+                          </p>
+                        </div>
+                      </motion.div>
+                      );
+                    })
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="py-10 text-center space-y-3"
+                    >
+                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">ไม่มีข้อมูลการลงเวลาเช็คแถว</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
 
