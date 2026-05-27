@@ -27,7 +27,7 @@ export default function RegisterPage() {
     phone: "",
     lineId: "",
     department: "ไม่มีสังกัด",
-    role: "teacher",
+    role: "user",
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -424,7 +424,7 @@ export default function RegisterPage() {
                             className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm font-bold cursor-pointer appearance-none"
                             required
                           >
-                            <option value="teacher">บุคลากร (Teacher / Staff)</option>
+                            <option value="general">บุคลากร (Teacher / Staff)</option>
                             <option value="user">บุคคลภายนอก (General User)</option>
                           </select>
                         </div>

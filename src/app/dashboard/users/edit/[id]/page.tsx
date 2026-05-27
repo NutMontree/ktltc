@@ -179,12 +179,12 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
     try {
       setSaving(true);
-      const updatePayload: any = { ...formData };
+      const { confirmPassword, originalPasswordText, ...rest } = formData;
+      const updatePayload: any = { ...rest };
 
       // If password field is empty, delete it so database retains original password
       if (!updatePayload.password) {
         delete updatePayload.password;
-        delete updatePayload.confirmPassword;
       }
 
       const res = await fetch(`/api/users/${id}`, {

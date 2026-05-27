@@ -10,6 +10,18 @@ export function getStudentAcademicYear(date: Date = new Date()): number {
 }
 
 /**
+ * Normalize รูปแบบชั้นปีให้เป็นมาตรฐาน (ไม่มีจุด)
+ * รองรับทั้ง "ปวช. 1" และ "ปวช 1" ให้กลายเป็น "ปวช 1"
+ */
+export function normalizeAcademicLevel(level: string): string {
+  if (!level) return level;
+  return level
+    .replace(/ปวช\.\s*/g, "ปวช ")
+    .replace(/ปวส\.\s*/g, "ปวส ")
+    .trim();
+}
+
+/**
  * คำนวณเลื่อนชั้นปีของนักเรียน นักศึกษา ตามจำนวนปีที่ต่างกัน
  * ปวช 1 -> ปวช 2 -> ปวช 3 -> จบการศึกษา
  * ปวส 1 -> ปวส 2 -> จบการศึกษา
@@ -17,7 +29,8 @@ export function getStudentAcademicYear(date: Date = new Date()): number {
 export function promoteAcademicLevel(level: string, yearsDiff: number): { newLevel: string; newStatus?: string } {
   if (yearsDiff <= 0) return { newLevel: level };
 
-  let currentLevel = level;
+  // Normalize format ก่อนทำการเลื่อนชั้น (รองรับทั้งมีจุดและไม่มีจุด)
+  let currentLevel = normalizeAcademicLevel(level);
   let newStatus: string | undefined;
 
   for (let i = 0; i < yearsDiff; i++) {
@@ -25,14 +38,18 @@ export function promoteAcademicLevel(level: string, yearsDiff: number): { newLev
       currentLevel = "ปวช 2";
     } else if (currentLevel === "ปวช 2") {
       currentLevel = "ปวช 3";
-    } else if (currentLevel === "ปวช 3" || currentLevel === "จบการศึกษา") {
+    } else if (currentLevel === "ปวช 3") {
       currentLevel = "จบการศึกษา";
       newStatus = "จบการศึกษา";
     } else if (currentLevel === "ปวส 1") {
       currentLevel = "ปวส 2";
-    } else if (currentLevel === "ปวส 2" || currentLevel === "จบการศึกษา") {
+    } else if (currentLevel === "ปวส 2") {
       currentLevel = "จบการศึกษา";
       newStatus = "จบการศึกษา";
+    } else if (currentLevel === "จบการศึกษา") {
+      // ถ้าจบแล้ว ให้อยู่ที่จบการศึกษา
+      newStatus = "จบการศึกษา";
+      break;
     }
   }
 
