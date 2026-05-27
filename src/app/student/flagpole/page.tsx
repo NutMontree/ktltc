@@ -598,7 +598,9 @@ export default function StudentFlagpolePortal() {
                       <ScanFace size={44} />
                     </div>
                     <h3 className="text-lg font-black text-slate-800 dark:text-white mb-1">
-                      เช็คชื่อกิจกรรมเสาธง
+                      เช็คชื่อกิจกรรมเสาธงsdsds
+                          <br /><p>Test System 1</p>
+
                     </h3>
                     <p className="text-slate-400 text-xs font-bold leading-relaxed mb-6 max-w-[240px] mx-auto">
                       โปรดสแกนใบหน้าและบันทึกตำแหน่ง GPS บริเวณหน้าเสาธงเพื่อลงทะเบียนเช็คชื่อเข้าร่วม
@@ -608,7 +610,6 @@ export default function StudentFlagpolePortal() {
                       <div className="p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-900/30 rounded-3xl text-rose-600 dark:text-rose-400 w-full">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 flex items-center justify-center gap-1.5">
                           <AlertCircle size={12} /> ระบบเข้าแถวเสาธงปิด
-                          <br /><p>Test System 1</p>
                         </p>
                         <p className="text-xs font-bold leading-relaxed">
                           {timeState.lockMsg}
