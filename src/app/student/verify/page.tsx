@@ -776,7 +776,7 @@ export default function StudentVerifyPage() {
 
                                 <div>
                                   <span className="block text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none mb-1.5">
-                                    รหัสกลุ่มเรียนสังกัด
+                                    ชื่อห้องเรียน
                                   </span>
                                   <span className="text-xs font-black text-slate-650 dark:text-zinc-300 flex items-center justify-end gap-1.5">
                                     <BookOpen className="w-3.5 h-3.5 text-slate-400" />

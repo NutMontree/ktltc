@@ -66,10 +66,10 @@ export async function GET(req: Request) {
         errors.push(`รหัสนักศึกษาไม่ครบ 11 ตัว (ปัจจุบัน: ${studentId.length} ตัว)`);
       }
 
-      // Check classGroupId (9 characters)
+      // Check classGroupId (Room Name)
       const classGroupId = student.classGroupId || "";
-      if (classGroupId.length !== 9) {
-        errors.push(`รหัสกลุ่มเรียนไม่ครบ 9 ตัว (ปัจจุบัน: ${classGroupId.length} ตัว)`);
+      if (!classGroupId) {
+        errors.push(`ไม่ได้ระบุชื่อห้องเรียน`);
       }
 
       return {

@@ -55,7 +55,7 @@ export default function StudentRegisterPage() {
     if (!formData.email.trim()) return setErrorMsg("กรุณาระบุอีเมล");
     if (!formData.phone.trim()) return setErrorMsg("กรุณาระบุเบอร์โทรศัพท์มือถือ");
     if (!formData.lineId.trim()) return setErrorMsg("กรุณาระบุไอดีไลน์ (LINE ID)");
-    if (!formData.classGroupId.trim()) return setErrorMsg("กรุณาระบุรหัสกลุ่มเรียน");
+    if (!formData.classGroupId.trim()) return setErrorMsg("กรุณาระบุชื่อห้องเรียน");
     if (!formData.department) return setErrorMsg("กรุณาเลือกแผนกวิชาที่สังกัด");
     if (!formData.academicLevel) return setErrorMsg("กรุณาเลือกระดับชั้นปีการศึกษา");
 
@@ -74,7 +74,7 @@ export default function StudentRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          username: formData.studentIdNum.trim(),
+          username: formData.citizenId.trim(),
           password: formData.phone.trim(),
           studentIdNum: formData.studentIdNum.trim(),
           role: "student",
@@ -242,7 +242,7 @@ export default function StudentRegisterPage() {
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
                     ระบบกำหนดข้อมูลสำหรับการเข้าสู่ระบบบัญชีผู้ใช้ (สำหรับนักเรียน/นักศึกษา) ดังนี้:
                     <br />
-                    1. 🔑 <strong>ชื่อผู้ใช้งาน (Username):</strong> รหัสนักศึกษา
+                    1. 🔑 <strong>ชื่อผู้ใช้งาน (Username):</strong> รหัสประจำตัวประชาชน (13 หลัก)
                     ที่ท่านกรอกด้านล่าง
                     <br />
                     2. 🔒 <strong>รหัสผ่าน (Password):</strong> เบอร์โทรศัพท์มือถือ ของท่าน
@@ -379,7 +379,7 @@ export default function StudentRegisterPage() {
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                      รหัสกลุ่มเรียน
+                      ชื่อห้องเรียน
                     </label>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-amber-500 transition-colors">
@@ -391,7 +391,7 @@ export default function StudentRegisterPage() {
                         value={formData.classGroupId}
                         onChange={handleChange}
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
-                        placeholder="ระบุรหัส เช่น 6932040001"
+                        placeholder="ระบุชื่อห้องเรียน เช่น สคบ.11"
                         required
                       />
                     </div>

@@ -963,7 +963,7 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                             </p>
                             <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
                               รหัสบัตรประจำตัวประชาชน, รหัสนักศึกษา,
-                              และรหัสกลุ่มเรียนถูกต้องตามรูปแบบ
+                              และชื่อห้องเรียนถูกต้องครบถ้วน
                             </p>
                           </div>
                         </div>
@@ -3611,13 +3611,13 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                     </div>
                     <div className="space-y-1">
                       <label className="text-xs font-black text-zinc-500 uppercase">
-                        รหัสกลุ่มเรียน (9 หลัก)
+                        ชื่อห้องเรียน (เช่น สคบ.11)
                       </label>
                       <input
                         value={formData.groupCode || ""}
                         onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
-                        placeholder="เช่น 000000000"
-                        maxLength={9}
+                        placeholder="เช่น สคบ.11"
+                        maxLength={30}
                         className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
