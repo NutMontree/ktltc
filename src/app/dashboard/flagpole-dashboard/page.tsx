@@ -687,36 +687,61 @@ export default function StudentFlagpoleDashboard() {
                 </div>
               </div>
 
-              <div className="h-64 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={departmentStats} layout="vertical">
-                    <XAxis type="number" hide />
-                    <YAxis 
-                      dataKey="_id" 
-                      type="category" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fill: "#94a3b8", fontSize: 9, fontWeight: 800 }}
-                      width={80}
-                    />
-                    <RechartsTooltip 
-                      cursor={{ fill: "transparent" }}
-                      contentStyle={{ 
-                        backgroundColor: "rgba(0,0,0,0.8)", 
-                        borderRadius: "16px", 
-                        border: "none",
-                        backdropFilter: "blur(10px)",
-                        color: "#fff"
-                      }}
-                    />
-                    <Bar 
-                      dataKey="count" 
-                      fill="#6366f1" 
-                      radius={[0, 8, 8, 0]} 
-                      barSize={12}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="space-y-4">
+                {departmentStats.map((dept, idx) => (
+                  <motion.div
+                    key={dept._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 + (idx * 0.05) }}
+                    className="bg-slate-50 dark:bg-zinc-800/50 rounded-2xl p-4 border border-slate-100 dark:border-zinc-800"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                        <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                          {dept._id}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-lg font-black text-slate-800 dark:text-white">
+                            {dept.total}
+                          </p>
+                          <p className="text-[8px] text-slate-400 font-black uppercase">ทั้งหมด</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-xl p-3 text-center">
+                        <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                          {dept.present || 0}
+                        </p>
+                        <p className="text-[8px] text-emerald-600/70 dark:text-emerald-400/70 font-black uppercase">ตรงเวลา</p>
+                      </div>
+                      <div className="bg-amber-50 dark:bg-amber-500/10 rounded-xl p-3 text-center">
+                        <p className="text-lg font-black text-amber-600 dark:text-amber-400">
+                          {dept.late || 0}
+                        </p>
+                        <p className="text-[8px] text-amber-600/70 dark:text-amber-400/70 font-black uppercase">สาย</p>
+                      </div>
+                      <div className="bg-blue-50 dark:bg-blue-500/10 rounded-xl p-3 text-center">
+                        <p className="text-lg font-black text-blue-600 dark:text-blue-400">
+                          {dept.inZone || 0}
+                        </p>
+                        <p className="text-[8px] text-blue-600/70 dark:text-blue-400/70 font-black uppercase">ในพื้นที่</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 h-2 bg-slate-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(dept.total / (departmentStats.reduce((acc: number, d: any) => acc + d.total, 0) || 1)) * 100}%` }}
+                        transition={{ duration: 0.5, delay: 0.7 + (idx * 0.05) }}
+                        className="h-full bg-indigo-500 rounded-full"
+                      />
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           </div>

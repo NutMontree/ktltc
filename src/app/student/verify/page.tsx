@@ -24,6 +24,9 @@ import {
   Sparkles,
   RefreshCw,
   ChevronDown,
+  X,
+  Smartphone,
+  MapPin,
 } from "lucide-react";
 
 interface Student {
@@ -57,6 +60,9 @@ export default function StudentVerifyPage() {
   const [activeHistoryStudentId, setActiveHistoryStudentId] = useState<string | null>(null);
   const [flagpoleHistory, setFlagpoleHistory] = useState<any[] | null>(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+
+  // Image modal state
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const toggleFlagpoleHistory = async (studentId: string) => {
     if (activeHistoryStudentId === studentId) {
@@ -980,9 +986,7 @@ export default function StudentVerifyPage() {
                                                     src={history.photoUrl}
                                                     alt="รูปภาพเช็คชื่อ"
                                                     className="w-full h-full object-cover transition-transform duration-300 group-hover/photo:scale-110 cursor-zoom-in"
-                                                    onClick={() =>
-                                                      window.open(history.photoUrl, "_blank")
-                                                    }
+                                                    onClick={() => setPreviewImage(history.photoUrl)}
                                                     title="คลิกเพื่อดูรูปภาพขนาดเต็ม"
                                                   />
                                                 </div>
@@ -1001,9 +1005,20 @@ export default function StudentVerifyPage() {
                                                 </span>
                                                 {formattedTime && (
                                                   <span className="text-[10px] text-slate-450 font-bold block">
-                                                    เวลาเช็คชื่อจริง: {formattedTime}{" "}
-                                                    {history.address ? `| ${history.address}` : ""}
+                                                    เวลาเช็คชื่อจริง: {formattedTime}
                                                   </span>
+                                                )}
+                                                {history.address && (
+                                                  <div className="flex items-center gap-1 text-[9px] text-slate-400 font-bold">
+                                                    <MapPin className="w-3 h-3" />
+                                                    <span className="truncate max-w-[200px]">{history.address}</span>
+                                                  </div>
+                                                )}
+                                                {history.deviceId && (
+                                                  <div className="flex items-center gap-1 text-[9px] text-slate-400 font-bold">
+                                                    <Smartphone className="w-3 h-3" />
+                                                    <span>อุปกรณ์: {history.deviceId}</span>
+                                                  </div>
                                                 )}
                                               </div>
                                             </div>
@@ -1083,6 +1098,40 @@ export default function StudentVerifyPage() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setPreviewImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative max-w-4xl max-h-[90vh] bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <img
+                src={previewImage}
+                alt="รูปภาพเช็คชื่อขนาดเต็ม"
+                className="w-full h-full object-contain max-h-[90vh]"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

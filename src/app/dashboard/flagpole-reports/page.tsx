@@ -98,7 +98,7 @@ function FlagpoleReportsManagementContent() {
     try {
       const currentPage = isLoadMore ? page + 1 : 1;
       const res = await fetch(
-        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&page=${currentPage}&limit=${LIMIT}`,
+        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&search=${encodeURIComponent(searchQuery)}&page=${currentPage}&limit=${LIMIT}`,
       );
       const json = await res.json();
       if (json.success) {
@@ -121,7 +121,7 @@ function FlagpoleReportsManagementContent() {
     if (status === "authenticated") {
       fetchReports();
     }
-  }, [startDate, endDate, statusFilter, status]);
+  }, [startDate, endDate, statusFilter, searchQuery, status]);
 
   const handleEditInit = (report: any) => {
     setSelectedReport(report);
@@ -253,12 +253,7 @@ function FlagpoleReportsManagementContent() {
     toast.success("ดาวน์โหลดไฟล์ Excel เรียบร้อยแล้วครับ");
   };
 
-  const filteredReports = reports.filter(
-    (r) =>
-      r.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.user?.academicLevel?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.user?.studentId?.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredReports = reports; // Server-side filtering is now used
 
   const getInitials = (name: string) => {
     return name ? name.trim().charAt(0).toUpperCase() : "?";

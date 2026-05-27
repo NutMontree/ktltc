@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -56,6 +56,8 @@ export default function MapDashboard({
   // Optimized Marker Rendering using Memoization
   const markerElements = useMemo(() => {
     return markers.map((m, i) => {
+      // Use calculatedDistance if available, otherwise use stored distance
+      const displayDistance = m.calculatedDistance ?? m.distance;
       const isInZone = m.inZone !== false; // default true สำหรับข้อมูลเก่า
       const markerIcon = isInZone ? inZoneIcon : outZoneIcon;
 
@@ -99,9 +101,9 @@ export default function MapDashboard({
                 </div>
 
                 {/* Distance info */}
-                {m.distance != null && m.distance >= 0 && (
+                {displayDistance != null && displayDistance >= 0 && (
                   <p className="text-[9px] text-slate-400 font-bold mt-1">
-                    ห่างเสาธง {Math.round(m.distance)} ม.
+                    ห่างเสาธง {Math.round(displayDistance)} ม.
                   </p>
                 )}
               </div>
@@ -114,10 +116,13 @@ export default function MapDashboard({
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden z-0 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-inner">
-      <MapContainer 
-        center={dynamicCenter} 
-        zoom={15} 
-        scrollWheelZoom={false} 
+      <MapContainer
+        center={dynamicCenter}
+        zoom={15}
+        minZoom={10}
+        maxZoom={22}
+        zoomControl={false}
+        scrollWheelZoom={true}
         preferCanvas={true}
         style={{ height: '100%', width: '100%', zIndex: 0 }}
       >
@@ -125,6 +130,7 @@ export default function MapDashboard({
           attribution='&copy; OSM'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <ZoomControl position="topright" />
         
         {/* วงกลมรัศมีเสาธงจริง (ดึงจาก config) */}
         <Circle

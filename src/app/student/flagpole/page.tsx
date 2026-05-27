@@ -608,6 +608,7 @@ export default function StudentFlagpolePortal() {
                       <div className="p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-900/30 rounded-3xl text-rose-600 dark:text-rose-400 w-full">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 flex items-center justify-center gap-1.5">
                           <AlertCircle size={12} /> ระบบเข้าแถวเสาธงปิด
+                          <br /><p>Test System 1</p>
                         </p>
                         <p className="text-xs font-bold leading-relaxed">
                           {timeState.lockMsg}
