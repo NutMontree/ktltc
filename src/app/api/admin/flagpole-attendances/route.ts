@@ -31,7 +31,7 @@ export async function GET(req: Request) {
     const db = client.db("ktltc_db");
 
     // สร้างเงื่อนไขการค้นหาช่วงเวลา
-    const query: any = {};
+    let query: any = {};
     if (startDateParam && endDateParam) {
       const start = new Date(startDateParam);
       start.setUTCHours(0, 0, 0, 0);
@@ -44,16 +44,42 @@ export async function GET(req: Request) {
       query.status = statusFilter;
     }
 
-    // สร้าง match pipeline สำหรับการค้นหา
-    const matchStage: any = {};
+    // ค้นหาผู้ใช้ (ชื่อ/รหัส/ชั้นเรียน) - ใช้ logic เดียวกับ flagpole-data API
     if (searchQuery) {
-      matchStage.$match = {
-        $or: [
-          { "userDetails.name": { $regex: searchQuery, $options: "i" } },
-          { "userDetails.academicLevel": { $regex: searchQuery, $options: "i" } },
-          { "userDetails.studentId": { $regex: searchQuery, $options: "i" } }
-        ]
-      };
+      let searchMatch: any = {};
+      if (ObjectId.isValid(searchQuery)) {
+        searchMatch = {
+          $or: [
+            { _id: new ObjectId(searchQuery) },
+            { userId: new ObjectId(searchQuery) },
+            { userId: searchQuery }
+          ]
+        };
+      } else {
+        const matchingUsers = await db.collection("users").find({
+          $or: [
+            { name: { $regex: searchQuery, $options: "i" } },
+            { studentId: { $regex: searchQuery, $options: "i" } },
+            { academicLevel: { $regex: searchQuery, $options: "i" } }
+          ]
+        }).project({ _id: 1 }).limit(20).toArray();
+
+        const userIds = matchingUsers.map(u => u._id);
+        const userIdsStrings = userIds.map(id => id.toString());
+
+        searchMatch = {
+          $or: [
+            { userId: { $in: userIds } },
+            { userId: { $in: userIdsStrings } }
+          ]
+        };
+      }
+
+      if (Object.keys(query).length > 0) {
+        query = { $and: [query, searchMatch] };
+      } else {
+        query = searchMatch;
+      }
     }
 
     //Aggregate เพื่อ Join ข้อมูลผู้ใช้
@@ -80,8 +106,6 @@ export async function GET(req: Request) {
         }
       },
       { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
-      // Add search filter after lookup
-      ...(searchQuery ? [{ $match: matchStage.$match }] : []),
       { $sort: { "checkIn.time": -1 } },
       { $skip: skip },
       { $limit: limit },
