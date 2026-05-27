@@ -494,7 +494,11 @@ export default function StudentFlagpoleDashboard() {
 
               <div className="space-y-5">
                 {recentCheckIns.length > 0 ? (
-                  recentCheckIns.map((item, idx) => (
+                  recentCheckIns.map((item, idx) => {
+                    const isInZone = item.statusTag
+                      ? item.statusTag.includes("In-Site")
+                      : true; // ข้อมูลเก่าไม่มี statusTag ให้ถือว่าอยู่ในพื้นที่
+                    return (
                     <div key={idx} className="flex items-center gap-4 group/row">
                       <div className="relative">
                         {item.image ? (
@@ -510,9 +514,24 @@ export default function StudentFlagpoleDashboard() {
                         <p className="text-xs font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
                           {item.name}
                         </p>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase truncate">
-                          {item.department}
-                        </p>
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                          <p className="text-[9px] text-slate-400 font-bold uppercase truncate">
+                            {item.department}
+                          </p>
+                          {/* Zone badge */}
+                          <span className={`inline-flex items-center text-[8px] font-black px-1.5 py-0.5 rounded-md border ${
+                            isInZone
+                              ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30'
+                              : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30'
+                          }`}>
+                            {isInZone ? '✅ ในพื้นที่' : '⚠️ นอกพื้นที่'}
+                          </span>
+                          {item.distance != null && item.distance >= 0 && (
+                            <span className="text-[8px] text-slate-400 font-bold">
+                              {Math.round(item.distance)}ม.
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 tabular-nums">
@@ -523,7 +542,8 @@ export default function StudentFlagpoleDashboard() {
                         </p>
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className="py-10 text-center space-y-3">
                     <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">ไม่มีข้อมูลการลงเวลาเช็คแถว</p>
