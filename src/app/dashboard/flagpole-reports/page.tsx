@@ -539,23 +539,44 @@ function FlagpoleReportsManagementContent() {
                           </div>
                         </td>
                         <td className="px-8 py-5 border-b border-slate-50 dark:border-zinc-800/50 text-[10px]">
-                          <div className="space-y-1 max-w-[200px] truncate">
+                          <div className="space-y-1.5 max-w-[220px]">
                             <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400 font-medium">
                               <Smartphone size={12} className="shrink-0" />
-                              <span className="truncate">
-                                {report.deviceId
-                                  ? report.deviceId.substring(0, 16) + "..."
-                                  : "ไม่ระบุอุปกรณ์"}
+                              <span className="truncate" title={report.deviceId || "ไม่ระบุอุปกรณ์"}>
+                                {report.deviceId && report.deviceId !== "device-student"
+                                  ? (() => {
+                                      const ua = report.deviceId;
+                                      if (ua.includes("iPhone")) return "📱 iPhone";
+                                      if (ua.includes("Android")) return "📱 Android";
+                                      if (ua.includes("iPad")) return "📱 iPad";
+                                      if (ua.includes("Chrome")) return "🌐 Chrome Browser";
+                                      if (ua.includes("Firefox")) return "🌐 Firefox Browser";
+                                      if (ua.includes("Safari")) return "🌐 Safari Browser";
+                                      return ua.substring(0, 20) + "…";
+                                    })()
+                                  : <span className="text-slate-300 dark:text-zinc-600 italic">ข้อมูลเก่า</span>
+                                }
                               </span>
                             </div>
-                            <div className="flex items-center gap-1.5 text-slate-400 dark:text-zinc-500 italic">
+                            <div className="flex items-center gap-1.5 text-slate-400 dark:text-zinc-500">
                               <MapIcon size={12} className="shrink-0" />
-                              <span
-                                className="truncate"
-                                title={report.address || "ไม่ระบุตำแหน่งโดยละเอียด"}
-                              >
-                                {report.address || "ไม่ระบุตำแหน่ง"}
-                              </span>
+                              {report.lat && report.lng ? (
+                                <a
+                                  href={`https://www.google.com/maps?q=${report.lat},${report.lng}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-indigo-500 hover:text-indigo-700 hover:underline font-bold truncate"
+                                  title={`ละติจูด: ${report.lat}, ลองจิจูด: ${report.lng}`}
+                                >
+                                  📍 {Number(report.lat).toFixed(5)}, {Number(report.lng).toFixed(5)}
+                                </a>
+                              ) : (
+                                <span className="italic truncate text-slate-300 dark:text-zinc-600" title={report.address || "ไม่ระบุตำแหน่ง"}>
+                                  {report.address && report.address !== "บริเวณแถวเสาธง KTLTC"
+                                    ? report.address
+                                    : "ไม่มีพิกัด GPS"}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </td>
