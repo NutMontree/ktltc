@@ -378,8 +378,8 @@ export default function StudentFlagpolePortal() {
           lat: location?.lat,
           lng: location?.lng,
           photoUrl,
-          deviceId: "device-student",
-          address: "บริเวณแถวเสาธง KTLTC",
+          deviceId: navigator.userAgent.substring(0, 80),
+          address: location ? `พิกัด: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}` : "ไม่ระบุตำแหน่ง",
         }),
       });
 
@@ -550,7 +550,7 @@ export default function StudentFlagpolePortal() {
 
                   <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4 pl-0.5">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>ระบบลงเวลา 07:00 - 08:45 น. | สายหลัง 08:00 น.</span>
+                    <span>ระบบลงเวลา {flagpoleConfig.checkInStart} - {flagpoleConfig.checkInEnd} น. | สายหลัง {flagpoleConfig.lateThreshold} น.</span>
                   </div>
                 </div>
 

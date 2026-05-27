@@ -101,7 +101,9 @@ export async function GET(req: Request) {
           department: { $ifNull: ["$userDetails.academicLevel", "ไม่ระบุชั้นปี"] },
           image: "$userDetails.image",
           time: "$checkIn.time",
-          status: "$status"
+          status: "$status",
+          statusTag: "$checkIn.statusTag",
+          distance: "$checkIn.distance"
         }
       }
     ]).toArray();
@@ -219,12 +221,12 @@ export async function GET(req: Request) {
           lng: "$checkIn.location.lng",
           status: "$status",
           time: "$checkIn.time",
-          photoUrl: "$checkIn.photoUrl"
+          photoUrl: "$checkIn.photoUrl",
+          statusTag: "$checkIn.statusTag",  // "อยู่ในพื้นที่ (In-Site)" หรือ "นอกพื้นที่ (Remote/WFH)"
+          distance: "$checkIn.distance"     // ระยะห่างจากเสาธง (เมตร)
         }
       }
     ]).toArray();
-
-    const validMarkers = markers.filter(m => m.lat && m.lng);
 
     const flagpoleSetting = await db.collection("flagpole_settings").findOne({ key: "global_flagpole" });
     const config = {
@@ -232,6 +234,20 @@ export async function GET(req: Request) {
       lng: flagpoleSetting?.lng ?? 104.65807,
       radius: flagpoleSetting?.inSiteDistance ?? 200,
     };
+
+    const validMarkers = markers
+      .filter(m => m.lat != null && m.lng != null)
+      .map(m => ({
+        ...m,
+        // inZone: true = อยู่ในรัศมีพื้นที่เสาธง (ใช้ statusTag เป็นหลัก, fallback ด้วย distance)
+        inZone: m.statusTag
+          ? m.statusTag.includes("In-Site")
+          : (m.distance != null && m.distance >= 0
+              ? m.distance <= (flagpoleSetting?.inSiteDistance ?? 200)
+              : true)  // ข้อมูลเก่าไม่มี distance ให้ถือว่าอยู่ในพื้นที่
+      }));
+
+
 
     return NextResponse.json({
       success: true,

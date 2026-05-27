@@ -79,7 +79,13 @@ export async function GET(req: Request) {
           time: "$checkIn.time",
           distance: "$checkIn.distance",
           deviceId: "$checkIn.deviceId",
-          address: "$checkIn.address",
+          // address เก็บใน checkIn.location.address ไม่ใช่ checkIn.address
+          address: {
+            $ifNull: [
+              "$checkIn.location.address",
+              { $ifNull: ["$checkIn.address", "$checkIn.statusTag"] }
+            ]
+          },
           lat: "$checkIn.location.lat",
           lng: "$checkIn.location.lng",
           user: {
