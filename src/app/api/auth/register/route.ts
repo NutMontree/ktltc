@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       if (!classGroupId) {
         console.log("[Register] 400 – classGroupId missing");
         return NextResponse.json(
-          { error: "กรุณาระบุรหัสกลุ่มเรียน" },
+          { error: "กรุณาระบุชื่อห้องเรียน" },
           { status: 400 }
         );
       }

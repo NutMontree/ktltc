@@ -726,7 +726,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                             {/* Class Group ID */}
                             <div className="space-y-2">
                               <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                                รหัสกลุ่มเรียน / รหัสชั้นเรียน (Group Code)
+                                ชื่อห้องเรียน (เช่น สคบ.11)
                               </label>
                               <div className="relative">
                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
@@ -737,7 +737,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                                   name="classGroupId"
                                   value={formData.classGroupId}
                                   onChange={handleInputChange}
-                                  placeholder="เช่น 6631020001, 652010102..."
+                                  placeholder="เช่น สคบ.11, ชย.12..."
                                   className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
                                 />
                               </div>

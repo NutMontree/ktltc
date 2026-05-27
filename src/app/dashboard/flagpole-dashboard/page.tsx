@@ -94,6 +94,36 @@ function AnimatedNumber({ value, duration = 0.5 }: { value: number; duration?: n
   );
 }
 
+// Delta Badge Component
+function DeltaBadge({ delta }: { delta: number }) {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    if (delta > 0) {
+      setShow(true);
+      // Hide after 1 minute
+      const timer = setTimeout(() => {
+        setShow(false);
+      }, 60000);
+      return () => clearTimeout(timer);
+    }
+  }, [delta]);
+
+  if (delta <= 0 || !show) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.5 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.5 }}
+      transition={{ duration: 0.5, type: "spring" }}
+      className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg z-20"
+    >
+      +{delta}
+    </motion.div>
+  );
+}
+
 export default function StudentFlagpoleDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -122,6 +152,12 @@ export default function StudentFlagpoleDashboard() {
     lng: 104.65807,
     radius: 200
   });
+  const [previousData, setPreviousData] = useState([
+    { name: "ตรงเวลา", value: 0, color: "#10b981" },
+    { name: "มาสาย", value: 0, color: "#f59e0b" },
+    { name: "ขาดแถว", value: 0, color: "#f43f5e" },
+  ]);
+  const [deltas, setDeltas] = useState([0, 0, 0]);
 
   // การยืนยันสิทธิ์เข้าใช้งานฝั่งแอดมิน
   useEffect(() => {
@@ -142,6 +178,17 @@ export default function StudentFlagpoleDashboard() {
         const res = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&_t=${Date.now()}`);
         const json = await res.json();
         if (json.success) {
+          // Calculate deltas before updating data
+          const newDeltas = json.data.map((newItem: any, idx: number) => {
+            const oldValue = previousData[idx]?.value || 0;
+            const newValue = newItem.value;
+            return newValue - oldValue;
+          });
+          setDeltas(newDeltas);
+
+          // Update previous data
+          setPreviousData(json.data);
+
           setData(json.data);
           setMarkers(json.markers || []);
           setRealTotal(json.totalStudents || 0);
@@ -162,7 +209,7 @@ export default function StudentFlagpoleDashboard() {
     // Poll every 5 seconds for real-time updates
     const interval = setInterval(fetchStats, 5000);
     return () => clearInterval(interval);
-  }, [selectedDate, trendRange, status]);
+  }, [selectedDate, trendRange, status, previousData]);
 
   const total = realTotal || data.reduce((acc, curr) => acc + curr.value, 0);
 
@@ -251,6 +298,7 @@ export default function StudentFlagpoleDashboard() {
               icon: Users,
               theme: "indigo",
               delay: 0,
+              delta: 0,
             },
             {
               label: "มาเข้าแถวตรงเวลา",
@@ -259,6 +307,7 @@ export default function StudentFlagpoleDashboard() {
               icon: Activity,
               theme: "emerald",
               delay: 0.1,
+              delta: deltas[0] || 0,
             },
             {
               label: "มาเข้าแถวสาย",
@@ -267,6 +316,7 @@ export default function StudentFlagpoleDashboard() {
               icon: Clock,
               theme: "amber",
               delay: 0.2,
+              delta: deltas[1] || 0,
             },
             {
               label: "ขาดเข้าแถวในระบบ",
@@ -275,6 +325,7 @@ export default function StudentFlagpoleDashboard() {
               icon: AlertTriangle,
               theme: "rose",
               delay: 0.3,
+              delta: deltas[2] || 0,
             },
           ].map((stat, idx) => {
             const Icon = stat.icon;
@@ -292,10 +343,13 @@ export default function StudentFlagpoleDashboard() {
                   <Icon size={120} />
                 </div>
                 <div className="flex flex-col items-start gap-6 relative z-10">
-                  <div
-                    className={`p-4 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-2xl shadow-sm border border-${stat.theme}-100 dark:border-${stat.theme}-900/30 group-hover:rotate-12 transition-transform`}
-                  >
-                    <Icon size={24} />
+                  <div className="relative">
+                    <div
+                      className={`p-4 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-2xl shadow-sm border border-${stat.theme}-100 dark:border-${stat.theme}-900/30 group-hover:rotate-12 transition-transform`}
+                    >
+                      <Icon size={24} />
+                    </div>
+                    <DeltaBadge delta={stat.delta} />
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-2">

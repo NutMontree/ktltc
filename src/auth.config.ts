@@ -25,12 +25,29 @@ const callbacks: NextAuthConfig["callbacks"] = {
       token.sessionId = (user as any).sessionId;
       token.loginTimestamp = Date.now(); // บันทึกเวลาที่ Login
     }
+
+    // บังคับให้เซสชันของนักศึกษาที่ยังใช้รหัสแบบเก่า (ไม่ใช่ 13 หลัก) หมดอายุทันที
+    if (token.role === "student") {
+      const username = token.username as string;
+      if (!username || username.length !== 13 || isNaN(Number(username))) {
+        return {}; // ล้าง Token ทั้งหมดเพื่อบังคับให้ออกจากระบบ
+      }
+    }
+
     return token;
   },
 
   // 2. session callback: ทำงานเมื่อแอปพลิเคชันเรียกใช้ข้อมูล Session (เช่น useSession())
   // เราจะดึงข้อมูลจาก JWT Token มาใส่ใน session.user เพื่อให้ฝั่ง Client เรียกใช้ได้
   async session({ session, token }) {
+    // ถ้า Token โดนล้าง หรือเป็นนักศึกษาที่ยังใช้รหัสผ่านแบบเก่า ให้ล้าง Session ทันที
+    if (!token.role || (token.role === "student" && (!token.username || (token.username as string).length !== 13 || isNaN(Number(token.username))))) {
+      return {
+        ...session,
+        user: undefined as any
+      };
+    }
+
     if (session.user) {
       (session.user as any).id = token.id;
       (session.user as any).role = token.role;
@@ -73,6 +90,14 @@ const callbacks: NextAuthConfig["callbacks"] = {
       if (!isLoggedIn) {
         return false; // บังคับให้เข้าสู่ระบบก่อน
       }
+
+      // ตรวจสอบเซสชันนักศึกษาแบบเก่า (ไม่ใช่ 13 หลัก)
+      const role = (auth?.user as any)?.role?.toLowerCase();
+      const username = (auth?.user as any)?.username;
+      if (role === "student" && (!username || username.length !== 13 || isNaN(Number(username)))) {
+        return false; // เด้งไปหน้า Login ทันที
+      }
+
       return true;
     }
 
@@ -86,6 +111,12 @@ const callbacks: NextAuthConfig["callbacks"] = {
 
       // ดึงสิทธิ์/บทบาทของผู้ใช้งาน
       const role = (auth?.user as any)?.role?.toLowerCase();
+      const username = (auth?.user as any)?.username;
+
+      // บังคับให้ออกจากระบบหากเป็นนักเรียนที่ยังใช้เซสชันเก่าอยู่
+      if (role === "student" && (!username || username.length !== 13 || isNaN(Number(username)))) {
+        return false;
+      }
 
       // สิทธิ์พื้นฐานอย่าง 'student' หรือ 'user' ไม่มีสิทธิ์เข้าถึงหน้าควบคุมระบบ (Dashboard/Admin) ใดๆ ทั้งสิ้น
       // ยกเว้นหน้าแรกแดชบอร์ด (/dashboard), หน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat), หน้าสมาชิก (/dashboard/members), หน้าทวิภาคี (/dashboard/dve) และหน้าภาพรวมเสาธง (/dashboard/flagpole-dashboard)

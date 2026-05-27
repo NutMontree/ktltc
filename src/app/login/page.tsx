@@ -221,7 +221,7 @@ export default function LoginPage() {
                 <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
             
                   1. 🔑 <strong>ชื่อผู้ใช้งาน:</strong>
-                  <strong className="text-[#003fff] text-sm"> รหัสนักศึกษา</strong>
+                  <strong className="text-[#003fff] text-sm"> เลขประจำตัวประชาชน (13 หลัก)</strong>
                   <br />
                   2. 🔒 <strong>รหัสผ่าน:</strong>
                   <strong className="text-[#003fff] text-sm"> เบอร์โทรศัพท์มือถือ</strong>
@@ -262,7 +262,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-11 pr-4 py-4 bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600 font-medium shadow-sm hover:shadow-md"
-                  placeholder="ชื่อผู้ใช้งาน สำหรับครู รหัสนักศึกษา สำหรับนักเรียน"
+                  placeholder="ชื่อผู้ใช้งาน สำหรับครู เลขบัตรประชาชน สำหรับนักเรียน"
                   autoComplete="username"
                   required
                 />
