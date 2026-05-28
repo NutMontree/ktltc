@@ -126,6 +126,10 @@ export async function GET(req: Request) {
           academicYear: subject.academicYear,
           teacherId: subject.teacherId,
           teacherName: subject.teacherName,
+          totalWeeks: subject.totalWeeks || "",
+          daysPerWeek: subject.daysPerWeek || "",
+          hoursPerDay: subject.hoursPerDay || "",
+          totalHours: subject.totalHours || "",
         },
       });
     }
@@ -164,6 +168,10 @@ export async function GET(req: Request) {
             teacherId: s.teacherId,
             teacherName: s.teacherName,
             teacherImage: teacher?.image || "",
+            totalWeeks: s.totalWeeks || "",
+            daysPerWeek: s.daysPerWeek || "",
+            hoursPerDay: s.hoursPerDay || "",
+            totalHours: s.totalHours || "",
           };
         }),
       });
@@ -194,6 +202,10 @@ export async function GET(req: Request) {
         academicYear: s.academicYear,
         teacherId: s.teacherId,
         teacherName: s.teacherName,
+        totalWeeks: s.totalWeeks || "",
+        daysPerWeek: s.daysPerWeek || "",
+        hoursPerDay: s.hoursPerDay || "",
+        totalHours: s.totalHours || "",
       })),
     });
   } catch (error: any) {
@@ -212,7 +224,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { code, name, department, curriculum, semester, academicYear } = body;
+    const { code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours } = body;
 
     if (!code || !name || !department || !curriculum || !semester || !academicYear) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -230,6 +242,10 @@ export async function POST(req: Request) {
       academicYear,
       teacherId: (session.user as any).id,
       teacherName: session.user.name || "คุณครู",
+      totalWeeks: totalWeeks || "",
+      daysPerWeek: daysPerWeek || "",
+      hoursPerDay: hoursPerDay || "",
+      totalHours: totalHours || "",
       createdAt: new Date(),
     };
 
@@ -256,7 +272,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, code, name, department, curriculum, semester, academicYear } = body;
+    const { id, code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours } = body;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
@@ -284,6 +300,10 @@ export async function PUT(req: Request) {
           curriculum,
           semester,
           academicYear,
+          totalWeeks: totalWeeks || "",
+          daysPerWeek: daysPerWeek || "",
+          hoursPerDay: hoursPerDay || "",
+          totalHours: totalHours || "",
           updatedAt: new Date(),
         },
       },

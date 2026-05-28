@@ -107,18 +107,36 @@ export async function GET(req: Request) {
 
     if (!department && !teacherId) {
       if (isStudent) {
-        const teachers = studentDept
-          ? await db
-              .collection("users")
-              .find({ role: "teacher", department: { $regex: escapeRegex(studentDept), $options: "i" } })
-              .project({ _id: 1, name: 1, department: 1 })
-              .sort({ name: 1 })
-              .toArray()
-          : [];
+        if (!studentDept) {
+          return NextResponse.json({ success: true, departments: [], teachers: [], userProfile });
+        }
+
+        const studentSubjects = await db.collection("dve_subjects")
+          .find({ department: { $regex: escapeRegex(studentDept), $options: "i" } })
+          .project({ teacherId: 1 })
+          .toArray();
+          
+        const teacherIds = Array.from(new Set(studentSubjects.map(s => s.teacherId).filter(id => typeof id === "string")));
+        const teacherObjectIds = teacherIds.map(id => {
+          try { return new ObjectId(id); } catch { return null; }
+        }).filter((id): id is ObjectId => id !== null);
+
+        const teachers = await db
+          .collection("users")
+          .find({ 
+            role: "teacher", 
+            $or: [
+              { department: { $regex: escapeRegex(studentDept), $options: "i" } },
+              { _id: { $in: teacherObjectIds } }
+            ]
+          })
+          .project({ _id: 1, name: 1, department: 1 })
+          .sort({ name: 1 })
+          .toArray();
 
         return NextResponse.json({
           success: true,
-          departments: studentDept ? [studentDept] : [],
+          departments: [studentDept],
           teachers: teachers.map((t) => ({ id: t._id.toString(), name: t.name, department: t.department })),
           userProfile,
         });
@@ -154,16 +172,27 @@ export async function GET(req: Request) {
           });
         }
 
-        const teachers = await db
-          .collection("users")
-          .find({ role: "teacher", department: { $regex: escapeRegex(studentDept), $options: "i" } })
-          .project({ _id: 1, name: 1, department: 1 })
-          .sort({ name: 1 })
-          .toArray();
-
         const subjects = await db
           .collection("dve_subjects")
           .find({ department: { $regex: escapeRegex(studentDept), $options: "i" } })
+          .sort({ name: 1 })
+          .toArray();
+
+        const teacherIdsFromSubjects = Array.from(new Set(subjects.map((s) => s.teacherId).filter((id) => typeof id === "string")));
+        const teacherObjectIds = teacherIdsFromSubjects.map((id) => {
+          try { return new ObjectId(id); } catch { return null; }
+        }).filter((id): id is ObjectId => id !== null);
+
+        const teachers = await db
+          .collection("users")
+          .find({ 
+            role: "teacher", 
+            $or: [
+              { department: { $regex: escapeRegex(studentDept), $options: "i" } },
+              { _id: { $in: teacherObjectIds } }
+            ]
+          })
+          .project({ _id: 1, name: 1, department: 1 })
           .sort({ name: 1 })
           .toArray();
 
@@ -290,8 +319,7 @@ export async function GET(req: Request) {
 
         const teacher = await db.collection("users").findOne({
           _id: new ObjectId(teacherId),
-          role: "teacher",
-          department: { $regex: escapeRegex(studentDept), $options: "i" },
+          role: "teacher"
         });
         if (!teacher) {
           return NextResponse.json({ success: true, subjects: [] });

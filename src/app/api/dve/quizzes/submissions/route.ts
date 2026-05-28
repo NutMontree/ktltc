@@ -137,10 +137,17 @@ export async function POST(req: Request) {
 
     // Automatically update student's score & file inside DVE attendance
     const subjectId = quiz.subjectId;
-    const existingAttendance = await db.collection("dve_attendances").findOne({
+    const unitId = quiz.unitId;
+    
+    const attendanceQuery: any = {
       studentId: userId,
       subjectId: subjectId
-    });
+    };
+    if (unitId) {
+      attendanceQuery.unitId = unitId;
+    }
+    
+    const existingAttendance = await db.collection("dve_attendances").findOne(attendanceQuery);
 
     if (existingAttendance) {
       const updateFields: any = {
@@ -162,6 +169,7 @@ export async function POST(req: Request) {
         studentId: userId,
         studentName: userName,
         subjectId: subjectId,
+        unitId: unitId || "",
         status: "Present", // default status
         assignmentStatus: "Submitted",
         imageUrl: fileUrl || "",

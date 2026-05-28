@@ -570,6 +570,13 @@ export default function DashboardLoader() {
                   variants={item}
                 />
                 <ActionCard
+                  href="/dashboard/supervision/requests"
+                  title="คำร้องการนิเทศ"
+                  icon={ShieldCheck}
+                  desc="ตรวจพิจารณาและอนุมัติผลการนิเทศ"
+                  variants={item}
+                />
+                <ActionCard
                   href="/dashboard/data-management"
                   title="แก้ไขข้อมูลการลงเวลา"
                   icon={ClipboardList}
@@ -775,6 +782,13 @@ export default function DashboardLoader() {
                   title="รายชื่อนักเรียนประจำแผนก"
                   icon={Users}
                   desc="ตรวจสอบประวัตินักเรียน แยกตามห้องเรียนและกลุ่มเรียน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/supervision"
+                  title="การนิเทศนักศึกษาฝึกงาน"
+                  icon={ClipboardList}
+                  desc="จัดการข้อมูลและบันทึกผลการนิเทศนักเรียนนักศึกษา"
                   variants={item}
                 />
               </div>

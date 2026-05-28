@@ -32,6 +32,7 @@ export async function GET() {
       manage_flagpole_settings: ["super_admin", "admin", "deputy_student_affairs"].includes(role),
       access_dve_teacher: ["super_admin", "admin", "teacher"].includes(role),
       access_dve_student: ["super_admin", "admin", "student"].includes(role),
+      manage_supervision_requests: ["super_admin"].includes(role),
       ...(dbPermission?.permissions || {}) // เอาค่าจาก DB มาทับถ้ามี
     };
 
