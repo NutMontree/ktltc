@@ -132,7 +132,7 @@ export async function GET(req: Request) {
       const ownStudent = {
         id: studentDoc._id.toString(),
         name: studentDoc.name || "ไม่ระบุชื่อ",
-        studentIdNum: studentDoc.studentId || "ไม่ระบุรหัส",
+        studentIdNum: studentDoc.studentId || studentDoc.studentIdNum || "ไม่ระบุรหัส",
         classGroupId: standardizeClassGroupName(studentDoc.classGroupId || "ไม่ระบุกลุ่ม"),
         department: studentDoc.department || ownDept,
         image: studentDoc.image || null,
@@ -219,7 +219,7 @@ export async function GET(req: Request) {
       students: filteredStudents.map((s) => ({
         id: s._id.toString(),
         name: s.name || "ไม่ระบุชื่อ",
-        studentIdNum: s.studentId || "ไม่ระบุรหัส",
+        studentIdNum: s.studentId || s.studentIdNum || "ไม่ระบุรหัส",
         classGroupId: standardizeClassGroupName(s.classGroupId || "ไม่ระบุห้อง"),
         department: s.department || department,
         image: s.image || null,

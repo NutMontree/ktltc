@@ -170,7 +170,8 @@ export async function POST(req: Request) {
     // เพิ่มข้อมูลเฉพาะสำหรับนักเรียน / นักศึกษา (student)
     if (role === "student") {
       newUser.citizenId = citizenId;
-      newUser.studentIdNum = studentIdNum;
+      newUser.studentId = studentIdNum;
+      newUser.studentIdNum = studentIdNum; // Save both for backwards compatibility just in case
       newUser.classGroupId = classGroupId;
       newUser.academicLevel = academicLevel;
       newUser.studentStatus = "กำลังศึกษา"; // ล็อคสถานะเป็นกำลังศึกษา
