@@ -987,7 +987,7 @@ export function DVEStudentPortal() {
                       className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20 shadow-sm"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-black text-lg shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-black text-lg shadow-sm">
                       {activeSubject.teacherName?.charAt(0) || "A"}
                     </div>
                   )}
@@ -1046,7 +1046,7 @@ export function DVEStudentPortal() {
                     </span>
                   </div>
                   {totalClasses > 0 && submittedAssignments === totalClasses && quizzes.filter((q) => q.isSubmitted).length === quizzes.length && (
-                    <div className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl text-white">
+                    <div className="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-emerald-500 to-teal-500 rounded-xl text-white">
                       <Sparkles size={16} />
                       <span className="text-xs font-black">ทำงานครบถ้วนแล้ว! 🎉</span>
                     </div>
