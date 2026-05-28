@@ -137,13 +137,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  turbopack: {
-    // ระบุให้ Turbopack ข้ามการจัดการโฟลเดอร์เหล่านี้ในส่วนของ Dev/Build
-    rules: {
-      "*.{png,jpg,jpeg,gif,webp,pdf,docx,xlsx}": {
-        // อาจไม่จำเป็นถ้าคุณจัดการผ่าน /api/media อยู่แล้ว
-      },
-    },
+  // turbopack: {},
+  
+webpack: (config, { dev }) => {
+    // ป้องกันการยุ่งกับไฟล์ใน public ระหว่าง build
+    config.watchOptions = {
+      ignored: ['**/public/uploads/**', '**/public/ktltc_drive/**'],
+    };
+    return config;
   },
 
   compress: true,
