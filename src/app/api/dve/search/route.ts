@@ -167,17 +167,28 @@ export async function GET(req: Request) {
           .sort({ name: 1 })
           .toArray();
 
+        // Get teacher information to include teacher images
+        const teacherIds = subjects.map((s) => s.teacherId).filter((id) => ObjectId.isValid(id));
+        const subjectTeachers = teacherIds.length > 0
+          ? await db.collection("users").find({ _id: { $in: teacherIds.map((id) => new ObjectId(id)) } }).toArray()
+          : [];
+        const teacherMap = new Map(subjectTeachers.map((t) => [t._id.toString(), t]));
+
         return NextResponse.json({
           success: true,
           teachers: teachers.map((t) => ({ id: t._id.toString(), name: t.name, department: t.department })),
-          subjects: subjects.map((s) => ({
-            id: s._id.toString(),
-            code: s.code,
-            name: s.name,
-            curriculum: s.curriculum,
-            teacherId: s.teacherId,
-            teacherName: s.teacherName,
-          })),
+          subjects: subjects.map((s) => {
+            const teacher = teacherMap.get(s.teacherId);
+            return {
+              id: s._id.toString(),
+              code: s.code,
+              name: s.name,
+              curriculum: s.curriculum,
+              teacherId: s.teacherId,
+              teacherName: s.teacherName,
+              teacherImage: teacher?.image || "",
+            };
+          }),
         });
       }
 
@@ -198,6 +209,7 @@ export async function GET(req: Request) {
             curriculum: s.curriculum,
             teacherId: s.teacherId,
             teacherName: s.teacherName,
+            teacherImage: userProfile?.image || "",
           })),
         });
       }
@@ -207,6 +219,13 @@ export async function GET(req: Request) {
         .find({ department: { $regex: escapeRegex(department), $options: "i" } })
         .sort({ name: 1 })
         .toArray();
+
+      // Get teacher information to include teacher images
+      const teacherIds = subjects.map((s) => s.teacherId).filter((id) => ObjectId.isValid(id));
+      const subjectTeachers = teacherIds.length > 0
+        ? await db.collection("users").find({ _id: { $in: teacherIds.map((id) => new ObjectId(id)) } }).toArray()
+        : [];
+      const teacherMap = new Map(subjectTeachers.map((t) => [t._id.toString(), t]));
 
       const deptTeachers = await db
         .collection("users")
@@ -228,7 +247,7 @@ export async function GET(req: Request) {
         })
         .filter((id): id is ObjectId => id !== null);
 
-      const subjectTeachers =
+      const subjectTeachersList =
         subjectTeacherObjectIds.length > 0
           ? await db
               .collection("users")
@@ -239,7 +258,7 @@ export async function GET(req: Request) {
 
       const uniqueTeachersMap = new Map<string, any>();
       deptTeachers.forEach((t) => uniqueTeachersMap.set(t._id.toString(), t));
-      subjectTeachers.forEach((t) => uniqueTeachersMap.set(t._id.toString(), t));
+      subjectTeachersList.forEach((t) => uniqueTeachersMap.set(t._id.toString(), t));
 
       const teachersList = Array.from(uniqueTeachersMap.values()).sort((a, b) =>
         (a.name || "").localeCompare(b.name || ""),
@@ -248,14 +267,18 @@ export async function GET(req: Request) {
       return NextResponse.json({
         success: true,
         teachers: teachersList.map((t) => ({ id: t._id.toString(), name: t.name, department: t.department })),
-        subjects: subjects.map((s) => ({
-          id: s._id.toString(),
-          code: s.code,
-          name: s.name,
-          curriculum: s.curriculum,
-          teacherId: s.teacherId,
-          teacherName: s.teacherName,
-        })),
+        subjects: subjects.map((s) => {
+          const teacher = teacherMap.get(s.teacherId);
+          return {
+            id: s._id.toString(),
+            code: s.code,
+            name: s.name,
+            curriculum: s.curriculum,
+            teacherId: s.teacherId,
+            teacherName: s.teacherName,
+            teacherImage: teacher?.image || "",
+          };
+        }),
       });
     }
 

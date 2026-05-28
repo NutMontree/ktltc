@@ -142,19 +142,30 @@ export async function GET(req: Request) {
         .sort({ createdAt: -1 })
         .toArray();
 
+      // Get teacher information to include teacher images
+      const teacherIds = subjects.map((s) => s.teacherId).filter((id) => ObjectId.isValid(id));
+      const teachers = teacherIds.length > 0
+        ? await db.collection("users").find({ _id: { $in: teacherIds.map((id) => new ObjectId(id)) } }).toArray()
+        : [];
+      const teacherMap = new Map(teachers.map((t) => [t._id.toString(), t]));
+
       return NextResponse.json({
         success: true,
-        subjects: subjects.map((s) => ({
-          id: s._id.toString(),
-          code: s.code,
-          name: s.name,
-          department: s.department,
-          curriculum: s.curriculum,
-          semester: s.semester,
-          academicYear: s.academicYear,
-          teacherId: s.teacherId,
-          teacherName: s.teacherName,
-        })),
+        subjects: subjects.map((s) => {
+          const teacher = teacherMap.get(s.teacherId);
+          return {
+            id: s._id.toString(),
+            code: s.code,
+            name: s.name,
+            department: s.department,
+            curriculum: s.curriculum,
+            semester: s.semester,
+            academicYear: s.academicYear,
+            teacherId: s.teacherId,
+            teacherName: s.teacherName,
+            teacherImage: teacher?.image || "",
+          };
+        }),
       });
     }
 

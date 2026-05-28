@@ -28,6 +28,9 @@ import {
   Clock3,
   BookmarkCheck,
   ArrowRight,
+  Bell,
+  XCircle,
+  Info,
   ClipboardList,
   X,
   Sparkles,
@@ -111,6 +114,8 @@ export function DVEStudentPortal() {
     department: "",
     teacherId: "",
     subjectId: "",
+    assignmentName: "",
+    timePeriod: "all", // all, today, week, month, semester
   });
 
   const [options, setOptions] = useState<{
@@ -137,6 +142,11 @@ export function DVEStudentPortal() {
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [attendances, setAttendances] = useState<any[]>([]);
   const [loadingSubjectData, setLoadingSubjectData] = useState(false);
+  const [taskView, setTaskView] = useState<"todo" | "submitted">("todo");
+
+  // Notification states
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Student in-app quiz states
   const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
@@ -610,7 +620,7 @@ export function DVEStudentPortal() {
 
   // Filter teachers/subjects when department changes
   const handleDepartmentChange = async (dept: string) => {
-    setSearchState({ department: dept, teacherId: "", subjectId: "" });
+    setSearchState({ department: dept, teacherId: "", subjectId: "", assignmentName: "", timePeriod: "all" });
     setActiveSubject(null);
     try {
       const res = await fetch(`/api/dve/search?department=${encodeURIComponent(dept)}`);
@@ -692,6 +702,49 @@ export function DVEStudentPortal() {
       : 100;
   const submittedAssignments = attendances.filter((a) => a.assignmentStatus === "Submitted").length;
 
+  // Generate notifications
+  useEffect(() => {
+    const newNotifications: any[] = [];
+
+    // Notification for incomplete assignments
+    const pendingAssignments = attendances.filter((a) => a.assignmentStatus === "Pending");
+    if (pendingAssignments.length > 0) {
+      newNotifications.push({
+        id: "pending-assignments",
+        type: "warning",
+        title: "งานที่ค้างส่ง",
+        message: `มี ${pendingAssignments.length} งานที่ยังไม่ได้ส่ง`,
+        count: pendingAssignments.length,
+      });
+    }
+
+    // Notification for new quizzes (not submitted)
+    const newQuizzes = quizzes.filter((q) => !q.isSubmitted);
+    if (newQuizzes.length > 0) {
+      newNotifications.push({
+        id: "new-quizzes",
+        type: "info",
+        title: "แบบทดสอบใหม่",
+        message: `มี ${newQuizzes.length} แบบทดสอบที่ยังไม่ได้ทำ`,
+        count: newQuizzes.length,
+      });
+    }
+
+    // Notification for missed attendance
+    const missedClasses = attendances.filter((a) => a.status === "Absent");
+    if (missedClasses.length > 0) {
+      newNotifications.push({
+        id: "missed-attendance",
+        type: "error",
+        title: "ขาดเรียน",
+        message: `ขาดเรียน ${missedClasses.length} ครั้ง`,
+        count: missedClasses.length,
+      });
+    }
+
+    setNotifications(newNotifications);
+  }, [attendances, quizzes]);
+
   const getRoleThaiLabel = (role?: string) => {
     if (!role) return "นักเรียน / นักศึกษา";
     const r = role.toLowerCase();
@@ -703,27 +756,27 @@ export function DVEStudentPortal() {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto space-y-6 px-2 sm:px-4 py-4 sm:py-8">
+    <div className="max-w-[1200px] mx-auto space-y-4 px-2 py-2 sm:py-4">
       {/* Student Portal Banner */}
-      <div className="relative overflow-hidden rounded-[30px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-8 sm:p-10 shadow-xl shadow-emerald-500/10">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
-          <GraduationCap size={180} />
+      <div className="relative overflow-hidden rounded-[20px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-4 sm:p-6 shadow-xl shadow-emerald-500/10">
+        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
+          <GraduationCap size={140} className="w-24 h-24 sm:w-32 sm:h-32" />
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-        <div className="absolute right-1/4 top-1/4 w-32 h-32 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
+        <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+        <div className="absolute right-1/4 top-1/4 w-20 h-20 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          <div className="space-y-4 max-w-2xl">
-            <span className="bg-white/20 backdrop-blur-md text-[10px] uppercase font-black tracking-widest px-3.5 py-1.5 rounded-full text-white/95 border border-white/10 shadow-xs">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
+          <div className="space-y-2 sm:space-y-4 max-w-2xl">
+            <span className="bg-white/20 backdrop-blur-md text-[9px] sm:text-[10px] uppercase font-black tracking-widest px-2 sm:px-3 py-0.5 sm:py-1.5 rounded-full text-white/95 border border-white/10 shadow-xs">
               Student Learning Hub
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
               ศูนย์การศึกษาระบบทวิภาคี{" "}
               <span className="text-emerald-350 block sm:inline">(DVE Portal)</span>
             </h1>
-            <p className="text-white/80 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
+            <p className="text-white/80 font-medium text-[10px] sm:text-xs md:text-sm leading-relaxed">
               ยินดีต้อนรับสู่ระบบฝึกอาชีพทวิภาคี ค้นหาบทเรียน ดาวน์โหลดสื่อส่งงาน
               และติดตามประวัติคะแนนของท่านได้ที่นี่
             </p>
@@ -731,9 +784,9 @@ export function DVEStudentPortal() {
 
           {/* 🌟 Highly Prominent & Premium Glassmorphic Welcome Card */}
           {session?.user && (
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 flex items-center gap-4 shadow-2xl min-w-[280px] sm:min-w-[340px] transform hover:scale-[1.02] transition-transform duration-300">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-3 sm:p-4 flex items-center gap-3 shadow-2xl min-w-[240px] sm:min-w-[280px] transform hover:scale-[1.02] transition-transform duration-300">
               {/* User Avatar Image / Thumbnail */}
-              <div className="w-14 h-14 rounded-xl overflow-hidden bg-linear-to-tr from-emerald-400 to-teal-400 text-white flex items-center justify-center font-black text-2xl shadow-lg border border-white/30 shrink-0">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-linear-to-tr from-emerald-400 to-teal-400 text-white flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg border border-white/30 shrink-0">
                 {session.user.image ? (
                   <img
                     src={session.user.image}
@@ -746,16 +799,62 @@ export function DVEStudentPortal() {
                   "U"
                 )}
               </div>
-              <div className="space-y-1 overflow-hidden">
-                <span className="text-[9px] font-black uppercase text-emerald-250 tracking-widest block">
+              <div className="space-y-0.5 sm:space-y-1 overflow-hidden flex-1">
+                <span className="text-[8px] sm:text-[9px] font-black uppercase text-emerald-250 tracking-widest block">
                   ยินดีต้อนรับผู้ใช้งาน
                 </span>
                 <h2 className="text-lg sm:text-xl font-black text-white truncate leading-tight">
                   {session.user.name}
                 </h2>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/30 border border-emerald-400/20 text-[9px] font-black text-emerald-100 uppercase tracking-wider">
-                  {getRoleThaiLabel((session.user as any).role)}
-                </div>
+                <p className="text-[10px] text-white/70 font-medium truncate">
+                  {getRoleThaiLabel((session.user as any)?.role)}
+                </p>
+              </div>
+
+              {/* Notification Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="w-12 h-12 rounded-xl bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center border border-white/20 relative"
+                >
+                  <Bell size={20} className="text-white" />
+                  {notifications.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-emerald-600">
+                      {notifications.length}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notification Dropdown */}
+                {showNotifications && notifications.length > 0 && (
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-800 z-50">
+                    <div className="p-3 border-b dark:border-zinc-800">
+                      <h3 className="text-xs font-black text-zinc-900 dark:text-white">การแจ้งเตือน</h3>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.map((notif) => (
+                        <div
+                          key={notif.id}
+                          className={`p-3 border-b dark:border-zinc-800 last:border-0 ${
+                            notif.type === "warning" ? "bg-amber-50 dark:bg-amber-900/10" :
+                            notif.type === "error" ? "bg-rose-50 dark:bg-rose-900/10" :
+                            "bg-blue-50 dark:bg-blue-900/10"
+                          }`}
+                        >
+                          <div className="flex items-start gap-2">
+                            {notif.type === "warning" && <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />}
+                            {notif.type === "error" && <XCircle size={14} className="text-rose-500 shrink-0 mt-0.5" />}
+                            {notif.type === "info" && <Info size={14} className="text-blue-500 shrink-0 mt-0.5" />}
+                            <div>
+                              <p className="text-xs font-black text-zinc-900 dark:text-white">{notif.title}</p>
+                              <p className="text-[10px] text-zinc-600 dark:text-zinc-400">{notif.message}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -763,19 +862,19 @@ export function DVEStudentPortal() {
       </div>
 
       {/* Smart Search Filters */}
-      <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
-        <h3 className="text-base font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-          <Search size={18} className="text-emerald-500" />
+      <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-sm">
+        <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
+          <Search size={18} className="text-emerald-500 w-4 h-4 sm:w-5 sm:h-5" />
           ค้นหารายวิชาเรียนทวิภาคี
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="flex flex-col gap-1 sm:gap-1.5">
+            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
               1. เลือกแผนกวิชา
             </label>
             <Select
               placeholder="-- เลือกแผนกวิชา --"
-              className="w-full h-11"
+              className="w-full h-9 sm:h-11"
               value={searchState.department || undefined}
               onChange={(val) => handleDepartmentChange(val)}
               loading={loadingOptions}
@@ -783,13 +882,13 @@ export function DVEStudentPortal() {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+          <div className="flex flex-col gap-1 sm:gap-1.5">
+            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
               2. เลือกอาจารย์ผู้สอน
             </label>
             <Select
               placeholder="-- เลือกอาจารย์ --"
-              className="w-full h-11"
+              className="w-full h-9 sm:h-11"
               value={searchState.teacherId || undefined}
               onChange={(val) => handleTeacherChange(val)}
               options={options.teachers.map((t) => ({
@@ -800,13 +899,13 @@ export function DVEStudentPortal() {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+          <div className="flex flex-col gap-1 sm:gap-1.5">
+            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
               3. เลือกวิชาเรียน
             </label>
             <Select
               placeholder="-- เลือกวิชาเรียน --"
-              className="w-full h-11"
+              className="w-full h-9 sm:h-11"
               value={searchState.subjectId || undefined}
               onChange={handleSubjectSelect}
               options={options.subjects.map((s) => ({
@@ -814,6 +913,40 @@ export function DVEStudentPortal() {
                 value: s.id,
               }))}
               disabled={!searchState.teacherId || !searchState.department}
+            />
+          </div>
+        </div>
+
+        {/* Advanced Filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3">
+          <div className="flex flex-col gap-1 sm:gap-1.5">
+            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
+              ค้นหาชื่องาน/แบบทดสอบ
+            </label>
+            <input
+              type="text"
+              placeholder="พิมพ์ชื่องาน..."
+              className="w-full h-9 sm:h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-2 sm:px-3 text-xs sm:text-sm focus:outline-hidden dark:text-white placeholder-zinc-400 font-bold"
+              value={searchState.assignmentName}
+              onChange={(e) => setSearchState((prev) => ({ ...prev, assignmentName: e.target.value }))}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1 sm:gap-1.5">
+            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
+              ช่วงเวลา
+            </label>
+            <Select
+              className="w-full h-9 sm:h-11"
+              value={searchState.timePeriod}
+              onChange={(val) => setSearchState((prev) => ({ ...prev, timePeriod: val }))}
+              options={[
+                { label: "ทั้งหมด", value: "all" },
+                { label: "วันนี้", value: "today" },
+                { label: "สัปดาห์นี้", value: "week" },
+                { label: "เดือนนี้", value: "month" },
+                { label: "ภาคเรียนนี้", value: "semester" },
+              ]}
             />
           </div>
         </div>
@@ -827,13 +960,13 @@ export function DVEStudentPortal() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4"
           >
             {/* Subject Roster Info & Personal Attendance Stats */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-3 sm:space-y-4">
               {/* Course Info Card */}
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
-                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-xl w-fit">
+              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-sm space-y-3 sm:space-y-4">
+                <div className="p-2 sm:p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-xl w-fit">
                   <BookOpen size={24} />
                 </div>
                 <div>
@@ -847,9 +980,17 @@ export function DVEStudentPortal() {
                   <p className="text-xs text-zinc-500 mt-1">รหัสวิชา: {activeSubject.code}</p>
                 </div>
                 <div className="border-t dark:border-zinc-800 pt-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 font-black">
-                    <User size={16} />
-                  </div>
+                  {activeSubject.teacherImage ? (
+                    <img
+                      src={activeSubject.teacherImage}
+                      alt={activeSubject.teacherName || "อาจารย์ผู้สอน"}
+                      className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-black text-lg shadow-sm">
+                      {activeSubject.teacherName?.charAt(0) || "A"}
+                    </div>
+                  )}
                   <div>
                     <p className="text-[10px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">
                       อาจารย์ผู้สอน
@@ -858,6 +999,58 @@ export function DVEStudentPortal() {
                       {activeSubject.teacherName}
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* Task Completion Status */}
+              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+                <h4 className="text-sm font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
+                  <BookmarkCheck size={16} className="text-emerald-500" />
+                  สถานะการทำงาน
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" />
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">งานที่ส่งแล้ว</span>
+                    </div>
+                    <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                      {submittedAssignments} / {totalClasses}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800/50">
+                    <div className="flex items-center gap-2">
+                      <Clock size={16} className="text-amber-600 dark:text-amber-400" />
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">งานที่ค้างส่ง</span>
+                    </div>
+                    <span className="text-sm font-black text-amber-600 dark:text-amber-400">
+                      {totalClasses - submittedAssignments}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800/50">
+                    <div className="flex items-center gap-2">
+                      <Award size={16} className="text-blue-600 dark:text-blue-400" />
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">แบบทดสอบที่ทำแล้ว</span>
+                    </div>
+                    <span className="text-sm font-black text-blue-600 dark:text-blue-400">
+                      {quizzes.filter((q) => q.isSubmitted).length} / {quizzes.length}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-200 dark:border-rose-800/50">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle size={16} className="text-rose-600 dark:text-rose-400" />
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">งานทั้งหมดที่ค้าง</span>
+                    </div>
+                    <span className="text-sm font-black text-rose-600 dark:text-rose-400">
+                      {(totalClasses - submittedAssignments) + (quizzes.filter((q) => !q.isSubmitted).length)}
+                    </span>
+                  </div>
+                  {totalClasses > 0 && submittedAssignments === totalClasses && quizzes.filter((q) => q.isSubmitted).length === quizzes.length && (
+                    <div className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl text-white">
+                      <Sparkles size={16} />
+                      <span className="text-xs font-black">ทำงานครบถ้วนแล้ว! 🎉</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1389,7 +1582,7 @@ export function DVEStudentPortal() {
                     คำอธิบายและเนื้อหาหน่วยเรียน
                   </h3>
                   {activeStudyUnit.content ? (
-                    <p className="text-xs text-zinc-700 dark:text-zinc-350 leading-relaxed whitespace-pre-line bg-zinc-50 dark:bg-zinc-850 p-4 rounded-xl border dark:border-zinc-800">
+                    <p className="text-xs text-zinc-700   leading-relaxed whitespace-pre-line bg-zinc-50 dark:bg-zinc-850 p-4 rounded-xl border dark:border-zinc-800">
                       {activeStudyUnit.content}
                     </p>
                   ) : (
@@ -1478,24 +1671,54 @@ export function DVEStudentPortal() {
                 {/* 📝 QUIZ REDIRECT */}
                 {quizzes && quizzes.length > 0 && (
                   <div className="space-y-3">
-                    <span className="text-[10px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider block">
-                      📝 แบบทดสอบทั้งหมด ({quizzes.length}):
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider block">
+                        📝 แบบทดสอบทั้งหมด ({quizzes.length}):
+                      </span>
+                      {/* To-Do / Submitted Toggle */}
+                      <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 rounded-full p-1">
+                        <button
+                          onClick={() => setTaskView("todo")}
+                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${
+                            taskView === "todo"
+                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                              : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                          }`}
+                        >
+                          งานที่ต้องทำ
+                        </button>
+                        <button
+                          onClick={() => setTaskView("submitted")}
+                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${
+                            taskView === "submitted"
+                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                              : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                          }`}
+                        >
+                          ส่งแล้ว
+                        </button>
+                      </div>
+                    </div>
                     <div className="space-y-2">
-                      {quizzes.map((quiz: any, qIdx: number) => {
-                        const isQuizSubmitted = !!quiz.isSubmitted;
-                        return (
-                          <div
-                            key={quiz.id || qIdx}
-                            className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${
-                              isQuizSubmitted
-                                ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
-                                : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
-                            }`}
-                          >
-                            <div className="space-y-0.5 text-center sm:text-left">
-                              <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
-                                แบบทดสอบวิชาเรียนที่ {qIdx + 1}
+                      {quizzes
+                        .filter((quiz: any) => {
+                          if (taskView === "submitted") return quiz.isSubmitted;
+                          return !quiz.isSubmitted;
+                        })
+                        .map((quiz: any, qIdx: number) => {
+                          const isQuizSubmitted = !!quiz.isSubmitted;
+                          return (
+                            <div
+                              key={quiz.id || qIdx}
+                              className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${
+                                isQuizSubmitted
+                                  ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
+                                  : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
+                              }`}
+                            >
+                              <div className="space-y-0.5 text-center sm:text-left">
+                                <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
+                                  แบบทดสอบวิชาเรียนที่ {qIdx + 1}
                               </span>
                               <div className="flex flex-wrap items-center gap-1.5 justify-center sm:justify-start">
                                 <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
