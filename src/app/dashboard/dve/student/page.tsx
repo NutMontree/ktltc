@@ -157,6 +157,7 @@ export function DVEStudentPortal() {
 
   // DVE Virtual Study Room timer states
   const [activeStudyUnit, setActiveStudyUnit] = useState<any>(null);
+  const [unitQuizMode, setUnitQuizMode] = useState<"pretest" | "learning" | "posttest" | null>(null);
   const [studySecondsElapsed, setStudySecondsElapsed] = useState<number>(0);
   const [isStudyCompleted, setIsStudyCompleted] = useState<boolean>(false);
   const [isSubmittingAttendance, setIsSubmittingAttendance] = useState<boolean>(false);
@@ -540,7 +541,7 @@ export function DVEStudentPortal() {
   // Study Room timer & Auto Check-in logic
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (activeStudyUnit) {
+    if (activeStudyUnit && unitQuizMode === "learning") {
       const studyLimitSeconds = (activeStudyUnit.studyMinutes || 0) * 60;
       const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
       const user = session?.user as any;
@@ -570,6 +571,16 @@ export function DVEStudentPortal() {
               setIsStudyCompleted(true);
               // Trigger auto check-in
               handleAutoCheckin(activeStudyUnit);
+              
+              // Automatically jump to Post-test if it exists and is not submitted
+              const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
+              const posttest = quizzes.find((q) => q.unitId === currentUnitIdStr && (q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")));
+              if (posttest && !posttest.isSubmitted) {
+                setUnitQuizMode("posttest");
+                // Open the modal automatically
+                handleOpenQuizFormGlobal(posttest);
+              }
+              
               return studyLimitSeconds;
             }
             return nextVal;
@@ -581,7 +592,26 @@ export function DVEStudentPortal() {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [activeStudyUnit, attendances, session]);
+  }, [activeStudyUnit, attendances, session, unitQuizMode, quizzes]);
+
+  // Handle Pre-test / Post-test flow when Quiz Modal is closed
+  useEffect(() => {
+    if (!isQuizModalOpen && activeStudyUnit) {
+      if (unitQuizMode === "pretest") {
+        const unitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
+        const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
+        if (pretest?.isSubmitted) {
+          setUnitQuizMode("learning");
+        } else {
+          setActiveStudyUnit(null);
+          setUnitQuizMode(null);
+          message.warning("คุณต้องทำแบบทดสอบก่อนเรียนให้เสร็จก่อนเข้าสู่บทเรียน");
+        }
+      } else if (unitQuizMode === "posttest") {
+        setUnitQuizMode("learning");
+      }
+    }
+  }, [isQuizModalOpen]);
 
   // Load subject contents once selected
   const handleSubjectSelect = async (subjectId: string) => {
@@ -607,7 +637,14 @@ export function DVEStudentPortal() {
 
         if (subData.success) setActiveSubject(subData.subject);
         if (unitsData.success) setUnits(unitsData.units || []);
-        if (quizzesData.success) setQuizzes(quizzesData.quizzes || []);
+        if (quizzesData.success) {
+          const today = new Date().toISOString().split("T")[0];
+          const filteredQuizzes = (quizzesData.quizzes || []).filter((q: any) => {
+            if (!q.startDate) return true;
+            return today >= q.startDate;
+          });
+          setQuizzes(filteredQuizzes);
+        }
         if (attData.success) setAttendances(attData.attendances || []);
       }
     } catch (err) {
@@ -1133,6 +1170,19 @@ export function DVEStudentPortal() {
                         key={unit.id}
                         type="button"
                         onClick={() => {
+                          const unitIdStr = unit.id || unit._id?.toString();
+                          const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
+                          
+                          if (pretest && !pretest.isSubmitted) {
+                            setUnitQuizMode("pretest");
+                            setActiveStudyUnit(unit);
+                            setStudySecondsElapsed(0);
+                            setIsStudyCompleted(false);
+                            handleOpenQuizFormGlobal(pretest);
+                            return;
+                          }
+                          
+                          setUnitQuizMode("learning");
                           setActiveStudyUnit(unit);
                           setStudySecondsElapsed(0);
                           setIsStudyCompleted(false);

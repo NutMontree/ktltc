@@ -108,6 +108,8 @@ export async function GET(req: Request) {
         isBuiltIn: !!q.isBuiltIn,
         questions: q.questions || [],
         deadline: q.deadline || "",
+        startDate: q.startDate || "",
+        unitId: q.unitId || "",
         isShuffle: !!q.isShuffle,
         quizType: q.quizType || "general",
         createdAt: q.createdAt,
@@ -132,7 +134,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { subjectId, title, googleFormUrl, deadline, isBuiltIn, questions, isShuffle, quizType } = body;
+    const { subjectId, title, googleFormUrl, deadline, startDate, unitId, isBuiltIn, questions, isShuffle, quizType } = body;
 
     if (!subjectId || !title || (!isBuiltIn && !googleFormUrl)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -153,6 +155,8 @@ export async function POST(req: Request) {
       isBuiltIn: !!isBuiltIn,
       questions: questions || [],
       deadline: deadline || "",
+      startDate: startDate || "",
+      unitId: unitId || "",
       isShuffle: !!isShuffle,
       quizType: quizType || "general",
       createdAt: new Date(),
@@ -179,7 +183,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, title, googleFormUrl, deadline, isBuiltIn, questions, isShuffle, quizType } = body;
+    const { id, title, googleFormUrl, deadline, startDate, unitId, isBuiltIn, questions, isShuffle, quizType } = body;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
@@ -208,6 +212,8 @@ export async function PUT(req: Request) {
           isBuiltIn: !!isBuiltIn,
           questions: questions || [],
           deadline: deadline || "",
+          startDate: startDate || "",
+          unitId: unitId || "",
           isShuffle: !!isShuffle,
           quizType: quizType || "general",
           updatedAt: new Date(),
