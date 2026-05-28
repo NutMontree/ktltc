@@ -137,15 +137,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // turbopack: {},
-  
-webpack: (config, { dev }) => {
-    // ป้องกันการยุ่งกับไฟล์ใน public ระหว่าง build
-    config.watchOptions = {
-      ignored: ['**/public/uploads/**', '**/public/ktltc_drive/**'],
-    };
-    return config;
-  },
+  turbopack: {},
 
   compress: true,
   devIndicators: {
