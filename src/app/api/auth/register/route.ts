@@ -43,19 +43,47 @@ export async function POST(req: Request) {
       );
     }
 
-    // ตรวจสอบความถูกต้องของข้อมูลสําหรับนักเรียน/นักศึกษา
+    // ตรวจสอบความถูกต้องของข้อมูลสําหรับนักเรียน/นักศึกษา (ต้องกรอกทุกฟิวส์)
     if (role === "student") {
-      if (!citizenId || citizenId.length !== 13 || isNaN(Number(citizenId))) {
-        console.log("[Register] 400 – citizenId invalid:", { citizenId, length: citizenId?.length });
+      if (!citizenId || !citizenId.trim()) {
+        console.log("[Register] 400 – citizenId missing");
         return NextResponse.json(
-          { error: "รหัสบัตรประชาชนต้องเป็นตัวเลข 13 หลักเท่านั้น" },
+          { error: "กรุณาระบุรหัสประจำตัวประชาชน" },
           { status: 400 }
         );
       }
-      if (!classGroupId) {
+      if (citizenId.trim().length !== 13 || isNaN(Number(citizenId.trim()))) {
+        console.log("[Register] 400 – citizenId invalid:", { citizenId, length: citizenId?.length });
+        return NextResponse.json(
+          { error: "รหัสประจำตัวประชาชนต้องประกอบด้วยตัวเลข 13 หลักเท่านั้น" },
+          { status: 400 }
+        );
+      }
+      if (!studentIdNum || !studentIdNum.trim()) {
+        console.log("[Register] 400 – studentIdNum missing");
+        return NextResponse.json(
+          { error: "กรุณาระบุรหัสนักศึกษา" },
+          { status: 400 }
+        );
+      }
+      if (!lineId || !lineId.trim()) {
+        console.log("[Register] 400 – lineId missing");
+        return NextResponse.json(
+          { error: "กรุณาระบุไอดีไลน์ (LINE ID)" },
+          { status: 400 }
+        );
+      }
+      if (!classGroupId || !classGroupId.trim()) {
         console.log("[Register] 400 – classGroupId missing");
         return NextResponse.json(
           { error: "กรุณาระบุชื่อห้องเรียน" },
+          { status: 400 }
+        );
+      }
+      if (!department || !department.trim() || department === "ไม่มีสังกัด") {
+        console.log("[Register] 400 – department missing or invalid");
+        return NextResponse.json(
+          { error: "กรุณาเลือกแผนกวิชาที่สังกัด" },
           { status: 400 }
         );
       }
@@ -63,7 +91,7 @@ export async function POST(req: Request) {
       if (!academicLevel || !validLevels.includes(academicLevel)) {
         console.log("[Register] 400 – academicLevel invalid:", JSON.stringify(academicLevel), "valid:", validLevels.map(v => JSON.stringify(v)));
         return NextResponse.json(
-          { error: "กรุณาเลือกชั้นปีให้ถูกต้องตามเงื่อนไข (ปวช 1-3, ปวส 1-2)" },
+          { error: "กรุณาเลือกระดับชั้นปีการศึกษาให้ถูกต้อง (ปวช 1-3, ปวส 1-2)" },
           { status: 400 }
         );
       }

@@ -728,8 +728,7 @@ export default function NavbarClient({
                               คลังไฟล์งาน (Drive)
                             </Link>
                           )}
-                          {(role?.toLowerCase() === "student" ||
-                            permissions?.student_dashboard) && (
+                          {role?.toLowerCase() === "student" && (
                             <Link
                               href="/student/flagpole"
                               onClick={() => setIsUserDropdownOpen(false)}

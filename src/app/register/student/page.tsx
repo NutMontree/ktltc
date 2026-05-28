@@ -439,11 +439,11 @@ export default function StudentRegisterPage() {
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-sm font-bold shadow-sm hover:shadow-md cursor-pointer appearance-none"
                         required
                       >
-                        <option value="ปวช 1">ปวช. ปีที่ 1</option>
-                        <option value="ปวช 2">ปวช. ปีที่ 2</option>
-                        <option value="ปวช 3">ปวช. ปีที่ 3</option>
-                        <option value="ปวส 1">ปวส. ปีที่ 1</option>
-                        <option value="ปวส 2">ปวส. ปีที่ 2</option>
+                        <option value="ปวช 1">ปวช 1</option>
+                        <option value="ปวช 2">ปวช 2</option>
+                        <option value="ปวช 3">ปวช 3</option>
+                        <option value="ปวส 1">ปวส 1</option>
+                        <option value="ปวส 2">ปวส 2</option>
                       </select>
                     </div>
                   </div>

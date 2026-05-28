@@ -95,6 +95,22 @@ function formatThaiDateDisplay(dateString?: string) {
   });
 }
 
+function standardizeClassGroupName(name: string): string {
+  if (!name) return "";
+  let clean = name.trim();
+  const stripped = clean.replace(/[\s\.-]+/g, "");
+  const match = stripped.match(/^([ก-ฮa-zA-Z]+)(.*)$/);
+  if (match) {
+    const prefix = match[1];
+    const rest = match[2];
+    if (rest) {
+      return `${prefix}.${rest}`;
+    }
+    return prefix;
+  }
+  return clean;
+}
+
 // Premium loading spinner
 function DVELoader() {
   return (
@@ -237,7 +253,82 @@ function DVETeacherWorkspace() {
     deadline: "",
     isBuiltIn: false,
     questions: [] as any[],
+    isShuffle: false,
+    quizType: "general",
   });
+
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+
+  const fetchTemplates = async () => {
+    try {
+      setLoadingTemplates(true);
+      const res = await fetch("/api/dve/quizzes/templates");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) setTemplates(data.templates || []);
+      }
+    } catch (err) {
+      console.error("fetchTemplates error:", err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
+  const handleSaveAsTemplate = async () => {
+    if (!quizForm.title) {
+      message.error("กรุณาระบุหัวข้อเพื่อใช้เป็นชื่อแม่แบบ");
+      return;
+    }
+    if (!quizForm.questions || quizForm.questions.length === 0) {
+      message.error("กรุณาเพิ่มคำถามอย่างน้อย 1 ข้อเพื่อบันทึกแม่แบบ");
+      return;
+    }
+    try {
+      message.loading({ content: "กำลังบันทึกแม่แบบ...", key: "dve-save-template", duration: 0 });
+      const res = await fetch("/api/dve/quizzes/templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: quizForm.title,
+          questions: quizForm.questions,
+        }),
+      });
+      message.destroy("dve-save-template");
+      if (res.ok) {
+        message.success("บันทึกเป็นแม่แบบเพื่อใช้ซ้ำสำเร็จ!");
+        fetchTemplates();
+      } else {
+        message.error("บันทึกแม่แบบล้มเหลว");
+      }
+    } catch (err) {
+      console.error("handleSaveAsTemplate error:", err);
+      message.error("เกิดข้อผิดพลาดในการบันทึกแม่แบบ");
+    }
+  };
+
+  const handleDeleteTemplate = async (templateId: string) => {
+    try {
+      const res = await fetch(`/api/dve/quizzes/templates?id=${templateId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        message.success("ลบแม่แบบสำเร็จ");
+        fetchTemplates();
+      } else {
+        message.error("ลบแม่แบบล้มเหลว");
+      }
+    } catch (err) {
+      console.error("handleDeleteTemplate error:", err);
+      message.error("เกิดข้อผิดพลาดในการลบแม่แบบ");
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "quizzes") {
+      fetchTemplates();
+    }
+  }, [activeTab]);
 
   // Quiz submissions view states
   const [submissionsQuizId, setSubmissionsQuizId] = useState<string | null>(null);
@@ -361,7 +452,8 @@ function DVETeacherWorkspace() {
               new Set(
                 data.attendances
                   .filter((a: any) => a.assignmentStatus === "Submitted" && a.classGroupId)
-                  .map((a: any) => a.classGroupId),
+                  .map((a: any) => standardizeClassGroupName(a.classGroupId))
+                  .filter((c: string) => c && !/^[\d\s-]+$/.test(c)),
               ),
             ).sort() as string[];
             setAvailableClassGroups(classGroups);
@@ -545,6 +637,8 @@ function DVETeacherWorkspace() {
           deadline: "",
           isBuiltIn: false,
           questions: [],
+          isShuffle: false,
+          quizType: "general",
         });
       }
     } catch (err) {
@@ -906,11 +1000,11 @@ function DVETeacherWorkspace() {
             DVE Administration Panel
           </span>
           <h1 className="text-3xl sm:text-4xl font-black mt-3 tracking-tight">
-            ระบบจัดตารางเรียนทวิภาคี (DVE Workspace)
+            ระบบบริหารการจัดการ อาชีวศึกษา ทวิภาคี (DVE-KTL-SYSTEM)
           </h1>
           <p className="text-white/80 font-bold mt-2 text-sm sm:text-base leading-relaxed">
             ห้องควบคุมหลักสำหรับอาจารย์: จัดการรายวิชาการเรียนการสอน, สื่อและไฟล์การเรียนรายหน่วย,
-            สร้างฟอร์มควิซทดสอบ และบันทึกประวัติการขาดลามาสายและผลงานนักศึกษา
+            สร้างแบบทดสอบ และบันทึกประวัติการขาดลามาสายและผลงานนักศึกษา
           </p>
         </div>
       </div>
@@ -935,7 +1029,7 @@ function DVETeacherWorkspace() {
           className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black transition-all grow sm:grow-0 whitespace-nowrap ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
         >
           <Award size={13} />
-          ควิซทดสอบ
+          แบบทดสอบ
         </button>
         <button
           onClick={() => {
@@ -1232,7 +1326,7 @@ function DVETeacherWorkspace() {
             <div className="lg:col-span-1 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
               <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
                 <Award size={16} className="text-emerald-500" />
-                เลือกรายวิชาเพื่อควิซ
+                เลือกรายวิชาเพื่อทำแบบทดสอบ
               </h3>
               <div className="space-y-2">
                 {subjects.map((s) => (
@@ -1270,6 +1364,8 @@ function DVETeacherWorkspace() {
                           deadline: "",
                           isBuiltIn: false,
                           questions: [],
+                          isShuffle: false,
+                          quizType: "general",
                         });
                         setIsQuizModalOpen(true);
                       }}
@@ -1287,7 +1383,7 @@ function DVETeacherWorkspace() {
                   ) : quizzes.length === 0 ? (
                     <div className="text-center py-12 text-zinc-400 dark:text-zinc-500 text-sm font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
                       <Award size={32} className="text-zinc-300 dark:text-zinc-700" />
-                      ยังไม่มีการสร้างแบบทดสอบ สำหรับวิชานี้
+                      ยังไม่มีการสร้างแบบทดสอบสำหรับวิชานี้
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -1347,6 +1443,8 @@ function DVETeacherWorkspace() {
                                   deadline: quiz.deadline || "",
                                   isBuiltIn: !!quiz.isBuiltIn,
                                   questions: quiz.questions || [],
+                                  isShuffle: !!quiz.isShuffle,
+                                  quizType: quiz.quizType || "general",
                                 });
                                 setIsQuizModalOpen(true);
                               }}
@@ -2348,27 +2446,71 @@ function DVETeacherWorkspace() {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      แผนกวิชา *
-                    </label>
-                    <select
-                      required
-                      className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
-                      value={subjectForm.department}
-                      onChange={(e) =>
-                        setSubjectForm((prev) => ({ ...prev, department: e.target.value }))
-                      }
-                    >
-                      <option value="">-- เลือกแผนกวิชา --</option>
-                      {DEPARTMENTS.filter(
-                        (d) => d.startsWith("แผนกวิชา") || d.includes("การจัดการ"),
-                      ).map((d) => (
-                        <option key={d} value={d}>
-                          {d}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                        แผนกวิชาที่ร่วมจัดการเรียนการสอน *
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const depts = subjectForm.department ? subjectForm.department.split(",").map(d => d.trim()).filter(Boolean) : [];
+                          depts.push("");
+                          setSubjectForm(prev => ({ ...prev, department: depts.join(", ") }));
+                        }}
+                        className="px-2.5 py-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 border-0 cursor-pointer"
+                      >
+                        <Plus size={10} /> เพิ่มแผนกวิชา
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {(() => {
+                        const depts = subjectForm.department ? subjectForm.department.split(",").map(d => d.trim()) : [""];
+                        return depts.map((currentDept, idx) => (
+                          <div key={idx} className="flex gap-2 items-center">
+                            <select
+                              required
+                              className="flex-1 h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                              value={currentDept}
+                              onChange={(e) => {
+                                const newDepts = [...depts];
+                                newDepts[idx] = e.target.value;
+                                setSubjectForm(prev => ({
+                                  ...prev,
+                                  department: newDepts.filter(d => d !== undefined).join(", ")
+                                }));
+                              }}
+                            >
+                              <option value="">-- เลือกแผนกวิชา --</option>
+                              {DEPARTMENTS.filter(
+                                (d) => d.startsWith("แผนกวิชา") || d.includes("การจัดการ"),
+                              ).map((d) => (
+                                <option key={d} value={d} disabled={depts.includes(d) && d !== currentDept}>
+                                  {d}
+                                </option>
+                              ))}
+                            </select>
+
+                            {depts.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newDepts = depts.filter((_, i) => i !== idx);
+                                  setSubjectForm(prev => ({
+                                    ...prev,
+                                    department: newDepts.join(", ")
+                                  }));
+                                }}
+                                className="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-lg border-0 cursor-pointer shrink-0 transition-colors"
+                              >
+                                <X size={16} />
+                              </button>
+                            )}
+                          </div>
+                        ));
+                      })()}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -2754,7 +2896,7 @@ function DVETeacherWorkspace() {
                 <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-center">
                   <h3 className="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2">
                     <Award size={20} className="text-emerald-500" />
-                    {quizForm.id ? "แก้ไขแบบทดสอบ" : "สร้างแบบทดสอบฝึกทักษะ (Quiz Builder)"}
+                    {quizForm.id ? "แก้ไขแบบทดสอบ" : "สร้างแบบทดสอบ (Test Builder)"}
                   </h3>
                   <button
                     type="button"
@@ -2767,7 +2909,7 @@ function DVETeacherWorkspace() {
                 <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      หัวข้อควิซ / แบบทดสอบ *
+                      หัวข้อแบบทดสอบ *
                     </label>
                     <input
                       type="text"
@@ -2781,7 +2923,7 @@ function DVETeacherWorkspace() {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      ประเภทของแบบทดสอบ
+                      ประเภทของแบบทดสอบ (รูปแบบทางเทคนิค)
                     </label>
                     <div className="flex border border-slate-200 dark:border-zinc-800 rounded-xl overflow-hidden p-0.5 bg-slate-50 dark:bg-zinc-950">
                       <button
@@ -2799,6 +2941,41 @@ function DVETeacherWorkspace() {
                         สร้างในตัวแอป (Built-In Quiz)
                       </button>
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                        ประเภทของแบบทดสอบ / การวัดผล
+                      </label>
+                      <select
+                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                        value={quizForm.quizType || "general"}
+                        onChange={(e) =>
+                          setQuizForm((prev) => ({ ...prev, quizType: e.target.value }))
+                        }
+                      >
+                        <option value="general">แบบทดสอบทั่วไป / เก็บคะแนน</option>
+                        <option value="pretest">แบบทดสอบก่อนเรียน (Pre-test)</option>
+                        <option value="posttest">แบบทดสอบหลังเรียน (Post-test)</option>
+                      </select>
+                    </div>
+
+                    {quizForm.isBuiltIn && (
+                      <div className="flex flex-col justify-end pb-1.5">
+                        <label className="flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer select-none bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-xl border dark:border-zinc-800">
+                          <input
+                            type="checkbox"
+                            className="accent-emerald-500 w-4 h-4"
+                            checked={!!quizForm.isShuffle}
+                            onChange={(e) =>
+                              setQuizForm((prev) => ({ ...prev, isShuffle: e.target.checked }))
+                            }
+                          />
+                          🔀 สลับลำดับข้อคำถามสำหรับนักเรียนแต่ละคน (Shuffle)
+                        </label>
+                      </div>
+                    )}
                   </div>
 
                   {!quizForm.isBuiltIn ? (
@@ -2819,6 +2996,103 @@ function DVETeacherWorkspace() {
                     </div>
                   ) : (
                     <div className="space-y-4 animate-fade-in border-t dark:border-zinc-800 pt-4">
+                      {/* Reusable Templates Box */}
+                      <div className="p-4 bg-zinc-50 dark:bg-zinc-950 border dark:border-zinc-800 rounded-2xl space-y-3">
+                        <h4 className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+                          💾 การจัดการแม่แบบแบบทดสอบเพื่อใช้งานซ้ำ
+                        </h4>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                          <div className="sm:col-span-8">
+                            {loadingTemplates ? (
+                              <div className="text-xs text-zinc-400 font-bold flex items-center gap-1.5">
+                                <Loader2 size={12} className="animate-spin text-emerald-500" />
+                                กำลังโหลดแม่แบบคำถาม...
+                              </div>
+                            ) : templates.length === 0 ? (
+                              <div className="text-xs text-zinc-400 font-bold italic">
+                                ยังไม่มีการบันทึกแม่แบบคำถามใดๆ คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
+                              </div>
+                            ) : (
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[10px] font-black text-zinc-400">
+                                  โหลดข้อมูลจากแม่แบบที่เคยบันทึกไว้
+                                </label>
+                                <select
+                                  className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-2 text-xs focus:outline-hidden dark:text-white font-bold"
+                                  defaultValue=""
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (!val) return;
+                                    const selectedTpl = templates.find((t) => t.id === val);
+                                    if (selectedTpl) {
+                                      setQuizForm((prev) => ({
+                                        ...prev,
+                                        title: prev.title || selectedTpl.title,
+                                        questions: JSON.parse(JSON.stringify(selectedTpl.questions)),
+                                      }));
+                                      message.success(`โหลดข้อมูลแม่แบบ "${selectedTpl.title}" เรียบร้อยแล้ว!`);
+                                      e.target.value = ""; // reset
+                                    }
+                                  }}
+                                >
+                                  <option value="">-- เลือกแม่แบบที่จะโหลดใช้ --</option>
+                                  {templates.map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                      {t.title} ({t.questions?.length || 0} ข้อ)
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="sm:col-span-4 flex justify-end">
+                            <button
+                              type="button"
+                              onClick={handleSaveAsTemplate}
+                              disabled={!quizForm.questions || quizForm.questions.length === 0}
+                              className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 text-white font-black rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs border-0 disabled:opacity-50"
+                            >
+                              บันทึกแม่แบบคำถามนี้
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* List of stored templates so they can be deleted! */}
+                        {templates.length > 0 && (
+                          <div className="border-t dark:border-zinc-900 pt-2 space-y-1.5">
+                            <span className="text-[10px] font-black text-zinc-400 block">
+                              แม่แบบของฉันทั้งหมด (สามารถลบออกได้):
+                            </span>
+                            <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto pr-1">
+                              {templates.map((tpl) => (
+                                <div
+                                  key={tpl.id}
+                                  className="inline-flex items-center gap-2 pl-2.5 pr-1.5 py-1 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-lg text-[10px] font-black text-zinc-700 dark:text-zinc-350"
+                                >
+                                  <span>{tpl.title} ({tpl.questions?.length || 0} ข้อ)</span>
+                                  <Popconfirm
+                                    title="ลบแม่แบบคำถามนี้อย่างถาวร?"
+                                    onConfirm={() => handleDeleteTemplate(tpl.id)}
+                                    okText="ลบออก"
+                                    cancelText="ยกเลิก"
+                                    okButtonProps={{ danger: true }}
+                                  >
+                                    <button
+                                      type="button"
+                                      className="p-1 hover:bg-rose-50 hover:text-rose-500 rounded border-0 bg-transparent cursor-pointer text-zinc-400 transition-colors"
+                                    >
+                                      <X size={10} />
+                                    </button>
+                                  </Popconfirm>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="flex justify-between items-center">
                         <span className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                           รายการโจทย์ข้อคำถาม ({quizForm.questions?.length || 0} ข้อ)

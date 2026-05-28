@@ -15,6 +15,22 @@ function escapeRegex(text: string): string {
   return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
+function buildFlexibleClassGroupRegex(classGroupId: string): string {
+  if (!classGroupId) return "";
+  const clean = classGroupId.trim();
+  let pattern = "^";
+  for (let i = 0; i < clean.length; i++) {
+    const char = clean[i];
+    if (char === " " || char === "." || char === "-") {
+      continue;
+    }
+    const escapedChar = char.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    pattern += `${escapedChar}[\\s\\.-]*`;
+  }
+  pattern += "$";
+  return pattern;
+}
+
 function getDeptFromClassGroup(classGroupId: string): string {
   if (!classGroupId) return "";
   const clean = classGroupId.replace(/[^0-9a-zA-Zก-ฮ]/g, "").trim();
@@ -90,7 +106,7 @@ export async function GET(req: Request) {
       query.studentId = userId;
     } else {
       if (date) query.date = date;
-      if (classGroupId) query.classGroupId = { $regex: escapeRegex(classGroupId), $options: "i" };
+      if (classGroupId) query.classGroupId = { $regex: buildFlexibleClassGroupRegex(classGroupId), $options: "i" };
     }
 
     const logs = await db.collection("dve_attendances").find(query).sort({ date: -1, studentName: 1 }).toArray();

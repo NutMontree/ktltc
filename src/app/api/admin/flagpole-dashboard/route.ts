@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
-import { auth } from '@/lib/auth';
+import { auth, hasPermission } from '@/lib/auth';
 import { calculateDistance } from '@/lib/geoDistance';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,12 @@ export async function GET(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const role = (session.user as any)?.role?.toLowerCase();
-    if (!["super_admin", "admin"].includes(role)) {
+    
+    // ตรวจสอบสิทธิ์ว่ามีสิทธิ์เข้าใช้งานหรือไม่ (ดูจากระบบ Permissions Matrix)
+    const hasAccess = ["super_admin", "admin", "deputy_student_affairs"].includes(role) || 
+                      (role !== "student" && await hasPermission(role, "student_dashboard"));
+                      
+    if (!hasAccess) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 
@@ -32,6 +37,12 @@ export async function GET(req: Request) {
 
     // 1. นับจำนวนนักเรียนทั้งหมดในระบบ (role === "student")
     const totalStudentsCount = await db.collection("users").countDocuments({ role: "student" });
+
+    // นับจำนวนนักศึกษาที่ออกฝึกงาน (isInternship === true)
+    const internshipStudentsCount = await db.collection("users").countDocuments({ role: "student", isInternship: true });
+
+    // นับจำนวนนักศึกษาที่เรียนปกติในวิทยาลัย (isInternship !== true)
+    const inCollegeStudentsCount = Math.max(0, totalStudentsCount - internshipStudentsCount);
 
     const startOfDay = new Date(targetDate);
     startOfDay.setUTCHours(0, 0, 0, 0);
@@ -64,7 +75,9 @@ export async function GET(req: Request) {
     });
 
     const reportedTotal = presentCount + lateCount;
-    const realAbsent = Math.max(0, totalStudentsCount - reportedTotal);
+    
+    // คำนวณจำนวนขาดแถวโดยเทียบจากจำนวนนักเรียนที่เรียนปกติอยู่ในวิทยาลัย
+    const realAbsent = Math.max(0, inCollegeStudentsCount - reportedTotal);
 
     formattedData[0].value = presentCount;
     formattedData[1].value = lateCount;
@@ -221,6 +234,7 @@ export async function GET(req: Request) {
         $project: {
           id: { $toString: "$_id" },
           name: { $ifNull: ["$userDetails.name", "นักศึกษา"] },
+          academicLevel: { $ifNull: ["$userDetails.academicLevel", "ไม่ระบุชั้นปี"] },
           lat: "$checkIn.location.lat",
           lng: "$checkIn.location.lng",
           status: "$status",
@@ -271,6 +285,8 @@ export async function GET(req: Request) {
       data: formattedData,
       markers: validMarkers,
       totalStudents: totalStudentsCount,
+      internshipStudents: internshipStudentsCount,
+      inCollegeStudents: inCollegeStudentsCount,
       recentCheckIns,
       trends,
       departmentStats,
