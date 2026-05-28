@@ -21,6 +21,7 @@ export default function SupervisionPage() {
   const [termYear, setTermYear] = useState("");
   const [customTermYears, setCustomTermYears] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [permissions, setPermissions] = useState<any>(null);
 
   const [records, setRecords] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +58,15 @@ export default function SupervisionPage() {
         }
       })
       .catch((err) => console.error("Failed to load settings:", err));
+
+    fetch("/api/auth/permissions")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) {
+          setPermissions(data);
+        }
+      })
+      .catch((err) => console.error("Failed to load permissions:", err));
 
     fetchRecords("");
   }, []);
@@ -105,6 +115,9 @@ export default function SupervisionPage() {
       alert("ระบบขัดข้อง");
     }
   };
+
+  const isSuperAdmin = session?.user?.role === "super_admin";
+  const hasApprovePerm = permissions?.manage_supervision_requests || isSuperAdmin;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
@@ -262,7 +275,7 @@ export default function SupervisionPage() {
                         </span>
                       </td>
                       <td className="p-4 flex justify-end gap-2">
-                        {session?.user?.role === "super_admin" && rec.status !== "อนุมัติแล้ว" && (
+                        {hasApprovePerm && rec.status !== "อนุมัติแล้ว" && (
                           <button
                             onClick={() => handleApprove(rec._id)}
                             title="อนุมัติ"
@@ -280,7 +293,7 @@ export default function SupervisionPage() {
                             <EditOutlined />
                           </button>
                         )}
-                        {session?.user?.role === "super_admin" && (
+                        {hasApprovePerm && (
                           <button
                             onClick={() => handleDelete(rec._id)}
                             title="ลบ"

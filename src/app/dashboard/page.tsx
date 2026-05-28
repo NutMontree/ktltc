@@ -500,6 +500,15 @@ export default function DashboardLoader() {
                   variants={item}
                 />
               )}
+              {((session?.user as any)?.role === "super_admin" || permissions?.manage_supervision_requests) && (
+                <ActionCard
+                  href="/dashboard/supervision/requests"
+                  title="คำร้องการนิเทศ"
+                  icon={ShieldCheck}
+                  desc="ตรวจพิจารณาและอนุมัติผลการนิเทศ"
+                  variants={item}
+                />
+              )}
               <ActionCard
                 href="/"
                 title="ดูเว็บไซต์จริง"
@@ -567,13 +576,6 @@ export default function DashboardLoader() {
                   title="จัดการสิทธิ์การเข้าถึงเมนูและฟังก์ชันต่างๆ"
                   icon={Shield}
                   desc="กำหนดสิทธิ์การเข้าถึงแยกตามรายบุคคล"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/dashboard/supervision/requests"
-                  title="คำร้องการนิเทศ"
-                  icon={ShieldCheck}
-                  desc="ตรวจพิจารณาและอนุมัติผลการนิเทศ"
                   variants={item}
                 />
                 <ActionCard

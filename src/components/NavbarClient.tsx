@@ -176,6 +176,7 @@ interface NavbarClientProps {
     manage_flagpole_settings?: boolean;
     access_dve_teacher?: boolean;
     access_dve_student?: boolean;
+    manage_supervision_requests?: boolean;
   } | null;
 }
 
@@ -651,33 +652,39 @@ export default function NavbarClient({
                               </h4>
                             )}
 
-                            {/* การ์ดเมนูเฉพาะ Super Admin */}
-                            {isSuperAdmin && (
+                            {/* การ์ดเมนูเฉพาะผู้มีสิทธิ์พิเศษ */}
+                            {(isSuperAdmin || permissions?.manage_supervision_requests) && (
                               <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
                                 <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
-                                  <Shield size={12} /> เฉพาะ Super Admin
+                                  <Shield size={12} /> เครื่องมือพิเศษ
                                 </p>
-                                <Link
-                                  href="/dashboard/super-admin"
-                                  onClick={() => setIsUserDropdownOpen(false)}
-                                  className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
-                                >
-                                  <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
-                                </Link>
-                                <Link
-                                  href="/dashboard/permissions"
-                                  onClick={() => setIsUserDropdownOpen(false)}
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-                                >
-                                  <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
-                                </Link>
-                                <Link
-                                  href="/dashboard/supervision/requests"
-                                  onClick={() => setIsUserDropdownOpen(false)}
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 rounded-xl transition-all"
-                                >
-                                  <ClipboardList size={14} /> คำร้องการนิเทศ (รออนุมัติ)
-                                </Link>
+                                {isSuperAdmin && (
+                                  <>
+                                    <Link
+                                      href="/dashboard/super-admin"
+                                      onClick={() => setIsUserDropdownOpen(false)}
+                                      className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                    >
+                                      <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
+                                    </Link>
+                                    <Link
+                                      href="/dashboard/permissions"
+                                      onClick={() => setIsUserDropdownOpen(false)}
+                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                                    >
+                                      <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
+                                    </Link>
+                                  </>
+                                )}
+                                {(isSuperAdmin || permissions?.manage_supervision_requests) && (
+                                  <Link
+                                    href="/dashboard/supervision/requests"
+                                    onClick={() => setIsUserDropdownOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 rounded-xl transition-all"
+                                  >
+                                    <ClipboardList size={14} /> คำร้องการนิเทศ (รออนุมัติ)
+                                  </Link>
+                                )}
                               </div>
                             )}
                           </div>
