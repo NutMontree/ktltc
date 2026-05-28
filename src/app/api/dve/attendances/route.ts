@@ -83,6 +83,7 @@ export async function GET(req: Request) {
     const subjectId = searchParams.get("subjectId")?.trim();
     const date = searchParams.get("date")?.trim();
     const classGroupId = searchParams.get("classGroupId")?.trim();
+    console.log("API attendances GET - classGroupId:", classGroupId);
 
     if (!subjectId) {
       return NextResponse.json({ error: "Missing subjectId" }, { status: 400 });
@@ -106,31 +107,47 @@ export async function GET(req: Request) {
       query.studentId = userId;
     } else {
       if (date) query.date = date;
-      if (classGroupId) query.classGroupId = { $regex: buildFlexibleClassGroupRegex(classGroupId), $options: "i" };
+      if (classGroupId) {
+        const regexPattern = buildFlexibleClassGroupRegex(classGroupId);
+        console.log("API attendances GET - regexPattern:", regexPattern);
+        query.classGroupId = { $regex: regexPattern, $options: "i" };
+      }
     }
 
+    console.log("API attendances GET - query:", JSON.stringify(query));
     const logs = await db.collection("dve_attendances").find(query).sort({ date: -1, studentName: 1 }).toArray();
+
+    // Get student information to fill in missing classGroupId
+    const studentIds = logs.map((l) => l.studentId).filter((id) => ObjectId.isValid(id));
+    const students = studentIds.length > 0
+      ? await db.collection("users").find({ _id: { $in: studentIds.map((id) => new ObjectId(id)) } }).toArray()
+      : [];
+    const studentMap = new Map(students.map((s) => [s._id.toString(), s]));
 
     return NextResponse.json({
       success: true,
-      attendances: logs.map((l) => ({
-        id: l._id.toString(),
-        subjectId: l.subjectId,
-        studentId: l.studentId,
-        studentName: l.studentName,
-        studentIdNum: l.studentIdNum,
-        classGroupId: l.classGroupId,
-        date: l.date,
-        status: l.status,
-        assignmentStatus: l.assignmentStatus,
-        imageUrl: l.imageUrl || "",
-        score: l.score || "",
-        unitId: l.unitId || "",
-        unitTitle: l.unitTitle || "",
-        unitSequence: l.unitSequence !== undefined ? l.unitSequence : "",
-        checkedBy: l.checkedBy,
-        updatedAt: l.updatedAt,
-      })),
+      attendances: logs.map((l) => {
+        const student = studentMap.get(l.studentId);
+        return {
+          id: l._id.toString(),
+          subjectId: l.subjectId,
+          studentId: l.studentId,
+          studentName: l.studentName,
+          studentIdNum: l.studentIdNum,
+          classGroupId: l.classGroupId || (student?.classGroupId || ""),
+          studentImage: student?.image || "",
+          date: l.date,
+          status: l.status,
+          assignmentStatus: l.assignmentStatus,
+          imageUrl: l.imageUrl || "",
+          score: l.score || "",
+          unitId: l.unitId || "",
+          unitTitle: l.unitTitle || "",
+          unitSequence: l.unitSequence !== undefined ? l.unitSequence : "",
+          checkedBy: l.checkedBy,
+          updatedAt: l.updatedAt,
+        };
+      }),
     });
   } catch (error: any) {
     console.error("[DVE Attendances GET API] Error:", error);

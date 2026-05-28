@@ -142,7 +142,7 @@ function maskSensitiveData(val: string) {
 function DVETeacherWorkspace() {
   const { data: session } = useSession();
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<"subjects" | "quizzes" | "checkin" | "internship">("subjects");
+  const [activeTab, setActiveTab] = useState<"subjects" | "quizzes" | "checkin" | "timeline" | "internship">("subjects");
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
 
@@ -155,6 +155,15 @@ function DVETeacherWorkspace() {
   });
   const [internshipClassGroups, setInternshipClassGroups] = useState<string[]>([]);
   const [internshipSearchQuery, setInternshipSearchQuery] = useState("");
+
+  // Timeline Tab States
+  const [timelineData, setTimelineData] = useState<any[]>([]);
+  const [loadingTimeline, setLoadingTimeline] = useState(false);
+  const [timelineFilter, setTimelineFilter] = useState({
+    subjectId: "",
+    classGroupId: "",
+    dateRange: "30", // days
+  });
 
   // Subject Modal states
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
@@ -349,6 +358,7 @@ function DVETeacherWorkspace() {
     date: new Date().toISOString().split("T")[0],
   });
   const [availableClassGroups, setAvailableClassGroups] = useState<string[]>([]);
+  const [timelineClassGroups, setTimelineClassGroups] = useState<string[]>([]);
   const [studentRoster, setStudentRoster] = useState<any[]>([]);
   const [attendanceLogs, setAttendanceLogs] = useState<any[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<{
@@ -626,7 +636,7 @@ function DVETeacherWorkspace() {
         body: JSON.stringify(quizForm),
       });
       if (res.ok) {
-        message.success(isEdit ? "บันทึกข้อมูลสำเร็จ" : "สร้างควิซสำเร็จ");
+        message.success(isEdit ? "บันทึกข้อมูลสำเร็จ" : "สร้างแบบทดสอบสำเร็จ");
         setIsQuizModalOpen(false);
         handleLoadQuizzes(quizForm.subjectId);
         setQuizForm({
@@ -642,7 +652,7 @@ function DVETeacherWorkspace() {
         });
       }
     } catch (err) {
-      message.error("บันทึกควิซล้มเหลว");
+      message.error("บันทึกแบบทดสอบล้มเหลว");
     }
   };
 
@@ -718,7 +728,7 @@ function DVETeacherWorkspace() {
     try {
       const res = await fetch(`/api/dve/quizzes?id=${quizId}`, { method: "DELETE" });
       if (res.ok) {
-        message.success("ลบควิซเรียบร้อยแล้ว");
+        message.success("ลบแบบทดสอบเรียบร้อยแล้ว");
         handleLoadQuizzes(subId);
       }
     } catch (err) {
@@ -864,6 +874,91 @@ function DVETeacherWorkspace() {
     }
   }, [activeTab, internshipFilter.department, internshipFilter.classGroupId]);
 
+  // Timeline data fetch function
+  const handleLoadTimelineData = async () => {
+    if (!timelineFilter.subjectId) return;
+    setLoadingTimeline(true);
+    try {
+      const { subjectId, classGroupId, dateRange } = timelineFilter;
+      const days = parseInt(dateRange) || 30;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      const startDateStr = startDate.toISOString().split("T")[0];
+
+      let url = `/api/dve/attendances?subjectId=${subjectId}&startDate=${startDateStr}`;
+      if (classGroupId) {
+        url += `&classGroupId=${encodeURIComponent(classGroupId)}`;
+        console.log("Timeline filter - classGroupId:", classGroupId);
+      }
+
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Timeline API response:", data);
+        if (data.success) {
+          // Group submissions by date and classroom
+          const grouped = (data.attendances || []).reduce((acc: any, att: any) => {
+            const date = att.date || "ไม่ระบุวันที่";
+            const classGroup = att.classGroupId || "ไม่ระบุกลุ่ม";
+            const key = `${date}|${classGroup}`;
+            if (!acc[key]) {
+              acc[key] = {
+                date,
+                classGroupId: classGroup,
+                submissions: [],
+              };
+            }
+            acc[key].submissions.push(att);
+            return acc;
+          }, {});
+          setTimelineData(Object.values(grouped).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        }
+      }
+    } catch (err) {
+      console.error("Load timeline error:", err);
+      message.error("โหลดข้อมูล Timeline ล้มเหลว");
+    } finally {
+      setLoadingTimeline(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "timeline" && timelineFilter.subjectId) {
+      handleLoadTimelineData();
+    }
+  }, [activeTab, timelineFilter.subjectId, timelineFilter.classGroupId, timelineFilter.dateRange]);
+
+  // Fetch class groups for timeline filter
+  useEffect(() => {
+    const fetchTimelineClassGroups = async () => {
+      if (!timelineFilter.subjectId) {
+        setTimelineClassGroups([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/dve/attendances?subjectId=${timelineFilter.subjectId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.attendances) {
+            const classGroups = Array.from(
+              new Set(
+                data.attendances
+                  .filter((a: any) => a.classGroupId)
+                  .map((a: any) => a.classGroupId)
+                  .filter((c: string) => c && c.trim() !== "" && !/^[\d\s-]+$/.test(c)),
+              ),
+            ).sort() as string[];
+            console.log("Timeline class groups fetched:", classGroups);
+            setTimelineClassGroups(classGroups);
+          }
+        }
+      } catch (err) {
+        console.error("Fetch timeline class groups error:", err);
+      }
+    };
+    fetchTimelineClassGroups();
+  }, [timelineFilter.subjectId]);
+
   const handleExtractScoreFromImage = async (studentId: string, imageUrl: string): Promise<string | null> => {
     setExtractingScoreStudentId(studentId);
     try {
@@ -989,20 +1084,20 @@ function DVETeacherWorkspace() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 px-2">
       {/* Teacher Workspace Header */}
-      <div className="relative overflow-hidden rounded-[30px] bg-linear-to-br from-teal-500 to-emerald-700 text-white p-8 shadow-xl shadow-teal-500/10">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
-          <BookOpen size={160} />
+      <div className="relative overflow-hidden rounded-[20px] bg-linear-to-br from-teal-500 to-emerald-700 text-white p-4 sm:p-6 shadow-xl shadow-teal-500/10">
+        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
+          <BookOpen size={140} className="w-24 h-24 sm:w-36 sm:h-36" />
         </div>
         <div className="relative z-10 max-w-2xl">
-          <span className="bg-white/20 backdrop-blur-md text-[10px] uppercase font-black tracking-widest px-3 py-1 rounded-full text-white/90">
+          <span className="bg-white/20 backdrop-blur-md text-[9px] sm:text-[10px] uppercase font-black tracking-widest px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white/90">
             DVE Administration Panel
           </span>
-          <h1 className="text-3xl sm:text-4xl font-black mt-3 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black mt-2 sm:mt-3 tracking-tight">
             ระบบบริหารการจัดการ อาชีวศึกษา ทวิภาคี (DVE-KTL-SYSTEM)
           </h1>
-          <p className="text-white/80 font-bold mt-2 text-sm sm:text-base leading-relaxed">
+          <p className="text-white/80 font-bold mt-1 sm:mt-2 text-xs sm:text-sm md:text-base leading-relaxed">
             ห้องควบคุมหลักสำหรับอาจารย์: จัดการรายวิชาการเรียนการสอน, สื่อและไฟล์การเรียนรายหน่วย,
             สร้างแบบทดสอบ และบันทึกประวัติการขาดลามาสายและผลงานนักศึกษา
           </p>
@@ -1026,10 +1121,10 @@ function DVETeacherWorkspace() {
               handleLoadQuizzes(subjects[0].id);
             }
           }}
-          className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black transition-all grow sm:grow-0 whitespace-nowrap ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
+          className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black transition-all grow sm:grow-0 whitespace-nowrap ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
         >
           <Award size={13} />
-          แบบทดสอบ
+          แบบทดสอบ (Tests)
         </button>
         <button
           onClick={() => {
@@ -1038,10 +1133,19 @@ function DVETeacherWorkspace() {
               setCheckinFilter((prev) => ({ ...prev, subjectId: subjects[0].id }));
             }
           }}
-          className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black transition-all grow sm:grow-0 whitespace-nowrap ${activeTab === "checkin" ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
+          className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black transition-all grow sm:grow-0 whitespace-nowrap ${activeTab === "checkin" ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
         >
           <ClipboardList size={13} />
-          เช็คชื่อ & งาน
+          งานส่ง (Assignments)
+        </button>
+        <button
+          onClick={() => {
+            setActiveTab("timeline");
+          }}
+          className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black transition-all grow sm:grow-0 whitespace-nowrap ${activeTab === "timeline" ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
+        >
+          <Clock3 size={13} />
+          Timeline งานส่ง
         </button>
         <button
           onClick={() => {
@@ -1054,6 +1158,42 @@ function DVETeacherWorkspace() {
         </button>
       </div>
 
+      {/* Tab Description */}
+      <motion.div
+        key={`tab-desc-${activeTab}`}
+        initial={{ opacity: 0, y: -5 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -5 }}
+        transition={{ duration: 0.2 }}
+        className="text-center mb-2"
+      >
+        {activeTab === "subjects" && (
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            จัดการวิชาเรียน หน่วยการเรียน และสื่อการสอน
+          </p>
+        )}
+        {activeTab === "quizzes" && (
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            สร้างและจัดการแบบทดสอบ คลังข้อสอบ และการให้คะแนน
+          </p>
+        )}
+        {activeTab === "checkin" && (
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            เช็คชื่อเข้าเรียน ตรวจงานส่ง และให้คะแนน
+          </p>
+        )}
+        {activeTab === "timeline" && (
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            ดูประวัติการส่งงานแบบ Timeline ตามวันที่และกลุ่มเรียน
+          </p>
+        )}
+        {activeTab === "internship" && (
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            ติดตามสถานะการออกฝึกงานของนักศึกษา
+          </p>
+        )}
+      </motion.div>
+
       <AnimatePresence mode="wait">
         {/* Tab 1: Subjects & Units Management */}
         {activeTab === "subjects" && (
@@ -1062,13 +1202,13 @@ function DVETeacherWorkspace() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4"
           >
             {/* List of Subjects */}
-            <div className="lg:col-span-1 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
+            <div className="lg:col-span-1 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-sm space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                  <BookOpen size={16} className="text-emerald-500" />
+                <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                  <BookOpen size={16} className="text-emerald-500 w-4 h-4 sm:w-5 sm:h-5" />
                   รายวิชาทวิภาคีทั้งหมด
                 </h3>
                 <button
@@ -1084,30 +1224,30 @@ function DVETeacherWorkspace() {
                     });
                     setIsSubjectModalOpen(true);
                   }}
-                  className="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all flex items-center gap-1 text-xs font-black"
+                  className="p-1.5 sm:p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all flex items-center gap-1 text-[10px] sm:text-xs font-black"
                 >
-                  <Plus size={14} />
+                  <Plus size={14} className="w-3 h-3 sm:w-4 sm:h-4" />
                   เพิ่มวิชา
                 </button>
               </div>
 
               {loadingSubjects ? (
-                <div className="flex justify-center py-10">
-                  <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-500 animate-spin" />
                 </div>
               ) : subjects.length === 0 ? (
-                <div className="text-center py-8 text-zinc-400 text-xs font-bold">
+                <div className="text-center py-6 text-zinc-400 text-[10px] sm:text-xs font-bold">
                   คุณครูยังไม่ได้เพิ่มรายวิชาใดๆ ลงในระบบ
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {subjects.map((sub) => (
                     <div
                       key={sub.id}
                       onClick={() => handleManageUnits(sub)}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer text-left ${activeSubject?.id === sub.id ? "bg-emerald-500/5 border-emerald-500/30" : "bg-zinc-50 dark:bg-zinc-800/40 border-zinc-100 dark:border-zinc-800 hover:bg-zinc-100/50"}`}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer text-left ${activeSubject?.id === sub.id ? "bg-emerald-500/5 border-emerald-500/30" : "bg-zinc-50 dark:bg-zinc-800/40 border-zinc-100 dark:border-zinc-800 hover:bg-zinc-100/50"}`}
                     >
-                      <span className="text-[10px] font-black text-emerald-500 uppercase tracking-wide">
+                      <span className="text-[9px] sm:text-[10px] font-black text-emerald-500 uppercase tracking-wide">
                         {sub.curriculum} • ภาคเรียน {sub.semester}
                       </span>
                       <h4 className="font-black text-zinc-950 dark:text-zinc-100 text-sm mt-1 truncate">
@@ -1131,7 +1271,7 @@ function DVETeacherWorkspace() {
                         </button>
                         <Popconfirm
                           title="ลบรายวิชา?"
-                          description="การลบวิชานี้จะลบหน่วยการเรียน ควิซแบบทดสอบ และเวลาเรียนของนักศึกษาทั้งหมดอย่างถาวร"
+                          description="การลบวิชานี้จะลบหน่วยการเรียน แบบทดสอบ และเวลาเรียนของนักศึกษาทั้งหมดอย่างถาวร"
                           onConfirm={() => handleDeleteSubject(sub.id)}
                           okText="ยืนยัน"
                           cancelText="ยกเลิก"
@@ -1352,7 +1492,7 @@ function DVETeacherWorkspace() {
                   <div className="flex justify-between items-center">
                     <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
                       <Award size={16} className="text-emerald-500" />
-                      แบบทดสอบและควิซทั้งหมด
+                      แบบทดสอบทั้งหมด
                     </h3>
                     <button
                       onClick={() => {
@@ -1400,7 +1540,7 @@ function DVETeacherWorkspace() {
                               <span
                                 className={`px-2 py-0.5 rounded-full text-[9px] font-black leading-none border ${quiz.isBuiltIn ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-blue-500/10 text-blue-600 border-blue-500/20"}`}
                               >
-                                {quiz.isBuiltIn ? "🧠 ควิซในแอป" : "🔗 Google Form"}
+                                {quiz.isBuiltIn ? "🧠 แบบทดสอบในแอป" : "🔗 Google Form"}
                               </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-zinc-400">
@@ -1453,7 +1593,7 @@ function DVETeacherWorkspace() {
                               แก้ไข
                             </button>
                             <Popconfirm
-                              title="ลบควิซแบบประเมินนี้?"
+                              title="ลบแบบทดสอบแบบประเมินนี้?"
                               onConfirm={() => handleDeleteQuiz(quiz.id, quizForm.subjectId)}
                             >
                               <button className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg text-xs font-black transition-all">
@@ -2067,6 +2207,205 @@ function DVETeacherWorkspace() {
                       </div>
                     </>
                   )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Tab 4: Timeline View for Submissions */}
+        {activeTab === "timeline" && (
+          <motion.div
+            key="timeline"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
+            className="space-y-6"
+          >
+            {/* Filter control box */}
+            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    1. เลือกรายวิชาเรียน
+                  </label>
+                  <Select
+                    placeholder="-- เลือกวิชาเรียน --"
+                    className="w-full h-11"
+                    value={timelineFilter.subjectId || undefined}
+                    onChange={(val) => {
+                      setTimelineFilter((prev) => ({ ...prev, subjectId: val, classGroupId: "" }));
+                      setTimelineData([]);
+                    }}
+                    options={subjects.map((s) => ({ label: `[${s.code}] ${s.name}`, value: s.id }))}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    2. เลือกกลุ่มเรียน / ห้องเรียน
+                  </label>
+                  <Select
+                    placeholder="-- ทั้งหมด --"
+                    className="w-full h-11"
+                    value={timelineFilter.classGroupId || undefined}
+                    onChange={(val) => {
+                      setTimelineFilter((prev) => ({ ...prev, classGroupId: val }));
+                    }}
+                    options={[{ label: "ทั้งหมด", value: "" }, ...timelineClassGroups.map((c) => ({ label: c, value: c }))]}
+                    disabled={!timelineFilter.subjectId}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    3. ช่วงเวลา
+                  </label>
+                  <Select
+                    className="w-full h-11"
+                    value={timelineFilter.dateRange}
+                    onChange={(val) => {
+                      setTimelineFilter((prev) => ({ ...prev, dateRange: val }));
+                    }}
+                    options={[
+                      { label: "7 วันล่าสุด", value: "7" },
+                      { label: "30 วันล่าสุด", value: "30" },
+                      { label: "90 วันล่าสุด", value: "90" },
+                      { label: "ทั้งหมด", value: "365" },
+                    ]}
+                  />
+                </div>
+
+                <button
+                  onClick={handleLoadTimelineData}
+                  disabled={!timelineFilter.subjectId}
+                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 text-white font-black rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/10 cursor-pointer"
+                >
+                  <Clock3 size={16} />
+                  ดึงข้อมูล Timeline
+                </button>
+              </div>
+            </div>
+
+            {/* Timeline Display */}
+            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+              {loadingTimeline ? (
+                <div className="flex justify-center py-20">
+                  <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
+                </div>
+              ) : timelineData.length === 0 ? (
+                <div className="text-center py-20 text-zinc-400 dark:text-zinc-500 text-sm font-bold border border-dashed dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-3 max-w-lg mx-auto">
+                  <Clock3 size={36} className="text-zinc-200 dark:text-zinc-800" />
+                  <div className="space-y-1">
+                    <p className="text-zinc-800 dark:text-zinc-200 text-sm font-black">
+                      ไม่พบข้อมูลการส่งงาน
+                    </p>
+                    <p className="text-zinc-400 font-medium text-xs leading-relaxed">
+                      กรุณาเลือกวิชาเรียนและกดยืนยันเพื่อดู Timeline การส่งงานของนักศึกษา
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  {timelineData.map((group: any, groupIdx: number) => (
+                    <div key={`${group.date}-${group.classGroupId}`} className="relative">
+                      {/* Timeline date header */}
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center font-black text-sm shadow-lg shadow-emerald-500/20">
+                            {new Date(group.date).getDate()}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                              {formatThaiDateDisplay(group.date)}
+                            </h3>
+                            <p className="text-xs font-bold text-zinc-500">
+                              กลุ่มเรียน: {group.classGroupId}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/30 to-transparent" />
+                      </div>
+
+                      {/* Timeline items */}
+                      <div className="ml-6 space-y-3 relative">
+                        {/* Vertical line */}
+                        <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-500/30 to-transparent" style={{ left: "-12px" }} />
+
+                        {group.submissions.map((submission: any, idx: number) => (
+                          <motion.div
+                            key={`${submission.studentId}-${submission.unitId}-${idx}`}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.05 }}
+                            className="relative pl-6"
+                          >
+                            {/* Timeline dot */}
+                            <div className="absolute left-0 top-4 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 shadow-sm" style={{ left: "-13px" }} />
+
+                            <div className="bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 rounded-xl p-4 hover:shadow-md transition-shadow">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-3">
+                                    {submission.studentImage ? (
+                                      <img
+                                        src={submission.studentImage}
+                                        className="w-8 h-8 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-800"
+                                      />
+                                    ) : (
+                                      <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-400">
+                                        <User size={14} />
+                                      </div>
+                                    )}
+                                    <div>
+                                      <p className="font-black text-sm text-zinc-900 dark:text-white">
+                                        {submission.studentName}
+                                      </p>
+                                      <p className="text-[10px] text-zinc-500">
+                                        ID: {maskSensitiveData(submission.studentIdNum)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] font-black border border-blue-200 dark:border-blue-800/50">
+                                      บทที่ {submission.unitSequence || "-"}: {submission.unitTitle || "-"}
+                                    </span>
+                                    <span
+                                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${
+                                        submission.assignmentStatus === "Submitted"
+                                          ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50"
+                                          : submission.assignmentStatus === "Pending"
+                                            ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/50"
+                                            : "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/50"
+                                      }`}
+                                    >
+                                      {submission.assignmentStatus === "Submitted" ? "ส่งแล้ว" : submission.assignmentStatus === "Pending" ? "ค้างส่ง" : "ไม่ส่ง"}
+                                    </span>
+                                    {submission.score && (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[9px] font-black border border-indigo-200 dark:border-indigo-800/50">
+                                        คะแนน: {submission.score}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                {submission.imageUrl && (
+                                  <a
+                                    href={submission.imageUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-black transition-all"
+                                  >
+                                    <Eye size={12} />
+                                    ดูงาน
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -2913,7 +3252,7 @@ function DVETeacherWorkspace() {
                     </label>
                     <input
                       type="text"
-                      placeholder="เช่น ควิซหลังเรียนหน่วยที่ 1"
+                      placeholder="เช่น แบบทดสอบหลังเรียนหน่วยที่ 1"
                       required
                       className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
                       value={quizForm.title}
@@ -3427,7 +3766,7 @@ function DVETeacherWorkspace() {
                   </h3>
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${submissionsIsBuiltIn ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800" : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800"}`}>
-                      {submissionsIsBuiltIn ? "🧠 ควิซในระบบ" : "🔗 Google Form / งานภายนอก"}
+                      {submissionsIsBuiltIn ? "🧠 แบบทดสอบในระบบ" : "🔗 Google Form / งานภายนอก"}
                     </span>
                     <span className="text-[10px] text-zinc-400 font-bold">รวม {submissions.length} คน</span>
                   </div>
