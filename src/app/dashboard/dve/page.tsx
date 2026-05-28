@@ -3351,98 +3351,179 @@ function DVETeacherWorkspace() {
                     ปิด
                   </button>
                 </div>
-                <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      หัวข้อแบบทดสอบ *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="เช่น แบบทดสอบหลังเรียนหน่วยที่ 1"
-                      required
-                      className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
-                      value={quizForm.title}
-                      onChange={(e) => setQuizForm((prev) => ({ ...prev, title: e.target.value }))}
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      ประเภทของแบบทดสอบ (รูปแบบทางเทคนิค)
-                    </label>
-                    <div className="flex border border-slate-200 dark:border-zinc-800 rounded-xl overflow-hidden p-0.5 bg-slate-50 dark:bg-zinc-950">
-                      <button
-                        type="button"
-                        onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: false }))}
-                        className={`flex-1 py-2 text-center text-xs font-black rounded-lg transition-all ${!quizForm.isBuiltIn ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500"}`}
-                      >
-                        ลิงก์ Google Form (ภายนอก)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: true }))}
-                        className={`flex-1 py-2 text-center text-xs font-black rounded-lg transition-all ${quizForm.isBuiltIn ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500"}`}
-                      >
-                        สร้างในตัวแอป (Built-In Quiz)
-                      </button>
+                
+                <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto bg-zinc-50/30 dark:bg-zinc-950/30">
+                  
+                  {/* Section 1: ข้อมูลทั่วไป (General Information) */}
+                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm">
+                    <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
+                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">ℹ️ ข้อมูลทั่วไป (General Info)</span>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                        ประเภทของแบบทดสอบ / การวัดผล
-                      </label>
-                      <select
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
-                        value={quizForm.quizType || "general"}
-                        onChange={(e) =>
-                          setQuizForm((prev) => ({ ...prev, quizType: e.target.value }))
-                        }
-                      >
-                        <option value="general">แบบทดสอบทั่วไป / เก็บคะแนน</option>
-                        <option value="pretest">แบบทดสอบก่อนเรียน (Pre-test)</option>
-                        <option value="posttest">แบบทดสอบหลังเรียน (Post-test)</option>
-                      </select>
-                    </div>
-
-                    {quizForm.isBuiltIn && (
-                      <div className="flex flex-col justify-end pb-1.5">
-                        <label className="flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer select-none bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-xl border dark:border-zinc-800">
-                          <input
-                            type="checkbox"
-                            className="accent-emerald-500 w-4 h-4"
-                            checked={!!quizForm.isShuffle}
-                            onChange={(e) =>
-                              setQuizForm((prev) => ({ ...prev, isShuffle: e.target.checked }))
-                            }
-                          />
-                          🔀 สลับลำดับข้อคำถามสำหรับนักเรียนแต่ละคน (Shuffle)
-                        </label>
-                      </div>
-                    )}
-                  </div>
-
-                  {!quizForm.isBuiltIn ? (
-                    <div className="flex flex-col gap-1.5 animate-fade-in">
-                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                        ลิงก์ Google Form สอบออนไลน์ *
+                        หัวข้อแบบทดสอบ *
                       </label>
                       <input
-                        type="url"
-                        placeholder="https://docs.google.com/forms/d/..."
-                        required={!quizForm.isBuiltIn}
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
-                        value={quizForm.googleFormUrl}
-                        onChange={(e) =>
-                          setQuizForm((prev) => ({ ...prev, googleFormUrl: e.target.value }))
-                        }
+                        type="text"
+                        placeholder="เช่น แบบทดสอบหลังเรียนหน่วยที่ 1"
+                        required
+                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                        value={quizForm.title}
+                        onChange={(e) => setQuizForm((prev) => ({ ...prev, title: e.target.value }))}
                       />
                     </div>
-                  ) : (
-                    <div className="space-y-4 animate-fade-in border-t dark:border-zinc-800 pt-4">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          ผูกกับหน่วยการเรียน (Link to Unit)
+                        </label>
+                        <select
+                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                          value={quizForm.unitId}
+                          onChange={(e) =>
+                            setQuizForm((prev) => ({ ...prev, unitId: e.target.value }))
+                          }
+                        >
+                          <option
+                            value=""
+                            className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                          >
+                            -- ไม่ผูกกับหน่วยใด (อิสระ) --
+                          </option>
+                          {units.map((u: any, idx: number) => (
+                            <option
+                              key={u.id || idx}
+                              value={u.id || u._id?.toString()}
+                              className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                            >
+                              หน่วยที่ {u.sequence || idx + 1}: {u.title}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          ประเภทของแบบทดสอบ / การวัดผล
+                        </label>
+                        <select
+                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                          value={quizForm.quizType || "general"}
+                          onChange={(e) =>
+                            setQuizForm((prev) => ({ ...prev, quizType: e.target.value }))
+                          }
+                        >
+                          <option value="general">แบบทดสอบทั่วไป / เก็บคะแนน</option>
+                          <option value="pretest">แบบทดสอบก่อนเรียน (Pre-test)</option>
+                          <option value="posttest">แบบทดสอบหลังเรียน (Post-test)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: การตั้งค่าระบบ (System Settings) */}
+                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm">
+                    <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
+                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">⚙️ การตั้งค่าระบบ (Settings)</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          รูปแบบทางเทคนิค (Platform)
+                        </label>
+                        <div className="flex border border-slate-200 dark:border-zinc-800 rounded-xl overflow-hidden p-0.5 bg-slate-50 dark:bg-zinc-950">
+                          <button
+                            type="button"
+                            onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: false }))}
+                            className={`flex-1 py-2 text-center text-xs font-black rounded-lg transition-all ${!quizForm.isBuiltIn ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm border dark:border-zinc-800" : "text-zinc-500 border border-transparent"}`}
+                          >
+                            ลิงก์ภายนอก (Google Form)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: true }))}
+                            className={`flex-1 py-2 text-center text-xs font-black rounded-lg transition-all ${quizForm.isBuiltIn ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm border dark:border-zinc-800" : "text-zinc-500 border border-transparent"}`}
+                          >
+                            สร้างในแอป (Built-In)
+                          </button>
+                        </div>
+                      </div>
+
+                      {quizForm.isBuiltIn ? (
+                        <div className="flex flex-col justify-end pb-1.5">
+                          <label className="flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer select-none bg-zinc-50 dark:bg-zinc-950 p-2.5 h-11 rounded-xl border dark:border-zinc-800">
+                            <input
+                              type="checkbox"
+                              className="accent-emerald-500 w-4 h-4"
+                              checked={!!quizForm.isShuffle}
+                              onChange={(e) =>
+                                setQuizForm((prev) => ({ ...prev, isShuffle: e.target.checked }))
+                              }
+                            />
+                            🔀 สลับลำดับข้อคำถาม (Shuffle)
+                          </label>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-1.5 animate-fade-in">
+                          <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                            ลิงก์ Google Form สอบออนไลน์ *
+                          </label>
+                          <input
+                            type="url"
+                            placeholder="https://docs.google.com/forms/d/..."
+                            required={!quizForm.isBuiltIn}
+                            className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                            value={quizForm.googleFormUrl}
+                            onChange={(e) =>
+                              setQuizForm((prev) => ({ ...prev, googleFormUrl: e.target.value }))
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t dark:border-zinc-800 pt-4 mt-2">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
+                        </label>
+                        <input
+                          type="date"
+                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                          value={quizForm.startDate}
+                          onChange={(e) =>
+                            setQuizForm((prev) => ({ ...prev, startDate: e.target.value }))
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          วันหมดเขตส่งกระดาษคำตอบ (Deadline)
+                        </label>
+                        <input
+                          type="date"
+                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                          value={quizForm.deadline}
+                          onChange={(e) =>
+                            setQuizForm((prev) => ({ ...prev, deadline: e.target.value }))
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 3: จัดการคำถามแบบทดสอบ (Quiz Content) */}
+                  {quizForm.isBuiltIn && (
+                    <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm animate-fade-in">
+                      <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
+                        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">📝 จัดการคำถามแบบทดสอบ (Quiz Content)</span>
+                      </div>
+
                       {/* Reusable Templates Box */}
-                      <div className="p-4 bg-zinc-50 dark:bg-zinc-950 border dark:border-zinc-800 rounded-2xl space-y-3">
+                      <div className="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl space-y-3">
                         <h4 className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
                           💾 การจัดการแม่แบบแบบทดสอบเพื่อใช้งานซ้ำ
                         </h4>
@@ -3456,8 +3537,7 @@ function DVETeacherWorkspace() {
                               </div>
                             ) : templates.length === 0 ? (
                               <div className="text-xs text-zinc-400 font-bold italic">
-                                ยังไม่มีการบันทึกแม่แบบคำถามใดๆ
-                                คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
+                                ยังไม่มีการบันทึกแม่แบบคำถามใดๆ คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
                               </div>
                             ) : (
                               <div className="flex flex-col gap-1">
@@ -3511,7 +3591,7 @@ function DVETeacherWorkspace() {
 
                         {/* List of stored templates so they can be deleted! */}
                         {templates.length > 0 && (
-                          <div className="border-t dark:border-zinc-900 pt-2 space-y-1.5">
+                          <div className="border-t border-zinc-200 dark:border-zinc-800/80 pt-3 mt-3 space-y-1.5">
                             <span className="text-[10px] font-black text-zinc-400 block">
                               แม่แบบของฉันทั้งหมด (สามารถลบออกได้):
                             </span>
@@ -3545,7 +3625,7 @@ function DVETeacherWorkspace() {
                         )}
                       </div>
 
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center mt-6">
                         <span className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                           รายการโจทย์ข้อคำถาม ({quizForm.questions?.length || 0} ข้อ)
                         </span>
@@ -3580,7 +3660,7 @@ function DVETeacherWorkspace() {
                           {quizForm.questions.map((q, qIdx) => (
                             <div
                               key={q.id}
-                              className="p-4 bg-zinc-50 dark:bg-zinc-950 border dark:border-zinc-800/80 rounded-xl space-y-3 relative"
+                              className="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-xl space-y-3 relative"
                             >
                               <div className="flex justify-between items-center gap-2">
                                 <span className="text-xs font-black text-emerald-600">
@@ -3594,7 +3674,7 @@ function DVETeacherWorkspace() {
                                     );
                                     setQuizForm((prev) => ({ ...prev, questions: updated }));
                                   }}
-                                  className="text-rose-500 hover:text-rose-700 p-1 border-0 bg-transparent cursor-pointer"
+                                  className="text-rose-500 hover:text-rose-700 p-1 border-0 bg-transparent cursor-pointer text-[10px] font-black"
                                 >
                                   ลบคำถาม
                                 </button>
@@ -3611,10 +3691,10 @@ function DVETeacherWorkspace() {
                                     updated[qIdx].text = e.target.value;
                                     setQuizForm((prev) => ({ ...prev, questions: updated }));
                                   }}
-                                  className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold"
+                                  className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold shadow-sm"
                                 />
 
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-2 mt-2">
                                   <div className="flex flex-col gap-1">
                                     <label className="text-[9px] font-black text-zinc-400">
                                       ประเภทคำตอบ
@@ -3642,14 +3722,10 @@ function DVETeacherWorkspace() {
                                         }
                                         setQuizForm((prev) => ({ ...prev, questions: updated }));
                                       }}
-                                      className="h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-2 text-xs focus:outline-hidden dark:text-white"
+                                      className="h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-2 text-xs focus:outline-hidden dark:text-white shadow-sm"
                                     >
-                                      <option value="multiple_choice">
-                                        ปรนัย (เลือกตอบ 1 ข้อ)
-                                      </option>
-                                      <option value="checkboxes">
-                                        กล่องตัวเลือก (เลือกตอบหลายข้อ)
-                                      </option>
+                                      <option value="multiple_choice">ปรนัย (เลือกตอบ 1 ข้อ)</option>
+                                      <option value="checkboxes">กล่องตัวเลือก (เลือกตอบหลายข้อ)</option>
                                       <option value="short_answer">อัตนัย (เติมคำตอบสั้น)</option>
                                     </select>
                                   </div>
@@ -3668,16 +3744,15 @@ function DVETeacherWorkspace() {
                                         updated[qIdx].points = parseInt(e.target.value) || 1;
                                         setQuizForm((prev) => ({ ...prev, questions: updated }));
                                       }}
-                                      className="h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold"
+                                      className="h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold shadow-sm"
                                     />
                                   </div>
                                 </div>
 
                                 {(q.type === "multiple_choice" || q.type === "checkboxes") && (
-                                  <div className="space-y-2 mt-2 pt-2 border-t dark:border-zinc-900">
+                                  <div className="space-y-2 mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-800/80">
                                     <label className="text-[9px] font-black text-zinc-500 block">
-                                      ป้อนตัวเลือกคำตอบ
-                                      (และกดยืนยันปุ่มวิทยุ/กล่องเพื่อระบุเฉลยที่ถูกต้อง)
+                                      ป้อนตัวเลือกคำตอบ (และกดยืนยันปุ่มวิทยุ/กล่องเพื่อระบุเฉลยที่ถูกต้อง)
                                     </label>
                                     <div className="space-y-1.5">
                                       {(q.options || []).map((opt: string, optIdx: number) => (
@@ -3706,35 +3781,34 @@ function DVETeacherWorkspace() {
                                               }
                                               onChange={(e) => {
                                                 const updated = [...quizForm.questions];
-                                                let currentCorrect = Array.isArray(q.correctAnswer)
+                                                let currentArr = Array.isArray(q.correctAnswer)
                                                   ? [...q.correctAnswer]
                                                   : [];
                                                 if (e.target.checked) {
-                                                  currentCorrect.push(opt);
+                                                  currentArr.push(opt);
                                                 } else {
-                                                  currentCorrect = currentCorrect.filter(
-                                                    (val: string) => val !== opt,
+                                                  currentArr = currentArr.filter(
+                                                    (v: string) => v !== opt,
                                                   );
                                                 }
-                                                updated[qIdx].correctAnswer = currentCorrect;
+                                                updated[qIdx].correctAnswer = currentArr;
                                                 setQuizForm((prev) => ({
                                                   ...prev,
                                                   questions: updated,
                                                 }));
                                               }}
-                                              className="w-3.5 h-3.5 accent-emerald-500 rounded cursor-pointer"
+                                              className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
                                             />
                                           )}
-
                                           <input
                                             type="text"
                                             required
-                                            placeholder={`ตัวเลือกตอบที่ ${optIdx + 1}`}
                                             value={opt}
                                             onChange={(e) => {
                                               const updated = [...quizForm.questions];
                                               const oldVal = updated[qIdx].options[optIdx];
                                               updated[qIdx].options[optIdx] = e.target.value;
+
                                               if (
                                                 q.type === "multiple_choice" &&
                                                 q.correctAnswer === oldVal
@@ -3754,48 +3828,45 @@ function DVETeacherWorkspace() {
                                                 questions: updated,
                                               }));
                                             }}
-                                            className="flex-1 h-8 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-2 text-[11px] focus:outline-hidden dark:text-white"
+                                            className="flex-1 h-8 border-b border-zinc-200 dark:border-zinc-800 bg-transparent px-2 text-[11px] focus:outline-hidden dark:text-white"
                                           />
-
-                                          {(q.options || []).length > 1 && (
-                                            <button
-                                              type="button"
-                                              onClick={() => {
-                                                const updated = [...quizForm.questions];
-                                                const valToRemove = updated[qIdx].options[optIdx];
-                                                updated[qIdx].options = updated[
-                                                  qIdx
-                                                ].options.filter(
-                                                  (_: string, idx: number) => idx !== optIdx,
-                                                );
-                                                if (
-                                                  q.type === "multiple_choice" &&
-                                                  q.correctAnswer === valToRemove
-                                                ) {
-                                                  updated[qIdx].correctAnswer = "";
-                                                } else if (
-                                                  q.type === "checkboxes" &&
-                                                  Array.isArray(q.correctAnswer)
-                                                ) {
-                                                  updated[qIdx].correctAnswer =
-                                                    q.correctAnswer.filter(
-                                                      (v: string) => v !== valToRemove,
-                                                    );
-                                                }
-                                                setQuizForm((prev) => ({
-                                                  ...prev,
-                                                  questions: updated,
-                                                }));
-                                              }}
-                                              className="text-zinc-400 hover:text-rose-500 p-1 border-0 bg-transparent cursor-pointer"
-                                            >
-                                              <X size={12} />
-                                            </button>
-                                          )}
+                                          <button
+                                            type="button"
+                                            disabled={(q.options || []).length <= 2}
+                                            onClick={() => {
+                                              const updated = [...quizForm.questions];
+                                              const valToRemove = updated[qIdx].options[optIdx];
+                                              updated[qIdx].options = updated[
+                                                qIdx
+                                              ].options.filter(
+                                                (_: string, idx: number) => idx !== optIdx,
+                                              );
+                                              if (
+                                                q.type === "multiple_choice" &&
+                                                q.correctAnswer === valToRemove
+                                              ) {
+                                                updated[qIdx].correctAnswer = "";
+                                              } else if (
+                                                q.type === "checkboxes" &&
+                                                Array.isArray(q.correctAnswer)
+                                              ) {
+                                                updated[qIdx].correctAnswer =
+                                                  q.correctAnswer.filter(
+                                                    (v: string) => v !== valToRemove,
+                                                  );
+                                              }
+                                              setQuizForm((prev) => ({
+                                                ...prev,
+                                                questions: updated,
+                                              }));
+                                            }}
+                                            className="text-rose-500 hover:text-rose-700 p-1 border-0 bg-transparent cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                          >
+                                            <X size={10} />
+                                          </button>
                                         </div>
                                       ))}
                                     </div>
-
                                     <button
                                       type="button"
                                       onClick={() => {
@@ -3804,14 +3875,12 @@ function DVETeacherWorkspace() {
                                         updated[qIdx].options.push(newOptName);
                                         setQuizForm((prev) => ({ ...prev, questions: updated }));
                                       }}
-                                      className="mt-1 text-[10px] text-emerald-600 hover:text-emerald-700 font-black flex items-center gap-0.5 border-0 bg-transparent cursor-pointer"
+                                      className="mt-1.5 text-[10px] text-emerald-600 hover:text-emerald-700 font-black flex items-center gap-0.5 border-0 bg-transparent cursor-pointer dark:bg-emerald-950/30 px-2 py-1 rounded-md"
                                     >
                                       <Plus size={10} /> เพิ่มช่องตัวเลือกใหม่
                                     </button>
                                   </div>
                                 )}
-
-                                {/* short_answer has no correct answer input field since it is subjective */}
                               </div>
                             </div>
                           ))}
@@ -3820,66 +3889,8 @@ function DVETeacherWorkspace() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t dark:border-zinc-800 pt-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                        ผูกกับหน่วยการเรียน (Link to Unit)
-                      </label>
-                      <select
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
-                        value={quizForm.unitId}
-                        onChange={(e) =>
-                          setQuizForm((prev) => ({ ...prev, unitId: e.target.value }))
-                        }
-                      >
-                        <option
-                          value=""
-                          className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
-                        >
-                          -- ไม่ผูกกับหน่วยใด (อิสระ) --
-                        </option>
-                        {units.map((u: any, idx: number) => (
-                          <option
-                            key={u.id || idx}
-                            value={u.id || u._id?.toString()}
-                            className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
-                          >
-                            หน่วยที่ {u.sequence || idx + 1}: {u.title}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
-                    </label>
-                    <input
-                      type="date"
-                      className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
-                      value={quizForm.startDate}
-                      onChange={(e) =>
-                        setQuizForm((prev) => ({ ...prev, startDate: e.target.value }))
-                      }
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5 border-t dark:border-zinc-800 pt-4 mt-4">
-                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      วันหมดเขตส่งกระดาษคำตอบ (เดดไลน์)
-                    </label>
-                    <input
-                      type="date"
-                      className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
-                      value={quizForm.deadline}
-                      onChange={(e) =>
-                        setQuizForm((prev) => ({ ...prev, deadline: e.target.value }))
-                      }
-                    />
-                  </div>
                 </div>
-                <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
+<div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
                   <button
                     type="button"
                     onClick={() => setIsQuizModalOpen(false)}
