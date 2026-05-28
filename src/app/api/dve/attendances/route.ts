@@ -15,6 +15,22 @@ function escapeRegex(text: string): string {
   return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
+function standardizeClassGroupName(name: string): string {
+  if (!name) return "";
+  let clean = name.trim();
+  const stripped = clean.replace(/[\s\.-]+/g, "");
+  const match = stripped.match(/^([ก-ฮa-zA-Z]+)(.*)$/);
+  if (match) {
+    const prefix = match[1];
+    const rest = match[2];
+    if (rest) {
+      return `${prefix}.${rest}`;
+    }
+    return prefix;
+  }
+  return stripped;
+}
+
 function buildFlexibleClassGroupRegex(classGroupId: string): string {
   if (!classGroupId) return "";
   const clean = classGroupId.trim();
@@ -134,7 +150,7 @@ export async function GET(req: Request) {
           studentId: l.studentId,
           studentName: l.studentName,
           studentIdNum: l.studentIdNum,
-          classGroupId: l.classGroupId || (student?.classGroupId || ""),
+          classGroupId: standardizeClassGroupName(l.classGroupId || (student?.classGroupId || "")),
           studentImage: student?.image || "",
           date: l.date,
           status: l.status,

@@ -142,7 +142,9 @@ function maskSensitiveData(val: string) {
 function DVETeacherWorkspace() {
   const { data: session } = useSession();
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<"subjects" | "quizzes" | "checkin" | "timeline" | "internship">("subjects");
+  const [activeTab, setActiveTab] = useState<
+    "subjects" | "quizzes" | "checkin" | "timeline" | "internship"
+  >("subjects");
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
 
@@ -260,6 +262,8 @@ function DVETeacherWorkspace() {
     title: "",
     googleFormUrl: "",
     deadline: "",
+    startDate: "",
+    unitId: "",
     isBuiltIn: false,
     questions: [] as any[],
     isShuffle: false,
@@ -645,6 +649,8 @@ function DVETeacherWorkspace() {
           title: "",
           googleFormUrl: "",
           deadline: "",
+          startDate: "",
+          unitId: "",
           isBuiltIn: false,
           questions: [],
           isShuffle: false,
@@ -681,7 +687,11 @@ function DVETeacherWorkspace() {
     }
   };
 
-  const handleToggleSubjectiveGrading = async (submissionId: string, questionId: string, isCorrect: boolean) => {
+  const handleToggleSubjectiveGrading = async (
+    submissionId: string,
+    questionId: string,
+    isCorrect: boolean,
+  ) => {
     try {
       const res = await fetch("/api/dve/quizzes/submissions", {
         method: "PATCH",
@@ -846,7 +856,10 @@ function DVETeacherWorkspace() {
         if (data.success) {
           setInternshipStudents(data.students || []);
           if (data.classGroups) {
-            setInternshipClassGroups(data.classGroups);
+            const standardized = Array.from(
+              new Set(data.classGroups.map((c: string) => standardizeClassGroupName(c))),
+            );
+            setInternshipClassGroups(standardized as string[]);
           }
         }
       }
@@ -899,7 +912,11 @@ function DVETeacherWorkspace() {
           // Group submissions by date and classroom
           const grouped = (data.attendances || []).reduce((acc: any, att: any) => {
             const date = att.date || "ไม่ระบุวันที่";
-            const classGroup = att.classGroupId || "ไม่ระบุกลุ่ม";
+            const rawClassGroup = att.classGroupId || "ไม่ระบุกลุ่ม";
+            const classGroup =
+              rawClassGroup === "ไม่ระบุกลุ่ม"
+                ? rawClassGroup
+                : standardizeClassGroupName(rawClassGroup);
             const key = `${date}|${classGroup}`;
             if (!acc[key]) {
               acc[key] = {
@@ -911,7 +928,11 @@ function DVETeacherWorkspace() {
             acc[key].submissions.push(att);
             return acc;
           }, {});
-          setTimelineData(Object.values(grouped).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+          setTimelineData(
+            Object.values(grouped).sort(
+              (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+            ),
+          );
         }
       }
     } catch (err) {
@@ -944,7 +965,7 @@ function DVETeacherWorkspace() {
               new Set(
                 data.attendances
                   .filter((a: any) => a.classGroupId)
-                  .map((a: any) => a.classGroupId)
+                  .map((a: any) => standardizeClassGroupName(a.classGroupId))
                   .filter((c: string) => c && c.trim() !== "" && !/^[\d\s-]+$/.test(c)),
               ),
             ).sort() as string[];
@@ -959,7 +980,10 @@ function DVETeacherWorkspace() {
     fetchTimelineClassGroups();
   }, [timelineFilter.subjectId]);
 
-  const handleExtractScoreFromImage = async (studentId: string, imageUrl: string): Promise<string | null> => {
+  const handleExtractScoreFromImage = async (
+    studentId: string,
+    imageUrl: string,
+  ): Promise<string | null> => {
     setExtractingScoreStudentId(studentId);
     try {
       message.loading({
@@ -1502,6 +1526,8 @@ function DVETeacherWorkspace() {
                           title: "",
                           googleFormUrl: "",
                           deadline: "",
+                          startDate: "",
+                          unitId: "",
                           isBuiltIn: false,
                           questions: [],
                           isShuffle: false,
@@ -1547,7 +1573,9 @@ function DVETeacherWorkspace() {
                               {!quiz.isBuiltIn ? (
                                 <span className="flex items-center gap-1">
                                   <ExternalLink size={10} />
-                                  {quiz.googleFormUrl ? quiz.googleFormUrl.substring(0, 45) + "..." : "ไม่มีลิงก์"}
+                                  {quiz.googleFormUrl
+                                    ? quiz.googleFormUrl.substring(0, 45) + "..."
+                                    : "ไม่มีลิงก์"}
                                 </span>
                               ) : (
                                 <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
@@ -1567,7 +1595,9 @@ function DVETeacherWorkspace() {
                           <div className="flex items-center gap-2 shrink-0">
                             {/* View submissions — available for ALL quiz types */}
                             <button
-                              onClick={() => handleLoadSubmissions(quiz.id, quiz.title, !!quiz.isBuiltIn)}
+                              onClick={() =>
+                                handleLoadSubmissions(quiz.id, quiz.title, !!quiz.isBuiltIn)
+                              }
                               className="px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-600 hover:text-white border border-indigo-500/20 hover:border-indigo-500 rounded-lg text-xs font-black transition-all shadow-sm flex items-center gap-1"
                             >
                               <Eye size={12} />
@@ -1581,6 +1611,8 @@ function DVETeacherWorkspace() {
                                   title: quiz.title,
                                   googleFormUrl: quiz.googleFormUrl || "",
                                   deadline: quiz.deadline || "",
+                                  startDate: quiz.startDate || "",
+                                  unitId: quiz.unitId || "",
                                   isBuiltIn: !!quiz.isBuiltIn,
                                   questions: quiz.questions || [],
                                   isShuffle: !!quiz.isShuffle,
@@ -1728,7 +1760,7 @@ function DVETeacherWorkspace() {
 
                     {studentRoster.length > 0 && (
                       <>
-                    <label className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 cursor-pointer select-none border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 rounded-lg">
+                        <label className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 cursor-pointer select-none border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 rounded-lg">
                           <input
                             type="checkbox"
                             className="accent-emerald-500 w-3.5 h-3.5"
@@ -1935,7 +1967,9 @@ function DVETeacherWorkspace() {
                                   key={student.id}
                                   className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850/50"
                                 >
-                                  <td className="py-4 px-2 font-medium text-xs tracking-wider">{maskSensitiveData(student.studentIdNum)}</td>
+                                  <td className="py-4 px-2 font-medium text-xs tracking-wider">
+                                    {maskSensitiveData(student.studentIdNum)}
+                                  </td>
                                   <td className="py-4 px-2">
                                     <div className="flex flex-col gap-2.5">
                                       <div className="flex items-center gap-3">
@@ -1950,10 +1984,12 @@ function DVETeacherWorkspace() {
                                           </div>
                                         )}
                                         <div className="flex flex-col gap-1">
-                                          <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">{student.name}</span>
+                                          <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">
+                                            {student.name}
+                                          </span>
                                         </div>
                                       </div>
-                                      
+
                                       {/* ประวัติการส่งงานที่ผ่านมา */}
                                       {studentSubmissionsById[student.id]?.length > 0 && (
                                         <div className="flex flex-wrap gap-1.5 mt-1 bg-zinc-50 dark:bg-zinc-850/50 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800">
@@ -1964,15 +2000,19 @@ function DVETeacherWorkspace() {
                                               <div
                                                 key={`${att.unitId || idx}-${att.studentId}-${att.date}`}
                                                 className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[9px] font-black shadow-xs ${
-                                                  isDone 
+                                                  isDone
                                                     ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
                                                     : isPending
                                                       ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400"
                                                       : "bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400"
                                                 }`}
                                               >
-                                                <span className="opacity-80">บทที่ {att.unitSequence || "-"}:</span>
-                                                <span className="truncate max-w-[80px]">{att.unitTitle || "-"}</span>
+                                                <span className="opacity-80">
+                                                  บทที่ {att.unitSequence || "-"}:
+                                                </span>
+                                                <span className="truncate max-w-[80px]">
+                                                  {att.unitTitle || "-"}
+                                                </span>
                                                 <span className="flex items-center gap-1 border-l border-current pl-1.5 opacity-90">
                                                   {isDone ? "✅" : isPending ? "⌛" : "❌"}
                                                   {att.score ? ` ${att.score}` : ""}
@@ -1984,8 +2024,10 @@ function DVETeacherWorkspace() {
                                       )}
                                     </div>
                                   </td>
-                                  <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">{student.classGroupId}</td>
-                                  
+                                  <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
+                                    {student.classGroupId}
+                                  </td>
+
                                   {/* Column 4: Attendance Status Badge */}
                                   <td className="py-4 px-2 text-center">
                                     <span
@@ -1997,7 +2039,11 @@ function DVETeacherWorkspace() {
                                             : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
                                       }`}
                                     >
-                                      {rec.status === "Present" ? "ตรงเวลา" : rec.status === "Late" ? "มาสาย" : "ขาดเรียน"}
+                                      {rec.status === "Present"
+                                        ? "ตรงเวลา"
+                                        : rec.status === "Late"
+                                          ? "มาสาย"
+                                          : "ขาดเรียน"}
                                     </span>
                                   </td>
 
@@ -2012,7 +2058,11 @@ function DVETeacherWorkspace() {
                                             : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60"
                                       }`}
                                     >
-                                      {rec.assignmentStatus === "Submitted" ? "ส่งแล้ว" : rec.assignmentStatus === "Pending" ? "ค้างส่ง" : "ไม่มีงาน"}
+                                      {rec.assignmentStatus === "Submitted"
+                                        ? "ส่งแล้ว"
+                                        : rec.assignmentStatus === "Pending"
+                                          ? "ค้างส่ง"
+                                          : "ไม่มีงาน"}
                                     </span>
                                   </td>
 
@@ -2020,12 +2070,14 @@ function DVETeacherWorkspace() {
                                   <td className="py-4 px-2 text-right">
                                     <div className="flex items-center justify-end gap-3">
                                       <div className="text-right">
-                                        <span className="text-xs font-bold text-zinc-400 block uppercase">คะแนน</span>
+                                        <span className="text-xs font-bold text-zinc-400 block uppercase">
+                                          คะแนน
+                                        </span>
                                         <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">
                                           {rec.score ? rec.score : "-"}
                                         </span>
                                       </div>
-                                      
+
                                       <button
                                         type="button"
                                         onClick={() => {
@@ -2049,7 +2101,9 @@ function DVETeacherWorkspace() {
 
                                       <Popconfirm
                                         title={`คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลการเข้าเรียนของ ${student.name}?`}
-                                        onConfirm={() => handleDeleteIndividualAttendance(student.id)}
+                                        onConfirm={() =>
+                                          handleDeleteIndividualAttendance(student.id)
+                                        }
                                         okText="ใช่, ลบ"
                                         cancelText="ยกเลิก"
                                         okButtonProps={{ danger: true }}
@@ -2101,7 +2155,8 @@ function DVETeacherWorkspace() {
                                     <span className="truncate">{student.name}</span>
                                   </h4>
                                   <p className="text-[10px] text-zinc-500 font-bold mt-0.5">
-                                    ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม: {student.classGroupId}
+                                    ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม:{" "}
+                                    {student.classGroupId}
                                   </p>
                                 </div>
                               </div>
@@ -2115,15 +2170,19 @@ function DVETeacherWorkspace() {
                                       <div
                                         key={`${att.unitId || idx}-${att.studentId}-${att.date}`}
                                         className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-black shadow-xs ${
-                                          isDone 
+                                          isDone
                                             ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
                                             : isPending
                                               ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400"
                                               : "bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400"
                                         }`}
                                       >
-                                        <span className="opacity-80">บทที่ {att.unitSequence || "-"}:</span>
-                                        <span className="truncate max-w-[60px]">{att.unitTitle || "-"}</span>
+                                        <span className="opacity-80">
+                                          บทที่ {att.unitSequence || "-"}:
+                                        </span>
+                                        <span className="truncate max-w-[60px]">
+                                          {att.unitTitle || "-"}
+                                        </span>
                                         <span className="flex items-center gap-1 border-l border-current pl-1 opacity-90">
                                           {isDone ? "✅" : isPending ? "⌛" : "❌"}
                                           {att.score ? ` ${att.score}` : ""}
@@ -2145,7 +2204,11 @@ function DVETeacherWorkspace() {
                                           : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
                                     }`}
                                   >
-                                    {rec.status === "Present" ? "ตรงเวลา" : rec.status === "Late" ? "มาสาย" : "ขาดเรียน"}
+                                    {rec.status === "Present"
+                                      ? "ตรงเวลา"
+                                      : rec.status === "Late"
+                                        ? "มาสาย"
+                                        : "ขาดเรียน"}
                                   </span>
                                   <span
                                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${
@@ -2156,10 +2219,17 @@ function DVETeacherWorkspace() {
                                           : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60"
                                     }`}
                                   >
-                                    {rec.assignmentStatus === "Submitted" ? "ส่งแล้ว" : rec.assignmentStatus === "Pending" ? "ค้างส่ง" : "ไม่มีงาน"}
+                                    {rec.assignmentStatus === "Submitted"
+                                      ? "ส่งแล้ว"
+                                      : rec.assignmentStatus === "Pending"
+                                        ? "ค้างส่ง"
+                                        : "ไม่มีงาน"}
                                   </span>
                                   <span className="text-[10px] font-bold text-zinc-500">
-                                    คะแนน: <span className="font-black text-indigo-600 dark:text-indigo-400">{rec.score || "-"}</span>
+                                    คะแนน:{" "}
+                                    <span className="font-black text-indigo-600 dark:text-indigo-400">
+                                      {rec.score || "-"}
+                                    </span>
                                   </span>
                                 </div>
                                 <div className="flex gap-2">
@@ -2252,7 +2322,10 @@ function DVETeacherWorkspace() {
                     onChange={(val) => {
                       setTimelineFilter((prev) => ({ ...prev, classGroupId: val }));
                     }}
-                    options={[{ label: "ทั้งหมด", value: "" }, ...timelineClassGroups.map((c) => ({ label: c, value: c }))]}
+                    options={[
+                      { label: "ทั้งหมด", value: "" },
+                      ...timelineClassGroups.map((c) => ({ label: c, value: c })),
+                    ]}
                     disabled={!timelineFilter.subjectId}
                   />
                 </div>
@@ -2330,7 +2403,10 @@ function DVETeacherWorkspace() {
                       {/* Timeline items */}
                       <div className="ml-6 space-y-3 relative">
                         {/* Vertical line */}
-                        <div className="absolute left-0 top-0 bottom-0 w-px bg-linear-to-b from-emerald-500/30 to-transparent" style={{ left: "-12px" }} />
+                        <div
+                          className="absolute left-0 top-0 bottom-0 w-px bg-linear-to-b from-emerald-500/30 to-transparent"
+                          style={{ left: "-12px" }}
+                        />
 
                         {group.submissions.map((submission: any, idx: number) => (
                           <motion.div
@@ -2341,7 +2417,10 @@ function DVETeacherWorkspace() {
                             className="relative pl-6"
                           >
                             {/* Timeline dot */}
-                            <div className="absolute left-0 top-4 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 shadow-sm" style={{ left: "-13px" }} />
+                            <div
+                              className="absolute left-0 top-4 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 shadow-sm"
+                              style={{ left: "-13px" }}
+                            />
 
                             <div className="bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 rounded-xl p-4 hover:shadow-md transition-shadow">
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -2368,7 +2447,8 @@ function DVETeacherWorkspace() {
                                   </div>
                                   <div className="flex flex-wrap gap-2">
                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] font-black border border-blue-200 dark:border-blue-800/50">
-                                      บทที่ {submission.unitSequence || "-"}: {submission.unitTitle || "-"}
+                                      บทที่ {submission.unitSequence || "-"}:{" "}
+                                      {submission.unitTitle || "-"}
                                     </span>
                                     <span
                                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${
@@ -2379,7 +2459,11 @@ function DVETeacherWorkspace() {
                                             : "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/50"
                                       }`}
                                     >
-                                      {submission.assignmentStatus === "Submitted" ? "ส่งแล้ว" : submission.assignmentStatus === "Pending" ? "ค้างส่ง" : "ไม่ส่ง"}
+                                      {submission.assignmentStatus === "Submitted"
+                                        ? "ส่งแล้ว"
+                                        : submission.assignmentStatus === "Pending"
+                                          ? "ค้างส่ง"
+                                          : "ไม่ส่ง"}
                                     </span>
                                     {submission.score && (
                                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[9px] font-black border border-indigo-200 dark:border-indigo-800/50">
@@ -2434,7 +2518,8 @@ function DVETeacherWorkspace() {
                     นักศึกษาในแผนกทั้งหมด
                   </span>
                   <span className="text-2xl font-black text-zinc-900 dark:text-white leading-none mt-1 inline-block">
-                    {internshipStats.total} <span className="text-xs font-bold text-zinc-400">คน</span>
+                    {internshipStats.total}{" "}
+                    <span className="text-xs font-bold text-zinc-400">คน</span>
                   </span>
                 </div>
               </div>
@@ -2451,7 +2536,8 @@ function DVETeacherWorkspace() {
                     💼 กำลังออกฝึกงาน
                   </span>
                   <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 leading-none mt-1 inline-block">
-                    {internshipStats.working} <span className="text-xs font-bold text-zinc-400">คน</span>
+                    {internshipStats.working}{" "}
+                    <span className="text-xs font-bold text-zinc-400">คน</span>
                   </span>
                 </div>
               </div>
@@ -2468,7 +2554,8 @@ function DVETeacherWorkspace() {
                     🏫 เรียนปกติที่วิทยาลัย
                   </span>
                   <span className="text-2xl font-black text-zinc-700 dark:text-zinc-300 leading-none mt-1 inline-block">
-                    {internshipStats.normal} <span className="text-xs font-bold text-zinc-400">คน</span>
+                    {internshipStats.normal}{" "}
+                    <span className="text-xs font-bold text-zinc-400">คน</span>
                   </span>
                 </div>
               </div>
@@ -2486,7 +2573,11 @@ function DVETeacherWorkspace() {
                     className="w-full h-11"
                     value={internshipFilter.department || undefined}
                     onChange={(val) => {
-                      setInternshipFilter((prev) => ({ ...prev, department: val, classGroupId: "" }));
+                      setInternshipFilter((prev) => ({
+                        ...prev,
+                        department: val,
+                        classGroupId: "",
+                      }));
                       setInternshipStudents([]);
                     }}
                     options={departments.map((d) => ({ label: d, value: d }))}
@@ -2551,7 +2642,8 @@ function DVETeacherWorkspace() {
                       ไม่พบข้อมูลนักศึกษาในแผนกที่เลือก
                     </p>
                     <p className="text-zinc-400 font-medium text-xs leading-relaxed">
-                      กรุณาเลือกแผนกวิชาด้านบน เพื่อทำการดึงข้อมูลรายชื่อนักศึกษารับการตั้งค่าฝึกงานครับ
+                      กรุณาเลือกแผนกวิชาด้านบน
+                      เพื่อทำการดึงข้อมูลรายชื่อนักศึกษารับการตั้งค่าฝึกงานครับ
                     </p>
                   </div>
                 </div>
@@ -2658,7 +2750,8 @@ function DVETeacherWorkspace() {
                                   {student.name}
                                 </h4>
                                 <p className="text-[10px] text-zinc-500 font-bold mt-0.5">
-                                  ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม: {student.classGroupId}
+                                  ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม:{" "}
+                                  {student.classGroupId}
                                 </p>
                                 <p className="text-[9px] text-zinc-400 font-bold mt-0.5">
                                   {student.department}
@@ -2667,7 +2760,9 @@ function DVETeacherWorkspace() {
                             </div>
 
                             <div className="flex items-center justify-between border-t dark:border-zinc-800/80 pt-3">
-                              <span className="text-[10px] font-bold text-zinc-400">สถานะฝึกงาน:</span>
+                              <span className="text-[10px] font-bold text-zinc-400">
+                                สถานะฝึกงาน:
+                              </span>
                               <button
                                 type="button"
                                 onClick={() => handleToggleInternship(student)}
@@ -2793,9 +2888,14 @@ function DVETeacherWorkspace() {
                       <button
                         type="button"
                         onClick={() => {
-                          const depts = subjectForm.department ? subjectForm.department.split(",").map(d => d.trim()).filter(Boolean) : [];
+                          const depts = subjectForm.department
+                            ? subjectForm.department
+                                .split(",")
+                                .map((d) => d.trim())
+                                .filter(Boolean)
+                            : [];
                           depts.push("");
-                          setSubjectForm(prev => ({ ...prev, department: depts.join(", ") }));
+                          setSubjectForm((prev) => ({ ...prev, department: depts.join(", ") }));
                         }}
                         className="px-2.5 py-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 border-0 cursor-pointer"
                       >
@@ -2805,7 +2905,9 @@ function DVETeacherWorkspace() {
 
                     <div className="space-y-2">
                       {(() => {
-                        const depts = subjectForm.department ? subjectForm.department.split(",").map(d => d.trim()) : [""];
+                        const depts = subjectForm.department
+                          ? subjectForm.department.split(",").map((d) => d.trim())
+                          : [""];
                         return depts.map((currentDept, idx) => (
                           <div key={idx} className="flex gap-2 items-center">
                             <select
@@ -2815,9 +2917,9 @@ function DVETeacherWorkspace() {
                               onChange={(e) => {
                                 const newDepts = [...depts];
                                 newDepts[idx] = e.target.value;
-                                setSubjectForm(prev => ({
+                                setSubjectForm((prev) => ({
                                   ...prev,
-                                  department: newDepts.filter(d => d !== undefined).join(", ")
+                                  department: newDepts.filter((d) => d !== undefined).join(", "),
                                 }));
                               }}
                             >
@@ -2825,7 +2927,11 @@ function DVETeacherWorkspace() {
                               {DEPARTMENTS.filter(
                                 (d) => d.startsWith("แผนกวิชา") || d.includes("การจัดการ"),
                               ).map((d) => (
-                                <option key={d} value={d} disabled={depts.includes(d) && d !== currentDept}>
+                                <option
+                                  key={d}
+                                  value={d}
+                                  disabled={depts.includes(d) && d !== currentDept}
+                                >
                                   {d}
                                 </option>
                               ))}
@@ -2836,9 +2942,9 @@ function DVETeacherWorkspace() {
                                 type="button"
                                 onClick={() => {
                                   const newDepts = depts.filter((_, i) => i !== idx);
-                                  setSubjectForm(prev => ({
+                                  setSubjectForm((prev) => ({
                                     ...prev,
-                                    department: newDepts.join(", ")
+                                    department: newDepts.join(", "),
                                   }));
                                 }}
                                 className="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-lg border-0 cursor-pointer shrink-0 transition-colors"
@@ -3340,7 +3446,7 @@ function DVETeacherWorkspace() {
                         <h4 className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
                           💾 การจัดการแม่แบบแบบทดสอบเพื่อใช้งานซ้ำ
                         </h4>
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                           <div className="sm:col-span-8">
                             {loadingTemplates ? (
@@ -3350,7 +3456,8 @@ function DVETeacherWorkspace() {
                               </div>
                             ) : templates.length === 0 ? (
                               <div className="text-xs text-zinc-400 font-bold italic">
-                                ยังไม่มีการบันทึกแม่แบบคำถามใดๆ คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
+                                ยังไม่มีการบันทึกแม่แบบคำถามใดๆ
+                                คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
                               </div>
                             ) : (
                               <div className="flex flex-col gap-1">
@@ -3368,9 +3475,13 @@ function DVETeacherWorkspace() {
                                       setQuizForm((prev) => ({
                                         ...prev,
                                         title: prev.title || selectedTpl.title,
-                                        questions: JSON.parse(JSON.stringify(selectedTpl.questions)),
+                                        questions: JSON.parse(
+                                          JSON.stringify(selectedTpl.questions),
+                                        ),
                                       }));
-                                      message.success(`โหลดข้อมูลแม่แบบ "${selectedTpl.title}" เรียบร้อยแล้ว!`);
+                                      message.success(
+                                        `โหลดข้อมูลแม่แบบ "${selectedTpl.title}" เรียบร้อยแล้ว!`,
+                                      );
                                       e.target.value = ""; // reset
                                     }
                                   }}
@@ -3385,7 +3496,7 @@ function DVETeacherWorkspace() {
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="sm:col-span-4 flex justify-end">
                             <button
                               type="button"
@@ -3410,7 +3521,9 @@ function DVETeacherWorkspace() {
                                   key={tpl.id}
                                   className="inline-flex items-center gap-2 pl-2.5 pr-1.5 py-1 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-lg text-[10px] font-black text-zinc-700 dark:text-zinc-350"
                                 >
-                                  <span>{tpl.title} ({tpl.questions?.length || 0} ข้อ)</span>
+                                  <span>
+                                    {tpl.title} ({tpl.questions?.length || 0} ข้อ)
+                                  </span>
                                   <Popconfirm
                                     title="ลบแม่แบบคำถามนี้อย่างถาวร?"
                                     onConfirm={() => handleDeleteTemplate(tpl.id)}
@@ -3463,7 +3576,7 @@ function DVETeacherWorkspace() {
                           ยังไม่มีการสร้างคำถามย่อย กรุณากดปุ่ม "เพิ่มโจทย์คำถาม" ด้านบน
                         </div>
                       ) : (
-                        <div className="space-y-4 max-h-[35vh] overflow-y-auto pr-1">
+                        <div className="space-y-6 max-h-[65vh] overflow-y-auto pr-1">
                           {quizForm.questions.map((q, qIdx) => (
                             <div
                               key={q.id}
@@ -3632,7 +3745,8 @@ function DVETeacherWorkspace() {
                                                 Array.isArray(q.correctAnswer)
                                               ) {
                                                 updated[qIdx].correctAnswer = q.correctAnswer.map(
-                                                  (v: string) => (v === oldVal ? e.target.value : v),
+                                                  (v: string) =>
+                                                    v === oldVal ? e.target.value : v,
                                                 );
                                               }
                                               setQuizForm((prev) => ({
@@ -3651,7 +3765,9 @@ function DVETeacherWorkspace() {
                                                 const valToRemove = updated[qIdx].options[optIdx];
                                                 updated[qIdx].options = updated[
                                                   qIdx
-                                                ].options.filter((_: string, idx: number) => idx !== optIdx);
+                                                ].options.filter(
+                                                  (_: string, idx: number) => idx !== optIdx,
+                                                );
                                                 if (
                                                   q.type === "multiple_choice" &&
                                                   q.correctAnswer === valToRemove
@@ -3704,8 +3820,53 @@ function DVETeacherWorkspace() {
                     </div>
                   )}
 
-                  <div className="flex flex-col gap-1.5 border-t dark:border-zinc-800 pt-4">
-                    <label className="text-xs font-black text-zinc-500 dark:border-zinc-400">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t dark:border-zinc-800 pt-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                        ผูกกับหน่วยการเรียน (Link to Unit)
+                      </label>
+                      <select
+                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                        value={quizForm.unitId}
+                        onChange={(e) =>
+                          setQuizForm((prev) => ({ ...prev, unitId: e.target.value }))
+                        }
+                      >
+                        <option
+                          value=""
+                          className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                        >
+                          -- ไม่ผูกกับหน่วยใด (อิสระ) --
+                        </option>
+                        {units.map((u: any, idx: number) => (
+                          <option
+                            key={u.id || idx}
+                            value={u.id || u._id?.toString()}
+                            className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                          >
+                            หน่วยที่ {u.sequence || idx + 1}: {u.title}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                      วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                      value={quizForm.startDate}
+                      onChange={(e) =>
+                        setQuizForm((prev) => ({ ...prev, startDate: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 border-t dark:border-zinc-800 pt-4 mt-4">
+                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                       วันหมดเขตส่งกระดาษคำตอบ (เดดไลน์)
                     </label>
                     <input
@@ -3747,7 +3908,10 @@ function DVETeacherWorkspace() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => { setIsSubmissionsModalOpen(false); setSubmissionsPreviewUrl(null); }}
+              onClick={() => {
+                setIsSubmissionsModalOpen(false);
+                setSubmissionsPreviewUrl(null);
+              }}
               className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
             />
             <motion.div
@@ -3765,15 +3929,22 @@ function DVETeacherWorkspace() {
                     งานที่นักเรียนส่ง: {submissionsQuizTitle}
                   </h3>
                   <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${submissionsIsBuiltIn ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800" : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800"}`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${submissionsIsBuiltIn ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800" : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800"}`}
+                    >
                       {submissionsIsBuiltIn ? "🧠 แบบทดสอบในระบบ" : "🔗 Google Form / งานภายนอก"}
                     </span>
-                    <span className="text-[10px] text-zinc-400 font-bold">รวม {submissions.length} คน</span>
+                    <span className="text-[10px] text-zinc-400 font-bold">
+                      รวม {submissions.length} คน
+                    </span>
                   </div>
                 </div>
                 <button
                   type="button"
-                  onClick={() => { setIsSubmissionsModalOpen(false); setSubmissionsPreviewUrl(null); }}
+                  onClick={() => {
+                    setIsSubmissionsModalOpen(false);
+                    setSubmissionsPreviewUrl(null);
+                  }}
                   className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer border-0 bg-transparent shrink-0"
                 >
                   <X size={16} />
@@ -3785,7 +3956,9 @@ function DVETeacherWorkspace() {
                 {loadingSubmissions ? (
                   <div className="flex flex-col justify-center items-center py-16 gap-3">
                     <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-                    <span className="text-xs text-zinc-400 font-bold">กำลังโหลดข้อมูลงานที่ส่ง...</span>
+                    <span className="text-xs text-zinc-400 font-bold">
+                      กำลังโหลดข้อมูลงานที่ส่ง...
+                    </span>
                   </div>
                 ) : submissions.length === 0 ? (
                   <div className="text-center py-16 text-zinc-400 dark:text-zinc-500 text-sm font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
@@ -3799,13 +3972,15 @@ function DVETeacherWorkspace() {
                         const grp = sub.classGroupId || "ไม่ระบุห้อง";
                         acc[grp] = [...(acc[grp] || []), sub];
                         return acc;
-                      }, {})
+                      }, {}),
                     ).map(([groupId, groupSubs]) => (
                       <div key={groupId} className="space-y-2">
                         <h4 className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b dark:border-zinc-800 pb-2 flex items-center gap-2">
                           <Users size={12} />
                           ห้อง / กลุ่มเรียน: {groupId}
-                          <span className="text-zinc-400 font-bold normal-case tracking-normal">({groupSubs.length} คน)</span>
+                          <span className="text-zinc-400 font-bold normal-case tracking-normal">
+                            ({groupSubs.length} คน)
+                          </span>
                         </h4>
                         <div className="overflow-hidden border dark:border-zinc-800 rounded-xl">
                           <table className="w-full text-xs border-collapse">
@@ -3816,7 +3991,9 @@ function DVETeacherWorkspace() {
                                 {submissionsIsBuiltIn && <th className="p-3 text-center">คะแนน</th>}
                                 <th className="p-3 text-center">ไฟล์/เอกสารที่แนบ</th>
                                 <th className="p-3 text-center">วันที่ส่ง</th>
-                                {submissionsIsBuiltIn && <th className="p-3 text-right">ตรวจคำตอบ</th>}
+                                {submissionsIsBuiltIn && (
+                                  <th className="p-3 text-right">ตรวจคำตอบ</th>
+                                )}
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -3825,19 +4002,27 @@ function DVETeacherWorkspace() {
                                 return (
                                   <React.Fragment key={sub.id}>
                                     <tr className="hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10 transition-colors">
-                                      <td className="p-3 text-zinc-400 text-[10px] tabular-nums">{idx + 1}</td>
+                                      <td className="p-3 text-zinc-400 text-[10px] tabular-nums">
+                                        {idx + 1}
+                                      </td>
                                       <td className="p-3">
                                         <div className="flex items-center gap-2">
                                           <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-black shrink-0">
                                             {(sub.studentName || "?").charAt(0)}
                                           </div>
-                                          <span className="font-black text-zinc-800 dark:text-zinc-200">{sub.studentName}</span>
+                                          <span className="font-black text-zinc-800 dark:text-zinc-200">
+                                            {sub.studentName}
+                                          </span>
                                         </div>
                                       </td>
                                       {submissionsIsBuiltIn && (
                                         <td className="p-3 text-center">
-                                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tabular-nums border ${sub.maxScore > 0 && sub.score === sub.maxScore ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/50" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"}`}>
-                                            {sub.maxScore > 0 ? `${sub.score} / ${sub.maxScore}` : "โ€”"}
+                                          <span
+                                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tabular-nums border ${sub.maxScore > 0 && sub.score === sub.maxScore ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/50" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"}`}
+                                          >
+                                            {sub.maxScore > 0
+                                              ? `${sub.score} / ${sub.maxScore}`
+                                              : "โ€”"}
                                           </span>
                                         </td>
                                       )}
@@ -3845,26 +4030,43 @@ function DVETeacherWorkspace() {
                                         {sub.fileUrl ? (
                                           <button
                                             type="button"
-                                            onClick={() => { setSubmissionsPreviewUrl(sub.fileUrl); setSubmissionsPreviewName(sub.fileName || "ไฟล์แนบ"); }}
+                                            onClick={() => {
+                                              setSubmissionsPreviewUrl(sub.fileUrl);
+                                              setSubmissionsPreviewName(sub.fileName || "ไฟล์แนบ");
+                                            }}
                                             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-black rounded-lg transition-all border border-emerald-200 dark:border-emerald-800/50 cursor-pointer"
                                           >
                                             <Eye size={10} className="shrink-0" />
-                                            <span className="truncate max-w-[140px]">{sub.fileName || "ดูไฟล์"}</span>
+                                            <span className="truncate max-w-[140px]">
+                                              {sub.fileName || "ดูไฟล์"}
+                                            </span>
                                           </button>
                                         ) : (
-                                          <span className="text-[10px] text-zinc-400 italic font-bold">ไม่มีไฟล์แนบ</span>
+                                          <span className="text-[10px] text-zinc-400 italic font-bold">
+                                            ไม่มีไฟล์แนบ
+                                          </span>
                                         )}
                                       </td>
                                       <td className="p-3 text-center text-[9px] text-zinc-400 tabular-nums">
-                                        {new Date(sub.submittedAt).toLocaleDateString("th-TH", { day: "2-digit", month: "short" })}
+                                        {new Date(sub.submittedAt).toLocaleDateString("th-TH", {
+                                          day: "2-digit",
+                                          month: "short",
+                                        })}
                                         <br />
-                                        <span className="text-zinc-300 dark:text-zinc-600">{new Date(sub.submittedAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</span>
+                                        <span className="text-zinc-300 dark:text-zinc-600">
+                                          {new Date(sub.submittedAt).toLocaleTimeString("th-TH", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })}
+                                        </span>
                                       </td>
                                       {submissionsIsBuiltIn && (
                                         <td className="p-3 text-right">
                                           <button
                                             type="button"
-                                            onClick={() => setExpandedSubmissionId(isExpanded ? null : sub.id)}
+                                            onClick={() =>
+                                              setExpandedSubmissionId(isExpanded ? null : sub.id)
+                                            }
                                             className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg text-[10px] font-black transition-all border-0 cursor-pointer text-zinc-600 dark:text-zinc-300"
                                           >
                                             {isExpanded ? "ซ่อน" : "ตรวจคำตอบ"}
@@ -3874,66 +4076,145 @@ function DVETeacherWorkspace() {
                                     </tr>
                                     {isExpanded && submissionsIsBuiltIn && (
                                       <tr>
-                                        <td colSpan={6} className="p-4 bg-indigo-50/30 dark:bg-indigo-950/10">
+                                        <td
+                                          colSpan={6}
+                                          className="p-4 bg-indigo-50/30 dark:bg-indigo-950/10"
+                                        >
                                           <div className="space-y-2 pl-3 border-l-2 border-indigo-400">
-                                            <h5 className="text-[10px] font-black text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wider">รายละเอียดคำตอบ:</h5>
+                                            <h5 className="text-[10px] font-black text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wider">
+                                              รายละเอียดคำตอบ:
+                                            </h5>
                                             {(() => {
-                                              const activeQuiz = quizzes.find((q: any) => q.id === submissionsQuizId);
+                                              const activeQuiz = quizzes.find(
+                                                (q: any) => q.id === submissionsQuizId,
+                                              );
                                               if (!activeQuiz?.questions?.length) {
-                                                return <span className="text-[10px] text-zinc-400 font-bold">ไม่พบรายละเอียดโจทย์</span>;
-                                              }
-                                              return activeQuiz.questions.map((question: any, qIndex: number) => {
-                                                const studentAnswerObj = sub.answers?.find((a: any) => String(a.questionId) === String(question.id));
-                                                const studentAnswer = studentAnswerObj ? studentAnswerObj.answer : "ไม่ได้ตอบ";
-                                                 const isSubjective = question.type === "short_answer";
-                                                let isCorrect = false;
-                                                if (question.type === "short_answer") {
-                                                  isCorrect = studentAnswerObj?.isCorrect !== false;
-                                                } else if (question.type === "multiple_choice") {
-                                                  isCorrect = String(studentAnswer || "").trim().toLowerCase() === String(question.correctAnswer || "").trim().toLowerCase() && String(studentAnswer || "").trim() !== "";
-                                                } else if (question.type === "checkboxes") {
-                                                  const sArr = Array.isArray(studentAnswer) ? studentAnswer.map((v: any) => String(v || "").trim().toLowerCase()).sort() : [];
-                                                  const cArr = Array.isArray(question.correctAnswer) ? question.correctAnswer.map((v: any) => String(v || "").trim().toLowerCase()).sort() : [String(question.correctAnswer || "").trim().toLowerCase()];
-                                                  isCorrect = sArr.length === cArr.length && sArr.every((v, i) => v === cArr[i]) && sArr.length > 0;
-                                                }
                                                 return (
-                                                  <div key={question.id} className="p-2.5 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl text-[11px]">
-                                                    <div className="flex justify-between items-start gap-2 mb-1.5">
-                                                      <span className="font-black text-zinc-800 dark:text-zinc-200">{qIndex + 1}. {question.text}</span>
-                                                      <span className={`shrink-0 font-black px-1.5 py-0.5 rounded text-[9px] ${isCorrect ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"}`}>
-                                                        {isCorrect ? `+${question.points}` : "0"} คะแนน
-                                                      </span>
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-2 border-t dark:border-zinc-800 pt-1.5 text-[10px]">
-                                                      <div>
-                                                        <span className="text-zinc-400 font-bold block">คำตอบนักศึกษา:</span>
-                                                        <span className={`font-black ${isCorrect ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}>
-                                                          {Array.isArray(studentAnswer) ? studentAnswer.join(", ") : String(studentAnswer)}
+                                                  <span className="text-[10px] text-zinc-400 font-bold">
+                                                    ไม่พบรายละเอียดโจทย์
+                                                  </span>
+                                                );
+                                              }
+                                              return activeQuiz.questions.map(
+                                                (question: any, qIndex: number) => {
+                                                  const studentAnswerObj = sub.answers?.find(
+                                                    (a: any) =>
+                                                      String(a.questionId) === String(question.id),
+                                                  );
+                                                  const studentAnswer = studentAnswerObj
+                                                    ? studentAnswerObj.answer
+                                                    : "ไม่ได้ตอบ";
+                                                  const isSubjective =
+                                                    question.type === "short_answer";
+                                                  let isCorrect = false;
+                                                  if (question.type === "short_answer") {
+                                                    isCorrect =
+                                                      studentAnswerObj?.isCorrect !== false;
+                                                  } else if (question.type === "multiple_choice") {
+                                                    isCorrect =
+                                                      String(studentAnswer || "")
+                                                        .trim()
+                                                        .toLowerCase() ===
+                                                        String(question.correctAnswer || "")
+                                                          .trim()
+                                                          .toLowerCase() &&
+                                                      String(studentAnswer || "").trim() !== "";
+                                                  } else if (question.type === "checkboxes") {
+                                                    const sArr = Array.isArray(studentAnswer)
+                                                      ? studentAnswer
+                                                          .map((v: any) =>
+                                                            String(v || "")
+                                                              .trim()
+                                                              .toLowerCase(),
+                                                          )
+                                                          .sort()
+                                                      : [];
+                                                    const cArr = Array.isArray(
+                                                      question.correctAnswer,
+                                                    )
+                                                      ? question.correctAnswer
+                                                          .map((v: any) =>
+                                                            String(v || "")
+                                                              .trim()
+                                                              .toLowerCase(),
+                                                          )
+                                                          .sort()
+                                                      : [
+                                                          String(question.correctAnswer || "")
+                                                            .trim()
+                                                            .toLowerCase(),
+                                                        ];
+                                                    isCorrect =
+                                                      sArr.length === cArr.length &&
+                                                      sArr.every((v, i) => v === cArr[i]) &&
+                                                      sArr.length > 0;
+                                                  }
+                                                  return (
+                                                    <div
+                                                      key={question.id}
+                                                      className="p-2.5 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl text-[11px]"
+                                                    >
+                                                      <div className="flex justify-between items-start gap-2 mb-1.5">
+                                                        <span className="font-black text-zinc-800 dark:text-zinc-200">
+                                                          {qIndex + 1}. {question.text}
                                                         </span>
-                                                        {isSubjective && (
-                                                          <button
-                                                            type="button"
-                                                            onClick={async () => {
-                                                              await handleToggleSubjectiveGrading(sub.id, question.id, !isCorrect);
-                                                            }}
-                                                            className={`ml-3 px-2 py-0.5 rounded-lg text-[9px] font-black cursor-pointer border transition-all ${isCorrect ? "bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/40 hover:bg-rose-100" : "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40 hover:bg-emerald-100"}`}
+                                                        <span
+                                                          className={`shrink-0 font-black px-1.5 py-0.5 rounded text-[9px] ${isCorrect ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"}`}
+                                                        >
+                                                          {isCorrect ? `+${question.points}` : "0"}{" "}
+                                                          คะแนน
+                                                        </span>
+                                                      </div>
+                                                      <div className="grid grid-cols-2 gap-2 border-t dark:border-zinc-800 pt-1.5 text-[10px]">
+                                                        <div>
+                                                          <span className="text-zinc-400 font-bold block">
+                                                            คำตอบนักศึกษา:
+                                                          </span>
+                                                          <span
+                                                            className={`font-black ${isCorrect ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}
                                                           >
-                                                            {isCorrect ? "ทำเครื่องหมายเป็นผิด (0 คะแนน)" : "ทำเครื่องหมายเป็นถูก (ได้คะแนน)"}
-                                                          </button>
+                                                            {Array.isArray(studentAnswer)
+                                                              ? studentAnswer.join(", ")
+                                                              : String(studentAnswer)}
+                                                          </span>
+                                                          {isSubjective && (
+                                                            <button
+                                                              type="button"
+                                                              onClick={async () => {
+                                                                await handleToggleSubjectiveGrading(
+                                                                  sub.id,
+                                                                  question.id,
+                                                                  !isCorrect,
+                                                                );
+                                                              }}
+                                                              className={`ml-3 px-2 py-0.5 rounded-lg text-[9px] font-black cursor-pointer border transition-all ${isCorrect ? "bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/40 hover:bg-rose-100" : "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40 hover:bg-emerald-100"}`}
+                                                            >
+                                                              {isCorrect
+                                                                ? "ทำเครื่องหมายเป็นผิด (0 คะแนน)"
+                                                                : "ทำเครื่องหมายเป็นถูก (ได้คะแนน)"}
+                                                            </button>
+                                                          )}
+                                                        </div>
+                                                        {!isSubjective && (
+                                                          <div>
+                                                            <span className="text-zinc-400 font-bold block">
+                                                              เฉลย:
+                                                            </span>
+                                                            <span className="font-black text-zinc-600 dark:text-zinc-300">
+                                                              {Array.isArray(question.correctAnswer)
+                                                                ? question.correctAnswer.join(", ")
+                                                                : String(
+                                                                    question.correctAnswer ||
+                                                                      "ไม่ได้ระบุ",
+                                                                  )}
+                                                            </span>
+                                                          </div>
                                                         )}
                                                       </div>
-                                                      {!isSubjective && (
-                                                        <div>
-                                                          <span className="text-zinc-400 font-bold block">เฉลย:</span>
-                                                          <span className="font-black text-zinc-600 dark:text-zinc-300">
-                                                            {Array.isArray(question.correctAnswer) ? question.correctAnswer.join(", ") : String(question.correctAnswer || "ไม่ได้ระบุ")}
-                                                          </span>
-                                                        </div>
-                                                      )}
                                                     </div>
-                                                  </div>
-                                                );
-                                              });
+                                                  );
+                                                },
+                                              );
                                             })()}
                                           </div>
                                         </td>
@@ -3957,7 +4238,9 @@ function DVETeacherWorkspace() {
                   <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-zinc-900 border-b border-zinc-800 shrink-0">
                     <div className="flex items-center gap-2 overflow-hidden">
                       <FileText size={14} className="text-indigo-400 shrink-0" />
-                      <span className="text-xs font-black text-zinc-200 truncate">{submissionsPreviewName}</span>
+                      <span className="text-xs font-black text-zinc-200 truncate">
+                        {submissionsPreviewName}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <a
@@ -3971,7 +4254,10 @@ function DVETeacherWorkspace() {
                       </a>
                       <button
                         type="button"
-                        onClick={() => { setSubmissionsPreviewUrl(null); setSubmissionsPreviewName(null); }}
+                        onClick={() => {
+                          setSubmissionsPreviewUrl(null);
+                          setSubmissionsPreviewName(null);
+                        }}
                         className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors font-black cursor-pointer border-0 text-sm"
                       >
                         โ•
@@ -4039,7 +4325,8 @@ function DVETeacherWorkspace() {
                     แก้ไขข้อมูล: {editingStudent.name}
                   </h3>
                   <p className="text-[10px] text-zinc-400 font-bold">
-                    รหัสนักศึกษา: {maskSensitiveData(editingStudent.studentIdNum)} • กลุ่ม: {editingStudent.classGroupId}
+                    รหัสนักศึกษา: {maskSensitiveData(editingStudent.studentIdNum)} • กลุ่ม:{" "}
+                    {editingStudent.classGroupId}
                   </p>
                 </div>
                 <button
@@ -4059,21 +4346,29 @@ function DVETeacherWorkspace() {
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {["Present", "Late", "Absent"].map((statusOption) => {
-                      const label = statusOption === "Present" ? "ตรงเวลา" : statusOption === "Late" ? "มาสาย" : "ขาดเรียน";
-                      const colorClass = statusOption === "Present" 
-                        ? "bg-emerald-500 text-white shadow-sm" 
-                        : statusOption === "Late" 
-                          ? "bg-amber-500 text-white shadow-sm" 
-                          : "bg-rose-500 text-white shadow-sm";
+                      const label =
+                        statusOption === "Present"
+                          ? "ตรงเวลา"
+                          : statusOption === "Late"
+                            ? "มาสาย"
+                            : "ขาดเรียน";
+                      const colorClass =
+                        statusOption === "Present"
+                          ? "bg-emerald-500 text-white shadow-sm"
+                          : statusOption === "Late"
+                            ? "bg-amber-500 text-white shadow-sm"
+                            : "bg-rose-500 text-white shadow-sm";
                       const active = editingStudent.status === statusOption;
                       return (
                         <button
                           key={statusOption}
                           type="button"
-                          onClick={() => setEditingStudent({ ...editingStudent, status: statusOption })}
+                          onClick={() =>
+                            setEditingStudent({ ...editingStudent, status: statusOption })
+                          }
                           className={`py-2.5 rounded-xl text-xs font-black transition-all ${
-                            active 
-                              ? colorClass 
+                            active
+                              ? colorClass
                               : "bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-750"
                           }`}
                         >
@@ -4087,7 +4382,9 @@ function DVETeacherWorkspace() {
                 {/* Warning about read-only General Check-in */}
                 {!editingStudent.unitId && (
                   <div className="p-3.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl border border-amber-500/20 text-xs font-bold leading-relaxed">
-                    ⚠️ เป็นเซสชันเช็คชื่อปกติ (ไม่ได้แนบรายหน่วยบทเรียนมาด้วย) จะแสดงแบบอ่านอย่างเดียวสำหรับงานมอบหมายและคะแนน และไม่สามารถแก้ไขส่วนส่งงาน/คะแนนได้
+                    ⚠️ เป็นเซสชันเช็คชื่อปกติ (ไม่ได้แนบรายหน่วยบทเรียนมาด้วย)
+                    จะแสดงแบบอ่านอย่างเดียวสำหรับงานมอบหมายและคะแนน
+                    และไม่สามารถแก้ไขส่วนส่งงาน/คะแนนได้
                   </div>
                 )}
 
@@ -4098,12 +4395,18 @@ function DVETeacherWorkspace() {
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {["None", "Submitted", "Pending"].map((statusOption) => {
-                      const label = statusOption === "None" ? "ไม่มีงาน" : statusOption === "Submitted" ? "ส่งแล้ว" : "ค้างส่ง";
-                      const colorClass = statusOption === "None" 
-                        ? "bg-zinc-300 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200" 
-                        : statusOption === "Submitted" 
-                          ? "bg-teal-500 text-white shadow-sm" 
-                          : "bg-orange-500 text-white shadow-sm";
+                      const label =
+                        statusOption === "None"
+                          ? "ไม่มีงาน"
+                          : statusOption === "Submitted"
+                            ? "ส่งแล้ว"
+                            : "ค้างส่ง";
+                      const colorClass =
+                        statusOption === "None"
+                          ? "bg-zinc-300 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200"
+                          : statusOption === "Submitted"
+                            ? "bg-teal-500 text-white shadow-sm"
+                            : "bg-orange-500 text-white shadow-sm";
                       const active = editingStudent.assignmentStatus === statusOption;
                       const disabled = !editingStudent.unitId;
                       return (
@@ -4111,10 +4414,12 @@ function DVETeacherWorkspace() {
                           key={statusOption}
                           type="button"
                           disabled={disabled}
-                          onClick={() => setEditingStudent({ ...editingStudent, assignmentStatus: statusOption })}
+                          onClick={() =>
+                            setEditingStudent({ ...editingStudent, assignmentStatus: statusOption })
+                          }
                           className={`py-2.5 rounded-xl text-xs font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                            active 
-                              ? colorClass 
+                            active
+                              ? colorClass
                               : "bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-750"
                           }`}
                         >
@@ -4136,9 +4441,14 @@ function DVETeacherWorkspace() {
                         type="button"
                         disabled={extractingScoreStudentId === editingStudent.id}
                         onClick={async () => {
-                          const resScore = await handleExtractScoreFromImage(editingStudent.id, editingStudent.imageUrl);
+                          const resScore = await handleExtractScoreFromImage(
+                            editingStudent.id,
+                            editingStudent.imageUrl,
+                          );
                           if (resScore !== null) {
-                            setEditingStudent((prev: any) => prev ? { ...prev, score: resScore } : null);
+                            setEditingStudent((prev: any) =>
+                              prev ? { ...prev, score: resScore } : null,
+                            );
                           }
                         }}
                         className="px-2.5 py-1.5 rounded-xl text-[10px] font-black bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20 hover:bg-violet-500/15 disabled:opacity-50 flex items-center gap-1 cursor-pointer"
@@ -4155,10 +4465,16 @@ function DVETeacherWorkspace() {
                   <input
                     type="text"
                     disabled={!editingStudent.unitId}
-                    placeholder={editingStudent.unitId ? "ป้อนคะแนนดิบหรือข้อสังเกต..." : "ไม่สามารถป้อนคะแนนในเซสชันเช็คชื่อปกติ"}
+                    placeholder={
+                      editingStudent.unitId
+                        ? "ป้อนคะแนนดิบหรือข้อสังเกต..."
+                        : "ไม่สามารถป้อนคะแนนในเซสชันเช็คชื่อปกติ"
+                    }
                     className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold disabled:opacity-50 disabled:bg-zinc-100 dark:disabled:bg-zinc-950"
                     value={editingStudent.score}
-                    onChange={(e) => setEditingStudent({ ...editingStudent, score: e.target.value })}
+                    onChange={(e) =>
+                      setEditingStudent({ ...editingStudent, score: e.target.value })
+                    }
                   />
                 </div>
 
@@ -4231,7 +4547,9 @@ function DVETeacherWorkspace() {
                         imageUrl: editingStudent.imageUrl,
                       },
                     }));
-                    message.success(`อัปเดตข้อมูลของ ${editingStudent.name} ในตารางชั่วคราวแล้ว! (กรุณากดปุ่มบันทึกสีเขียวที่ด้านบนเพื่อบันทึกถาวรลงระบบ)`);
+                    message.success(
+                      `อัปเดตข้อมูลของ ${editingStudent.name} ในตารางชั่วคราวแล้ว! (กรุณากดปุ่มบันทึกสีเขียวที่ด้านบนเพื่อบันทึกถาวรลงระบบ)`,
+                    );
                     setEditingStudent(null);
                   }}
                   className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md cursor-pointer"
