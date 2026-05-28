@@ -2324,13 +2324,13 @@ function DVETeacherWorkspace() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/30 to-transparent" />
+                        <div className="flex-1 h-px bg-linear-to-r from-emerald-500/30 to-transparent" />
                       </div>
 
                       {/* Timeline items */}
                       <div className="ml-6 space-y-3 relative">
                         {/* Vertical line */}
-                        <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-500/30 to-transparent" style={{ left: "-12px" }} />
+                        <div className="absolute left-0 top-0 bottom-0 w-px bg-linear-to-b from-emerald-500/30 to-transparent" style={{ left: "-12px" }} />
 
                         {group.submissions.map((submission: any, idx: number) => (
                           <motion.div
