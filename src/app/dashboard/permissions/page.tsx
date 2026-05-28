@@ -104,6 +104,12 @@ const FEATURE_LABELS: {
     color: "text-indigo-500", 
     href: "/dashboard/dve/student",
   },
+  manage_supervision_requests: {
+    label: "อนุมัติผลนิเทศ",
+    icon: FiCheckCircle,
+    color: "text-teal-600",
+    href: "/dashboard/supervision/requests",
+  },
 };
 
 const ADVANCED_FEATURE_LABELS: {

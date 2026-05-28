@@ -177,6 +177,10 @@ function DVETeacherWorkspace() {
     curriculum: "ปวส.",
     semester: "1/2569",
     academicYear: "2569",
+    totalWeeks: "",
+    daysPerWeek: "",
+    hoursPerDay: "",
+    totalHours: "",
   });
 
   // Unit Managing states
@@ -199,6 +203,7 @@ function DVETeacherWorkspace() {
     content: string;
     sequence: number;
     studyMinutes: number;
+    totalMinutes: number;
     files: Array<{ name: string; url: string; type?: string }>;
   }>({
     id: "",
@@ -206,6 +211,7 @@ function DVETeacherWorkspace() {
     content: "",
     sequence: 0,
     studyMinutes: 0,
+    totalMinutes: 0,
     files: [],
   });
 
@@ -514,6 +520,10 @@ function DVETeacherWorkspace() {
           curriculum: "ปวส.",
           semester: "1/2569",
           academicYear: "2569",
+          totalWeeks: "",
+          daysPerWeek: "",
+          hoursPerDay: "",
+          totalHours: "",
         });
         fetchSubjects();
       }
@@ -584,6 +594,7 @@ function DVETeacherWorkspace() {
           content: "",
           sequence: units.length + 1,
           studyMinutes: 0,
+          totalMinutes: 0,
           files: [],
         });
         handleManageUnits(activeSubject);
@@ -1245,6 +1256,10 @@ function DVETeacherWorkspace() {
                       curriculum: "ปวส.",
                       semester: "1/2569",
                       academicYear: "2569",
+                      totalWeeks: "",
+                      daysPerWeek: "",
+                      hoursPerDay: "",
+                      totalHours: "",
                     });
                     setIsSubjectModalOpen(true);
                   }}
@@ -1333,6 +1348,7 @@ function DVETeacherWorkspace() {
                           content: "",
                           sequence: units.length + 1,
                           studyMinutes: 0,
+                          totalMinutes: 0,
                           files: [],
                         });
                         setIsUnitModalOpen(true);
@@ -1369,6 +1385,7 @@ function DVETeacherWorkspace() {
                                   content: unit.content,
                                   sequence: unit.sequence,
                                   studyMinutes: unit.studyMinutes || 0,
+                                  totalMinutes: unit.totalMinutes || 0,
                                   files: unit.files || [],
                                 });
                                 setIsUnitModalOpen(true);
@@ -1872,7 +1889,7 @@ function DVETeacherWorkspace() {
                           </div>
                           <div className="text-xs text-zinc-500 dark:text-zinc-400">
                             วันที่: {formatThaiDateDisplay(att.date || checkinFilter.date)} • กลุ่ม:{" "}
-                            {att.classGroupId || "-"}
+                            {standardizeClassGroupName(att.classGroupId) || "-"}
                           </div>
                         </div>
 
@@ -2025,7 +2042,7 @@ function DVETeacherWorkspace() {
                                     </div>
                                   </td>
                                   <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
-                                    {student.classGroupId}
+                                    {standardizeClassGroupName(student.classGroupId)}
                                   </td>
 
                                   {/* Column 4: Attendance Status Badge */}
@@ -2156,7 +2173,7 @@ function DVETeacherWorkspace() {
                                   </h4>
                                   <p className="text-[10px] text-zinc-500 font-bold mt-0.5">
                                     ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม:{" "}
-                                    {student.classGroupId}
+                                    {standardizeClassGroupName(student.classGroupId)}
                                   </p>
                                 </div>
                               </div>
@@ -2693,7 +2710,7 @@ function DVETeacherWorkspace() {
                                   {student.name}
                                 </td>
                                 <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
-                                  {student.classGroupId}
+                                  {standardizeClassGroupName(student.classGroupId)}
                                 </td>
                                 <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
                                   {student.department}
@@ -2751,7 +2768,7 @@ function DVETeacherWorkspace() {
                                 </h4>
                                 <p className="text-[10px] text-zinc-500 font-bold mt-0.5">
                                   ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม:{" "}
-                                  {student.classGroupId}
+                                  {standardizeClassGroupName(student.classGroupId)}
                                 </p>
                                 <p className="text-[9px] text-zinc-400 font-bold mt-0.5">
                                   {student.department}
@@ -2815,22 +2832,33 @@ function DVETeacherWorkspace() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-left"
+              className="relative w-full max-w-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-4xl shadow-2xl overflow-hidden text-left flex flex-col max-h-[90vh]"
             >
-              <form onSubmit={handleSaveSubject}>
-                <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-center">
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white">
-                    {subjectForm.id ? "แก้ไขข้อมูลรายวิชา" : "สร้างรายวิชาทวิภาคีใหม่"}
-                  </h3>
+              <form onSubmit={handleSaveSubject} className="flex flex-col h-full overflow-hidden">
+                <div className="shrink-0 px-8 py-5 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                      <BookOpen size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-zinc-900 dark:text-white leading-tight">
+                        {subjectForm.id ? "แก้ไขข้อมูลรายวิชา" : "สร้างรายวิชาทวิภาคีใหม่"}
+                      </h3>
+                      <p className="text-xs font-bold text-zinc-500">
+                        กรอกรายละเอียดวิชาและตั้งค่าชั่วโมงเรียน
+                      </p>
+                    </div>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setIsSubjectModalOpen(false)}
-                    className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-200/50 dark:bg-zinc-800/50 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 transition-colors"
                   >
-                    ปิด
+                    <X size={16} />
                   </button>
                 </div>
-                <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+
+                <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
@@ -2991,18 +3019,100 @@ function DVETeacherWorkspace() {
                     </div>
                   </div>
                 </div>
-                <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
+
+                <div className="col-span-12 p-5 bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/30 rounded-2xl space-y-4">
+                  <h4 className="text-sm font-black text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+                    <Clock size={16} className="text-emerald-500" />
+                    ตั้งค่าเวลาเรียน (สำหรับคำนวณ % การเข้าเรียน)
+                  </h4>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black text-emerald-700/80 dark:text-emerald-500">
+                        จำนวนสัปดาห์
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="เช่น 18"
+                        className="w-full h-11 border border-emerald-200 dark:border-emerald-800/50 bg-white/50 dark:bg-zinc-900/50 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        value={(subjectForm as any).totalWeeks || ""}
+                        onChange={(e) => {
+                          const w = e.target.value;
+                          const d = (subjectForm as any).daysPerWeek;
+                          const h = (subjectForm as any).hoursPerDay;
+                          let th = (subjectForm as any).totalHours;
+                          if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
+                          setSubjectForm((prev) => ({ ...prev, totalWeeks: w, totalHours: th }));
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black text-emerald-700/80 dark:text-emerald-500">
+                        วัน / สัปดาห์
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="เช่น 1"
+                        className="w-full h-11 border border-emerald-200 dark:border-emerald-800/50 bg-white/50 dark:bg-zinc-900/50 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        value={(subjectForm as any).daysPerWeek || ""}
+                        onChange={(e) => {
+                          const d = e.target.value;
+                          const w = (subjectForm as any).totalWeeks;
+                          const h = (subjectForm as any).hoursPerDay;
+                          let th = (subjectForm as any).totalHours;
+                          if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
+                          setSubjectForm((prev) => ({ ...prev, daysPerWeek: d, totalHours: th }));
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black text-emerald-700/80 dark:text-emerald-500">
+                        ชั่วโมง / วัน
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="เช่น 2"
+                        className="w-full h-11 border border-emerald-200 dark:border-emerald-800/50 bg-white/50 dark:bg-zinc-900/50 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        value={(subjectForm as any).hoursPerDay || ""}
+                        onChange={(e) => {
+                          const h = e.target.value;
+                          const w = (subjectForm as any).totalWeeks;
+                          const d = (subjectForm as any).daysPerWeek;
+                          let th = (subjectForm as any).totalHours;
+                          if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
+                          setSubjectForm((prev) => ({ ...prev, hoursPerDay: h, totalHours: th }));
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black text-amber-600 dark:text-amber-500">
+                        เวลารวม (ชั่วโมง) *
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        placeholder="เช่น 36"
+                        className="w-full h-11 border border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 text-sm font-black focus:outline-hidden dark:text-amber-400"
+                        value={(subjectForm as any).totalHours || ""}
+                        onChange={(e) =>
+                          setSubjectForm((prev) => ({ ...prev, totalHours: e.target.value }))
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="shrink-0 px-8 py-5 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md flex justify-end gap-3 border-t border-zinc-200/50 dark:border-zinc-800/50">
                   <button
                     type="button"
                     onClick={() => setIsSubjectModalOpen(false)}
-                    className="px-5 py-2.5 rounded-lg text-xs font-black text-zinc-500 hover:bg-zinc-100"
+                    className="px-6 py-3 rounded-xl text-sm font-black text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
                   >
                     ยกเลิก
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md cursor-pointer"
+                    className="px-8 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-black shadow-lg shadow-emerald-500/25 transition-all active:scale-95 cursor-pointer flex items-center gap-2"
                   >
+                    <CheckCircle size={16} />
                     บันทึกข้อมูล
                   </button>
                 </div>
@@ -3044,7 +3154,7 @@ function DVETeacherWorkspace() {
                 </div>
                 <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                   <div className="grid grid-cols-12 gap-4">
-                    <div className="col-span-7 flex flex-col gap-1.5">
+                    <div className="col-span-12 flex flex-col gap-1.5">
                       <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                         หัวข้อหน่วยการเรียน *
                       </label>
@@ -3059,37 +3169,60 @@ function DVETeacherWorkspace() {
                         }
                       />
                     </div>
-                    <div className="col-span-2 flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                        ลำดับ
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
-                        value={unitForm.sequence}
-                        onChange={(e) =>
-                          setUnitForm((prev) => ({ ...prev, sequence: Number(e.target.value) }))
-                        }
-                      />
-                    </div>
-                    <div className="col-span-3 flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-emerald-650 dark:text-emerald-400 flex items-center gap-1">
-                        <Clock size={12} />
-                        เวลาเรียนขั้นต่ำ (นาที)
-                      </label>
-                      <input
-                        type="number"
-                        min={0}
-                        placeholder="เช่น 15 (0 = ปิดตัวจับเวลา)"
-                        className="w-full h-11 border border-emerald-200 dark:border-emerald-800/80 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold text-emerald-600 dark:text-emerald-450"
-                        value={unitForm.studyMinutes}
-                        onChange={(e) =>
-                          setUnitForm((prev) => ({
-                            ...prev,
-                            studyMinutes: Math.max(0, Number(e.target.value)),
-                          }))
-                        }
-                      />
+
+                    <div className="col-span-12 grid grid-cols-3 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          ลำดับ
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                          value={unitForm.sequence}
+                          onChange={(e) =>
+                            setUnitForm((prev) => ({ ...prev, sequence: Number(e.target.value) }))
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-emerald-650 dark:text-emerald-400 flex items-center gap-1">
+                          <Clock size={12} />
+                          เวลารวมของหน่วย (นาที) *
+                        </label>
+                        <input
+                          type="number"
+                          min={0}
+                          required
+                          placeholder="เช่น 60"
+                          className="w-full h-11 border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-lg px-3 text-sm font-bold text-emerald-600 dark:text-emerald-450 focus:outline-hidden"
+                          value={unitForm.totalMinutes}
+                          onChange={(e) =>
+                            setUnitForm((prev) => ({
+                              ...prev,
+                              totalMinutes: Math.max(0, Number(e.target.value)),
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-amber-600 dark:text-amber-500 flex items-center gap-1">
+                          <Clock size={12} />
+                          เวลาขั้นต่ำที่ต้องเรียน (นาที) *
+                        </label>
+                        <input
+                          type="number"
+                          min={0}
+                          placeholder="เช่น 15 (0 = ปิดจับเวลา)"
+                          className="w-full h-11 border border-amber-200 dark:border-amber-800/80 bg-amber-50/50 dark:bg-amber-900/10 rounded-lg px-3 text-sm font-bold text-amber-600 dark:text-amber-500 focus:outline-hidden"
+                          value={unitForm.studyMinutes}
+                          onChange={(e) =>
+                            setUnitForm((prev) => ({
+                              ...prev,
+                              studyMinutes: Math.max(0, Number(e.target.value)),
+                            }))
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -3351,13 +3484,14 @@ function DVETeacherWorkspace() {
                     ปิด
                   </button>
                 </div>
-                
+
                 <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto bg-zinc-50/30 dark:bg-zinc-950/30">
-                  
                   {/* Section 1: ข้อมูลทั่วไป (General Information) */}
                   <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm">
                     <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
-                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">ℹ️ ข้อมูลทั่วไป (General Info)</span>
+                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                        ℹ️ ข้อมูลทั่วไป (General Info)
+                      </span>
                     </div>
 
                     <div className="flex flex-col gap-1.5">
@@ -3370,7 +3504,9 @@ function DVETeacherWorkspace() {
                         required
                         className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
                         value={quizForm.title}
-                        onChange={(e) => setQuizForm((prev) => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) =>
+                          setQuizForm((prev) => ({ ...prev, title: e.target.value }))
+                        }
                       />
                     </div>
 
@@ -3426,7 +3562,9 @@ function DVETeacherWorkspace() {
                   {/* Section 2: การตั้งค่าระบบ (System Settings) */}
                   <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm">
                     <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
-                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">⚙️ การตั้งค่าระบบ (Settings)</span>
+                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                        ⚙️ การตั้งค่าระบบ (Settings)
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3519,7 +3657,9 @@ function DVETeacherWorkspace() {
                   {quizForm.isBuiltIn && (
                     <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm animate-fade-in">
                       <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
-                        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">📝 จัดการคำถามแบบทดสอบ (Quiz Content)</span>
+                        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                          📝 จัดการคำถามแบบทดสอบ (Quiz Content)
+                        </span>
                       </div>
 
                       {/* Reusable Templates Box */}
@@ -3537,7 +3677,8 @@ function DVETeacherWorkspace() {
                               </div>
                             ) : templates.length === 0 ? (
                               <div className="text-xs text-zinc-400 font-bold italic">
-                                ยังไม่มีการบันทึกแม่แบบคำถามใดๆ คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
+                                ยังไม่มีการบันทึกแม่แบบคำถามใดๆ
+                                คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
                               </div>
                             ) : (
                               <div className="flex flex-col gap-1">
@@ -3724,8 +3865,12 @@ function DVETeacherWorkspace() {
                                       }}
                                       className="h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-2 text-xs focus:outline-hidden dark:text-white shadow-sm"
                                     >
-                                      <option value="multiple_choice">ปรนัย (เลือกตอบ 1 ข้อ)</option>
-                                      <option value="checkboxes">กล่องตัวเลือก (เลือกตอบหลายข้อ)</option>
+                                      <option value="multiple_choice">
+                                        ปรนัย (เลือกตอบ 1 ข้อ)
+                                      </option>
+                                      <option value="checkboxes">
+                                        กล่องตัวเลือก (เลือกตอบหลายข้อ)
+                                      </option>
                                       <option value="short_answer">อัตนัย (เติมคำตอบสั้น)</option>
                                     </select>
                                   </div>
@@ -3752,7 +3897,8 @@ function DVETeacherWorkspace() {
                                 {(q.type === "multiple_choice" || q.type === "checkboxes") && (
                                   <div className="space-y-2 mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-800/80">
                                     <label className="text-[9px] font-black text-zinc-500 block">
-                                      ป้อนตัวเลือกคำตอบ (และกดยืนยันปุ่มวิทยุ/กล่องเพื่อระบุเฉลยที่ถูกต้อง)
+                                      ป้อนตัวเลือกคำตอบ
+                                      (และกดยืนยันปุ่มวิทยุ/กล่องเพื่อระบุเฉลยที่ถูกต้อง)
                                     </label>
                                     <div className="space-y-1.5">
                                       {(q.options || []).map((opt: string, optIdx: number) => (
@@ -3836,9 +3982,7 @@ function DVETeacherWorkspace() {
                                             onClick={() => {
                                               const updated = [...quizForm.questions];
                                               const valToRemove = updated[qIdx].options[optIdx];
-                                              updated[qIdx].options = updated[
-                                                qIdx
-                                              ].options.filter(
+                                              updated[qIdx].options = updated[qIdx].options.filter(
                                                 (_: string, idx: number) => idx !== optIdx,
                                               );
                                               if (
@@ -3888,9 +4032,8 @@ function DVETeacherWorkspace() {
                       )}
                     </div>
                   )}
-
                 </div>
-<div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
+                <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
                   <button
                     type="button"
                     onClick={() => setIsQuizModalOpen(false)}
@@ -3980,7 +4123,7 @@ function DVETeacherWorkspace() {
                   <>
                     {Object.entries(
                       submissions.reduce((acc: Record<string, any[]>, sub: any) => {
-                        const grp = sub.classGroupId || "ไม่ระบุห้อง";
+                        const grp = standardizeClassGroupName(sub.classGroupId) || "ไม่ระบุห้อง";
                         acc[grp] = [...(acc[grp] || []), sub];
                         return acc;
                       }, {}),
@@ -4337,7 +4480,7 @@ function DVETeacherWorkspace() {
                   </h3>
                   <p className="text-[10px] text-zinc-400 font-bold">
                     รหัสนักศึกษา: {maskSensitiveData(editingStudent.studentIdNum)} • กลุ่ม:{" "}
-                    {editingStudent.classGroupId}
+                    {standardizeClassGroupName(editingStudent.classGroupId)}
                   </p>
                 </div>
                 <button

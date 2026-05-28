@@ -671,6 +671,13 @@ export default function NavbarClient({
                                 >
                                   <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
                                 </Link>
+                                <Link
+                                  href="/dashboard/supervision/requests"
+                                  onClick={() => setIsUserDropdownOpen(false)}
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 rounded-xl transition-all"
+                                >
+                                  <ClipboardList size={14} /> คำร้องการนิเทศ (รออนุมัติ)
+                                </Link>
                               </div>
                             )}
                           </div>

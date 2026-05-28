@@ -518,9 +518,13 @@ export function DVEStudentPortal() {
           if (attData.success) setAttendances(attData.attendances || []);
         }
 
-        // Check if there is a quiz available for this subject
-        if (quizzes && quizzes.length > 0) {
-          const targetQuiz = quizzes[0];
+        // Check if there is a quiz available for this specific unit
+        const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
+        const targetQuizzes = quizzes.filter((q) => q.unitId === currentUnitId);
+        
+        if (targetQuizzes && targetQuizzes.length > 0) {
+          // Find posttest or just use the first quiz for this unit
+          const targetQuiz = targetQuizzes.find(q => q.title.toLowerCase().includes("post") || q.title.includes("หลังเรียน")) || targetQuizzes[0];
           message.loading("📝 เรียนจบเวลาแล้ว! กำลังเตรียมแบบทดสอบประเมินผล...", 3);
           setTimeout(() => {
             handleOpenQuizFormGlobal(targetQuiz);
@@ -733,11 +737,26 @@ export function DVEStudentPortal() {
   const presentClasses = attendances.filter((a) => a.status === "Present").length;
   const lateClasses = attendances.filter((a) => a.status === "Late").length;
   const absentClasses = attendances.filter((a) => a.status === "Absent").length;
-  const attendanceRate =
-    totalClasses > 0
-      ? Math.round(((presentClasses + lateClasses * 0.5) / totalClasses) * 100)
-      : 100;
+  
+  // คำนวณเปอร์เซ็นต์การเข้าเรียนแบบใหม่ (อิงตามเวลาเรียนรวม)
+  const studiedMinutes = attendances.reduce((sum, att) => {
+    // ให้เครดิตเวลาเรียนเต็มโควต้าของหน่วยนั้น ถ้านักเรียนเรียนผ่านแล้ว
+    const unit = units.find(u => u.id === att.unitId);
+    return sum + (Number(unit?.totalMinutes) || 0);
+  }, 0);
+  
+  const requiredTotalMinutes = (Number(activeSubject?.totalHours) || 0) * 60;
+  
+  // ถ้าครูตั้งค่าเวลาเรียนไว้ ให้ใช้สูตรใหม่ ถ้ายังไม่ตั้ง (วิชาเก่า) ให้ใช้สูตรเดิมไปก่อน
+  const attendanceRate = requiredTotalMinutes > 0
+    ? Math.min(100, Math.round((studiedMinutes / requiredTotalMinutes) * 100))
+    : (totalClasses > 0
+        ? Math.round(((presentClasses + lateClasses * 0.5) / totalClasses) * 100)
+        : 100);
   const submittedAssignments = attendances.filter((a) => a.assignmentStatus === "Submitted").length;
+  const pendingAssignmentsCount = attendances.filter((a) => a.assignmentStatus === "Pending").length;
+  const unstudiedUnitsCount = Math.max(0, units.length - attendances.length);
+  const missingTasksCount = unstudiedUnitsCount + pendingAssignmentsCount;
 
   // Generate notifications
   useEffect(() => {
@@ -1049,19 +1068,19 @@ export function DVEStudentPortal() {
                   <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
                     <div className="flex items-center gap-2">
                       <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" />
-                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">งานที่ส่งแล้ว</span>
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">เข้าเรียน/งานที่ส่งแล้ว</span>
                     </div>
                     <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                      {submittedAssignments} / {totalClasses}
+                      {attendances.length} / {units.length} หน่วย
                     </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800/50">
                     <div className="flex items-center gap-2">
                       <Clock size={16} className="text-amber-600 dark:text-amber-400" />
-                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">งานที่ค้างส่ง</span>
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">หน่วยเรียน/งานที่ค้าง</span>
                     </div>
                     <span className="text-sm font-black text-amber-600 dark:text-amber-400">
-                      {totalClasses - submittedAssignments}
+                      {missingTasksCount}
                     </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800/50">
@@ -1079,10 +1098,10 @@ export function DVEStudentPortal() {
                       <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">งานทั้งหมดที่ค้าง</span>
                     </div>
                     <span className="text-sm font-black text-rose-600 dark:text-rose-400">
-                      {(totalClasses - submittedAssignments) + (quizzes.filter((q) => !q.isSubmitted).length)}
+                      {missingTasksCount + (quizzes.filter((q) => !q.isSubmitted).length)}
                     </span>
                   </div>
-                  {totalClasses > 0 && submittedAssignments === totalClasses && quizzes.filter((q) => q.isSubmitted).length === quizzes.length && (
+                  {units.length > 0 && missingTasksCount === 0 && quizzes.filter((q) => q.isSubmitted).length === quizzes.length && (
                     <div className="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-emerald-500 to-teal-500 rounded-xl text-white">
                       <Sparkles size={16} />
                       <span className="text-xs font-black">ทำงานครบถ้วนแล้ว! 🎉</span>
