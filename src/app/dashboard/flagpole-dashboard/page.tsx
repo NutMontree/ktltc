@@ -17,7 +17,8 @@ import {
   Loader2 as LucideLoader,
   ListRestart,
   Building2,
-  GraduationCap
+  GraduationCap,
+  Briefcase
 } from "lucide-react";
 import { 
   PieChart, 
@@ -147,6 +148,8 @@ export default function StudentFlagpoleDashboard() {
   const [departmentStats, setDepartmentStats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [realTotal, setRealTotal] = useState(0);
+  const [inCollegeCount, setInCollegeCount] = useState(0);
+  const [internshipCount, setInternshipCount] = useState(0);
   const [config, setConfig] = useState({
     lat: 14.754043,
     lng: 104.65807,
@@ -158,17 +161,45 @@ export default function StudentFlagpoleDashboard() {
     { name: "ขาดแถว", value: 0, color: "#f43f5e" },
   ]);
   const [deltas, setDeltas] = useState([0, 0, 0]);
+  const [mapMode, setMapMode] = useState<"status" | "level">("status");
 
   // การยืนยันสิทธิ์เข้าใช้งานฝั่งแอดมิน
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.replace("/login");
-    } else if (status === "authenticated") {
-      const role = (session?.user as any)?.role?.toLowerCase();
-      if (!["super_admin", "admin"].includes(role)) {
+    async function checkAccess() {
+      if (status === "unauthenticated") {
+        router.replace("/login");
+      } else if (status === "authenticated") {
+        const role = (session?.user as any)?.role?.toLowerCase();
+        
+        // อนุญาตให้บทบาทระบบพื้นฐานเข้าถึงได้เลย
+        if (["super_admin", "admin", "deputy_student_affairs"].includes(role)) {
+          return;
+        }
+        
+        // นักเรียนไม่สามารถเข้าถึงหน้าแดชบอร์ดแอดมินนี้ได้ในทุกกรณี
+        if (role === "student") {
+          router.replace("/");
+          return;
+        }
+
+        try {
+          // ดึงสิทธิ์ที่ตั้งค่าไว้จากระบบ Permissions Matrix
+          const res = await fetch("/api/auth/permissions?_t=" + Date.now());
+          if (res.ok) {
+            const permissions = await res.json();
+            if (permissions?.student_dashboard) {
+              return; // ได้รับสิทธิ์
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch permissions", error);
+        }
+        
+        // หากไม่มีสิทธิ์ ให้ดีดกลับหน้าหลัก
         router.replace("/");
       }
     }
+    checkAccess();
   }, [status, session]);
 
   useEffect(() => {
@@ -192,6 +223,8 @@ export default function StudentFlagpoleDashboard() {
           setData(json.data);
           setMarkers(json.markers || []);
           setRealTotal(json.totalStudents || 0);
+          setInCollegeCount(json.inCollegeStudents || 0);
+          setInternshipCount(json.internshipStudents || 0);
           setRecentCheckIns(json.recentCheckIns || []);
           setTrends(json.trends || []);
           setDepartmentStats(json.departmentStats || []);
@@ -211,7 +244,7 @@ export default function StudentFlagpoleDashboard() {
     return () => clearInterval(interval);
   }, [selectedDate, trendRange, status, previousData]);
 
-  const total = realTotal || data.reduce((acc, curr) => acc + curr.value, 0);
+  const total = inCollegeCount || data.reduce((acc, curr) => acc + curr.value, 0);
 
   const CustomPieLabel = ({ cx, cy }: any) => {
     return (
@@ -234,7 +267,7 @@ export default function StudentFlagpoleDashboard() {
           fill="#94a3b8"
           className="uppercase text-[9px] font-black tracking-[0.2em] fill-slate-400"
         >
-          <span>นร. ทั้งหมด</span>
+          <span>นร. ในวิทยาลัย</span>
         </text>
       </g>
     );
@@ -289,15 +322,33 @@ export default function StudentFlagpoleDashboard() {
         </div>
 
         {/* Status Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {[
             {
               label: "นักเรียนระดับ ปวช.-ปวส. ทั้งหมด",
-              val: total,
+              val: realTotal,
               unit: "คน",
               icon: Users,
               theme: "indigo",
               delay: 0,
+              delta: 0,
+            },
+            {
+              label: "นักศึกษาเรียนปกติในวิทยาลัย",
+              val: inCollegeCount,
+              unit: "คน",
+              icon: Building2,
+              theme: "sky",
+              delay: 0.05,
+              delta: 0,
+            },
+            {
+              label: "นักศึกษาที่ออกฝึกงานภายนอก",
+              val: internshipCount,
+              unit: "คน",
+              icon: Briefcase,
+              theme: "purple",
+              delay: 0.1,
               delta: 0,
             },
             {
@@ -306,7 +357,7 @@ export default function StudentFlagpoleDashboard() {
               unit: "คน",
               icon: Activity,
               theme: "emerald",
-              delay: 0.1,
+              delay: 0.15,
               delta: deltas[0] || 0,
             },
             {
@@ -324,7 +375,7 @@ export default function StudentFlagpoleDashboard() {
               unit: "คน",
               icon: AlertTriangle,
               theme: "rose",
-              delay: 0.3,
+              delay: 0.25,
               delta: deltas[2] || 0,
             },
           ].map((stat, idx) => {
@@ -380,7 +431,7 @@ export default function StudentFlagpoleDashboard() {
             className="lg:col-span-2 space-y-8"
           >
             <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] p-6 shadow-2xl shadow-black/3 overflow-hidden group relative">
-              <div className="flex items-center justify-between mb-6 px-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 px-2 gap-4">
                 <div>
                   <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
                     แผนที่ <span className="text-indigo-600">การเช็คพิกัดเสาธง</span>
@@ -389,8 +440,29 @@ export default function StudentFlagpoleDashboard() {
                     พิกัด GPS ตำแหน่งเช็คชื่อเข้าแถวของนักเรียนยามเช้า
                   </p>
                 </div>
-                <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl">
-                  <MapIcon size={20} />
+                
+                {/* 🌟 Sliding Map Mode Tabs Toggle */}
+                <div className="flex bg-slate-50 dark:bg-zinc-800/40 p-1 rounded-2xl border border-slate-100 dark:border-zinc-800 shrink-0">
+                  <button
+                    onClick={() => setMapMode("status")}
+                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${
+                      mapMode === "status"
+                        ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                        : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
+                    }`}
+                  >
+                    สถานะพื้นที่
+                  </button>
+                  <button
+                    onClick={() => setMapMode("level")}
+                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${
+                      mapMode === "level"
+                        ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                        : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
+                    }`}
+                  >
+                    ระดับชั้น (ปวช/ปวส)
+                  </button>
                 </div>
               </div>
               <div className="h-[480px] w-full rounded-3xl overflow-hidden relative border border-slate-100 dark:border-zinc-800 shadow-inner">
@@ -399,6 +471,7 @@ export default function StudentFlagpoleDashboard() {
                   centerLat={config.lat}
                   centerLng={config.lng}
                   radius={config.radius}
+                  mode={mapMode}
                 />
               </div>
             </div>
@@ -688,60 +761,66 @@ export default function StudentFlagpoleDashboard() {
               </div>
 
               <div className="space-y-4">
-                {departmentStats.map((dept, idx) => (
-                  <motion.div
-                    key={dept._id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 + (idx * 0.05) }}
-                    className="bg-slate-50 dark:bg-zinc-800/50 rounded-2xl p-4 border border-slate-100 dark:border-zinc-800"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                        <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                          {dept._id}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="text-lg font-black text-slate-800 dark:text-white">
-                            {dept.total}
-                          </p>
-                          <p className="text-[8px] text-slate-400 font-black uppercase">ทั้งหมด</p>
+                {(() => {
+                  const sortOrder = ["ปวช 1", "ปวช 2", "ปวช 3", "ปวส 1", "ปวส 2"];
+                  const sortedStats = [...departmentStats].sort((a, b) => {
+                    const idxA = sortOrder.indexOf(a._id);
+                    const idxB = sortOrder.indexOf(b._id);
+                    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                    if (idxA !== -1) return -1;
+                    if (idxB !== -1) return 1;
+                    return a._id.localeCompare(b._id);
+                  });
+                  return sortedStats.map((dept, idx) => (
+                    <div
+                      key={dept._id}
+                      className="bg-slate-50 dark:bg-zinc-800/50 rounded-2xl p-4 border border-slate-100 dark:border-zinc-800"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                          <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                            {dept._id}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-lg font-black text-slate-800 dark:text-white">
+                              {dept.total}
+                            </p>
+                            <p className="text-[8px] text-slate-400 font-black uppercase">ทั้งหมด</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-xl p-3 text-center">
-                        <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">
-                          {dept.present || 0}
-                        </p>
-                        <p className="text-[8px] text-emerald-600/70 dark:text-emerald-400/70 font-black uppercase">ตรงเวลา</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-xl p-3 text-center">
+                          <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                            {dept.present || 0}
+                          </p>
+                          <p className="text-[8px] text-emerald-600/70 dark:text-emerald-400/70 font-black uppercase">ตรงเวลา</p>
+                        </div>
+                        <div className="bg-amber-50 dark:bg-amber-500/10 rounded-xl p-3 text-center">
+                          <p className="text-lg font-black text-amber-600 dark:text-amber-400">
+                            {dept.late || 0}
+                          </p>
+                          <p className="text-[8px] text-amber-600/70 dark:text-amber-400/70 font-black uppercase">สาย</p>
+                        </div>
+                        <div className="bg-blue-50 dark:bg-blue-500/10 rounded-xl p-3 text-center">
+                          <p className="text-lg font-black text-blue-600 dark:text-blue-400">
+                            {dept.inZone || 0}
+                          </p>
+                          <p className="text-[8px] text-blue-600/70 dark:text-blue-400/70 font-black uppercase">ในพื้นที่</p>
+                        </div>
                       </div>
-                      <div className="bg-amber-50 dark:bg-amber-500/10 rounded-xl p-3 text-center">
-                        <p className="text-lg font-black text-amber-600 dark:text-amber-400">
-                          {dept.late || 0}
-                        </p>
-                        <p className="text-[8px] text-amber-600/70 dark:text-amber-400/70 font-black uppercase">สาย</p>
-                      </div>
-                      <div className="bg-blue-50 dark:bg-blue-500/10 rounded-xl p-3 text-center">
-                        <p className="text-lg font-black text-blue-600 dark:text-blue-400">
-                          {dept.inZone || 0}
-                        </p>
-                        <p className="text-[8px] text-blue-600/70 dark:text-blue-400/70 font-black uppercase">ในพื้นที่</p>
+                      <div className="mt-3 h-2 bg-slate-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                        <div
+                          style={{ width: `${(dept.total / (departmentStats.reduce((acc: number, d: any) => acc + d.total, 0) || 1)) * 100}%` }}
+                          className="h-full bg-indigo-500 rounded-full"
+                        />
                       </div>
                     </div>
-                    <div className="mt-3 h-2 bg-slate-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(dept.total / (departmentStats.reduce((acc: number, d: any) => acc + d.total, 0) || 1)) * 100}%` }}
-                        transition={{ duration: 1.0, delay: 0.7 + (idx * 0.05) }}
-                        className="h-full bg-indigo-500 rounded-full"
-                      />
-                    </div>
-                  </motion.div>
-                ))}
+                  ));
+                })()}
               </div>
             </motion.div>
           </div>

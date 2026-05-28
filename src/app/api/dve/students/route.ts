@@ -57,6 +57,38 @@ function escapeRegex(text: string): string {
   return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
+function standardizeClassGroupName(name: string): string {
+  if (!name) return "";
+  let clean = name.trim();
+  const stripped = clean.replace(/[\s\.-]+/g, "");
+  const match = stripped.match(/^([ก-ฮa-zA-Z]+)(.*)$/);
+  if (match) {
+    const prefix = match[1];
+    const rest = match[2];
+    if (rest) {
+      return `${prefix}.${rest}`;
+    }
+    return prefix;
+  }
+  return clean;
+}
+
+function buildFlexibleClassGroupRegex(classGroupId: string): string {
+  if (!classGroupId) return "";
+  const clean = classGroupId.trim();
+  let pattern = "^";
+  for (let i = 0; i < clean.length; i++) {
+    const char = clean[i];
+    if (char === " " || char === "." || char === "-") {
+      continue;
+    }
+    const escapedChar = char.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    pattern += `${escapedChar}[\\s\\.-]*`;
+  }
+  pattern += "$";
+  return pattern;
+}
+
 async function resolveStudentDoc(db: any, userId: string) {
   if (!ObjectId.isValid(userId)) return null;
   return db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
@@ -133,7 +165,7 @@ export async function GET(req: Request) {
 
     const query: any = { role: "student" };
     if (classGroupId) {
-      query.classGroupId = { $regex: escapeRegex(classGroupId), $options: "i" };
+      query.classGroupId = { $regex: buildFlexibleClassGroupRegex(classGroupId), $options: "i" };
     }
 
     const students = await db
@@ -177,8 +209,8 @@ export async function GET(req: Request) {
             const finalClean = normalizeDept(finalDept);
             return finalClean.includes(targetClean) || targetClean.includes(finalClean);
           })
-          .map((s) => s.classGroupId)
-          .filter(Boolean),
+          .map((s) => standardizeClassGroupName(s.classGroupId || ""))
+          .filter((c) => c && !/^[\d\s-]+$/.test(c)),
       ),
     ).sort();
 

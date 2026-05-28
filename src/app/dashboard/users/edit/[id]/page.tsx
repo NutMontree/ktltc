@@ -759,35 +759,11 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                                   className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all cursor-pointer appearance-none shadow-inner"
                                 >
                                   <option value="">-- เลือกระดับชั้น --</option>
-                                  <option value="ปวช. 1">ปวช. 1</option>
-                                  <option value="ปวช. 2">ปวช. 2</option>
-                                  <option value="ปวช. 3">ปวช. 3</option>
                                   <option value="ปวช 1">ปวช 1</option>
                                   <option value="ปวช 2">ปวช 2</option>
                                   <option value="ปวช 3">ปวช 3</option>
-                                  <option value="ปวส. 1">ปวส. 1</option>
-                                  <option value="ปวส. 2">ปวส. 2</option>
                                   <option value="ปวส 1">ปวส 1</option>
                                   <option value="ปวส 2">ปวส 2</option>
-                                  <option value="ปริญญาตรี">ปริญญาตรี</option>
-                                  {formData.academicLevel &&
-                                    ![
-                                      "ปวช. 1",
-                                      "ปวช. 2",
-                                      "ปวช. 3",
-                                      "ปวช 1",
-                                      "ปวช 2",
-                                      "ปวช 3",
-                                      "ปวส. 1",
-                                      "ปวส. 2",
-                                      "ปวส 1",
-                                      "ปวส 2",
-                                      "ปริญญาตรี",
-                                    ].includes(formData.academicLevel) && (
-                                      <option value={formData.academicLevel}>
-                                        {formData.academicLevel}
-                                      </option>
-                                    )}
                                 </select>
                               </div>
                             </div>
