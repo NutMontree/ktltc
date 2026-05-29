@@ -83,6 +83,8 @@ export default function StudentFlagpolePortal() {
     checkInEnd: "08:45",
     inSiteDistance: 200,
     closedDays: [0, 6],
+    lat: 14.754043,
+    lng: 104.65807,
   });
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -288,16 +290,34 @@ export default function StudentFlagpolePortal() {
     }, 1500);
   };
 
+  const getDistanceToFlagpole = () => {
+    if (!location || !flagpoleConfig.lat || !flagpoleConfig.lng) return null;
+    const R = 6371e3; // meters
+    const φ1 = (flagpoleConfig.lat * Math.PI) / 180;
+    const φ2 = (location.lat * Math.PI) / 180;
+    const Δφ = ((location.lat - flagpoleConfig.lat) * Math.PI) / 180;
+    const Δλ = ((location.lng - flagpoleConfig.lng) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // in meters
+  };
+
   const getLocation = (silent = false) => {
     if (!navigator.geolocation) {
       if (!silent) {
         setLocationStatus("error");
-        setLocationError("อุปกรณ์ของคุณไม่รอบรับพิกัดระบบนำทาง GPS");
+        setLocationError("อุปกรณ์ของคุณไม่รองรับพิกัดระบบนำทาง GPS");
       }
       return;
     }
     setLocationStatus("searching");
     setLocationError("");
+
+    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -305,15 +325,28 @@ export default function StudentFlagpolePortal() {
         setLocationStatus("found");
       },
       (err) => {
-        console.error("GPS Error:", err);
-        setLocationStatus("error");
-        if (err.code === 1)
-          setLocationError(
-            "กรุณาเปิดสิทธิ์ระบุตำแหน่ง (Location Access) ในเมนูของอุปกรณ์เบราว์เซอร์",
-          );
-        else setLocationError("ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกที่ร่ม/อาคารเรียน");
+        console.error("GPS High Accuracy Error:", err);
+        // Fallback to standard accuracy which is much more reliable indoors/on certain devices
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+            setLocationStatus("found");
+          },
+          (fallbackErr) => {
+            console.error("GPS Fallback Error:", fallbackErr);
+            if (!silent) {
+              setLocationStatus("error");
+              if (fallbackErr.code === 1) {
+                setLocationError("กรุณาเปิดสิทธิ์ระบุตำแหน่ง (Location Access) ในเมนูของอุปกรณ์เบราว์เซอร์");
+              } else {
+                setLocationError("ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกที่ร่ม/อาคารเรียน หรือเปิด GPS ทิ้งไว้สักครู่");
+              }
+            }
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+        );
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+      options
     );
   };
 
@@ -705,7 +738,13 @@ export default function StudentFlagpolePortal() {
                           <MapPin size={12} />
                           <span>
                             {locationStatus === "searching" && "กำลังตรวจพิกัด GPS..."}
-                            {locationStatus === "found" && "พิกัดเสร็จสิ้น"}
+                            {locationStatus === "found" && (() => {
+                              const dist = getDistanceToFlagpole();
+                              if (dist !== null) {
+                                return `จับพิกัดแล้ว (ห่างจากเสาธง ${Math.round(dist)} เมตร)`;
+                              }
+                              return "พิกัดเสร็จสิ้น";
+                            })()}
                             {locationStatus === "error" && "ตรวจพิกัดขัดข้อง"}
                             {locationStatus === "idle" && "รอระบุพิกัด..."}
                           </span>

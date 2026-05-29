@@ -23,6 +23,8 @@ export async function GET(req: Request) {
     const endDateParam = searchParams.get('endDate');
     const statusFilter = searchParams.get('status') || 'all'; // all, Present, Late
     const searchQuery = searchParams.get('search') || '';
+    const department = searchParams.get('department') || '';
+    const classGroupId = searchParams.get('classGroupId') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const skip = (page - 1) * limit;
@@ -44,42 +46,64 @@ export async function GET(req: Request) {
       query.status = statusFilter;
     }
 
-    // ค้นหาผู้ใช้ (ชื่อ/รหัส/ชั้นเรียน) - ใช้ logic เดียวกับ flagpole-data API
+    // สร้างเงื่อนไขการกรองผู้ใช้ (ตามคำค้นหา แผนกวิชา หรือห้องเรียน)
+    let userFilterQuery: any = { role: "student" };
+    let hasUserFilters = false;
+
+    if (department) {
+      userFilterQuery.department = department;
+      hasUserFilters = true;
+    }
+    if (classGroupId) {
+      userFilterQuery.classGroupId = classGroupId;
+      hasUserFilters = true;
+    }
+
     if (searchQuery) {
-      let searchMatch: any = {};
-      if (ObjectId.isValid(searchQuery)) {
-        searchMatch = {
-          $or: [
-            { _id: new ObjectId(searchQuery) },
-            { userId: new ObjectId(searchQuery) },
-            { userId: searchQuery }
-          ]
-        };
-      } else {
-        const matchingUsers = await db.collection("users").find({
-          $or: [
-            { name: { $regex: searchQuery, $options: "i" } },
-            { studentId: { $regex: searchQuery, $options: "i" } },
-            { academicLevel: { $regex: searchQuery, $options: "i" } }
-          ]
-        }).project({ _id: 1 }).limit(20).toArray();
+      const searchRegex = { $regex: searchQuery, $options: "i" };
+      userFilterQuery.$or = [
+        { name: searchRegex },
+        { studentId: searchRegex },
+        { academicLevel: searchRegex }
+      ];
+      hasUserFilters = true;
+    }
 
-        const userIds = matchingUsers.map(u => u._id);
-        const userIdsStrings = userIds.map(id => id.toString());
+    if (hasUserFilters) {
+      // ค้นหารายชื่อนักเรียนที่ตรงตามตัวกรองทั้งหมด (ไม่จำกัดจำนวนเพื่อให้เช็คสถิติรายห้องได้ครบ)
+      const matchingUsers = await db.collection("users")
+        .find(userFilterQuery)
+        .project({ _id: 1 })
+        .toArray();
 
-        searchMatch = {
-          $or: [
-            { userId: { $in: userIds } },
-            { userId: { $in: userIdsStrings } }
-          ]
-        };
-      }
+      const userIds = matchingUsers.map(u => u._id);
+      const userIdsStrings = userIds.map(id => id.toString());
+
+      const userMatch = {
+        $or: [
+          { userId: { $in: userIds } },
+          { userId: { $in: userIdsStrings } }
+        ]
+      };
 
       if (Object.keys(query).length > 0) {
-        query = { $and: [query, searchMatch] };
+        query = { $and: [query, userMatch] };
       } else {
-        query = searchMatch;
+        query = userMatch;
       }
+    }
+
+    // ดึงห้องเรียนทั้งหมดที่สังกัดในแผนกเพื่อเอาไปทำตัวกรอง (Class Groups Dropdown)
+    let classGroups: string[] = [];
+    try {
+      const distinctFilter: any = { role: "student" };
+      if (department) {
+        distinctFilter.department = department;
+      }
+      classGroups = await db.collection("users").distinct("classGroupId", distinctFilter);
+      classGroups = classGroups.filter(Boolean).sort();
+    } catch (err) {
+      console.error("Fetch distinct class groups error:", err);
     }
 
     //Aggregate เพื่อ Join ข้อมูลผู้ใช้
@@ -131,6 +155,8 @@ export async function GET(req: Request) {
             name: { $ifNull: ["$userDetails.name", "นักศึกษา"] },
             academicLevel: { $ifNull: ["$userDetails.academicLevel", "ไม่ระบุชั้นปี"] },
             studentId: { $ifNull: ["$userDetails.studentId", "-"] },
+            department: { $ifNull: ["$userDetails.department", "-"] },
+            classGroupId: { $ifNull: ["$userDetails.classGroupId", "-"] },
             image: "$userDetails.image"
           }
         }
@@ -141,7 +167,8 @@ export async function GET(req: Request) {
       success: true,
       data: attendances,
       hasMore: skip + attendances.length < totalCount,
-      total: totalCount
+      total: totalCount,
+      classGroups
     });
   } catch (error: any) {
     console.error("Flagpole Attendances GET Error:", error);

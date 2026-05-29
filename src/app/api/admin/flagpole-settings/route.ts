@@ -52,14 +52,25 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
+    
+    // Explicitly parse coordinates and distance as Numbers
+    const lat = body.lat != null ? Number(body.lat) : undefined;
+    const lng = body.lng != null ? Number(body.lng) : undefined;
+    const inSiteDistance = body.inSiteDistance != null ? Number(body.inSiteDistance) : undefined;
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const updateData = {
+    const updateData: any = {
       ...body,
       key: "global_flagpole",
       updatedAt: new Date(),
     };
+    
+    if (lat !== undefined && !isNaN(lat)) updateData.lat = lat;
+    if (lng !== undefined && !isNaN(lng)) updateData.lng = lng;
+    if (inSiteDistance !== undefined && !isNaN(inSiteDistance)) updateData.inSiteDistance = inSiteDistance;
+    
     delete updateData._id; // ป้องกันการเซ็ต _id ทับซ้อน
 
     const result = await db.collection("flagpole_settings").updateOne(

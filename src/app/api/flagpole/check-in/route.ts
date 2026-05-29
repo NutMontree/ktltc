@@ -45,8 +45,8 @@ export async function POST(req: Request) {
     const inSiteThreshold = flagpoleSetting?.inSiteDistance ?? DEFAULT_IN_SITE_DISTANCE;
 
     // จุดพิกัดหน้าเสาธงแบบไดนามิกจากฐานข้อมูล หรือใช้ค่าเริ่มต้นของวิทยาลัย
-    const targetLat = flagpoleSetting?.lat ?? COLLEGE_LOCATION.lat;
-    const targetLng = flagpoleSetting?.lng ?? COLLEGE_LOCATION.lng;
+    const targetLat = Number(flagpoleSetting?.lat ?? COLLEGE_LOCATION.lat);
+    const targetLng = Number(flagpoleSetting?.lng ?? COLLEGE_LOCATION.lng);
 
     // 3. วิเคราะห์ระยะทางและระบุสถานะพิกัด (Geofencing) - ไม่บล็อกการเช็คชื่อ แต่บันทึกข้อมูลแม่นยำ
     let statusTag = "นอกพื้นที่ (Remote)";
@@ -54,7 +54,10 @@ export async function POST(req: Request) {
 
     // ใช้ null/undefined check แทน falsy เพื่อรองรับพิกัด 0 (เส้นศูนย์สูตร)
     if (lat != null && lng != null) {
-      distance = calculateDistance(targetLat, targetLng, lat, lng);
+      const studentLat = Number(lat);
+      const studentLng = Number(lng);
+      
+      distance = calculateDistance(targetLat, targetLng, studentLat, studentLng);
       if (distance <= inSiteThreshold) {
         statusTag = "อยู่ในพื้นที่ (In-Site)";
       } else {

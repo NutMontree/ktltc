@@ -578,7 +578,7 @@ export function DVEStudentPortal() {
               
               // Automatically jump to Post-test if it exists and is not submitted
               const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
-              const posttest = quizzes.find((q) => q.unitId === currentUnitIdStr && (q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")));
+              const posttest = quizzes.find((q) => q.unitId === currentUnitIdStr && (q.quizType === "posttest" || q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")));
               if (posttest && !posttest.isSubmitted) {
                 setUnitQuizMode("posttest");
                 // Open the modal automatically
@@ -603,7 +603,7 @@ export function DVEStudentPortal() {
     if (!isQuizModalOpen && activeStudyUnit) {
       if (unitQuizMode === "pretest") {
         const unitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
-        const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
+        const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.quizType === "pretest" || q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
         if (pretest?.isSubmitted) {
           setUnitQuizMode("learning");
         } else {
@@ -814,14 +814,16 @@ export function DVEStudentPortal() {
   return (
     <div className="max-w-[1200px] mx-auto space-y-4 px-2 py-2 sm:py-4">
       {/* Student Portal Banner */}
-      <div className="relative overflow-hidden rounded-[20px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-4 sm:p-6 shadow-xl shadow-emerald-500/10">
-        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
-          <GraduationCap size={140} className="w-24 h-24 sm:w-32 sm:h-32" />
-        </div>
+      <div className="relative rounded-[20px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-4 sm:p-6 shadow-xl shadow-emerald-500/10">
+        {/* Decorative elements background wrapper to prevent clipping of notifications dropdown */}
+        <div className="absolute inset-0 rounded-[20px] overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
+            <GraduationCap size={140} className="w-24 h-24 sm:w-32 sm:h-32" />
+          </div>
 
-        {/* Decorative elements */}
-        <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-        <div className="absolute right-1/4 top-1/4 w-20 h-20 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
+          <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+          <div className="absolute right-1/4 top-1/4 w-20 h-20 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
+        </div>
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
           <div className="space-y-2 sm:space-y-4 max-w-2xl">
@@ -1190,7 +1192,7 @@ export function DVEStudentPortal() {
                         type="button"
                         onClick={() => {
                           const unitIdStr = unit.id || unit._id?.toString();
-                          const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
+                          const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.quizType === "pretest" || q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
                           
                           if (pretest && !pretest.isSubmitted) {
                             setUnitQuizMode("pretest");
@@ -1776,6 +1778,8 @@ export function DVEStudentPortal() {
                         })
                         .map((quiz: any, qIdx: number) => {
                           const isQuizSubmitted = !!quiz.isSubmitted;
+                          const isPretest = quiz.quizType === "pretest" || quiz.title.includes("ก่อนเรียน") || quiz.title.toLowerCase().includes("pre");
+                          const isAllowedToTake = isPretest || isStudyCompleted;
                           return (
                             <div
                               key={quiz.id || qIdx}
@@ -1821,13 +1825,13 @@ export function DVEStudentPortal() {
                               className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${
                                 isQuizSubmitted
                                   ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
-                                  : isStudyCompleted
+                                  : isAllowedToTake
                                     ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
                                     : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
                               }`}
                               onClick={() => {
                                 if (isQuizSubmitted) return;
-                                if (!isStudyCompleted) {
+                                if (!isAllowedToTake) {
                                   message.warning(
                                     `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${activeStudyUnit.studyMinutes} นาทีก่อนทำแบบทดสอบประเมิน`,
                                   );
