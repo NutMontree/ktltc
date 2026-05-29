@@ -42,6 +42,7 @@ interface ExeItem {
 
 export default function EDUAdmin() {
   const [boardData, setBoardData] = useState<ExeItem[]>([]);
+  const [committeeData, setCommitteeData] = useState<ExeItem[]>(DataCommittee);
   const [loading, setLoading] = useState(true);
   const [selectedExec, setSelectedExec] = useState<ExeItem | null>(null);
   const [activeTab, setActiveTab] = useState<"current" | "committee" | "former">("current");
@@ -72,6 +73,21 @@ export default function EDUAdmin() {
               lineId: u.lineId || "",
             }));
           setBoardData(executives);
+
+          // ดึงข้อมูลคณะกรรมการจากฐานข้อมูลโดยการเทียบชื่อ (ดึงเฉพาะรูปภาพโปรไฟล์จาก DB เพื่อไม่ให้ข้อมูลติดต่อของคณะกรรมการคลาดเคลื่อน)
+          const updatedCommittee = DataCommittee.map((member) => {
+            const dbUser = (data.users || []).find(
+              (u: any) => u.name && u.name.trim() === member.title.trim()
+            );
+            if (dbUser) {
+              return {
+                ...member,
+                img: dbUser.image || member.img,
+              };
+            }
+            return member;
+          });
+          setCommitteeData(updatedCommittee);
         }
       } catch (error) {
         console.error("Failed to fetch executives", error);
@@ -416,7 +432,7 @@ export default function EDUAdmin() {
               className="max-w-7xl mx-auto"
             >
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {DataCommittee.map((member, index) => (
+                {committeeData.map((member, index) => (
                   <motion.div key={index} whileHover={{ y: -8 }} className="group h-full">
                     <div className="relative h-full overflow-hidden rounded-3xl border border-white/60 bg-white/70 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] backdrop-blur-lg transition-all duration-300 hover:border-amber-200 hover:shadow-xl dark:border-neutral-900/60 dark:bg-neutral-900/65 dark:hover:border-amber-950/60 dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
                       <div className="flex flex-col items-center text-center h-full">
@@ -447,7 +463,7 @@ export default function EDUAdmin() {
 
                         {/* Contact Info (Direct Channels) */}
                         <div className="mt-4 pt-3 border-t border-slate-100 dark:border-neutral-800 w-full text-left text-xs space-y-1.5 text-slate-600 dark:text-slate-400">
-                          {member.phone && (
+                          {member.phone ? (
                             <p className="flex items-center gap-2">
                               <Phone className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                               <span className="font-bold">โทร:</span>{" "}
@@ -455,18 +471,33 @@ export default function EDUAdmin() {
                                 {member.phone}
                               </a>
                             </p>
+                          ) : (
+                            <p className="flex items-center gap-2 text-slate-400 dark:text-zinc-500">
+                              <Phone className="w-3.5 h-3.5 text-slate-300 dark:text-zinc-700 shrink-0" />
+                              <span className="font-bold">โทร:</span> ไม่มีข้อมูล
+                            </p>
                           )}
-                          {member.email && (
+                          {member.email ? (
                             <p className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                               <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                               <span className="font-bold">อีเมล:</span>{" "}
                               <span className="truncate">{member.email}</span>
                             </p>
+                          ) : (
+                            <p className="flex items-center gap-2 text-slate-400 dark:text-zinc-500 overflow-hidden text-ellipsis whitespace-nowrap">
+                              <Mail className="w-3.5 h-3.5 text-slate-300 dark:text-zinc-700 shrink-0" />
+                              <span className="font-bold">อีเมล:</span> ไม่มีข้อมูล
+                            </p>
                           )}
-                          {member.lineId && (
+                          {member.lineId ? (
                             <p className="flex items-center gap-2">
                               <MessageSquare className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                               <span className="font-bold">Line:</span> <span>{member.lineId}</span>
+                            </p>
+                          ) : (
+                            <p className="flex items-center gap-2 text-slate-400 dark:text-zinc-500">
+                              <MessageSquare className="w-3.5 h-3.5 text-slate-300 dark:text-zinc-700 shrink-0" />
+                              <span className="font-bold">Line:</span> ไม่มีข้อมูล
                             </p>
                           )}
                         </div>

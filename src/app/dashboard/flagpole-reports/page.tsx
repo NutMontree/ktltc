@@ -279,6 +279,194 @@ function FlagpoleReportsManagementContent() {
     }
   };
 
+  const exportToPdf = async () => {
+    const loadToast = toast.loading("กำลังเตรียมดึงข้อมูลกิจกรรมเสาธงเพื่อออกรายงาน PDF...");
+    try {
+      const res = await fetch(
+        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&search=${encodeURIComponent(searchQuery)}&department=${encodeURIComponent(departmentFilter)}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=1&limit=10000`,
+      );
+      const json = await res.json();
+      if (!json.success || !json.data || json.data.length === 0) {
+        toast.dismiss(loadToast);
+        toast.error("ไม่พบข้อมูลสำหรับการออกรายงานในขณะนี้");
+        return;
+      }
+
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>รายงานประวัติการเข้าแถวเสาธง</title>
+              <style>
+                @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+                body {
+                  font-family: 'Sarabun', sans-serif;
+                  padding: 30px;
+                  color: #1f2937;
+                  background-color: #ffffff;
+                  line-height: 1.5;
+                }
+                h1 {
+                  text-align: center;
+                  font-size: 22px;
+                  font-weight: 700;
+                  margin-bottom: 5px;
+                  color: #111827;
+                }
+                .subtitle {
+                  text-align: center;
+                  font-size: 13px;
+                  color: #4b5563;
+                  margin-bottom: 25px;
+                  font-weight: 400;
+                }
+                .summary-cards {
+                  display: flex;
+                  justify-content: space-around;
+                  margin-bottom: 25px;
+                  background-color: #f9fafb;
+                  padding: 15px;
+                  border-radius: 12px;
+                  border: 1px solid #e5e7eb;
+                }
+                .summary-item {
+                  text-align: center;
+                }
+                .summary-label {
+                  font-size: 10px;
+                  color: #6b7280;
+                  text-transform: uppercase;
+                  font-weight: 600;
+                  margin-bottom: 4px;
+                }
+                .summary-value {
+                  font-size: 16px;
+                  font-weight: 700;
+                  color: #1f2937;
+                }
+                table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  margin-top: 10px;
+                  font-size: 11px;
+                }
+                th, td {
+                  border: 1px solid #e5e7eb;
+                  padding: 8px 6px;
+                  text-align: left;
+                }
+                th {
+                  background-color: #f3f4f6;
+                  font-weight: 700;
+                  color: #374151;
+                  text-transform: uppercase;
+                }
+                tr:nth-child(even) {
+                  background-color: #f9fafb;
+                }
+                .status-badge {
+                  display: inline-block;
+                  padding: 2px 8px;
+                  font-size: 9px;
+                  font-weight: 600;
+                  border-radius: 9999px;
+                }
+                .status-present {
+                  background-color: #d1fae5;
+                  color: #065f46;
+                }
+                .status-late {
+                  background-color: #fef3c7;
+                  color: #92400e;
+                }
+                @media print {
+                  body { padding: 0; }
+                  @page { size: A4 landscape; margin: 15mm; }
+                }
+              </style>
+            </head>
+            <body>
+              <h1>รายงานประวัติการเข้าร่วมกิจกรรมหน้าเสาธง</h1>
+              <div class="subtitle">วิทยาลัยเทคนิคกันทรลักษ์ • ช่วงวันที่ ${new Date(startDate).toLocaleDateString("th-TH")} ถึง ${new Date(endDate).toLocaleDateString("th-TH")}</div>
+              
+              <div class="summary-cards">
+                <div class="summary-item">
+                  <div class="summary-label">จำนวนประวัติที่พบบันทึก</div>
+                  <div class="summary-value">${json.data.length} รายการ</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">เข้าร่วมตรงเวลา</div>
+                  <div class="summary-value" style="color: #059669;">${json.data.filter((r: any) => r.status === "Present").length} รายการ</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">เข้าร่วมสาย</div>
+                  <div class="summary-value" style="color: #d97706;">${json.data.filter((r: any) => r.status !== "Present").length} รายการ</div>
+                </div>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 5%; text-align: center;">ลำดับ</th>
+                    <th style="width: 13%;">รหัสนักศึกษา</th>
+                    <th style="width: 20%;">ชื่อ-สกุล</th>
+                    <th style="width: 15%;">แผนกวิชา / ชั้นเรียน</th>
+                    <th style="width: 10%;">ห้องเรียน</th>
+                    <th style="width: 12%;">วันที่เข้าร่วม</th>
+                    <th style="width: 13%;">เวลาที่บันทึก</th>
+                    <th style="width: 12%;">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${json.data.map((r: any, idx: number) => {
+                    const statusClass = r.status === "Present" ? "status-present" : "status-late";
+                    const statusText = r.status === "Present" ? "ตรงเวลา" : "มาสาย";
+                    const dateText = new Date(r.date).toLocaleDateString("th-TH");
+                    const timeText = r.time ? new Date(r.time).toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " น." : "-";
+
+                    return `
+                      <tr>
+                        <td style="text-align: center;">${idx + 1}</td>
+                        <td>${r.user?.studentId || "-"}</td>
+                        <td style="font-weight: 600;">${r.user?.name || "-"}</td>
+                        <td>${r.user?.department || "-"} (${r.user?.academicLevel || "-"})</td>
+                        <td>${r.user?.classGroupId || "-"}</td>
+                        <td>${dateText}</td>
+                        <td>${timeText}</td>
+                        <td>
+                          <span class="status-badge ${statusClass}">
+                            ${statusText}
+                          </span>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+              <script>
+                window.onload = function() {
+                  setTimeout(function() {
+                    window.print();
+                    setTimeout(function() { window.close(); }, 500);
+                  }, 500);
+                }
+              </script>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+      }
+
+      toast.dismiss(loadToast);
+      toast.success(`ดาวน์โหลดรายงาน PDF เรียบร้อยแล้วครับ (${json.data.length} รายการ)`);
+    } catch (err) {
+      console.error("Export to PDF error:", err);
+      toast.dismiss(loadToast);
+      toast.error("เกิดข้อผิดพลาดในการดาวน์โหลดข้อมูลเพื่อออกรายงาน PDF");
+    }
+  };
+
   const filteredReports = reports; // Server-side filtering is now used
 
   const getInitials = (name: string) => {
@@ -350,6 +538,13 @@ function FlagpoleReportsManagementContent() {
               className="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl shadow-md text-xs font-black transition-all active:scale-95 cursor-pointer"
             >
               <FileText size={16} /> ดาวน์โหลดประวัติ (Excel)
+            </button>
+
+            <button
+              onClick={exportToPdf}
+              className="flex items-center gap-2 px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl shadow-md text-xs font-black transition-all active:scale-95 cursor-pointer"
+            >
+              <FileText size={16} /> ดาวน์โหลดประวัติ (PDF)
             </button>
 
             {isAdmin && (
