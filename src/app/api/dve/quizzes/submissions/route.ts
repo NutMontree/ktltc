@@ -218,17 +218,19 @@ export async function GET(req: Request) {
       .sort({ submittedAt: -1 })
       .toArray();
 
-    // Enrich submissions with classGroupId from users collection
+    // Enrich submissions with classGroupId and studentIdNum from users collection
     const enriched = await Promise.all(
       submissions.map(async (s) => {
         let classGroupId = "";
+        let studentIdNum = "";
         try {
           if (s.studentId && ObjectId.isValid(s.studentId)) {
             const userDoc = await db.collection("users").findOne(
               { _id: new ObjectId(s.studentId) },
-              { projection: { classGroupId: 1 } }
+              { projection: { classGroupId: 1, username: 1, studentIdNum: 1 } }
             );
             classGroupId = userDoc?.classGroupId || "";
+            studentIdNum = userDoc?.studentIdNum || userDoc?.username || "";
           }
         } catch (_) {}
         return {
@@ -236,6 +238,7 @@ export async function GET(req: Request) {
           quizId: s.quizId,
           studentId: s.studentId,
           studentName: s.studentName,
+          studentIdNum,
           classGroupId,
           answers: s.answers || [],
           score: s.score || 0,

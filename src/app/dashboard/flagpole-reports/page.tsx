@@ -33,6 +33,7 @@ import { useSession } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 
 const STATUS_TH: Record<string, string> = {
   all: "สถานะทั้งหมด",
@@ -75,6 +76,9 @@ function FlagpoleReportsManagementContent() {
   });
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("");
+  const [classGroupFilter, setClassGroupFilter] = useState("");
+  const [availableClassGroups, setAvailableClassGroups] = useState<string[]>([]);
 
   // การยืนยันสิทธิ์เข้าใช้งานฝั่งแอดมิน
   useEffect(() => {
@@ -98,13 +102,16 @@ function FlagpoleReportsManagementContent() {
     try {
       const currentPage = isLoadMore ? page + 1 : 1;
       const res = await fetch(
-        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&search=${encodeURIComponent(searchQuery)}&page=${currentPage}&limit=${LIMIT}`,
+        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&search=${encodeURIComponent(searchQuery)}&department=${encodeURIComponent(departmentFilter)}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=${currentPage}&limit=${LIMIT}`,
       );
       const json = await res.json();
       if (json.success) {
         setReports((prev) => (isLoadMore ? [...prev, ...json.data] : json.data));
         setHasMore(json.hasMore);
         if (isLoadMore) setPage(currentPage);
+        if (json.classGroups) {
+          setAvailableClassGroups(json.classGroups);
+        }
       } else {
         toast.error(json.message || "ดึงรายงานล้มเหลว");
       }
@@ -121,7 +128,12 @@ function FlagpoleReportsManagementContent() {
     if (status === "authenticated") {
       fetchReports();
     }
-  }, [startDate, endDate, statusFilter, searchQuery, status]);
+  }, [startDate, endDate, statusFilter, searchQuery, departmentFilter, classGroupFilter, status]);
+
+  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDepartmentFilter(e.target.value);
+    setClassGroupFilter(""); // รีเซ็ตห้องเรียนเมื่อเปลี่ยนแผนกวิชา
+  };
 
   const handleEditInit = (report: any) => {
     setSelectedReport(report);
@@ -220,37 +232,51 @@ function FlagpoleReportsManagementContent() {
     }
   };
 
-  const exportToExcel = () => {
-    if (filteredReports.length === 0) {
-      toast.error("ไม่พบข้อมูลสำหรับการส่งออกในขณะนี้");
-      return;
+  const exportToExcel = async () => {
+    const loadToast = toast.loading("กำลังเตรียมดึงข้อมูลกิจกรรมเสาธงทั้งหมดเพื่อส่งออก...");
+    try {
+      const res = await fetch(
+        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&search=${encodeURIComponent(searchQuery)}&department=${encodeURIComponent(departmentFilter)}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=1&limit=10000`,
+      );
+      const json = await res.json();
+      if (!json.success || !json.data || json.data.length === 0) {
+        toast.dismiss(loadToast);
+        toast.error("ไม่พบข้อมูลสำหรับการส่งออกในขณะนี้");
+        return;
+      }
+
+      const data = json.data.map((r: any) => ({
+        รหัสนักศึกษา: r.user?.studentId || "-",
+        "ชื่อ-นามสกุล": r.user?.name || "-",
+        "ระดับชั้น/ห้อง": r.user?.academicLevel || "-",
+        ห้องเรียน: r.user?.classGroupId || "-",
+        แผนกวิชา: r.user?.department || "-",
+        วันที่เข้าแถว: new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" }),
+        เวลาลงชื่อ: r.time ? new Date(r.time).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" }) + " น." : "-",
+        "ระยะห่าง GPS (เมตร)": r.distance !== undefined && r.distance !== null && r.distance >= 0 ? Math.round(r.distance) + " ม." : "-",
+        "ละติจูด (Lat)": r.lat || "-",
+        "ลองจิจูด (Lng)": r.lng || "-",
+        พิกัดที่อยู่โดยประมาณ: r.address || "-",
+        สถานะการร่วมแถว: r.status === "Present" ? "ตรงเวลา" : "มาสาย",
+        "รหัสอุปกรณ์ (Device ID)": r.deviceId || "-",
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Flagpole Reports");
+
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+      const finalData = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+      });
+      saveAs(finalData, `Flagpole_Attendances_${startDate}_to_${endDate}.xlsx`);
+      toast.dismiss(loadToast);
+      toast.success(`ดาวน์โหลดไฟล์ Excel เรียบร้อยแล้วครับ (${json.data.length} รายการ)`);
+    } catch (err) {
+      console.error("Export to Excel error:", err);
+      toast.dismiss(loadToast);
+      toast.error("เกิดข้อผิดพลาดในการดาวน์โหลดข้อมูลเพื่อส่งออก");
     }
-
-    const data = filteredReports.map((r) => ({
-      รหัสนักศึกษา: r.user?.studentId || "-",
-      "ชื่อ-นามสกุล": r.user?.name || "-",
-      "ระดับชั้น/ห้อง": r.user?.academicLevel || "-",
-      วันที่เข้าแถว: new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" }),
-      เวลาลงชื่อ:
-        new Date(r.time).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" }) + " น.",
-      "ระยะห่าง GPS (เมตร)": r.distance ? Math.round(r.distance) + " ม." : "-",
-      "ละติจูด (Lat)": r.lat || "-",
-      "ลองจิจูด (Lng)": r.lng || "-",
-      พิกัดที่อยู่โดยประมาณ: r.address || "-",
-      สถานะการร่วมแถว: r.status === "Present" ? "ตรงเวลา" : "มาสาย",
-      "รหัสอุปกรณ์ (Device ID)": r.deviceId || "-",
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Flagpole Reports");
-
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const finalData = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-    });
-    saveAs(finalData, `Flagpole_Attendances_${startDate}_to_${endDate}.xlsx`);
-    toast.success("ดาวน์โหลดไฟล์ Excel เรียบร้อยแล้วครับ");
   };
 
   const filteredReports = reports; // Server-side filtering is now used
@@ -339,82 +365,137 @@ function FlagpoleReportsManagementContent() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-zinc-900 px-6 py-6 rounded-3xl md:rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-zinc-850 grid grid-cols-1 md:grid-cols-5 gap-6 items-end w-full">
-          <div className="md:col-span-2">
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
-              ค้นหานักศึกษา / รหัส / ชั้นเรียน
-            </label>
-            <div className="relative group">
-              <Search
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"
-                size={18}
-              />
-              <input
-                type="text"
-                placeholder="พิมพ์ชื่อนักเรียน, รหัส 10 หลัก หรือชั้นเรียน (ปวช./ปวส.)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none transition-all font-bold placeholder:text-slate-400 text-slate-850 dark:text-zinc-200 shadow-inner"
-              />
+        <div className="bg-white dark:bg-zinc-900 px-6 py-6 rounded-3xl md:rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-zinc-850 flex flex-col gap-6 w-full">
+          {/* Row 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
+            <div className="md:col-span-3">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                ค้นหานักศึกษา / รหัส / ชั้นเรียน
+              </label>
+              <div className="relative group">
+                <Search
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="พิมพ์ชื่อนักเรียน, รหัส 10 หลัก หรือชั้นเรียน (ปวช./ปวส.)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none transition-all font-bold placeholder:text-slate-400 text-slate-850 dark:text-zinc-200 shadow-inner"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                ตั้งแต่วันที่
+              </label>
+              <div className="relative">
+                <Calendar
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  size={16}
+                />
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                ถึงวันที่
+              </label>
+              <div className="relative">
+                <Calendar
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  size={16}
+                />
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                />
+              </div>
             </div>
           </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
-              ตัวกรองสถานะ
-            </label>
-            <div className="relative group">
-              <Filter
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                size={16}
-              />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
-              >
-                {Object.entries(STATUS_TH).map(([val, label]) => (
-                  <option key={val} value={val}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+          {/* Row 2 */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                แผนกวิชา
+              </label>
+              <div className="relative group">
+                <Database
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  size={16}
+                />
+                <select
+                  value={departmentFilter}
+                  onChange={handleDepartmentChange}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                >
+                  <option value="">แผนกวิชาทั้งหมด</option>
+                  {DEPARTMENT_GROUPS.find((g) => g.label.includes("แผนกวิชา"))?.options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
-              ตั้งแต่วันที่
-            </label>
-            <div className="relative">
-              <Calendar
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                size={16}
-              />
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
-              />
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                ห้องเรียน / กลุ่มเรียน
+              </label>
+              <div className="relative group">
+                <Filter
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  size={16}
+                />
+                <select
+                  value={classGroupFilter}
+                  onChange={(e) => setClassGroupFilter(e.target.value)}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                  disabled={!departmentFilter && availableClassGroups.length === 0}
+                >
+                  <option value="">ห้องเรียนทั้งหมด</option>
+                  {availableClassGroups.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
-              ถึงวันที่
-            </label>
-            <div className="relative">
-              <Calendar
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                size={16}
-              />
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
-              />
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                ตัวกรองสถานะ
+              </label>
+              <div className="relative group">
+                <Filter
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  size={16}
+                />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                >
+                  {Object.entries(STATUS_TH).map(([val, label]) => (
+                    <option key={val} value={val}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -495,12 +576,20 @@ function FlagpoleReportsManagementContent() {
                               <p className="font-black text-slate-800 dark:text-zinc-100 leading-tight">
                                 {report.user?.name}
                               </p>
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5 flex items-center gap-2">
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5 flex flex-wrap items-center gap-2">
                                 <span>ID: {report.user?.studentId}</span>
                                 <span className="w-1 h-1 rounded-full bg-indigo-500"></span>
                                 <span className="text-indigo-500 font-bold">
                                   {report.user?.academicLevel}
                                 </span>
+                                {report.user?.classGroupId && report.user.classGroupId !== "-" && (
+                                  <>
+                                    <span className="w-1 h-1 rounded-full bg-indigo-500"></span>
+                                    <span className="text-emerald-500 font-bold">
+                                      ห้อง: {report.user.classGroupId}
+                                    </span>
+                                  </>
+                                )}
                               </p>
                             </div>
                           </div>

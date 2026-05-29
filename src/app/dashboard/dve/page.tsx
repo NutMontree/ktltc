@@ -131,9 +131,7 @@ function maskSensitiveData(val: string) {
   if (!val || val === "ไม่ระบุรหัส" || val.includes("ไม่ระบุ") || val.includes("ยังไม่กรอก")) {
     return "ยังไม่กรอกรหัสนักศึกษา";
   }
-  const str = val.trim();
-  if (str.length <= 5) return str;
-  return `${str.slice(0, 3)}${"x".repeat(str.length - 5)}${str.slice(-2)}`;
+  return val.trim(); // Return unmasked for the teacher so they have complete info!
 }
 
 // -------------------------------------------------------------
@@ -2095,6 +2093,18 @@ function DVETeacherWorkspace() {
                                         </span>
                                       </div>
 
+                                      {rec.imageUrl && (
+                                        <a
+                                          href={rec.imageUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer border border-emerald-500/10 shadow-sm"
+                                        >
+                                          <Eye size={12} />
+                                          <span>ดูงาน</span>
+                                        </a>
+                                      )}
+
                                       <button
                                         type="button"
                                         onClick={() => {
@@ -2250,6 +2260,18 @@ function DVETeacherWorkspace() {
                                   </span>
                                 </div>
                                 <div className="flex gap-2">
+                                  {rec.imageUrl && (
+                                    <a
+                                      href={rec.imageUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer border border-emerald-500/10 shadow-sm"
+                                    >
+                                      <Eye size={11} />
+                                      <span>ดูงาน</span>
+                                    </a>
+                                  )}
+
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -4164,9 +4186,16 @@ function DVETeacherWorkspace() {
                                           <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-black shrink-0">
                                             {(sub.studentName || "?").charAt(0)}
                                           </div>
-                                          <span className="font-black text-zinc-800 dark:text-zinc-200">
-                                            {sub.studentName}
-                                          </span>
+                                          <div className="flex flex-col">
+                                            <span className="font-black text-zinc-800 dark:text-zinc-200">
+                                              {sub.studentName}
+                                            </span>
+                                            {sub.studentIdNum && (
+                                              <span className="text-[10px] text-zinc-400 font-bold">
+                                                ID: {maskSensitiveData(sub.studentIdNum)}
+                                              </span>
+                                            )}
+                                          </div>
                                         </div>
                                       </td>
                                       {submissionsIsBuiltIn && (

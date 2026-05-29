@@ -11,14 +11,23 @@
  * calculateDistance: คำนวณระยะทางระหว่าง 2 พิกัด
  * @returns ระยะทางที่มีหน่วยเป็น "เมตร" (Meters)
  */
-export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+export function calculateDistance(lat1: any, lon1: any, lat2: any, lon2: any): number {
+  const nLat1 = Number(lat1);
+  const nLon1 = Number(lon1);
+  const nLat2 = Number(lat2);
+  const nLon2 = Number(lon2);
+
+  if (isNaN(nLat1) || isNaN(nLon1) || isNaN(nLat2) || isNaN(nLon2)) {
+    return -1;
+  }
+
   const R = 6371e3; // รัศมีของโลกโดยเฉลี่ย (6,371 กิโลเมตร แปลงเป็นเมตร)
   
   // แปลงองศา (Degree) เป็น เรเดียน (Radian)
-  const φ1 = (lat1 * Math.PI) / 180;
-  const φ2 = (lat2 * Math.PI) / 180;
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+  const φ1 = (nLat1 * Math.PI) / 180;
+  const φ2 = (nLat2 * Math.PI) / 180;
+  const Δφ = ((nLat2 - nLat1) * Math.PI) / 180;
+  const Δλ = ((nLon2 - nLon1) * Math.PI) / 180;
 
   // การคำนวณตามสูตร Haversine
   const a =
