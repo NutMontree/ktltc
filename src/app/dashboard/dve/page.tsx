@@ -376,6 +376,8 @@ function DVETeacherWorkspace() {
       score: string;
       imageUrl?: string;
       unitId?: string;
+      unitTitle?: string;
+      unitSequence?: string | number;
     };
   }>({});
   const [loadingRoster, setLoadingRoster] = useState(false);
@@ -384,6 +386,44 @@ function DVETeacherWorkspace() {
   const [showOnlyInternship, setShowOnlyInternship] = useState(false);
   const [extractingScoreStudentId, setExtractingScoreStudentId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Individual student details & progress states
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
+  const [selectedStudentLogs, setSelectedStudentLogs] = useState<any[]>([]);
+  const [loadingStudentProgress, setLoadingStudentProgress] = useState(false);
+
+  const handleSelectStudentProgress = async (studentId: string) => {
+    setSelectedStudentId(studentId);
+    const student = studentRoster.find((s) => s.id === studentId);
+    setSelectedStudent(student || null);
+    if (!student) {
+      setSelectedStudentLogs([]);
+      return;
+    }
+
+    setLoadingStudentProgress(true);
+    try {
+      const res = await fetch(`/api/dve/attendances?subjectId=${checkinFilter.subjectId}&studentId=${studentId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setSelectedStudentLogs(data.attendances || []);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("ดึงข้อมูลประวัติการส่งงานล้มเหลว");
+    } finally {
+      setLoadingStudentProgress(false);
+    }
+  };
+
+  const handleClearSelectedStudentProgress = () => {
+    setSelectedStudentId(null);
+    setSelectedStudent(null);
+    setSelectedStudentLogs([]);
+  };
 
   const logs = studentRoster.filter((student) => {
     const rec = attendanceRecords[student.id];
@@ -491,6 +531,13 @@ function DVETeacherWorkspace() {
       handleManageUnits(selectedSubject);
     }
   }, [checkinFilter.subjectId]);
+
+  // Auto-load roster when date changes
+  useEffect(() => {
+    if (checkinFilter.subjectId && checkinFilter.date) {
+      handleLoadRoster();
+    }
+  }, [checkinFilter.date]);
 
   // SUBJECT ACTIONS
   const handleSaveSubject = async (e: React.FormEvent) => {
@@ -755,11 +802,34 @@ function DVETeacherWorkspace() {
     }
   };
 
+  const handleDeleteSubmission = async (submissionId: string) => {
+    console.log("handleDeleteSubmission called with submissionId:", submissionId);
+    try {
+      const res = await fetch(`/api/dve/quizzes/submissions?submissionId=${submissionId}`, { method: "DELETE" });
+      console.log("Delete response status:", res.status);
+      if (res.ok) {
+        message.success("ลบงานที่ส่งเรียบร้อยแล้ว");
+        // Reload submissions
+        if (submissionsQuizId) {
+          handleLoadSubmissions(submissionsQuizId, submissionsQuizTitle, submissionsIsBuiltIn);
+        }
+      } else {
+        const errorData = await res.json();
+        console.error("Delete failed:", errorData);
+        message.error("ลบงานที่ส่งล้มเหลว");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      message.error("เกิดข้อผิดพลาดในการลบงานที่ส่ง");
+    }
+  };
+
   // ATTENDANCES / ROSTER ACTIONS
   const handleLoadRoster = async () => {
     const { subjectId, classGroupId, date } = checkinFilter;
     if (!subjectId) return;
 
+    handleClearSelectedStudentProgress();
     setLoadingRoster(true);
     try {
       // 1. Get Subject details to know the department
@@ -799,6 +869,8 @@ function DVETeacherWorkspace() {
             score: existing ? existing.score : "",
             imageUrl: existing ? existing.imageUrl || "" : "",
             unitId: existing ? existing.unitId || "" : "",
+            unitTitle: existing ? existing.unitTitle || "" : "",
+            unitSequence: existing && existing.unitSequence !== undefined ? existing.unitSequence : "",
           };
         });
         setAttendanceRecords(newRecords);
@@ -1048,6 +1120,9 @@ function DVETeacherWorkspace() {
         assignmentStatus: attendanceRecords[s.id]?.assignmentStatus || "None",
         score: attendanceRecords[s.id]?.score || "",
         imageUrl: attendanceRecords[s.id]?.imageUrl || "",
+        unitId: attendanceRecords[s.id]?.unitId || "",
+        unitTitle: attendanceRecords[s.id]?.unitTitle || "",
+        unitSequence: attendanceRecords[s.id]?.unitSequence !== undefined ? attendanceRecords[s.id].unitSequence : "",
       }));
 
       const res = await fetch("/api/dve/attendances", {
@@ -1410,8 +1485,24 @@ function DVETeacherWorkspace() {
                               <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm">
                                 {unit.title}
                               </h4>
+                              <div className="flex items-center gap-3 mt-1 flex-wrap">
+                                {unit.createdAt && (
+                                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold flex items-center gap-1">
+                                    📅 โพสต์เมื่อ: {new Date(unit.createdAt).toLocaleDateString("th-TH", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })}
+                                  </span>
+                                )}
+                                {unit.studyMinutes > 0 && (
+                                  <span className="text-[10px] text-amber-500 font-bold bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
+                                    ⏱️ {unit.studyMinutes} นาที
+                                  </span>
+                                )}
+                              </div>
                               {unit.content && (
-                                <p className="text-xs text-zinc-500 mt-1 whitespace-pre-line leading-relaxed">
+                                <p className="text-xs text-zinc-500 mt-2 whitespace-pre-line leading-relaxed">
                                   {unit.content}
                                 </p>
                               )}
@@ -1753,6 +1844,163 @@ function DVETeacherWorkspace() {
                 </button>
               </div>
             </div>
+
+            {/* 🔍 Individual Student Progress Analyzer */}
+            {studentRoster.length > 0 && (
+              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
+                <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                  <User className="text-emerald-500" size={18} />
+                  ตรวจสอบข้อมูลการส่งงานรายบุคคล (งานที่ส่งและยังไม่ส่ง)
+                </h3>
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <div className="flex-1 w-full">
+                    <Select
+                      showSearch
+                      placeholder="-- ค้นหาหรือเลือกชื่อนักเรียนเพื่อดูประวัติงานทั้งหมด --"
+                      className="w-full h-11"
+                      optionFilterProp="children"
+                      value={selectedStudentId || undefined}
+                      onChange={(val) => handleSelectStudentProgress(val)}
+                      filterOption={(input, option) =>
+                        String(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                      }
+                      options={studentRoster.map((s) => ({
+                        label: `${s.studentIdNum} - ${s.name}`,
+                        value: s.id,
+                      }))}
+                    />
+                  </div>
+                  {selectedStudentId && (
+                    <button
+                      onClick={() => handleClearSelectedStudentProgress()}
+                      className="px-4 py-2 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-850/50 text-zinc-500 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    >
+                      ล้างการเลือก
+                    </button>
+                  )}
+                </div>
+
+                {loadingStudentProgress ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                  </div>
+                ) : selectedStudent ? (
+                  <div className="border dark:border-zinc-800 rounded-xl p-4 space-y-4 bg-zinc-50/50 dark:bg-zinc-950/20">
+                    {/* Student Info Profile Header */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b dark:border-zinc-800">
+                      <div className="flex items-center gap-3">
+                        {selectedStudent.image ? (
+                          <img
+                            src={selectedStudent.image}
+                            className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20 shadow-sm"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black text-lg shadow-sm">
+                            {selectedStudent.name?.charAt(0) || "U"}
+                          </div>
+                        )}
+                        <div>
+                          <h4 className="font-black text-zinc-900 dark:text-white text-base leading-tight">
+                            {selectedStudent.name}
+                          </h4>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-450 font-bold mt-1">
+                            รหัสนักศึกษา: {selectedStudent.studentIdNum} • กลุ่ม: {standardizeClassGroupName(selectedStudent.classGroupId)}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Overall Task Completion Badge */}
+                      <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-xl text-center shrink-0">
+                        <span className="block text-[10px] font-black uppercase tracking-wider opacity-85">
+                          ส่งการบ้านสำเร็จ
+                        </span>
+                        <span className="text-xl font-black tabular-nums">
+                          {selectedStudentLogs.filter((l) => l.assignmentStatus === "Submitted").length} / {units.length}
+                        </span>
+                        <span className="text-xs font-bold block mt-0.5">
+                          หน่วยการเรียน
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Unit Breakdown Checklist */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+                        รายงานการส่งงานรายหน่วยเรียน
+                      </h4>
+                      {units.length === 0 ? (
+                        <p className="text-xs text-zinc-400 text-center py-4 font-bold">
+                          ยังไม่มีหน่วยเรียนในวิชานี้
+                        </p>
+                      ) : (
+                        <div className="grid gap-2">
+                          {units.map((unit) => {
+                            const record = selectedStudentLogs.find((l) => l.unitId === unit.id);
+                            const isSubmitted = record?.assignmentStatus === "Submitted";
+                            const isPending = record?.assignmentStatus === "Pending";
+                            
+                            return (
+                              <div
+                                key={unit.id}
+                                className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl gap-3 text-xs"
+                              >
+                                <div className="space-y-1 min-w-0 flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-black text-zinc-500">
+                                      หน่วยที่ {unit.sequence}
+                                    </span>
+                                    <span className="font-bold text-zinc-800 dark:text-zinc-200 truncate">
+                                      {unit.title}
+                                    </span>
+                                  </div>
+                                  {record?.date && (
+                                    <span className="text-[10px] text-zinc-400 font-bold block">
+                                      📅 บันทึกเมื่อ: {formatThaiDateDisplay(record.date)}
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                                  {/* Status Indicator */}
+                                  <div>
+                                    {isSubmitted ? (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                        ส่งงานแล้ว {record.score ? `(${record.score} คะแนน)` : ""}
+                                      </span>
+                                    ) : isPending ? (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                        ค้างส่ง
+                                      </span>
+                                    ) : (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                        ยังไม่ได้ส่ง
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Evidence Link */}
+                                  {record?.imageUrl && (
+                                    <a
+                                      href={record.imageUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-605 dark:text-emerald-400 hover:bg-emerald-500/15 border border-emerald-500/20 text-[10px] font-black rounded-lg transition-colors cursor-pointer"
+                                    >
+                                      <Eye size={10} />
+                                      <span>เปิดดูงาน</span>
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            )}
 
             {/* Student Roster attendance checkboxes sheet */}
             <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
@@ -4170,6 +4418,7 @@ function DVETeacherWorkspace() {
                                 {submissionsIsBuiltIn && (
                                   <th className="p-3 text-right">ตรวจคำตอบ</th>
                                 )}
+                                <th className="p-3 text-center">จัดการ</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -4256,11 +4505,24 @@ function DVETeacherWorkspace() {
                                           </button>
                                         </td>
                                       )}
+                                      <td className="p-3 text-center">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            if (window.confirm(`ลบงานที่ส่งของ ${sub.studentName}?`)) {
+                                              handleDeleteSubmission(sub.id);
+                                            }
+                                          }}
+                                          className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white rounded-lg text-[10px] font-black transition-all border-0 cursor-pointer"
+                                        >
+                                          <Trash2 size={10} />
+                                        </button>
+                                      </td>
                                     </tr>
                                     {isExpanded && submissionsIsBuiltIn && (
                                       <tr>
                                         <td
-                                          colSpan={6}
+                                          colSpan={7}
                                           className="p-4 bg-indigo-50/30 dark:bg-indigo-950/10"
                                         >
                                           <div className="space-y-2 pl-3 border-l-2 border-indigo-400">
