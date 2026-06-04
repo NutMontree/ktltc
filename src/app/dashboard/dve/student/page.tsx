@@ -752,14 +752,15 @@ export function DVEStudentPortal() {
     fetchSearchOptions();
   }, []);
 
-  // Stats calculators
-  const totalClasses = attendances.length;
-  const presentClasses = attendances.filter((a) => a.status === "Present").length;
-  const lateClasses = attendances.filter((a) => a.status === "Late").length;
-  const absentClasses = attendances.filter((a) => a.status === "Absent").length;
+  // Stats calculators - Filter to show only study unit data (exclude internship/normal classroom data)
+  const studyUnitAttendances = attendances.filter((att) => att.unitId);
+  const totalClasses = studyUnitAttendances.length;
+  const presentClasses = studyUnitAttendances.filter((a) => a.status === "Present").length;
+  const lateClasses = studyUnitAttendances.filter((a) => a.status === "Late").length;
+  const absentClasses = studyUnitAttendances.filter((a) => a.status === "Absent").length;
 
   // คำนวณเปอร์เซ็นต์การเข้าเรียนแบบใหม่ (อิงตามเวลาเรียนรวม)
-  const studiedMinutes = attendances.reduce((sum, att) => {
+  const studiedMinutes = studyUnitAttendances.reduce((sum, att) => {
     // ให้เครดิตเวลาเรียนเต็มโควต้าของหน่วยนั้น ถ้านักเรียนเรียนผ่านแล้ว
     const unit = units.find((u) => u.id === att.unitId);
     return sum + (Number(unit?.totalMinutes) || 0);
@@ -774,19 +775,19 @@ export function DVEStudentPortal() {
       : totalClasses > 0
         ? Math.round(((presentClasses + lateClasses * 0.5) / totalClasses) * 100)
         : 100;
-  const submittedAssignments = attendances.filter((a) => a.assignmentStatus === "Submitted").length;
-  const pendingAssignmentsCount = attendances.filter(
+  const submittedAssignments = studyUnitAttendances.filter((a) => a.assignmentStatus === "Submitted").length;
+  const pendingAssignmentsCount = studyUnitAttendances.filter(
     (a) => a.assignmentStatus === "Pending",
   ).length;
-  const unstudiedUnitsCount = Math.max(0, units.length - attendances.length);
+  const unstudiedUnitsCount = Math.max(0, units.length - studyUnitAttendances.length);
   const missingTasksCount = unstudiedUnitsCount + pendingAssignmentsCount;
 
-  // Generate notifications
+  // Generate notifications - Use filtered study unit attendances
   useEffect(() => {
     const newNotifications: any[] = [];
 
     // Notification for incomplete assignments
-    const pendingAssignments = attendances.filter((a) => a.assignmentStatus === "Pending");
+    const pendingAssignments = studyUnitAttendances.filter((a) => a.assignmentStatus === "Pending");
     if (pendingAssignments.length > 0) {
       newNotifications.push({
         id: "pending-assignments",
@@ -810,7 +811,7 @@ export function DVEStudentPortal() {
     }
 
     // Notification for missed attendance
-    const missedClasses = attendances.filter((a) => a.status === "Absent");
+    const missedClasses = studyUnitAttendances.filter((a) => a.status === "Absent");
     if (missedClasses.length > 0) {
       newNotifications.push({
         id: "missed-attendance",
@@ -822,7 +823,7 @@ export function DVEStudentPortal() {
     }
 
     setNotifications(newNotifications);
-  }, [attendances, quizzes]);
+  }, [studyUnitAttendances, quizzes]);
 
   const getRoleThaiLabel = (role?: string) => {
     if (!role) return "นักเรียน / นักศึกษา";
@@ -1258,7 +1259,9 @@ export function DVEStudentPortal() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
-                          {attendances.map((att) => {
+                          {attendances
+                            .filter((att) => att.unitId) // Filter to show only records with unitId (study units)
+                            .map((att) => {
                             const dateObj = new Date(att.date);
                             const formattedDate = isNaN(dateObj.getTime())
                               ? att.date
@@ -1375,7 +1378,9 @@ export function DVEStudentPortal() {
 
                     {/* Mobile Roster Cards View (Visible on Small screens and below, optimized down to px-2 layout) */}
                     <div className="block md:hidden space-y-4">
-                      {attendances.map((att) => {
+                      {attendances
+                        .filter((att) => att.unitId) // Filter to show only records with unitId (study units)
+                        .map((att) => {
                         const dateObj = new Date(att.date);
                         const formattedDate = isNaN(dateObj.getTime())
                           ? att.date

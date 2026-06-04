@@ -282,18 +282,43 @@ export async function DELETE(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id")?.trim();
     const subjectId = searchParams.get("subjectId")?.trim();
     const date = searchParams.get("date")?.trim();
     const classGroupId = searchParams.get("classGroupId")?.trim();
     const studentId = searchParams.get("studentId")?.trim();
 
-    if (!subjectId || !date) {
-      return NextResponse.json({ error: "Missing required parameters subjectId or date" }, { status: 400 });
-    }
-
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const userId = (session.user as any)?.id || "";
+
+    // Delete by individual record ID
+    if (id) {
+      if (!ObjectId.isValid(id)) {
+        return NextResponse.json({ error: "Invalid record ID" }, { status: 400 });
+      }
+
+      // Fetch the attendance record to check subject ownership
+      const record = await db.collection("dve_attendances").findOne({ _id: new ObjectId(id) });
+      if (!record) {
+        return NextResponse.json({ error: "Record not found" }, { status: 404 });
+      }
+
+      if (!(await isOwnedSubject(db, record.subjectId, userId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+
+      await db.collection("dve_attendances").deleteOne({ _id: new ObjectId(id) });
+      return NextResponse.json({
+        success: true,
+        message: "ลบบันทึกการส่งงานเรียบร้อยแล้ว",
+      });
+    }
+
+    // Bulk deletion by subjectId, date, classGroupId, studentId
+    if (!subjectId || !date) {
+      return NextResponse.json({ error: "Missing required parameters subjectId or date" }, { status: 400 });
+    }
 
     if (!(await isOwnedSubject(db, subjectId, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
