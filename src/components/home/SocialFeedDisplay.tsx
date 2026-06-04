@@ -41,8 +41,8 @@ export default function SocialFeedDisplay({
   }, [feeds]);
 
   return (
-    <section className="py-12 px-4">
-      <div className="max-w-[1600px] mx-auto bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-zinc-200/50 dark:shadow-none">
+    <section className="py-12">
+      <div className="max-w-[1600px] mx-auto bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[3rem] p-4 shadow-2xl shadow-zinc-200/50 dark:shadow-none">
         
         {/* หัวข้อส่วนวิดีโอ */}
         <div className="flex flex-col items-center text-center mb-12">
@@ -67,7 +67,7 @@ export default function SocialFeedDisplay({
                 className="group border border-zinc-100 dark:border-zinc-800 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md"
               >
                 {/* ส่วนหัวของรายการ (กดเพื่อกางออก) */}
-                <summary className="flex items-center justify-between p-6 cursor-pointer list-none bg-white dark:bg-zinc-900 outline-none">
+                <summary className="flex items-center justify-between p-4 cursor-pointer list-none bg-white dark:bg-zinc-900 outline-none">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500">
                       <FiYoutube size={20} />
