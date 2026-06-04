@@ -824,6 +824,28 @@ function DVETeacherWorkspace() {
     }
   };
 
+  const handleDeleteAttendanceRecord = async (recordId: string) => {
+    console.log("handleDeleteAttendanceRecord called with recordId:", recordId);
+    try {
+      const res = await fetch(`/api/dve/attendances?id=${recordId}`, { method: "DELETE" });
+      console.log("Delete attendance response status:", res.status);
+      if (res.ok) {
+        message.success("ลบบันทึกการส่งงานเรียบร้อยแล้ว");
+        // Reload student progress
+        if (selectedStudentId) {
+          handleSelectStudentProgress(selectedStudentId);
+        }
+      } else {
+        const errorData = await res.json();
+        console.error("Delete attendance failed:", errorData);
+        message.error("ลบบันทึกการส่งงานล้มเหลว");
+      }
+    } catch (err) {
+      console.error("Delete attendance error:", err);
+      message.error("เกิดข้อผิดพลาดในการลบบันทึกการส่งงาน");
+    }
+  };
+
   // ATTENDANCES / ROSTER ACTIONS
   const handleLoadRoster = async () => {
     const { subjectId, classGroupId, date } = checkinFilter;
@@ -1989,6 +2011,22 @@ function DVETeacherWorkspace() {
                                       <Eye size={10} />
                                       <span>เปิดดูงาน</span>
                                     </a>
+                                  )}
+
+                                  {/* Delete Button */}
+                                  {record && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (window.confirm(`ลบบันทึกการส่งงานของ ${selectedStudent.name} ในหน่วยที่ ${unit.sequence}?`)) {
+                                          handleDeleteAttendanceRecord(record.id || record._id?.toString());
+                                        }
+                                      }}
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 text-[10px] font-black rounded-lg transition-colors cursor-pointer"
+                                    >
+                                      <Trash2 size={10} />
+                                      <span>ลบ</span>
+                                    </button>
                                   )}
                                 </div>
                               </div>
