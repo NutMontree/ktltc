@@ -1471,7 +1471,7 @@ function DVETeacherWorkspace() {
                           key={unit.id}
                           className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 relative group"
                         >
-                          <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute top-4 right-4 flex gap-2  transition-opacity">
                             <button
                               onClick={() => {
                                 setUnitForm({
