@@ -92,6 +92,7 @@ export async function GET(req: Request) {
         sequence: u.sequence || 0,
         studyMinutes: u.studyMinutes || 0,
         totalMinutes: u.totalMinutes || 0,
+        createdAt: u.createdAt || null,
       })),
     });
   } catch (error: any) {

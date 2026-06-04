@@ -157,7 +157,9 @@ export function DVEStudentPortal() {
 
   // DVE Virtual Study Room timer states
   const [activeStudyUnit, setActiveStudyUnit] = useState<any>(null);
-  const [unitQuizMode, setUnitQuizMode] = useState<"pretest" | "learning" | "posttest" | null>(null);
+  const [unitQuizMode, setUnitQuizMode] = useState<"pretest" | "learning" | "posttest" | null>(
+    null,
+  );
   const [studySecondsElapsed, setStudySecondsElapsed] = useState<number>(0);
   const [isStudyCompleted, setIsStudyCompleted] = useState<boolean>(false);
   const [isSubmittingAttendance, setIsSubmittingAttendance] = useState<boolean>(false);
@@ -296,7 +298,10 @@ export function DVEStudentPortal() {
         const shuffledQuestions = [...quiz.questions];
         for (let i = shuffledQuestions.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+          [shuffledQuestions[i], shuffledQuestions[j]] = [
+            shuffledQuestions[j],
+            shuffledQuestions[i],
+          ];
         }
         processedQuiz.questions = shuffledQuestions;
       }
@@ -317,9 +322,7 @@ export function DVEStudentPortal() {
     if (!session?.user || !activeSubject) return;
 
     // Mark this quiz as submitted in local state
-    setQuizzes((prev) =>
-      prev.map((q) => (q.id === quiz.id ? { ...q, isSubmitted: true } : q)),
-    );
+    setQuizzes((prev) => prev.map((q) => (q.id === quiz.id ? { ...q, isSubmitted: true } : q)));
 
     try {
       // Record a dummy submission in the database to prevent doing it again
@@ -521,10 +524,13 @@ export function DVEStudentPortal() {
         // Check if there is a quiz available for this specific unit
         const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
         const targetQuizzes = quizzes.filter((q) => q.unitId === currentUnitId);
-        
+
         if (targetQuizzes && targetQuizzes.length > 0) {
           // Find posttest or just use the first quiz for this unit
-          const targetQuiz = targetQuizzes.find(q => q.title.toLowerCase().includes("post") || q.title.includes("หลังเรียน")) || targetQuizzes[0];
+          const targetQuiz =
+            targetQuizzes.find(
+              (q) => q.title.toLowerCase().includes("post") || q.title.includes("หลังเรียน"),
+            ) || targetQuizzes[0];
           message.loading("📝 เรียนจบเวลาแล้ว! กำลังเตรียมแบบทดสอบประเมินผล...", 3);
           setTimeout(() => {
             handleOpenQuizFormGlobal(targetQuiz);
@@ -575,16 +581,20 @@ export function DVEStudentPortal() {
               setIsStudyCompleted(true);
               // Trigger auto check-in
               handleAutoCheckin(activeStudyUnit);
-              
+
               // Automatically jump to Post-test if it exists and is not submitted
               const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
-              const posttest = quizzes.find((q) => q.unitId === currentUnitIdStr && (q.quizType === "posttest" || q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")));
+              const posttest = quizzes.find(
+                (q) =>
+                  q.unitId === currentUnitIdStr &&
+                  (q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")),
+              );
               if (posttest && !posttest.isSubmitted) {
                 setUnitQuizMode("posttest");
                 // Open the modal automatically
                 handleOpenQuizFormGlobal(posttest);
               }
-              
+
               return studyLimitSeconds;
             }
             return nextVal;
@@ -603,7 +613,11 @@ export function DVEStudentPortal() {
     if (!isQuizModalOpen && activeStudyUnit) {
       if (unitQuizMode === "pretest") {
         const unitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
-        const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.quizType === "pretest" || q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
+        const pretest = quizzes.find(
+          (q) =>
+            q.unitId === unitIdStr &&
+            (q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")),
+        );
         if (pretest?.isSubmitted) {
           setUnitQuizMode("learning");
         } else {
@@ -661,7 +675,13 @@ export function DVEStudentPortal() {
 
   // Filter teachers/subjects when department changes
   const handleDepartmentChange = async (dept: string) => {
-    setSearchState({ department: dept, teacherId: "", subjectId: "", assignmentName: "", timePeriod: "all" });
+    setSearchState({
+      department: dept,
+      teacherId: "",
+      subjectId: "",
+      assignmentName: "",
+      timePeriod: "all",
+    });
     setActiveSubject(null);
     try {
       const res = await fetch(`/api/dve/search?department=${encodeURIComponent(dept)}`);
@@ -737,24 +757,27 @@ export function DVEStudentPortal() {
   const presentClasses = attendances.filter((a) => a.status === "Present").length;
   const lateClasses = attendances.filter((a) => a.status === "Late").length;
   const absentClasses = attendances.filter((a) => a.status === "Absent").length;
-  
+
   // คำนวณเปอร์เซ็นต์การเข้าเรียนแบบใหม่ (อิงตามเวลาเรียนรวม)
   const studiedMinutes = attendances.reduce((sum, att) => {
     // ให้เครดิตเวลาเรียนเต็มโควต้าของหน่วยนั้น ถ้านักเรียนเรียนผ่านแล้ว
-    const unit = units.find(u => u.id === att.unitId);
+    const unit = units.find((u) => u.id === att.unitId);
     return sum + (Number(unit?.totalMinutes) || 0);
   }, 0);
-  
+
   const requiredTotalMinutes = (Number(activeSubject?.totalHours) || 0) * 60;
-  
+
   // ถ้าครูตั้งค่าเวลาเรียนไว้ ให้ใช้สูตรใหม่ ถ้ายังไม่ตั้ง (วิชาเก่า) ให้ใช้สูตรเดิมไปก่อน
-  const attendanceRate = requiredTotalMinutes > 0
-    ? Math.min(100, Math.round((studiedMinutes / requiredTotalMinutes) * 100))
-    : (totalClasses > 0
+  const attendanceRate =
+    requiredTotalMinutes > 0
+      ? Math.min(100, Math.round((studiedMinutes / requiredTotalMinutes) * 100))
+      : totalClasses > 0
         ? Math.round(((presentClasses + lateClasses * 0.5) / totalClasses) * 100)
-        : 100);
+        : 100;
   const submittedAssignments = attendances.filter((a) => a.assignmentStatus === "Submitted").length;
-  const pendingAssignmentsCount = attendances.filter((a) => a.assignmentStatus === "Pending").length;
+  const pendingAssignmentsCount = attendances.filter(
+    (a) => a.assignmentStatus === "Pending",
+  ).length;
   const unstudiedUnitsCount = Math.max(0, units.length - attendances.length);
   const missingTasksCount = unstudiedUnitsCount + pendingAssignmentsCount;
 
@@ -814,16 +837,14 @@ export function DVEStudentPortal() {
   return (
     <div className="max-w-[1200px] mx-auto space-y-4 px-2 py-2 sm:py-4">
       {/* Student Portal Banner */}
-      <div className="relative rounded-[20px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-4 sm:p-6 shadow-xl shadow-emerald-500/10">
-        {/* Decorative elements background wrapper to prevent clipping of notifications dropdown */}
-        <div className="absolute inset-0 rounded-[20px] overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
-            <GraduationCap size={140} className="w-24 h-24 sm:w-32 sm:h-32" />
-          </div>
-
-          <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-          <div className="absolute right-1/4 top-1/4 w-20 h-20 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-[20px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-4 sm:p-6 shadow-xl shadow-emerald-500/10">
+        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
+          <GraduationCap size={140} className="w-24 h-24 sm:w-32 sm:h-32" />
         </div>
+
+        {/* Decorative elements */}
+        <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+        <div className="absolute right-1/4 top-1/4 w-20 h-20 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
           <div className="space-y-2 sm:space-y-4 max-w-2xl">
@@ -867,52 +888,6 @@ export function DVEStudentPortal() {
                 <p className="text-[10px] text-white/70 font-medium truncate">
                   {getRoleThaiLabel((session.user as any)?.role)}
                 </p>
-              </div>
-
-              {/* Notification Bell */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="w-12 h-12 rounded-xl bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center border border-white/20 relative"
-                >
-                  <Bell size={20} className="text-white" />
-                  {notifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-emerald-600">
-                      {notifications.length}
-                    </span>
-                  )}
-                </button>
-
-                {/* Notification Dropdown */}
-                {showNotifications && notifications.length > 0 && (
-                  <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-800 z-50">
-                    <div className="p-3 border-b dark:border-zinc-800">
-                      <h3 className="text-xs font-black text-zinc-900 dark:text-white">การแจ้งเตือน</h3>
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {notifications.map((notif) => (
-                        <div
-                          key={notif.id}
-                          className={`p-3 border-b dark:border-zinc-800 last:border-0 ${
-                            notif.type === "warning" ? "bg-amber-50 dark:bg-amber-900/10" :
-                            notif.type === "error" ? "bg-rose-50 dark:bg-rose-900/10" :
-                            "bg-blue-50 dark:bg-blue-900/10"
-                          }`}
-                        >
-                          <div className="flex items-start gap-2">
-                            {notif.type === "warning" && <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />}
-                            {notif.type === "error" && <XCircle size={14} className="text-rose-500 shrink-0 mt-0.5" />}
-                            {notif.type === "info" && <Info size={14} className="text-blue-500 shrink-0 mt-0.5" />}
-                            <div>
-                              <p className="text-xs font-black text-zinc-900 dark:text-white">{notif.title}</p>
-                              <p className="text-[10px] text-zinc-600 dark:text-zinc-400">{notif.message}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -986,7 +961,9 @@ export function DVEStudentPortal() {
               placeholder="พิมพ์ชื่องาน..."
               className="w-full h-9 sm:h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-2 sm:px-3 text-xs sm:text-sm focus:outline-hidden dark:text-white placeholder-zinc-400 font-bold"
               value={searchState.assignmentName}
-              onChange={(e) => setSearchState((prev) => ({ ...prev, assignmentName: e.target.value }))}
+              onChange={(e) =>
+                setSearchState((prev) => ({ ...prev, assignmentName: e.target.value }))
+              }
             />
           </div>
 
@@ -1013,7 +990,11 @@ export function DVEStudentPortal() {
       <AnimatePresence mode="wait">
         {loadingSubjectData && <DVELoader />}
 
-        {!loadingSubjectData && searchState.department && searchState.teacherId && searchState.subjectId && activeSubject ? (
+        {!loadingSubjectData &&
+        searchState.department &&
+        searchState.teacherId &&
+        searchState.subjectId &&
+        activeSubject ? (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1070,7 +1051,9 @@ export function DVEStudentPortal() {
                   <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
                     <div className="flex items-center gap-2">
                       <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" />
-                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">เข้าเรียน/งานที่ส่งแล้ว</span>
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        เข้าเรียน/งานที่ส่งแล้ว
+                      </span>
                     </div>
                     <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
                       {attendances.length} / {units.length} หน่วย
@@ -1079,7 +1062,9 @@ export function DVEStudentPortal() {
                   <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800/50">
                     <div className="flex items-center gap-2">
                       <Clock size={16} className="text-amber-600 dark:text-amber-400" />
-                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">หน่วยเรียน/งานที่ค้าง</span>
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        หน่วยเรียน/งานที่ค้าง
+                      </span>
                     </div>
                     <span className="text-sm font-black text-amber-600 dark:text-amber-400">
                       {missingTasksCount}
@@ -1088,7 +1073,9 @@ export function DVEStudentPortal() {
                   <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800/50">
                     <div className="flex items-center gap-2">
                       <Award size={16} className="text-blue-600 dark:text-blue-400" />
-                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">แบบทดสอบที่ทำแล้ว</span>
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        แบบทดสอบที่ทำแล้ว
+                      </span>
                     </div>
                     <span className="text-sm font-black text-blue-600 dark:text-blue-400">
                       {quizzes.filter((q) => q.isSubmitted).length} / {quizzes.length}
@@ -1097,18 +1084,22 @@ export function DVEStudentPortal() {
                   <div className="flex items-center justify-between p-3 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-200 dark:border-rose-800/50">
                     <div className="flex items-center gap-2">
                       <AlertTriangle size={16} className="text-rose-600 dark:text-rose-400" />
-                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">งานทั้งหมดที่ค้าง</span>
+                      <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        งานทั้งหมดที่ค้าง
+                      </span>
                     </div>
                     <span className="text-sm font-black text-rose-600 dark:text-rose-400">
-                      {missingTasksCount + (quizzes.filter((q) => !q.isSubmitted).length)}
+                      {missingTasksCount + quizzes.filter((q) => !q.isSubmitted).length}
                     </span>
                   </div>
-                  {units.length > 0 && missingTasksCount === 0 && quizzes.filter((q) => q.isSubmitted).length === quizzes.length && (
-                    <div className="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-emerald-500 to-teal-500 rounded-xl text-white">
-                      <Sparkles size={16} />
-                      <span className="text-xs font-black">ทำงานครบถ้วนแล้ว! 🎉</span>
-                    </div>
-                  )}
+                  {units.length > 0 &&
+                    missingTasksCount === 0 &&
+                    quizzes.filter((q) => q.isSubmitted).length === quizzes.length && (
+                      <div className="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-emerald-500 to-teal-500 rounded-xl text-white">
+                        <Sparkles size={16} />
+                        <span className="text-xs font-black">ทำงานครบถ้วนแล้ว! 🎉</span>
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -1192,8 +1183,13 @@ export function DVEStudentPortal() {
                         type="button"
                         onClick={() => {
                           const unitIdStr = unit.id || unit._id?.toString();
-                          const pretest = quizzes.find((q) => q.unitId === unitIdStr && (q.quizType === "pretest" || q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")));
-                          
+                          const pretest = quizzes.find(
+                            (q) =>
+                              q.unitId === unitIdStr &&
+                              (q.title.includes("ก่อนเรียน") ||
+                                q.title.toLowerCase().includes("pre")),
+                          );
+
                           if (pretest && !pretest.isSubmitted) {
                             setUnitQuizMode("pretest");
                             setActiveStudyUnit(unit);
@@ -1202,7 +1198,7 @@ export function DVEStudentPortal() {
                             handleOpenQuizFormGlobal(pretest);
                             return;
                           }
-                          
+
                           setUnitQuizMode("learning");
                           setActiveStudyUnit(unit);
                           setStudySecondsElapsed(0);
@@ -1234,10 +1230,15 @@ export function DVEStudentPortal() {
 
               {/* บันทึกเวลาเรียนและการส่งหลักฐานคะแนน */}
               <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
-                <h3 className="text-base font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-                  <ClipboardList size={18} className="text-emerald-500" />
-                  บันทึกเวลาเรียนและการส่งหลักฐานคะแนน
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                    <ClipboardList size={18} className="text-emerald-500" />
+                    บันทึกเวลาเรียนและการส่งหลักฐานคะแนน
+                  </h3>
+                  <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                    วันที่: {new Date().toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                </div>
                 {attendances.length === 0 ? (
                   <div className="text-center py-8 text-zinc-400 dark:text-zinc-500 text-sm font-bold border border-dashed dark:border-zinc-800 rounded-xl">
                     ยังไม่มีบันทึกประวัติเข้าเรียนหรือส่งงานในรายวิชานี้
@@ -1345,9 +1346,9 @@ export function DVEStudentPortal() {
                                       >
                                         <Upload size={11} />
                                         <span>📎 จัดการส่งงาน/เอกสาร</span>
-                                        {quizzes.filter(q => q.fileUrl).length > 0 && (
+                                        {quizzes.filter((q) => q.fileUrl).length > 0 && (
                                           <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
-                                            {quizzes.filter(q => q.fileUrl).length}
+                                            {quizzes.filter((q) => q.fileUrl).length}
                                           </span>
                                         )}
                                       </button>
@@ -1488,9 +1489,9 @@ export function DVEStudentPortal() {
                                   >
                                     <Upload size={11} />
                                     <span>📎 ส่งงาน/เอกสารเพิ่มเติม</span>
-                                    {quizzes.filter(q => q.fileUrl).length > 0 && (
+                                    {quizzes.filter((q) => q.fileUrl).length > 0 && (
                                       <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
-                                        {quizzes.filter(q => q.fileUrl).length}
+                                        {quizzes.filter((q) => q.fileUrl).length}
                                       </span>
                                     )}
                                   </button>
@@ -1522,7 +1523,9 @@ export function DVEStudentPortal() {
                   กรุณาเลือกข้อมูลเพื่อแสดงรายละเอียดรายวิชา
                 </h3>
                 <p className="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto font-medium">
-                  กรุณาเลือก <b>แผนกวิชา</b>, <b>อาจารย์ผู้สอน</b> และ <b>รายวิชาทวิภาคี</b> ให้ครบทั้ง 3 รายการด้านบน เพื่อเปิดหอเรียนรู้เสมือนจริง ดาวน์โหลดเอกสารประกอบ และเช็คชื่อเข้าเรียนครับ
+                  กรุณาเลือก <b>แผนกวิชา</b>, <b>อาจารย์ผู้สอน</b> และ <b>รายวิชาทวิภาคี</b>{" "}
+                  ให้ครบทั้ง 3 รายการด้านบน เพื่อเปิดหอเรียนรู้เสมือนจริง ดาวน์โหลดเอกสารประกอบ
+                  และเช็คชื่อเข้าเรียนครับ
                 </p>
               </div>
             </motion.div>
@@ -1778,8 +1781,6 @@ export function DVEStudentPortal() {
                         })
                         .map((quiz: any, qIdx: number) => {
                           const isQuizSubmitted = !!quiz.isSubmitted;
-                          const isPretest = quiz.quizType === "pretest" || quiz.title.includes("ก่อนเรียน") || quiz.title.toLowerCase().includes("pre");
-                          const isAllowedToTake = isPretest || isStudyCompleted;
                           return (
                             <div
                               key={quiz.id || qIdx}
@@ -1792,69 +1793,75 @@ export function DVEStudentPortal() {
                               <div className="space-y-0.5 text-center sm:text-left">
                                 <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
                                   แบบทดสอบวิชาเรียนที่ {qIdx + 1}
-                              </span>
-                              <div className="flex flex-wrap items-center gap-1.5 justify-center sm:justify-start">
-                                <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
-                                  {quiz.title}
-                                </h4>
-                                {quiz.quizType === "pretest" && (
-                                  <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
-                                    ก่อนเรียน (Pre-test)
-                                  </span>
-                                )}
-                                {quiz.quizType === "posttest" && (
-                                  <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
-                                    หลังเรียน (Post-test)
-                                  </span>
-                                )}
-                                {quiz.quizType === "general" && (
-                                  <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20">
-                                    ทั่วไป
-                                  </span>
-                                )}
-                                {quiz.isBuiltIn && quiz.isShuffle && (
-                                  <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20">
-                                    🔀 สลับข้อ
-                                  </span>
-                                )}
+                                </span>
+                                <div className="flex flex-wrap items-center gap-1.5 justify-center sm:justify-start">
+                                  <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
+                                    {quiz.title}
+                                  </h4>
+                                  {quiz.quizType === "pretest" && (
+                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
+                                      ก่อนเรียน (Pre-test)
+                                    </span>
+                                  )}
+                                  {quiz.quizType === "posttest" && (
+                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
+                                      หลังเรียน (Post-test)
+                                    </span>
+                                  )}
+                                  {quiz.quizType === "general" && (
+                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20">
+                                      ทั่วไป
+                                    </span>
+                                  )}
+                                  {quiz.isBuiltIn && quiz.isShuffle && (
+                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20">
+                                      🔀 สลับข้อ
+                                    </span>
+                                  )}
+                                </div>
                               </div>
+                              <button
+                                type="button"
+                                disabled={isQuizSubmitted}
+                                className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${
+                                  isQuizSubmitted
+                                    ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
+                                    : isStudyCompleted
+                                      ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                                      : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
+                                }`}
+                                onClick={() => {
+                                  if (isQuizSubmitted) return;
+                                  if (!isStudyCompleted) {
+                                    message.warning(
+                                      `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${activeStudyUnit.studyMinutes} นาทีก่อนทำแบบทดสอบประเมิน`,
+                                    );
+                                  } else {
+                                    handleOpenQuizFormGlobal(quiz);
+                                  }
+                                }}
+                              >
+                                {isQuizSubmitted ? (
+                                  <>
+                                    <CheckCircle size={12} className="text-emerald-500" />
+                                    ทำแบบทดสอบแล้ว
+                                  </>
+                                ) : (
+                                  <>
+                                    {quiz.isBuiltIn
+                                      ? "เริ่มทำข้อสอบท้ายบทเรียน"
+                                      : "เริ่มทำแบบทดสอบประเมิน"}
+                                    {quiz.isBuiltIn ? (
+                                      <ArrowRight size={12} />
+                                    ) : (
+                                      <ExternalLink size={12} />
+                                    )}
+                                  </>
+                                )}
+                              </button>
                             </div>
-                            <button
-                              type="button"
-                              disabled={isQuizSubmitted}
-                              className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${
-                                isQuizSubmitted
-                                  ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
-                                  : isAllowedToTake
-                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
-                                    : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
-                              }`}
-                              onClick={() => {
-                                if (isQuizSubmitted) return;
-                                if (!isAllowedToTake) {
-                                  message.warning(
-                                    `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${activeStudyUnit.studyMinutes} นาทีก่อนทำแบบทดสอบประเมิน`,
-                                  );
-                                } else {
-                                  handleOpenQuizFormGlobal(quiz);
-                                }
-                              }}
-                            >
-                              {isQuizSubmitted ? (
-                                <>
-                                  <CheckCircle size={12} className="text-emerald-500" />
-                                  ทำแบบทดสอบแล้ว
-                                </>
-                              ) : (
-                                <>
-                                  {quiz.isBuiltIn ? "เริ่มทำข้อสอบท้ายบทเรียน" : "เริ่มทำแบบทดสอบประเมิน"}
-                                  {quiz.isBuiltIn ? <ArrowRight size={12} /> : <ExternalLink size={12} />}
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                     </div>
                   </div>
                 )}
@@ -1939,7 +1946,9 @@ export function DVEStudentPortal() {
                     {/* Questions cards */}
                     <div className="space-y-4">
                       {(activeQuiz.questions || []).map((q: any, qIdx: number) => {
-                        const studentAnsObj = quizAnswers.find((a) => String(a.questionId) === String(q.id));
+                        const studentAnsObj = quizAnswers.find(
+                          (a) => String(a.questionId) === String(q.id),
+                        );
                         const currentAnswer = studentAnsObj ? studentAnsObj.answer : "";
 
                         return (
@@ -1970,7 +1979,9 @@ export function DVEStudentPortal() {
                                       checked={currentAnswer === opt}
                                       onChange={() => {
                                         const updated = quizAnswers.map((a) =>
-                                          String(a.questionId) === String(q.id) ? { ...a, answer: opt } : a,
+                                          String(a.questionId) === String(q.id)
+                                            ? { ...a, answer: opt }
+                                            : a,
                                         );
                                         setQuizAnswers(updated);
                                       }}
@@ -2007,7 +2018,9 @@ export function DVEStudentPortal() {
                                             nextArr = nextArr.filter((v) => v !== opt);
                                           }
                                           const updated = quizAnswers.map((a) =>
-                                            String(a.questionId) === String(q.id) ? { ...a, answer: nextArr } : a,
+                                            String(a.questionId) === String(q.id)
+                                              ? { ...a, answer: nextArr }
+                                              : a,
                                           );
                                           setQuizAnswers(updated);
                                         }}
@@ -2029,7 +2042,9 @@ export function DVEStudentPortal() {
                                   value={(currentAnswer as string) || ""}
                                   onChange={(e) => {
                                     const updated = quizAnswers.map((a) =>
-                                      String(a.questionId) === String(q.id) ? { ...a, answer: e.target.value } : a,
+                                      String(a.questionId) === String(q.id)
+                                        ? { ...a, answer: e.target.value }
+                                        : a,
                                     );
                                     setQuizAnswers(updated);
                                   }}
@@ -2113,7 +2128,9 @@ export function DVEStudentPortal() {
                       </h3>
                       <div className="space-y-3 max-h-[30vh] overflow-y-auto pr-1">
                         {(activeQuiz.questions || []).map((q: any, qIdx: number) => {
-                          const studentAnsObj = quizAnswers.find((a) => String(a.questionId) === String(q.id));
+                          const studentAnsObj = quizAnswers.find(
+                            (a) => String(a.questionId) === String(q.id),
+                          );
                           const studentAns = studentAnsObj ? studentAnsObj.answer : "";
 
                           let isCorrect = false;
@@ -2288,7 +2305,10 @@ export function DVEStudentPortal() {
 
                   {quizzes.length === 0 ? (
                     <div className="text-center py-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
-                      <ClipboardList size={32} className="text-zinc-350 dark:text-zinc-755 animate-pulse" />
+                      <ClipboardList
+                        size={32}
+                        className="text-zinc-350 dark:text-zinc-755 animate-pulse"
+                      />
                       <p className="text-xs text-zinc-400 dark:text-zinc-555 font-black">
                         ยังไม่มีหัวข้อแบบทดสอบหรือการส่งงานในวิชานี้
                       </p>
@@ -2314,11 +2334,13 @@ export function DVEStudentPortal() {
                             <div className="flex items-start justify-between gap-3 p-4 pb-3">
                               <div className="space-y-1.5 flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className={`inline-block text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                                    isBuiltIn
-                                      ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
-                                      : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-                                  }`}>
+                                  <span
+                                    className={`inline-block text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                                      isBuiltIn
+                                        ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
+                                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                                    }`}
+                                  >
                                     {isBuiltIn ? "🧠 แบบทดสอบในระบบ" : "🔗 งานภายนอก"}
                                   </span>
                                   {quiz.quizType === "pretest" && (
@@ -2371,7 +2393,10 @@ export function DVEStudentPortal() {
                             {isBuiltIn ? (
                               <div className="mx-4 mb-4 bg-white dark:bg-zinc-900 border border-purple-100 dark:border-purple-900/40 rounded-xl p-3 flex items-center gap-2">
                                 <div className="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
-                                  <Award size={14} className="text-purple-600 dark:text-purple-400" />
+                                  <Award
+                                    size={14}
+                                    className="text-purple-600 dark:text-purple-400"
+                                  />
                                 </div>
                                 <div>
                                   <p className="text-[10px] font-black text-zinc-700 dark:text-zinc-300">
@@ -2395,7 +2420,10 @@ export function DVEStudentPortal() {
                                     className="w-full flex items-center gap-3 bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-400 dark:hover:border-emerald-600/70 rounded-xl px-3 py-2.5 transition-all group cursor-pointer"
                                   >
                                     <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                      <FolderOpen size={15} className="text-emerald-600 dark:text-emerald-400" />
+                                      <FolderOpen
+                                        size={15}
+                                        className="text-emerald-600 dark:text-emerald-400"
+                                      />
                                     </div>
                                     <span className="text-[11px] text-zinc-700 dark:text-zinc-300 font-black truncate flex-1 text-left">
                                       {quiz.fileName || "เอกสารหลักฐานแนบ"}
@@ -2409,7 +2437,9 @@ export function DVEStudentPortal() {
                                 {/* Upload controls row */}
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                   <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500">
-                                    {isUploadedFile ? "🔄 เปลี่ยน/อัปเดตไฟล์:" : "📎 แนบไฟล์งานยืนยัน:"}
+                                    {isUploadedFile
+                                      ? "🔄 เปลี่ยน/อัปเดตไฟล์:"
+                                      : "📎 แนบไฟล์งานยืนยัน:"}
                                   </span>
                                   <div className="flex gap-2 flex-wrap">
                                     {isUploading ? (
@@ -2448,7 +2478,9 @@ export function DVEStudentPortal() {
                                           }`}
                                         >
                                           <Upload size={10} />
-                                          <span>{isUploadedFile ? "เปลี่ยนไฟล์" : "อัปโหลดไฟล์งาน"}</span>
+                                          <span>
+                                            {isUploadedFile ? "เปลี่ยนไฟล์" : "อัปโหลดไฟล์งาน"}
+                                          </span>
                                         </label>
                                       </>
                                     )}
@@ -2470,7 +2502,9 @@ export function DVEStudentPortal() {
                   <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-zinc-900 border-b border-zinc-800/80 shrink-0">
                     <div className="flex items-center gap-2 overflow-hidden">
                       <FolderOpen size={15} className="text-emerald-400 shrink-0" />
-                      <span className="text-xs font-black text-zinc-200 truncate">{filePreviewName}</span>
+                      <span className="text-xs font-black text-zinc-200 truncate">
+                        {filePreviewName}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <a
@@ -2484,7 +2518,10 @@ export function DVEStudentPortal() {
                       </a>
                       <button
                         type="button"
-                        onClick={() => { setFilePreviewUrl(null); setFilePreviewName(null); }}
+                        onClick={() => {
+                          setFilePreviewUrl(null);
+                          setFilePreviewName(null);
+                        }}
                         className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors text-xs font-black cursor-pointer border-0"
                       >
                         ✕
@@ -2512,7 +2549,9 @@ export function DVEStudentPortal() {
                         </div>
                         <div>
                           <p className="text-sm font-black text-zinc-200">{filePreviewName}</p>
-                          <p className="text-xs text-zinc-500 mt-1 font-bold">ไม่สามารถแสดงตัวอย่างได้</p>
+                          <p className="text-xs text-zinc-500 mt-1 font-bold">
+                            ไม่สามารถแสดงตัวอย่างได้
+                          </p>
                         </div>
                         <a
                           href={filePreviewUrl}

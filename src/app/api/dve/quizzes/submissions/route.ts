@@ -332,3 +332,75 @@ export async function PATCH(req: Request) {
   }
 }
 
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth();
+    const role = ((session?.user as any)?.role || "").toLowerCase();
+
+    if (!session || !ALLOWED_ROLES.includes(role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const submissionId = searchParams.get("submissionId")?.trim();
+
+    if (!submissionId || !ObjectId.isValid(submissionId)) {
+      return NextResponse.json({ error: "Missing or invalid submissionId" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Fetch submission to get studentId and quizId before deletion
+    const submission = await db.collection("dve_quiz_submissions").findOne({
+      _id: new ObjectId(submissionId)
+    });
+    if (!submission) {
+      return NextResponse.json({ error: "Submission not found" }, { status: 404 });
+    }
+
+    // Delete the submission
+    await db.collection("dve_quiz_submissions").deleteOne({
+      _id: new ObjectId(submissionId)
+    });
+
+    // Update student's DVE attendance record to reset assignment status
+    const quiz = await db.collection("dve_quizzes").findOne({
+      _id: new ObjectId(submission.quizId)
+    });
+    if (quiz) {
+      const subjectId = quiz.subjectId;
+      const unitId = quiz.unitId;
+      
+      const attendanceQuery: any = {
+        studentId: submission.studentId,
+        subjectId: subjectId
+      };
+      if (unitId) {
+        attendanceQuery.unitId = unitId;
+      }
+
+      await db.collection("dve_attendances").updateOne(
+        attendanceQuery,
+        { 
+          $set: { 
+            assignmentStatus: "Pending",
+            score: 0,
+            maxScore: 0,
+            imageUrl: "",
+            updatedAt: new Date()
+          } 
+        }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "ลบงานที่ส่งเรียบร้อยแล้ว"
+    });
+  } catch (error: any) {
+    console.error("[DVE Submissions DELETE API] Error:", error);
+    return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
+  }
+}
+

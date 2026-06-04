@@ -122,11 +122,19 @@ export async function GET(req: Request) {
     if (role === "student") {
       query.studentId = userId;
     } else {
+      const studentId = searchParams.get("studentId")?.trim();
+      if (studentId) query.studentId = studentId;
       if (date) query.date = date;
       if (classGroupId) {
-        const regexPattern = buildFlexibleClassGroupRegex(classGroupId);
-        console.log("API attendances GET - regexPattern:", regexPattern);
-        query.classGroupId = { $regex: regexPattern, $options: "i" };
+        // Use standardized class group name for matching
+        const standardized = standardizeClassGroupName(classGroupId);
+        console.log("API attendances GET - standardized classGroupId:", standardized);
+        // Match both the original classGroupId and standardized versions
+        query.$or = [
+          { classGroupId: classGroupId },
+          { classGroupId: standardized },
+          { classGroupId: { $regex: buildFlexibleClassGroupRegex(classGroupId), $options: "i" } },
+        ];
       }
     }
 
