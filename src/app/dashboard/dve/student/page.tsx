@@ -2524,7 +2524,6 @@ export function DVEStudentPortal() {
                       <button
                         type="button"
                         onClick={() => {
-            dashboard/dve  หน่วยการเรียนและไฟล์แนบ ไม่ต้องซ่อนปุ่ม และแก้ไขการตั้งเวลา ไม่ต้องกำหนดค่าเริ่มเป็น 1 และแก้ไข ปัญหาตั้งเวลานับถอยหลังไม่ได้
                           setFilePreviewUrl(null);
                           setFilePreviewName(null);
                         }}
