@@ -382,14 +382,15 @@ export async function DELETE(req: Request) {
 
       await db.collection("dve_attendances").updateOne(
         attendanceQuery,
-        { 
-          $set: { 
-            assignmentStatus: "Pending",
+        {
+          $set: {
+            status: "Absent",
+            assignmentStatus: "None",
             score: 0,
             maxScore: 0,
             imageUrl: "",
             updatedAt: new Date()
-          } 
+          }
         }
       );
     }
