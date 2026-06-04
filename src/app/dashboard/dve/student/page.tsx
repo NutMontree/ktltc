@@ -1217,7 +1217,7 @@ export function DVEStudentPortal() {
                         </div>
                         <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-650">
                           {unit.studyMinutes > 0 && (
-                            <span className="text-[10px] font-bold text-amber-500/90 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10 hidden md:inline">
+                            <span className="text-[10px] font-bold text-amber-500/90 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
                               ⏱️ {unit.studyMinutes} นาที
                             </span>
                           )}
@@ -2524,6 +2524,7 @@ export function DVEStudentPortal() {
                       <button
                         type="button"
                         onClick={() => {
+            dashboard/dve  หน่วยการเรียนและไฟล์แนบ ไม่ต้องซ่อนปุ่ม และแก้ไขการตั้งเวลา ไม่ต้องกำหนดค่าเริ่มเป็น 1 และแก้ไข ปัญหาตั้งเวลานับถอยหลังไม่ได้
                           setFilePreviewUrl(null);
                           setFilePreviewName(null);
                         }}
