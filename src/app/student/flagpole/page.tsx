@@ -337,16 +337,20 @@ export default function StudentFlagpolePortal() {
             if (!silent) {
               setLocationStatus("error");
               if (fallbackErr.code === 1) {
-                setLocationError("กรุณาเปิดสิทธิ์ระบุตำแหน่ง (Location Access) ในเมนูของอุปกรณ์เบราว์เซอร์");
+                setLocationError(
+                  "กรุณาเปิดสิทธิ์ระบุตำแหน่ง (Location Access) ในเมนูของอุปกรณ์เบราว์เซอร์",
+                );
               } else {
-                setLocationError("ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกที่ร่ม/อาคารเรียน หรือเปิด GPS ทิ้งไว้สักครู่");
+                setLocationError(
+                  "ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกที่ร่ม/อาคารเรียน หรือเปิด GPS ทิ้งไว้สักครู่",
+                );
               }
             }
           },
-          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 },
         );
       },
-      options
+      options,
     );
   };
 
@@ -534,25 +538,6 @@ export default function StudentFlagpolePortal() {
               </div>
             </div>
           </div>
-
-          <button
-            onClick={async () => {
-              try {
-                // 1. ลบคุกกี้ความปลอดภัย "token" ผ่าน API
-                await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-                // 2. เรียกใช้ signOut แบบปิด redirect
-                await signOut({ redirect: false });
-              } catch (err) {
-                console.error("Logout error:", err);
-              }
-              // 3. ใช้ window.location.href ทำ Hard Redirect
-              window.location.href = "/login";
-            }}
-            className="p-3 bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-2xl transition-all border border-slate-100 dark:border-zinc-800 dark:bg-zinc-800/30 dark:hover:bg-rose-950/20"
-            title="ออกจากระบบ"
-          >
-            <LogOut size={18} />
-          </button>
         </div>
 
         {/* Dynamic Navigation Tabs */}
@@ -738,13 +723,14 @@ export default function StudentFlagpolePortal() {
                           <MapPin size={12} />
                           <span>
                             {locationStatus === "searching" && "กำลังตรวจพิกัด GPS..."}
-                            {locationStatus === "found" && (() => {
-                              const dist = getDistanceToFlagpole();
-                              if (dist !== null) {
-                                return `จับพิกัดแล้ว (ห่างจากเสาธง ${Math.round(dist)} เมตร)`;
-                              }
-                              return "พิกัดเสร็จสิ้น";
-                            })()}
+                            {locationStatus === "found" &&
+                              (() => {
+                                const dist = getDistanceToFlagpole();
+                                if (dist !== null) {
+                                  return `จับพิกัดแล้ว (ห่างจากเสาธง ${Math.round(dist)} เมตร)`;
+                                }
+                                return "พิกัดเสร็จสิ้น";
+                              })()}
                             {locationStatus === "error" && "ตรวจพิกัดขัดข้อง"}
                             {locationStatus === "idle" && "รอระบุพิกัด..."}
                           </span>
