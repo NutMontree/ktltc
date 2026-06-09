@@ -88,9 +88,9 @@ export async function GET(req: Request) {
       // Strip Thai titles from input and normalize spaces
       const strippedName = stripThaiTitles(name);
       const normalizedName = normalizeSpaces(strippedName);
-      console.log("[Student Verify] Original name:", name);
-      console.log("[Student Verify] Stripped name:", strippedName);
-      console.log("[Student Verify] Normalized name:", normalizedName);
+      // console.log("[Student Verify] Original name:", name);
+      // console.log("[Student Verify] Stripped name:", strippedName);
+      // console.log("[Student Verify] Normalized name:", normalizedName);
 
       // Create regex that matches full name with optional Thai title prefix
       // and handles multiple spaces in database
@@ -100,7 +100,7 @@ export async function GET(req: Request) {
         .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
         .replace(/ /g, '\\s+');
       const regexPattern = `^${titlePattern}${escapedName}$`;
-      console.log("[Student Verify] Regex pattern:", regexPattern);
+      // console.log("[Student Verify] Regex pattern:", regexPattern);
       query.name = { $regex: regexPattern, $options: "i" };
     }
 

@@ -12,6 +12,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 import HomeBannerSwiper from "@/components/HomeBannerSwiper";
 import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
+import dynamic from "next/dynamic";
 
 export const revalidate = 300; // Revalidate every 5 minutes (300 seconds) for better performance
 
@@ -24,7 +25,12 @@ import {
 } from "@/components/home/DynamicClientSections";
 import ShowFacebookClient from "@/components/ShowFacebookClient";
 import PerformancePage from "./performance/page";
-import StudentVerifyPage from "./student/verify/page";
+
+// Lazy load StudentVerifyPage to improve initial page load performance
+const StudentVerifyPage = dynamic(() => import("./student/verify/page"), {
+  loading: () => <div className="py-8 text-center text-zinc-500">กำลังโหลด...</div>,
+  ssr: false,
+});
 
 // ดึงข้อมูลผ่าน Server Side เหมือนเดิม (รันบนเครื่องเซิร์ฟเวอร์เท่านั้น ปลอดภัยกว่า)
 async function getHomeData() {
