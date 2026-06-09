@@ -60,6 +60,7 @@ export default function StudentVerifyPage() {
   const [activeHistoryStudentId, setActiveHistoryStudentId] = useState<string | null>(null);
   const [flagpoleHistory, setFlagpoleHistory] = useState<any[] | null>(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [historyLimit, setHistoryLimit] = useState(5);
 
   // Image modal state
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -72,6 +73,7 @@ export default function StudentVerifyPage() {
 
     setActiveHistoryStudentId(studentId);
     setFlagpoleHistory(null);
+    setHistoryLimit(5); // Reset limit when switching students
     setIsHistoryLoading(true);
 
     try {
@@ -236,7 +238,7 @@ export default function StudentVerifyPage() {
   const isCitizenIdInputValid = citizenIdInput.replace(/[^0-9]/g, "").length === 13;
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-50 via-slate-50 to-slate-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 text-slate-800 dark:text-zinc-100 py-12 px-4 relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-50 via-slate-50 to-slate-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 text-slate-800 dark:text-zinc-100 py-12 px-2 relative overflow-hidden transition-colors duration-500">
       <Toaster position="bottom-right" reverseOrder={false} />
 
       {/* Custom Global Holographic and Cybernetic Styles */}
@@ -331,7 +333,7 @@ export default function StudentVerifyPage() {
             />
           )}
 
-          <div className="bg-white/85 dark:bg-zinc-900/90 backdrop-blur-2xl rounded-[30.5px] p-6 md:p-8 relative">
+          <div className="bg-white/85 dark:bg-zinc-900/90 backdrop-blur-2xl rounded-[30.5px] p-4 md:p-8 relative">
             {/* Segmented Sliding Tabs Control (SaaS Style) */}
             <div className="flex bg-slate-100/70 dark:bg-zinc-800/70 p-1.5 rounded-[22px] max-w-lg mx-auto mb-8 border border-slate-200/50 dark:border-zinc-700/50 backdrop-blur-xl">
               <button
@@ -933,8 +935,9 @@ export default function StudentVerifyPage() {
                                       </span>
                                     </div>
                                   ) : flagpoleHistory && flagpoleHistory.length > 0 ? (
-                                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                                      {flagpoleHistory.map((history) => {
+                                    <div className="space-y-2">
+                                      <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                                        {flagpoleHistory.slice(0, historyLimit).map((history) => {
                                         const isPresent =
                                           history.status === "Present" ||
                                           history.status === "ตรงเวลา";
@@ -986,7 +989,9 @@ export default function StudentVerifyPage() {
                                                     src={history.photoUrl}
                                                     alt="รูปภาพเช็คชื่อ"
                                                     className="w-full h-full object-cover transition-transform duration-300 group-hover/photo:scale-110 cursor-zoom-in"
-                                                    onClick={() => setPreviewImage(history.photoUrl)}
+                                                    onClick={() =>
+                                                      setPreviewImage(history.photoUrl)
+                                                    }
                                                     title="คลิกเพื่อดูรูปภาพขนาดเต็ม"
                                                   />
                                                 </div>
@@ -1011,7 +1016,9 @@ export default function StudentVerifyPage() {
                                                 {history.address && (
                                                   <div className="flex items-center gap-1 text-[9px] text-slate-400 font-bold">
                                                     <MapPin className="w-3 h-3" />
-                                                    <span className="truncate max-w-[200px]">{history.address}</span>
+                                                    <span className="truncate max-w-[200px]">
+                                                      {history.address}
+                                                    </span>
                                                   </div>
                                                 )}
                                                 {history.deviceId && (
@@ -1045,6 +1052,17 @@ export default function StudentVerifyPage() {
                                           </div>
                                         );
                                       })}
+                                      </div>
+                                      {/* Show more button */}
+                                      {flagpoleHistory.length > historyLimit && (
+                                        <button
+                                          onClick={() => setHistoryLimit((prev) => prev + 10)}
+                                          className="w-full py-2.5 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                        >
+                                          <ChevronDown className="w-4 h-4" />
+                                          <span>ดูเพิ่มเติม 10 รายการ</span>
+                                        </button>
+                                      )}
                                     </div>
                                   ) : (
                                     <div className="text-center py-8 space-y-2 bg-slate-50/50 dark:bg-zinc-800/50 rounded-2xl border border-slate-200/30 dark:border-zinc-700/30">

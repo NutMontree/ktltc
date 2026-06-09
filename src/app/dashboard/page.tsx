@@ -170,7 +170,7 @@ export default function DashboardLoader() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
         <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">
-          Initializing Executive Dashboard...
+        กำลังเริ่มต้นใช้งานแดชบอร์ด...
         </p>
       </div>
     );
