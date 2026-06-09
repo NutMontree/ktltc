@@ -142,10 +142,22 @@ const CustomAlertModal = ({ isOpen, type, title, message, onClose }: any) => {
   );
 };
 
+const normalizeUnemployedReason = (val: string) => {
+  if (!val) return "";
+  if (val === "ยังไม่ประสงค์ทำงาน" || val === "1") return "1";
+  if (val === "รอฟังคำตอบจากหน่วยงาน" || val === "รอฟังคำตอบ" || val === "2") return "2";
+  if (val === "หางานทำไม่ได้" || val === "3") return "3";
+  if (val === "4") return "4";
+  return val;
+};
+
 const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<Isuvery>({ ...suvery });
+  const [formData, setFormData] = useState<Isuvery>({
+    ...suvery,
+    unemployedReason: normalizeUnemployedReason(suvery.unemployedReason || ""),
+  });
 
   // ✅ Alert State
   const [alertState, setAlertState] = useState({
@@ -708,13 +720,9 @@ const SuveryEditForm: React.FC<SuveryEditFormProps> = ({ suvery }) => {
                   required={isNotWorking}
                 >
                   <option value="">-- เลือกสาเหตุ --</option>
-                  <option value="ยังไม่ประสงค์ทำงาน">
-                    1 ยังไม่ประสงค์ทำงาน
-                  </option>
-                  <option value="รอฟังคำตอบจากหน่วยงาน">
-                    2 รอฟังคำตอบจากหน่วยงาน
-                  </option>
-                  <option value="หางานทำไม่ได้">3 หางานทำไม่ได้</option>
+                  <option value="1">1 ยังไม่ประสงค์ทำงาน</option>
+                  <option value="2">2 รอฟังคำตอบจากหน่วยงาน</option>
+                  <option value="3">3 หางานทำไม่ได้</option>
                   <option value="4">4 อื่นๆ (โปรดระบุ)</option>
                 </select>
                 {isUnemployedReasonOther && (

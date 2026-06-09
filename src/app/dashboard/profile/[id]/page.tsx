@@ -848,7 +848,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
       signIn();
       return;
     }
-    if (!postText.trim() && postImagePreviews.length === 0) return;
+    if (!postText.trim() && postImagePreviews.length === 0) {
+      message.warning("กรุณากรอกข้อความหรือเลือกรูปภาพก่อนโพสต์");
+      return;
+    }
     setIsPosting(true);
     try {
       const imageUrls: string[] = [];
@@ -889,10 +892,15 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
         setPostImagePreviews([]);
         setEditingPostId(null);
         setActiveModal(null);
+        message.success(editingPostId ? "แก้ไขโพสต์สำเร็จแล้ว" : "สร้างโพสต์สำเร็จแล้ว");
         fetchData(true);
+      } else {
+        const errorData = await res.json();
+        message.error(errorData.error || "ไม่สามารถโพสต์ได้");
       }
     } catch (error) {
       console.error("Post error:", error);
+      message.error("เกิดข้อผิดพลาดในการส่งโพสต์");
     } finally {
       setIsPosting(false);
     }
@@ -903,10 +911,14 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
     try {
       const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
       if (res.ok) {
+        message.success("ลบโพสต์สำเร็จแล้ว");
         fetchData(true);
+      } else {
+        message.error("ไม่สามารถลบโพสต์ได้");
       }
     } catch (error) {
       console.error("Delete post error:", error);
+      message.error("เกิดข้อผิดพลาดในการลบโพสต์");
     }
   };
 

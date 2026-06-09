@@ -501,8 +501,8 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
           ? `ศึกษาต่อระดับ ${sv.furtherStudyLevel || "-"} (${sv.furtherStudyMajorDetail || "-"})` 
           : "ไม่ได้ทำงาน",
       "รายได้ต่อเดือน": sv.salaryRange || "-",
-      "ตรงสาขาที่เรียน": sv.jobMatch === "1" ? "ตรงสาขา" : sv.jobMatch === "2" ? "ไม่ตรงสาขา" : "-",
-      "ความพึงพอใจในงาน": sv.jobSatisfaction === "1" ? "พึงพอใจ" : sv.jobSatisfaction === "2" ? "ไม่พึงพอใจ" : "-",
+      "ตรงสาขาที่เรียน": (sv.jobMatch === "1" || sv.jobMatch === "ตรง") ? "ตรงสาขา" : (sv.jobMatch === "2" || sv.jobMatch === "ไม่ตรง") ? "ไม่ตรงสาขา" : "-",
+      "ความพึงพอใจในงาน": (sv.jobSatisfaction === "1" || sv.jobSatisfaction === "พึงพอใจ") ? "พึงพอใจ" : (sv.jobSatisfaction === "2" || sv.jobSatisfaction === "ไม่พึงพอใจ") ? "ไม่พึงพอใจ" : "-",
       "สาเหตุที่ยังหางานไม่ได้": sv.currentStatus === "ไม่ได้ทำงาน" ? (sv.notWorkingReasonGroup || "-") : "-",
       "ข้อเสนอแนะเพิ่มเติม": sv.suggestion || "-",
     }));
