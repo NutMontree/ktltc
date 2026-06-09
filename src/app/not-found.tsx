@@ -1,10 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ShieldAlert, ArrowLeft, Home } from "lucide-react";
 
+const AUTO_REDIRECT_SECONDS = 5;
+
 export default function NotFound() {
+  const router = useRouter();
+  const [countdown, setCountdown] = useState(AUTO_REDIRECT_SECONDS);
+
+  useEffect(() => {
+    if (countdown <= 0) {
+      router.back();
+      return;
+    }
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [countdown, router]);
+
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center">
       <motion.div
@@ -20,7 +35,7 @@ export default function NotFound() {
         </div>
       </motion.div>
 
-      <motion.h1 
+      <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -29,35 +44,39 @@ export default function NotFound() {
         ไม่พบหน้าที่คุณต้องการ
       </motion.h1>
 
-      <motion.p 
+      <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="text-zinc-500 dark:text-zinc-400 font-medium max-w-md mb-10 leading-relaxed"
+        className="text-zinc-500 dark:text-zinc-400 font-medium max-w-md mb-6 leading-relaxed"
       >
         ขออภัย หน้านี้อาจถูกย้าย ลบออก หรือไม่เคยมีอยู่จริงในระบบ <br/>
         กรุณาตรวจสอบ URL อีกครั้ง หรือกลับไปยังหน้าหลัก
       </motion.p>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
+        className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6"
+      >
+        <p className="text-amber-700 dark:text-amber-400 font-bold text-sm">
+          กำลังย้อนกลับใน {countdown} วินาที...
+        </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
         className="flex flex-col sm:flex-row items-center gap-4"
       >
-        <Link
-          href="/"
-          className="w-full sm:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 group"
-        >
-          <Home size={18} className="group-hover:-translate-y-0.5 transition-transform" />
-          กลับหน้าหลัก
-        </Link>
         <button
-          onClick={() => window.history.back()}
-          className="w-full sm:w-auto px-10 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-2xl font-black text-sm uppercase tracking-widest transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center gap-2 group"
+          onClick={() => router.back()}
+          className="w-full sm:w-auto px-10 py-4 bg-zinc-900 dark:bg-zinc-800 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-all hover:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center gap-2 group"
         >
           <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          ย้อนกลับ
+          กลับไปทันที
         </button>
       </motion.div>
     </div>

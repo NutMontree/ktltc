@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const AUTO_REFRESH_SECONDS = 5;
 
@@ -11,6 +12,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const router = useRouter();
   const [countdown, setCountdown] = useState(AUTO_REFRESH_SECONDS);
 
   useEffect(() => {
@@ -19,17 +21,14 @@ export default function Error({
   }, [error]);
 
   useEffect(() => {
-    // นับถอยหลัง แล้ว auto-refresh
+    // นับถอยหลัง แล้ว redirect กลับ
     if (countdown <= 0) {
-      // ลองรีเซ็ต React error boundary ก่อน
-      reset();
-      // ถ้ายังไม่หาย ให้รีโหลดหน้าเว็บทั้งหมด
-      setTimeout(() => window.location.reload(), 300);
+      router.back();
       return;
     }
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
-  }, [countdown, reset]);
+  }, [countdown, router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">

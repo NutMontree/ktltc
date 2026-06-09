@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const AUTO_REFRESH_SECONDS = 5;
 
@@ -10,6 +11,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const router = useRouter();
   const [countdown, setCountdown] = useState(AUTO_REFRESH_SECONDS);
 
   useEffect(() => {
@@ -18,12 +20,12 @@ export default function GlobalError({
 
   useEffect(() => {
     if (countdown <= 0) {
-      window.location.reload();
+      router.back();
       return;
     }
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
-  }, [countdown]);
+  }, [countdown, router]);
 
   return (
     <html lang="th">
