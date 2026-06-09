@@ -4,6 +4,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 30; // Revalidate every 30 seconds
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 

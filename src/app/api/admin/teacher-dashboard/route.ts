@@ -4,6 +4,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 60; // Revalidate every 60 seconds
 
 const ALLOWED_ROLES = ["super_admin", "admin"];
 
@@ -84,10 +85,11 @@ export async function GET(req: Request) {
 
     const teacherIds = teachers.map((t) => t._id.toString());
 
-    // Get DVE subjects
+    // Get DVE subjects first (needed for attendances query)
     const subjects = await db
       .collection("dve_subjects")
       .find({ teacherId: { $in: teacherIds } })
+      .project({ _id: 1, teacherId: 1, name: 1, code: 1, department: 1 })
       .toArray();
 
     const subjectIds = subjects.map((s) => s._id.toString());
@@ -101,13 +103,14 @@ export async function GET(req: Request) {
       dateFilter.$lte = endDate;
     }
 
-    // Get all attendances
+    // Get attendances
     const attendances = await db
       .collection("dve_attendances")
       .find({
         subjectId: { $in: subjectIds },
         ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
       })
+      .project({ _id: 1, subjectId: 1, studentId: 1, date: 1, score: 1 })
       .toArray();
 
     // Get this week's attendances
