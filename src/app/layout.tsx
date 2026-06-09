@@ -112,10 +112,18 @@ export default async function RootLayout({
               {/* <Analytics /> */}
 
               {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
+              {/* ❗ ต้องห่อด้วย Suspense เพื่อป้องกัน "Application error" */}
+              {/* เมื่อ Footer ดึงข้อมูล DB ไม่ได้ (timeout/connection error) */}
               <ScrollToTop />
               <ScrollUp />
               <CookieConsent />
-              <Footer />
+              <Suspense fallback={
+                <footer className="bg-[#0f172a] text-slate-500 text-xs text-center py-6 border-t border-slate-800">
+                  กำลังโหลดข้อมูล...
+                </footer>
+              }>
+                <Footer />
+              </Suspense>
             </ThemeProvider>
           </SessionProvider>
         </AntdRegistry>

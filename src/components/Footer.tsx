@@ -22,61 +22,80 @@ interface NavItem {
   parentId: string | null;
 }
 
+// helper: timeout เพื่อป้องกัน Footer ค้างรอ DB นานเกินไป
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 // 1. ฟังก์ชันดึงเมนู Footer จากฐานข้อมูล (Server-side)
 // ดึงข้อมูลเดียวกับ Navbar เพื่อให้เมนูอัปเดตพร้อมกัน
 async function getFooterNavItems() {
+  const fallbackItems: NavItem[] = [
+    { _id: "f1", label: "หน้าแรก", path: "/", order: 1, parentId: null },
+    { _id: "f2", label: "ข่าวประชาสัมพันธ์", path: "/news", order: 2, parentId: null },
+    { _id: "f3", label: "ข้อมูลพื้นฐาน", path: "/about", order: 3, parentId: null },
+    { _id: "f4", label: "บุคลากร", path: "/personnel", order: 4, parentId: null },
+    { _id: "f5", label: "ติดต่อเรา", path: "/contact", order: 5, parentId: null },
+  ];
   try {
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
-    const items = await db.collection("navbar").find({}).sort({ order: 1 }).toArray();
-
-    if (!items || items.length === 0) {
-      console.warn("⚠️ [Footer] No nav items found in database. Using fallback.");
-      return [
-        { _id: "f1", label: "หน้าแรก", path: "/", order: 1, parentId: null },
-        { _id: "f2", label: "ข่าวประชาสัมพันธ์", path: "/news", order: 2, parentId: null },
-        { _id: "f3", label: "ข้อมูลพื้นฐาน", path: "/about", order: 3, parentId: null },
-        { _id: "f4", label: "บุคลากร", path: "/personnel", order: 4, parentId: null },
-        { _id: "f5", label: "ติดต่อเรา", path: "/contact", order: 5, parentId: null },
-      ] as NavItem[];
-    }
-    return JSON.parse(JSON.stringify(items)) as NavItem[];
+    const fetchItems = async () => {
+      const client = await clientPromise;
+      const db = client.db("ktltc_db");
+      const items = await db.collection("navbar").find({}).sort({ order: 1 }).toArray();
+      if (!items || items.length === 0) return fallbackItems;
+      return JSON.parse(JSON.stringify(items)) as NavItem[];
+    };
+    // timeout 5 วินาที: ถ้า DB ช้า ให้ใช้ fallback แทน (ไม่ค้างหน้า)
+    return await withTimeout(fetchItems(), 5000, fallbackItems);
   } catch (error) {
     console.error("Error fetching footer nav:", error);
-    return [];
+    return fallbackItems;
   }
 }
 
 // 2. ฟังก์ชันดึงยอดผู้เข้าชมล่าสุดมาแสดง
 async function getVisitorCount() {
   try {
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
-
-    const result = await db.collection("site_stats").findOne({ _id: "visitor_count" as any });
-
-    const rawCount = result?.count;
-    let parsed = typeof rawCount === "number" ? rawCount : parseInt(String(rawCount)) || 0;
-
-    // หากค่าเริ่มต้นยังไม่ได้ตั้งค่า หรือต่ำกว่า 127457 ให้ตั้งค่าเป็น 127457 ทันที
-    if (parsed < 127457) {
-      await db
-        .collection("site_stats")
-        .updateOne({ _id: "visitor_count" as any }, { $set: { count: 127457 } }, { upsert: true });
-      parsed = 127457;
-    }
-
-    return parsed;
+    const fetchCount = async () => {
+      const client = await clientPromise;
+      const db = client.db("ktltc_db");
+      const result = await db.collection("site_stats").findOne({ _id: "visitor_count" as any });
+      const rawCount = result?.count;
+      let parsed = typeof rawCount === "number" ? rawCount : parseInt(String(rawCount)) || 0;
+      if (parsed < 127457) {
+        await db
+          .collection("site_stats")
+          .updateOne({ _id: "visitor_count" as any }, { $set: { count: 127457 } }, { upsert: true });
+        parsed = 127457;
+      }
+      return parsed;
+    };
+    // timeout 5 วินาที: ถ้า DB ช้า ให้ใช้ค่า Default แทน (ไม่ค้างหน้า)
+    return await withTimeout(fetchCount(), 5000, 127457);
   } catch (error) {
     console.error("Error fetching visitor count:", error);
-    return 127457; // ค่า Default กรณีดึงข้อมูลไม่สำเร็จ
+    return 127457;
   }
 }
 
 // --- Main Footer Component ---
 export default async function Footer() {
-  const navItems = await getFooterNavItems();
-  const visitorCount = await getVisitorCount();
+  // ครอบทุกอย่างด้วย try-catch เพื่อป้องกัน "Application error"
+  // เพราะ clientPromise ใน db.ts อาจ throw error ตรงๆ เมื่อ MONGODB_URI ไม่มี หรือเชื่อมต่อไม่ได้
+  let navItems: NavItem[] = [];
+  let visitorCount = 127457;
+  try {
+    [navItems, visitorCount] = await Promise.all([
+      getFooterNavItems(),
+      getVisitorCount(),
+    ]);
+  } catch (err) {
+    console.error("❌ [Footer] Unexpected error during data fetch:", err);
+    // ใช้ค่า default เดิม (ไม่ crash)
+  }
   // คำนวนปีบน server เพียงครั้งเดียว เพื่อป้องกัน Hydration Mismatch
   // (ถ้าปล่อยไว้ใน JSX → server ใช้ UTC, client ใช้ timezone ไทย อาจต่างกันได้)
   const currentYear = new Date().getFullYear();
