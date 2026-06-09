@@ -107,6 +107,8 @@ export default function NotificationsPage() {
     if (!url) {
       if (n.type === "friend_request" || n.type === "friend_accept") {
         url = `/dashboard/profile/${n.from}`;
+      } else if (n.type === "post_on_profile" || n.type === "post_comment" || n.type === "comment_reply" || n.type === "post_like" || n.type === "post_share") {
+        url = `/dashboard/profile/${n.from}`;
       }
     }
 
@@ -233,14 +235,34 @@ export default function NotificationsPage() {
                     ? "คำขอเป็นเพื่อน"
                     : n.type === "friend_accept"
                       ? "ยอมรับเป็นเพื่อน"
-                      : "การแจ้งเตือน");
+                      : n.type === "post_on_profile"
+                        ? "โพสต์ในโปรไฟล์"
+                        : n.type === "post_comment"
+                          ? "คอมเมนต์ในโพสต์"
+                          : n.type === "comment_reply"
+                            ? "ตอบกลับคอมเมนต์"
+                            : n.type === "post_like"
+                              ? "กดถูกใจโพสต์"
+                              : n.type === "post_share"
+                                ? "แชร์โพสต์"
+                                : "การแจ้งเตือน");
                 const message =
                   n.message ||
                   (n.type === "friend_request"
                     ? `${n.fromName} ส่งคำขอเป็นเพื่อนกับคุณ`
                     : n.type === "friend_accept"
                       ? `${n.fromName} ยอมรับคำขอเป็นเพื่อนของคุณแล้ว`
-                      : "");
+                      : n.type === "post_on_profile"
+                        ? `${n.fromName} โพสต์ในโปรไฟล์ของคุณ`
+                        : n.type === "post_comment"
+                          ? `${n.fromName} คอมเมนต์ในโพสต์ของคุณ`
+                          : n.type === "comment_reply"
+                            ? `${n.fromName} ตอบกลับคอมเมนต์ของคุณ`
+                            : n.type === "post_like"
+                              ? `${n.fromName} กดถูกใจโพสต์ของคุณ`
+                              : n.type === "post_share"
+                                ? `${n.fromName} แชร์โพสต์ของคุณ`
+                                : "");
 
                 return (
                   <motion.div

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef, use, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
@@ -43,6 +43,7 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
   ExclamationCircleOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Popover, message, Popconfirm, Modal } from "antd";
 import { useSession, signIn } from "next-auth/react";
@@ -227,8 +228,7 @@ const ProfileNotFoundPage = ({ router }: { router: any }) => {
   );
 };
 
-export default function FriendProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+function FriendProfilePageContent({ id }: { id: string }) {
   const router = useRouter();
   const { data: session } = useSession();
   const userId = (session?.user as any)?.id || (session?.user as any)?.sub || null;
@@ -348,6 +348,8 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
   });
 
   const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [suggestedUsers, setSuggestedUsers] = useState<any[]>([]);
+  const [displayedSuggestedUsers, setDisplayedSuggestedUsers] = useState<any[]>([]);
   const [searchFriend, setSearchFriend] = useState("");
   const [selectedImage, setSelectedImage] = useState<{
     images: string[];
@@ -543,7 +545,9 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
       });
       if (res.ok) {
         message.success("ส่งคำขอเป็นเพื่อนแล้ว");
-        fetchData();
+        // เพิ่ม user ที่ส่งคำขอแล้วไปยัง dismissedUsers และอัปเดต displayedSuggestedUsers
+        setDismissedUsers((prev) => [...prev, targetId]);
+        setDisplayedSuggestedUsers((prev) => prev.filter((u) => String(u._id) !== targetId));
       } else {
         const error = await res.json();
         message.error(error.error || "ไม่สามารถส่งคำขอได้");
@@ -635,6 +639,20 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
       if (allUsersRes.ok) {
         const data = await allUsersRes.json();
         setAllUsers(data.users || []);
+        // Generate suggested users only when allUsers is first loaded
+        if (suggestedUsers.length === 0) {
+          const myId = (session?.user as any)?.id;
+          const filtered = (data.users || []).filter((u: any) => {
+            const isMe = String(u._id) === String(myId);
+            const isAlreadyFriend = (formData?.friends || []).some(
+              (fId: any) => String(fId) === String(u._id),
+            );
+            return !isMe && !isAlreadyFriend;
+          });
+          const shuffled = filtered.sort(() => 0.5 - Math.random()).slice(0, 10);
+          setSuggestedUsers(shuffled);
+          setDisplayedSuggestedUsers(shuffled);
+        }
       }
 
       // Only fetch friend status if profile exists
@@ -674,6 +692,7 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
 
   useEffect(() => {
     if (id) {
+      setSuggestedUsers([]); // Reset suggested users when profile changes
       fetchData();
     }
   }, [id]);
@@ -718,18 +737,18 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
         setSelectedImage((prev) =>
           prev
             ? {
-                ...prev,
-                index: (prev.index - 1 + prev.images.length) % prev.images.length,
-              }
+              ...prev,
+              index: (prev.index - 1 + prev.images.length) % prev.images.length,
+            }
             : null,
         );
       } else if (e.key === "ArrowRight") {
         setSelectedImage((prev) =>
           prev
             ? {
-                ...prev,
-                index: (prev.index + 1) % prev.images.length,
-              }
+              ...prev,
+              index: (prev.index + 1) % prev.images.length,
+            }
             : null,
         );
       } else if (e.key === "Escape") {
@@ -1024,11 +1043,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                   {/* Validation Status Indicator for Students */}
                   {isMyProfile && isStudent && (
                     <div
-                      className={`p-4 rounded-xl border ${
-                        validationStatus?.isValid
-                          ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
-                          : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
-                      }`}
+                      className={`p-4 rounded-xl border ${validationStatus?.isValid
+                        ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
+                        : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
+                        }`}
                     >
                       {loadingValidation ? (
                         <div className="flex items-center gap-2 text-sm text-zinc-500">
@@ -1179,10 +1197,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                     ))}
                   {userPosts.filter((p) => (p.images && p.images.length > 0) || p.image).length ===
                     0 && (
-                    <div className="col-span-3 py-10 text-center text-zinc-400 text-xs italic">
-                      ยังไม่มีรูปภาพ
-                    </div>
-                  )}
+                      <div className="col-span-3 py-10 text-center text-zinc-400 text-xs italic">
+                        ยังไม่มีรูปภาพ
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -1300,75 +1318,64 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                 </div>
 
                 <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar snap-x">
-                  {allUsers
-                    .filter((u) => {
-                      const myId = (session?.user as any)?.id;
-                      const isMe = String(u._id) === String(myId);
-                      const isAlreadyFriend = (formData?.friends || []).some(
-                        (fId: any) => String(fId) === String(u._id),
-                      );
-                      const isDismissed = dismissedUsers.includes(String(u._id));
-                      return !isMe && !isAlreadyFriend && !isDismissed;
-                    })
-                    .sort(() => 0.5 - Math.random())
-                    .slice(0, 10)
-                    .map((u) => {
-                      const myFriendsIds = (formData?.friends || []).map((fId: any) => String(fId));
-                      const uFriendsIds = (u.friends || []).map((fId: any) => String(fId));
-                      const mutualCount = uFriendsIds.filter((fId: any) =>
-                        myFriendsIds.includes(fId),
-                      ).length;
+                  {displayedSuggestedUsers.map((u) => {
+                    const myFriendsIds = (formData?.friends || []).map((fId: any) => String(fId));
+                    const uFriendsIds = (u.friends || []).map((fId: any) => String(fId));
+                    const mutualCount = uFriendsIds.filter((fId: any) =>
+                      myFriendsIds.includes(fId),
+                    ).length;
 
-                      return (
-                        <div
-                          key={String(u._id)}
-                          onClick={() => router.push(`/dashboard/profile/${String(u._id)}`)}
-                          className="min-w-[180px] w-[180px] bg-white dark:bg-zinc-900 rounded-2xl border dark:border-zinc-800 overflow-hidden flex flex-col snap-start group cursor-pointer hover:shadow-xl hover:shadow-blue-500/10 transition-all hover:-translate-y-1"
-                        >
-                          <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                            {u.image ? (
-                              <img
-                                src={u.image}
-                                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
-                                alt={u.name}
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
-                                <UserOutlined className="text-4xl" />
-                              </div>
-                            )}
-                            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissedUsers((prev) => [...prev, String(u._id)]);
-                              }}
-                              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/20 hover:bg-rose-500 text-white flex items-center justify-center backdrop-blur-md transition-all z-10 opacity-0 group-hover:opacity-100"
-                            >
-                              <CloseOutlined className="text-[10px]" />
-                            </button>
-                          </div>
-                          <div className="p-3 flex-1 flex flex-col">
-                            <h4 className="font-black text-sm text-zinc-900 dark:text-white truncate mb-1">
-                              {u.name}
-                            </h4>
-                            <p className="text-[10px] text-zinc-500 font-bold flex items-center gap-1 mb-4">
-                              <TeamOutlined className="text-[8px]" /> {mutualCount} เพื่อนร่วมกัน
-                              {mutualCount !== 1 ? "s" : ""}
-                            </p>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRequestFriend(String(u._id));
-                              }}
-                              className="mt-auto w-full py-2 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-600 hover:text-white font-black text-xs transition-all flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white"
-                            >
-                              <UserAddOutlined /> Add friend
-                            </button>
-                          </div>
+                    return (
+                      <div
+                        key={String(u._id)}
+                        onClick={() => router.push(`/dashboard/profile/${String(u._id)}`)}
+                        className="min-w-[180px] w-[180px] bg-white dark:bg-zinc-900 rounded-2xl border dark:border-zinc-800 overflow-hidden flex flex-col snap-start group cursor-pointer hover:shadow-xl hover:shadow-blue-500/10 transition-all hover:-translate-y-1"
+                      >
+                        <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                          {u.image ? (
+                            <img
+                              src={u.image}
+                              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                              alt={u.name}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
+                              <UserOutlined className="text-4xl" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDismissedUsers((prev) => [...prev, String(u._id)]);
+                              setDisplayedSuggestedUsers((prev) => prev.filter((user) => String(user._id) !== String(u._id)));
+                            }}
+                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/20 hover:bg-rose-500 text-white flex items-center justify-center backdrop-blur-md transition-all z-10 opacity-0 group-hover:opacity-100"
+                          >
+                            <CloseOutlined className="text-[10px]" />
+                          </button>
                         </div>
-                      );
-                    })}
+                        <div className="p-3 flex-1 flex flex-col">
+                          <h4 className="font-black text-sm text-zinc-900 dark:text-white truncate mb-1">
+                            {u.name}
+                          </h4>
+                          <p className="text-[10px] text-zinc-500 font-bold flex items-center gap-1 mb-4">
+                            <TeamOutlined className="text-[8px]" /> {mutualCount} เพื่อนร่วมกัน
+                            {mutualCount !== 1 ? "s" : ""}
+                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRequestFriend(String(u._id));
+                            }}
+                            className="mt-auto w-full py-2 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-600 hover:text-white font-black text-xs transition-all flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white"
+                          >
+                            <UserAddOutlined /> Add friend
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="mt-2 text-center">
@@ -1392,10 +1399,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center border dark:border-zinc-700">
                           {post.authorImage ||
-                          post.userImage ||
-                          (String(post.authorId?.$oid || post.authorId || "") === id
-                            ? formData.image
-                            : null) ? (
+                            post.userImage ||
+                            (String(post.authorId?.$oid || post.authorId || "") === id
+                              ? formData.image
+                              : null) ? (
                             <img
                               src={
                                 post.authorImage ||
@@ -1447,65 +1454,65 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                       {(String(post.authorId?.$oid || post.authorId || "") ===
                         String((session?.user as any)?.id) ||
                         String(post.userId?.$oid || post.userId || "") ===
-                          String((session?.user as any)?.id) ||
+                        String((session?.user as any)?.id) ||
                         isMyProfile) && (
-                        <div className="relative">
-                          <button
-                            onClick={() =>
-                              setOpenPostMenuId(openPostMenuId === post._id ? null : post._id)
-                            }
-                            className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-all text-zinc-600 dark:text-zinc-300 border-2 border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 z-10"
-                          >
-                            <EllipsisOutlined className="text-2xl" />
-                          </button>
+                          <div className="relative">
+                            <button
+                              onClick={() =>
+                                setOpenPostMenuId(openPostMenuId === post._id ? null : post._id)
+                              }
+                              className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-all text-zinc-600 dark:text-zinc-300 border-2 border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 z-10"
+                            >
+                              <EllipsisOutlined className="text-2xl" />
+                            </button>
 
-                          <AnimatePresence>
-                            {openPostMenuId === post._id && (
-                              <motion.div
-                                initial={{ opacity: 0, y: 5 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 5 }}
-                                className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl shadow-2xl z-40 py-2 overflow-hidden"
-                              >
-                                {String(post.authorId?.$oid || post.authorId || "") ===
-                                  String((session?.user as any)?.id) && (
+                            <AnimatePresence>
+                              {openPostMenuId === post._id && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: 5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: 5 }}
+                                  className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl shadow-2xl z-40 py-2 overflow-hidden"
+                                >
+                                  {String(post.authorId?.$oid || post.authorId || "") ===
+                                    String((session?.user as any)?.id) && (
+                                      <div
+                                        onClick={() => {
+                                          setEditingPostId(post._id);
+                                          setPostText(post.content);
+                                          const images =
+                                            post.images || (post.image ? [post.image] : []);
+                                          setPostImagePreviews(
+                                            images.map((src: string, idx: number) => ({
+                                              id: `img-${idx}`,
+                                              preview: src,
+                                              src,
+                                            })),
+                                          );
+                                          setActiveModal("post");
+                                          setOpenPostMenuId(null);
+                                        }}
+                                        className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
+                                      >
+                                        <EditOutlined />{" "}
+                                        <span className="text-sm font-bold">แก้ไขโพสต์</span>
+                                      </div>
+                                    )}
                                   <div
                                     onClick={() => {
-                                      setEditingPostId(post._id);
-                                      setPostText(post.content);
-                                      const images =
-                                        post.images || (post.image ? [post.image] : []);
-                                      setPostImagePreviews(
-                                        images.map((src: string, idx: number) => ({
-                                          id: `img-${idx}`,
-                                          preview: src,
-                                          src,
-                                        })),
-                                      );
-                                      setActiveModal("post");
+                                      handleDeletePost(post._id);
                                       setOpenPostMenuId(null);
                                     }}
-                                    className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
+                                    className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
                                   >
-                                    <EditOutlined />{" "}
-                                    <span className="text-sm font-bold">แก้ไขโพสต์</span>
+                                    <DeleteOutlined />{" "}
+                                    <span className="text-sm font-bold">ลบโพสต์</span>
                                   </div>
-                                )}
-                                <div
-                                  onClick={() => {
-                                    handleDeletePost(post._id);
-                                    setOpenPostMenuId(null);
-                                  }}
-                                  className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
-                                >
-                                  <DeleteOutlined />{" "}
-                                  <span className="text-sm font-bold">ลบโพสต์</span>
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      )}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )}
                     </div>
                     <div className="text-sm text-zinc-800 dark:text-zinc-300 leading-relaxed mb-4 whitespace-pre-wrap">
                       {expandedPosts.includes(post._id) || (post.content?.length || 0) <= 200 ? (
@@ -1543,8 +1550,8 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                             <span className="text-[10px] text-zinc-400 font-bold">
                               {post.sharedPostData.createdAt
                                 ? new Date(post.sharedPostData.createdAt).toLocaleDateString(
-                                    "th-TH",
-                                  )
+                                  "th-TH",
+                                )
                                 : "เมื่อสักครู่"}
                             </span>
                           </div>
@@ -1575,15 +1582,14 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                             return (
                               <div
                                 key={idx}
-                                className={`relative overflow-hidden ${
-                                  totalImages === 1
-                                    ? "h-auto"
-                                    : totalImages === 3 && idx === 0
-                                      ? "row-span-2 h-full"
-                                      : totalImages >= 3
-                                        ? "h-[150px] sm:h-[250px]"
-                                        : "h-[200px] sm:h-[300px]"
-                                }`}
+                                className={`relative overflow-hidden ${totalImages === 1
+                                  ? "h-auto"
+                                  : totalImages === 3 && idx === 0
+                                    ? "row-span-2 h-full"
+                                    : totalImages >= 3
+                                      ? "h-[150px] sm:h-[250px]"
+                                      : "h-[200px] sm:h-[300px]"
+                                  }`}
                               >
                                 <img
                                   src={img}
@@ -1593,11 +1599,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                                       index: idx,
                                     })
                                   }
-                                  className={`w-full cursor-pointer hover:scale-[1.01] transition-transform duration-500 ${
-                                    totalImages === 1
-                                      ? "h-auto object-contain"
-                                      : "h-full object-cover"
-                                  }`}
+                                  className={`w-full cursor-pointer hover:scale-[1.01] transition-transform duration-500 ${totalImages === 1
+                                    ? "h-auto object-contain"
+                                    : "h-full object-cover"
+                                    }`}
                                   alt={`Post ${idx}`}
                                 />
                                 {totalImages > 4 && idx === 3 && (
@@ -1702,7 +1707,7 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                                 String(comment.userId) === String((session?.user as any)?.id) ||
                                 (comment.userId?.$oid &&
                                   String(comment.userId.$oid) ===
-                                    String((session?.user as any)?.id));
+                                  String((session?.user as any)?.id));
                               const isEditing = editingCommentId === commentId;
                               const replies =
                                 post.comments?.filter((c: any) => c.parentId === commentId) || [];
@@ -1959,41 +1964,41 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                                                 String((session?.user as any)?.id) ||
                                                 (reply.userId?.$oid &&
                                                   String(reply.userId.$oid) ===
-                                                    String((session?.user as any)?.id))) && (
-                                                <Dropdown
-                                                  menu={{
-                                                    items: [
-                                                      {
-                                                        key: "edit",
-                                                        label: "แก้ไข",
-                                                        icon: <EditOutlined />,
-                                                        onClick: () => {
-                                                          setEditingCommentId(
-                                                            reply.id || reply._id,
-                                                          );
-                                                          setEditingCommentText(reply.text);
+                                                  String((session?.user as any)?.id))) && (
+                                                  <Dropdown
+                                                    menu={{
+                                                      items: [
+                                                        {
+                                                          key: "edit",
+                                                          label: "แก้ไข",
+                                                          icon: <EditOutlined />,
+                                                          onClick: () => {
+                                                            setEditingCommentId(
+                                                              reply.id || reply._id,
+                                                            );
+                                                            setEditingCommentText(reply.text);
+                                                          },
                                                         },
-                                                      },
-                                                      {
-                                                        key: "delete",
-                                                        label: "ลบ",
-                                                        icon: <DeleteOutlined />,
-                                                        danger: true,
-                                                        onClick: () =>
-                                                          handleDeleteComment(
-                                                            post._id,
-                                                            reply.id || reply._id,
-                                                          ),
-                                                      },
-                                                    ],
-                                                  }}
-                                                  trigger={["click"]}
-                                                >
-                                                  <button className="w-7 h-7 rounded-full bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700 flex items-center justify-center transition-all shadow-sm">
-                                                    <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400" />
-                                                  </button>
-                                                </Dropdown>
-                                              )}
+                                                        {
+                                                          key: "delete",
+                                                          label: "ลบ",
+                                                          icon: <DeleteOutlined />,
+                                                          danger: true,
+                                                          onClick: () =>
+                                                            handleDeleteComment(
+                                                              post._id,
+                                                              reply.id || reply._id,
+                                                            ),
+                                                        },
+                                                      ],
+                                                    }}
+                                                    trigger={["click"]}
+                                                  >
+                                                    <button className="w-7 h-7 rounded-full bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700 flex items-center justify-center transition-all shadow-sm">
+                                                      <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400" />
+                                                    </button>
+                                                  </Dropdown>
+                                                )}
                                             </div>
                                             <div className="flex items-center gap-4 pl-2 text-[10px] font-black text-zinc-500 dark:text-zinc-400">
                                               <span>
@@ -2432,11 +2437,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                             <span>
                               สถานภาพนักเรียน{" "}
                               <span
-                                className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
-                                  formData.studentStatus === "กำลังศึกษา"
-                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                                    : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                                }`}
+                                className={`px-2.5 py-0.5 rounded-full text-xs font-black ${formData.studentStatus === "กำลังศึกษา"
+                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                  : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                                  }`}
                               >
                                 {formData.studentStatus}
                               </span>
@@ -2450,11 +2454,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                           <span>
                             สถานะทวิภาคี{" "}
                             <span
-                              className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
-                                formData.isInternship
-                                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                              }`}
+                              className={`px-2.5 py-0.5 rounded-full text-xs font-black ${formData.isInternship
+                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                                }`}
                             >
                               {formData.isInternship
                                 ? "กำลังฝึกงานอยู่ 💼"
@@ -2907,10 +2910,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                               {formData.govStartDate
                                 ? new Date(formData.govStartDate).toLocaleDateString("th-TH", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  })
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })
                                 : "-"}
                             </p>
                             <p className="text-[10px] font-bold text-zinc-400 uppercase">
@@ -2926,10 +2929,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                             <p className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
                               {formData.retirementDate
                                 ? new Date(formData.retirementDate).toLocaleDateString("th-TH", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  })
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })
                                 : "-"}
                             </p>
                             <p className="text-[10px] font-bold text-zinc-400 uppercase">
@@ -3323,11 +3326,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                 <div
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-4 font-bold text-sm sm:text-base cursor-pointer whitespace-nowrap transition-all relative group ${
-                    activeTab === tab
-                      ? "text-blue-600"
-                      : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg"
-                  }`}
+                  className={`px-6 py-4 font-bold text-sm sm:text-base cursor-pointer whitespace-nowrap transition-all relative group ${activeTab === tab
+                    ? "text-blue-600"
+                    : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg"
+                    }`}
                 >
                   {tab}
                   {activeTab === tab && (
@@ -3766,11 +3768,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                       value={formData.studentStatus || ""}
                       onChange={(e) => setFormData({ ...formData, studentStatus: e.target.value })}
                       disabled={!isSuperAdmin}
-                      className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${
-                        isSuperAdmin
-                          ? "bg-zinc-100 dark:bg-zinc-800"
-                          : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
-                      }`}
+                      className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${isSuperAdmin
+                        ? "bg-zinc-100 dark:bg-zinc-800"
+                        : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
+                        }`}
                     >
                       <option value="">ไม่ระบุ</option>
                       <option value="กำลังศึกษา">กำลังศึกษา</option>
@@ -3782,11 +3783,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
 
                   {/* ฝึกงาน — super_admin only */}
                   <div
-                    className={`flex items-center justify-between p-3 rounded-xl border ${
-                      isSuperAdmin
-                        ? "bg-zinc-50 dark:bg-zinc-800/50 dark:border-zinc-700"
-                        : "bg-zinc-50/50 dark:bg-zinc-900/50 dark:border-zinc-800 opacity-60"
-                    }`}
+                    className={`flex items-center justify-between p-3 rounded-xl border ${isSuperAdmin
+                      ? "bg-zinc-50 dark:bg-zinc-800/50 dark:border-zinc-700"
+                      : "bg-zinc-50/50 dark:bg-zinc-900/50 dark:border-zinc-800 opacity-60"
+                      }`}
                   >
                     <div>
                       <p className="text-sm font-black text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
@@ -3808,14 +3808,12 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                         setFormData({ ...formData, isInternship: !formData.isInternship })
                       }
                       disabled={!isSuperAdmin}
-                      className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
-                        formData.isInternship ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"
-                      } ${!isSuperAdmin ? "cursor-not-allowed" : "cursor-pointer"}`}
+                      className={`relative w-12 h-6 rounded-full transition-all duration-300 ${formData.isInternship ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"
+                        } ${!isSuperAdmin ? "cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       <div
-                        className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${
-                          formData.isInternship ? "left-6" : "left-0.5"
-                        }`}
+                        className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${formData.isInternship ? "left-6" : "left-0.5"
+                          }`}
                       />
                     </button>
                   </div>
@@ -4391,9 +4389,9 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                     setSelectedImage((prev) =>
                       prev
                         ? {
-                            ...prev,
-                            index: (prev.index - 1 + prev.images.length) % prev.images.length,
-                          }
+                          ...prev,
+                          index: (prev.index - 1 + prev.images.length) % prev.images.length,
+                        }
                         : null,
                     );
                   }}
@@ -4407,9 +4405,9 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
                     setSelectedImage((prev) =>
                       prev
                         ? {
-                            ...prev,
-                            index: (prev.index + 1) % prev.images.length,
-                          }
+                          ...prev,
+                          index: (prev.index + 1) % prev.images.length,
+                        }
                         : null,
                     );
                   }}
@@ -4541,4 +4539,17 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
       </AnimatePresence>
     </div>
   );
+}
+
+export default function FriendProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense fallback={<FullPageLoader message="กำลังโหลดโปรไฟล์..." />}>
+      <FriendProfilePageWrapper params={params} />
+    </Suspense>
+  );
+}
+
+function FriendProfilePageWrapper({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  return <FriendProfilePageContent id={id} />;
 }

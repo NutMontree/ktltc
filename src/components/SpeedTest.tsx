@@ -489,7 +489,7 @@ export default function SpeedTest() {
               <div className="w-2 h-8 bg-[#83697b] rounded-full" />
               วิธีการเข้าใช้งาน
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 space-y-3">
               เรียกใช้งานผ่าน Web Browser โดยไปที่
               <span className="text-[#83697b] font-bold underline">
                 ktltc.ac.th/speedtest
@@ -521,11 +521,10 @@ function StatBox({
 }) {
   return (
     <div
-      className={`bg-white/70 backdrop-blur-md p-5 rounded-4xl border transition-all duration-500 relative overflow-hidden ${
-        active
-          ? "border-[#83697b] shadow-2xl scale-[1.02] z-10"
-          : "border-white/40"
-      } ${highlight ? "bg-white shadow-xl" : ""}`}
+      className={`bg-white/70 backdrop-blur-md p-5 rounded-4xl border transition-all duration-500 relative overflow-hidden ${active
+        ? "border-[#83697b] shadow-2xl scale-[1.02] z-10"
+        : "border-white/40"
+        } ${highlight ? "bg-white shadow-xl" : ""}`}
     >
       <div className="flex items-center gap-2 text-gray-400 font-black text-[10px] tracking-widest mb-3 uppercase">
         <span className={active || highlight ? "text-[#83697b]" : ""}>
@@ -535,19 +534,18 @@ function StatBox({
       </div>
       <div className="flex items-baseline gap-1">
         <span
-          className={`text-3xl font-black tabular-nums transition-colors ${
-            highlight
-              ? "text-[#83697b]"
-              : value > 0
-                ? "text-[#4a3b4e]"
-                : "text-gray-300"
-          }`}
+          className={`text-3xl font-black tabular-nums transition-colors ${highlight
+            ? "text-[#83697b]"
+            : value > 0
+              ? "text-[#4a3b4e]"
+              : "text-gray-300"
+            }`}
         >
           {value === 0
             ? "--"
             : value.toFixed(
-                label.includes("PING") || label.includes("JITTER") ? 0 : 1,
-              )}
+              label.includes("PING") || label.includes("JITTER") ? 0 : 1,
+            )}
         </span>
         <span className="text-[10px] text-gray-400 font-bold tracking-tighter">
           {unit}
