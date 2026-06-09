@@ -3,7 +3,7 @@ import clientPromise from "@/lib/db";
 import Link from "next/link";
 import ManageNewsList from "@/components/ManageNewsList";
 
-export const revalidate = 0; // ป้องกันการค้าง Cache
+export const revalidate = 60; // Revalidate every 1 minute for dashboard
 
 interface NewsItem {
   _id: string;

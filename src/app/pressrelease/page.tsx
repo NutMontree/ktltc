@@ -4,7 +4,7 @@ import Image from "next/image";
 import ViewAllButton from "@/components/ViewAllButton";
 
 // ✅ 1. เพิ่ม revalidate เพื่อให้หน้าแรกอัปเดตข่าวใหม่เสมอ
-export const revalidate = 0;
+export const revalidate = 300; // Revalidate every 5 minutes
 
 // Interface ข้อมูลข่าว
 interface NewsItem {
@@ -88,7 +88,7 @@ export default async function PressRelease() {
         {latestNews.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {latestNews.map((news) => (
-              <Link 
+              <Link
                 href={`/news/${news._id}`}
                 key={news._id}
                 className="group flex flex-col rounded-2xl overflow-hidden border border-zinc-100 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full dark:bg-zinc-900 dark:border-zinc-800"
@@ -96,7 +96,7 @@ export default async function PressRelease() {
                 <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                   {(
                     (news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0]) && (
-                      /\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0] || "") || 
+                      /\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0] || "") ||
                       (news.thumbnails?.[0] || news.images?.[0] || news.announcementImages?.[0] || "").includes('video')
                     )
                   ) ? (
