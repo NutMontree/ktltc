@@ -3,7 +3,7 @@ import NewsListClient from "@/components/NewsListClient";
 import Link from "next/link";
 
 // ✅ 1. บังคับให้หน้าเว็บดึงข้อมูลใหม่เสมอ (ปิด Cache เพื่อให้เห็นความเคลื่อนไหวล่าสุด)
-export const revalidate = 0;
+export const revalidate = 300; // Revalidate every 5 minutes
 
 interface NewsItem {
   _id: string;

@@ -3,7 +3,7 @@ import NewsListClient from "@/components/NewsListClient";
 import Link from "next/link";
 
 // ✅ 1. เพิ่มการ Revalidate เพื่อให้ข้อมูลการประกวดราคาไม่อัปเดตล่าช้า
-export const revalidate = 0;
+export const revalidate = 300; // Revalidate every 5 minutes
 
 interface NewsItem {
   _id: string;

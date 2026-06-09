@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 // ✅ 1. เพิ่มการ Revalidate เพื่อให้ข่าวประกาศอัปเดตทันที
-export const revalidate = 0;
+export const revalidate = 300; // Revalidate every 5 minutes
 
 interface NewsItem {
   _id: string;
