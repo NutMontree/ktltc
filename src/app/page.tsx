@@ -76,7 +76,7 @@ export default async function Home() {
 
         {/* ✅ Container คุมความกว้างเนื้อหา */}
         <div className="max-w-[1600px] mx-auto w-full">
-          {isShow.student_support !== false && <StudentVerifyPage />}
+          <StudentVerifyPage />
           {isShow.student_support !== false && <StudentSupportSystem />}
           {isShow.qa_ita !== false && <ExternalQualityAssurance />}
           {isShow.features !== false && <Features />}
