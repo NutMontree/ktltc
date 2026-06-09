@@ -90,8 +90,8 @@ export async function GET(req: Request) {
         content: u.content,
         files: u.files || [],
         sequence: u.sequence || 0,
-        studyMinutes: u.studyMinutes || 0,
-        totalMinutes: u.totalMinutes || 0,
+        studyMinutes: Number(u.studyMinutes || 0) || 0,
+        totalMinutes: Number(u.totalMinutes || 0) || 0,
         createdAt: u.createdAt || null,
       })),
     });

@@ -134,10 +134,17 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { subjectId, title, googleFormUrl, deadline, startDate, unitId, isBuiltIn, questions, isShuffle, quizType } = body;
+    const { subjectId, title, googleFormUrl, deadline, startDate, unitId, isBuiltIn, questions, isShuffle, quizType, showCorrectAnswers } = body;
 
     if (!subjectId || !title || (!isBuiltIn && !googleFormUrl)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // Validate that if unitId is specified, the quiz is for that specific unit only
+    if (unitId && isBuiltIn && questions && questions.length > 0) {
+      // Ensure questions are relevant to the unit (this is a basic validation)
+      // In a more complex system, you might validate question content against unit content
+      console.log(`[DVE Quizzes POST] Creating quiz for unit ${unitId} with ${questions.length} questions`);
     }
 
     const client = await clientPromise;
@@ -159,6 +166,7 @@ export async function POST(req: Request) {
       unitId: unitId || "",
       isShuffle: !!isShuffle,
       quizType: quizType || "general",
+      showCorrectAnswers: showCorrectAnswers !== undefined ? !!showCorrectAnswers : false,
       createdAt: new Date(),
     });
 

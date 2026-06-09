@@ -162,6 +162,7 @@ export function DVEStudentPortal() {
   );
   const [studySecondsElapsed, setStudySecondsElapsed] = useState<number>(0);
   const [isStudyCompleted, setIsStudyCompleted] = useState<boolean>(false);
+  const [isMinimumTimeReached, setIsMinimumTimeReached] = useState<boolean>(false);
   const [isSubmittingAttendance, setIsSubmittingAttendance] = useState<boolean>(false);
   const [uploadingRecordId, setUploadingRecordId] = useState<string | null>(null);
 
@@ -552,7 +553,8 @@ export function DVEStudentPortal() {
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (activeStudyUnit && unitQuizMode === "learning") {
-      const studyLimitSeconds = (activeStudyUnit.studyMinutes || 0) * 60;
+      const studyLimitSeconds = (Number(activeStudyUnit.studyMinutes) || 0) * 60;
+      const totalLimitSeconds = (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes) || 0) * 60;
       const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
       const user = session?.user as any;
 
@@ -562,10 +564,11 @@ export function DVEStudentPortal() {
       );
 
       // หากเคยเช็คชื่อไปแล้ว (มีข้อมูลในระบบ) หรือหน่วยนี้ไม่ได้ตั้งเวลาไว้ ให้ข้ามการจับเวลาไปเลย
-      if (alreadyCheckedIn || studyLimitSeconds <= 0) {
+      if (alreadyCheckedIn || totalLimitSeconds <= 0) {
         setIsStudyCompleted(true);
-        if (studyLimitSeconds > 0) {
-          setStudySecondsElapsed(studyLimitSeconds); // เติมหลอดเวลาให้เต็ม
+        setIsMinimumTimeReached(true);
+        if (totalLimitSeconds > 0) {
+          setStudySecondsElapsed(totalLimitSeconds); // เติมหลอดเวลาให้เต็ม
         }
 
         // ถ้าไม่เคยเช็คชื่อ (กรณีไม่มีเวลา) ถึงจะให้บันทึกอัตโนมัติ
@@ -576,11 +579,19 @@ export function DVEStudentPortal() {
         timer = setInterval(() => {
           setStudySecondsElapsed((prev) => {
             const nextVal = prev + 1;
-            if (nextVal >= studyLimitSeconds) {
+
+            // Check if minimum time is reached
+            if (!isMinimumTimeReached && nextVal >= studyLimitSeconds) {
+              setIsMinimumTimeReached(true);
+              // Trigger auto check-in when minimum time is reached
+              handleAutoCheckin(activeStudyUnit);
+              message.success("เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ สามารถทำแบบทดสอบได้ทันที");
+            }
+
+            // Check if total time is reached
+            if (nextVal >= totalLimitSeconds) {
               clearInterval(timer);
               setIsStudyCompleted(true);
-              // Trigger auto check-in
-              handleAutoCheckin(activeStudyUnit);
 
               // Automatically jump to Post-test if it exists and is not submitted
               const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
@@ -592,10 +603,13 @@ export function DVEStudentPortal() {
               if (posttest && !posttest.isSubmitted) {
                 setUnitQuizMode("posttest");
                 // Open the modal automatically
+                message.success("เรียนครบเวลาทั้งหมดแล้ว! กำลังเปิดแบบทดสอบหลังเรียน...");
                 handleOpenQuizFormGlobal(posttest);
+              } else {
+                message.success("เรียนครบเวลาทั้งหมดแล้ว!");
               }
 
-              return studyLimitSeconds;
+              return totalLimitSeconds;
             }
             return nextVal;
           });
@@ -606,7 +620,7 @@ export function DVEStudentPortal() {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [activeStudyUnit, attendances, session, unitQuizMode, quizzes]);
+  }, [activeStudyUnit, attendances, session, unitQuizMode, quizzes, isMinimumTimeReached]);
 
   // Handle Pre-test / Post-test flow when Quiz Modal is closed
   useEffect(() => {
@@ -619,17 +633,21 @@ export function DVEStudentPortal() {
             (q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")),
         );
         if (pretest?.isSubmitted) {
+          // After pre-test is submitted, switch to learning mode (timer)
           setUnitQuizMode("learning");
+          message.success("ทำแบบทดสอบก่อนเรียนเสร็จสิ้น กำลังเริ่มจับเวลาเรียน...");
         } else {
           setActiveStudyUnit(null);
           setUnitQuizMode(null);
           message.warning("คุณต้องทำแบบทดสอบก่อนเรียนให้เสร็จก่อนเข้าสู่บทเรียน");
         }
       } else if (unitQuizMode === "posttest") {
+        // After post-test is completed, return to learning mode
         setUnitQuizMode("learning");
+        message.success("ทำแบบทดสอบหลังเรียนเสร็จสิ้น");
       }
     }
-  }, [isQuizModalOpen]);
+  }, [isQuizModalOpen, quizzes, activeStudyUnit, unitQuizMode]);
 
   // Load subject contents once selected
   const handleSubjectSelect = async (subjectId: string) => {
@@ -1196,6 +1214,8 @@ export function DVEStudentPortal() {
                             setActiveStudyUnit(unit);
                             setStudySecondsElapsed(0);
                             setIsStudyCompleted(false);
+                            setIsMinimumTimeReached(false);
+                            message.info("พบแบบทดสอบก่อนเรียน กรุณาทำแบบทดสอบก่อนเรียนก่อนเข้าสู่บทเรียน");
                             handleOpenQuizFormGlobal(pretest);
                             return;
                           }
@@ -1204,6 +1224,7 @@ export function DVEStudentPortal() {
                           setActiveStudyUnit(unit);
                           setStudySecondsElapsed(0);
                           setIsStudyCompleted(false);
+                          setIsMinimumTimeReached(false);
                         }}
                         className="w-full text-left p-4 hover:bg-zinc-50 dark:hover:bg-zinc-850/50 bg-transparent flex items-center justify-between transition-colors cursor-pointer border-0"
                       >
@@ -1216,7 +1237,7 @@ export function DVEStudentPortal() {
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-650">
-                          {unit.studyMinutes > 0 && (
+                          {Number(unit.studyMinutes) > 0 && (
                             <span className="text-[10px] font-bold text-amber-500/90 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
                               ⏱️ {unit.studyMinutes} นาที
                             </span>
@@ -1557,7 +1578,7 @@ export function DVEStudentPortal() {
               <div className="bg-linear-to-br from-emerald-500 to-teal-600 text-white p-6 relative">
                 <button
                   onClick={() => {
-                    if (activeStudyUnit.studyMinutes > 0 && !isStudyCompleted) {
+                    if (Number(activeStudyUnit.studyMinutes) > 0 && !isStudyCompleted) {
                       if (
                         confirm(
                           "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",
@@ -1587,7 +1608,7 @@ export function DVEStudentPortal() {
               {/* Study Area content */}
               <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
                 {/* ⏱️ TIMER BANNER */}
-                {activeStudyUnit.studyMinutes > 0 && (
+                {Number(activeStudyUnit.studyMinutes) > 0 && (
                   <div
                     className={`p-5 rounded-2xl border text-center transition-all ${isStudyCompleted
                       ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400 animate-pulse"
@@ -1610,11 +1631,20 @@ export function DVEStudentPortal() {
                       {isStudyCompleted ? (
                         <div>
                           <h4 className="text-base font-black text-emerald-600 dark:text-emerald-400">
-                            🎉 เรียนครบเวลาและเช็คชื่อเข้าเรียนเสร็จสิ้น!
+                            🎉 เรียนครบเวลาทั้งหมดแล้ว!
                           </h4>
                           <p className="text-xs text-emerald-500 mt-1 font-bold">
                             ท่านเข้าเรียนวิชานี้เรียบร้อยแล้ว สามารถศึกษาชีทดาวน์โหลด
                             หรือทำแบบทดสอบด้านล่างได้ทันที
+                          </p>
+                        </div>
+                      ) : isMinimumTimeReached ? (
+                        <div>
+                          <h4 className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                            ✅ เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ
+                          </h4>
+                          <p className="text-xs text-emerald-500/80 mt-1">
+                            สามารถทำแบบทดสอบได้ทันที หรือศึกษาต่อจนครบเวลาทั้งหมด
                           </p>
                         </div>
                       ) : (
@@ -1636,14 +1666,24 @@ export function DVEStudentPortal() {
                             สะสมเวลาแล้ว: {Math.floor(studySecondsElapsed / 60)} นาที{" "}
                             {studySecondsElapsed % 60} วินาที
                           </span>
-                          <span>เป้าหมาย: {activeStudyUnit.studyMinutes} นาที</span>
+                          <span>
+                            เป้าหมาย: {Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)} นาที
+                            (ขั้นต่ำ: {Number(activeStudyUnit.studyMinutes)} นาที)
+                          </span>
                         </div>
-                        <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-3.5 rounded-full overflow-hidden">
+                        <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-3.5 rounded-full overflow-hidden relative">
                           <div
-                            className={`h-full transition-all duration-1000 ${isStudyCompleted ? "bg-emerald-500" : "bg-amber-500"
+                            className={`h-full transition-all duration-1000 ${isStudyCompleted ? "bg-emerald-500" : isMinimumTimeReached ? "bg-emerald-500" : "bg-amber-500"
                               }`}
                             style={{
-                              width: `${(studySecondsElapsed / (activeStudyUnit.studyMinutes * 60)) * 100}%`,
+                              width: `${(studySecondsElapsed / ((Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)) * 60)) * 100}%`,
+                            }}
+                          />
+                          {/* Minimum time marker */}
+                          <div
+                            className="absolute top-0 bottom-0 w-0.5 bg-zinc-400 dark:bg-zinc-600"
+                            style={{
+                              left: `${(Number(activeStudyUnit.studyMinutes) / (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes))) * 100}%`,
                             }}
                           />
                         </div>
@@ -1825,15 +1865,15 @@ export function DVEStudentPortal() {
                                 disabled={isQuizSubmitted}
                                 className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${isQuizSubmitted
                                   ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
-                                  : isStudyCompleted
+                                  : isMinimumTimeReached
                                     ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
                                     : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
                                   }`}
                                 onClick={() => {
                                   if (isQuizSubmitted) return;
-                                  if (!isStudyCompleted) {
+                                  if (!isMinimumTimeReached) {
                                     message.warning(
-                                      `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${activeStudyUnit.studyMinutes} นาทีก่อนทำแบบทดสอบประเมิน`,
+                                      `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${Number(activeStudyUnit.studyMinutes)} นาทีก่อนทำแบบทดสอบประเมิน`,
                                     );
                                   } else {
                                     handleOpenQuizFormGlobal(quiz);
@@ -1871,7 +1911,7 @@ export function DVEStudentPortal() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (activeStudyUnit.studyMinutes > 0 && !isStudyCompleted) {
+                    if (Number(activeStudyUnit.studyMinutes) > 0 && !isStudyCompleted) {
                       if (
                         confirm(
                           "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",

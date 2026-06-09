@@ -117,13 +117,13 @@ export default async function RootLayout({
               <ScrollToTop />
               <ScrollUp />
               <CookieConsent />
-              <Suspense fallback={
+              {/* <Suspense fallback={
                 <footer className="bg-[#0f172a] text-slate-500 text-xs text-center py-6 border-t border-slate-800">
                   กำลังโหลดข้อมูล...
                 </footer>
               }>
-                <Footer />
-              </Suspense>
+              </Suspense> */}
+              <Footer />
             </ThemeProvider>
           </SessionProvider>
         </AntdRegistry>
