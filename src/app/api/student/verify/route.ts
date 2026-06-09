@@ -41,6 +41,20 @@ function escapeRegex(text: string): string {
   return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
+// Strip Thai title prefixes (นาย, นาง, นางสาว) from name
+function stripThaiTitles(name: string): string {
+  if (!name) return "";
+  return name
+    .replace(/^(นาย|นาง|นางสาว)\s*/i, "")
+    .trim();
+}
+
+// Normalize multiple spaces to single space
+function normalizeSpaces(name: string): string {
+  if (!name) return "";
+  return name.replace(/\s+/g, " ").trim();
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -71,8 +85,23 @@ export async function GET(req: Request) {
       }
       query.citizenId = sanitizedId;
     } else if (name) {
-      // Support sub-string searches on name
-      query.name = { $regex: escapeRegex(name), $options: "i" };
+      // Strip Thai titles from input and normalize spaces
+      const strippedName = stripThaiTitles(name);
+      const normalizedName = normalizeSpaces(strippedName);
+      console.log("[Student Verify] Original name:", name);
+      console.log("[Student Verify] Stripped name:", strippedName);
+      console.log("[Student Verify] Normalized name:", normalizedName);
+
+      // Create regex that matches full name with optional Thai title prefix
+      // and handles multiple spaces in database
+      const titlePattern = "(?:นาย|นาง|นางสาว)?\\s*";
+      // Escape special regex characters (excluding space)
+      const escapedName = normalizedName
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/ /g, '\\s+');
+      const regexPattern = `^${titlePattern}${escapedName}$`;
+      console.log("[Student Verify] Regex pattern:", regexPattern);
+      query.name = { $regex: regexPattern, $options: "i" };
     }
 
     const students = await db
