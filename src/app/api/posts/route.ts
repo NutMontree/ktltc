@@ -21,7 +21,7 @@ export async function GET(req: Request) {
       // ตรวจสอบว่าเป็นเพื่อนกันหรือไม่
       let isFriend = false;
       const isMe = currentUserId === userId;
-      
+
       if (currentUserId && !isMe) {
         const currentUser = await db.collection("users").findOne({ _id: new ObjectId(currentUserId) });
         if (currentUser?.friends?.map((f: any) => String(f)).includes(userId)) {
@@ -31,12 +31,7 @@ export async function GET(req: Request) {
 
       query = {
         $and: [
-          {
-            $or: [
-              { userId: new ObjectId(userId) },
-              { authorId: new ObjectId(userId) }
-            ]
-          },
+          { userId: new ObjectId(userId) }, // เฉพาะโพสต์ที่อยู่บนวอลล์ของ userId นี้เท่านั้น
           {
             $or: [
               { audience: "public" },
@@ -101,6 +96,26 @@ export async function POST(req: Request) {
     };
 
     const result = await db.collection("posts").insertOne(newPost);
+
+    // ✅ สร้างการแจ้งเตือนเมื่อคนอื่นโพสต์ในโปรไฟล์ของเรา
+    if (targetUserId && targetUserId !== userId) {
+      const profileOwner = await db.collection("users").findOne({ _id: new ObjectId(targetUserId) });
+      if (profileOwner) {
+        await db.collection("notifications").insertOne({
+          userId: new ObjectId(targetUserId),
+          type: "post_on_profile",
+          title: "มีโพสต์ใหม่ในโปรไฟล์ของคุณ",
+          message: `${userName} โพสต์ในโปรไฟล์ของคุณ: ${content?.slice(0, 50)}${content?.length > 50 ? '...' : ''}`,
+          from: userId,
+          fromName: userName,
+          fromImage: session?.user?.image,
+          targetUrl: `/dashboard/profile/${targetUserId}`,
+          isRead: false,
+          read: false,
+          createdAt: new Date(),
+        });
+      }
+    }
 
     // ✅ บันทึก Log กิจกรรม
     await db.collection("logs").insertOne({

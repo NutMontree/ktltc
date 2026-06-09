@@ -753,7 +753,7 @@ export function DVEStudentPortal() {
   }, []);
 
   // Stats calculators - Filter to show only study unit data (exclude internship/normal classroom data)
-  const studyUnitAttendances = attendances.filter((att) => att.unitId);
+  const studyUnitAttendances = useMemo(() => attendances.filter((att) => att.unitId), [attendances]);
   const totalClasses = studyUnitAttendances.length;
   const presentClasses = studyUnitAttendances.filter((a) => a.status === "Present").length;
   const lateClasses = studyUnitAttendances.filter((a) => a.status === "Late").length;

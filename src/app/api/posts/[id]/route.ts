@@ -120,8 +120,34 @@ export async function POST(
             { _id: new ObjectId(id) },
             { $addToSet: { likes: userId } },
           );
+
+        // ✅ สร้างการแจ้งเตือนเมื่อมีคนกดถูกใจโพสต์
+        const postAuthorId = String(post.authorId || post.userId);
+        const likerId = String(userId);
+
+        if (postAuthorId !== likerId) {
+          const postAuthor = await db.collection("users").findOne({ _id: new ObjectId(postAuthorId) });
+          if (postAuthor) {
+            await db.collection("notifications").insertOne({
+              userId: new ObjectId(postAuthorId),
+              type: "post_like",
+              title: "มีคนกดถูกใจโพสต์ของคุณ",
+              message: `${userName} กดถูกใจโพสต์ของคุณ`,
+              from: userId,
+              fromName: userName,
+              fromImage: session.user.image,
+              targetUrl: `/dashboard/profile/${post.userId || post.authorId}`,
+              isRead: false,
+              read: false,
+              createdAt: new Date(),
+            });
+          }
+        }
       }
     } else if (type === "COMMENT") {
+      const post = await db.collection("posts").findOne({ _id: new ObjectId(id) });
+      if (!post) return NextResponse.json({ error: "ไม่พบโพสต์" }, { status: 404 });
+
       const comment = {
         id: new ObjectId().toString(),
         userId: new ObjectId(userId),
@@ -138,6 +164,52 @@ export async function POST(
           { _id: new ObjectId(id) },
           { $push: { comments: comment } as any },
         );
+
+      // ✅ สร้างการแจ้งเตือนเมื่อมีคนคอมเมนต์หรือตอบกลับ
+      const postAuthorId = String(post.authorId || post.userId);
+      const commenterId = String(userId);
+
+      // ถ้าเป็น reply (มี parentId) ให้แจ้งเตือนคนที่เขียนคอมเมนต์แม่
+      if (parentId) {
+        const parentComment = post.comments?.find((c: any) => c.id === parentId);
+        if (parentComment && String(parentComment.userId) !== commenterId) {
+          const parentCommentAuthor = await db.collection("users").findOne({ _id: parentComment.userId });
+          if (parentCommentAuthor) {
+            await db.collection("notifications").insertOne({
+              userId: parentComment.userId,
+              type: "comment_reply",
+              title: "มีการตอบกลับคอมเมนต์ของคุณ",
+              message: `${userName} ตอบกลับคอมเมนต์ของคุณ: ${text?.slice(0, 50)}${text?.length > 50 ? '...' : ''}`,
+              from: userId,
+              fromName: userName,
+              fromImage: session.user.image,
+              targetUrl: `/dashboard/profile/${post.userId || post.authorId}`,
+              isRead: false,
+              read: false,
+              createdAt: new Date(),
+            });
+          }
+        }
+      }
+      // ถ้าเป็นคอมเมนต์ใหม่ (ไม่ใช่ reply) และผู้คอมเมนต์ไม่ใช่เจ้าของโพสต์ ให้แจ้งเตือนเจ้าของโพสต์
+      else if (postAuthorId !== commenterId) {
+        const postAuthor = await db.collection("users").findOne({ _id: new ObjectId(postAuthorId) });
+        if (postAuthor) {
+          await db.collection("notifications").insertOne({
+            userId: new ObjectId(postAuthorId),
+            type: "post_comment",
+            title: "มีคอมเมนต์ใหม่ในโพสต์ของคุณ",
+            message: `${userName} คอมเมนต์ในโพสต์ของคุณ: ${text?.slice(0, 50)}${text?.length > 50 ? '...' : ''}`,
+            from: userId,
+            fromName: userName,
+            fromImage: session.user.image,
+            targetUrl: `/dashboard/profile/${post.userId || post.authorId}`,
+            isRead: false,
+            read: false,
+            createdAt: new Date(),
+          });
+        }
+      }
     } else if (type === "DELETE_COMMENT") {
       await db.collection("posts").updateOne(
         { _id: new ObjectId(id) },
@@ -225,6 +297,29 @@ export async function POST(
         updatedAt: new Date(),
       };
       await db.collection("posts").insertOne(sharedPost);
+
+      // ✅ สร้างการแจ้งเตือนเมื่อมีคนแชร์โพสต์
+      const originalPostAuthorId = String(originalPost.authorId || originalPost.userId);
+      const sharerId = String(userId);
+
+      if (originalPostAuthorId !== sharerId) {
+        const originalPostAuthor = await db.collection("users").findOne({ _id: new ObjectId(originalPostAuthorId) });
+        if (originalPostAuthor) {
+          await db.collection("notifications").insertOne({
+            userId: new ObjectId(originalPostAuthorId),
+            type: "post_share",
+            title: "มีคนแชร์โพสต์ของคุณ",
+            message: `${userName} แชร์โพสต์ของคุณ${body.shareText ? `: ${body.shareText.slice(0, 50)}${body.shareText.length > 50 ? '...' : ''}` : ''}`,
+            from: userId,
+            fromName: userName,
+            fromImage: session.user.image,
+            targetUrl: `/dashboard/profile/${originalPost.userId || originalPost.authorId}`,
+            isRead: false,
+            read: false,
+            createdAt: new Date(),
+          });
+        }
+      }
     }
 
     return NextResponse.json({ success: true });

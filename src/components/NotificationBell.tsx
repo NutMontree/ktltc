@@ -89,6 +89,8 @@ export default function NotificationBell() {
     if (!url) {
       if (n.type === 'friend_request' || n.type === 'friend_accept') {
         url = `/dashboard/profile/${n.from}`;
+      } else if (n.type === 'post_on_profile' || n.type === 'post_comment' || n.type === 'comment_reply' || n.type === 'post_like' || n.type === 'post_share') {
+        url = `/dashboard/profile/${n.from}`;
       }
     }
 
@@ -147,8 +149,8 @@ export default function NotificationBell() {
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
             {notifications.slice(0, 10).map((n) => {
               const isRead = n.isRead ?? n.read ?? false;
-              const title = n.title || (n.type === 'friend_request' ? 'คำขอเป็นเพื่อน' : n.type === 'friend_accept' ? 'ยอมรับเป็นเพื่อน' : 'การแจ้งเตือนระบบ');
-              const message = n.message || (n.type === 'friend_request' ? `${n.fromName} ส่งคำขอเป็นเพื่อนกับคุณ` : n.type === 'friend_accept' ? `${n.fromName} ยอมรับคำขอเป็นเพื่อนของคุณแล้ว` : '');
+              const title = n.title || (n.type === 'friend_request' ? 'คำขอเป็นเพื่อน' : n.type === 'friend_accept' ? 'ยอมรับเป็นเพื่อน' : n.type === 'post_on_profile' ? 'โพสต์ในโปรไฟล์' : n.type === 'post_comment' ? 'คอมเมนต์ในโพสต์' : n.type === 'comment_reply' ? 'ตอบกลับคอมเมนต์' : n.type === 'post_like' ? 'กดถูกใจโพสต์' : n.type === 'post_share' ? 'แชร์โพสต์' : 'การแจ้งเตือนระบบ');
+              const message = n.message || (n.type === 'friend_request' ? `${n.fromName} ส่งคำขอเป็นเพื่อนกับคุณ` : n.type === 'friend_accept' ? `${n.fromName} ยอมรับคำขอเป็นเพื่อนของคุณแล้ว` : n.type === 'post_on_profile' ? `${n.fromName} โพสต์ในโปรไฟล์ของคุณ` : n.type === 'post_comment' ? `${n.fromName} คอมเมนต์ในโพสต์ของคุณ` : n.type === 'comment_reply' ? `${n.fromName} ตอบกลับคอมเมนต์ของคุณ` : n.type === 'post_like' ? `${n.fromName} กดถูกใจโพสต์ของคุณ` : n.type === 'post_share' ? `${n.fromName} แชร์โพสต์ของคุณ` : '');
 
               return (
                 <div 
