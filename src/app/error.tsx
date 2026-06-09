@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const AUTO_REFRESH_SECONDS = 5;
 
 export default function Error({
   error,
@@ -9,43 +11,100 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [countdown, setCountdown] = useState(AUTO_REFRESH_SECONDS);
+
   useEffect(() => {
-    // บันทึก log ลง console
+    // บันทึก log
     console.error("Application Error:", error);
   }, [error]);
 
+  useEffect(() => {
+    // นับถอยหลัง แล้ว auto-refresh
+    if (countdown <= 0) {
+      // ลองรีเซ็ต React error boundary ก่อน
+      reset();
+      // ถ้ายังไม่หาย ให้รีโหลดหน้าเว็บทั้งหมด
+      setTimeout(() => window.location.reload(), 300);
+      return;
+    }
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [countdown, reset]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-      <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-8 max-w-md shadow-lg">
-        <div className="w-12 h-12 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg
-            className="w-6 h-6 text-red-600 dark:text-red-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            ></path>
-          </svg>
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
+      <div className="bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900/30 rounded-3xl p-10 max-w-md w-full shadow-2xl shadow-red-500/5">
+        {/* ไอคอน */}
+        <div className="relative w-20 h-20 mx-auto mb-6">
+          <div className="absolute inset-0 rounded-full bg-red-50 dark:bg-red-950/40 animate-ping opacity-30" />
+          <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900/50">
+            <svg
+              className="w-9 h-9 text-red-500 dark:text-red-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.8}
+                d="M5.636 5.636a9 9 0 1 0 12.728 12.728M5.636 5.636A9 9 0 0 1 18.364 18.364M5.636 5.636 18.364 18.364"
+              />
+            </svg>
+          </div>
         </div>
-        <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">
-          การเชื่อมต่อฐานข้อมูลหรือระบบขัดข้อง
+
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+          เซิร์ฟเวอร์หรือฐานข้อมูลขัดข้อง
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-          กรุณาตรวจสอบว่าเซิร์ฟเวอร์ฐานข้อมูลยังเปิดใช้งานอยู่
-          และเครือข่ายอินเทอร์เน็ต/วงแลนของคุณยังเชื่อมต่อได้ปกติ
+        <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed">
+          ระบบไม่สามารถเชื่อมต่อฐานข้อมูลได้ในขณะนี้
+          <br />
+          อาจเกิดจากเครือข่ายหรือเซิร์ฟเวอร์ไม่พร้อม
         </p>
-        <div className="flex gap-4 justify-center">
+
+        {/* Countdown ring */}
+        <div className="flex flex-col items-center gap-5">
+          <div className="relative w-16 h-16">
+            <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                className="text-slate-100 dark:text-slate-800"
+              />
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                className="text-teal-500 transition-all duration-1000"
+                strokeDasharray={`${2 * Math.PI * 28}`}
+                strokeDashoffset={`${2 * Math.PI * 28 * (1 - countdown / AUTO_REFRESH_SECONDS)}`}
+              />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-teal-600 dark:text-teal-400">
+              {countdown}
+            </span>
+          </div>
+          <p className="text-xs text-slate-400">
+            กำลังรีเฟรชอัตโนมัติใน {countdown} วินาที...
+          </p>
+
           <button
-            onClick={() => reset()}
-            className="px-5 py-2.5 bg-teal-600 text-white font-medium text-sm rounded-xl hover:bg-teal-700 transition cursor-pointer"
+            onClick={() => {
+              reset();
+              setTimeout(() => window.location.reload(), 300);
+            }}
+            className="w-full px-5 py-3 bg-teal-600 text-white font-semibold text-sm rounded-2xl hover:bg-teal-700 active:scale-95 transition-all cursor-pointer shadow-lg shadow-teal-600/20"
           >
-            ลองใหม่อีกครั้ง
+            รีเฟรชทันที
           </button>
         </div>
       </div>
