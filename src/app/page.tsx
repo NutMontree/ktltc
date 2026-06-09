@@ -24,6 +24,7 @@ import {
 } from "@/components/home/DynamicClientSections";
 import ShowFacebookClient from "@/components/ShowFacebookClient";
 import PerformancePage from "./performance/page";
+import StudentVerifyPage from "./student/verify/page";
 
 // ดึงข้อมูลผ่าน Server Side เหมือนเดิม (รันบนเครื่องเซิร์ฟเวอร์เท่านั้น ปลอดภัยกว่า)
 async function getHomeData() {
@@ -75,6 +76,7 @@ export default async function Home() {
 
         {/* ✅ Container คุมความกว้างเนื้อหา */}
         <div className="max-w-[1600px] mx-auto w-full">
+          {isShow.student_support !== false && <StudentVerifyPage />}
           {isShow.student_support !== false && <StudentSupportSystem />}
           {isShow.qa_ita !== false && <ExternalQualityAssurance />}
           {isShow.features !== false && <Features />}

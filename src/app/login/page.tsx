@@ -207,29 +207,6 @@ export default function LoginPage() {
             </p>
           </motion.div>
 
-          <div>
-            {/* Login Info Tip Card */}
-            <div className="p-5 bg-amber-500/5 dark:bg-amber-500/10 border-2 border-dashed border-amber-500/20 rounded-3xl flex gap-4 items-start mb-6">
-              <div className="p-3 bg-amber-500 text-white rounded-2xl shadow-lg shadow-amber-500/30">
-                <ShieldAlert size={20} />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-black text-amber-600 dark:text-amber-400 mb-1 leading-none">
-                  ข้อกำหนดสำหรับ 
-                  <strong className="text-[#ff0000] text-sm"> นักเรียน นักศึกษา</strong>
-                </h4>
-                <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
-            
-                  1. 🔑 <strong>ชื่อผู้ใช้งาน:</strong>
-                  <strong className="text-[#003fff] text-sm"> เลขประจำตัวประชาชน (13 หลัก)</strong>
-                  <br />
-                  2. 🔒 <strong>รหัสผ่าน:</strong>
-                  <strong className="text-[#003fff] text-sm"> เบอร์โทรศัพท์มือถือ</strong>
-                </p>
-              </div>
-            </div>
-          </div>
-
           <AnimatePresence>
             {error && (
               <motion.div
@@ -251,7 +228,9 @@ export default function LoginPage() {
               transition={{ delay: 0.1 }}
             >
               <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2 block">
-                ชื่อผู้ใช้งาน
+                 🔑 <strong>ชื่อผู้ใช้งาน:</strong>
+                  <strong className="text-[#003fff] text-sm"> เลขประจำตัวประชาชน (13 หลัก)</strong>
+
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
@@ -276,7 +255,8 @@ export default function LoginPage() {
             >
               <div className="flex justify-between items-end mb-2">
                 <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                  รหัสผ่าน
+       🔒 <strong>รหัสผ่าน:</strong>
+                  <strong className="text-[#003fff] text-sm"> เบอร์โทรศัพท์มือถือ</strong>
                 </label>
                 <Link
                   // href="https://www.allmaster.store/contactus"
