@@ -254,7 +254,7 @@ export default function AdministrativeStructure() {
                    text.includes("ความร่วมมือและพัฒนานวัตกรรม") ||
                    text.includes("งบประมาณ") ||
                    text.includes("บัญชี") ||
-                   text.includes("รองผู้อำนวยการ/ฝ่ายแผนงานและความร่วมมือ") ||
+                   text.includes("รองผู้อำนวยการ/ฝ่ายยุทธศาสตร์และแผนงาน") ||
                    u.role === "deputy_strategy";
           };
 
@@ -409,7 +409,7 @@ export default function AdministrativeStructure() {
         };
       case "strategy":
         return {
-          title: "ฝ่ายแผนงานและความร่วมมือ",
+          title: "ฝ่ายยุทธศาสตร์และแผนงาน",
           deputy: deputyStrategy,
           fallbackName: "นายสมศักดิ์ จันทานิตย์",
           fallbackImg: "/images/personal/สมศักดิ์.webp",
@@ -504,11 +504,11 @@ export default function AdministrativeStructure() {
             />
 
             <DepartmentColumn
-              title="ฝ่ายแผนงานและความร่วมมือ"
+              title="ฝ่ายยุทธศาสตร์และแผนงาน"
               head={{
                 name: deputyStrategy?.name || "นายสมศักดิ์ จันทานิตย์",
                 img: deputyStrategy?.image || "/images/personal/สมศักดิ์.webp",
-                position: deputyStrategy?.position || "รองผู้อำนวยการฝ่ายแผนงานและความร่วมมือ",
+                position: deputyStrategy?.position || "รองผู้อำนวยการฝ่ายยุทธศาสตร์และแผนงาน",
               }}
               colorClass="bg-blue-500"
               onClick={() => setActiveTab("strategy")}

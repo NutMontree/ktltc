@@ -21,6 +21,7 @@ import { th } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import PostModal from "@/components/PostModal";
 
 interface Notification {
   _id: string;
@@ -33,6 +34,7 @@ interface Notification {
   fromImage?: string;
   targetUrl?: string;
   from?: string;
+  postId?: string;
   createdAt: string;
 }
 
@@ -41,6 +43,8 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread">("all");
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchNotifications = async () => {
@@ -103,11 +107,19 @@ export default function NotificationsPage() {
       markAsRead(n._id);
     }
 
+    // Open modal for post-related notifications
+    if (n.type === 'post_on_profile' || n.type === 'post_comment' || n.type === 'comment_reply' || n.type === 'post_like' || n.type === 'post_share') {
+      if (n.postId) {
+        setSelectedPostId(n.postId);
+        setPostModalOpen(true);
+        return;
+      }
+    }
+
+    // Navigate for other notifications
     let url = n.targetUrl;
     if (!url) {
       if (n.type === "friend_request" || n.type === "friend_accept") {
-        url = `/dashboard/profile/${n.from}`;
-      } else if (n.type === "post_on_profile" || n.type === "post_comment" || n.type === "comment_reply" || n.type === "post_like" || n.type === "post_share") {
         url = `/dashboard/profile/${n.from}`;
       }
     }
@@ -271,11 +283,10 @@ export default function NotificationsPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className={`relative group p-6 rounded-4xl border transition-all duration-300 ${
-                      !isRead
-                        ? "bg-blue-50/30 dark:bg-blue-900/5 border-blue-100/50 dark:border-blue-900/20 shadow-sm shadow-blue-500/5"
-                        : "bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
-                    }`}
+                    className={`relative group p-6 rounded-4xl border transition-all duration-300 ${!isRead
+                      ? "bg-blue-50/30 dark:bg-blue-900/5 border-blue-100/50 dark:border-blue-900/20 shadow-sm shadow-blue-500/5"
+                      : "bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
+                      }`}
                   >
                     <div className="flex gap-6">
                       <div className="relative shrink-0">
@@ -291,15 +302,14 @@ export default function NotificationsPage() {
                           )}
                         </div>
                         <div
-                          className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-4 border-white dark:border-zinc-900 flex items-center justify-center shadow-lg ${
-                            n.type === "success"
-                              ? "bg-emerald-500"
-                              : n.type === "warning"
-                                ? "bg-amber-500"
-                                : n.type === "error"
-                                  ? "bg-rose-500"
-                                  : "bg-blue-500"
-                          }`}
+                          className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-4 border-white dark:border-zinc-900 flex items-center justify-center shadow-lg ${n.type === "success"
+                            ? "bg-emerald-500"
+                            : n.type === "warning"
+                              ? "bg-amber-500"
+                              : n.type === "error"
+                                ? "bg-rose-500"
+                                : "bg-blue-500"
+                            }`}
                         >
                           {n.type === "success" ? (
                             <CheckCircle2 className="text-white" size={16} />
@@ -363,6 +373,12 @@ export default function NotificationsPage() {
           </AnimatePresence>
         </div>
       </div>
+
+      <PostModal
+        postId={selectedPostId}
+        open={postModalOpen}
+        onClose={() => setPostModalOpen(false)}
+      />
     </div>
   );
 }

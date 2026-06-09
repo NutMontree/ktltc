@@ -4,6 +4,29 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 
+// GET: ดึงข้อมูลโพสต์ตาม ID
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const post = await db.collection("posts").findOne({ _id: new ObjectId(id) });
+
+    if (!post) {
+      return NextResponse.json({ error: "ไม่พบโพสต์" }, { status: 404 });
+    }
+
+    return NextResponse.json(post);
+  } catch (error) {
+    console.error("Fetch Post Error:", error);
+    return NextResponse.json({ error: "Failed to fetch post" }, { status: 500 });
+  }
+}
+
 // 1. ลบโพสต์
 export async function DELETE(
   req: Request,
@@ -121,7 +144,7 @@ export async function POST(
             { $addToSet: { likes: userId } },
           );
 
-        // ✅ สร้างการแจ้งเตือนเมื่อมีคนกดถูกใจโพสต์
+        // ✅ สร้างการแจ้งเตือนเมื่อมีคนกดถูกใชโพสต์
         const postAuthorId = String(post.authorId || post.userId);
         const likerId = String(userId);
 
@@ -131,11 +154,12 @@ export async function POST(
             await db.collection("notifications").insertOne({
               userId: new ObjectId(postAuthorId),
               type: "post_like",
-              title: "มีคนกดถูกใจโพสต์ของคุณ",
-              message: `${userName} กดถูกใจโพสต์ของคุณ`,
+              title: "มีคนกดถูกใชโพสต์ของคุณ",
+              message: `${userName} กดถูกใชโพสต์ของคุณ`,
               from: userId,
               fromName: userName,
               fromImage: session.user.image,
+              postId: id,
               targetUrl: `/dashboard/profile/${post.userId || post.authorId}`,
               isRead: false,
               read: false,
@@ -183,6 +207,7 @@ export async function POST(
               from: userId,
               fromName: userName,
               fromImage: session.user.image,
+              postId: id,
               targetUrl: `/dashboard/profile/${post.userId || post.authorId}`,
               isRead: false,
               read: false,
@@ -203,6 +228,7 @@ export async function POST(
             from: userId,
             fromName: userName,
             fromImage: session.user.image,
+            postId: id,
             targetUrl: `/dashboard/profile/${post.userId || post.authorId}`,
             isRead: false,
             read: false,
@@ -313,6 +339,7 @@ export async function POST(
             from: userId,
             fromName: userName,
             fromImage: session.user.image,
+            postId: id,
             targetUrl: `/dashboard/profile/${originalPost.userId || originalPost.authorId}`,
             isRead: false,
             read: false,

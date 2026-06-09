@@ -439,7 +439,7 @@ export default function SpeedTest() {
         {/* Footer info */}
         <div className="p-8 border-t border-gray-200/50 flex flex-col items-center gap-3">
           <p className="text-[10px] text-gray-400 font-bold tracking-[0.2em] text-center uppercase leading-loose">
-            All trademarks of Ookla, LLC, including Speedtest®, are used under
+            All trademarks of KTLTC, AllMaster, including Speedtest®, are used under
             license.
           </p>
           <div className="flex gap-4 text-[10px] text-[#83697b] font-black tracking-widest transition-opacity hover:opacity-100 opacity-60">
@@ -489,17 +489,21 @@ export default function SpeedTest() {
               <div className="w-2 h-8 bg-[#83697b] rounded-full" />
               วิธีการเข้าใช้งาน
             </h3>
-            <p className="text-gray-600 space-y-3">
-              เรียกใช้งานผ่าน Web Browser โดยไปที่
-              <span className="text-[#83697b] font-bold underline">
+            <p className="text-gray-600 ">
+              <span>
+                เรียกใช้งานผ่าน Web Browser โดยไปที่
+              </span>
+              <span className="text-[#83697b] px-2 font-bold underline">
                 ktltc.ac.th/speedtest
               </span>
-              หรือใช้งานผ่านช่องทางบริการของวิทยาลัย
+              <span>
+                หรือใช้งานผ่านช่องทางบริการของวิทยาลัย
+              </span>
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

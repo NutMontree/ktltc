@@ -35,6 +35,8 @@ import {
   SearchOutlined,
   LikeFilled,
   LikeOutlined,
+  HeartFilled,
+  HeartOutlined,
   CommentOutlined,
   LeftOutlined,
   RightOutlined,
@@ -1644,8 +1646,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
                           className="flex items-center gap-1.5 hover:underline transition-all group"
                         >
                           <div className="flex -space-x-1 items-center">
-                            <div className="w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 shadow-sm z-10">
-                              <LikeFilled style={{ color: "white" }} className="text-[10px]" />
+                            <div className="w-5 h-5 rounded-full bg-linear-to-b from-red-400 to-red-600 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 shadow-sm z-10">
+                              <HeartFilled style={{ color: "white" }} className="text-[10px]" />
                             </div>
                           </div>
                           <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
@@ -1667,12 +1669,12 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     <div className="flex items-center justify-around gap-1">
                       <button
                         onClick={() => handleLikePost(post._id)}
-                        className={`flex-1 py-1.5 rounded-md flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800 ${post.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : "text-zinc-600 dark:text-zinc-400"}`}
+                        className={`flex-1 py-1.5 rounded-md flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800 ${post.likes?.includes((session?.user as any)?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-400 hover:text-red-500"}`}
                       >
                         {post.likes?.includes((session?.user as any)?.id) ? (
-                          <LikeFilled className="text-xl" />
+                          <HeartFilled className="text-xl" />
                         ) : (
-                          <LikeOutlined className="text-xl" />
+                          <HeartOutlined className="text-xl" />
                         )}
                         <span>ถูกใจ</span>
                       </button>
@@ -1784,8 +1786,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                               {(comment.likes?.length || 0) > 0 && (
                                                 <div className="absolute -bottom-1.5 -right-2 flex items-center bg-white dark:bg-zinc-800 rounded-full shadow-md border dark:border-zinc-700 px-1 py-0.5 scale-75 origin-left">
                                                   <div className="flex -space-x-1">
-                                                    <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center ring-1 ring-white dark:ring-zinc-800">
-                                                      <LikeFilled
+                                                    <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center ring-1 ring-white dark:ring-zinc-800">
+                                                      <HeartFilled
                                                         style={{ color: "white" }}
                                                         className="text-[8px]"
                                                       />
@@ -1843,9 +1845,9 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                               { addSuffix: false, locale: th },
                                             )}
                                           </span>
-                                          <span
+                                           <span
                                             onClick={() => handleLikeComment(post._id, commentId)}
-                                            className={`hover:underline cursor-pointer ${comment.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : "text-zinc-600 dark:text-zinc-300"}`}
+                                            className={`hover:underline cursor-pointer ${comment.likes?.includes((session?.user as any)?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-300 hover:text-red-500"}`}
                                           >
                                             ถูกใจ
                                           </span>
@@ -2010,11 +2012,11 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                                   },
                                                 )}
                                               </span>
-                                              <span
+                                               <span
                                                 onClick={() =>
                                                   handleLikeComment(post._id, reply.id || reply._id)
                                                 }
-                                                className={`hover:underline cursor-pointer ${reply.likes?.includes((session?.user as any)?.id) ? "text-blue-600" : ""}`}
+                                                className={`hover:underline cursor-pointer ${reply.likes?.includes((session?.user as any)?.id) ? "text-red-500" : "hover:text-red-500"}`}
                                               >
                                                 ถูกใจ
                                               </span>
@@ -3505,8 +3507,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
         <Modal
           title={
             <div className="flex items-center gap-3 p-1">
-              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <LikeFilled style={{ color: "white" }} className="text-xs" />
+              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-red-400 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/20">
+                <HeartFilled style={{ color: "white" }} className="text-xs" />
               </div>
               <span className="font-black text-lg tracking-tight">คนที่ถูกใจโพสต์นี้</span>
             </div>
@@ -3542,8 +3544,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             </div>
                           )}
                         </div>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 border-2 border-white dark:border-zinc-800 flex items-center justify-center shadow-sm">
-                          <LikeFilled style={{ color: "white" }} className="text-[8px]" />
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-linear-to-b from-red-400 to-red-600 border-2 border-white dark:border-zinc-800 flex items-center justify-center shadow-sm">
+                          <HeartFilled style={{ color: "white" }} className="text-[8px]" />
                         </div>
                       </div>
                       <div>

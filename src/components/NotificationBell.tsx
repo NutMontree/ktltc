@@ -8,6 +8,7 @@ import { th } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import PostModal from "./PostModal";
 
 /**
  * NotificationBell.tsx: คอมโพเนนต์กระดิ่งแจ้งเตือน (Real-time Simulation)
@@ -31,6 +32,7 @@ interface Notification {
   fromImage?: string;
   targetUrl?: string;
   from?: string;
+  postId?: string;
   createdAt: string;
 }
 
@@ -38,6 +40,8 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -85,11 +89,20 @@ export default function NotificationBell() {
       markAsRead(n._id);
     }
 
+    // Open modal for post-related notifications
+    if (n.type === 'post_on_profile' || n.type === 'post_comment' || n.type === 'comment_reply' || n.type === 'post_like' || n.type === 'post_share') {
+      if (n.postId) {
+        setSelectedPostId(n.postId);
+        setPostModalOpen(true);
+        setOpen(false);
+        return;
+      }
+    }
+
+    // Navigate for other notifications
     let url = n.targetUrl;
     if (!url) {
       if (n.type === 'friend_request' || n.type === 'friend_accept') {
-        url = `/dashboard/profile/${n.from}`;
-      } else if (n.type === 'post_on_profile' || n.type === 'post_comment' || n.type === 'comment_reply' || n.type === 'post_like' || n.type === 'post_share') {
         url = `/dashboard/profile/${n.from}`;
       }
     }
@@ -117,7 +130,7 @@ export default function NotificationBell() {
             </p>
           </div>
           {unreadCount > 0 && (
-            <button 
+            <button
               onClick={() => markAsRead()}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all duration-300 shadow-sm"
             >
@@ -139,11 +152,11 @@ export default function NotificationBell() {
           </div>
         ) : notifications.length === 0 ? (
           <div className="p-16 text-center">
-             <div className="w-20 h-20 bg-white dark:bg-zinc-900 rounded-4xl shadow-xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-center mx-auto mb-6 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
-                <Bell className="text-zinc-200 dark:text-zinc-800" size={40} strokeWidth={1} />
-             </div>
-             <p className="text-zinc-800 dark:text-zinc-200 font-black text-lg leading-tight uppercase tracking-tight">เงียบเหงาจัง...</p>
-             <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-2 font-medium">ยังไม่มีการแจ้งเตือนใหม่ในระบบ</p>
+            <div className="w-20 h-20 bg-white dark:bg-zinc-900 rounded-4xl shadow-xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-center mx-auto mb-6 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
+              <Bell className="text-zinc-200 dark:text-zinc-800" size={40} strokeWidth={1} />
+            </div>
+            <p className="text-zinc-800 dark:text-zinc-200 font-black text-lg leading-tight uppercase tracking-tight">เงียบเหงาจัง...</p>
+            <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-2 font-medium">ยังไม่มีการแจ้งเตือนใหม่ในระบบ</p>
           </div>
         ) : (
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
@@ -153,12 +166,11 @@ export default function NotificationBell() {
               const message = n.message || (n.type === 'friend_request' ? `${n.fromName} ส่งคำขอเป็นเพื่อนกับคุณ` : n.type === 'friend_accept' ? `${n.fromName} ยอมรับคำขอเป็นเพื่อนของคุณแล้ว` : n.type === 'post_on_profile' ? `${n.fromName} โพสต์ในโปรไฟล์ของคุณ` : n.type === 'post_comment' ? `${n.fromName} คอมเมนต์ในโพสต์ของคุณ` : n.type === 'comment_reply' ? `${n.fromName} ตอบกลับคอมเมนต์ของคุณ` : n.type === 'post_like' ? `${n.fromName} กดถูกใจโพสต์ของคุณ` : n.type === 'post_share' ? `${n.fromName} แชร์โพสต์ของคุณ` : '');
 
               return (
-                <div 
+                <div
                   key={n._id}
                   onClick={() => handleNotificationClick(n)}
-                  className={`relative p-5 transition-all cursor-pointer group overflow-hidden ${
-                    !isRead ? 'bg-white dark:bg-zinc-900 border-l-4 border-l-blue-600' : 'hover:bg-white dark:hover:bg-zinc-900 bg-transparent'
-                  }`}
+                  className={`relative p-5 transition-all cursor-pointer group overflow-hidden ${!isRead ? 'bg-white dark:bg-zinc-900 border-l-4 border-l-blue-600' : 'hover:bg-white dark:hover:bg-zinc-900 bg-transparent'
+                    }`}
                 >
                   <div className="flex gap-5">
                     <div className="relative shrink-0 mt-1">
@@ -171,13 +183,12 @@ export default function NotificationBell() {
                           </div>
                         )}
                       </div>
-                      <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-4 border-white dark:border-zinc-900 flex items-center justify-center shadow-md ${
-                        n.type === 'success' ? 'bg-emerald-500' : n.type === 'warning' ? 'bg-amber-500' : n.type === 'error' ? 'bg-rose-500' : 'bg-blue-600'
-                      }`}>
+                      <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-4 border-white dark:border-zinc-900 flex items-center justify-center shadow-md ${n.type === 'success' ? 'bg-emerald-500' : n.type === 'warning' ? 'bg-amber-500' : n.type === 'error' ? 'bg-rose-500' : 'bg-blue-600'
+                        }`}>
                         {n.type === 'success' ? <CheckCircle2 className="text-white" size={14} strokeWidth={3} /> :
-                         n.type === 'warning' ? <AlertTriangle className="text-white" size={14} strokeWidth={3} /> :
-                         n.type === 'error' ? <AlertTriangle className="text-white" size={14} strokeWidth={3} /> :
-                         <Bell className="text-white" size={12} strokeWidth={3} />}
+                          n.type === 'warning' ? <AlertTriangle className="text-white" size={14} strokeWidth={3} /> :
+                            n.type === 'error' ? <AlertTriangle className="text-white" size={14} strokeWidth={3} /> :
+                              <Bell className="text-white" size={12} strokeWidth={3} />}
                       </div>
                     </div>
 
@@ -208,7 +219,7 @@ export default function NotificationBell() {
 
       {/* ส่วนท้าย Popover */}
       <div className="p-4 bg-white dark:bg-zinc-900 border-t dark:border-zinc-800">
-        <button 
+        <button
           className="w-full group flex items-center justify-center gap-2 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white rounded-2xl transition-all duration-300"
           onClick={() => {
             router.push("/dashboard/notifications");
@@ -225,32 +236,40 @@ export default function NotificationBell() {
   );
 
   return (
-    <Popover
-      content={content}
-      trigger="click"
-      open={open}
-      onOpenChange={setOpen}
-      placement="bottomRight"
-      overlayClassName="notification-popover"
-      overlayStyle={{ maxWidth: 'calc(100vw - 24px)' }}
-      styles={{
-        container: {
-          backgroundColor: isDark ? '#18181b' : '#ffffff',
-          border: `1px solid ${isDark ? '#27272a' : '#e2e8f0'}`,
-          padding: 0,
-          borderRadius: '2rem',
-          overflow: 'hidden',
-          boxShadow: isDark ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-        }
-      }}
-      arrow={false}
-    >
-      <button className="relative w-10 h-10 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shadow-sm active:scale-95 group">
-        <Badge count={unreadCount} overflowCount={99} size="small" offset={[-1, 1]} className="notification-badge">
-          <Bell size={20} className="group-hover:rotate-12 transition-transform" />
-        </Badge>
-      </button>
-    </Popover>
+    <>
+      <Popover
+        content={content}
+        trigger="click"
+        open={open}
+        onOpenChange={setOpen}
+        placement="bottomRight"
+        overlayClassName="notification-popover"
+        overlayStyle={{ maxWidth: 'calc(100vw - 24px)' }}
+        styles={{
+          container: {
+            backgroundColor: isDark ? '#18181b' : '#ffffff',
+            border: `1px solid ${isDark ? '#27272a' : '#e2e8f0'}`,
+            padding: 0,
+            borderRadius: '2rem',
+            overflow: 'hidden',
+            boxShadow: isDark ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }
+        }}
+        arrow={false}
+      >
+        <button className="relative w-10 h-10 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shadow-sm active:scale-95 group">
+          <Badge count={unreadCount} overflowCount={99} size="small" offset={[-1, 1]} className="notification-badge">
+            <Bell size={20} className="group-hover:rotate-12 transition-transform" />
+          </Badge>
+        </button>
+      </Popover>
+
+      <PostModal
+        postId={selectedPostId}
+        open={postModalOpen}
+        onClose={() => setPostModalOpen(false)}
+      />
+    </>
   );
 }
 
