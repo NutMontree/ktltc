@@ -12,7 +12,7 @@ import ScrollVelocity from "@/components/Scrollvelocity";
 import HomeBannerSwiper from "@/components/HomeBannerSwiper";
 import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
-import dynamic from "next/dynamic";
+import Link from "next/link";
 
 export const revalidate = 300; // Revalidate every 5 minutes (300 seconds) for better performance
 
@@ -25,12 +25,6 @@ import {
 } from "@/components/home/DynamicClientSections";
 import ShowFacebookClient from "@/components/ShowFacebookClient";
 import PerformancePage from "./performance/page";
-
-// Lazy load StudentVerifyPage to improve initial page load performance
-const StudentVerifyPage = dynamic(() => import("./student/verify/page"), {
-  loading: () => <div className="py-8 text-center text-zinc-500">กำลังโหลด...</div>,
-  ssr: false,
-});
 
 // ดึงข้อมูลผ่าน Server Side เหมือนเดิม (รันบนเครื่องเซิร์ฟเวอร์เท่านั้น ปลอดภัยกว่า)
 async function getHomeData() {
@@ -82,7 +76,43 @@ export default async function Home() {
 
         {/* ✅ Container คุมความกว้างเนื้อหา */}
         <div className="max-w-[1600px] mx-auto w-full">
-          <StudentVerifyPage />
+          {/* Student Verify Button */}
+          <div className="py-8 flex justify-center">
+            <Link
+              href="/student/verify"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full text-white font-bold text-lg shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-white/20 group-hover:bg-white/30 transition-all duration-300" />
+              <svg
+                className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+              <span className="relative z-10">KTLTC Central Directory Verification Portal</span>
+              <svg
+                className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </Link>
+          </div>
           {isShow.student_support !== false && <StudentSupportSystem />}
           {isShow.qa_ita !== false && <ExternalQualityAssurance />}
           {isShow.features !== false && <Features />}
