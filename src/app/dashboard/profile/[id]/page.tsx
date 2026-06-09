@@ -179,6 +179,54 @@ const ProfileModal = ({
   </AnimatePresence>
 );
 
+// Profile Not Found Page Component with Countdown
+const ProfileNotFoundPage = ({ router }: { router: any }) => {
+  const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          router.back();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [router]);
+
+  return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 text-center">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center">
+          <ExclamationCircleOutlined className="text-4xl text-rose-500" />
+        </div>
+        <h1 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">
+          ไม่พบหน้าที่คุณต้องการ
+        </h1>
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+          ขออภัย หน้านี้อาจถูกย้าย ลบออก หรือไม่เคยมีอยู่จริงในระบบ
+          <br />
+          กรุณาตรวจสอบ URL อีกครั้ง หรือกลับไปยังหน้าหลัก
+        </p>
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
+          <p className="text-amber-700 dark:text-amber-400 font-bold text-sm">
+            กำลังย้อนกลับใน {countdown} วินาที...
+          </p>
+        </div>
+        <button
+          onClick={() => router.back()}
+          className="px-6 py-3 bg-zinc-900 dark:bg-zinc-800 text-white rounded-xl font-black hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors"
+        >
+          กลับไปทันที
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default function FriendProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -469,7 +517,16 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
   const fetchFriendStatus = async () => {
     try {
       const res = await fetch(`/api/friends/status?id=${id}`);
-      const data = await res.json();
+      if (!res.ok) {
+        console.error("Friend status fetch failed:", res.status);
+        return;
+      }
+      const text = await res.text();
+      if (!text) {
+        console.error("Empty response from friend status API");
+        return;
+      }
+      const data = JSON.parse(text);
       setFriendStatus(data.status);
       setFriendRequestId(data.requestId || null);
     } catch (error) {
@@ -565,7 +622,13 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
         });
         if (data.image) setPreviewImage(data.image);
         if (data.coverImage) setPreviewCover(data.coverImage);
+      } else {
+        // Profile not found - set formData to null to trigger error page
+        setFormData(null as any);
+        return; // Don't fetch additional data if profile doesn't exist
       }
+
+      // Only fetch additional data if profile exists
       if (postsRes.ok) {
         setUserPosts(await postsRes.json());
       }
@@ -574,7 +637,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
         setAllUsers(data.users || []);
       }
 
-      await fetchFriendStatus();
+      // Only fetch friend status if profile exists
+      if (profileData) {
+        await fetchFriendStatus();
+      }
 
       // Fetch validation status for students viewing their own profile
       if (
@@ -923,7 +989,10 @@ export default function FriendProfilePage({ params }: { params: Promise<{ id: st
   };
 
   if (loading) return <FullPageLoader message="กำลังโหลดโปรไฟล์..." />;
-  if (!formData) return null;
+  if (!formData) {
+    // Profile not found - show error with countdown
+    return <ProfileNotFoundPage router={router} />;
+  }
 
   const isMyProfile = session?.user && (session.user as any).id === id;
   const isSuperAdmin = (session?.user as any)?.role === "super_admin";
