@@ -48,6 +48,26 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
     return true;
   };
 
+  const getUnemployedReasonText = (val: string) => {
+    if (!val) return "-";
+    switch (val) {
+      case "1":
+      case "ยังไม่ประสงค์ทำงาน":
+        return "ยังไม่ประสงค์ทำงาน";
+      case "2":
+      case "รอฟังคำตอบจากหน่วยงาน":
+      case "รอฟังคำตอบ":
+        return "รอฟังคำตอบจากหน่วยงาน";
+      case "3":
+      case "หางานทำไม่ได้":
+        return "หางานทำไม่ได้";
+      case "4":
+        return "อื่นๆ";
+      default:
+        return val;
+    }
+  };
+
   // Component ย่อยสำหรับแสดงข้อมูล 1 บรรทัด
   const DataRow = ({
     label,
@@ -223,8 +243,26 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                   label="รายได้ (ระบุ)"
                   value={suvery.salaryRangeOther}
                 />
-                <DataRow label="ตรงสายงานหรือไม่" value={suvery.jobMatch} />
-                <DataRow label="ความพึงพอใจ" value={suvery.jobSatisfaction} />
+                <DataRow
+                  label="ตรงสายงานหรือไม่"
+                  value={
+                    suvery.jobMatch === "1" || suvery.jobMatch === "ตรง"
+                      ? "ตรงสาขา"
+                      : suvery.jobMatch === "2" || suvery.jobMatch === "ไม่ตรง"
+                        ? "ไม่ตรงสาขา"
+                        : suvery.jobMatch
+                  }
+                />
+                <DataRow
+                  label="ความพึงพอใจ"
+                  value={
+                    suvery.jobSatisfaction === "1" || suvery.jobSatisfaction === "พึงพอใจ"
+                      ? "พึงพอใจ"
+                      : suvery.jobSatisfaction === "2" || suvery.jobSatisfaction === "ไม่พึงพอใจ"
+                        ? "ไม่พึงพอใจ"
+                        : suvery.jobSatisfaction
+                  }
+                />
                 <DataRow
                   label="ที่อยู่ที่ทำงาน"
                   value={[
@@ -263,9 +301,19 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 />
                 <DataRow
                   label="เหตุผล"
-                  value={suvery.furtherStudyReason}
-                  fullWidth
+                  value={
+                    suvery.furtherStudyReason === "4"
+                      ? "อื่นๆ"
+                      : suvery.furtherStudyReason
+                  }
+                  fullWidth={suvery.furtherStudyReason !== "4" || !suvery.furtherStudyReasonOther}
                 />
+                {suvery.furtherStudyReason === "4" && suvery.furtherStudyReasonOther && (
+                  <DataRow
+                    label="เหตุผลอื่น"
+                    value={suvery.furtherStudyReasonOther}
+                  />
+                )}
               </div>
             </>
           )}
@@ -285,7 +333,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 />
                 <DataRow
                   label="สาเหตุละเอียด"
-                  value={suvery.unemployedReason}
+                  value={getUnemployedReasonText(suvery.unemployedReason || "")}
                 />
                 <DataRow
                   label="สาเหตุอื่น"
