@@ -335,14 +335,14 @@ export default function StudentVerifyPage() {
 
           <div className="bg-white/85 dark:bg-zinc-900/90 backdrop-blur-2xl rounded-[30.5px] p-4 md:p-8 relative">
             {/* Segmented Sliding Tabs Control (SaaS Style) */}
-            <div className="flex bg-slate-100/70 dark:bg-zinc-800/70 p-1.5 rounded-[22px] max-w-lg mx-auto mb-8 border border-slate-200/50 dark:border-zinc-700/50 backdrop-blur-xl">
+            <div className="flex bg-slate-100/70 dark:bg-zinc-800/70 p-1.5 rounded-[22px] w-full max-w-lg mx-auto mb-8 border border-slate-200/50 dark:border-zinc-700/50 backdrop-blur-xl">
               <button
                 type="button"
                 onClick={() => {
                   setSearchMode("name");
                   setErrorMsg("");
                 }}
-                className={`flex-1 flex items-center justify-center gap-2.5 py-3.5 rounded-[18px] text-xs font-black transition-all duration-350 relative cursor-pointer ${
+                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 py-2.5 sm:py-3.5 rounded-[18px] text-[10px] sm:text-xs font-black transition-all duration-350 relative cursor-pointer ${
                   searchMode === "name"
                     ? "text-blue-650 dark:text-blue-400 font-extrabold"
                     : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
@@ -355,8 +355,8 @@ export default function StudentVerifyPage() {
                     transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   />
                 )}
-                <User className="w-4 h-4 relative z-10" />
-                <span className="relative z-10">ค้นหาด้วยชื่อ-นามสกุล</span>
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 relative z-10" />
+                <span className="relative z-10">ค้นหาด้วยชื่อ</span>
               </button>
 
               <button
@@ -365,7 +365,7 @@ export default function StudentVerifyPage() {
                   setSearchMode("citizenId");
                   setErrorMsg("");
                 }}
-                className={`flex-1 flex items-center justify-center gap-2.5 py-3.5 rounded-[18px] text-xs font-black transition-all duration-350 relative cursor-pointer ${
+                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 py-2.5 sm:py-3.5 rounded-[18px] text-[10px] sm:text-xs font-black transition-all duration-350 relative cursor-pointer ${
                   searchMode === "citizenId"
                     ? "text-blue-650 dark:text-blue-400 font-extrabold"
                     : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
@@ -378,8 +378,8 @@ export default function StudentVerifyPage() {
                     transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   />
                 )}
-                <ShieldCheck className="w-4 h-4 relative z-10" />
-                <span className="relative z-10">ค้นหาด้วยเลขบัตรประชาชน</span>
+                <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 relative z-10" />
+                <span className="relative z-10">ค้นหาด้วยเลขบัตร</span>
               </button>
             </div>
 
