@@ -342,11 +342,10 @@ export default function StudentVerifyPage() {
                   setSearchMode("name");
                   setErrorMsg("");
                 }}
-                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 py-2.5 sm:py-3.5 rounded-[18px] text-[10px] sm:text-xs font-black transition-all duration-350 relative cursor-pointer ${
-                  searchMode === "name"
-                    ? "text-blue-650 dark:text-blue-400 font-extrabold"
-                    : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
-                }`}
+                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 py-2.5 sm:py-3.5 rounded-[18px] text-[10px] sm:text-xs font-black transition-all duration-350 relative cursor-pointer ${searchMode === "name"
+                  ? "text-blue-650 dark:text-blue-400 font-extrabold"
+                  : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
+                  }`}
               >
                 {searchMode === "name" && (
                   <motion.div
@@ -365,11 +364,10 @@ export default function StudentVerifyPage() {
                   setSearchMode("citizenId");
                   setErrorMsg("");
                 }}
-                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 py-2.5 sm:py-3.5 rounded-[18px] text-[10px] sm:text-xs font-black transition-all duration-350 relative cursor-pointer ${
-                  searchMode === "citizenId"
-                    ? "text-blue-650 dark:text-blue-400 font-extrabold"
-                    : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
-                }`}
+                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 py-2.5 sm:py-3.5 rounded-[18px] text-[10px] sm:text-xs font-black transition-all duration-350 relative cursor-pointer ${searchMode === "citizenId"
+                  ? "text-blue-650 dark:text-blue-400 font-extrabold"
+                  : "text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
+                  }`}
               >
                 {searchMode === "citizenId" && (
                   <motion.div
@@ -396,12 +394,12 @@ export default function StudentVerifyPage() {
                     className="space-y-3"
                   >
                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500">
-                      พิมพ์ชื่อ หรือนามสกุลผู้เรียน
+                      พิมพ์ชื่อ-นามสกุลผู้เรียน (ครบถ้วน)
                     </label>
                     <div className="relative group/input">
                       <input
                         type="text"
-                        placeholder="ป้อนคำสืบค้น เช่น สมชาย, รักเรียน, วิศวะ..."
+                        placeholder="ป้อนชื่อ-นามสกุลครบ เช่น สมชาย ใจดี"
                         value={nameInput}
                         onChange={(e) => setNameInput(e.target.value)}
                         disabled={isLoading}
@@ -420,7 +418,11 @@ export default function StudentVerifyPage() {
                       )}
                     </div>
                     <span className="text-[10px] text-slate-450 font-semibold block leading-none pt-1">
-                      💡 ระบบสนับสนุนการสืบค้นชื่อใกล้เคียง (ป้อนคำขั้นต่ำ 2 ตัวอักษร)
+                      💡 ต้องพิมพ์ชื่อ-นามสกุล
+                      <span className="text-red-600 dark:text-red-400 px-1 text-xs">
+                        ครบถ้วนเท่านั้น
+                      </span>
+                      (ระบบจะตัดคำนำหน้า นาย/นาง/นางสาว ให้อัตโนมัติ)
                     </span>
                   </motion.div>
                 ) : (
@@ -647,15 +649,13 @@ export default function StudentVerifyPage() {
                         className="bg-linear-to-r from-blue-200 via-indigo-100 to-purple-100 p-[1.5px] rounded-[32px] shadow-lg relative overflow-hidden group/card"
                       >
                         <div
-                          className={`holographic-badge rounded-[30.5px] p-6 relative overflow-hidden border ${
-                            isActiveStudent ? "border-emerald-250/60" : "border-amber-250/60"
-                          }`}
+                          className={`holographic-badge rounded-[30.5px] p-6 relative overflow-hidden border ${isActiveStudent ? "border-emerald-250/60" : "border-amber-250/60"
+                            }`}
                         >
                           {/* Iridescent radial shine chip inside card */}
                           <div
-                            className={`absolute top-0 right-0 w-36 h-36 rounded-full blur-[65px] pointer-events-none opacity-20 ${
-                              isActiveStudent ? "bg-emerald-450" : "bg-amber-450"
-                            }`}
+                            className={`absolute top-0 right-0 w-36 h-36 rounded-full blur-[65px] pointer-events-none opacity-20 ${isActiveStudent ? "bg-emerald-450" : "bg-amber-450"
+                              }`}
                           />
 
                           {/* Upper Certificate crest seal banner */}
@@ -681,11 +681,10 @@ export default function StudentVerifyPage() {
 
                               {/* Pulsing Active indicator */}
                               <span
-                                className={`inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
-                                  isActiveStudent
-                                    ? "bg-emerald-50 text-emerald-600 border-emerald-200 shadow-[0_4px_12px_rgba(16,185,129,0.05)]"
-                                    : "bg-amber-50 text-amber-600 border-amber-200 shadow-[0_4px_12px_rgba(245,158,11,0.05)]"
-                                }`}
+                                className={`inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${isActiveStudent
+                                  ? "bg-emerald-50 text-emerald-600 border-emerald-200 shadow-[0_4px_12px_rgba(16,185,129,0.05)]"
+                                  : "bg-amber-50 text-amber-600 border-amber-200 shadow-[0_4px_12px_rgba(245,158,11,0.05)]"
+                                  }`}
                               >
                                 {isActiveStudent ? (
                                   <span className="relative flex h-2 w-2">
@@ -706,11 +705,10 @@ export default function StudentVerifyPage() {
                             <div className="flex gap-4.5 items-start">
                               {/* Profile credential avatar badge */}
                               <div
-                                className={`w-14 h-14 rounded-full flex items-center justify-center border shrink-0 relative shadow-inner overflow-hidden ${
-                                  isVocational
-                                    ? "bg-blue-50 text-blue-600 border-blue-200"
-                                    : "bg-indigo-50 text-indigo-650 border-indigo-205"
-                                }`}
+                                className={`w-14 h-14 rounded-full flex items-center justify-center border shrink-0 relative shadow-inner overflow-hidden ${isVocational
+                                  ? "bg-blue-50 text-blue-600 border-blue-200"
+                                  : "bg-indigo-50 text-indigo-650 border-indigo-205"
+                                  }`}
                               >
                                 {student.image ? (
                                   <img
@@ -736,11 +734,10 @@ export default function StudentVerifyPage() {
                                 <div className="flex flex-wrap gap-2 items-center">
                                   {/* Level details tag */}
                                   <span
-                                    className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg border ${
-                                      isVocational
-                                        ? "bg-blue-50/50 text-blue-600 border-blue-200/50"
-                                        : "bg-indigo-50/50 text-indigo-600 border-indigo-200/50"
-                                    }`}
+                                    className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg border ${isVocational
+                                      ? "bg-blue-50/50 text-blue-600 border-blue-200/50"
+                                      : "bg-indigo-50/50 text-indigo-600 border-indigo-200/50"
+                                      }`}
                                   >
                                     ระดับชั้น: {student.academicLevel}
                                   </span>
@@ -938,120 +935,119 @@ export default function StudentVerifyPage() {
                                     <div className="space-y-2">
                                       <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
                                         {flagpoleHistory.slice(0, historyLimit).map((history) => {
-                                        const isPresent =
-                                          history.status === "Present" ||
-                                          history.status === "ตรงเวลา";
-                                        const isLate =
-                                          history.status === "Late" || history.status === "สาย";
-                                        const isLeave =
-                                          history.status === "Leave" || history.status === "ลา";
+                                          const isPresent =
+                                            history.status === "Present" ||
+                                            history.status === "ตรงเวลา";
+                                          const isLate =
+                                            history.status === "Late" || history.status === "สาย";
+                                          const isLeave =
+                                            history.status === "Leave" || history.status === "ลา";
 
-                                        // Formatting Date beautifully
-                                        const dateObj = new Date(history.date);
-                                        const thaiDate = dateObj.toLocaleDateString("th-TH", {
-                                          year: "numeric",
-                                          month: "short",
-                                          day: "numeric",
-                                        });
+                                          // Formatting Date beautifully
+                                          const dateObj = new Date(history.date);
+                                          const thaiDate = dateObj.toLocaleDateString("th-TH", {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                          });
 
-                                        // Formatting Time beautifully (Thai Local Time Zone)
-                                        let formattedTime = "";
-                                        if (history.time) {
-                                          try {
-                                            const timeDate = new Date(history.time);
-                                            if (!isNaN(timeDate.getTime())) {
-                                              formattedTime =
-                                                timeDate.toLocaleTimeString("th-TH", {
-                                                  hour: "2-digit",
-                                                  minute: "2-digit",
-                                                  hour12: false,
-                                                }) + " น.";
-                                            } else {
-                                              formattedTime = history.time.includes("น.")
-                                                ? history.time
-                                                : `${history.time} น.`;
+                                          // Formatting Time beautifully (Thai Local Time Zone)
+                                          let formattedTime = "";
+                                          if (history.time) {
+                                            try {
+                                              const timeDate = new Date(history.time);
+                                              if (!isNaN(timeDate.getTime())) {
+                                                formattedTime =
+                                                  timeDate.toLocaleTimeString("th-TH", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false,
+                                                  }) + " น.";
+                                              } else {
+                                                formattedTime = history.time.includes("น.")
+                                                  ? history.time
+                                                  : `${history.time} น.`;
+                                              }
+                                            } catch (e) {
+                                              formattedTime = history.time;
                                             }
-                                          } catch (e) {
-                                            formattedTime = history.time;
                                           }
-                                        }
 
-                                        return (
-                                          <div
-                                            key={history.id}
-                                            className="flex items-center justify-between p-3 bg-slate-50/70 dark:bg-zinc-800/70 border border-slate-200/50 dark:border-zinc-700/50 rounded-xl text-xs hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors gap-3"
-                                          >
-                                            <div className="flex items-center gap-3">
-                                              {/* Check-in photo thumbnail with dynamic zoom hover */}
-                                              {history.photoUrl ? (
-                                                <div className="relative group/photo w-12 h-12 rounded-lg overflow-hidden border border-slate-200 shadow-sm shrink-0">
-                                                  <img
-                                                    src={history.photoUrl}
-                                                    alt="รูปภาพเช็คชื่อ"
-                                                    className="w-full h-full object-cover transition-transform duration-300 group-hover/photo:scale-110 cursor-zoom-in"
-                                                    onClick={() =>
-                                                      setPreviewImage(history.photoUrl)
-                                                    }
-                                                    title="คลิกเพื่อดูรูปภาพขนาดเต็ม"
-                                                  />
-                                                </div>
-                                              ) : (
-                                                <div
-                                                  className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-zinc-700 border border-slate-200/50 dark:border-zinc-600 flex items-center justify-center shrink-0 text-slate-350"
-                                                  title="ไม่มีรูปภาพเช็คชื่อ"
-                                                >
-                                                  <User className="w-5 h-5" />
-                                                </div>
-                                              )}
+                                          return (
+                                            <div
+                                              key={history.id}
+                                              className="flex items-center justify-between p-3 bg-slate-50/70 dark:bg-zinc-800/70 border border-slate-200/50 dark:border-zinc-700/50 rounded-xl text-xs hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors gap-3"
+                                            >
+                                              <div className="flex items-center gap-3">
+                                                {/* Check-in photo thumbnail with dynamic zoom hover */}
+                                                {history.photoUrl ? (
+                                                  <div className="relative group/photo w-12 h-12 rounded-lg overflow-hidden border border-slate-200 shadow-sm shrink-0">
+                                                    <img
+                                                      src={history.photoUrl}
+                                                      alt="รูปภาพเช็คชื่อ"
+                                                      className="w-full h-full object-cover transition-transform duration-300 group-hover/photo:scale-110 cursor-zoom-in"
+                                                      onClick={() =>
+                                                        setPreviewImage(history.photoUrl)
+                                                      }
+                                                      title="คลิกเพื่อดูรูปภาพขนาดเต็ม"
+                                                    />
+                                                  </div>
+                                                ) : (
+                                                  <div
+                                                    className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-zinc-700 border border-slate-200/50 dark:border-zinc-600 flex items-center justify-center shrink-0 text-slate-350"
+                                                    title="ไม่มีรูปภาพเช็คชื่อ"
+                                                  >
+                                                    <User className="w-5 h-5" />
+                                                  </div>
+                                                )}
 
-                                              <div className="space-y-1 text-left">
-                                                <span className="font-extrabold text-slate-700 dark:text-zinc-200 block">
-                                                  {thaiDate}
-                                                </span>
-                                                {formattedTime && (
-                                                  <span className="text-[10px] text-slate-450 font-bold block">
-                                                    เวลาเช็คชื่อจริง: {formattedTime}
+                                                <div className="space-y-1 text-left">
+                                                  <span className="font-extrabold text-slate-700 dark:text-zinc-200 block">
+                                                    {thaiDate}
                                                   </span>
-                                                )}
-                                                {history.address && (
-                                                  <div className="flex items-center gap-1 text-[9px] text-slate-400 font-bold">
-                                                    <MapPin className="w-3 h-3" />
-                                                    <span className="truncate max-w-[200px]">
-                                                      {history.address}
+                                                  {formattedTime && (
+                                                    <span className="text-[10px] text-slate-450 font-bold block">
+                                                      เวลาเช็คชื่อจริง: {formattedTime}
                                                     </span>
-                                                  </div>
-                                                )}
-                                                {history.deviceId && (
-                                                  <div className="flex items-center gap-1 text-[9px] text-slate-400 font-bold">
-                                                    <Smartphone className="w-3 h-3" />
-                                                    <span>อุปกรณ์: {history.deviceId}</span>
-                                                  </div>
-                                                )}
+                                                  )}
+                                                  {history.address && (
+                                                    <div className="flex items-center gap-1 text-[9px] text-slate-400 font-bold">
+                                                      <MapPin className="w-3 h-3" />
+                                                      <span className="truncate max-w-[200px]">
+                                                        {history.address}
+                                                      </span>
+                                                    </div>
+                                                  )}
+                                                  {history.deviceId && (
+                                                    <div className="flex items-center gap-1 text-[9px] text-slate-400 font-bold">
+                                                      <Smartphone className="w-3 h-3" />
+                                                      <span>อุปกรณ์: {history.deviceId}</span>
+                                                    </div>
+                                                  )}
+                                                </div>
                                               </div>
-                                            </div>
 
-                                            <span
-                                              className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${
-                                                isPresent
+                                              <span
+                                                className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${isPresent
                                                   ? "bg-emerald-50 text-emerald-600 border-emerald-200"
                                                   : isLate
                                                     ? "bg-amber-50 text-amber-600 border-amber-200"
                                                     : isLeave
                                                       ? "bg-blue-50 text-blue-600 border-blue-200"
                                                       : "bg-rose-50 text-rose-600 border-rose-200"
-                                              }`}
-                                            >
-                                              {isPresent
-                                                ? "ตรงเวลา"
-                                                : isLate
-                                                  ? "สาย"
-                                                  : isLeave
-                                                    ? "ลากิจ/ป่วย"
-                                                    : "ขาดแถว"}
-                                            </span>
-                                          </div>
-                                        );
-                                      })}
+                                                  }`}
+                                              >
+                                                {isPresent
+                                                  ? "ตรงเวลา"
+                                                  : isLate
+                                                    ? "สาย"
+                                                    : isLeave
+                                                      ? "ลากิจ/ป่วย"
+                                                      : "ขาดแถว"}
+                                              </span>
+                                            </div>
+                                          );
+                                        })}
                                       </div>
                                       {/* Show more button */}
                                       {flagpoleHistory.length > historyLimit && (

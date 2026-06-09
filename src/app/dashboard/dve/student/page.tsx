@@ -333,7 +333,7 @@ export function DVEStudentPortal() {
           quizId: quiz.id,
           answers: [{ questionId: "external", answer: "clicked" }],
         }),
-      }).catch(() => {});
+      }).catch(() => { });
 
       const todayStr = new Date().toLocaleDateString("en-CA");
       const user = session.user as any;
@@ -992,10 +992,10 @@ export function DVEStudentPortal() {
         {loadingSubjectData && <DVELoader />}
 
         {!loadingSubjectData &&
-        searchState.department &&
-        searchState.teacherId &&
-        searchState.subjectId &&
-        activeSubject ? (
+          searchState.department &&
+          searchState.teacherId &&
+          searchState.subjectId &&
+          activeSubject ? (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1262,116 +1262,116 @@ export function DVEStudentPortal() {
                           {attendances
                             .filter((att) => att.unitId) // Filter to show only records with unitId (study units)
                             .map((att) => {
-                            const dateObj = new Date(att.date);
-                            const formattedDate = isNaN(dateObj.getTime())
-                              ? att.date
-                              : dateObj.toLocaleDateString("th-TH", {
+                              const dateObj = new Date(att.date);
+                              const formattedDate = isNaN(dateObj.getTime())
+                                ? att.date
+                                : dateObj.toLocaleDateString("th-TH", {
                                   day: "numeric",
                                   month: "short",
                                   year: "numeric",
                                 });
 
-                            const isUploading = uploadingRecordId !== null;
+                              const isUploading = uploadingRecordId !== null;
 
-                            return (
-                              <tr
-                                key={att.id || att.date}
-                                className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850/50"
-                              >
-                                <td className="py-4">
-                                  <div className="flex flex-col gap-1 items-start justify-center">
-                                    <span className="text-sm font-black text-zinc-850 dark:text-zinc-200">
-                                      {formattedDate}
-                                    </span>
-                                    {att.unitId ? (
-                                      <span
-                                        className="text-[10px] text-emerald-600 dark:text-emerald-400 font-black bg-emerald-500/10 px-2 py-0.5 rounded-md w-fit whitespace-nowrap overflow-hidden text-ellipsis max-w-[220px]"
-                                        title={att.unitTitle}
-                                      >
-                                        หน่วยที่ {att.unitSequence || "-"}: {att.unitTitle}
+                              return (
+                                <tr
+                                  key={att.id || att.date}
+                                  className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850/50"
+                                >
+                                  <td className="py-4">
+                                    <div className="flex flex-col gap-1 items-start justify-center">
+                                      <span className="text-sm font-black text-zinc-850 dark:text-zinc-200">
+                                        {formattedDate}
                                       </span>
-                                    ) : (
-                                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold bg-zinc-100 dark:bg-zinc-800/40 px-2 py-0.5 rounded-md w-fit">
-                                        เช็คชื่อในชั้นเรียนปกติ
+                                      {att.unitId ? (
+                                        <span
+                                          className="text-[10px] text-emerald-600 dark:text-emerald-400 font-black bg-emerald-500/10 px-2 py-0.5 rounded-md w-fit whitespace-nowrap overflow-hidden text-ellipsis max-w-[220px]"
+                                          title={att.unitTitle}
+                                        >
+                                          หน่วยที่ {att.unitSequence || "-"}: {att.unitTitle}
+                                        </span>
+                                      ) : (
+                                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold bg-zinc-100 dark:bg-zinc-800/40 px-2 py-0.5 rounded-md w-fit">
+                                          เช็คชื่อในชั้นเรียนปกติ
+                                        </span>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="py-4 text-center">
+                                    {att.status === "Present" && (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                        ตรงเวลา
                                       </span>
                                     )}
-                                  </div>
-                                </td>
-                                <td className="py-4 text-center">
-                                  {att.status === "Present" && (
-                                    <span className="px-2.5 py-1 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                      ตรงเวลา
-                                    </span>
-                                  )}
-                                  {att.status === "Late" && (
-                                    <span className="px-2.5 py-1 rounded-full text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                      มาสาย
-                                    </span>
-                                  )}
-                                  {att.status === "Absent" && (
-                                    <span className="px-2.5 py-1 rounded-full text-[10px] bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                                      ขาดเรียน
-                                    </span>
-                                  )}
-                                </td>
-                                <td className="py-4 text-center">
-                                  {att.assignmentStatus === "Submitted" && (
-                                    <span className="px-2.5 py-1 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                      ส่งงานแล้ว
-                                    </span>
-                                  )}
-                                  {att.assignmentStatus === "Pending" && (
-                                    <span className="px-2.5 py-1 rounded-full text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                      ค้างส่ง
-                                    </span>
-                                  )}
-                                  {att.assignmentStatus === "None" && (
-                                    <span className="px-2.5 py-1 rounded-full text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-555 dark:text-zinc-400">
-                                      ไม่มีงาน
-                                    </span>
-                                  )}
-                                </td>
-                                <td className="py-4">
-                                  <div className="flex items-center justify-center">
-                                    {isUploading ? (
-                                      <div className="flex items-center gap-1.5 text-xs text-zinc-555">
-                                        <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-                                        <span>กำลังโหลด...</span>
-                                      </div>
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setImageModalAtt({});
-                                          setImageModalOpen(true);
-                                        }}
-                                        className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1 shadow-2xs"
-                                      >
-                                        <Upload size={11} />
-                                        <span>📎 จัดการส่งงาน/เอกสาร</span>
-                                        {quizzes.filter((q) => q.fileUrl).length > 0 && (
-                                          <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
-                                            {quizzes.filter((q) => q.fileUrl).length}
-                                          </span>
-                                        )}
-                                      </button>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="py-4 text-right">
-                                  <div className="flex items-center justify-end">
-                                    {att.score ? (
-                                      <span className="text-sm font-black text-zinc-850 dark:text-zinc-100 tabular-nums">
-                                        {att.score} คะแนน
+                                    {att.status === "Late" && (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                        มาสาย
                                       </span>
-                                    ) : (
-                                      <span className="text-xs text-zinc-400 font-bold">-</span>
                                     )}
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
+                                    {att.status === "Absent" && (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                        ขาดเรียน
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="py-4 text-center">
+                                    {att.assignmentStatus === "Submitted" && (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                        ส่งงานแล้ว
+                                      </span>
+                                    )}
+                                    {att.assignmentStatus === "Pending" && (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                        ค้างส่ง
+                                      </span>
+                                    )}
+                                    {att.assignmentStatus === "None" && (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-555 dark:text-zinc-400">
+                                        ไม่มีงาน
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="py-4">
+                                    <div className="flex items-center justify-center">
+                                      {isUploading ? (
+                                        <div className="flex items-center gap-1.5 text-xs text-zinc-555">
+                                          <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
+                                          <span>กำลังโหลด...</span>
+                                        </div>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setImageModalAtt({});
+                                            setImageModalOpen(true);
+                                          }}
+                                          className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1 shadow-2xs"
+                                        >
+                                          <Upload size={11} />
+                                          <span>📎 จัดการส่งงาน/เอกสาร</span>
+                                          {quizzes.filter((q) => q.fileUrl).length > 0 && (
+                                            <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
+                                              {quizzes.filter((q) => q.fileUrl).length}
+                                            </span>
+                                          )}
+                                        </button>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="py-4 text-right">
+                                    <div className="flex items-center justify-end">
+                                      {att.score ? (
+                                        <span className="text-sm font-black text-zinc-850 dark:text-zinc-100 tabular-nums">
+                                          {att.score} คะแนน
+                                        </span>
+                                      ) : (
+                                        <span className="text-xs text-zinc-400 font-bold">-</span>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                         </tbody>
                       </table>
                     </div>
@@ -1381,131 +1381,131 @@ export function DVEStudentPortal() {
                       {attendances
                         .filter((att) => att.unitId) // Filter to show only records with unitId (study units)
                         .map((att) => {
-                        const dateObj = new Date(att.date);
-                        const formattedDate = isNaN(dateObj.getTime())
-                          ? att.date
-                          : dateObj.toLocaleDateString("th-TH", {
+                          const dateObj = new Date(att.date);
+                          const formattedDate = isNaN(dateObj.getTime())
+                            ? att.date
+                            : dateObj.toLocaleDateString("th-TH", {
                               day: "numeric",
                               month: "short",
                               year: "numeric",
                             });
-                        const isUploading = uploadingRecordId === (att.id || att.date);
+                          const isUploading = uploadingRecordId === (att.id || att.date);
 
-                        return (
-                          <div
-                            key={att.id || att.date}
-                            className="bg-zinc-50 dark:bg-zinc-800/30 rounded-2xl p-4 border border-zinc-150 dark:border-zinc-800 space-y-4 shadow-xs"
-                          >
-                            {/* Date and Status Badge Row */}
-                            <div className="flex justify-between items-center border-b dark:border-zinc-800 pb-2">
-                              <span className="text-sm font-black text-zinc-850 dark:text-zinc-200">
-                                📅 {formattedDate}
-                              </span>
-                              <div className="flex gap-1.5">
-                                {att.status === "Present" && (
-                                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                    ตรงเวลา
-                                  </span>
-                                )}
-                                {att.status === "Late" && (
-                                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                    มาสาย
-                                  </span>
-                                )}
-                                {att.status === "Absent" && (
-                                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                                    ขาดเรียน
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Unit indicator tag */}
-                            <div>
-                              {att.unitId ? (
-                                <span className="inline-block text-[10px] text-emerald-650 dark:text-emerald-400 font-black bg-emerald-500/10 px-2.5 py-1 rounded-lg w-full text-left">
-                                  📖 หน่วยที่ {att.unitSequence || "-"}: {att.unitTitle}
+                          return (
+                            <div
+                              key={att.id || att.date}
+                              className="bg-zinc-50 dark:bg-zinc-800/30 rounded-2xl p-4 border border-zinc-150 dark:border-zinc-800 space-y-4 shadow-xs"
+                            >
+                              {/* Date and Status Badge Row */}
+                              <div className="flex justify-between items-center border-b dark:border-zinc-800 pb-2">
+                                <span className="text-sm font-black text-zinc-850 dark:text-zinc-200">
+                                  📅 {formattedDate}
                                 </span>
-                              ) : (
-                                <span className="inline-block text-[10px] text-zinc-500 dark:text-zinc-400 font-bold bg-zinc-150 dark:bg-zinc-800 px-2.5 py-1 rounded-lg w-full text-left">
-                                  🏫 เช็คชื่อในชั้นเรียนปกติ
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Assignment and Score Row */}
-                            <div className="grid grid-cols-2 gap-4 text-xs">
-                              <div className="space-y-1.5">
-                                <span className="text-zinc-400 block text-[10px]">
-                                  สถานะการส่งงาน
-                                </span>
-                                {att.assignmentStatus === "Submitted" && (
-                                  <span className="px-2.5 py-1 rounded-lg text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 block text-center w-full">
-                                    ส่งงานแล้ว
-                                  </span>
-                                )}
-                                {att.assignmentStatus === "Pending" && (
-                                  <span className="px-2.5 py-1 rounded-lg text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 block text-center w-full">
-                                    ค้างส่ง
-                                  </span>
-                                )}
-                                {att.assignmentStatus === "None" && (
-                                  <span className="px-2.5 py-1 rounded-lg text-[10px] bg-zinc-150 dark:bg-zinc-800 text-zinc-555 dark:text-zinc-400 block text-center w-full">
-                                    ไม่มีงาน
-                                  </span>
-                                )}
-                              </div>
-
-                              <div className="space-y-1.5">
-                                <span className="text-zinc-400 block text-[10px] text-right">
-                                  คะแนนสอบรวม
-                                </span>
-                                <div className="flex items-center justify-end pt-1">
-                                  {att.score ? (
-                                    <span className="text-sm font-black text-zinc-850 dark:text-zinc-100 tabular-nums">
-                                      {att.score} คะแนน
+                                <div className="flex gap-1.5">
+                                  {att.status === "Present" && (
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                      ตรงเวลา
                                     </span>
+                                  )}
+                                  {att.status === "Late" && (
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                      มาสาย
+                                    </span>
+                                  )}
+                                  {att.status === "Absent" && (
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                      ขาดเรียน
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Unit indicator tag */}
+                              <div>
+                                {att.unitId ? (
+                                  <span className="inline-block text-[10px] text-emerald-650 dark:text-emerald-400 font-black bg-emerald-500/10 px-2.5 py-1 rounded-lg w-full text-left">
+                                    📖 หน่วยที่ {att.unitSequence || "-"}: {att.unitTitle}
+                                  </span>
+                                ) : (
+                                  <span className="inline-block text-[10px] text-zinc-500 dark:text-zinc-400 font-bold bg-zinc-150 dark:bg-zinc-800 px-2.5 py-1 rounded-lg w-full text-left">
+                                    🏫 เช็คชื่อในชั้นเรียนปกติ
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Assignment and Score Row */}
+                              <div className="grid grid-cols-2 gap-4 text-xs">
+                                <div className="space-y-1.5">
+                                  <span className="text-zinc-400 block text-[10px]">
+                                    สถานะการส่งงาน
+                                  </span>
+                                  {att.assignmentStatus === "Submitted" && (
+                                    <span className="px-2.5 py-1 rounded-lg text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 block text-center w-full">
+                                      ส่งงานแล้ว
+                                    </span>
+                                  )}
+                                  {att.assignmentStatus === "Pending" && (
+                                    <span className="px-2.5 py-1 rounded-lg text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 block text-center w-full">
+                                      ค้างส่ง
+                                    </span>
+                                  )}
+                                  {att.assignmentStatus === "None" && (
+                                    <span className="px-2.5 py-1 rounded-lg text-[10px] bg-zinc-150 dark:bg-zinc-800 text-zinc-555 dark:text-zinc-400 block text-center w-full">
+                                      ไม่มีงาน
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <span className="text-zinc-400 block text-[10px] text-right">
+                                    คะแนนสอบรวม
+                                  </span>
+                                  <div className="flex items-center justify-end pt-1">
+                                    {att.score ? (
+                                      <span className="text-sm font-black text-zinc-850 dark:text-zinc-100 tabular-nums">
+                                        {att.score} คะแนน
+                                      </span>
+                                    ) : (
+                                      <span className="text-xs text-zinc-450 font-bold">-</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Image upload / evidence block */}
+                              <div className="bg-zinc-150/45 dark:bg-zinc-850/40 rounded-xl p-3 border border-zinc-200/50 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                                <span className="text-[10px] font-black text-zinc-450">
+                                  จัดส่งงาน/เอกสารเพิ่มเติม:
+                                </span>
+                                <div className="w-full sm:w-auto flex justify-end">
+                                  {isUploading ? (
+                                    <div className="flex items-center gap-1.5 text-xs text-zinc-555">
+                                      <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
+                                      <span>กำลังโหลด...</span>
+                                    </div>
                                   ) : (
-                                    <span className="text-xs text-zinc-450 font-bold">-</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setImageModalAtt({});
+                                        setImageModalOpen(true);
+                                      }}
+                                      className="w-full justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1 shadow-2xs"
+                                    >
+                                      <Upload size={11} />
+                                      <span>📎 ส่งงาน/เอกสารเพิ่มเติม</span>
+                                      {quizzes.filter((q) => q.fileUrl).length > 0 && (
+                                        <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
+                                          {quizzes.filter((q) => q.fileUrl).length}
+                                        </span>
+                                      )}
+                                    </button>
                                   )}
                                 </div>
                               </div>
                             </div>
-
-                            {/* Image upload / evidence block */}
-                            <div className="bg-zinc-150/45 dark:bg-zinc-850/40 rounded-xl p-3 border border-zinc-200/50 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-                              <span className="text-[10px] font-black text-zinc-450">
-                                จัดส่งงาน/เอกสารเพิ่มเติม:
-                              </span>
-                              <div className="w-full sm:w-auto flex justify-end">
-                                {isUploading ? (
-                                  <div className="flex items-center gap-1.5 text-xs text-zinc-555">
-                                    <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-                                    <span>กำลังโหลด...</span>
-                                  </div>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setImageModalAtt({});
-                                      setImageModalOpen(true);
-                                    }}
-                                    className="w-full justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1 shadow-2xs"
-                                  >
-                                    <Upload size={11} />
-                                    <span>📎 ส่งงาน/เอกสารเพิ่มเติม</span>
-                                    {quizzes.filter((q) => q.fileUrl).length > 0 && (
-                                      <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
-                                        {quizzes.filter((q) => q.fileUrl).length}
-                                      </span>
-                                    )}
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                     </div>
                   </>
                 )}
@@ -1589,11 +1589,10 @@ export function DVEStudentPortal() {
                 {/* ⏱️ TIMER BANNER */}
                 {activeStudyUnit.studyMinutes > 0 && (
                   <div
-                    className={`p-5 rounded-2xl border text-center transition-all ${
-                      isStudyCompleted
-                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400 animate-pulse"
-                        : "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400"
-                    }`}
+                    className={`p-5 rounded-2xl border text-center transition-all ${isStudyCompleted
+                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400 animate-pulse"
+                      : "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400"
+                      }`}
                   >
                     <div className="flex flex-col items-center gap-2">
                       <div className="flex items-center gap-2">
@@ -1641,9 +1640,8 @@ export function DVEStudentPortal() {
                         </div>
                         <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-3.5 rounded-full overflow-hidden">
                           <div
-                            className={`h-full transition-all duration-1000 ${
-                              isStudyCompleted ? "bg-emerald-500" : "bg-amber-500"
-                            }`}
+                            className={`h-full transition-all duration-1000 ${isStudyCompleted ? "bg-emerald-500" : "bg-amber-500"
+                              }`}
                             style={{
                               width: `${(studySecondsElapsed / (activeStudyUnit.studyMinutes * 60)) * 100}%`,
                             }}
@@ -1758,21 +1756,19 @@ export function DVEStudentPortal() {
                       <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 rounded-full p-1">
                         <button
                           onClick={() => setTaskView("todo")}
-                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${
-                            taskView === "todo"
-                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
-                              : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "todo"
+                            ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                            : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                            }`}
                         >
                           งานที่ต้องทำ
                         </button>
                         <button
                           onClick={() => setTaskView("submitted")}
-                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${
-                            taskView === "submitted"
-                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
-                              : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "submitted"
+                            ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                            : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                            }`}
                         >
                           ส่งแล้ว
                         </button>
@@ -1789,11 +1785,10 @@ export function DVEStudentPortal() {
                           return (
                             <div
                               key={quiz.id || qIdx}
-                              className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${
-                                isQuizSubmitted
-                                  ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
-                                  : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
-                              }`}
+                              className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${isQuizSubmitted
+                                ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
+                                : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
+                                }`}
                             >
                               <div className="space-y-0.5 text-center sm:text-left">
                                 <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
@@ -1828,13 +1823,12 @@ export function DVEStudentPortal() {
                               <button
                                 type="button"
                                 disabled={isQuizSubmitted}
-                                className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${
-                                  isQuizSubmitted
-                                    ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
-                                    : isStudyCompleted
-                                      ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
-                                      : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
-                                }`}
+                                className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${isQuizSubmitted
+                                  ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
+                                  : isStudyCompleted
+                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                                    : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
+                                  }`}
                                 onClick={() => {
                                   if (isQuizSubmitted) return;
                                   if (!isStudyCompleted) {
@@ -2152,26 +2146,26 @@ export function DVEStudentPortal() {
                           } else if (q.type === "checkboxes") {
                             const sArr = Array.isArray(studentAns)
                               ? studentAns
-                                  .map((v) =>
-                                    String(v || "")
-                                      .trim()
-                                      .toLowerCase(),
-                                  )
-                                  .sort()
+                                .map((v) =>
+                                  String(v || "")
+                                    .trim()
+                                    .toLowerCase(),
+                                )
+                                .sort()
                               : [];
                             const cArr = Array.isArray(q.correctAnswer)
                               ? q.correctAnswer
-                                  .map((v: any) =>
-                                    String(v || "")
-                                      .trim()
-                                      .toLowerCase(),
-                                  )
-                                  .sort()
-                              : [
-                                  String(q.correctAnswer || "")
+                                .map((v: any) =>
+                                  String(v || "")
                                     .trim()
                                     .toLowerCase(),
-                                ];
+                                )
+                                .sort()
+                              : [
+                                String(q.correctAnswer || "")
+                                  .trim()
+                                  .toLowerCase(),
+                              ];
                             isCorrect =
                               sArr.length === cArr.length && sArr.every((v, i) => v === cArr[i]);
                           }
@@ -2329,22 +2323,20 @@ export function DVEStudentPortal() {
                         return (
                           <div
                             key={quiz.id}
-                            className={`border rounded-2xl transition-all ${
-                              isBuiltIn
-                                ? "bg-purple-50/40 dark:bg-purple-950/10 border-purple-200/50 dark:border-purple-800/30"
-                                : "bg-zinc-50 dark:bg-zinc-850/30 border-zinc-150 dark:border-zinc-800 hover:border-emerald-200 dark:hover:border-emerald-800/50"
-                            }`}
+                            className={`border rounded-2xl transition-all ${isBuiltIn
+                              ? "bg-purple-50/40 dark:bg-purple-950/10 border-purple-200/50 dark:border-purple-800/30"
+                              : "bg-zinc-50 dark:bg-zinc-850/30 border-zinc-150 dark:border-zinc-800 hover:border-emerald-200 dark:hover:border-emerald-800/50"
+                              }`}
                           >
                             {/* Header: Quiz Title + Status */}
                             <div className="flex items-start justify-between gap-3 p-4 pb-3">
                               <div className="space-y-1.5 flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span
-                                    className={`inline-block text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                                      isBuiltIn
-                                        ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
-                                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-                                    }`}
+                                    className={`inline-block text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${isBuiltIn
+                                      ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
+                                      : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                                      }`}
                                   >
                                     {isBuiltIn ? "🧠 แบบทดสอบในระบบ" : "🔗 งานภายนอก"}
                                   </span>
@@ -2476,11 +2468,10 @@ export function DVEStudentPortal() {
                                         />
                                         <label
                                           htmlFor={`quiz-upload-${quiz.id}`}
-                                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black cursor-pointer border transition-all ${
-                                            isUploadedFile
-                                              ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
-                                              : "bg-emerald-500 hover:bg-emerald-600 border-emerald-500 text-white shadow-sm"
-                                          }`}
+                                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black cursor-pointer border transition-all ${isUploadedFile
+                                            ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"
+                                            : "bg-emerald-500 hover:bg-emerald-600 border-emerald-500 text-white shadow-sm"
+                                            }`}
                                         >
                                           <Upload size={10} />
                                           <span>
