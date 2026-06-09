@@ -77,6 +77,9 @@ async function getVisitorCount() {
 export default async function Footer() {
   const navItems = await getFooterNavItems();
   const visitorCount = await getVisitorCount();
+  // คำนวนปีบน server เพียงครั้งเดียว เพื่อป้องกัน Hydration Mismatch
+  // (ถ้าปล่อยไว้ใน JSX → server ใช้ UTC, client ใช้ timezone ไทย อาจต่างกันได้)
+  const currentYear = new Date().getFullYear();
 
   // แปลงยอดผู้เข้าชมเป็นอาร์เรย์ของตัวเลข (เช่น 0127457) เพื่อทำกราฟิกแบบตัวเลขหมุน (แสดงผลเป็น 7 หลัก)
   const countStr = String(visitorCount);
@@ -176,7 +179,7 @@ export default async function Footer() {
         {/* --- ลิขสิทธิ์และการออกแบบ --- */}
         <div className="pt-8 border-t border-slate-800 flex flex-col items-center justify-center text-center text-xs text-slate-500 space-y-2">
           <div className="flex items-center gap-1">
-            สงวนลิขสิทธิ์ © {new Date().getFullYear()}.
+            <span suppressHydrationWarning>สงวนลิขสิทธิ์ © {currentYear}.</span>
             <p className="text-blue-500">
               <span>KTLTC</span> /งานศูนย์ข้อมูลและสารสนเทศ
             </p>
