@@ -105,7 +105,7 @@ export default async function RootLayout({
                 <Navbar />
               </Suspense>
               {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
-              <div className="pt-20">{children}</div>
+              <div className="pt-20" suppressHydrationWarning>{children}</div>
 
               {/* ปิดการใช้งาน Vercel Analytics & Speed Insights ชั่วคราว */}
               {/* <SpeedInsights /> */}

@@ -109,6 +109,7 @@ export async function POST(req: Request) {
           from: userId,
           fromName: userName,
           fromImage: session?.user?.image,
+          postId: result.insertedId.toString(),
           targetUrl: `/dashboard/profile/${targetUserId}`,
           isRead: false,
           read: false,

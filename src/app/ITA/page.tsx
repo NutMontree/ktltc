@@ -122,6 +122,80 @@ export const TageLink = [
 
 export const ImageItem = [{ imgs: "/images/pressrelease/2568/november/11/00.webp" }];
 
+export const isDefaultDescription = (desc: string) => {
+  if (!desc) return true;
+  const clean = desc.replace(/\s+/g, "").trim();
+  const defaultDescs = [
+    // 2568 defaults
+    "แสดงแผนผังแสดงโครงสร้างการแบ่งส่วนราชการของสถานศึกษา",
+    "แสดงแผนผังแสดงโครงสร้างการแบ่งส่วนราชการของสถานศึกษา",
+    "แสดงรายนามผู้บริหารตำแหน่งและรูปภาพ",
+    "แสดงหน้าที่และอำนาจตามกฎหมายจัดตั้งหรือกฎหมายอื่นที่เกี่ยวข้อง",
+    "แสดงแผนยุทธศาสตร์แผนพัฒนาหรือแผนปฏิบัติการของสถานศึกษา",
+    "แสดงข้อมูลการติดต่อที่อยู่โทรศัพท์และแผนที่ตั้ง",
+    "แสดงกฎหมายพระราชบัญญัติระเบียบข้อบังคับที่เกี่ยวข้องกับการบริหารงาน",
+    "แสดงข่าวประชาสัมพันธ์กิจกรรมและความเคลื่อนไหวล่าสุด",
+    "ช่องทางสื่อสารสองทางเช่นWebboard,MessengerLiveChat",
+    "แสดงช่องทางเครือข่ายสังคมออนไลน์ของวิทยาลัยเช่นFacebook,YouTube",
+    "แสดงแผนปฏิบัติราชการประจำปีและขั้นตอนดำเนินงานประจำปี",
+    "แสดงรายงานการประเมินตนเองหรือผลการดำเนินงานในปีที่ผ่านมา",
+    "คู่มือหรือมาตรฐานการปฏิบัติงานที่เจ้าหน้าที่ใช้ยึดถือปฏิบัติ",
+    "คู่มือการให้บริการประชาชนผู้ปกครองหรือนักเรียนนักศึกษา",
+    "สถิติผู้มาขอรับบริการหรือสรุปผลการให้บริการรายภาคเรียน/ปี",
+    "รายงานผลการสำรวจความพึงพอใจต่อการให้บริการของสถานศึกษา",
+    "ช่องทางการให้บริการผ่านระบบออนไลน์เช่นระบบรับสมัครนักเรียนหรือระบบส่งงาน",
+    "แสดงแผนการใช้จ่ายเงินแผนงบประมาณของวิทยาลัย",
+    "รายงานการรับ-จ่ายเงินหรือรายงานสรุปการเงินการใช้จ่ายงบประมาณ",
+    "แสดงแผนการจัดซื้อจัดจ้างประจำปีงบประมาณ",
+    "ประกาศจัดซื้อจัดจ้าง",
+    "ประกาศประกวดราคาหรือประกาศผลการจัดซื้อจัดจ้างตามระเบียบ",
+    "รายงานสขร.1หรือสรุปผลการจัดซื้อจัดจ้างในแต่ละเดือน",
+    "รายงานผลการจัดซื้อจัดจ้างประจำปี",
+    "รายงานผลการวิเคราะห์และสรุปผลการจัดซื้อจัดจ้างในปีงบประมาณที่ผ่านมา",
+    "นโยบายบริหารทรัพยากรบุคคล",
+    "นโยบายการจัดหาพัฒนาและรักษาบุคลากรของวิทยาลัย",
+    "ระเบียบประกาศหรือหลักเกณฑ์การประเมินเลื่อนขั้นเลื่อนตำแหน่ง",
+    "รายงานสรุปผลการบริหารทรัพยากรบุคคลประจำปี",
+    "คู่มือหรือแนวทางปฏิบัติการแก้ไขและจัดการเรื่องร้องเรียนเมื่อพบเห็นการทุจริต",
+    "ระบบรับเรื่องร้องเรียนออนไลน์หรือแบบฟอร์มส่งข้อมูลลับ",
+    "รายงานสรุปสถิติจำนวนเรื่องร้องเรียนและผลการดำเนินการแต่ละข้อ",
+    "ภาพถ่ายหรือกิจกรรมที่เปิดโอกาสให้บุคคลภายนอกร่วมวางแผน/ตัดสินใจ",
+    "ประกาศนโยบายไม่รับของขวัญและของกำนัลทุกชนิดจากการปฏิบัติหน้าที่",
+    "กิจกรรมที่ผู้บริหารสูงสุดร่วมประกาศนโยบายNoGiftPolicyหรือสร้างจริยธรรม",
+    "รายงานวิเคราะห์และประเมินผลการดำเนินการเพื่อควบคุมหรือลดความเสี่ยงทุจริต",
+    "โครงการกิจกรรมหรืองานอบรมสร้างจิตสำนึกสุจริตให้บุคลากรและนักเรียน",
+    "แผนงานป้องกันและส่งเสริมคุณธรรมจริยธรรมประจำปี",
+    "สรุปผลการดำเนินงานโครงการในแผนปฏิบัติการทุจริตที่ทำสำเร็จ",
+    "ประกาศระเบียบหรือมาตรการเชิงบวกที่วิทยาลัยใช้กำกับการทำงาน",
+    "รายงานสรุปการตรวจสอบการเปิดเผยข้อมูลหรือผลการบังคับใช้ข้อตกลงธรรมาภิบาล",
+    // 2569 defaults
+    "แสดงแผนผังโครงสร้างการแบ่งส่วนราชการหน้าที่และอำนาจของสถานศึกษาตามที่กฎหมายกำหนด",
+    "แสดงข้อมูลของผู้อำนวยการและรองผู้อำนวยการสถานศึกษาเช่นชื่อ-นามสกุลตำแหน่งรูปถ่ายและช่องทางการติดต่อ",
+    "แสดงแผนพัฒนาสถานศึกษาที่มีระยะมากกว่า1ปีครอบคลุมยุทธศาสตร์กลยุทธ์เป้าหมายและตัวชี้วัด",
+    "แสดงข้อมูลการติดต่อที่อยู่เบอร์โทรศัพท์อีเมลแผนที่และช่องทางเครือข่ายสังคมออนไลน์",
+    "แสดงกฎหมายที่เกี่ยวข้องกับการดำเนินงานหรือปฏิบัติงานของสถานศึกษาไม่น้อยกว่า5ฉบับ",
+    "แสดงแผนปฏิบัติราชการประจำปีงบประมาณที่ได้รับและรายละเอียดโครงการประจำปีงบประมาณปัจจุบัน",
+    "แสดงสรุปผลการดำเนินงานโครงการการใช้จ่ายงบประมาณและปัญหาอุปสรรคย้อนหลัง1ปีงบประมาณ",
+    "แสดงรายงานผลการประเมินตนเองคุณภาพภายในสถานศึกษาย้อนหลัง1ปีการศึกษา",
+    "แสดงข้อมูลข่าวสารและกิจกรรมที่เกิดขึ้นในสถานศึกษาในปีงบประมาณปัจจุบัน",
+    "แสดงประกาศการจัดซื้อจัดจ้างตามระเบียบพ.ร.บ.จัดซื้อจัดจ้างฯพ.ศ.2560ในปีงบประมาณปัจจุบัน",
+    "แสดงสรุปผลการจัดซื้อจัดจ้างประจำปีและรายงานผลการจัดซื้อจัดจ้างย้อนหลัง1ปีงบประมาณ",
+    "แสดงคู่มือขั้นตอนการปฏิบัติงานภายในตามโครงสร้างสถานศึกษาอย่างน้อยฝ่ายละ1เล่ม(รวม4เล่ม)",
+    "แสดงคู่มือหรือขั้นตอนการให้บริการประชาชนเช่นคู่มือนักเรียนนักศึกษาคู่มือการลงทะเบียน",
+    "แสดงช่องทางบริการธุรกรรมออนไลน์ที่ผู้รับบริการไม่จำเป็นต้องเดินทางมาเช่นระบบศธ.02",
+    "แสดงข้อมูลสถิติและความพึงพอใจการให้บริการอย่างน้อย3โครงการย้อนหลัง1ปีงบประมาณ",
+    "แสดงหลักเกณฑ์การสรรหาการพัฒนาการประเมินผลและการสร้างขวัญกำลังใจแก่บุคลากรที่ยังใช้บังคับ",
+    "แสดงแนวปฏิบัติDo's&Don'tและกิจกรรมส่งเสริมจริยธรรมของครูและบุคลากรอาชีวศึกษา",
+    "แสดงคู่มือขั้นตอนการดำเนินการต่อเรื่องร้องเรียนที่เกี่ยวข้องกับการทุจริตและประพฤติมิชอบของเจ้าหน้าที่",
+    "แสดงสถิติจำนวนเรื่องร้องเรียนทุจริตการดำเนินการและความก้าวหน้าแบบรายเดือน/ไตรมาส/6เดือน",
+    "แสดงการประกาศเจตนารมณ์NoGiftPolicyและการสร้างวัฒนธรรมองค์กรในการปฏิบัติหน้าที่",
+    "แสดงรายงานการประเมินความเสี่ยงเพื่อควบคุมหรือลดความเสี่ยงทุจริตประจำปีงบประมาณพ.ศ.2569",
+    "แสดงแผนงานป้องกันและส่งเสริมคุณธรรมจริยธรรมประจำปีงบประมาณพ.ศ.2569",
+    "แสดงโครงการ/กิจกรรมส่งเสริมความซื่อสัตย์สุจริตและความโปร่งใสหรือการแต่งตั้งคณะกรรมการITAในปีงบประมาณปัจจุบัน"
+  ];
+  return defaultDescs.includes(clean);
+};
+
 // --- Styled Components & Assets ---
 const BackgroundDecor = () => (
   <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
@@ -169,7 +243,7 @@ const MainDownloadCard = ({ year }: { year: string }) => {
             </div>
           </div>
 
-          
+
           <div className="shrink-0">
             <Link
               href={year === "2568" ? "/pdf/ITA/2568/ผลประเมินITA2568.pdf" : "#"}
@@ -224,11 +298,10 @@ const CategorySection = ({
       <Card
         isPressable
         onPress={() => setIsExpanded(!isExpanded)}
-        className={`group w-full overflow-visible border-0 transition-all duration-300 ${
-          isExpanded
-            ? "z-10 rounded-b-none bg-white shadow-lg ring-2 ring-blue-500/50 dark:bg-slate-800 dark:ring-blue-400/50"
-            : "rounded-2xl bg-white/60 backdrop-blur-md hover:bg-white hover:shadow-md dark:bg-slate-800/60 dark:hover:bg-slate-800"
-        }`}
+        className={`group w-full overflow-visible border-0 transition-all duration-300 ${isExpanded
+          ? "z-10 rounded-b-none bg-white shadow-lg ring-2 ring-blue-500/50 dark:bg-slate-800 dark:ring-blue-400/50"
+          : "rounded-2xl bg-white/60 backdrop-blur-md hover:bg-white hover:shadow-md dark:bg-slate-800/60 dark:hover:bg-slate-800"
+          }`}
       >
         <CardHeader className="flex items-center gap-4 p-4">
           <div
@@ -278,7 +351,7 @@ const CategorySection = ({
                   const oitCode = `O${item.key}`;
                   const dbEntry = dbItems?.find((d) => d.oitCode === oitCode);
                   const hasData = dbEntry && (
-                    (dbEntry.description && dbEntry.description.trim() !== "") || 
+                    (dbEntry.description && dbEntry.description.trim() !== "") ||
                     (dbEntry.links && dbEntry.links.length > 0)
                   );
 
@@ -346,7 +419,7 @@ const CategorySection = ({
 
                         {dbEntry ? (
                           <>
-                            {dbEntry.description && (
+                            {dbEntry.description && !isDefaultDescription(dbEntry.description) && (
                               <div className="pb-6 text-xs text-blue-500 md:text-sm lg:text-base dark:text-blue-400 leading-relaxed">
                                 {dbEntry.description.split("\n").map((line: string, idx: number) => (
                                   <p key={idx}>{line}</p>
@@ -372,16 +445,16 @@ const CategorySection = ({
                                             src={link.url}
                                             alt={link.name}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
-                                           />
-                                           <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
-                                             <span className="px-3.5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover/img:translate-y-0 transition-all duration-300">
-                                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                                               </svg>
-                                               ขยายรูปภาพ
-                                             </span>
-                                           </div>
-                                           <input type="hidden"
+                                          />
+                                          <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+                                            <span className="px-3.5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover/img:translate-y-0 transition-all duration-300">
+                                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                              </svg>
+                                              ขยายรูปภาพ
+                                            </span>
+                                          </div>
+                                          <input type="hidden"
                                           />
                                         </div>
                                         <div className="p-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
@@ -1056,11 +1129,10 @@ export default function ITA() {
                 <button
                   key={year}
                   onClick={() => setSelectedYear(year)}
-                  className={`relative px-8 py-3 rounded-xl text-lg font-black transition-all duration-500 ${
-                    selectedYear === year
-                      ? "text-white shadow-2xl scale-105"
-                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                  }`}
+                  className={`relative px-8 py-3 rounded-xl text-lg font-black transition-all duration-500 ${selectedYear === year
+                    ? "text-white shadow-2xl scale-105"
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    }`}
                 >
                   {selectedYear === year && (
                     <motion.div

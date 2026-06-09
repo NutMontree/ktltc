@@ -4,12 +4,6 @@ import React from "react";
 export default function page() {
   return (
     <>
-      <div className="pb-6 text-xs text-blue-500 md:text-sm lg:text-base dark:text-blue-400">
-        – แสดงกฎหมายที่เกี่ยวข้องกับการดำเนินงานหรือการปฏิบัติงานของสถานศึกษา
-        เช่น แผนการศึกษาแห่งชาติ ประกาศกระทรวงศึกษาธิการใช้มาตรฐานการอาชีวศึกษา
-        ระดับ ปวช. และ ปวส. เป็นต้น
-      </div>
-
       <p className="text-xl">File PDF</p>
       <div className="grid gap-4 py-4">
         <div className="hover:text-blue-500 dark:hover:text-blue-400">

@@ -19,9 +19,9 @@ interface FullPageLoaderProps {
   subtitle?: string;
 }
 
-export default function FullPageLoader({ 
-  message = "กำลังจัดเตรียมข้อมูล...", 
-  subtitle = "กรุณารอสักครู่ ระบบกำลังรวบรวมข้อมูลทั้งหมดเพื่อคุณ" 
+export default function FullPageLoader({
+  message = "กำลังจัดเตรียมข้อมูล...",
+  subtitle = "กรุณารอสักครู่ ระบบกำลังรวบรวมข้อมูลทั้งหมดเพื่อคุณ"
 }: FullPageLoaderProps) {
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/80 dark:bg-zinc-950/90 backdrop-blur-2xl">
@@ -36,16 +36,16 @@ export default function FullPageLoader({
         <div className="relative">
           {/* เงาเรืองแสงด้านนอก (Subtle Outer Glow) */}
           <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full scale-150 animate-pulse" />
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative p-8 bg-white dark:bg-zinc-900 rounded-[3rem] shadow-2xl border border-white/20 flex flex-col items-center gap-6"
           >
             <div className="relative">
-              <Loader2 
-                size={48} 
-                className="text-blue-500 animate-spin" 
+              <Loader2
+                size={48}
+                className="text-blue-500 animate-spin"
                 strokeWidth={2.5}
               />
               <div className="absolute inset-0 border-4 border-blue-500/10 rounded-full" />
@@ -63,7 +63,7 @@ export default function FullPageLoader({
         </div>
 
         {/* สถานะการทำงานของระบบ (System Operational Note) */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
@@ -71,7 +71,7 @@ export default function FullPageLoader({
         >
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-[9px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-widest">
-            KTLTC Systems Operational
+            ระบบ KTLTC พร้อมใช้งานแล้ว
           </span>
         </motion.div>
       </div>

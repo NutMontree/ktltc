@@ -503,7 +503,7 @@ export default function ItaDashboard() {
 
     if (existing) {
       setTitle(existing.title || defaultMeta?.title || "");
-      setDescription(existing.description || defaultMeta?.desc || "");
+      setDescription(existing.description !== undefined && existing.description !== null ? existing.description : (defaultMeta?.desc || ""));
       setLinks(existing.links || []);
     } else {
       // Pre-populate with official OIT structure defaults
