@@ -4,6 +4,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 10; // Revalidate every 10 seconds (attendances change frequently)
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 
@@ -99,7 +100,7 @@ export async function GET(req: Request) {
     const subjectId = searchParams.get("subjectId")?.trim();
     const date = searchParams.get("date")?.trim();
     const classGroupId = searchParams.get("classGroupId")?.trim();
-    console.log("API attendances GET - classGroupId:", classGroupId);
+    // console.log("API attendances GET - classGroupId:", classGroupId);
 
     if (!subjectId) {
       return NextResponse.json({ error: "Missing subjectId" }, { status: 400 });
@@ -128,7 +129,7 @@ export async function GET(req: Request) {
       if (classGroupId) {
         // Use standardized class group name for matching
         const standardized = standardizeClassGroupName(classGroupId);
-        console.log("API attendances GET - standardized classGroupId:", standardized);
+        // console.log("API attendances GET - standardized classGroupId:", standardized);
         // Match both the original classGroupId and standardized versions
         query.$or = [
           { classGroupId: classGroupId },
@@ -138,7 +139,7 @@ export async function GET(req: Request) {
       }
     }
 
-    console.log("API attendances GET - query:", JSON.stringify(query));
+    // console.log("API attendances GET - query:", JSON.stringify(query));
     const logs = await db.collection("dve_attendances").find(query).sort({ date: -1, studentName: 1 }).toArray();
 
     // Get student information to fill in missing classGroupId

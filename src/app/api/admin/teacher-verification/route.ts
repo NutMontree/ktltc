@@ -4,6 +4,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 60; // Revalidate every 60 seconds
 
 const ALLOWED_ROLES = ["super_admin", "admin"];
 
@@ -60,8 +61,8 @@ export async function GET(req: Request) {
       .sort({ name: 1 })
       .toArray();
 
-    console.log("[Teacher Verification] Total teachers found:", teachers.length);
-    console.log("[Teacher Verification] All teachers departments:", teachers.map(t => t.department));
+    // console.log("[Teacher Verification] Total teachers found:", teachers.length);
+    // console.log("[Teacher Verification] All teachers departments:", teachers.map(t => t.department));
 
     // Get unique departments from teachers for the dropdown
     const uniqueDepartments = Array.from(
@@ -71,19 +72,19 @@ export async function GET(req: Request) {
     // Filter by department using normalized comparison for better matching
     if (department) {
       const normalizedFilter = normalizeDept(department);
-      console.log("[Teacher Verification] Filter department:", department, "-> normalized:", normalizedFilter);
-      
+      // console.log("[Teacher Verification] Filter department:", department, "-> normalized:", normalizedFilter);
+
       teachers = teachers.filter((teacher) => {
         const normalizedTeacherDept = normalizeDept(teacher.department || "");
-        console.log("[Teacher Verification] Teacher:", teacher.name, "department:", teacher.department, "-> normalized:", normalizedTeacherDept);
+        // console.log("[Teacher Verification] Teacher:", teacher.name, "department:", teacher.department, "-> normalized:", normalizedTeacherDept);
         
         // Check if the normalized department name contains the filter or vice versa
         const matches = normalizedTeacherDept.includes(normalizedFilter) || normalizedFilter.includes(normalizedTeacherDept);
-        console.log("[Teacher Verification] Match result:", matches);
+        // console.log("[Teacher Verification] Match result:", matches);
         return matches;
       });
-      
-      console.log("[Teacher Verification] Filtered teachers count:", teachers.length);
+
+      // console.log("[Teacher Verification] Filtered teachers count:", teachers.length);
     }
 
     // Get DVE subjects for each teacher
@@ -91,6 +92,7 @@ export async function GET(req: Request) {
     const subjects = await db
       .collection("dve_subjects")
       .find({ teacherId: { $in: teacherIds } })
+      .project({ _id: 1, teacherId: 1, name: 1, code: 1, department: 1 })
       .toArray();
 
     // Get attendance data for teaching activity verification
@@ -108,6 +110,7 @@ export async function GET(req: Request) {
         subjectId: { $in: subjects.map((s) => s._id.toString()) },
         ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
       })
+      .project({ _id: 1, subjectId: 1, date: 1, students: 1 })
       .toArray();
 
     // Group data by teacher
