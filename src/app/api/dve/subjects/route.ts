@@ -241,7 +241,7 @@ export async function GET(req: Request) {
     }
 
     const query: any = {};
-    if (userRole !== "student") {
+    if (userRole !== "student" && userRole !== "super_admin" && userRole !== "admin") {
       query.teacherId = userId;
     } else if (department) {
       query.department = { $regex: escapeRegex(department), $options: "i" };
@@ -351,7 +351,7 @@ export async function PUT(req: Request) {
     const db = client.db("ktltc_db");
     const userId = (session.user as any).id || "";
 
-    if (!(await isOwnedSubject(db, id, userId))) {
+    if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, id, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -405,7 +405,7 @@ export async function DELETE(req: Request) {
     const db = client.db("ktltc_db");
     const userId = (session.user as any).id || "";
 
-    if (!(await isOwnedSubject(db, id, userId))) {
+    if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, id, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

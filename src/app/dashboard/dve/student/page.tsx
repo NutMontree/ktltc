@@ -489,6 +489,76 @@ export function DVEStudentPortal() {
     }
   };
 
+  // Helper to save study progress directly to backend
+  const handleSaveStudyProgressDirect = async (unitToCheck: any, seconds: number, isFinished: boolean = false) => {
+    if (!session?.user || !activeSubject || !unitToCheck) return;
+    try {
+      const todayStr = getBangkokDateString(new Date());
+      const user = session.user as any;
+      const currentUnitId = unitToCheck.id || unitToCheck._id?.toString();
+
+      // Find if we have an existing check-in record for today
+      const existingToday = attendances.find(
+        (a) =>
+          a.date === todayStr &&
+          a.unitId === currentUnitId,
+      );
+
+      // Determine correct status
+      let currentStatus = "Studying";
+      if (isFinished) {
+        currentStatus = resolveUnitCheckinStatus(unitToCheck, todayStr);
+      } else {
+        const studyLimitSeconds = (Number(unitToCheck.studyMinutes) || 0) * 60;
+        if (seconds >= studyLimitSeconds) {
+          currentStatus = resolveUnitCheckinStatus(unitToCheck, todayStr);
+        }
+      }
+
+      const payload = {
+        subjectId: activeSubject.id,
+        date: todayStr,
+        records: [
+          {
+            studentId: user.id,
+            studentName: user.name,
+            studentIdNum: user.username || "",
+            classGroupId: resolveSessionClassGroup(user),
+            status: currentStatus,
+            assignmentStatus: existingToday ? existingToday.assignmentStatus : "None",
+            score: existingToday ? existingToday.score : "",
+            imageUrl: existingToday ? existingToday.imageUrl || "" : "",
+            unitId: currentUnitId,
+            unitTitle: unitToCheck.title || "",
+            unitSequence: unitToCheck.sequence !== undefined ? unitToCheck.sequence : "",
+            studySeconds: seconds,
+          },
+        ],
+      };
+
+      const res = await fetch("/api/dve/attendances", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const attRes = await fetch(`/api/dve/attendances?subjectId=${activeSubject.id}`);
+        if (attRes.ok) {
+          const attData = await attRes.json();
+          if (attData.success) setAttendances(attData.attendances || []);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to save study progress:", err);
+    }
+  };
+
+  const handleSaveStudyProgress = async (seconds: number, isFinished: boolean = false) => {
+    if (!activeStudyUnit) return;
+    await handleSaveStudyProgressDirect(activeStudyUnit, seconds, isFinished);
+  };
+
   // Auto checkin handler when timer reaches limit
   const handleAutoCheckin = async (unitToCheck: any) => {
     if (!session?.user || !activeSubject || !unitToCheck) return;
@@ -497,6 +567,14 @@ export function DVEStudentPortal() {
       const todayStr = getBangkokDateString(new Date());
       const user = session.user as any;
       const checkinStatus = resolveUnitCheckinStatus(unitToCheck, todayStr);
+      const currentUnitId = unitToCheck.id || unitToCheck._id?.toString();
+
+      // Find if we have an existing check-in record for today
+      const existingToday = attendances.find(
+        (a) =>
+          a.date === todayStr &&
+          a.unitId === currentUnitId,
+      );
 
       const payload = {
         subjectId: activeSubject.id,
@@ -508,11 +586,13 @@ export function DVEStudentPortal() {
             studentIdNum: user.username || "",
             classGroupId: resolveSessionClassGroup(user),
             status: checkinStatus,
-            assignmentStatus: "None",
-            score: "",
-            unitId: unitToCheck.id || unitToCheck._id?.toString() || "",
+            assignmentStatus: existingToday ? existingToday.assignmentStatus : "None",
+            score: existingToday ? existingToday.score : "",
+            imageUrl: existingToday ? existingToday.imageUrl || "" : "",
+            unitId: currentUnitId,
             unitTitle: unitToCheck.title || "",
             unitSequence: unitToCheck.sequence !== undefined ? unitToCheck.sequence : "",
+            studySeconds: (Number(unitToCheck.studyMinutes) || 0) * 60,
           },
         ],
       };
@@ -539,7 +619,6 @@ export function DVEStudentPortal() {
         }
 
         // Check if there is a quiz available for this specific unit
-        const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
         const targetQuizzes = quizzes.filter((q) => q.unitId === currentUnitId);
 
         if (targetQuizzes && targetQuizzes.length > 0) {
@@ -570,6 +649,14 @@ export function DVEStudentPortal() {
   useEffect(() => {
     isMinimumTimeReachedRef.current = isMinimumTimeReached;
   }, [isMinimumTimeReached]);
+
+  // Periodic save of progress every 20 seconds
+  useEffect(() => {
+    if (studySecondsElapsed > 0 && studySecondsElapsed % 20 === 0) {
+      handleSaveStudyProgress(studySecondsElapsed);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [studySecondsElapsed]);
 
   // Cleanup timer when study unit changes or unmounts
   useEffect(() => {
@@ -624,6 +711,7 @@ export function DVEStudentPortal() {
             timerActiveRef.current = false;
           }
           setIsStudyCompleted(true);
+          handleSaveStudyProgress(totalLimitSeconds, true);
 
           // Automatically jump to Post-test if it exists and is not submitted
           const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
@@ -1255,6 +1343,15 @@ export function DVEStudentPortal() {
                                 q.title.toLowerCase().includes("pre")),
                           );
 
+                          // Find if there is an existing attendance record for this unit
+                          const unitAtts = attendances.filter((a) => a.unitId === unitIdStr);
+                          const existingAtt = unitAtts.sort((a, b) => (b.studySeconds || 0) - (a.studySeconds || 0))[0];
+                          const savedSeconds = existingAtt?.studySeconds || 0;
+
+                          const studyLimitSeconds = (Number(unit.studyMinutes) || 0) * 60;
+                          const hasMetMinTime = savedSeconds >= studyLimitSeconds;
+                          const isCompleted = savedSeconds >= (Number(unit.totalMinutes) || Number(unit.studyMinutes) || 0) * 60;
+
                           if (pretest && !pretest.isSubmitted) {
                             setUnitQuizMode("pretest");
                             // Clear any existing timer before starting a new one
@@ -1263,11 +1360,11 @@ export function DVEStudentPortal() {
                               timerRef.current = null;
                             }
                             timerActiveRef.current = false;
-                            isMinimumTimeReachedRef.current = false;
+                            isMinimumTimeReachedRef.current = hasMetMinTime;
                             setActiveStudyUnit(unit);
-                            setStudySecondsElapsed(0);
-                            setIsStudyCompleted(false);
-                            setIsMinimumTimeReached(false);
+                            setStudySecondsElapsed(savedSeconds);
+                            setIsStudyCompleted(isCompleted);
+                            setIsMinimumTimeReached(hasMetMinTime);
                             message.info("พบแบบทดสอบก่อนเรียน กรุณาทำแบบทดสอบก่อนเรียนก่อนเข้าสู่บทเรียน");
                             handleOpenQuizFormGlobal(pretest);
                             return;
@@ -1280,11 +1377,18 @@ export function DVEStudentPortal() {
                             timerRef.current = null;
                           }
                           timerActiveRef.current = false;
-                          isMinimumTimeReachedRef.current = false;
+                          isMinimumTimeReachedRef.current = hasMetMinTime;
                           setActiveStudyUnit(unit);
-                          setStudySecondsElapsed(0);
-                          setIsStudyCompleted(false);
-                          setIsMinimumTimeReached(false);
+                          setStudySecondsElapsed(savedSeconds);
+                          setIsStudyCompleted(isCompleted);
+                          setIsMinimumTimeReached(hasMetMinTime);
+
+                          // Save progress once on entry if not already completed/checked-in
+                          if (!hasMetMinTime && existingAtt?.status !== "Present" && existingAtt?.status !== "Late") {
+                            setTimeout(() => {
+                              handleSaveStudyProgressDirect(unit, savedSeconds);
+                            }, 100);
+                          }
                         }}
                         className="w-full text-left p-4 hover:bg-zinc-50 dark:hover:bg-zinc-850/50 bg-transparent flex items-center justify-between transition-colors cursor-pointer border-0"
                       >
@@ -1654,6 +1758,7 @@ export function DVEStudentPortal() {
                           timerRef.current = null;
                         }
                         timerActiveRef.current = false;
+                        handleSaveStudyProgress(studySecondsElapsed);
                         setActiveStudyUnit(null);
                         setUnitQuizMode(null);
                       }
@@ -1663,6 +1768,7 @@ export function DVEStudentPortal() {
                         timerRef.current = null;
                       }
                       timerActiveRef.current = false;
+                      handleSaveStudyProgress(studySecondsElapsed);
                       setActiveStudyUnit(null);
                       setUnitQuizMode(null);
                     }
@@ -1769,6 +1875,84 @@ export function DVEStudentPortal() {
                   </div>
                 )}
 
+                {/* 📝 QUIZZES (Pre-test & Post-test) */}
+                {(() => {
+                  const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
+                  const targetQuizzes = quizzes.filter((q) => q.unitId === currentUnitId);
+                  const pretest = targetQuizzes.find((q) => q.quizType === "pretest" || q.title?.includes("ก่อนเรียน"));
+                  const posttest = targetQuizzes.find((q) => q.quizType === "posttest" || q.title?.includes("หลังเรียน"));
+
+                  if (!pretest && !posttest) return null;
+
+                  return (
+                    <div className="space-y-3 bg-zinc-50 dark:bg-zinc-850 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                      <h3 className="text-sm font-black text-zinc-955 dark:text-white flex items-center gap-1.5 border-b pb-2 dark:border-zinc-800">
+                        <BookmarkCheck size={16} className="text-indigo-500" />
+                        แบบทดสอบประจำหน่วยเรียน
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {pretest && (
+                          <div className={`p-3 rounded-xl border flex flex-col justify-between ${pretest.isSubmitted ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-800' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-sm'}`}>
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full">
+                                  Pre-test
+                                </span>
+                                {pretest.isSubmitted && (
+                                  <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                                    <CheckCircle size={10} /> ทำแล้ว
+                                  </span>
+                                )}
+                              </div>
+                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-1">{pretest.title}</h4>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setUnitQuizMode("pretest");
+                                handleOpenQuizFormGlobal(pretest);
+                              }}
+                              disabled={pretest.isSubmitted}
+                              className={`mt-3 py-1.5 px-3 rounded-lg text-xs font-bold w-full transition-all ${pretest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md active:scale-95'}`}
+                            >
+                              {pretest.isSubmitted ? 'ส่งคำตอบแล้ว' : 'ทำแบบทดสอบก่อนเรียน'}
+                            </button>
+                          </div>
+                        )}
+                        {posttest && (
+                          <div className={`p-3 rounded-xl border flex flex-col justify-between ${posttest.isSubmitted ? 'bg-purple-50/50 dark:bg-purple-900/10 border-purple-100 dark:border-purple-800' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-sm'}`}>
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 rounded-full">
+                                  Post-test
+                                </span>
+                                {posttest.isSubmitted && (
+                                  <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                                    <CheckCircle size={10} /> ทำแล้ว
+                                  </span>
+                                )}
+                              </div>
+                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-1">{posttest.title}</h4>
+                            </div>
+                            <button
+                              onClick={() => {
+                                if (!isMinimumTimeReached && !posttest.isSubmitted && Number(activeStudyUnit.studyMinutes) > 0) {
+                                  message.warning(`กรุณาเรียนให้ครบเวลาขั้นต่ำ ${activeStudyUnit.studyMinutes} นาที ก่อนทำแบบทดสอบหลังเรียน`);
+                                  return;
+                                }
+                                setUnitQuizMode("posttest");
+                                handleOpenQuizFormGlobal(posttest);
+                              }}
+                              disabled={posttest.isSubmitted}
+                              className={`mt-3 py-1.5 px-3 rounded-lg text-xs font-bold w-full transition-all ${posttest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : !isMinimumTimeReached && Number(activeStudyUnit.studyMinutes) > 0 ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 text-white shadow-md active:scale-95'}`}
+                            >
+                              {posttest.isSubmitted ? 'ส่งคำตอบแล้ว' : !isMinimumTimeReached && Number(activeStudyUnit.studyMinutes) > 0 ? 'ต้องเรียนให้ครบเวลาก่อน' : 'ทำแบบทดสอบหลังเรียน'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
                 {/* 📝 LESSON CONTENT */}
                 <div className="space-y-2">
                   <h3 className="text-sm font-black text-zinc-955 dark:text-white flex items-center gap-1.5 border-b pb-2 dark:border-zinc-800">
@@ -2000,10 +2184,24 @@ export function DVEStudentPortal() {
                           "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",
                         )
                       ) {
+                        if (timerRef.current) {
+                          clearInterval(timerRef.current);
+                          timerRef.current = null;
+                        }
+                        timerActiveRef.current = false;
+                        handleSaveStudyProgress(studySecondsElapsed);
                         setActiveStudyUnit(null);
+                        setUnitQuizMode(null);
                       }
                     } else {
+                      if (timerRef.current) {
+                        clearInterval(timerRef.current);
+                        timerRef.current = null;
+                      }
+                      timerActiveRef.current = false;
+                      handleSaveStudyProgress(studySecondsElapsed);
                       setActiveStudyUnit(null);
+                      setUnitQuizMode(null);
                     }
                   }}
                   className="px-5 py-2.5 rounded-xl text-xs font-black bg-zinc-200 hover:bg-zinc-300 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-750 transition-colors cursor-pointer border-0"

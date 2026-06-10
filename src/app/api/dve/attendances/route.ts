@@ -116,7 +116,6 @@ async function isStudentAllowedSubject(db: any, subjectId: string, userId: strin
   const studentDeptNorm = normalizeDept(studentDept);
   return subjectDept.includes(studentDeptNorm) || studentDeptNorm.includes(subjectDept);
 }
-
 export async function GET(req: Request) {
   try {
     const session = await auth();
@@ -143,7 +142,7 @@ export async function GET(req: Request) {
       if (!(await isStudentAllowedSubject(db, subjectId, userId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-    } else if (!(await isOwnedSubject(db, subjectId, userId))) {
+    } else if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, subjectId, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -198,6 +197,7 @@ export async function GET(req: Request) {
           unitId: l.unitId || "",
           unitTitle: l.unitTitle || "",
           unitSequence: l.unitSequence !== undefined ? l.unitSequence : "",
+          studySeconds: l.studySeconds !== undefined ? l.studySeconds : 0,
           checkedBy: l.checkedBy,
           updatedAt: l.updatedAt,
         };
@@ -275,18 +275,32 @@ export async function POST(req: Request) {
         unitId,
         unitTitle,
         unitSequence,
+        studySeconds,
       } = rec;
       const unitDoc = unitId ? unitMap.get(String(unitId)) : null;
       const dueDate = toBangkokDateString(unitDoc?.dueDate || "");
       const createdDate = toBangkokDateString(unitDoc?.createdAt || "");
       let finalStatus = status || "Absent";
-      if (finalStatus !== "Absent") {
+      if (finalStatus !== "Absent" && finalStatus !== "Studying") {
         if (dueDate) {
           if (requestDate > dueDate) finalStatus = "Late";
         } else if (createdDate && requestDate > createdDate) {
           finalStatus = "Late";
         }
       }
+
+      const updateFields: any = {
+        studentName: studentName || "",
+        studentIdNum: studentIdNum || "",
+        classGroupId: classGroupId || "",
+        status: finalStatus,
+        assignmentStatus: assignmentStatus || "None",
+        score: score !== undefined ? score : "",
+      };
+
+      if (unitTitle !== undefined) updateFields.unitTitle = unitTitle;
+      if (unitSequence !== undefined) updateFields.unitSequence = unitSequence;
+      if (studySeconds !== undefined) updateFields.studySeconds = Number(studySeconds);
 
       return {
         updateOne: {
@@ -297,20 +311,7 @@ export async function POST(req: Request) {
             unitId: unitId || "",
           },
           update: {
-            $set: {
-              studentName: studentName || "",
-              studentIdNum: studentIdNum || "",
-              classGroupId: classGroupId || "",
-              status: finalStatus,
-              assignmentStatus: assignmentStatus || "None",
-              score: score !== undefined ? score : "",
-              imageUrl: rec.imageUrl !== undefined ? rec.imageUrl : "",
-              unitId: unitId || "",
-              unitTitle: unitTitle || "",
-              unitSequence: unitSequence !== undefined ? unitSequence : "",
-              checkedBy: role === "student" ? "student_self_study" : userId,
-              updatedAt: new Date(),
-            },
+            $set: updateFields,
           },
           upsert: true,
         },
