@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserOutlined, LoadingOutlined } from "@ant-design/icons";
+import { UserOutlined, LoadingOutlined, FilterOutlined } from "@ant-design/icons";
 import { AppSearch } from "./conson/AppSearch";
 import { ImgItem } from "./conson/ImgItem";
 import { ImgPost } from "./conson/ImgPost";
@@ -13,10 +13,21 @@ interface ImgData {
   [key: string]: any;
 }
 
+// Normalize department name for better matching
+function normalizeDept(value: string) {
+  if (!value) return "";
+  let normalized = (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
+  normalized = normalized.replace(/แผนกวิชา/g, "").trim();
+  normalized = normalized.replace(/\s+/g, " ").trim();
+  return normalized;
+}
+
 export const Personnel1 = () => {
   const [dbUsers, setDbUsers] = useState<ImgData[]>([]);
   const [selectedImg, setSelectedImg] = useState<ImgData | null>(null);
   const [searchText, setSearchText] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState<string>("");
+  const [departments, setDepartments] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -129,14 +140,14 @@ export const Personnel1 = () => {
             // ถ้า Role เท่ากัน ให้จัดตำแหน่งที่เป็น "หัวหน้า" หรือ "ผู้อำนวยการ" หรือ "รอง" ขึ้นก่อน
             const isHeadA =
               a.position?.includes("หัวหน้า") ||
-              a.position?.includes("ผู้อำนวยการ") ||
-              a.position?.includes("รอง")
+                a.position?.includes("ผู้อำนวยการ") ||
+                a.position?.includes("รอง")
                 ? 0
                 : 1;
             const isHeadB =
               b.position?.includes("หัวหน้า") ||
-              b.position?.includes("ผู้อำนวยการ") ||
-              b.position?.includes("รอง")
+                b.position?.includes("ผู้อำนวยการ") ||
+                b.position?.includes("รอง")
                 ? 0
                 : 1;
             if (isHeadA !== isHeadB) return isHeadA - isHeadB;
@@ -151,6 +162,12 @@ export const Personnel1 = () => {
           });
 
           setDbUsers(sortedUsers);
+
+          // Extract unique departments
+          const uniqueDepts = Array.from(
+            new Set(mappedUsers.map((u: any) => u.department).filter(Boolean))
+          ).sort() as string[];
+          setDepartments(uniqueDepts);
         }
       } catch (error) {
         console.error("Failed to fetch all users", error);
@@ -164,9 +181,20 @@ export const Personnel1 = () => {
   const onImgOpenClick = (img: any) => setSelectedImg(img);
   const onImgCloseClick = () => setSelectedImg(null);
 
-  const filteredImgs = dbUsers.filter((img) =>
-    img.title.toLowerCase().includes(searchText.toLowerCase()),
-  );
+  const filteredImgs = dbUsers.filter((img) => {
+    // Filter by search text
+    const matchesSearch = img.title.toLowerCase().includes(searchText.toLowerCase());
+
+    // Filter by department
+    let matchesDept = true;
+    if (departmentFilter) {
+      const normalizedFilter = normalizeDept(departmentFilter);
+      const normalizedDept = normalizeDept(img.department || "");
+      matchesDept = normalizedDept.includes(normalizedFilter) || normalizedFilter.includes(normalizedDept);
+    }
+
+    return matchesSearch && matchesDept;
+  });
 
   if (loading) {
     return (
@@ -195,6 +223,34 @@ export const Personnel1 = () => {
               </div>
             </div>
           </div>
+
+          {/* Department Filter */}
+          {departments.length > 0 && (
+            <div className="mt-4 flex items-center gap-3">
+              <FilterOutlined className="w-4 h-4 text-slate-500" />
+              <select
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+                className="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#DAA520] bg-white dark:bg-slate-800 dark:border-slate-600 dark:text-white"
+              >
+                <option value="">ทุกแผนก</option>
+                {departments.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
+              </select>
+              {departmentFilter && (
+                <button
+                  onClick={() => setDepartmentFilter("")}
+                  className="text-xs text-red-500 hover:text-red-700"
+                >
+                  ล้าง
+                </button>
+              )}
+            </div>
+          )}
+
           <p className="mt-3 text-xs text-slate-400">
             พบข้อมูลทั้งหมด {filteredImgs.length} รายการ
           </p>

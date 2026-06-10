@@ -42,6 +42,7 @@ interface User {
   phone?: string;
   lineId?: string;
   orderIndex?: number;
+  image?: string;
 }
 
 interface Summary {
@@ -871,7 +872,7 @@ export default function SuperAdminPage() {
                 </div>
                 <input
                   type="text"
-                  placeholder="ค้นหาชื่อ หรือชื่อผู้ใช้..."
+                  placeholder="ค้นหา ชื่อ / username / รหัส นศ / เบอร์โทร / เลขบัตร ปชช / ข้อมูลอื่นๆ..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="w-full pl-12 pr-6 py-3 bg-slate-100 dark:bg-zinc-950 border border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-blue-500 rounded-2xl focus:outline-none text-slate-800 dark:text-white font-bold text-xs uppercase tracking-widest transition-all"
@@ -891,20 +892,18 @@ export default function SuperAdminPage() {
           <div className="px-4 pt-2 pb-0 flex items-center gap-2 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => handleCategoryChange("all")}
-              className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
-                selectedCategory === "all"
-                  ? "bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20"
-                  : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
-              }`}
+              className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${selectedCategory === "all"
+                ? "bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20"
+                : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
+                }`}
             >
               <span className="text-sm">👥</span>
               <span>ทั้งหมด</span>
               <span
-                className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
-                  selectedCategory === "all"
-                    ? "bg-white/20 text-white"
-                    : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
-                }`}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${selectedCategory === "all"
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
+                  }`}
               >
                 {Object.values(roleCounts).reduce((a, b) => a + b, 0)}
               </span>
@@ -917,19 +916,17 @@ export default function SuperAdminPage() {
                 <button
                   key={roleKey}
                   onClick={() => handleCategoryChange(roleKey)}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
-                    isActive
-                      ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20"
-                      : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
-                  }`}
+                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${isActive
+                    ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20"
+                    : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
+                    }`}
                 >
                   <span>{roleLabels[roleKey] || roleKey}</span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${
-                      isActive
-                        ? "bg-white/20 text-white"
-                        : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
-                    }`}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
+                      }`}
                   >
                     {count}
                   </span>
@@ -1000,6 +997,17 @@ export default function SuperAdminPage() {
 
                             <td className="p-4">
                               <div className="flex items-center gap-4">
+                                {user.image ? (
+                                  <img
+                                    src={user.image}
+                                    alt={user.name}
+                                    className="w-12 h-12 rounded-2xl object-cover border-2 border-slate-200 dark:border-zinc-700"
+                                  />
+                                ) : (
+                                  <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-slate-200 dark:border-zinc-700">
+                                    <Users size={20} className="text-slate-400 dark:text-zinc-600" />
+                                  </div>
+                                )}
                                 <div>
                                   <div className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors leading-tight">
                                     {user.name}
@@ -1137,100 +1145,113 @@ export default function SuperAdminPage() {
                                 </div>
                               </div>
 
-                              <div>
-                                <div className="font-bold text-slate-800 dark:text-white text-sm sm:text-base tracking-tight uppercase leading-tight">
-                                  {user.name}
-                                </div>
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
-                                    @{user.username}
-                                  </span>
-                                  {!user.isActive && (
-                                    <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
-                                      รอนุมัติ
+                              <div className="flex items-center gap-3">
+                                {user.image ? (
+                                  <img
+                                    src={user.image}
+                                    alt={user.name}
+                                    className="w-10 h-10 rounded-xl object-cover border-2 border-slate-200 dark:border-zinc-700"
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-slate-200 dark:border-zinc-700">
+                                    <Users size={16} className="text-slate-400 dark:text-zinc-600" />
+                                  </div>
+                                )}
+                                <div>
+                                  <div className="font-bold text-slate-800 dark:text-white text-sm sm:text-base tracking-tight uppercase leading-tight">
+                                    {user.name}
+                                  </div>
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
+                                      @{user.username}
                                     </span>
-                                  )}
+                                    {!user.isActive && (
+                                      <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
+                                        รอนุมัติ
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
+                              </div>
+
+                              {/* Actions */}
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
+                                  className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm cursor-pointer"
+                                  title="แก้ไขข้อมูล"
+                                >
+                                  <Edit3 size={14} />
+                                </button>
+                                <button
+                                  onClick={() => deleteUser(user._id, user.name)}
+                                  className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm cursor-pointer"
+                                  title="ลบผู้ใช้ออกจากระบบ"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
                               </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex items-center gap-1.5">
-                              <button
-                                onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
-                                className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm cursor-pointer"
-                                title="แก้ไขข้อมูล"
-                              >
-                                <Edit3 size={14} />
-                              </button>
-                              <button
-                                onClick={() => deleteUser(user._id, user.name)}
-                                className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm cursor-pointer"
-                                title="ลบผู้ใช้ออกจากระบบ"
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          </div>
+                            {/* Middle inputs: Role selection and Department dropdowns */}
+                            <div className="grid grid-cols-2 gap-3 pt-1">
+                              <div className="space-y-1">
+                                <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                                  สิทธิ์การใช้งาน
+                                </span>
+                                <select
+                                  value={user.role || "user"}
+                                  onChange={(e) => changeRole(user._id, e.target.value, user.name)}
+                                  className={`w-full text-xs font-bold border-2 rounded-2xl px-3 py-2 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                                >
+                                  {roles.map((roleKey) => (
+                                    <option key={roleKey} value={roleKey}>
+                                      {roleLabels[roleKey] || roleKey.toUpperCase()}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
 
-                          {/* Middle inputs: Role selection and Department dropdowns */}
-                          <div className="grid grid-cols-2 gap-3 pt-1">
-                            <div className="space-y-1">
-                              <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                                สิทธิ์การใช้งาน
+                              <div className="space-y-1">
+                                <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                                  สังกัด / แผนก
+                                </span>
+                                <select
+                                  value={user.department || "ไม่มีสังกัด"}
+                                  onChange={(e) =>
+                                    changeDepartment(user._id, e.target.value, user.name)
+                                  }
+                                  className="w-full text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-3 py-2 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer"
+                                >
+                                  <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                                  <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                                  {DEPARTMENT_GROUPS.map((group) => (
+                                    <optgroup key={group.label} label={group.label}>
+                                      {group.options.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>
+                                          {opt.label}
+                                        </option>
+                                      ))}
+                                    </optgroup>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* Bottom Row: Status Activation Switch */}
+                            <div className="flex justify-between items-center bg-slate-50 dark:bg-zinc-900/30 p-2.5 rounded-2xl border border-slate-100 dark:border-zinc-800/40">
+                              <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                สถานะการใช้งาน
                               </span>
-                              <select
-                                value={user.role || "user"}
-                                onChange={(e) => changeRole(user._id, e.target.value, user.name)}
-                                className={`w-full text-xs font-bold border-2 rounded-2xl px-3 py-2 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                              <button
+                                onClick={() => toggleActive(user._id, user.isActive, user.name)}
+                                className={`h-7 w-12 rounded-full transition-all relative p-0.5 shadow-inner cursor-pointer ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
                               >
-                                {roles.map((roleKey) => (
-                                  <option key={roleKey} value={roleKey}>
-                                    {roleLabels[roleKey] || roleKey.toUpperCase()}
-                                  </option>
-                                ))}
-                              </select>
+                                <div
+                                  className={`h-4.5 w-4.5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
+                                />
+                              </button>
                             </div>
-
-                            <div className="space-y-1">
-                              <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                                สังกัด / แผนก
-                              </span>
-                              <select
-                                value={user.department || "ไม่มีสังกัด"}
-                                onChange={(e) =>
-                                  changeDepartment(user._id, e.target.value, user.name)
-                                }
-                                className="w-full text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-3 py-2 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer"
-                              >
-                                <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                                <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                                {DEPARTMENT_GROUPS.map((group) => (
-                                  <optgroup key={group.label} label={group.label}>
-                                    {group.options.map((opt) => (
-                                      <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                      </option>
-                                    ))}
-                                  </optgroup>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-
-                          {/* Bottom Row: Status Activation Switch */}
-                          <div className="flex justify-between items-center bg-slate-50 dark:bg-zinc-900/30 p-2.5 rounded-2xl border border-slate-100 dark:border-zinc-800/40">
-                            <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                              สถานะการใช้งาน
-                            </span>
-                            <button
-                              onClick={() => toggleActive(user._id, user.isActive, user.name)}
-                              className={`h-7 w-12 rounded-full transition-all relative p-0.5 shadow-inner cursor-pointer ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
-                            >
-                              <div
-                                className={`h-4.5 w-4.5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
-                              />
-                            </button>
                           </div>
                         </motion.div>
                       ))}

@@ -29,7 +29,22 @@ export async function GET(req: Request) {
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
-        { username: { $regex: search, $options: "i" } }
+        { username: { $regex: search, $options: "i" } },
+        { studentId: { $regex: search, $options: "i" } },
+        { studentIdNum: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { citizenId: { $regex: search, $options: "i" } },
+        { lineId: { $regex: search, $options: "i" } },
+        { department: { $regex: search, $options: "i" } },
+        { classGroupId: { $regex: search, $options: "i" } },
+        { academicLevel: { $regex: search, $options: "i" } },
+        { position: { $regex: search, $options: "i" } },
+        { positionNumber: { $regex: search, $options: "i" } },
+        { faction: { $regex: search, $options: "i" } },
+        { affiliation: { $regex: search, $options: "i" } },
+        { studentStatus: { $regex: search, $options: "i" } },
+        { learnerType: { $regex: search, $options: "i" } },
       ];
     }
 

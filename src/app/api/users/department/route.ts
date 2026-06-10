@@ -3,6 +3,15 @@ import clientPromise from "@/lib/db";
 
 export const dynamic = 'force-dynamic';
 
+// Normalize department name for better matching
+function normalizeDept(value: string) {
+  if (!value) return "";
+  let normalized = (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
+  normalized = normalized.replace(/แผนกวิชา/g, "").trim();
+  normalized = normalized.replace(/\s+/g, " ").trim();
+  return normalized;
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -15,15 +24,22 @@ export async function GET(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const users = await db
+    // Get all users with the specified roles
+    const allUsers = await db
       .collection("users")
       .find({
-        department: departmentStr,
         isActive: true,
         role: { $nin: ["student", "user", "member", "members"] }
       })
-      .project({ password: 0 }) 
+      .project({ password: 0 })
       .toArray();
+
+    // Filter by department using normalized comparison
+    const normalizedFilter = normalizeDept(departmentStr);
+    const users = allUsers.filter((user: any) => {
+      const normalizedDept = normalizeDept(user.department || "");
+      return normalizedDept.includes(normalizedFilter) || normalizedFilter.includes(normalizedDept);
+    });
 
     // ลำดับสิทธิ์การเข้าถึง (เรียงจากระดับบริหารลงมา)
     const roleOrder: Record<string, number> = {

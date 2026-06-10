@@ -301,7 +301,7 @@ export default function StudentVerifyPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-black tracking-tight leading-none text-slate-900 dark:text-white"
           >
-            ระบบยืนยันตัวตน{" "}
+            ระบบพิสูจน์ตัวตน
             <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-indigo-655 to-blue-500">
               นักเรียน นักศึกษา
             </span>
