@@ -18,26 +18,19 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import NavbarSkeleton from "@/components/NavbarSkeleton";
 import { Suspense } from "react";
-import { Prompt } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-// import { Analytics } from "@vercel/analytics/next";
 import ScrollUp from "@/components/Common/ScrollUp";
 import ScrollToTop from "@/components/Common/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
 import SessionWatcher from "@/components/SessionWatcher";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-// import { auth } from "@/lib/auth";
-// import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
-// การใช้ next/font ช่วยลด Layout Shift และโหลดฟอนต์ได้รวดเร็ว
-const prompt = Prompt({
-  subsets: ["thai", "latin"], // รองรับภาษาไทยและอังกฤษ
-  weight: ["300", "400", "500", "600", "700"], // น้ำหนักฟอนต์ที่ใช้
-  variable: "--font-prompt", // กำหนด CSS variable เพื่อเรียกใช้ใน Tailwind
-  display: "swap", // ให้แสดงฟอนต์สำรองก่อนจนกว่าฟอนต์จริงจะโหลดเสร็จ
-});
+// 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt)
+const prompt = {
+  className: "font-prompt",
+  variable: "font-prompt",
+};
 
 // 2. กำหนด Metadata สำหรับ SEO และการแชร์ลง Social Media (Open Graph)
 export const metadata: Metadata = {

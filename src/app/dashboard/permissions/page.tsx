@@ -110,6 +110,18 @@ const FEATURE_LABELS: {
     color: "text-teal-600",
     href: "/dashboard/supervision/requests",
   },
+  access_teacher_verification: {
+    label: "ตรวจสอบครูผู้สอน (ผู้บริหาร)",
+    icon: FiCheckCircle,
+    color: "text-amber-500",
+    href: "/teacher-verification",
+  },
+  access_teacher_dashboard: {
+    label: "ติดตามงานครู (ผู้บริหาร)",
+    icon: FiLayout,
+    color: "text-blue-500",
+    href: "/teacher-dashboard",
+  },
 };
 
 const ADVANCED_FEATURE_LABELS: {

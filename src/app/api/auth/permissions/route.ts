@@ -33,6 +33,8 @@ export async function GET() {
       access_dve_teacher: ["super_admin", "admin", "teacher"].includes(role),
       access_dve_student: ["super_admin", "admin", "student"].includes(role),
       manage_supervision_requests: ["super_admin"].includes(role),
+      access_teacher_verification: ["super_admin"].includes(role),
+      access_teacher_dashboard: ["super_admin"].includes(role),
       ...(dbPermission?.permissions || {}) // เอาค่าจาก DB มาทับถ้ามี
     };
 

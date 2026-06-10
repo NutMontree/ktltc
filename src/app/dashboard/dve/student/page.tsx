@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -163,6 +163,9 @@ export function DVEStudentPortal() {
   const [studySecondsElapsed, setStudySecondsElapsed] = useState<number>(0);
   const [isStudyCompleted, setIsStudyCompleted] = useState<boolean>(false);
   const [isMinimumTimeReached, setIsMinimumTimeReached] = useState<boolean>(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isMinimumTimeReachedRef = useRef(false);
+  const timerActiveRef = useRef(false);
   const [isSubmittingAttendance, setIsSubmittingAttendance] = useState<boolean>(false);
   const [uploadingRecordId, setUploadingRecordId] = useState<string | null>(null);
 
@@ -453,16 +456,30 @@ export function DVEStudentPortal() {
       const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD in local time zone
       const user = session.user as any;
 
-      // Check quiz deadlines to see if check-in is late
+      // Determine checkin status: "Present" or "Late"
       let checkinStatus = "Present";
-      if (quizzes && quizzes.length > 0) {
-        for (const quiz of quizzes) {
+
+      // 1. Check if unit was created on a PREVIOUS day → student is doing old work = Late
+      if (unitToCheck.createdAt) {
+        const unitCreatedDate = new Date(unitToCheck.createdAt);
+        if (!isNaN(unitCreatedDate.getTime())) {
+          const unitDateStr = unitCreatedDate.toLocaleDateString("en-CA");
+          if (todayStr > unitDateStr) {
+            checkinStatus = "Late"; // Student is completing a unit from a previous day
+          }
+        }
+      }
+
+      // 2. Also check quiz deadlines (if any quiz deadline has passed, mark as Late)
+      if (checkinStatus !== "Late" && quizzes && quizzes.length > 0) {
+        const currentUnitId = unitToCheck.id || unitToCheck._id?.toString();
+        const unitQuizzesForCheck = quizzes.filter((q) => q.unitId === currentUnitId);
+        for (const quiz of unitQuizzesForCheck) {
           if (quiz.deadline) {
             let deadlineDate: Date | null = null;
             if (quiz.deadline.includes("/")) {
               const parts = quiz.deadline.split("/");
               if (parts.length === 3) {
-                // If MM/DD/YYYY
                 deadlineDate = new Date(`${parts[2]}-${parts[0]}-${parts[1]}`);
               } else {
                 deadlineDate = new Date(quiz.deadline);
@@ -474,7 +491,7 @@ export function DVEStudentPortal() {
             if (deadlineDate && !isNaN(deadlineDate.getTime())) {
               const deadlineStr = deadlineDate.toLocaleDateString("en-CA");
               if (todayStr > deadlineStr) {
-                checkinStatus = "Late"; // Expired quiz deadline makes attendance "Late"
+                checkinStatus = "Late";
                 break;
               }
             }
@@ -489,7 +506,7 @@ export function DVEStudentPortal() {
           {
             studentId: user.id,
             studentName: user.name,
-            studentIdNum: user.username || "", // Username stores the student ID code
+            studentIdNum: user.username || "",
             classGroupId: user.classGroup || "",
             status: checkinStatus,
             assignmentStatus: "None",
@@ -550,77 +567,89 @@ export function DVEStudentPortal() {
   };
 
   // Study Room timer & Auto Check-in logic
+  // Keep ref in sync with state
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (activeStudyUnit && unitQuizMode === "learning") {
-      const studyLimitSeconds = (Number(activeStudyUnit.studyMinutes) || 0) * 60;
-      const totalLimitSeconds = (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes) || 0) * 60;
-      const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
-      const user = session?.user as any;
+    isMinimumTimeReachedRef.current = isMinimumTimeReached;
+  }, [isMinimumTimeReached]);
 
-      // ตรวจสอบว่านักเรียนคนนี้มีบันทึกการเข้าเรียนในหน่วยการเรียนรู้นี้แล้วหรือไม่
-      const alreadyCheckedIn = attendances.some(
-        (a) => a.unitId === currentUnitId && a.studentId === user?.id,
-      );
-
-      // หากเคยเช็คชื่อไปแล้ว (มีข้อมูลในระบบ) หรือหน่วยนี้ไม่ได้ตั้งเวลาไว้ ให้ข้ามการจับเวลาไปเลย
-      if (alreadyCheckedIn || totalLimitSeconds <= 0) {
-        setIsStudyCompleted(true);
-        setIsMinimumTimeReached(true);
-        if (totalLimitSeconds > 0) {
-          setStudySecondsElapsed(totalLimitSeconds); // เติมหลอดเวลาให้เต็ม
-        }
-
-        // ถ้าไม่เคยเช็คชื่อ (กรณีไม่มีเวลา) ถึงจะให้บันทึกอัตโนมัติ
-        if (!alreadyCheckedIn) {
-          handleAutoCheckin(activeStudyUnit);
-        }
-      } else {
-        timer = setInterval(() => {
-          setStudySecondsElapsed((prev) => {
-            const nextVal = prev + 1;
-
-            // Check if minimum time is reached
-            if (!isMinimumTimeReached && nextVal >= studyLimitSeconds) {
-              setIsMinimumTimeReached(true);
-              // Trigger auto check-in when minimum time is reached
-              handleAutoCheckin(activeStudyUnit);
-              message.success("เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ สามารถทำแบบทดสอบได้ทันที");
-            }
-
-            // Check if total time is reached
-            if (nextVal >= totalLimitSeconds) {
-              clearInterval(timer);
-              setIsStudyCompleted(true);
-
-              // Automatically jump to Post-test if it exists and is not submitted
-              const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
-              const posttest = quizzes.find(
-                (q) =>
-                  q.unitId === currentUnitIdStr &&
-                  (q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")),
-              );
-              if (posttest && !posttest.isSubmitted) {
-                setUnitQuizMode("posttest");
-                // Open the modal automatically
-                message.success("เรียนครบเวลาทั้งหมดแล้ว! กำลังเปิดแบบทดสอบหลังเรียน...");
-                handleOpenQuizFormGlobal(posttest);
-              } else {
-                message.success("เรียนครบเวลาทั้งหมดแล้ว!");
-              }
-
-              return totalLimitSeconds;
-            }
-            return nextVal;
-          });
-        }, 1000);
+  // Cleanup timer when study unit changes or unmounts
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+        timerActiveRef.current = false;
       }
+    };
+  }, [activeStudyUnit]);
+
+  // Start timer when entering learning mode
+  useEffect(() => {
+    // Only start timer when conditions are met and timer isn't already running
+    if (!activeStudyUnit || unitQuizMode !== "learning" || timerActiveRef.current) {
+      return;
     }
 
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [activeStudyUnit, attendances, session, unitQuizMode, quizzes, isMinimumTimeReached]);
+    const studyLimitSeconds = (Number(activeStudyUnit.studyMinutes) || 0) * 60;
+    const totalLimitSeconds = (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes) || 0) * 60;
+
+    // หากหน่วยนี้ไม่ได้ตั้งเวลาไว้ ให้ข้ามการจับเวลาไปเลย
+    if (totalLimitSeconds <= 0) {
+      setIsStudyCompleted(true);
+      setIsMinimumTimeReached(true);
+      handleAutoCheckin(activeStudyUnit);
+      return;
+    }
+
+    // Mark timer as active to prevent double-start
+    timerActiveRef.current = true;
+
+    timerRef.current = setInterval(() => {
+      setStudySecondsElapsed((prev) => {
+        const nextVal = prev + 1;
+
+        // Check if minimum time is reached (use ref to avoid stale closure)
+        if (!isMinimumTimeReachedRef.current && nextVal >= studyLimitSeconds) {
+          setIsMinimumTimeReached(true);
+          isMinimumTimeReachedRef.current = true;
+          // Trigger auto check-in when minimum time is reached
+          handleAutoCheckin(activeStudyUnit);
+          message.success("เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ สามารถทำแบบทดสอบได้ทันที");
+        }
+
+        // Check if total time is reached
+        if (nextVal >= totalLimitSeconds) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+            timerActiveRef.current = false;
+          }
+          setIsStudyCompleted(true);
+
+          // Automatically jump to Post-test if it exists and is not submitted
+          const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
+          const posttest = quizzes.find(
+            (q) =>
+              q.unitId === currentUnitIdStr &&
+              (q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")),
+          );
+          if (posttest && !posttest.isSubmitted) {
+            setUnitQuizMode("posttest");
+            message.success("เรียนครบเวลาทั้งหมดแล้ว! กำลังเปิดแบบทดสอบหลังเรียน...");
+            setTimeout(() => {
+              handleOpenQuizFormGlobal(posttest);
+            }, 500);
+          } else {
+            message.success("เรียนครบเวลาทั้งหมดแล้ว!");
+          }
+
+          return totalLimitSeconds;
+        }
+        return nextVal;
+      });
+    }, 1000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStudyUnit, unitQuizMode]);
 
   // Handle Pre-test / Post-test flow when Quiz Modal is closed
   useEffect(() => {
@@ -634,6 +663,16 @@ export function DVEStudentPortal() {
         );
         if (pretest?.isSubmitted) {
           // After pre-test is submitted, switch to learning mode (timer)
+          // Reset timer tracking so the timer can start fresh
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          timerActiveRef.current = false;
+          isMinimumTimeReachedRef.current = false;
+          setStudySecondsElapsed(0);
+          setIsStudyCompleted(false);
+          setIsMinimumTimeReached(false);
           setUnitQuizMode("learning");
           message.success("ทำแบบทดสอบก่อนเรียนเสร็จสิ้น กำลังเริ่มจับเวลาเรียน...");
         } else {
@@ -672,7 +711,15 @@ export function DVEStudentPortal() {
         const attData = await attRes.json();
 
         if (subData.success) setActiveSubject(subData.subject);
-        if (unitsData.success) setUnits(unitsData.units || []);
+        if (unitsData.success) {
+          const sortedUnits = (unitsData.units || []).sort((a: any, b: any) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            if (dateA !== dateB) return dateB - dateA;
+            return (b.sequence || 0) - (a.sequence || 0);
+          });
+          setUnits(sortedUnits);
+        }
         if (quizzesData.success) {
           const today = new Date().toISOString().split("T")[0];
           const filteredQuizzes = (quizzesData.quizzes || []).filter((q: any) => {
@@ -1211,6 +1258,13 @@ export function DVEStudentPortal() {
 
                           if (pretest && !pretest.isSubmitted) {
                             setUnitQuizMode("pretest");
+                            // Clear any existing timer before starting a new one
+                            if (timerRef.current) {
+                              clearInterval(timerRef.current);
+                              timerRef.current = null;
+                            }
+                            timerActiveRef.current = false;
+                            isMinimumTimeReachedRef.current = false;
                             setActiveStudyUnit(unit);
                             setStudySecondsElapsed(0);
                             setIsStudyCompleted(false);
@@ -1221,6 +1275,13 @@ export function DVEStudentPortal() {
                           }
 
                           setUnitQuizMode("learning");
+                          // Clear any existing timer before starting a new one
+                          if (timerRef.current) {
+                            clearInterval(timerRef.current);
+                            timerRef.current = null;
+                          }
+                          timerActiveRef.current = false;
+                          isMinimumTimeReachedRef.current = false;
                           setActiveStudyUnit(unit);
                           setStudySecondsElapsed(0);
                           setIsStudyCompleted(false);
@@ -1561,7 +1622,7 @@ export function DVEStudentPortal() {
 
       {/* VIRTUAL STUDY ROOM OVERLAY */}
       <AnimatePresence>
-        {activeStudyUnit && (
+        {activeStudyUnit && unitQuizMode !== "pretest" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1584,10 +1645,22 @@ export function DVEStudentPortal() {
                           "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",
                         )
                       ) {
+                        if (timerRef.current) {
+                          clearInterval(timerRef.current);
+                          timerRef.current = null;
+                        }
+                        timerActiveRef.current = false;
                         setActiveStudyUnit(null);
+                        setUnitQuizMode(null);
                       }
                     } else {
+                      if (timerRef.current) {
+                        clearInterval(timerRef.current);
+                        timerRef.current = null;
+                      }
+                      timerActiveRef.current = false;
                       setActiveStudyUnit(null);
+                      setUnitQuizMode(null);
                     }
                   }}
                   className="absolute top-6 right-6 p-2 bg-white/20 hover:bg-white/35 rounded-full transition-all text-white border-0 cursor-pointer flex items-center justify-center"
@@ -1786,124 +1859,130 @@ export function DVEStudentPortal() {
                 })()}
 
                 {/* 📝 QUIZ REDIRECT */}
-                {quizzes && quizzes.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider block">
-                        📝 แบบทดสอบทั้งหมด ({quizzes.length}):
-                      </span>
-                      {/* To-Do / Submitted Toggle */}
-                      <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 rounded-full p-1">
-                        <button
-                          onClick={() => setTaskView("todo")}
-                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "todo"
-                            ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
-                            : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                            }`}
-                        >
-                          งานที่ต้องทำ
-                        </button>
-                        <button
-                          onClick={() => setTaskView("submitted")}
-                          className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "submitted"
-                            ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
-                            : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                            }`}
-                        >
-                          ส่งแล้ว
-                        </button>
+                {(() => {
+                  const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
+                  const unitQuizzes = quizzes.filter((q) => q.unitId === currentUnitId);
+                  if (unitQuizzes.length === 0) return null;
+
+                  return (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider block">
+                          📝 แบบทดสอบของหน่วยเรียน ({unitQuizzes.length}):
+                        </span>
+                        {/* To-Do / Submitted Toggle */}
+                        <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 rounded-full p-1">
+                          <button
+                            onClick={() => setTaskView("todo")}
+                            className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "todo"
+                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                              : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                              }`}
+                          >
+                            งานที่ต้องทำ
+                          </button>
+                          <button
+                            onClick={() => setTaskView("submitted")}
+                            className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "submitted"
+                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                              : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                              }`}
+                          >
+                            ส่งแล้ว
+                          </button>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {unitQuizzes
+                          .filter((quiz: any) => {
+                            if (taskView === "submitted") return quiz.isSubmitted;
+                            return !quiz.isSubmitted;
+                          })
+                          .map((quiz: any, qIdx: number) => {
+                            const isQuizSubmitted = !!quiz.isSubmitted;
+                            return (
+                              <div
+                                key={quiz.id || qIdx}
+                                className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${isQuizSubmitted
+                                  ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
+                                  : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
+                                  }`}
+                              >
+                                <div className="space-y-0.5 text-center sm:text-left">
+                                  <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
+                                    แบบทดสอบวิชาเรียนที่ {qIdx + 1}
+                                  </span>
+                                  <div className="flex flex-wrap items-center gap-1.5 justify-center sm:justify-start">
+                                    <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
+                                      {quiz.title}
+                                    </h4>
+                                    {quiz.quizType === "pretest" && (
+                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
+                                        ก่อนเรียน (Pre-test)
+                                      </span>
+                                    )}
+                                    {quiz.quizType === "posttest" && (
+                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
+                                        หลังเรียน (Post-test)
+                                      </span>
+                                    )}
+                                    {quiz.quizType === "general" && (
+                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20">
+                                        ทั่วไป
+                                      </span>
+                                    )}
+                                    {quiz.isBuiltIn && quiz.isShuffle && (
+                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20">
+                                        🔀 สลับข้อ
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  disabled={isQuizSubmitted}
+                                  className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${isQuizSubmitted
+                                    ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
+                                    : isMinimumTimeReached
+                                      ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                                      : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
+                                    }`}
+                                  onClick={() => {
+                                    if (isQuizSubmitted) return;
+                                    if (!isMinimumTimeReached) {
+                                      message.warning(
+                                        `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${Number(activeStudyUnit.studyMinutes)} นาทีก่อนทำแบบทดสอบประเมิน`,
+                                      );
+                                    } else {
+                                      handleOpenQuizFormGlobal(quiz);
+                                    }
+                                  }}
+                                >
+                                  {isQuizSubmitted ? (
+                                    <>
+                                      <CheckCircle size={12} className="text-emerald-500" />
+                                      ทำแบบทดสอบแล้ว
+                                    </>
+                                  ) : (
+                                    <>
+                                      {quiz.isBuiltIn
+                                        ? "เริ่มทำข้อสอบท้ายบทเรียน"
+                                        : "เริ่มทำแบบทดสอบประเมิน"}
+                                      {quiz.isBuiltIn ? (
+                                        <ArrowRight size={12} />
+                                      ) : (
+                                        <ExternalLink size={12} />
+                                      )}
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      {quizzes
-                        .filter((quiz: any) => {
-                          if (taskView === "submitted") return quiz.isSubmitted;
-                          return !quiz.isSubmitted;
-                        })
-                        .map((quiz: any, qIdx: number) => {
-                          const isQuizSubmitted = !!quiz.isSubmitted;
-                          return (
-                            <div
-                              key={quiz.id || qIdx}
-                              className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${isQuizSubmitted
-                                ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
-                                : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
-                                }`}
-                            >
-                              <div className="space-y-0.5 text-center sm:text-left">
-                                <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
-                                  แบบทดสอบวิชาเรียนที่ {qIdx + 1}
-                                </span>
-                                <div className="flex flex-wrap items-center gap-1.5 justify-center sm:justify-start">
-                                  <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
-                                    {quiz.title}
-                                  </h4>
-                                  {quiz.quizType === "pretest" && (
-                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
-                                      ก่อนเรียน (Pre-test)
-                                    </span>
-                                  )}
-                                  {quiz.quizType === "posttest" && (
-                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
-                                      หลังเรียน (Post-test)
-                                    </span>
-                                  )}
-                                  {quiz.quizType === "general" && (
-                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20">
-                                      ทั่วไป
-                                    </span>
-                                  )}
-                                  {quiz.isBuiltIn && quiz.isShuffle && (
-                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20">
-                                      🔀 สลับข้อ
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              <button
-                                type="button"
-                                disabled={isQuizSubmitted}
-                                className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${isQuizSubmitted
-                                  ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
-                                  : isMinimumTimeReached
-                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
-                                    : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
-                                  }`}
-                                onClick={() => {
-                                  if (isQuizSubmitted) return;
-                                  if (!isMinimumTimeReached) {
-                                    message.warning(
-                                      `กรุณาเรียนรู้สะสมเวลาให้ครบอย่างน้อย ${Number(activeStudyUnit.studyMinutes)} นาทีก่อนทำแบบทดสอบประเมิน`,
-                                    );
-                                  } else {
-                                    handleOpenQuizFormGlobal(quiz);
-                                  }
-                                }}
-                              >
-                                {isQuizSubmitted ? (
-                                  <>
-                                    <CheckCircle size={12} className="text-emerald-500" />
-                                    ทำแบบทดสอบแล้ว
-                                  </>
-                                ) : (
-                                  <>
-                                    {quiz.isBuiltIn
-                                      ? "เริ่มทำข้อสอบท้ายบทเรียน"
-                                      : "เริ่มทำแบบทดสอบประเมิน"}
-                                    {quiz.isBuiltIn ? (
-                                      <ArrowRight size={12} />
-                                    ) : (
-                                      <ExternalLink size={12} />
-                                    )}
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
 
               {/* Close Button / Bottom Bar */}
@@ -2243,9 +2322,13 @@ export function DVEStudentPortal() {
                                     เฉลยที่ถูกต้อง:
                                   </span>
                                   <span className="text-zinc-600 dark:text-zinc-300 font-black">
-                                    {Array.isArray(q.correctAnswer)
-                                      ? q.correctAnswer.join(", ")
-                                      : String(q.correctAnswer || "ไม่ระบุเฉลย")}
+                                    {activeQuiz.showCorrectAnswers ? (
+                                      Array.isArray(q.correctAnswer)
+                                        ? q.correctAnswer.join(", ")
+                                        : String(q.correctAnswer || "ไม่ระบุเฉลย")
+                                    ) : (
+                                      <span className="text-zinc-400 font-bold italic">🔒 ปิดการแสดงเฉลย</span>
+                                    )}
                                   </span>
                                 </div>
                               </div>
@@ -2354,7 +2437,32 @@ export function DVEStudentPortal() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {quizzes.map((quiz) => {
+                      {quizzes.filter(quiz => {
+                        if (!quiz.unitId) return true;
+                        
+                        const unit = units.find(u => (u.id || u._id?.toString()) === quiz.unitId);
+                        if (!unit) return false;
+                        
+                        const hasAttendance = attendances.some(a => a.unitId === quiz.unitId);
+                        const isActive = activeStudyUnit && (activeStudyUnit.id || activeStudyUnit._id?.toString()) === quiz.unitId;
+                        
+                        if (hasAttendance || isActive) return true;
+                        
+                        const unitIndex = units.findIndex(u => (u.id || u._id?.toString()) === quiz.unitId);
+                        if (unitIndex === 0) return true;
+                        
+                        let maxCheckedInSeq = 0;
+                        units.forEach((u, idx) => {
+                          const uId = u.id || u._id?.toString();
+                          if (attendances.some(a => a.unitId === uId)) {
+                            const seq = u.sequence || (idx + 1);
+                            if (seq > maxCheckedInSeq) maxCheckedInSeq = seq;
+                          }
+                        });
+                        
+                        const seq = unit.sequence || (unitIndex + 1);
+                        return seq <= maxCheckedInSeq + 1;
+                      }).map((quiz) => {
                         const isUploadedFile = !!quiz.fileUrl;
                         const isUploading = uploadingRecordId === quiz.id;
                         // Built-in system quizzes: score comes from quiz submission system, no file upload needed

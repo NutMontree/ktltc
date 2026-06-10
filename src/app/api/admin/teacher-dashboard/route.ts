@@ -6,7 +6,15 @@ import { ObjectId } from "mongodb";
 export const dynamic = "force-dynamic";
 export const revalidate = 60; // Revalidate every 60 seconds
 
-const ALLOWED_ROLES = ["super_admin", "admin"];
+const ALLOWED_ROLES = [
+  "super_admin",
+  "admin",
+  "director",
+  "deputy_resource",
+  "deputy_strategy",
+  "deputy_academic",
+  "deputy_student_affairs",
+];
 
 function normalizeDept(value: string) {
   if (!value) return "";
@@ -24,8 +32,14 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
     const userRole = ((session.user as any)?.role || "").toLowerCase();
-    if (!ALLOWED_ROLES.includes(userRole)) {
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const hasAccess = rolePerms?.permissions?.access_teacher_dashboard || userRole === "super_admin";
+
+    if (!hasAccess) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -33,9 +47,6 @@ export async function GET(req: Request) {
     const department = searchParams.get("department")?.trim();
     const startDate = searchParams.get("startDate")?.trim();
     const endDate = searchParams.get("endDate")?.trim();
-
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
 
     // Get date ranges for this week and last week
     const now = new Date();

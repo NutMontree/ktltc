@@ -359,6 +359,25 @@ export default function MobileMenu({
                         </Link>
                       )}
 
+                      {(permissions?.access_teacher_dashboard ?? isSuperAdmin) && (
+                        <Link
+                          href="/teacher-dashboard"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/teacher-dashboard" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
+                          <Activity className="w-5 h-5" /> แดชบอร์ดผู้บริหาร (ติดตามงานครู)
+                        </Link>
+                      )}
+                      {(permissions?.access_teacher_verification ?? isSuperAdmin) && (
+                        <Link
+                          href="/teacher-verification"
+                          onClick={closeMenu}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/teacher-verification" ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                        >
+                          <Calendar className="w-5 h-5" /> ตรวจสอบการจัดการเรียนการสอนครู
+                        </Link>
+                      )}
+
                       {(permissions?.access_dve_student ||
                         roleLower === "student" ||
                         isSuperAdmin) && (
