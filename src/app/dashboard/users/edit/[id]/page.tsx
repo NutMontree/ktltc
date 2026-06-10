@@ -78,6 +78,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     password: "",
     confirmPassword: "",
     originalPasswordText: "",
+    image: "",
   });
 
   // Fetch dynamic roles from API
@@ -127,6 +128,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
           password: "",
           confirmPassword: "",
           originalPasswordText: data.passwordText || "",
+          image: data.image || "",
         });
       } else {
         toast.error("ไม่พบข้อมูลผู้ใช้ที่ระบุ");
@@ -307,8 +309,18 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                 </div>
 
                 <div className="flex flex-col items-center text-center space-y-4 relative z-10">
-                  <div className="w-20 h-20 rounded-3xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-lg border border-blue-500/20">
-                    <UserIcon size={36} />
+                  <div className="relative">
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt={formData.name}
+                        className="w-20 h-20 rounded-3xl object-cover shadow-lg border-2 border-blue-500/20"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-3xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-lg border border-blue-500/20">
+                        <UserIcon size={36} />
+                      </div>
+                    )}
                   </div>
                   <div>
                     <h2 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight line-clamp-1">
@@ -333,11 +345,10 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                   <button
                     type="button"
                     onClick={handleToggleActive}
-                    className={`w-full py-3 px-4 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${
-                      formData.isActive
-                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
-                        : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20"
-                    }`}
+                    className={`w-full py-3 px-4 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${formData.isActive
+                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
+                      : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20"
+                      }`}
                   >
                     {formData.isActive
                       ? "ระงับสิทธิ์เข้าใช้ระบบ 🔒"
@@ -399,11 +410,10 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id as any)}
-                      className={`flex items-center gap-3 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest text-left transition-all active:scale-98 ${
-                        isActive
-                          ? "bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-white shadow-inner"
-                          : "text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300"
-                      }`}
+                      className={`flex items-center gap-3 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest text-left transition-all active:scale-98 ${isActive
+                        ? "bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-white shadow-inner"
+                        : "text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300"
+                        }`}
                     >
                       <Icon size={16} className={isActive ? tab.color : "text-slate-400"} />
                       <span>{tab.label}</span>
@@ -836,11 +846,10 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                                   isInternship: !prev.isInternship,
                                 }))
                               }
-                              className={`w-full sm:w-auto px-6 py-3 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${
-                                formData.isInternship
-                                  ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30"
-                                  : "bg-slate-100 border-slate-200 text-slate-400 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 hover:bg-slate-200/50"
-                              }`}
+                              className={`w-full sm:w-auto px-6 py-3 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${formData.isInternship
+                                ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30"
+                                : "bg-slate-100 border-slate-200 text-slate-400 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 hover:bg-slate-200/50"
+                                }`}
                             >
                               {formData.isInternship
                                 ? "กำลังฝึกงานอยู่ 💼"
@@ -1074,11 +1083,10 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                       {formData.password && (
                         <div className="flex flex-wrap items-center gap-2 mt-3 p-3 bg-slate-50 dark:bg-zinc-950/40 rounded-2xl border border-slate-100 dark:border-zinc-900">
                           <span
-                            className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                              formData.password.length >= 4
-                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                                : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                            }`}
+                            className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${formData.password.length >= 4
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                              : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                              }`}
                           >
                             {formData.password.length >= 4
                               ? "✓ ปลอดภัย (>= 4 หลัก)"
@@ -1087,11 +1095,10 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
                           {formData.confirmPassword && (
                             <span
-                              className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                                formData.password === formData.confirmPassword
-                                  ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                                  : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                              }`}
+                              className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${formData.password === formData.confirmPassword
+                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                                }`}
                             >
                               {formData.password === formData.confirmPassword
                                 ? "✓ รหัสผ่านตรงกัน"
