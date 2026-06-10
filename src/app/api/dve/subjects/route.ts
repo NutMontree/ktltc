@@ -57,6 +57,67 @@ function escapeRegex(text: string): string {
   return (text || "").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
+const CLASS_GROUP_FIELDS = ["classGroupId", "groupCode", "classroomName"] as const;
+
+function standardizeClassGroupName(name: string): string {
+  if (!name) return "";
+  return String(name).trim().replace(/[\s\.-]+/g, ".");
+}
+
+function resolveStudentClassGroup(student: any): string {
+  for (const field of CLASS_GROUP_FIELDS) {
+    const value = student?.[field];
+    if (value && String(value).trim()) {
+      return standardizeClassGroupName(String(value).trim());
+    }
+  }
+  return "";
+}
+
+function parseAllowedClassGroups(value: any): string[] {
+  if (Array.isArray(value)) {
+    return Array.from(
+      new Set(
+        value
+          .map((item) => standardizeClassGroupName(String(item || "").trim()))
+          .filter(Boolean),
+      ),
+    );
+  }
+
+  if (typeof value === "string") {
+    return Array.from(
+      new Set(
+        value
+          .split(",")
+          .map((item) => standardizeClassGroupName(item))
+          .filter(Boolean),
+      ),
+    );
+  }
+
+  return [];
+}
+
+function subjectMatchesStudent(subject: any, student: any): boolean {
+  const subjectGroups = parseAllowedClassGroups(subject?.allowedClassGroups);
+  const studentClassGroup = resolveStudentClassGroup(student);
+  if (subjectGroups.length > 0) {
+    if (!studentClassGroup) return false;
+    return subjectGroups.some((group) => {
+      const target = standardizeClassGroupName(group);
+      const actual = standardizeClassGroupName(studentClassGroup);
+      return target === actual || target.includes(actual) || actual.includes(target);
+    });
+  }
+
+  const subjectDept = normalizeDept(subject?.department || "");
+  const studentDept = normalizeDept((student?.department || "").trim() || getDeptFromClassGroup(studentClassGroup));
+  if (!subjectDept) return true;
+  if (!studentDept) return false;
+  return subjectDept.includes(studentDept) || studentDept.includes(subjectDept);
+}
+
 async function resolveStudentDept(db: any, userId: string) {
   const uDoc = await db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
   if (!uDoc) return "";
@@ -73,10 +134,9 @@ async function isStudentAllowedSubject(db: any, subjectId: string, userId: strin
   if (!ObjectId.isValid(subjectId)) return false;
   const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
   if (!subject) return false;
-  const studentDept = await resolveStudentDept(db, userId);
-  if (!studentDept) return false;
-  return normalizeDept(subject.department || "").includes(normalizeDept(studentDept)) ||
-    normalizeDept(studentDept).includes(normalizeDept(subject.department || ""));
+  const student = await db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
+  if (!student) return false;
+  return subjectMatchesStudent(subject, student);
 }
 
 export async function GET(req: Request) {
@@ -130,24 +190,26 @@ export async function GET(req: Request) {
           daysPerWeek: subject.daysPerWeek || "",
           hoursPerDay: subject.hoursPerDay || "",
           totalHours: subject.totalHours || "",
+          allowedClassGroups: parseAllowedClassGroups(subject.allowedClassGroups),
         },
       });
     }
 
     if (userRole === "student") {
-      const studentDept = await resolveStudentDept(db, userId);
-      if (!studentDept) {
+      const studentDoc = await db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
+      if (!studentDoc) {
         return NextResponse.json({ success: true, subjects: [] });
       }
 
       const subjects = await db
         .collection("dve_subjects")
-        .find({ department: { $regex: escapeRegex(studentDept), $options: "i" } })
+        .find({})
         .sort({ createdAt: -1 })
         .toArray();
+      const filteredSubjects = subjects.filter((subject) => subjectMatchesStudent(subject, studentDoc));
 
       // Get teacher information to include teacher images
-      const teacherIds = subjects.map((s) => s.teacherId).filter((id) => ObjectId.isValid(id));
+      const teacherIds = filteredSubjects.map((s) => s.teacherId).filter((id) => ObjectId.isValid(id));
       const teachers = teacherIds.length > 0
         ? await db.collection("users").find({ _id: { $in: teacherIds.map((id) => new ObjectId(id)) } }).toArray()
         : [];
@@ -155,7 +217,7 @@ export async function GET(req: Request) {
 
       return NextResponse.json({
         success: true,
-        subjects: subjects.map((s) => {
+        subjects: filteredSubjects.map((s) => {
           const teacher = teacherMap.get(s.teacherId);
           return {
             id: s._id.toString(),
@@ -172,6 +234,7 @@ export async function GET(req: Request) {
             daysPerWeek: s.daysPerWeek || "",
             hoursPerDay: s.hoursPerDay || "",
             totalHours: s.totalHours || "",
+            allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
           };
         }),
       });
@@ -206,6 +269,7 @@ export async function GET(req: Request) {
         daysPerWeek: s.daysPerWeek || "",
         hoursPerDay: s.hoursPerDay || "",
         totalHours: s.totalHours || "",
+        allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
       })),
     });
   } catch (error: any) {
@@ -224,7 +288,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours } = body;
+    const { code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours, allowedClassGroups } = body;
 
     if (!code || !name || !department || !curriculum || !semester || !academicYear) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -246,6 +310,7 @@ export async function POST(req: Request) {
       daysPerWeek: daysPerWeek || "",
       hoursPerDay: hoursPerDay || "",
       totalHours: totalHours || "",
+      allowedClassGroups: parseAllowedClassGroups(allowedClassGroups),
       createdAt: new Date(),
     };
 
@@ -272,7 +337,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours } = body;
+    const { id, code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours, allowedClassGroups } = body;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
@@ -304,6 +369,7 @@ export async function PUT(req: Request) {
           daysPerWeek: daysPerWeek || "",
           hoursPerDay: hoursPerDay || "",
           totalHours: totalHours || "",
+          allowedClassGroups: parseAllowedClassGroups(allowedClassGroups),
           updatedAt: new Date(),
         },
       },

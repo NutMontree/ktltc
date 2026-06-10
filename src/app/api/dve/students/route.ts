@@ -89,6 +89,24 @@ function buildFlexibleClassGroupRegex(classGroupId: string): string {
   return pattern;
 }
 
+const CLASS_GROUP_FIELDS = ["classGroupId", "groupCode", "classroomName"] as const;
+
+function resolveStudentClassGroup(student: any): string {
+  for (const field of CLASS_GROUP_FIELDS) {
+    const value = student?.[field];
+    if (value && String(value).trim()) {
+      return standardizeClassGroupName(String(value).trim());
+    }
+  }
+  return "";
+}
+
+function resolveStudentDept(student: any): string {
+  const dept = (student?.department || "").trim();
+  if (dept) return dept;
+  return getDeptFromClassGroup(resolveStudentClassGroup(student));
+}
+
 async function resolveStudentDoc(db: any, userId: string) {
   if (!ObjectId.isValid(userId)) return null;
   return db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
@@ -122,7 +140,8 @@ export async function GET(req: Request) {
         return NextResponse.json({ success: true, students: [], classGroups: [] });
       }
 
-      const ownDept = (studentDoc.department || "").trim() || getDeptFromClassGroup(studentDoc.classGroupId || "");
+      const ownClassGroup = resolveStudentClassGroup(studentDoc);
+      const ownDept = (studentDoc.department || "").trim() || getDeptFromClassGroup(ownClassGroup);
       const ownClean = normalizeDept(ownDept);
       const requestedClean = normalizeDept(department || ownDept);
       if (ownClean && requestedClean && !ownClean.includes(requestedClean) && !requestedClean.includes(ownClean)) {
@@ -133,7 +152,7 @@ export async function GET(req: Request) {
         id: studentDoc._id.toString(),
         name: studentDoc.name || "ไม่ระบุชื่อ",
         studentIdNum: studentDoc.studentId || studentDoc.studentIdNum || "ไม่ระบุรหัส",
-        classGroupId: standardizeClassGroupName(studentDoc.classGroupId || "ไม่ระบุกลุ่ม"),
+        classGroupId: ownClassGroup || "ไม่ระบุกลุ่ม",
         department: studentDoc.department || ownDept,
         image: studentDoc.image || null,
         isInternship: studentDoc.isInternship ?? false,
@@ -142,7 +161,7 @@ export async function GET(req: Request) {
       return NextResponse.json({
         success: true,
         students: [ownStudent],
-        classGroups: classGroupId ? [classGroupId] : [studentDoc.classGroupId || ""].filter(Boolean),
+        classGroups: classGroupId ? [classGroupId] : [ownClassGroup].filter(Boolean),
       });
     }
 
@@ -165,20 +184,38 @@ export async function GET(req: Request) {
 
     const query: any = { role: "student" };
     if (classGroupId) {
-      query.classGroupId = { $regex: buildFlexibleClassGroupRegex(classGroupId), $options: "i" };
+      const classGroupTargets = Array.from(
+        new Set([classGroupId, standardizeClassGroupName(classGroupId)].filter(Boolean)),
+      );
+      query.$or = CLASS_GROUP_FIELDS.flatMap((field) =>
+        classGroupTargets.flatMap((target) => [
+          { [field]: target },
+          { [field]: { $regex: buildFlexibleClassGroupRegex(target), $options: "i" } },
+        ]),
+      );
     }
 
     const students = await db
       .collection("users")
       .find(query)
-      .project({ _id: 1, name: 1, studentId: 1, classGroupId: 1, department: 1, image: 1, isInternship: 1 })
+      .project({
+        _id: 1,
+        name: 1,
+        studentId: 1,
+        classGroupId: 1,
+        groupCode: 1,
+        classroomName: 1,
+        department: 1,
+        image: 1,
+        isInternship: 1,
+      })
       .sort({ studentId: 1, name: 1 })
       .toArray();
 
     const targetClean = normalizeDept(department);
     const filteredStudents = students.filter((s) => {
-      const currentDept = s.department || "";
-      const classGroup = s.classGroupId || "";
+      const currentDept = resolveStudentDept(s);
+      const classGroup = resolveStudentClassGroup(s);
 
       const isPlaceholder =
         !currentDept ||
@@ -200,8 +237,8 @@ export async function GET(req: Request) {
       new Set(
         allStudents
           .filter((s) => {
-            const currentDept = s.department || "";
-            const classGroup = s.classGroupId || "";
+            const currentDept = resolveStudentDept(s);
+            const classGroup = resolveStudentClassGroup(s);
             let finalDept = currentDept;
             if ((!currentDept || currentDept === "ไม่มีกำหนด" || currentDept.includes("แผนกนักเรียน") || currentDept.includes("นักเรียน/นักศึกษา")) && classGroup) {
               finalDept = getDeptFromClassGroup(classGroup);
@@ -209,7 +246,7 @@ export async function GET(req: Request) {
             const finalClean = normalizeDept(finalDept);
             return finalClean.includes(targetClean) || targetClean.includes(finalClean);
           })
-          .map((s) => standardizeClassGroupName(s.classGroupId || ""))
+          .map((s) => resolveStudentClassGroup(s))
           .filter((c) => c && !/^[\d\s-]+$/.test(c)),
       ),
     ).sort();
@@ -220,7 +257,7 @@ export async function GET(req: Request) {
         id: s._id.toString(),
         name: s.name || "ไม่ระบุชื่อ",
         studentIdNum: s.studentId || s.studentIdNum || "ไม่ระบุรหัส",
-        classGroupId: standardizeClassGroupName(s.classGroupId || "ไม่ระบุห้อง"),
+        classGroupId: resolveStudentClassGroup(s) || "ไม่ระบุห้อง",
         department: s.department || department,
         image: s.image || null,
         isInternship: s.isInternship ?? false,

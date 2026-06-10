@@ -93,6 +93,7 @@ export async function GET(req: Request) {
         sequence: u.sequence || 0,
         studyMinutes: Number(u.studyMinutes || 0) || 0,
         totalMinutes: Number(u.totalMinutes || 0) || 0,
+        dueDate: u.dueDate || "",
         createdAt: u.createdAt || null,
       })),
     });
@@ -112,7 +113,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { subjectId, title, content, files, sequence, studyMinutes, totalMinutes } = body;
+    const { subjectId, title, content, files, sequence, studyMinutes, totalMinutes, dueDate } = body;
 
     if (!subjectId || !title) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -134,6 +135,7 @@ export async function POST(req: Request) {
       sequence: Number(sequence) || 0,
       studyMinutes: Number(studyMinutes) || 0,
       totalMinutes: Number(totalMinutes) || 0,
+      dueDate: dueDate || "",
       createdAt: new Date(),
     });
 
@@ -158,7 +160,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, title, content, files, sequence, studyMinutes, totalMinutes } = body;
+    const { id, title, content, files, sequence, studyMinutes, totalMinutes, dueDate } = body;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
@@ -188,6 +190,7 @@ export async function PUT(req: Request) {
           sequence: Number(sequence) || 0,
           studyMinutes: Number(studyMinutes) || 0,
           totalMinutes: Number(totalMinutes) || 0,
+          dueDate: dueDate || "",
           updatedAt: new Date(),
         },
       },

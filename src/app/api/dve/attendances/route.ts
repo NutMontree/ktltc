@@ -48,6 +48,34 @@ function buildFlexibleClassGroupRegex(classGroupId: string): string {
   return pattern;
 }
 
+const CLASS_GROUP_FIELDS = ["classGroupId", "groupCode", "classroomName"] as const;
+
+function resolveStudentClassGroup(student: any): string {
+  for (const field of CLASS_GROUP_FIELDS) {
+    const value = student?.[field];
+    if (value && String(value).trim()) {
+      return standardizeClassGroupName(String(value).trim());
+    }
+  }
+  return "";
+}
+
+function toBangkokDateString(value?: string | Date | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = parts.find((part) => part.type === "month")?.value || "";
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  return year && month && day ? `${year}-${month}-${day}` : "";
+}
+
 function getDeptFromClassGroup(classGroupId: string): string {
   if (!classGroupId) return "";
   const clean = classGroupId.replace(/[^0-9a-zA-Zก-ฮ]/g, "").trim();
@@ -69,7 +97,7 @@ function getDeptFromClassGroup(classGroupId: string): string {
 async function resolveStudentDept(db: any, userId: string) {
   const uDoc = await db.collection("users").findOne({ _id: new ObjectId(userId), role: "student" });
   if (!uDoc) return "";
-  return (uDoc.department || "").trim() || getDeptFromClassGroup(uDoc.classGroupId || "");
+  return (uDoc.department || "").trim() || getDeptFromClassGroup(resolveStudentClassGroup(uDoc));
 }
 
 async function isOwnedSubject(db: any, subjectId: string, userId: string) {
@@ -128,14 +156,15 @@ export async function GET(req: Request) {
       if (date) query.date = date;
       if (classGroupId) {
         // Use standardized class group name for matching
-        const standardized = standardizeClassGroupName(classGroupId);
-        // console.log("API attendances GET - standardized classGroupId:", standardized);
-        // Match both the original classGroupId and standardized versions
-        query.$or = [
-          { classGroupId: classGroupId },
-          { classGroupId: standardized },
-          { classGroupId: { $regex: buildFlexibleClassGroupRegex(classGroupId), $options: "i" } },
-        ];
+        const classGroupTargets = Array.from(
+          new Set([classGroupId, standardizeClassGroupName(classGroupId)].filter(Boolean)),
+        );
+        query.$or = ["classGroupId", "groupCode", "classroomName"].flatMap((field) =>
+          classGroupTargets.flatMap((target) => [
+            { [field]: target },
+            { [field]: { $regex: buildFlexibleClassGroupRegex(target), $options: "i" } },
+          ]),
+        );
       }
     }
 
@@ -159,7 +188,7 @@ export async function GET(req: Request) {
           studentId: l.studentId,
           studentName: l.studentName,
           studentIdNum: l.studentIdNum,
-          classGroupId: standardizeClassGroupName(l.classGroupId || (student?.classGroupId || "")),
+          classGroupId: standardizeClassGroupName(l.classGroupId || resolveStudentClassGroup(student) || ""),
           studentImage: student?.image || "",
           date: l.date,
           status: l.status,
@@ -213,6 +242,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    const unitIds = Array.from(
+      new Set(
+        records
+          .map((rec: any) => String(rec.unitId || "").trim())
+          .filter((unitId: string) => unitId && ObjectId.isValid(unitId)),
+      ),
+    );
+    const unitMap = new Map<string, any>();
+    if (unitIds.length > 0) {
+      const units = await db
+        .collection("dve_units")
+        .find({ _id: { $in: unitIds.map((unitId) => new ObjectId(unitId)) } })
+        .project({ dueDate: 1, createdAt: 1 })
+        .toArray();
+      units.forEach((unit) => {
+        unitMap.set(unit._id.toString(), unit);
+      });
+    }
+
+    const requestDate = String(date).slice(0, 10);
+
     const bulkOps = records.map((rec: any) => {
       const {
         studentId,
@@ -226,6 +276,17 @@ export async function POST(req: Request) {
         unitTitle,
         unitSequence,
       } = rec;
+      const unitDoc = unitId ? unitMap.get(String(unitId)) : null;
+      const dueDate = toBangkokDateString(unitDoc?.dueDate || "");
+      const createdDate = toBangkokDateString(unitDoc?.createdAt || "");
+      let finalStatus = status || "Absent";
+      if (finalStatus !== "Absent") {
+        if (dueDate) {
+          if (requestDate > dueDate) finalStatus = "Late";
+        } else if (createdDate && requestDate > createdDate) {
+          finalStatus = "Late";
+        }
+      }
 
       return {
         updateOne: {
@@ -240,7 +301,7 @@ export async function POST(req: Request) {
               studentName: studentName || "",
               studentIdNum: studentIdNum || "",
               classGroupId: classGroupId || "",
-              status: status || "Absent",
+              status: finalStatus,
               assignmentStatus: assignmentStatus || "None",
               score: score !== undefined ? score : "",
               imageUrl: rec.imageUrl !== undefined ? rec.imageUrl : "",

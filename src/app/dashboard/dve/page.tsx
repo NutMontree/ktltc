@@ -134,6 +134,38 @@ function maskSensitiveData(val: string) {
   return val.trim(); // Return unmasked for the teacher so they have complete info!
 }
 
+function parseClassGroupsText(value: string): string[] {
+  return Array.from(
+    new Set(
+      String(value || "")
+        .split(",")
+        .map((item) => standardizeClassGroupName(item))
+        .filter(Boolean),
+    ),
+  );
+}
+
+function formatClassGroupsText(value: string[] | string | undefined): string {
+  if (Array.isArray(value)) {
+    return value.map((item) => standardizeClassGroupName(item)).filter(Boolean).join(", ");
+  }
+  return String(value || "");
+}
+
+function getSubjectAllowedClassGroups(subject: any): string[] {
+  if (!subject) return [];
+  if (Array.isArray(subject.allowedClassGroups)) {
+    return subject.allowedClassGroups
+      .map((group: string) => standardizeClassGroupName(group))
+      .filter(Boolean);
+  }
+  return parseClassGroupsText(subject.allowedClassGroups || "");
+}
+
+function getDveEntityId(entity: any): string {
+  return String(entity?.id || entity?._id || "").trim();
+}
+
 // -------------------------------------------------------------
 // TEACHER WORKSPACE PORTAL COMPONENT
 // -------------------------------------------------------------
@@ -179,7 +211,32 @@ function DVETeacherWorkspace() {
     daysPerWeek: "",
     hoursPerDay: "",
     totalHours: "",
+    allowedClassGroups: "",
   });
+  const [subjectAllowedClassGroupRows, setSubjectAllowedClassGroupRows] = useState<string[]>([""]);
+  const [subjectClassGroupOptions, setSubjectClassGroupOptions] = useState<string[]>([]);
+  const [loadingSubjectClassGroups, setLoadingSubjectClassGroups] = useState(false);
+
+  const subjectClassGroupSelectOptions = useMemo(() => {
+    return Array.from(
+      new Set([
+        ...subjectClassGroupOptions,
+        ...subjectAllowedClassGroupRows.map((group) => standardizeClassGroupName(group)).filter(Boolean),
+      ]),
+    ).sort((a, b) => a.localeCompare(b, "th"));
+  }, [subjectAllowedClassGroupRows, subjectClassGroupOptions]);
+
+  const syncSubjectAllowedClassGroupRows = (rows: string[]) => {
+    const nextRows = rows.length > 0 ? rows : [""];
+    const cleanGroups = Array.from(
+      new Set(nextRows.map((group) => standardizeClassGroupName(group)).filter(Boolean)),
+    );
+    setSubjectAllowedClassGroupRows(nextRows);
+    setSubjectForm((prev) => ({
+      ...prev,
+      allowedClassGroups: cleanGroups.join(", "),
+    }));
+  };
 
   // Unit Managing states
   const [activeSubject, setActiveSubject] = useState<any>(null);
@@ -202,6 +259,7 @@ function DVETeacherWorkspace() {
     sequence: number;
     studyMinutes: string;
     totalMinutes: string;
+    dueDate: string;
     files: Array<{ name: string; url: string; type?: string }>;
   }>({
     id: "",
@@ -210,6 +268,7 @@ function DVETeacherWorkspace() {
     sequence: 0,
     studyMinutes: "",
     totalMinutes: "",
+    dueDate: "",
     files: [],
   });
 
@@ -425,6 +484,8 @@ function DVETeacherWorkspace() {
     setSelectedStudentLogs([]);
   };
 
+  const activeStudyUnitId = getDveEntityId(activeStudyUnit);
+
   const logs = studentRoster.filter((student) => {
     const rec = attendanceRecords[student.id];
     return rec && (rec.status === "Present" || rec.status === "Late");
@@ -433,11 +494,12 @@ function DVETeacherWorkspace() {
   const studentSubmissionsById = useMemo(() => {
     return attendanceLogs.reduce((acc: Record<string, any[]>, record: any) => {
       if (!record.studentId) return acc;
+      if (activeStudyUnitId && String(record.unitId || "") !== activeStudyUnitId) return acc;
       if (!acc[record.studentId]) acc[record.studentId] = [];
       acc[record.studentId].push(record);
       return acc;
     }, {});
-  }, [attendanceLogs]);
+  }, [activeStudyUnitId, attendanceLogs]);
 
   const internshipStats = useMemo(() => {
     const total = internshipStudents.length;
@@ -473,6 +535,12 @@ function DVETeacherWorkspace() {
   const displayedRoster = showOnlyInternship
     ? baseRoster.filter((student) => student.isInternship)
     : baseRoster;
+  const selectedCheckinSubject = subjects.find((s) => s.id === checkinFilter.subjectId);
+  const selectedCheckinAllowedGroups = getSubjectAllowedClassGroups(selectedCheckinSubject);
+  const activeUnitQuizzes = useMemo(() => {
+    if (!activeStudyUnitId) return [];
+    return quizzes.filter((quiz) => String(quiz.unitId || "").trim() === activeStudyUnitId);
+  }, [activeStudyUnitId, quizzes]);
 
   // Fetch subjects
   const fetchSubjects = async () => {
@@ -494,11 +562,18 @@ function DVETeacherWorkspace() {
     fetchSubjects();
   }, []);
 
-  // Load distinct class groups that have assignment submissions for the selected subject
+  // Load class groups for the selected subject. Prefer explicit subject settings,
+  // then fall back to groups that already have submissions.
   useEffect(() => {
     const fetchSubmittedClassGroups = async () => {
       if (!checkinFilter.subjectId) {
         setAvailableClassGroups([]);
+        return;
+      }
+      const selectedSubject = subjects.find((s) => s.id === checkinFilter.subjectId);
+      const subjectGroups = getSubjectAllowedClassGroups(selectedSubject);
+      if (subjectGroups.length > 0) {
+        setAvailableClassGroups(subjectGroups);
         return;
       }
       try {
@@ -522,22 +597,67 @@ function DVETeacherWorkspace() {
       }
     };
     fetchSubmittedClassGroups();
-  }, [checkinFilter.subjectId]);
+  }, [checkinFilter.subjectId, subjects]);
 
   useEffect(() => {
     if (!checkinFilter.subjectId) return;
     const selectedSubject = subjects.find((s) => s.id === checkinFilter.subjectId);
     if (selectedSubject) {
       handleManageUnits(selectedSubject);
+      handleLoadQuizzes(selectedSubject.id);
     }
   }, [checkinFilter.subjectId]);
 
-  // Auto-load roster when date changes
+  // Auto-load roster whenever the check-in filter changes.
+  // This keeps the roster in sync when the teacher switches class groups/rooms.
   useEffect(() => {
+    if (activeTab !== "checkin") return;
     if (checkinFilter.subjectId && checkinFilter.date) {
       handleLoadRoster();
     }
-  }, [checkinFilter.date]);
+  }, [activeTab, checkinFilter.subjectId, checkinFilter.classGroupId, checkinFilter.date, activeStudyUnitId]);
+
+  useEffect(() => {
+    if (!isSubjectModalOpen) return;
+
+    const departments = subjectForm.department
+      .split(",")
+      .map((dept) => dept.trim())
+      .filter(Boolean);
+
+    if (departments.length === 0) {
+      setSubjectClassGroupOptions([]);
+      return;
+    }
+
+    let cancelled = false;
+    const loadSubjectClassGroups = async () => {
+      setLoadingSubjectClassGroups(true);
+      try {
+        const params = new URLSearchParams({ department: departments.join(",") });
+        const res = await fetch(`/api/dve/class-groups?${params.toString()}`);
+        const data = await res.json();
+        if (!cancelled) {
+          setSubjectClassGroupOptions(Array.isArray(data.classGroups) ? data.classGroups : []);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setSubjectClassGroupOptions([]);
+          message.error("ไม่สามารถโหลดรายชื่อห้องเรียนจากฐานข้อมูลได้");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingSubjectClassGroups(false);
+        }
+      }
+    };
+
+    loadSubjectClassGroups();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isSubjectModalOpen, subjectForm.department]);
 
   // SUBJECT ACTIONS
   const handleSaveSubject = async (e: React.FormEvent) => {
@@ -549,10 +669,14 @@ function DVETeacherWorkspace() {
     try {
       const isEdit = !!subjectForm.id;
       const method = isEdit ? "PUT" : "POST";
+      const payload = {
+        ...subjectForm,
+        allowedClassGroups: parseClassGroupsText(subjectForm.allowedClassGroups || ""),
+      };
       const res = await fetch("/api/dve/subjects", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(subjectForm),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         message.success(isEdit ? "แก้ไขวิชาทวิภาคีสำเร็จ" : "สร้างวิชาทวิภาคีสำเร็จ");
@@ -569,7 +693,9 @@ function DVETeacherWorkspace() {
           daysPerWeek: "",
           hoursPerDay: "",
           totalHours: "",
+          allowedClassGroups: "",
         });
+        setSubjectAllowedClassGroupRows([""]);
         fetchSubjects();
       }
     } catch (err) {
@@ -606,6 +732,12 @@ function DVETeacherWorkspace() {
             return (b.sequence || 0) - (a.sequence || 0);
           });
           setUnits(sortedUnits);
+          setActiveStudyUnit((prev: any) => {
+            if (prev && sortedUnits.some((unit: any) => getDveEntityId(unit) === getDveEntityId(prev))) {
+              return sortedUnits.find((unit: any) => getDveEntityId(unit) === getDveEntityId(prev)) || prev;
+            }
+            return sortedUnits[0] || null;
+          });
         }
       }
     } catch (err) {
@@ -631,6 +763,7 @@ function DVETeacherWorkspace() {
         sequence: unitForm.sequence,
         studyMinutes: unitForm.studyMinutes ? Number(unitForm.studyMinutes) : 0,
         totalMinutes: unitForm.totalMinutes ? Number(unitForm.totalMinutes) : 0,
+        dueDate: unitForm.dueDate,
         subjectId: activeSubject.id,
         files: unitForm.files,
       };
@@ -649,6 +782,7 @@ function DVETeacherWorkspace() {
           sequence: units.length + 1,
           studyMinutes: "",
           totalMinutes: "",
+          dueDate: "",
           files: [],
         });
         handleManageUnits(activeSubject);
@@ -859,6 +993,7 @@ function DVETeacherWorkspace() {
   const handleLoadRoster = async () => {
     const { subjectId, classGroupId, date } = checkinFilter;
     if (!subjectId) return;
+    const selectedUnitId = getDveEntityId(activeStudyUnit);
 
     handleClearSelectedStudentProgress();
     setLoadingRoster(true);
@@ -891,17 +1026,22 @@ function DVETeacherWorkspace() {
         // Initialize attendance records for all students, defaulting to Absent
         const newRecords: any = {};
         (studentsData.students || []).forEach((std: any) => {
-          const existing =
-            logs.find((a: any) => a.studentId === std.id && !a.unitId) ||
-            logs.find((a: any) => a.studentId === std.id);
+          const existing = selectedUnitId
+            ? logs.find((a: any) => a.studentId === std.id && String(a.unitId || "") === selectedUnitId)
+            : logs.find((a: any) => a.studentId === std.id && !a.unitId);
           newRecords[std.id] = {
             status: existing ? existing.status : "Absent",
             assignmentStatus: existing ? existing.assignmentStatus : "None",
             score: existing ? existing.score : "",
             imageUrl: existing ? existing.imageUrl || "" : "",
-            unitId: existing ? existing.unitId || "" : "",
-            unitTitle: existing ? existing.unitTitle || "" : "",
-            unitSequence: existing && existing.unitSequence !== undefined ? existing.unitSequence : "",
+            unitId: existing ? existing.unitId || "" : selectedUnitId,
+            unitTitle: existing ? existing.unitTitle || activeStudyUnit?.title || "" : activeStudyUnit?.title || "",
+            unitSequence:
+              existing && existing.unitSequence !== undefined
+                ? existing.unitSequence
+                : activeStudyUnit?.sequence !== undefined
+                  ? activeStudyUnit.sequence
+                  : "",
           };
         });
         setAttendanceRecords(newRecords);
@@ -1151,9 +1291,14 @@ function DVETeacherWorkspace() {
         assignmentStatus: attendanceRecords[s.id]?.assignmentStatus || "None",
         score: attendanceRecords[s.id]?.score || "",
         imageUrl: attendanceRecords[s.id]?.imageUrl || "",
-        unitId: attendanceRecords[s.id]?.unitId || "",
-        unitTitle: attendanceRecords[s.id]?.unitTitle || "",
-        unitSequence: attendanceRecords[s.id]?.unitSequence !== undefined ? attendanceRecords[s.id].unitSequence : "",
+        unitId: attendanceRecords[s.id]?.unitId || activeStudyUnitId || "",
+        unitTitle: attendanceRecords[s.id]?.unitTitle || activeStudyUnit?.title || "",
+        unitSequence:
+          attendanceRecords[s.id]?.unitSequence !== undefined && attendanceRecords[s.id]?.unitSequence !== ""
+            ? attendanceRecords[s.id].unitSequence
+            : activeStudyUnit?.sequence !== undefined
+              ? activeStudyUnit.sequence
+              : "",
       }));
 
       const res = await fetch("/api/dve/attendances", {
@@ -1276,19 +1421,9 @@ function DVETeacherWorkspace() {
           }}
           className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === "checkin" ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"}`}
         >
-          <ClipboardList size={13} />
-          <span className="hidden sm:inline">งานส่ง</span>
-          <span className="sm:hidden">งานส่ง</span>
-        </button>
-        <button
-          onClick={() => {
-            setActiveTab("timeline");
-          }}
-          className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === "timeline" ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"}`}
-        >
-          <Clock3 size={13} />
-          <span className="hidden sm:inline">Timeline</span>
-          <span className="sm:hidden">Timeline</span>
+          <CheckCircle size={13} />
+          <span className="hidden sm:inline">เช็คชื่อ</span>
+          <span className="sm:hidden">เช็คชื่อ</span>
         </button>
         <button
           onClick={() => {
@@ -1369,7 +1504,9 @@ function DVETeacherWorkspace() {
                       daysPerWeek: "",
                       hoursPerDay: "",
                       totalHours: "",
+                      allowedClassGroups: "",
                     });
+                    setSubjectAllowedClassGroupRows([""]);
                     setIsSubjectModalOpen(true);
                   }}
                   className="p-1.5 sm:p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all flex items-center gap-1 text-[10px] sm:text-xs font-black"
@@ -1404,13 +1541,27 @@ function DVETeacherWorkspace() {
                       <p className="text-xs text-zinc-500 mt-0.5 truncate">
                         รหัส: {sub.code} • แผนก: {sub.department}
                       </p>
+                      {sub.allowedClassGroups && (Array.isArray(sub.allowedClassGroups) ? sub.allowedClassGroups.length > 0 : String(sub.allowedClassGroups).trim()) && (
+                        <p className="text-[10px] text-violet-500 mt-1 font-bold line-clamp-2">
+                          ห้องเรียนที่อนุญาต: {formatClassGroupsText(sub.allowedClassGroups)}
+                        </p>
+                      )}
                       <div
                         className="flex justify-end gap-2 mt-3 border-t dark:border-zinc-800 pt-2"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
                           onClick={() => {
-                            setSubjectForm({ ...sub });
+                            const allowedClassGroups = parseClassGroupsText(
+                              formatClassGroupsText(sub.allowedClassGroups),
+                            );
+                            setSubjectForm({
+                              ...sub,
+                              allowedClassGroups: allowedClassGroups.join(", "),
+                            });
+                            setSubjectAllowedClassGroupRows(
+                              allowedClassGroups.length > 0 ? allowedClassGroups : [""],
+                            );
                             setIsSubjectModalOpen(true);
                           }}
                           className="p-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-600 dark:text-zinc-300 rounded"
@@ -1458,6 +1609,7 @@ function DVETeacherWorkspace() {
                           sequence: units.length + 1,
                           studyMinutes: "",
                           totalMinutes: "",
+                          dueDate: "",
                           files: [],
                         });
                         setIsUnitModalOpen(true);
@@ -1495,6 +1647,7 @@ function DVETeacherWorkspace() {
                                   sequence: unit.sequence,
                                   studyMinutes: unit.studyMinutes !== undefined && unit.studyMinutes !== null ? String(unit.studyMinutes) : "",
                                   totalMinutes: unit.totalMinutes !== undefined && unit.totalMinutes !== null ? String(unit.totalMinutes) : "",
+                                  dueDate: unit.dueDate || "",
                                   files: unit.files || [],
                                 });
                                 setIsUnitModalOpen(true);
@@ -1534,6 +1687,15 @@ function DVETeacherWorkspace() {
                                 {unit.studyMinutes > 0 && (
                                   <span className="text-[10px] text-amber-500 font-bold bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
                                     ⏱️ {unit.studyMinutes} นาที
+                                  </span>
+                                )}
+                                {unit.dueDate && (
+                                  <span className="text-[10px] text-rose-500 font-bold bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
+                                    📅 กำหนดส่ง: {new Date(unit.dueDate).toLocaleDateString("th-TH", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })}
                                   </span>
                                 )}
                               </div>
@@ -1801,7 +1963,7 @@ function DVETeacherWorkspace() {
           >
             {/* Filter control box */}
             <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm">
-              <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-black text-zinc-600 dark:text-zinc-400">
                     1. เลือกรายวิชาเรียน
@@ -1811,7 +1973,11 @@ function DVETeacherWorkspace() {
                     className="w-full h-11"
                     value={checkinFilter.subjectId || undefined}
                     onChange={(val) => {
-                      setCheckinFilter((prev) => ({ ...prev, subjectId: val, classGroupId: "" }));
+                      const selectedSubject = subjects.find((s) => s.id === val);
+                      const allowedGroups = getSubjectAllowedClassGroups(selectedSubject);
+                      setCheckinFilter((prev) => ({ ...prev, subjectId: val, classGroupId: allowedGroups[0] || "" }));
+                      setActiveStudyUnit(null);
+                      setQuizzes([]);
                       setStudentRoster([]);
                       setAttendanceLogs([]);
                       setAttendanceRecords({});
@@ -1822,7 +1988,30 @@ function DVETeacherWorkspace() {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                    2. เลือกกลุ่มเรียน / ห้องเรียน
+                    2. เลือกหน่วยเรียน / บทเรียน
+                  </label>
+                  <Select
+                    placeholder="-- เลือกหน่วยเรียน --"
+                    className="w-full h-11"
+                    value={activeStudyUnitId || undefined}
+                    onChange={(val) => {
+                      const nextUnit = units.find((unit) => getDveEntityId(unit) === val) || null;
+                      setActiveStudyUnit(nextUnit);
+                      setAttendanceLogs([]);
+                      setAttendanceRecords({});
+                    }}
+                    options={units.map((unit) => ({
+                      label: `หน่วยที่ ${unit.sequence || "-"}: ${unit.title}`,
+                      value: getDveEntityId(unit),
+                    }))}
+                    disabled={!checkinFilter.subjectId || loadingUnits || units.length === 0}
+                    loading={loadingUnits}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    3. เลือกกลุ่มเรียน / ห้องเรียน
                   </label>
                   <Select
                     placeholder="-- เลือกกลุ่มเรียน --"
@@ -1834,7 +2023,9 @@ function DVETeacherWorkspace() {
                       setAttendanceRecords({});
                     }}
                     options={[
-                      { label: "แสดงทั้งหมด", value: "" },
+                      ...(selectedCheckinAllowedGroups.length === 0
+                        ? [{ label: "แสดงทั้งหมด", value: "" }]
+                        : []),
                       ...availableClassGroups.map((c) => ({ label: c, value: c })),
                     ]}
                     disabled={!checkinFilter.subjectId}
@@ -1843,7 +2034,7 @@ function DVETeacherWorkspace() {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                    3. วันที่เช็คแถว / คาบเรียน
+                    4. วันที่เช็คแถว / คาบเรียน
                   </label>
                   <input
                     type="date"
@@ -1859,7 +2050,7 @@ function DVETeacherWorkspace() {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                    4. ค้นหารายชื่อนักเรียน / รหัสนักศึกษา
+                    5. ค้นหารายชื่อนักเรียน / รหัสนักศึกษา
                   </label>
                   <input
                     type="text"
@@ -2070,6 +2261,14 @@ function DVETeacherWorkspace() {
                       <span className="text-zinc-500">
                         หน่วยการสอน: หน่วยที่ {activeStudyUnit.sequence || "-"}:{" "}
                         {activeStudyUnit.title}
+                      </span>
+                    )}
+                    {activeStudyUnit && (
+                      <span className="text-indigo-500 dark:text-indigo-400">
+                        แบบทดสอบในหน่วยนี้:{" "}
+                        {activeUnitQuizzes.length > 0
+                          ? activeUnitQuizzes.map((quiz) => quiz.title).join(", ")
+                          : "ยังไม่มีแบบทดสอบที่ผูกกับหน่วยนี้"}
                       </span>
                     )}
 
@@ -2415,6 +2614,11 @@ function DVETeacherWorkspace() {
                                             score: rec.score,
                                             imageUrl: rec.imageUrl,
                                             unitId: rec.unitId,
+                                            unitTitle: rec.unitTitle || activeStudyUnit?.title || "",
+                                            unitSequence:
+                                              rec.unitSequence !== undefined && rec.unitSequence !== ""
+                                                ? rec.unitSequence
+                                                : activeStudyUnit?.sequence || "",
                                           });
                                         }}
                                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
@@ -2579,6 +2783,11 @@ function DVETeacherWorkspace() {
                                         score: rec.score,
                                         imageUrl: rec.imageUrl,
                                         unitId: rec.unitId,
+                                        unitTitle: rec.unitTitle || activeStudyUnit?.title || "",
+                                        unitSequence:
+                                          rec.unitSequence !== undefined && rec.unitSequence !== ""
+                                            ? rec.unitSequence
+                                            : activeStudyUnit?.sequence || "",
                                       });
                                     }}
                                     className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
@@ -3299,6 +3508,73 @@ function DVETeacherWorkspace() {
                     </div>
                   </div>
 
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center gap-3">
+                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                        ห้องเรียนที่อนุญาตให้เรียน
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setSubjectAllowedClassGroupRows((prev) => [...prev, ""])}
+                        className="px-2.5 py-1 bg-sky-50 text-sky-600 hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-400 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 border-0 cursor-pointer"
+                      >
+                        <Plus size={10} /> เพิ่มห้องเรียนที่อนุญาตให้เรียน
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {subjectAllowedClassGroupRows.map((currentGroup, idx) => (
+                        <div key={`${currentGroup}-${idx}`} className="flex gap-2 items-center">
+                          <Select
+                            showSearch
+                            allowClear
+                            loading={loadingSubjectClassGroups}
+                            placeholder={
+                              subjectForm.department
+                                ? "เลือกห้องเรียนจากฐานข้อมูล"
+                                : "เลือกแผนกวิชาก่อน"
+                            }
+                            className="flex-1 h-11"
+                            value={currentGroup || undefined}
+                            disabled={!subjectForm.department || loadingSubjectClassGroups}
+                            optionFilterProp="label"
+                            options={subjectClassGroupSelectOptions.map((group) => ({
+                              label: group,
+                              value: group,
+                              disabled:
+                                subjectAllowedClassGroupRows.includes(group) &&
+                                group !== currentGroup,
+                            }))}
+                            onChange={(value) => {
+                              const nextRows = [...subjectAllowedClassGroupRows];
+                              nextRows[idx] = value || "";
+                              syncSubjectAllowedClassGroupRows(nextRows);
+                            }}
+                          />
+
+                          {subjectAllowedClassGroupRows.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nextRows = subjectAllowedClassGroupRows.filter(
+                                  (_, rowIdx) => rowIdx !== idx,
+                                );
+                                syncSubjectAllowedClassGroupRows(nextRows);
+                              }}
+                              className="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-lg border-0 cursor-pointer shrink-0 transition-colors"
+                            >
+                              <X size={16} />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="text-[10px] text-zinc-400 font-medium">
+                      ดึงรายชื่อห้องเรียนจากฐานข้อมูลนักศึกษาในแผนกที่เลือก หากไม่เลือกห้องเรียน ระบบจะเปิดให้ห้องเรียนตามแผนกเข้าถึงตามปกติ
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
@@ -3565,6 +3841,26 @@ function DVETeacherWorkspace() {
                           }
                         />
                       </div>
+                    </div>
+
+                    <div className="bg-rose-500/5 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-950/40 rounded-xl p-3 flex flex-col gap-1.5">
+                      <label className="text-[10px] font-black text-rose-700 dark:text-rose-400 uppercase tracking-wider pl-0.5">
+                        วันกำหนดส่งของหน่วยเรียน
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full h-9 border border-rose-200 dark:border-rose-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-rose-600 dark:text-rose-400 focus:outline-hidden"
+                        value={unitForm.dueDate}
+                        onChange={(e) =>
+                          setUnitForm((prev) => ({
+                            ...prev,
+                            dueDate: e.target.value,
+                          }))
+                        }
+                      />
+                      <p className="text-[10px] text-rose-500/80 font-medium">
+                        ถ้าเรียนครบเวลาแต่เกินวันนี้ ระบบจะบันทึกเป็น "สาย" อัตโนมัติ
+                      </p>
                     </div>
                   </div>
 
@@ -5073,6 +5369,12 @@ function DVETeacherWorkspace() {
                         assignmentStatus: editingStudent.assignmentStatus,
                         score: editingStudent.score,
                         imageUrl: editingStudent.imageUrl,
+                        unitId: editingStudent.unitId,
+                        unitTitle: editingStudent.unitTitle || activeStudyUnit?.title || "",
+                        unitSequence:
+                          editingStudent.unitSequence !== undefined && editingStudent.unitSequence !== ""
+                            ? editingStudent.unitSequence
+                            : activeStudyUnit?.sequence || "",
                       },
                     }));
                     message.success(
