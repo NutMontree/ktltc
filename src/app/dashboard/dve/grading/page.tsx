@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Select, InputNumber, message, Modal, Input } from "antd";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 interface GradingCategory {
   id: string;
@@ -64,6 +66,67 @@ export default function DVEGradingPage() {
   const [editingGrade, setEditingGrade] = useState<StudentGrade | null>(null);
   const [gradeForm, setGradeForm] = useState<Record<string, number>>({});
   const [newStudentName, setNewStudentName] = useState<string>("");
+
+  const exportToExcel = () => {
+    if (studentGrades.length === 0 || !config) {
+      message.error("ไม่พบข้อมูลที่จะส่งออก");
+      return;
+    }
+    const currentSubject = subjects.find((s) => s.id === selectedSubjectId);
+    const subjectNameStr = currentSubject ? `${currentSubject.code} ${currentSubject.name}` : "คะแนน";
+
+    const data = studentGrades.map((g, idx) => {
+      const row: any = {
+        "ลำดับ": idx + 1,
+        "รหัสนักศึกษา": g.studentId || "-",
+        "ชื่อ-นามสกุล": g.studentName || "-",
+      };
+
+      config.categories.forEach((cat) => {
+        row[`${cat.name} (${cat.points})`] = g.scores[cat.id] ?? 0;
+      });
+
+      row["คะแนนรวม (100)"] = g.totalScore;
+      row["เกรด"] = g.finalGrade;
+      row["ผลการเรียน"] = g.isPassed ? "ผ่าน" : "ไม่ผ่าน";
+      return row;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Grade Sheet");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const finalData = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+    saveAs(finalData, `Grade_Sheet_${subjectNameStr.replace(/\s+/g, "_")}.xlsx`);
+  };
+
+  const exportToSot02 = () => {
+    if (studentGrades.length === 0 || !config) {
+      message.error("ไม่พบข้อมูลที่จะส่งออก");
+      return;
+    }
+    const currentSubject = subjects.find((s) => s.id === selectedSubjectId);
+    const subjectNameStr = currentSubject ? `${currentSubject.code} ${currentSubject.name}` : "ศธ02";
+
+    const data = studentGrades.map((g) => ({
+      "รหัสนักศึกษา": g.studentId || "-",
+      "เกรด": g.finalGrade,
+      "คะแนนรวม": g.totalScore,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "ศธ02 Import");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const finalData = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+    saveAs(finalData, `ศธ02_Import_${subjectNameStr.replace(/\s+/g, "_")}.xlsx`);
+  };
+
+  const triggerPrint = () => {
+    window.print();
+  };
 
   useEffect(() => {
     fetchSubjects();
@@ -358,23 +421,46 @@ export default function DVEGradingPage() {
         {/* Student Grades */}
         {config && selectedSubjectId && (
           <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-slate-200 dark:border-zinc-700 overflow-hidden">
-            <div className="p-6 border-b border-slate-200 dark:border-zinc-700">
-              <div className="flex items-center justify-between">
+            <div className="p-6 border-b border-slate-200 dark:border-zinc-700 print:hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                   คะแนนนักเรียน ({studentGrades.length} คน)
                 </h2>
-                <button
-                  onClick={() => {
-                    setEditingGrade(null);
-                    setGradeForm({});
-                    setNewStudentName("");
-                    setIsGradeModalOpen(true);
-                  }}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  เพิ่มคะแนน
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={exportToExcel}
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    ส่งออก Excel
+                  </button>
+                  <button
+                    onClick={exportToSot02}
+                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    ส่งออก ศธ.02
+                  </button>
+                  <button
+                    onClick={triggerPrint}
+                    className="px-3 py-1.5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer"
+                  >
+                    <Calculator className="w-3.5 h-3.5" />
+                    พิมพ์รายงาน (PDF)
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingGrade(null);
+                      setGradeForm({});
+                      setNewStudentName("");
+                      setIsGradeModalOpen(true);
+                    }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-xs font-bold border-0 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    เพิ่มคะแนน
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -606,6 +692,80 @@ export default function DVEGradingPage() {
             </Modal>
           )}
         </AnimatePresence>
+
+        {/* Printable Area */}
+        {config && selectedSubjectId && (
+          <div id="printable-grade-sheet" className="hidden print:block p-8 bg-white text-black font-sans w-full">
+            <div className="text-center space-y-2 mb-6">
+              <h2 className="text-2xl font-black">วิทยาลัยเทคนิคกันทรลักษ์</h2>
+              <h3 className="text-xl font-bold">รายงานผลการประเมินการฝึกงานระบบทวิภาคี (Grade Sheet)</h3>
+              <p className="text-sm">
+                <strong>วิชา:</strong> [{(subjects.find(s => s.id === selectedSubjectId))?.code}] {(subjects.find(s => s.id === selectedSubjectId))?.name} &nbsp;&nbsp;&nbsp;&nbsp;
+                <strong>แผนกวิชา:</strong> {(subjects.find(s => s.id === selectedSubjectId))?.department}
+              </p>
+            </div>
+            
+            <table className="w-full border-collapse border border-black text-xs">
+              <thead>
+                <tr>
+                  <th className="border border-black p-2 text-center">ลำดับ</th>
+                  <th className="border border-black p-2 text-center">รหัสนักศึกษา</th>
+                  <th className="border border-black p-2 text-left">ชื่อ-นามสกุล</th>
+                  {config.categories.map(cat => (
+                    <th key={cat.id} className="border border-black p-2 text-center">{cat.name} ({cat.points})</th>
+                  ))}
+                  <th className="border border-black p-2 text-center">คะแนนรวม</th>
+                  <th className="border border-black p-2 text-center">เกรด</th>
+                  <th className="border border-black p-2 text-center">ผลการเรียน</th>
+                </tr>
+              </thead>
+              <tbody>
+                {studentGrades.map((g, idx) => (
+                  <tr key={g.id}>
+                    <td className="border border-black p-2 text-center">{idx + 1}</td>
+                    <td className="border border-black p-2 text-center">{g.studentId}</td>
+                    <td className="border border-black p-2 text-left">{g.studentName}</td>
+                    {config.categories.map(cat => (
+                      <td key={cat.id} className="border border-black p-2 text-center">{g.scores[cat.id] ?? 0}</td>
+                    ))}
+                    <td className="border border-black p-2 text-center font-bold">{g.totalScore}</td>
+                    <td className="border border-black p-2 text-center font-bold">{g.finalGrade}</td>
+                    <td className="border border-black p-2 text-center">{g.isPassed ? "ผ่าน" : "ไม่ผ่าน"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            <div className="mt-12 flex justify-between text-sm">
+              <div></div>
+              <div className="text-center space-y-8">
+                <p>ลงชื่อ.......................................................... ครูผู้สอน</p>
+                <p>(..........................................................)</p>
+                <p>วันที่........./........./.........</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <style dangerouslySetInnerHTML={{__html: `
+          @media print {
+            body * {
+              visibility: hidden;
+            }
+            #printable-grade-sheet, #printable-grade-sheet * {
+              visibility: visible;
+            }
+            #printable-grade-sheet {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+              display: block !important;
+              background: white !important;
+              color: black !important;
+            }
+          }
+        `}} />
       </div>
     </div>
   );

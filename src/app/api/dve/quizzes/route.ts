@@ -113,6 +113,7 @@ export async function GET(req: Request) {
         unitId: q.unitId || "",
         isShuffle: !!q.isShuffle,
         quizType: q.quizType || "general",
+        showCorrectAnswers: q.showCorrectAnswers !== undefined ? !!q.showCorrectAnswers : false,
         createdAt: q.createdAt,
         isSubmitted: !!studentSubmissionsMap[q._id.toString()]?.isSubmitted,
         fileUrl: studentSubmissionsMap[q._id.toString()]?.fileUrl || "",
@@ -192,7 +193,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, title, googleFormUrl, deadline, startDate, unitId, isBuiltIn, questions, isShuffle, quizType } = body;
+    const { id, title, googleFormUrl, deadline, startDate, unitId, isBuiltIn, questions, isShuffle, quizType, showCorrectAnswers } = body;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
@@ -225,6 +226,7 @@ export async function PUT(req: Request) {
           unitId: unitId || "",
           isShuffle: !!isShuffle,
           quizType: quizType || "general",
+          showCorrectAnswers: showCorrectAnswers !== undefined ? !!showCorrectAnswers : false,
           updatedAt: new Date(),
         },
       },

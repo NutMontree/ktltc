@@ -598,7 +598,15 @@ function DVETeacherWorkspace() {
       const res = await fetch(`/api/dve/units?subjectId=${sub.id}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.success) setUnits(data.units || []);
+        if (data.success) {
+          const sortedUnits = (data.units || []).sort((a: any, b: any) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            if (dateA !== dateB) return dateB - dateA;
+            return (b.sequence || 0) - (a.sequence || 0);
+          });
+          setUnits(sortedUnits);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -3427,48 +3435,71 @@ function DVETeacherWorkspace() {
         )}
       </AnimatePresence>
 
-      {/* 2. Add/Edit Learning Unit Modal */}
+            {/* 2. Add/Edit Learning Unit Modal */}
       <AnimatePresence>
         {isUnitModalOpen && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 sm:p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsUnitModalOpen(false)}
-              className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-955/65 dark:bg-zinc-950/80 backdrop-blur-md"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-xl bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-left"
+              className="relative w-full max-w-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden text-left"
             >
               <form onSubmit={handleSaveUnit}>
-                <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-center">
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white">
-                    {unitForm.id ? "แก้ไขหน่วยการเรียนรู้" : "เพิ่มหน่วยการเรียนรู้ในรายวิชา"}
-                  </h3>
+                {/* Header */}
+                <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-linear-to-tr from-violet-500 to-indigo-650 text-white rounded-2xl shadow-md shadow-indigo-500/20">
+                      <BookOpen size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white leading-tight">
+                        {unitForm.id ? "แก้ไขหน่วยการเรียนรู้" : "เพิ่มหน่วยการเรียนรู้ในรายวิชา"}
+                      </h3>
+                      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold mt-0.5">
+                        {unitForm.id ? "แก้ไขและอัปเดตข้อมูลหน่วยเรียน" : "กรอกข้อมูลเพื่อสร้างหน่วยเรียนใหม่"}
+                      </p>
+                    </div>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setIsUnitModalOpen(false)}
-                    className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-850 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-zinc-650 dark:text-zinc-500 dark:hover:text-zinc-350 transition-all border-0 cursor-pointer"
                   >
-                    ปิด
+                    <X size={16} />
                   </button>
                 </div>
-                <div className="p-4 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-                  <div className="grid grid-cols-12 gap-3 sm:gap-4">
-                    <div className="col-span-12 flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 flex items-center gap-1.5">
-                        <BookOpen size={12} />
+
+                {/* Body Content */}
+                <div className="p-3 sm:p-6 space-y-6 max-h-[70vh] overflow-y-auto px-2">
+                  {/* Card 1: ข้อมูลหลัก */}
+                  <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-4 shadow-sm">
+                    <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                      <span className="text-xs font-black text-violet-600 dark:text-violet-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <BookOpen size={14} className="text-violet-500" />
+                        ข้อมูลหลักของหน่วยเรียน
+                      </span>
+                      <span className="px-2 py-0.5 bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-md text-[9px] font-black">
+                        จำเป็น *
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black text-zinc-650 dark:text-zinc-400 pl-0.5">
                         หัวข้อหน่วยการเรียน *
                       </label>
                       <input
                         type="text"
                         placeholder="เช่น หน่วยที่ 1: แนะนำวิชา"
                         required
-                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl px-4 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all dark:text-white placeholder:text-zinc-400"
+                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 rounded-xl px-4 text-xs focus:outline-hidden dark:text-white placeholder:text-zinc-400 font-medium"
                         value={unitForm.title}
                         onChange={(e) =>
                           setUnitForm((prev) => ({ ...prev, title: e.target.value }))
@@ -3476,24 +3507,27 @@ function DVETeacherWorkspace() {
                       />
                     </div>
 
-                    <div className="col-span-12 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 flex items-center gap-1.5">
-                          <span className="w-5 h-5 flex items-center justify-center bg-zinc-100 dark:bg-zinc-700 rounded text-[10px]">#</span>
-                          ลำดับ
+                    {/* Sequence & Duration fields with Color Separations */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* Sequence: Slate/Gray Card */}
+                      <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-800 rounded-xl p-3 flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider pl-0.5">
+                          ลำดับที่ของหน่วย
                         </label>
                         <input
                           type="number"
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl px-4 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all dark:text-white placeholder:text-zinc-400"
+                          required
+                          className="w-full h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold"
                           value={unitForm.sequence}
                           onChange={(e) =>
                             setUnitForm((prev) => ({ ...prev, sequence: Number(e.target.value) }))
                           }
                         />
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                          <Clock size={12} />
+
+                      {/* Total Minutes: Emerald/Teal Card */}
+                      <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-950/40 rounded-xl p-3 flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-wider pl-0.5">
                           เวลารวมของหน่วย (นาที) *
                         </label>
                         <input
@@ -3501,7 +3535,7 @@ function DVETeacherWorkspace() {
                           min={1}
                           required
                           placeholder="เช่น 60"
-                          className="w-full h-12 border-2 border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl px-4 text-sm font-bold text-emerald-700 dark:text-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-emerald-400/50"
+                          className="w-full h-9 border border-emerald-200 dark:border-emerald-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-emerald-600 dark:text-emerald-400 focus:outline-hidden"
                           value={unitForm.totalMinutes}
                           onChange={(e) =>
                             setUnitForm((prev) => ({
@@ -3511,16 +3545,17 @@ function DVETeacherWorkspace() {
                           }
                         />
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                          <Clock size={12} />
-                          เวลาขั้นต่ำที่ต้องเรียน (นาที) *
+
+                      {/* Minimum Study Minutes: Amber/Orange Card */}
+                      <div className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-950/40 rounded-xl p-3 flex flex-col gap-1.5">
+                        <label className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-wider pl-0.5">
+                          เวลาขั้นต่ำที่เรียน (นาที)
                         </label>
                         <input
                           type="number"
                           min={1}
                           placeholder="เช่น 15"
-                          className="w-full h-12 border-2 border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-4 text-sm font-bold text-amber-700 dark:text-amber-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all placeholder:text-amber-400/50"
+                          className="w-full h-9 border border-amber-200 dark:border-amber-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-amber-600 dark:text-amber-400 focus:outline-hidden"
                           value={unitForm.studyMinutes}
                           onChange={(e) =>
                             setUnitForm((prev) => ({
@@ -3533,15 +3568,16 @@ function DVETeacherWorkspace() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 flex items-center gap-1.5">
-                      <FileText size={12} />
-                      เนื้อหาบทเรียนย่อ / บรรยาย
+                  {/* Card 2: รายละเอียด (Description) - expanded rows */}
+                  <div className="bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3 shadow-sm">
+                    <label className="text-xs font-black text-zinc-650 dark:text-zinc-350 flex items-center gap-1.5 pl-0.5">
+                      <FileText size={14} className="text-zinc-400" />
+                      คำอธิบายเนื้อหาหน่วยเรียนย่อ (Description)
                     </label>
                     <textarea
-                      placeholder="เขียนอธิบายเนื้อหาหน่วยเรียนอย่างย่อประกอบที่นี่..."
-                      rows={4}
-                      className="w-full border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-4 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none dark:text-white placeholder:text-zinc-400"
+                      placeholder="เขียนรายละเอียด คำอธิบายเนื้อหา หรือใบงานประกอบหน่วยการเรียนรู้ เพื่อให้นักเรียนเข้าใจขอบเขตการเรียน..."
+                      rows={6}
+                      className="w-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3.5 text-xs focus:outline-hidden dark:text-white placeholder:text-zinc-400/90 leading-relaxed"
                       value={unitForm.content}
                       onChange={(e) =>
                         setUnitForm((prev) => ({ ...prev, content: e.target.value }))
@@ -3549,26 +3585,26 @@ function DVETeacherWorkspace() {
                     />
                   </div>
 
-                  {/* SECTION 1: 📂 อัปโหลดไฟล์เอกสารประกอบการเรียน */}
-                  <div className="flex flex-col gap-3 p-4 sm:p-5 bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-200 dark:border-emerald-800 rounded-2xl overflow-hidden">
-                    <label className="text-xs font-black text-emerald-700 dark:text-emerald-400 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                      <span className="flex items-center gap-1.5 min-w-0">
-                        <FolderOpen size={14} className="shrink-0" />
-                        <span className="truncate">ไฟล์เอกสารประกอบบทเรียน (ครูอัปโหลดเอง)</span>
+                  {/* Card 3: 📂 ไฟล์แนบและสื่อการสอน */}
+                  <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-150 dark:border-emerald-900/30 rounded-2xl p-4 space-y-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-emerald-100 dark:border-emerald-900/40 pb-3">
+                      <span className="text-xs font-black text-emerald-700 dark:text-emerald-455 flex items-center gap-1.5">
+                        <FolderOpen size={14} className="text-emerald-500" />
+                        ไฟล์เอกสารดาวน์โหลด (PDF, Word, Powerpoint)
                       </span>
                       <button
                         type="button"
                         onClick={() =>
                           setUnitForm((prev) => ({
                             ...prev,
-                            files: [...prev.files, { name: "", url: "", type: "file" }],
+                            files: [{ name: "", url: "", type: "file" }, ...prev.files],
                           }))
                         }
-                        className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] sm:text-xs font-black rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow-sm border-0 shrink-0"
+                        className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-xs hover:scale-[1.02] border-0 shrink-0"
                       >
-                        <Plus size={12} /> เพิ่มไฟล์แนบ
+                        <Plus size={10} /> เพิ่มไฟล์แนบ
                       </button>
-                    </label>
+                    </div>
 
                     {unitForm.files.filter(
                       (f) =>
@@ -3576,11 +3612,11 @@ function DVETeacherWorkspace() {
                         f.url?.startsWith("/uploads/") ||
                         f.url?.startsWith("/api/media/"),
                     ).length === 0 ? (
-                      <div className="text-center py-4 border border-dashed dark:border-zinc-800 rounded-xl text-zinc-400 text-xs font-bold bg-white/50 dark:bg-transparent">
-                        ยังไม่มีไฟล์อัปโหลดในหน่วยเรียนนี้
+                      <div className="text-center py-5 border border-dashed border-emerald-250 dark:border-emerald-800/60 rounded-xl text-emerald-650/65 dark:text-emerald-400/50 text-xs font-bold bg-white/40 dark:bg-zinc-955/10">
+                        ยังไม่มีไฟล์แนบในหน่วยเรียนนี้
                       </div>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-3.5">
                         {unitForm.files.map((file, idx) => {
                           const isDirectFile =
                             file.type === "file" ||
@@ -3588,67 +3624,71 @@ function DVETeacherWorkspace() {
                             file.url?.startsWith("/api/media/");
                           if (!isDirectFile) return null;
                           return (
-                            <div key={idx} className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
-                              <input
-                                type="text"
-                                placeholder="ชื่อไฟล์ เช่น เอกสารใบงาน 1"
-                                required
-                                className="flex-1 min-w-0 h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white"
-                                value={file.name}
-                                onChange={(e) => {
-                                  const newFiles = [...unitForm.files];
-                                  newFiles[idx].name = e.target.value;
-                                  setUnitForm((prev) => ({ ...prev, files: newFiles }));
-                                }}
-                              />
-
-                              <div className="relative flex-1 min-w-0">
+                            <div key={idx} className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center bg-white dark:bg-zinc-900 p-2 sm:p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs transition-all hover:border-emerald-300 dark:hover:border-emerald-800">
+                              <div className="flex-1">
                                 <input
-                                  type="url"
-                                  placeholder="ยังไม่ได้อัปโหลดไฟล์..."
+                                  type="text"
+                                  placeholder="ชื่อไฟล์ เช่น เอกสารใบงาน 1"
                                   required
-                                  readOnly
-                                  className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 rounded-lg pl-3 pr-20 text-xs focus:outline-hidden text-zinc-500 dark:text-zinc-400 cursor-not-allowed truncate"
-                                  value={file.url}
+                                  className="w-full h-9 border border-zinc-200 dark:border-zinc-750 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg px-2 sm:px-3 text-xs focus:outline-hidden dark:text-white font-medium"
+                                  value={file.name}
+                                  onChange={(e) => {
+                                    const newFiles = [...unitForm.files];
+                                    newFiles[idx].name = e.target.value;
+                                    setUnitForm((prev) => ({ ...prev, files: newFiles }));
+                                  }}
                                 />
-                                <label className="absolute right-1 top-1 h-8 px-2 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-md cursor-pointer transition-colors shadow-xs">
-                                  <input
-                                    type="file"
-                                    className="hidden"
-                                    onChange={async (e) => {
-                                      const selectedFile = e.target.files?.[0];
-                                      if (selectedFile) {
-                                        await handleRowFileUpload(idx, selectedFile);
-                                      }
-                                    }}
-                                    disabled={fileUploading[idx]?.loading}
-                                  />
-                                  {fileUploading[idx]?.loading ? (
-                                    <div className="flex items-center gap-1">
-                                      <Loader2 size={12} className="animate-spin text-white" />
-                                      <span className="text-[9px] font-black text-white">
-                                        {fileUploading[idx].progress}%
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center gap-1 text-[10px] font-black text-white">
-                                      <Upload size={12} />
-                                      <span>เลือกไฟล์</span>
-                                    </div>
-                                  )}
-                                </label>
                               </div>
 
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const newFiles = unitForm.files.filter((_, i) => i !== idx);
-                                  setUnitForm((prev) => ({ ...prev, files: newFiles }));
-                                }}
-                                className="p-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all cursor-pointer border-0"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                              <div className="flex-1 flex gap-2 items-center">
+                                <div className="relative flex-1 min-w-0">
+                                  <input
+                                    type="url"
+                                    placeholder="ยังไม่ได้อัปโหลดไฟล์..."
+                                    required
+                                    readOnly
+                                    className="w-full h-9 border border-zinc-200 dark:border-zinc-750 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg pl-3 pr-20 text-xs focus:outline-hidden text-zinc-500 dark:text-zinc-400 cursor-not-allowed truncate"
+                                    value={file.url}
+                                  />
+                                  <label className="absolute right-1 top-1 h-7 px-2 flex items-center justify-center bg-emerald-500 hover:bg-emerald-655 text-white rounded-md cursor-pointer transition-colors shadow-xs">
+                                    <input
+                                      type="file"
+                                      className="hidden"
+                                      onChange={async (e) => {
+                                        const selectedFile = e.target.files?.[0];
+                                        if (selectedFile) {
+                                          await handleRowFileUpload(idx, selectedFile);
+                                        }
+                                      }}
+                                      disabled={fileUploading[idx]?.loading}
+                                    />
+                                    {fileUploading[idx]?.loading ? (
+                                      <div className="flex items-center gap-1">
+                                        <Loader2 size={10} className="animate-spin text-white" />
+                                        <span className="text-[9px] font-black text-white">
+                                          {fileUploading[idx].progress}%
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center gap-1 text-[9px] font-black text-white">
+                                        <Upload size={10} />
+                                        <span>อัปโหลด</span>
+                                      </div>
+                                    )}
+                                  </label>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newFiles = unitForm.files.filter((_, i) => i !== idx);
+                                    setUnitForm((prev) => ({ ...prev, files: newFiles }));
+                                  }}
+                                  className="w-9 h-9 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all cursor-pointer border-0 flex items-center justify-center shrink-0"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </div>
                           );
                         })}
@@ -3656,26 +3696,26 @@ function DVETeacherWorkspace() {
                     )}
                   </div>
 
-                  {/* SECTION 2: 🔗 ลิงก์และแหล่งข้อมูลภายนอก */}
-                  <div className="flex flex-col gap-3 p-4 bg-blue-500/5 dark:bg-blue-950/10 border-2 border-blue-200 dark:border-blue-800 rounded-2xl overflow-hidden">
-                    <label className="text-xs font-black text-blue-700 dark:text-blue-400 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                      <span className="flex items-center gap-1.5 min-w-0">
-                        <ExternalLink size={14} className="shrink-0" />
-                        <span className="truncate">ลิงก์ภายนอก / แหล่งข้อมูลเพิ่มเติม (เช่น Google Drive, YouTube)</span>
+                  {/* Card 4: 🔗 ลิงก์และแหล่งข้อมูลภายนอก */}
+                  <div className="bg-blue-500/5 dark:bg-blue-500/10 border border-blue-150 dark:border-blue-900/30 rounded-2xl p-4 space-y-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-blue-100 dark:border-blue-900/40 pb-3">
+                      <span className="text-xs font-black text-blue-700 dark:text-blue-450 flex items-center gap-1.5">
+                        <ExternalLink size={14} className="text-blue-500" />
+                        ลิงก์ภายนอก / แหล่งเรียนรู้ (เช่น YouTube, Slides)
                       </span>
                       <button
                         type="button"
                         onClick={() =>
                           setUnitForm((prev) => ({
                             ...prev,
-                            files: [...prev.files, { name: "", url: "", type: "link" }],
+                            files: [{ name: "", url: "", type: "link" }, ...prev.files],
                           }))
                         }
-                        className="px-2.5 py-1 bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-sm border-0 shrink-0"
+                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-[11px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-xs hover:scale-[1.02] border-0 shrink-0"
                       >
                         <Plus size={10} /> เพิ่มลิงก์ภายนอก
                       </button>
-                    </label>
+                    </div>
 
                     {unitForm.files.filter(
                       (f) =>
@@ -3684,11 +3724,11 @@ function DVETeacherWorkspace() {
                           !f.url?.startsWith("/uploads/") &&
                           !f.url?.startsWith("/api/media/")),
                     ).length === 0 ? (
-                      <div className="text-center py-4 border border-dashed dark:border-zinc-800 rounded-xl text-zinc-400 text-xs font-bold bg-white/50 dark:bg-transparent">
+                      <div className="text-center py-5 border border-dashed border-blue-200 dark:border-blue-800/60 rounded-xl text-blue-600/65 dark:text-blue-400/50 text-xs font-bold bg-white/40 dark:bg-zinc-955/10">
                         ยังไม่มีลิงก์ภายนอกในหน่วยเรียนนี้
                       </div>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-3.5">
                         {unitForm.files.map((file, idx) => {
                           const isDirectFile =
                             file.type === "file" ||
@@ -3696,43 +3736,47 @@ function DVETeacherWorkspace() {
                             file.url?.startsWith("/api/media/");
                           if (isDirectFile) return null;
                           return (
-                            <div key={idx} className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
-                              <input
-                                type="text"
-                                placeholder="ชื่อลิงก์ เช่น สไลด์การสอน หรือ วิดีโอแนะนำ"
-                                required
-                                className="flex-1 min-w-0 h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white"
-                                value={file.name}
-                                onChange={(e) => {
-                                  const newFiles = [...unitForm.files];
-                                  newFiles[idx].name = e.target.value;
-                                  setUnitForm((prev) => ({ ...prev, files: newFiles }));
-                                }}
-                              />
+                            <div key={idx} className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center bg-white dark:bg-zinc-900 p-2 sm:p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs transition-all hover:border-blue-300 dark:hover:border-blue-800">
+                              <div className="flex-1">
+                                <input
+                                  type="text"
+                                  placeholder="ชื่อลิงก์ เช่น สไลด์การสอน หรือ วิดีโอแนะนำ"
+                                  required
+                                  className="w-full h-9 border border-zinc-200 dark:border-zinc-755 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg px-2 sm:px-3 text-xs focus:outline-hidden dark:text-white font-medium"
+                                  value={file.name}
+                                  onChange={(e) => {
+                                    const newFiles = [...unitForm.files];
+                                    newFiles[idx].name = e.target.value;
+                                    setUnitForm((prev) => ({ ...prev, files: newFiles }));
+                                  }}
+                                />
+                              </div>
 
-                              <input
-                                type="url"
-                                placeholder="วางลิงก์ เช่น https://drive.google.com/..."
-                                required
-                                className="flex-1 min-w-0 h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white truncate"
-                                value={file.url}
-                                onChange={(e) => {
-                                  const newFiles = [...unitForm.files];
-                                  newFiles[idx].url = e.target.value;
-                                  setUnitForm((prev) => ({ ...prev, files: newFiles }));
-                                }}
-                              />
+                              <div className="flex-1 flex gap-2 items-center">
+                                <input
+                                  type="url"
+                                  placeholder="วางลิงก์ เช่น https://drive.google.com/..."
+                                  required
+                                  className="flex-1 h-9 border border-zinc-200 dark:border-zinc-755 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg px-2 sm:px-3 text-xs focus:outline-hidden dark:text-white truncate"
+                                  value={file.url}
+                                  onChange={(e) => {
+                                    const newFiles = [...unitForm.files];
+                                    newFiles[idx].url = e.target.value;
+                                    setUnitForm((prev) => ({ ...prev, files: newFiles }));
+                                  }}
+                                />
 
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const newFiles = unitForm.files.filter((_, i) => i !== idx);
-                                  setUnitForm((prev) => ({ ...prev, files: newFiles }));
-                                }}
-                                className="p-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all cursor-pointer border-0"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newFiles = unitForm.files.filter((_, i) => i !== idx);
+                                    setUnitForm((prev) => ({ ...prev, files: newFiles }));
+                                  }}
+                                  className="w-9 h-9 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all cursor-pointer border-0 flex items-center justify-center shrink-0"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </div>
                           );
                         })}
@@ -3740,17 +3784,19 @@ function DVETeacherWorkspace() {
                     )}
                   </div>
                 </div>
-                <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
+
+                {/* Footer Actions */}
+                <div className="px-4 py-4 sm:px-6 bg-zinc-50 dark:bg-zinc-900/50 flex justify-end gap-2.5 border-t border-zinc-150 dark:border-zinc-800">
                   <button
                     type="button"
                     onClick={() => setIsUnitModalOpen(false)}
-                    className="px-5 py-2.5 rounded-lg text-xs font-black text-zinc-500 hover:bg-zinc-100"
+                    className="px-5 py-2.5 bg-white dark:bg-zinc-900 hover:bg-zinc-105 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-555 hover:text-zinc-700 dark:hover:text-zinc-350 transition-colors cursor-pointer"
                   >
                     ยกเลิก
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-linear-to-r from-emerald-500 to-teal-650 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black shadow-md shadow-emerald-500/10 hover:scale-[1.02] active:scale-98 transition-all duration-150 border-0 cursor-pointer"
                   >
                     บันทึกหน่วยเรียน
                   </button>
@@ -3760,6 +3806,7 @@ function DVETeacherWorkspace() {
           </div>
         )}
       </AnimatePresence>
+
 
       {/* 3. Add/Edit Quiz Modal */}
       <AnimatePresence>

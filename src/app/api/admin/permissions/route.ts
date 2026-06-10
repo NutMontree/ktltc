@@ -19,6 +19,8 @@ const DEFAULT_LABELS = {
   user: "สมาชิกทั่วไป",
   access_dve_teacher: "เมนู DVE สำหรับครู/อาจารย์",
   access_dve_student: "เมนู DVE สำหรับนักเรียน/นักศึกษา",
+  access_teacher_verification: "ตรวจสอบครูผู้สอน (ผู้บริหาร)",
+  access_teacher_dashboard: "ติดตามงานครู (ผู้บริหาร)",
 };
 
 const DEFAULT_PERMISSIONS = {
@@ -43,6 +45,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: true,
     access_dve_teacher: true,
     access_dve_student: true,
+    access_teacher_verification: true,
+    access_teacher_dashboard: true,
   },
   admin: {
     access_dashboard: true,
@@ -65,6 +69,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: true,
     access_dve_teacher: true,
     access_dve_student: true,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   editor: {
     access_dashboard: true,
@@ -87,6 +93,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   hr: {
     access_dashboard: true,
@@ -107,8 +115,10 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
-   director: {
+  director: {
     access_dashboard: true,
     manage_users: false,
     manage_news: false,
@@ -127,6 +137,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   deputy_resource: {
     access_dashboard: true,
@@ -147,6 +159,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   deputy_strategy: {
     access_dashboard: true,
@@ -167,6 +181,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   deputy_academic: {
     access_dashboard: true,
@@ -187,6 +203,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   deputy_student_affairs: {
     access_dashboard: true,
@@ -207,6 +225,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: true,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   teacher: {
     access_dashboard: false,
@@ -227,6 +247,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: true,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   janitor: {
     access_dashboard: false,
@@ -247,6 +269,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   staff: {
     access_dashboard: false,
@@ -267,6 +291,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   student: {
     access_dashboard: false,
@@ -287,6 +313,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: true,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   },
   user: {
     access_dashboard: false,
@@ -307,6 +335,8 @@ const DEFAULT_PERMISSIONS = {
     manage_flagpole_settings: false,
     access_dve_teacher: false,
     access_dve_student: false,
+    access_teacher_verification: false,
+    access_teacher_dashboard: false,
   }
 };
 
@@ -557,6 +587,8 @@ export async function POST(req: Request) {
       manage_flagpole_settings: false,
       access_dve_teacher: false,
       access_dve_student: false,
+      access_teacher_verification: false,
+      access_teacher_dashboard: false,
     };
 
     await db.collection("role_permissions").insertOne({

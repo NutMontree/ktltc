@@ -269,6 +269,15 @@ export default function NavbarClient({
 
   const isSuperAdmin = role?.toLowerCase() === "super_admin";
   const isAdmin = role?.toLowerCase() === "admin";
+  const isExecutiveOrAdmin = [
+    "super_admin",
+    "admin",
+    "director",
+    "deputy_resource",
+    "deputy_strategy",
+    "deputy_academic",
+    "deputy_student_affairs",
+  ].includes(role?.toLowerCase() || "");
 
   useEffect(() => {
     // จัดการ Event เมื่อ Scroll เพื่อเปลี่ยนหน้าตา Navbar (Floating Effect)
@@ -767,6 +776,31 @@ export default function NavbarClient({
                                 <BookOpen size={16} />
                               </div>
                               ศูนย์ฝึกทวีภาคี (DVE Portal)
+                            </Link>
+                          )}
+
+                          {(permissions?.access_teacher_dashboard ?? isSuperAdmin) && (
+                            <Link
+                              href="/teacher-dashboard"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-violet-700 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-2xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-xl bg-violet-100 dark:bg-violet-900/30 group-hover:bg-violet-200 dark:group-hover:bg-violet-900/50 transition-colors shadow-sm">
+                                <BarChart2 size={16} />
+                              </div>
+                              แดชบอร์ดผู้บริหาร (ติดตามงานครู)
+                            </Link>
+                          )}
+                          {(permissions?.access_teacher_verification ?? isSuperAdmin) && (
+                            <Link
+                              href="/teacher-verification"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-500/10 rounded-2xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-xl bg-teal-100 dark:bg-teal-900/30 group-hover:bg-teal-200 dark:group-hover:bg-teal-900/50 transition-colors shadow-sm">
+                                <CalendarCheck size={16} />
+                              </div>
+                              ตรวจสอบการจัดการเรียนการสอนครู
                             </Link>
                           )}
 

@@ -39,7 +39,7 @@ const DEFAULT_GRADING_CONFIG = {
       name: "โปรเจครายวิชา",
       points: 20,
       cannotDeduct: false,
-      required: true,
+      required: false,
       description: "โปรเจครายวิชา",
     },
     {
@@ -47,18 +47,21 @@ const DEFAULT_GRADING_CONFIG = {
       name: "งานอื่นๆ (งานในคาบเรียน)",
       points: 30,
       cannotDeduct: false,
-      required: true,
+      required: false,
       description: "งานในคาบเรียนและกิจกรรมอื่นๆ",
     },
   ],
   totalPoints: 100,
-  passingScore: 60,
+  passingScore: 50, // Standard passing score is typically 50 (1.0) for vocational
   gradeScale: [
-    { minScore: 80, grade: "4", description: "ดีมาก" },
-    { minScore: 70, grade: "3", description: "ดี" },
-    { minScore: 60, grade: "2", description: "พอใช้" },
-    { minScore: 50, grade: "1", description: "ผ่านขั้นต่ำ" },
-    { minScore: 0, grade: "0", description: "ไม่ผ่าน" },
+    { minScore: 80, grade: "4.0", description: "ดีเยี่ยม" },
+    { minScore: 75, grade: "3.5", description: "ดีมาก" },
+    { minScore: 70, grade: "3.0", description: "ดี" },
+    { minScore: 65, grade: "2.5", description: "ค่อนข้างดี" },
+    { minScore: 60, grade: "2.0", description: "พอใช้" },
+    { minScore: 55, grade: "1.5", description: "ผ่านเกณฑ์ขั้นต่ำ" },
+    { minScore: 50, grade: "1.0", description: "ผ่านเกณฑ์ปรับปรุง" },
+    { minScore: 0, grade: "0", description: "ต่ำกว่าเกณฑ์ / ไม่ผ่าน" },
   ],
 };
 

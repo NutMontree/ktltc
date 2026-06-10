@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   Users,
   BookOpen,
@@ -52,7 +53,8 @@ interface TeacherActivity {
 }
 
 export default function TeacherDashboardPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activities, setActivities] = useState<TeacherActivity[]>([]);
@@ -61,10 +63,38 @@ export default function TeacherDashboardPage() {
   const [imagePreview, setImagePreview] = useState<{ url: string; name: string } | null>(null);
   const [selectedTeacher, setSelectedTeacher] = useState<TeacherActivity | null>(null);
   const [departments, setDepartments] = useState<string[]>([]);
+  const [checkingAccess, setCheckingAccess] = useState(true);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [departmentFilter, dateRange]);
+    async function verifyPermission() {
+      if (status === "loading") return;
+      if (status === "unauthenticated") {
+        router.replace("/login");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/auth/permissions?_t=" + Date.now());
+        if (res.ok) {
+          const permissions = await res.json();
+          if (permissions?.access_teacher_dashboard) {
+            setCheckingAccess(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch permissions", err);
+      }
+      router.replace("/dashboard");
+    }
+    verifyPermission();
+  }, [status, router]);
+
+  useEffect(() => {
+    if (!checkingAccess) {
+      fetchDashboardData();
+    }
+  }, [departmentFilter, dateRange, checkingAccess]);
 
   const fetchDashboardData = async () => {
     try {
@@ -100,10 +130,10 @@ export default function TeacherDashboardPage() {
     fetchDashboardData();
   };
 
-  if (!session) {
+  if (status === "loading" || checkingAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-zinc-900 dark:to-zinc-950">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }

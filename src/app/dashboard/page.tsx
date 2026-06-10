@@ -763,6 +763,42 @@ export default function DashboardLoader() {
             </div>
           )}
 
+          {/* --- Executive Section --- */}
+          {(permissions?.access_teacher_verification || permissions?.access_teacher_dashboard) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 flex items-center gap-4">
+                  <UserCog className="w-4 h-4" /> เมนูสำหรับผู้บริหาร
+                  <span className="h-px bg-violet-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  เครื่องมือติดตาม ตรวจสอบ และวิเคราะห์การปฏิบัติงานจัดการเรียนการสอนของครู
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                {permissions?.access_teacher_dashboard && (
+                  <ActionCard
+                    href="/teacher-dashboard"
+                    title="แดชบอร์ดผู้บริหาร (ติดตามงานครู)"
+                    icon={Clock}
+                    desc="สถิติภาพรวมและติดตามความก้าวหน้าการเรียนการสอนของครู"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_teacher_verification && (
+                  <ActionCard
+                    href="/teacher-verification"
+                    title="ตรวจสอบการจัดการเรียนการสอนครู"
+                    icon={CalendarCheck}
+                    desc="ตรวจสอบบันทึกการเรียนการสอนและการเข้าเรียนของนักเรียนแยกตามรายวิชา"
+                    variants={item}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
           {/* --- Teacher Section --- */}
           {["super_admin", "admin", "editor", "teacher"].includes(
             ((session?.user as any)?.role || "").toLowerCase()

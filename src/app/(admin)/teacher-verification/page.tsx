@@ -53,7 +53,7 @@ interface Teacher {
 }
 
 export default function TeacherVerificationPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -61,6 +61,7 @@ export default function TeacherVerificationPage() {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [imagePreview, setImagePreview] = useState<{ url: string; name: string } | null>(null);
   const [departments, setDepartments] = useState<string[]>([]);
+  const [checkingAccess, setCheckingAccess] = useState(true);
 
   // Filters
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
@@ -69,8 +70,35 @@ export default function TeacherVerificationPage() {
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
 
   useEffect(() => {
-    fetchTeachers();
-  }, [departmentFilter, dateRange]);
+    async function verifyPermission() {
+      if (status === "loading") return;
+      if (status === "unauthenticated") {
+        router.replace("/login");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/auth/permissions?_t=" + Date.now());
+        if (res.ok) {
+          const permissions = await res.json();
+          if (permissions?.access_teacher_verification) {
+            setCheckingAccess(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch permissions", err);
+      }
+      router.replace("/dashboard");
+    }
+    verifyPermission();
+  }, [status, router]);
+
+  useEffect(() => {
+    if (!checkingAccess) {
+      fetchTeachers();
+    }
+  }, [departmentFilter, dateRange, checkingAccess]);
 
   useEffect(() => {
     applyFilters();
@@ -137,10 +165,10 @@ export default function TeacherVerificationPage() {
     fetchTeachers();
   };
 
-  if (!session) {
+  if (status === "loading" || checkingAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-zinc-900 dark:to-zinc-950">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
