@@ -93,6 +93,46 @@ function formatThaiDateDisplay(dateString?: string) {
   });
 }
 
+function getBangkokDateString(value?: string | Date | null) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = parts.find((part) => part.type === "month")?.value || "";
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  return year && month && day ? `${year}-${month}-${day}` : "";
+}
+
+function resolveSessionClassGroup(user: any): string {
+  return (
+    user?.classGroup ||
+    user?.classGroupId ||
+    user?.groupCode ||
+    user?.classroomName ||
+    ""
+  ).toString().trim();
+}
+
+function resolveUnitCheckinStatus(unit: any, todayStr: string): "Present" | "Late" {
+  const dueDate = String(unit?.dueDate || "").trim();
+  if (dueDate) {
+    return todayStr > dueDate ? "Late" : "Present";
+  }
+
+  const createdAt = getBangkokDateString(unit?.createdAt);
+  if (createdAt) {
+    return todayStr > createdAt ? "Late" : "Present";
+  }
+
+  return "Present";
+}
+
 // Premium loading spinner
 function DVELoader() {
   return (
@@ -339,8 +379,9 @@ export function DVEStudentPortal() {
         }),
       }).catch(() => { });
 
-      const todayStr = new Date().toLocaleDateString("en-CA");
+      const todayStr = getBangkokDateString(new Date());
       const user = session.user as any;
+      const checkinStatus = resolveUnitCheckinStatus(activeStudyUnit, todayStr);
       const existingToday = attendances.find(
         (a) =>
           a.date === todayStr &&
@@ -355,8 +396,8 @@ export function DVEStudentPortal() {
             studentId: user.id,
             studentName: user.name,
             studentIdNum: user.username || "",
-            classGroupId: user.classGroup || "",
-            status: existingToday ? existingToday.status : "Present",
+            classGroupId: resolveSessionClassGroup(user),
+            status: existingToday ? existingToday.status : checkinStatus,
             assignmentStatus: "Submitted",
             score: existingToday ? existingToday.score : "",
             imageUrl: existingToday ? existingToday.imageUrl || "" : "",
@@ -453,51 +494,9 @@ export function DVEStudentPortal() {
     if (!session?.user || !activeSubject || !unitToCheck) return;
     try {
       setIsSubmittingAttendance(true);
-      const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD in local time zone
+      const todayStr = getBangkokDateString(new Date());
       const user = session.user as any;
-
-      // Determine checkin status: "Present" or "Late"
-      let checkinStatus = "Present";
-
-      // 1. Check if unit was created on a PREVIOUS day → student is doing old work = Late
-      if (unitToCheck.createdAt) {
-        const unitCreatedDate = new Date(unitToCheck.createdAt);
-        if (!isNaN(unitCreatedDate.getTime())) {
-          const unitDateStr = unitCreatedDate.toLocaleDateString("en-CA");
-          if (todayStr > unitDateStr) {
-            checkinStatus = "Late"; // Student is completing a unit from a previous day
-          }
-        }
-      }
-
-      // 2. Also check quiz deadlines (if any quiz deadline has passed, mark as Late)
-      if (checkinStatus !== "Late" && quizzes && quizzes.length > 0) {
-        const currentUnitId = unitToCheck.id || unitToCheck._id?.toString();
-        const unitQuizzesForCheck = quizzes.filter((q) => q.unitId === currentUnitId);
-        for (const quiz of unitQuizzesForCheck) {
-          if (quiz.deadline) {
-            let deadlineDate: Date | null = null;
-            if (quiz.deadline.includes("/")) {
-              const parts = quiz.deadline.split("/");
-              if (parts.length === 3) {
-                deadlineDate = new Date(`${parts[2]}-${parts[0]}-${parts[1]}`);
-              } else {
-                deadlineDate = new Date(quiz.deadline);
-              }
-            } else {
-              deadlineDate = new Date(quiz.deadline);
-            }
-
-            if (deadlineDate && !isNaN(deadlineDate.getTime())) {
-              const deadlineStr = deadlineDate.toLocaleDateString("en-CA");
-              if (todayStr > deadlineStr) {
-                checkinStatus = "Late";
-                break;
-              }
-            }
-          }
-        }
-      }
+      const checkinStatus = resolveUnitCheckinStatus(unitToCheck, todayStr);
 
       const payload = {
         subjectId: activeSubject.id,
@@ -507,7 +506,7 @@ export function DVEStudentPortal() {
             studentId: user.id,
             studentName: user.name,
             studentIdNum: user.username || "",
-            classGroupId: user.classGroup || "",
+            classGroupId: resolveSessionClassGroup(user),
             status: checkinStatus,
             assignmentStatus: "None",
             score: "",
@@ -527,7 +526,7 @@ export function DVEStudentPortal() {
       if (res.ok) {
         if (checkinStatus === "Late") {
           message.warning(
-            "⚠️ เช็คชื่อเข้าเรียนสำเร็จ: แต่ท่านถูกบันทึกเป็น 'มาสาย' เนื่องจากเกินกำหนดส่งแบบทดสอบ!",
+            "⚠️ เช็คชื่อเข้าเรียนสำเร็จ: แต่ท่านถูกบันทึกเป็น 'มาสาย' เนื่องจากเกินวันกำหนดของหน่วยเรียน!",
           );
         } else {
           message.success("✨ ระบบจับเวลาสำเร็จ: เช็คชื่อเข้าเรียนของท่านเรียบร้อยแล้ว!");
@@ -1301,6 +1300,11 @@ export function DVEStudentPortal() {
                           {Number(unit.studyMinutes) > 0 && (
                             <span className="text-[10px] font-bold text-amber-500/90 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
                               ⏱️ {unit.studyMinutes} นาที
+                            </span>
+                          )}
+                          {unit.dueDate && (
+                            <span className="text-[10px] font-bold text-rose-500/90 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
+                              📌 {formatThaiDateDisplay(unit.dueDate)}
                             </span>
                           )}
                           <ChevronRight size={16} />

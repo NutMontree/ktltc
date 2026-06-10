@@ -177,6 +177,8 @@ interface NavbarClientProps {
     access_dve_teacher?: boolean;
     access_dve_student?: boolean;
     manage_supervision_requests?: boolean;
+    access_teacher_dashboard?: boolean;
+    access_teacher_verification?: boolean;
   } | null;
 }
 

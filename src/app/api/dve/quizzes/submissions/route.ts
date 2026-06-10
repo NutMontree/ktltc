@@ -7,6 +7,35 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 
+function toBangkokDateString(value?: string | Date | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = parts.find((part) => part.type === "month")?.value || "";
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  return year && month && day ? `${year}-${month}-${day}` : "";
+}
+
+function standardizeClassGroupName(name: string): string {
+  if (!name) return "";
+  const clean = String(name).trim();
+  const stripped = clean.replace(/[\s.-]+/g, "");
+  const match = stripped.match(/^([ก-ฮa-zA-Z]+)(.*)$/);
+  if (match) {
+    const prefix = match[1];
+    const rest = match[2];
+    return rest ? `${prefix}.${rest}` : prefix;
+  }
+  return clean;
+}
+
 // Helpers to grade the quiz answers
 function gradeQuiz(questions: any[], answers: any[]): { score: number; maxScore: number } {
   let totalScore = 0;
@@ -138,10 +167,33 @@ export async function POST(req: Request) {
     // Automatically update student's score & file inside DVE attendance
     const subjectId = quiz.subjectId;
     const unitId = quiz.unitId;
+    const unitDoc =
+      unitId && ObjectId.isValid(unitId)
+        ? await db.collection("dve_units").findOne({ _id: new ObjectId(unitId) })
+        : null;
+    const userDoc =
+      userId && ObjectId.isValid(userId)
+        ? await db.collection("users").findOne(
+          { _id: new ObjectId(userId) },
+          { projection: { classGroupId: 1, groupCode: 1, classroomName: 1, username: 1, studentId: 1, studentIdNum: 1 } },
+        )
+        : null;
+    const classGroupId = standardizeClassGroupName(
+      userDoc?.classGroupId || userDoc?.groupCode || userDoc?.classroomName || "",
+    );
+    const studentIdNum = userDoc?.studentId || userDoc?.studentIdNum || userDoc?.username || "";
+    const todayStr = toBangkokDateString(new Date());
+    const unitDueDate = toBangkokDateString(unitDoc?.dueDate || "");
+    const unitCreatedDate = toBangkokDateString(unitDoc?.createdAt || "");
+    const submissionStatus =
+      (unitDueDate && todayStr > unitDueDate) || (!unitDueDate && unitCreatedDate && todayStr > unitCreatedDate)
+        ? "Late"
+        : "Present";
     
     const attendanceQuery: any = {
       studentId: userId,
-      subjectId: subjectId
+      subjectId: subjectId,
+      date: todayStr,
     };
     if (unitId) {
       attendanceQuery.unitId = unitId;
@@ -151,9 +203,17 @@ export async function POST(req: Request) {
 
     if (existingAttendance) {
       const updateFields: any = {
+        date: todayStr,
+        studentName: userName,
+        studentIdNum,
+        classGroupId,
         assignmentStatus: "Submitted",
         score: scoreVal,
         maxScore: maxScoreVal,
+        unitId: unitId || "",
+        unitTitle: unitDoc?.title || "",
+        unitSequence: unitDoc?.sequence !== undefined ? unitDoc.sequence : "",
+        status: existingAttendance.status === "Late" ? "Late" : submissionStatus,
         updatedAt: new Date()
       };
       if (fileUrl) {
@@ -168,9 +228,14 @@ export async function POST(req: Request) {
       await db.collection("dve_attendances").insertOne({
         studentId: userId,
         studentName: userName,
+        studentIdNum,
         subjectId: subjectId,
+        date: todayStr,
+        classGroupId,
         unitId: unitId || "",
-        status: "Present", // default status
+        unitTitle: unitDoc?.title || "",
+        unitSequence: unitDoc?.sequence !== undefined ? unitDoc.sequence : "",
+        status: submissionStatus,
         assignmentStatus: "Submitted",
         imageUrl: fileUrl || "",
         score: scoreVal,
@@ -315,8 +380,16 @@ export async function PATCH(req: Request) {
 
     // Update student's DVE attendance record score
     const subjectId = quiz.subjectId;
-    await db.collection("dve_attendances").updateOne(
-      { studentId: submission.studentId, subjectId },
+    const attendanceQuery: any = { studentId: submission.studentId, subjectId };
+    const submissionDate = toBangkokDateString(submission.submittedAt);
+    if (submissionDate) {
+      attendanceQuery.date = submissionDate;
+    }
+    if (quiz.unitId) {
+      attendanceQuery.unitId = quiz.unitId;
+    }
+    await db.collection("dve_attendances").updateMany(
+      attendanceQuery,
       { $set: { score, maxScore, updatedAt: new Date() } }
     );
 
@@ -376,6 +449,10 @@ export async function DELETE(req: Request) {
         studentId: submission.studentId,
         subjectId: subjectId
       };
+      const submissionDate = toBangkokDateString(submission.submittedAt);
+      if (submissionDate) {
+        attendanceQuery.date = submissionDate;
+      }
       if (unitId) {
         attendanceQuery.unitId = unitId;
       }
@@ -384,9 +461,8 @@ export async function DELETE(req: Request) {
         attendanceQuery,
         {
           $set: {
-            status: "Absent",
             assignmentStatus: "None",
-            score: 0,
+            score: "",
             maxScore: 0,
             imageUrl: "",
             updatedAt: new Date()

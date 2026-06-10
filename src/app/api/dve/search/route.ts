@@ -13,8 +13,69 @@ function toUserProfile(uDoc: any) {
     role: uDoc.role,
     department: uDoc.department || "",
     studentId: uDoc.studentId || "",
-    classGroupId: uDoc.classGroupId || "",
+    classGroupId: uDoc.classGroupId || uDoc.groupCode || uDoc.classroomName || "",
   };
+}
+
+const CLASS_GROUP_FIELDS = ["classGroupId", "groupCode", "classroomName"] as const;
+
+function standardizeClassGroupName(name: string): string {
+  if (!name) return "";
+  return String(name).trim().replace(/[\s\.-]+/g, ".");
+}
+
+function resolveStudentClassGroup(userProfile: any) {
+  for (const field of CLASS_GROUP_FIELDS) {
+    const value = userProfile?.[field];
+    if (value && String(value).trim()) {
+      return standardizeClassGroupName(String(value).trim());
+    }
+  }
+  return "";
+}
+
+function parseAllowedClassGroups(value: any): string[] {
+  if (Array.isArray(value)) {
+    return Array.from(
+      new Set(
+        value
+          .map((item) => standardizeClassGroupName(String(item || "").trim()))
+          .filter(Boolean),
+      ),
+    );
+  }
+
+  if (typeof value === "string") {
+    return Array.from(
+      new Set(
+        value
+          .split(",")
+          .map((item) => standardizeClassGroupName(item))
+          .filter(Boolean),
+      ),
+    );
+  }
+
+  return [];
+}
+
+function subjectMatchesStudent(subject: any, userProfile: any): boolean {
+  const subjectGroups = parseAllowedClassGroups(subject?.allowedClassGroups);
+  const studentClassGroup = resolveStudentClassGroup(userProfile);
+  if (subjectGroups.length > 0) {
+    if (!studentClassGroup) return false;
+    return subjectGroups.some((group) => {
+      const target = standardizeClassGroupName(group);
+      const actual = standardizeClassGroupName(studentClassGroup);
+      return target === actual || target.includes(actual) || actual.includes(target);
+    });
+  }
+
+  const subjectDept = normalizeDept(subject?.department || "");
+  const studentDept = normalizeDept((userProfile?.department || "").trim() || getDeptFromClassGroup(studentClassGroup));
+  if (!subjectDept) return true;
+  if (!studentDept) return false;
+  return subjectDept.includes(studentDept) || studentDept.includes(subjectDept);
 }
 
 function getDeptFromClassGroup(classGroupId: string): string {
@@ -113,10 +174,10 @@ export async function GET(req: Request) {
 
         const studentSubjects = await db.collection("dve_subjects")
           .find({ department: { $regex: escapeRegex(studentDept), $options: "i" } })
-          .project({ teacherId: 1 })
           .toArray();
-          
-        const teacherIds = Array.from(new Set(studentSubjects.map(s => s.teacherId).filter(id => typeof id === "string")));
+        const accessibleSubjects = studentSubjects.filter((subject) => subjectMatchesStudent(subject, userProfile));
+
+        const teacherIds = Array.from(new Set(accessibleSubjects.map((s) => s.teacherId).filter((id) => typeof id === "string")));
         const teacherObjectIds = teacherIds.map(id => {
           try { return new ObjectId(id); } catch { return null; }
         }).filter((id): id is ObjectId => id !== null);
@@ -177,8 +238,9 @@ export async function GET(req: Request) {
           .find({ department: { $regex: escapeRegex(studentDept), $options: "i" } })
           .sort({ name: 1 })
           .toArray();
+        const accessibleSubjects = subjects.filter((subject) => subjectMatchesStudent(subject, userProfile));
 
-        const teacherIdsFromSubjects = Array.from(new Set(subjects.map((s) => s.teacherId).filter((id) => typeof id === "string")));
+        const teacherIdsFromSubjects = Array.from(new Set(accessibleSubjects.map((s) => s.teacherId).filter((id) => typeof id === "string")));
         const teacherObjectIds = teacherIdsFromSubjects.map((id) => {
           try { return new ObjectId(id); } catch { return null; }
         }).filter((id): id is ObjectId => id !== null);
@@ -197,7 +259,7 @@ export async function GET(req: Request) {
           .toArray();
 
         // Get teacher information to include teacher images
-        const teacherIds = subjects.map((s) => s.teacherId).filter((id) => ObjectId.isValid(id));
+        const teacherIds = accessibleSubjects.map((s) => s.teacherId).filter((id) => ObjectId.isValid(id));
         const subjectTeachers = teacherIds.length > 0
           ? await db.collection("users").find({ _id: { $in: teacherIds.map((id) => new ObjectId(id)) } }).toArray()
           : [];
@@ -206,7 +268,7 @@ export async function GET(req: Request) {
         return NextResponse.json({
           success: true,
           teachers: teachers.map((t) => ({ id: t._id.toString(), name: t.name, department: t.department })),
-          subjects: subjects.map((s) => {
+          subjects: accessibleSubjects.map((s) => {
             const teacher = teacherMap.get(s.teacherId);
             return {
               id: s._id.toString(),
@@ -216,6 +278,7 @@ export async function GET(req: Request) {
               teacherId: s.teacherId,
               teacherName: s.teacherName,
               teacherImage: teacher?.image || "",
+              allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
             };
           }),
         });
@@ -239,6 +302,7 @@ export async function GET(req: Request) {
             teacherId: s.teacherId,
             teacherName: s.teacherName,
             teacherImage: userProfile?.image || "",
+            allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
           })),
         });
       }
@@ -306,6 +370,7 @@ export async function GET(req: Request) {
             teacherId: s.teacherId,
             teacherName: s.teacherName,
             teacherImage: teacher?.image || "",
+            allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
           };
         }),
       });
@@ -330,10 +395,11 @@ export async function GET(req: Request) {
           .find({ teacherId, department: { $regex: escapeRegex(studentDept), $options: "i" } })
           .sort({ name: 1 })
           .toArray();
+        const accessibleSubjects = subjects.filter((subject) => subjectMatchesStudent(subject, userProfile));
 
         return NextResponse.json({
           success: true,
-          subjects: subjects.map((s) => ({
+          subjects: accessibleSubjects.map((s) => ({
             id: s._id.toString(),
             code: s.code,
             name: s.name,
@@ -341,6 +407,7 @@ export async function GET(req: Request) {
             department: s.department,
             teacherId: s.teacherId,
             teacherName: s.teacherName,
+            allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
           })),
         });
       }
@@ -366,6 +433,7 @@ export async function GET(req: Request) {
             department: s.department,
             teacherId: s.teacherId,
             teacherName: s.teacherName,
+            allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
           })),
         });
       }
@@ -386,6 +454,7 @@ export async function GET(req: Request) {
           department: s.department,
           teacherId: s.teacherId,
           teacherName: s.teacherName,
+          allowedClassGroups: parseAllowedClassGroups(s.allowedClassGroups),
         })),
       });
     }
