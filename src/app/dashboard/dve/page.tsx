@@ -166,6 +166,12 @@ function getDveEntityId(entity: any): string {
   return String(entity?.id || entity?._id || "").trim();
 }
 
+function getQuizTypeLabel(type: string): string {
+  if (type === "pretest") return "ก่อนเรียน";
+  if (type === "posttest") return "หลังเรียน";
+  return "แบบทดสอบ";
+}
+
 // -------------------------------------------------------------
 // TEACHER WORKSPACE PORTAL COMPONENT
 // -------------------------------------------------------------
@@ -242,6 +248,7 @@ function DVETeacherWorkspace() {
   const [activeSubject, setActiveSubject] = useState<any>(null);
   const [units, setUnits] = useState<any[]>([]);
   const [activeStudyUnit, setActiveStudyUnit] = useState<any>(null);
+  const activeStudyUnitId = getDveEntityId(activeStudyUnit);
   const allUnitFiles = units.flatMap((unit: any) =>
     (unit.files || []).map((file: any) => ({
       ...file,
@@ -317,6 +324,22 @@ function DVETeacherWorkspace() {
 
   // Quiz states
   const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [allSubjectQuizSubmissions, setAllSubjectQuizSubmissions] = useState<any[]>([]);
+  const [loadingQuizSubmissions, setLoadingQuizSubmissions] = useState(false);
+
+  const unitQuizResultsByStudent = useMemo(() => {
+    if (!activeStudyUnitId || !allSubjectQuizSubmissions.length) return {};
+    const filtered = allSubjectQuizSubmissions.filter((sub) =>
+      String(sub.unitId || "").trim() === activeStudyUnitId &&
+      ["pretest", "posttest"].includes(String(sub.quizType || ""))
+    );
+    return filtered.reduce((acc: Record<string, any[]>, submission: any) => {
+      if (!submission.studentId) return acc;
+      if (!acc[submission.studentId]) acc[submission.studentId] = [];
+      acc[submission.studentId].push(submission);
+      return acc;
+    }, {});
+  }, [activeStudyUnitId, allSubjectQuizSubmissions]);
   const [loadingQuizzes, setLoadingQuizzes] = useState(false);
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [quizForm, setQuizForm] = useState({
@@ -430,13 +453,14 @@ function DVETeacherWorkspace() {
   const [attendanceLogs, setAttendanceLogs] = useState<any[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<{
     [studentId: string]: {
-      status: "Present" | "Late" | "Absent";
+      status: "Present" | "Late" | "Absent" | "Studying";
       assignmentStatus: "Submitted" | "Pending" | "None";
       score: string;
       imageUrl?: string;
       unitId?: string;
       unitTitle?: string;
       unitSequence?: string | number;
+      studySeconds?: number;
     };
   }>({});
   const [loadingRoster, setLoadingRoster] = useState(false);
@@ -483,8 +507,6 @@ function DVETeacherWorkspace() {
     setSelectedStudent(null);
     setSelectedStudentLogs([]);
   };
-
-  const activeStudyUnitId = getDveEntityId(activeStudyUnit);
 
   const logs = studentRoster.filter((student) => {
     const rec = attendanceRecords[student.id];
@@ -605,6 +627,7 @@ function DVETeacherWorkspace() {
     if (selectedSubject) {
       handleManageUnits(selectedSubject);
       handleLoadQuizzes(selectedSubject.id);
+      handleLoadAllQuizSubmissions(selectedSubject.id);
     }
   }, [checkinFilter.subjectId]);
 
@@ -886,6 +909,24 @@ function DVETeacherWorkspace() {
     }
   };
 
+  const handleLoadAllQuizSubmissions = async (subjectId: string) => {
+    setLoadingQuizSubmissions(true);
+    try {
+      const res = await fetch(`/api/dve/quizzes/submissions?subjectId=${subjectId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setAllSubjectQuizSubmissions(data.submissions || []);
+        }
+      }
+    } catch (err) {
+      console.error("Load all quiz submissions error:", err);
+      setAllSubjectQuizSubmissions([]);
+    } finally {
+      setLoadingQuizSubmissions(false);
+    }
+  };
+
   const handleToggleSubjectiveGrading = async (
     submissionId: string,
     questionId: string,
@@ -998,6 +1039,7 @@ function DVETeacherWorkspace() {
     handleClearSelectedStudentProgress();
     setLoadingRoster(true);
     try {
+      handleLoadAllQuizSubmissions(subjectId);
       // 1. Get Subject details to know the department
       const sub = subjects.find((s) => s.id === subjectId);
       if (!sub) return;
@@ -1042,6 +1084,7 @@ function DVETeacherWorkspace() {
                 : activeStudyUnit?.sequence !== undefined
                   ? activeStudyUnit.sequence
                   : "",
+            studySeconds: existing ? existing.studySeconds || 0 : 0,
           };
         });
         setAttendanceRecords(newRecords);
@@ -1299,6 +1342,7 @@ function DVETeacherWorkspace() {
             : activeStudyUnit?.sequence !== undefined
               ? activeStudyUnit.sequence
               : "",
+        studySeconds: attendanceRecords[s.id]?.studySeconds || 0,
       }));
 
       const res = await fetch("/api/dve/attendances", {
@@ -1385,6 +1429,15 @@ function DVETeacherWorkspace() {
             ห้องควบคุมหลักสำหรับอาจารย์: จัดการรายวิชาการเรียนการสอน, สื่อและไฟล์การเรียนรายหน่วย,
             สร้างแบบทดสอบ และบันทึกประวัติการขาดลามาสายและผลงานนักศึกษา
           </p>
+          <div className="mt-4 flex gap-2">
+            <button
+              onClick={() => router.push("/dashboard/dve/grading")}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-white text-emerald-700 hover:bg-emerald-50 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer"
+            >
+              <ClipboardList className="w-4 h-4" />
+              <span>ระบบตรวจงานและให้คะแนน (Grading)</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2166,6 +2219,14 @@ function DVETeacherWorkspace() {
                             const isSubmitted = record?.assignmentStatus === "Submitted";
                             const isPending = record?.assignmentStatus === "Pending";
 
+                            const studentUnitSubs = allSubjectQuizSubmissions.filter(
+                              (sub) =>
+                                sub.studentId === selectedStudent.id &&
+                                String(sub.unitId || "").trim() === String(unit.id || unit._id || "").trim()
+                            );
+                            const pretestSub = studentUnitSubs.find((s) => s.quizType === "pretest");
+                            const posttestSub = studentUnitSubs.find((s) => s.quizType === "posttest");
+
                             return (
                               <div
                                 key={unit.id}
@@ -2184,6 +2245,20 @@ function DVETeacherWorkspace() {
                                     <span className="text-[10px] text-zinc-400 font-bold block">
                                       📅 บันทึกเมื่อ: {formatThaiDateDisplay(record.date)}
                                     </span>
+                                  )}
+                                  {(pretestSub || posttestSub) && (
+                                    <div className="flex flex-wrap gap-2 mt-1.5">
+                                      {pretestSub && (
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/30 text-indigo-650 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50 text-[9px] font-black">
+                                          ก่อนเรียน: {pretestSub.score} / {pretestSub.maxScore}
+                                        </span>
+                                      )}
+                                      {posttestSub && (
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-650 dark:text-purple-400 border border-purple-200/50 dark:border-purple-800/50 text-[9px] font-black">
+                                          หลังเรียน: {posttestSub.score} / {posttestSub.maxScore}
+                                        </span>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
 
@@ -2466,16 +2541,25 @@ function DVETeacherWorkspace() {
                               <th className="py-4 px-2 text-center">กลุ่มเรียน</th>
                               <th className="py-4 px-2 text-center">สถานะเวลาเรียน</th>
                               <th className="py-4 px-2 text-center">การส่งการบ้าน / งาน</th>
+                              <th className="py-4 px-2 text-center">ก่อนเรียน (Pre-test)</th>
+                              <th className="py-4 px-2 text-center">หลังเรียน (Post-test)</th>
                               <th className="py-4 px-2 text-right">คะแนน / หมายเหตุ</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
                             {displayedRoster.map((student) => {
                               const rec = attendanceRecords[student.id] || {
-                                status: "Absent",
-                                assignmentStatus: "None",
+                                status: "Absent" as const,
+                                assignmentStatus: "None" as const,
                                 score: "",
+                                studySeconds: 0,
                               };
+                              const pretestSub = unitQuizResultsByStudent[student.id]?.find(
+                                (s) => s.quizType === "pretest"
+                              );
+                              const posttestSub = unitQuizResultsByStudent[student.id]?.find(
+                                (s) => s.quizType === "posttest"
+                              );
                               return (
                                 <tr
                                   key={student.id}
@@ -2543,20 +2627,36 @@ function DVETeacherWorkspace() {
 
                                   {/* Column 4: Attendance Status Badge */}
                                   <td className="py-4 px-2 text-center">
-                                    <span
-                                      className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black border ${rec.status === "Present"
-                                        ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
-                                        : rec.status === "Late"
-                                          ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
-                                          : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
-                                        }`}
-                                    >
-                                      {rec.status === "Present"
-                                        ? "ตรงเวลา"
-                                        : rec.status === "Late"
-                                          ? "มาสาย"
-                                          : "ขาดเรียน"}
-                                    </span>
+                                    {rec.status === "Studying" ? (
+                                      <span className="inline-flex flex-col items-center px-2 py-1.5 rounded-full text-[10px] font-black border bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/60 animate-pulse">
+                                        <span>กำลังเรียนอยู่ ⏱️</span>
+                                        <span className="text-[9px] opacity-85 mt-0.5 font-bold">
+                                          {Math.round((rec.studySeconds || 0) / 60)} / {activeStudyUnit?.studyMinutes || 0} นาที
+                                        </span>
+                                      </span>
+                                    ) : (
+                                      <span
+                                        className={`inline-flex flex-col items-center px-3 py-1 rounded-full text-[10px] font-black border ${rec.status === "Present"
+                                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+                                          : rec.status === "Late"
+                                            ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+                                            : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
+                                          }`}
+                                      >
+                                        <span>
+                                          {rec.status === "Present"
+                                            ? "ตรงเวลา"
+                                            : rec.status === "Late"
+                                              ? "มาสาย"
+                                              : "ยังไม่เข้าเรียน"}
+                                        </span>
+                                        {(rec.studySeconds || 0) > 0 && (
+                                          <span className="text-[9px] opacity-75 mt-0.5 font-bold">
+                                            ({Math.round((rec.studySeconds || 0) / 60)} นาที)
+                                          </span>
+                                        )}
+                                      </span>
+                                    )}
                                   </td>
 
                                   {/* Column 5: Assignment Status Badge */}
@@ -2575,6 +2675,44 @@ function DVETeacherWorkspace() {
                                           ? "ค้างส่ง"
                                           : "ไม่มีงาน"}
                                     </span>
+                                  </td>
+
+                                  {/* Column: Pre-test */}
+                                  <td className="py-4 px-2 text-center">
+                                    {pretestSub ? (
+                                      <span className="inline-flex flex-col items-center">
+                                        <span className="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/30 text-indigo-650 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50 font-black text-[10px]">
+                                          {pretestSub.score} / {pretestSub.maxScore}
+                                        </span>
+                                        <span className="text-[8px] text-zinc-400 mt-0.5">
+                                          {new Date(pretestSub.submittedAt).toLocaleDateString("th-TH", {
+                                            day: "2-digit",
+                                            month: "short",
+                                          })}
+                                        </span>
+                                      </span>
+                                    ) : (
+                                      <span className="text-zinc-400 text-[10px] italic">ยังไม่ทำ</span>
+                                    )}
+                                  </td>
+
+                                  {/* Column: Post-test */}
+                                  <td className="py-4 px-2 text-center">
+                                    {posttestSub ? (
+                                      <span className="inline-flex flex-col items-center">
+                                        <span className="px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-650 dark:text-purple-400 border border-purple-200/50 dark:border-purple-800/50 font-black text-[10px]">
+                                          {posttestSub.score} / {posttestSub.maxScore}
+                                        </span>
+                                        <span className="text-[8px] text-zinc-400 mt-0.5">
+                                          {new Date(posttestSub.submittedAt).toLocaleDateString("th-TH", {
+                                            day: "2-digit",
+                                            month: "short",
+                                          })}
+                                        </span>
+                                      </span>
+                                    ) : (
+                                      <span className="text-zinc-400 text-[10px] italic">ยังไม่ทำ</span>
+                                    )}
                                   </td>
 
                                   {/* Column 6: Score / Edit Action */}
@@ -2619,6 +2757,7 @@ function DVETeacherWorkspace() {
                                               rec.unitSequence !== undefined && rec.unitSequence !== ""
                                                 ? rec.unitSequence
                                                 : activeStudyUnit?.sequence || "",
+                                            studySeconds: rec.studySeconds || 0,
                                           });
                                         }}
                                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
@@ -2657,10 +2796,17 @@ function DVETeacherWorkspace() {
                       <div className="block sm:hidden space-y-4">
                         {displayedRoster.map((student) => {
                           const rec = attendanceRecords[student.id] || {
-                            status: "Absent",
-                            assignmentStatus: "None",
+                            status: "Absent" as const,
+                            assignmentStatus: "None" as const,
                             score: "",
+                            studySeconds: 0,
                           };
+                          const pretestSub = unitQuizResultsByStudent[student.id]?.find(
+                            (s) => s.quizType === "pretest"
+                          );
+                          const posttestSub = unitQuizResultsByStudent[student.id]?.find(
+                            (s) => s.quizType === "posttest"
+                          );
                           return (
                             <div
                               key={student.id}
@@ -2722,20 +2868,27 @@ function DVETeacherWorkspace() {
 
                               <div className="flex flex-wrap gap-2 border-t dark:border-zinc-800/80 pt-3 items-center justify-between">
                                 <div className="flex flex-wrap gap-1.5">
-                                  <span
-                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${rec.status === "Present"
-                                      ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
-                                      : rec.status === "Late"
-                                        ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
-                                        : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
-                                      }`}
-                                  >
-                                    {rec.status === "Present"
-                                      ? "ตรงเวลา"
-                                      : rec.status === "Late"
-                                        ? "มาสาย"
-                                        : "ขาดเรียน"}
-                                  </span>
+                                  {rec.status === "Studying" ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 border-indigo-500/20 animate-pulse">
+                                      กำลังเรียนอยู่ ⏱️ ({Math.round((rec.studySeconds || 0) / 60)}/{activeStudyUnit?.studyMinutes || 0} น.)
+                                    </span>
+                                  ) : (
+                                    <span
+                                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${rec.status === "Present"
+                                        ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+                                        : rec.status === "Late"
+                                          ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+                                          : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
+                                        }`}
+                                    >
+                                      {rec.status === "Present"
+                                        ? "ตรงเวลา"
+                                        : rec.status === "Late"
+                                          ? "มาสาย"
+                                          : "ยังไม่เข้าเรียน"}
+                                      {(rec.studySeconds || 0) > 0 && ` (${Math.round((rec.studySeconds || 0) / 60)} น.)`}
+                                    </span>
+                                  )}
                                   <span
                                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${rec.assignmentStatus === "Submitted"
                                       ? "bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/60"
@@ -2757,6 +2910,22 @@ function DVETeacherWorkspace() {
                                     </span>
                                   </span>
                                 </div>
+
+                                {/* Quiz Scores on Mobile */}
+                                {(pretestSub || posttestSub) && (
+                                  <div className="flex flex-wrap gap-2 text-[10px] font-bold text-zinc-500 mt-2 bg-zinc-150/45 dark:bg-zinc-900/40 p-2 rounded-lg border dark:border-zinc-800/80 w-full">
+                                    {pretestSub && (
+                                      <span className="flex items-center gap-1.5">
+                                        📝 ก่อนเรียน: <span className="font-black text-indigo-600 dark:text-indigo-450 bg-indigo-50 dark:bg-indigo-950/30 px-1.5 py-0.5 rounded border border-indigo-250 dark:border-indigo-800/50">{pretestSub.score} / {pretestSub.maxScore}</span>
+                                      </span>
+                                    )}
+                                    {posttestSub && (
+                                      <span className="flex items-center gap-1.5">
+                                        📝 หลังเรียน: <span className="font-black text-purple-650 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 px-1.5 py-0.5 rounded border border-purple-250 dark:border-purple-800/50">{posttestSub.score} / {posttestSub.maxScore}</span>
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                                 <div className="flex gap-2">
                                   {rec.imageUrl && (
                                     <a
@@ -2788,6 +2957,7 @@ function DVETeacherWorkspace() {
                                           rec.unitSequence !== undefined && rec.unitSequence !== ""
                                             ? rec.unitSequence
                                             : activeStudyUnit?.sequence || "",
+                                        studySeconds: rec.studySeconds || 0,
                                       });
                                     }}
                                     className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
@@ -5375,6 +5545,7 @@ function DVETeacherWorkspace() {
                           editingStudent.unitSequence !== undefined && editingStudent.unitSequence !== ""
                             ? editingStudent.unitSequence
                             : activeStudyUnit?.sequence || "",
+                        studySeconds: editingStudent.studySeconds || 0,
                       },
                     }));
                     message.success(

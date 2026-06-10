@@ -270,18 +270,44 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const quizId = searchParams.get("quizId")?.trim();
+    const subjectId = searchParams.get("subjectId")?.trim();
 
-    if (!quizId) {
-      return NextResponse.json({ error: "Missing quizId" }, { status: 400 });
+    if (!quizId && !subjectId) {
+      return NextResponse.json({ error: "Missing quizId or subjectId" }, { status: 400 });
     }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const submissions = await db.collection("dve_quiz_submissions")
-      .find({ quizId })
-      .sort({ submittedAt: -1 })
-      .toArray();
+    let submissions: any[] = [];
+    if (quizId) {
+      submissions = await db.collection("dve_quiz_submissions")
+        .find({ quizId })
+        .sort({ submittedAt: -1 })
+        .toArray();
+    } else if (subjectId) {
+      // Find all quizzes in this subject first
+      const quizzes = await db.collection("dve_quizzes")
+        .find({ subjectId })
+        .project({ _id: 1, title: 1, quizType: 1, unitId: 1 })
+        .toArray();
+      const quizIds = quizzes.map(q => q._id.toString());
+      
+      const rawSubmissions = await db.collection("dve_quiz_submissions")
+        .find({ quizId: { $in: quizIds } })
+        .sort({ submittedAt: -1 })
+        .toArray();
+        
+      submissions = rawSubmissions.map(s => {
+        const quiz = quizzes.find(q => q._id.toString() === s.quizId);
+        return {
+          ...s,
+          quizTitle: quiz?.title || "",
+          quizType: quiz?.quizType || "general",
+          unitId: quiz?.unitId || "",
+        };
+      });
+    }
 
     // Enrich submissions with classGroupId and studentIdNum from users collection
     const enriched = await Promise.all(
@@ -299,7 +325,7 @@ export async function GET(req: Request) {
           }
         } catch (_) {}
         return {
-          id: s._id.toString(),
+          id: s._id?.toString() || s.id || "",
           quizId: s.quizId,
           studentId: s.studentId,
           studentName: s.studentName,
@@ -311,6 +337,9 @@ export async function GET(req: Request) {
           fileUrl: s.fileUrl || "",
           fileName: s.fileName || "",
           submittedAt: s.submittedAt,
+          quizTitle: s.quizTitle || "",
+          quizType: s.quizType || "general",
+          unitId: s.unitId || "",
         };
       })
     );
