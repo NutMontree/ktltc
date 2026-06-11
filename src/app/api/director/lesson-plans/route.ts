@@ -2,11 +2,34 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
-export async function GET() {
+import { auth } from "@/auth";
+
+export async function GET(req: Request) {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = session.user as any;
+    const { searchParams } = new URL(req.url);
+    const teacherParam = searchParams.get("teacher");
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const plans = await db.collection("lesson_plans").find({}).sort({ createdAt: -1 }).toArray();
+
+    let query: any = {};
+    const isDirector = user.role === "director" || user.role === "super_admin";
+    
+    if (!isDirector) {
+      // Teachers can only view their own plans
+      query = { teacherName: user.name || user.username };
+    } else if (teacherParam) {
+      // Directors can filter by teacher query parameter
+      query = { teacherName: teacherParam };
+    }
+
+    const plans = await db.collection("lesson_plans").find(query).sort({ createdAt: -1 }).toArray();
     return NextResponse.json(plans);
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch lesson plans" }, { status: 500 });
@@ -15,6 +38,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    const user = session?.user as any || { name: "System", id: "system" };
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const body = await req.json();
@@ -27,6 +52,28 @@ export async function POST(req: Request) {
     };
     
     const result = await db.collection("lesson_plans").insertOne(newPlan);
+
+    // Notify directors and super_admins
+    const targetUsers = await db.collection("users").find({
+      role: { $in: ["director", "super_admin"] }
+    }).project({ _id: 1 }).toArray();
+
+    if (targetUsers.length > 0) {
+      const notifications = targetUsers.map(u => ({
+        userId: new ObjectId(u._id),
+        title: "แผนการสอนใหม่",
+        message: `ครู ${newPlan.teacherName || user.name || 'ไม่ระบุชื่อ'} ได้ส่งแผนการสอน/บันทึกหลังสอนใหม่`,
+        type: "info",
+        isRead: false,
+        read: false,
+        from: user.id || "system",
+        fromName: user.name || "System",
+        targetUrl: "/dashboard/director/lesson-plans",
+        createdAt: new Date()
+      }));
+      await db.collection("notifications").insertMany(notifications);
+    }
+
     return NextResponse.json({ ...newPlan, _id: result.insertedId }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: "Failed to create lesson plan" }, { status: 500 });
@@ -38,7 +85,7 @@ export async function PATCH(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const body = await req.json();
-    const { _id, status, feedback, subject, title, fileUrl, semester, academicYear } = body;
+    const { _id, status, feedback, subject, title, fileUrl, semester, academicYear, hasAfterClassNote } = body;
     
     if (!_id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
     
@@ -52,6 +99,7 @@ export async function PATCH(req: Request) {
     if (fileUrl) updateData.fileUrl = fileUrl;
     if (semester) updateData.semester = semester;
     if (academicYear) updateData.academicYear = academicYear;
+    if (hasAfterClassNote !== undefined) updateData.hasAfterClassNote = hasAfterClassNote;
 
 
     await db.collection("lesson_plans").updateOne(

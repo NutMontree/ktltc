@@ -23,6 +23,8 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import Link from "next/link";
@@ -63,6 +65,7 @@ export default function TeacherStudentsPage() {
   const [selectedDept, setSelectedDept] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<string>("");
   const [searchName, setSearchName] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const [students, setStudents] = useState<Student[]>([]);
   const [classGroups, setClassGroups] = useState<string[]>([]);
@@ -393,6 +396,34 @@ export default function TeacherStudentsPage() {
                 animate="show"
                 className="space-y-6"
               >
+                {/* View Toggle */}
+                <div className="flex justify-end">
+                  <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-1 flex gap-1 shadow-sm">
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      className={`p-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                        viewMode === "grid" 
+                          ? "bg-slate-100 dark:bg-zinc-800 text-blue-600 dark:text-blue-400" 
+                          : "text-slate-500 hover:bg-slate-50 dark:hover:bg-zinc-800/50"
+                      }`}
+                    >
+                      <LayoutGrid className="w-4 h-4" />
+                      กริด
+                    </button>
+                    <button
+                      onClick={() => setViewMode("list")}
+                      className={`p-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                        viewMode === "list" 
+                          ? "bg-slate-100 dark:bg-zinc-800 text-blue-600 dark:text-blue-400" 
+                          : "text-slate-500 hover:bg-slate-50 dark:hover:bg-zinc-800/50"
+                      }`}
+                    >
+                      <List className="w-4 h-4" />
+                      รายการ
+                    </button>
+                  </div>
+                </div>
+
                 {grouped.map(([group, groupStudents]) => (
                   <motion.div key={group} variants={item} className="space-y-3">
                     {/* Group Header */}
@@ -407,8 +438,8 @@ export default function TeacherStudentsPage() {
                       <div className="h-px flex-1 bg-slate-200 dark:bg-zinc-800" />
                     </div>
 
-                    {/* Student Cards Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {/* Student Cards */}
+                    <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" : "flex flex-col gap-3"}>
                       {groupStudents.map((student, idx) => {
                         const isActive = student.studentStatus === "กำลังศึกษา";
                         return (
@@ -434,46 +465,67 @@ export default function TeacherStudentsPage() {
                               </div>
 
                               {/* Info */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-1">
-                                  <h3 className="text-xs font-black text-slate-800 dark:text-zinc-100 leading-tight truncate">
-                                    {student.name}
-                                  </h3>
-                                  <span
-                                    className={`shrink-0 inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full border ${
-                                      isActive
-                                        ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
-                                        : "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900"
-                                    }`}
-                                  >
-                                    {isActive ? (
-                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    ) : (
-                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                              {/* Info */}
+                              <div className={`flex-1 min-w-0 flex ${viewMode === "list" ? "flex-col sm:flex-row sm:items-center sm:justify-between gap-3" : "flex-col gap-1"}`}>
+                                <div>
+                                  <div className="flex items-start gap-2">
+                                    <h3 className="text-sm font-black text-slate-800 dark:text-zinc-100 leading-tight truncate">
+                                      {student.name}
+                                    </h3>
+                                    {viewMode === "list" && (
+                                      <span
+                                        className={`shrink-0 inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                                          isActive
+                                            ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
+                                            : "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900"
+                                        }`}
+                                      >
+                                        {isActive ? (
+                                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        ) : (
+                                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                        )}
+                                        {student.studentStatus}
+                                      </span>
                                     )}
-                                    {student.studentStatus}
-                                  </span>
+                                  </div>
+                                  {viewMode === "grid" && (
+                                    <span
+                                      className={`shrink-0 inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full border mt-1 ${
+                                        isActive
+                                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
+                                          : "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900"
+                                      }`}
+                                    >
+                                      {isActive ? (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                      ) : (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                      )}
+                                      {student.studentStatus}
+                                    </span>
+                                  )}
+
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    <span className="text-[9px] font-bold bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-md">
+                                      {student.academicLevel}
+                                    </span>
+                                    <span className="text-[9px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-md border border-blue-100 dark:border-blue-900/50">
+                                      {student.learnerType}
+                                    </span>
+                                  </div>
                                 </div>
 
-                                <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                  <span className="text-[9px] font-bold bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-md">
-                                    {student.academicLevel}
-                                  </span>
-                                  <span className="text-[9px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-md border border-blue-100 dark:border-blue-900/50">
-                                    {student.learnerType}
-                                  </span>
-                                </div>
-
-                                {/* Contact (hover to show) */}
-                                <div className="mt-2 space-y-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                {/* Contact */}
+                                <div className={`flex items-center gap-4 ${viewMode === "grid" ? "mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" : "shrink-0 ml-auto"}`}>
                                   {student.phone && (
-                                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 flex items-center gap-1">
-                                      <Phone className="w-3 h-3" /> {student.phone}
+                                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 flex items-center gap-1.5">
+                                      <Phone className="w-3.5 h-3.5" /> {student.phone}
                                     </p>
                                   )}
                                   {student.email && (
-                                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 flex items-center gap-1 truncate">
-                                      <Mail className="w-3 h-3 shrink-0" />
+                                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 flex items-center gap-1.5 max-w-[150px] truncate">
+                                      <Mail className="w-3.5 h-3.5 shrink-0" />
                                       <span className="truncate">{student.email}</span>
                                     </p>
                                   )}

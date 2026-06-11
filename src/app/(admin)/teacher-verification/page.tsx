@@ -60,6 +60,18 @@ interface Teacher {
   plcHours?: number;
   paStatus?: "approved" | "pending" | "not_started";
   sdqCompletion?: number;
+  checklist?: {
+    hasLessonPlan?: boolean;
+    hasAfterClassNote?: boolean;
+    videoCount?: number;
+    hasStudentOutcome?: boolean;
+    evidenceLink?: string;
+  };
+  supervisions?: Array<{
+    date: string;
+    score: number;
+    maxScore: number;
+  }>;
 }
 
 export default function TeacherVerificationPage() {
@@ -73,6 +85,10 @@ export default function TeacherVerificationPage() {
   const [imagePreview, setImagePreview] = useState<{ url: string; name: string } | null>(null);
   const [departments, setDepartments] = useState<string[]>([]);
   const [checkingAccess, setCheckingAccess] = useState(true);
+  const [teacherLessonPlans, setTeacherLessonPlans] = useState<any[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(false);
+  const [planFilterYear, setPlanFilterYear] = useState<string>("");
+  const [planFilterSemester, setPlanFilterSemester] = useState<string>("");
 
   // Filters
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
@@ -155,6 +171,28 @@ export default function TeacherVerificationPage() {
       filtered = filtered.filter((t) => t.name.toLowerCase().includes(query) || t.email.toLowerCase().includes(query));
     }
     setFilteredTeachers(filtered);
+  };
+
+  // ดึงแผนการสอนของครูที่เลือก
+  useEffect(() => {
+    if (selectedTeacher) {
+      fetchTeacherLessonPlans(selectedTeacher.name);
+    } else {
+      setTeacherLessonPlans([]);
+    }
+  }, [selectedTeacher]);
+
+  const fetchTeacherLessonPlans = async (teacherName: string) => {
+    setLoadingPlans(true);
+    try {
+      const res = await fetch(`/api/director/lesson-plans?teacher=${encodeURIComponent(teacherName)}`);
+      const data = await res.json();
+      setTeacherLessonPlans(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Fetch lesson plans error:", err);
+      setTeacherLessonPlans([]);
+    }
+    setLoadingPlans(false);
   };
 
   if (status === "loading" || checkingAccess) {
@@ -402,19 +440,148 @@ export default function TeacherVerificationPage() {
                       </div>
                     </div>
 
-                    <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-slate-100 dark:border-zinc-800">
-                      <h3 className="font-black text-slate-800 dark:text-white mb-4 uppercase tracking-wider">รายวิชาที่รับผิดชอบ</h3>
-                      <div className="space-y-3">
-                        {selectedTeacher.subjects.map(s => (
-                          <div key={s.id} className="p-4 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl flex justify-between items-center">
-                            <div>
-                              <p className="font-bold text-slate-800 dark:text-white">[{s.code}] {s.name}</p>
-                              <p className="text-xs font-bold text-slate-500 uppercase mt-1">จำนวนคาบ: {s.hoursPerDay || 2} คาบ/สัปดาห์</p>
-                            </div>
-                            <button onClick={() => router.push(`/dashboard/director/lesson-plans?teacher=${encodeURIComponent(selectedTeacher.name)}`)} className="px-4 py-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-widest">ดูแผนการสอน</button>
-                          </div>
+                    {/* ตัวกรอง ปี/เทอม สำหรับแผนการสอน */}
+                    <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-100 dark:border-zinc-800">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">กรองแผนการสอน:</span>
+                      <select
+                        className="px-3 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl bg-slate-50 dark:bg-zinc-800 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        value={planFilterYear}
+                        onChange={e => setPlanFilterYear(e.target.value)}
+                      >
+                        <option value="">📅 ทุกปีการศึกษา</option>
+                        {Array.from({ length: 5 }, (_, i) => String(new Date().getFullYear() + 543 - 3 + i)).map(y => (
+                          <option key={y} value={y}>{y}</option>
                         ))}
+                      </select>
+                      <select
+                        className="px-3 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl bg-slate-50 dark:bg-zinc-800 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        value={planFilterSemester}
+                        onChange={e => setPlanFilterSemester(e.target.value)}
+                      >
+                        <option value="">📌 ทุกเทอม</option>
+                        <option value="1">เทอม 1</option>
+                        <option value="2">เทอม 2</option>
+                        <option value="3">เทอม 3</option>
+                      </select>
+                      {(planFilterYear || planFilterSemester) && (
+                        <button onClick={() => { setPlanFilterYear(""); setPlanFilterSemester(""); }} className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-rose-500 bg-rose-50 dark:bg-rose-950/30 rounded-xl hover:bg-rose-100 transition-colors">
+                          ✕ ล้างตัวกรอง
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-slate-100 dark:border-zinc-800">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-black text-slate-800 dark:text-white uppercase tracking-wider">รายวิชาที่รับผิดชอบ</h3>
+                        <button onClick={() => router.push(`/dashboard/director/lesson-plans?teacher=${encodeURIComponent(selectedTeacher.name)}`)} className="px-3 py-1.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition-colors">
+                          ดูทั้งหมดในหน้าแผนการสอน →
+                        </button>
                       </div>
+                      <div className="space-y-3">
+                        {selectedTeacher.subjects.map(s => {
+                          // กรองแผนการสอนตาม ปี/เทอม ก่อน แล้วค่อย match วิชา
+                          const filteredLessonPlans = teacherLessonPlans.filter((lp: any) => {
+                            if (planFilterYear && lp.academicYear !== planFilterYear) return false;
+                            if (planFilterSemester && lp.semester !== planFilterSemester) return false;
+                            return true;
+                          });
+                          const matchingPlans = filteredLessonPlans.filter((lp: any) =>
+                            lp.subject === s.name || lp.subject === s.code || lp.subject?.includes(s.name) || s.name?.includes(lp.subject)
+                          );
+                          return (
+                            <div key={s.id} className="p-4 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl">
+                              <div className="flex justify-between items-start gap-3 mb-2">
+                                <div>
+                                  <p className="font-bold text-slate-800 dark:text-white">[{s.code}] {s.name}</p>
+                                  <p className="text-xs font-bold text-slate-500 uppercase mt-1">จำนวนคาบ: {s.hoursPerDay || 2} คาบ/สัปดาห์</p>
+                                </div>
+                                {matchingPlans.length > 0 ? (
+                                  <span className="text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider whitespace-nowrap"><CheckCircle size={12} className="inline mr-1" />มีแผน {matchingPlans.length} ฉบับ</span>
+                                ) : (
+                                  <span className="text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider whitespace-nowrap"><AlertCircle size={12} className="inline mr-1" />ยังไม่มีแผน</span>
+                                )}
+                              </div>
+                              {/* แสดงรายการแผนการสอนที่ตรง */}
+                              {loadingPlans ? (
+                                <p className="text-xs text-slate-400 mt-2">กำลังโหลดแผนการสอน...</p>
+                              ) : matchingPlans.length > 0 ? (
+                                <div className="mt-3 space-y-2 pl-2 border-l-2 border-emerald-200 dark:border-emerald-800">
+                                  {matchingPlans.map((lp: any) => (
+                                    <div key={lp._id} className="flex items-center justify-between gap-3 p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-100 dark:border-zinc-700">
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{lp.title}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <span className="text-[10px] font-bold text-slate-400">เทอม {lp.semester}/{lp.academicYear}</span>
+                                          <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${
+                                            lp.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' :
+                                            lp.status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400' :
+                                            'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400'
+                                          }`}>
+                                            {lp.status === 'approved' ? 'อนุมัติแล้ว' : lp.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      {lp.fileUrl ? (
+                                        <a href={lp.fileUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors">
+                                          <FileText size={13} /> เปิด PDF
+                                        </a>
+                                      ) : (
+                                        <span className="text-[10px] text-slate-400 font-bold">ไม่มีไฟล์</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* แสดงแผนการสอนที่ไม่ตรงกับวิชาใด */}
+                      {teacherLessonPlans.length > 0 && (() => {
+                        const filteredAll = teacherLessonPlans.filter((lp: any) => {
+                          if (planFilterYear && lp.academicYear !== planFilterYear) return false;
+                          if (planFilterSemester && lp.semester !== planFilterSemester) return false;
+                          return true;
+                        });
+                        const unmatchedPlans = filteredAll.filter((lp: any) => {
+                          return !selectedTeacher.subjects.some(s =>
+                            lp.subject === s.name || lp.subject === s.code || lp.subject?.includes(s.name) || s.name?.includes(lp.subject)
+                          );
+                        });
+                        if (unmatchedPlans.length === 0) return null;
+                        return (
+                          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-zinc-800">
+                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">แผนการสอนอื่นๆ ที่ส่ง ({unmatchedPlans.length} ฉบับ)</h4>
+                            <div className="space-y-2">
+                              {unmatchedPlans.map((lp: any) => (
+                                <div key={lp._id} className="flex items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-700">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{lp.subject} — {lp.title}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <span className="text-[10px] font-bold text-slate-400">เทอม {lp.semester}/{lp.academicYear}</span>
+                                      <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${
+                                        lp.status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
+                                        lp.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
+                                        'bg-amber-50 text-amber-600'
+                                      }`}>
+                                        {lp.status === 'approved' ? 'อนุมัติแล้ว' : lp.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  {lp.fileUrl ? (
+                                    <a href={lp.fileUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-indigo-100 transition-colors">
+                                      <FileText size={13} /> เปิด PDF
+                                    </a>
+                                  ) : (
+                                    <span className="text-[10px] text-slate-400 font-bold">ไม่มีไฟล์</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 )}
@@ -449,7 +616,7 @@ export default function TeacherVerificationPage() {
                             <span className="text-sm font-bold">2. บันทึกหลังสอนครบถ้วน</span>
                           </div>
                           <div className="flex items-center gap-3">
-                            {selectedTeacher.checklist?.videoCount >= 2 ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />} 
+                            {(selectedTeacher.checklist?.videoCount || 0) >= 2 ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />} 
                             <span className="text-sm font-bold">3. อัปโหลดคลิปวิดีโอการสอน ({selectedTeacher.checklist?.videoCount || 0}/2 คลิป)</span>
                           </div>
                           <div className="flex items-center gap-3">

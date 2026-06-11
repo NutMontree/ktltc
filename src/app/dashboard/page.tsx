@@ -461,20 +461,24 @@ export default function DashboardLoader() {
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                <ActionCard
-                  href="/student/flagpole"
-                  title="เช็คชื่อเข้าแถว"
-                  icon={Clock}
-                  desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/dashboard/dve/student"
-                  title="ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)"
-                  icon={BookOpen}
-                  desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
-                  variants={item}
-                />
+                {["super_admin", "admin", "student"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
+                  <>
+                    <ActionCard
+                      href="/student/flagpole"
+                      title="เช็คชื่อเข้าแถว"
+                      icon={Clock}
+                      desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/dashboard/dve/student"
+                      title="ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)"
+                      icon={BookOpen}
+                      desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
+                      variants={item}
+                    />
+                  </>
+                )}
                 <ActionCard
                   href="/dashboard/chat"
                   title="กล่องข้อความ"
@@ -683,34 +687,38 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
-                <ActionCard
-                  href="/attendance-dashboard"
-                  title="ภาพรวมการเข้างาน"
-                  icon={CalendarCheck}
-                  desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/attendance-report"
-                  title="รายงานการเข้างาน"
-                  icon={Clock}
-                  desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/work-reports"
-                  title="รายงานการปฏิบัติงาน"
-                  icon={FileText}
-                  desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/leave-approvals"
-                  title="อนุมัติการลางาน"
-                  icon={CalendarCheck}
-                  desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
-                  variants={item}
-                />
+                {["super_admin", "admin", "director", "hr"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
+                  <>
+                    <ActionCard
+                      href="/attendance-dashboard"
+                      title="ภาพรวมการเข้างาน"
+                      icon={CalendarCheck}
+                      desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/attendance-report"
+                      title="รายงานการเข้างาน"
+                      icon={Clock}
+                      desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/work-reports"
+                      title="รายงานการปฏิบัติงาน"
+                      icon={FileText}
+                      desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/leave-approvals"
+                      title="อนุมัติการลางาน"
+                      icon={CalendarCheck}
+                      desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
+                      variants={item}
+                    />
+                  </>
+                )}
                 {((session?.user as any)?.role === "super_admin" || permissions?.manage_supervision_requests) && (
                   <ActionCard
                     href="/dashboard/supervision/requests"

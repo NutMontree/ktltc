@@ -594,8 +594,9 @@ function FlagpoleReportsManagementContent() {
                 <input
                   type="date"
                   value={startDate}
+                  onClick={(e) => 'showPicker' in e.target && (e.target as any).showPicker()}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
                 />
               </div>
             </div>
@@ -612,8 +613,9 @@ function FlagpoleReportsManagementContent() {
                 <input
                   type="date"
                   value={endDate}
+                  onClick={(e) => 'showPicker' in e.target && (e.target as any).showPicker()}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
                 />
               </div>
             </div>
