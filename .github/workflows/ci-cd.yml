@@ -13,6 +13,18 @@ jobs:
     name: Build and Promote to Production
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    env:
+      MONGODB_URI: mongodb://localhost:27017/ktltc_db
+      AUTH_SECRET: dummy_secret_auth_key_for_building
+      NEXTAUTH_SECRET: dummy_secret_auth_key_for_building
+      NEXTAUTH_URL: http://localhost:3000
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
