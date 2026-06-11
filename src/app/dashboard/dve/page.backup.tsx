@@ -4507,9 +4507,9 @@ function DVETeacherWorkspace() {
                   </button>
                 </div>
 
-                <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto bg-zinc-50/30 dark:bg-zinc-950/30">
+                <div className="p-2 space-y-6 max-h-[75vh] overflow-y-auto bg-zinc-50/30 dark:bg-zinc-950/30">
                   {/* Section 1: ข้อมูลทั่วไป (General Information) */}
-                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm">
+                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 pace-y-4 shadow-sm">
                     <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
                       <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
                         ℹ️ ข้อมูลทั่วไป (General Info)
@@ -4582,7 +4582,7 @@ function DVETeacherWorkspace() {
                   </div>
 
                   {/* Section 2: การตั้งค่าระบบ (System Settings) */}
-                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm">
+                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 pace-y-4 shadow-sm">
                     <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
                       <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
                         ⚙️ การตั้งค่าระบบ (Settings)
@@ -4677,7 +4677,7 @@ function DVETeacherWorkspace() {
 
                   {/* Section 3: จัดการคำถามแบบทดสอบ (Quiz Content) */}
                   {quizForm.isBuiltIn && (
-                    <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm animate-fade-in">
+                    <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 pace-y-4 shadow-sm animate-fade-in">
                       <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
                         <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
                           📝 จัดการคำถามแบบทดสอบ (Quiz Content)
