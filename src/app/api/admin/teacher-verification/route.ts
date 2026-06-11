@@ -124,7 +124,18 @@ export async function GET(req: Request) {
       .project({ _id: 1, subjectId: 1, date: 1, students: 1 })
       .toArray();
 
+
+    const teacherNames = teachers.map((t) => t.name);
+
+    // Fetch real metrics from collections
+    const lessonPlans = await db.collection("lesson_plans").find({ teacherName: { $in: teacherNames } }).toArray();
+    const plcRecords = await db.collection("plc_records").find({ participants: { $in: teacherNames } }).toArray();
+    const dpaEvaluations = await db.collection("dpa_evaluations").find({ teacherName: { $in: teacherNames } }).toArray();
+    const studentCares = await db.collection("student_care_records").find({ teacherName: { $in: teacherNames } }).toArray();
+    const supervisionRecords = await db.collection("supervision_records").find({ teacherName: { $in: teacherNames } }).toArray();
+
     // Group data by teacher
+
     const teacherData = teachers.map((teacher) => {
       const teacherIdStr = teacher._id.toString();
       const teacherSubjects = subjects.filter((s) => s.teacherId === teacherIdStr);
@@ -144,6 +155,39 @@ export async function GET(req: Request) {
         const attDate = new Date(a.date);
         return attDate >= sevenDaysAgo;
       });
+
+
+      // Real Data calculation
+      const lessonPlanStatus = lessonPlans.some(lp => lp.teacherName === teacher.name) ? "submitted" : "missing";
+      const plcHours = plcRecords
+        .filter(p => p.participants && p.participants.includes(teacher.name))
+        .reduce((sum, p) => sum + (Number(p.durationHours) || 0), 0);
+      
+      const teacherDpa = dpaEvaluations.find(d => d.teacherName === teacher.name);
+      const paStatus = teacherDpa && (teacherDpa.status === "evaluated" || teacherDpa.status === "approved") ? "approved" : "pending";
+      
+      
+      const teacherLessonPlans = lessonPlans.filter(lp => lp.teacherName === teacher.name);
+      const checklist = {
+        hasLessonPlan: teacherLessonPlans.length > 0,
+        hasAfterClassNote: teacherLessonPlans.some(lp => lp.hasAfterClassNote),
+        videoCount: teacherDpa?.videoUrls?.length || 0,
+        hasStudentOutcome: (teacherDpa?.studentOutcomeUrls?.length || 0) > 0,
+        evidenceLink: teacherDpa?.evidenceLinks?.[0] || null
+      };
+      
+      const supervisions = supervisionRecords.filter(s => s.teacherName === teacher.name).map(s => ({
+        score: s.score,
+        maxScore: s.maxScore,
+        date: s.supervisionDate
+      }));
+
+      const hasStudentCare = studentCares.some(sc => sc.teacherName === teacher.name);
+      const sdqCompletion = hasStudentCare ? 100 : 0;
+      
+      const teachingHours = teacherSubjects.length > 0 
+        ? teacherSubjects.reduce((sum, s) => sum + ((Number(s.daysPerWeek) || 1) * (Number(s.hoursPerDay) || 2)), 0)
+        : 0;
 
       return {
         id: teacherIdStr,
@@ -172,6 +216,13 @@ export async function GET(req: Request) {
             : null,
         },
         isActive: totalClasses > 0,
+        lessonPlanStatus,
+        plcHours,
+        paStatus,
+        sdqCompletion,
+        checklist,
+        supervisions,
+        teachingHours
       };
     });
 

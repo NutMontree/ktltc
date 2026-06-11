@@ -96,7 +96,17 @@ export default function LessonPlansPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <input type="text" placeholder="ชื่อวิชา" className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm" value={newPlan.subject} onChange={e => setNewPlan({...newPlan, subject: e.target.value})} />
                   <input type="text" placeholder="หัวข้อ/เรื่องที่สอน" className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm" value={newPlan.title} onChange={e => setNewPlan({...newPlan, title: e.target.value})} />
-                  <input type="text" placeholder="ลิงก์ไฟล์แนบ (Google Drive)" className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm" value={newPlan.fileUrl} onChange={e => setNewPlan({...newPlan, fileUrl: e.target.value})} />
+                  <input 
+                    type="file" 
+                    accept=".pdf,.doc,.docx,.xls,.xlsx" 
+                    className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" 
+                    onChange={e => {
+                      if (e.target.files && e.target.files[0]) {
+                        // จำลองการอัปโหลดไฟล์ โดยเก็บเป็นชื่อไฟล์ไว้ก่อน
+                        setNewPlan({...newPlan, fileUrl: e.target.files[0].name});
+                      }
+                    }} 
+                  />
                 </div>
                 <button onClick={handleAdd} className="bg-emerald-600 text-white px-6 py-2 rounded-xl text-sm font-bold">บันทึกข้อมูล</button>
               </div>

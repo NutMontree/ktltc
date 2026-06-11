@@ -154,7 +154,17 @@ export async function GET(req: Request) {
       ? Math.round(((thisWeekClasses - lastWeekClasses) / lastWeekClasses) * 100) 
       : 0;
 
+
+    const teacherNames = teachers.map((t) => t.name);
+
+    // Fetch real metrics from collections
+    const lessonPlans = await db.collection("lesson_plans").find({ teacherName: { $in: teacherNames } }).toArray();
+    const plcRecords = await db.collection("plc_records").find({ participants: { $in: teacherNames } }).toArray();
+    const dpaEvaluations = await db.collection("dpa_evaluations").find({ teacherName: { $in: teacherNames } }).toArray();
+    const studentCares = await db.collection("student_care_records").find({ teacherName: { $in: teacherNames } }).toArray();
+
     // Calculate teacher activities
+
     const teacherActivities = teachers.map((teacher) => {
       const teacherIdStr = teacher._id.toString();
       const teacherSubjects = subjects.filter((s) => s.teacherId === teacherIdStr);
@@ -185,6 +195,23 @@ export async function GET(req: Request) {
         }
       }
 
+
+      // Real Data calculation
+      const lessonPlanSubmitted = lessonPlans.some(lp => lp.teacherName === teacher.name);
+      const plcHours = plcRecords
+        .filter(p => p.participants && p.participants.includes(teacher.name))
+        .reduce((sum, p) => sum + (Number(p.durationHours) || 0), 0);
+      
+      const teacherDpa = dpaEvaluations.find(d => d.teacherName === teacher.name);
+      const paStatus = teacherDpa && (teacherDpa.status === "evaluated" || teacherDpa.status === "approved") ? "approved" : "pending";
+      
+      const hasStudentCare = studentCares.some(sc => sc.teacherName === teacher.name);
+      const sdqCompleted = hasStudentCare;
+      
+      const teachingHoursPerWeek = teacherSubjects.length > 0 
+        ? teacherSubjects.reduce((sum, s) => sum + ((Number(s.daysPerWeek) || 1) * (Number(s.hoursPerDay) || 2)), 0)
+        : 0;
+
       return {
         teacherId: teacherIdStr,
         teacherName: teacher.name,
@@ -196,6 +223,11 @@ export async function GET(req: Request) {
         subjects: teacherSubjects.length,
         status,
         image: teacher.image,
+        lessonPlanSubmitted,
+        plcHours,
+        paStatus,
+        sdqCompleted,
+        teachingHoursPerWeek
       };
     });
 

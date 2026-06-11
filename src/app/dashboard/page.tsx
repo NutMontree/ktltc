@@ -441,111 +441,167 @@ export default function DashboardLoader() {
           )}
 
           {/* --- Quick Actions Section --- */}
-          <div>
-            <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 flex items-center gap-4">
-                เมนูการจัดการข้อมูล (Administrative)
-                <span className="h-px bg-indigo-500/10 flex-1" />
-              </h2>
-              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                เครื่องมือจัดการเนื้อหาและข่าวสารของวิทยาลัย
-              </span>
-            </motion.div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-              {permissions?.manage_news && (
-                <ActionCard
-                  href="/dashboard/news"
-                  title="จัดการข่าวสาร / ประชาสัมพันธ์"
-                  icon={Newspaper}
-                  desc="ลงข่าวประชาสัมพันธ์และกิจกรรมล่าสุด"
-                  variants={item}
-                />
-              )}
-
-              {(session?.user as any)?.role === "super_admin" || permissions?.manage_home ? (
-                <ActionCard
-                  href="/dashboard/manage-home"
-                  title="ปรับแต่งหน้าหลัก"
-                  icon={Globe}
-                  desc="จัดการแบนเนอร์และประกาศหน้าแรก"
-                  variants={item}
-                />
-              ) : null}
-              {(session?.user as any)?.role === "super_admin" || permissions?.manage_navbar ? (
-                <ActionCard
-                  href="/dashboard/navbar"
-                  title="เมนูเว็บไซต์"
-                  icon={Navigation}
-                  desc="ตั้งค่าโครงสร้างเมนูและลิงก์เชื่อมโยง"
-                  variants={item}
-                />
-              ) : null}
-              {permissions?.manage_pages && (
-                <ActionCard
-                  href="/dashboard/pages"
-                  title="เนื้อหาหน้าเว็บ"
-                  icon={FileText}
-                  desc="จัดการข้อมูลและเนื้อหาในแต่ละหน้า"
-                  variants={item}
-                />
-              )}
-              {permissions?.manage_qa && (
-                <ActionCard
-                  href="/dashboard/questions"
-                  title="ระบบถาม-ตอบ"
-                  icon={MessageSquare}
-                  desc="จัดการคำถามและข้อร้องเรียนจากผู้ใช้"
-                  badge={stats.totalPendingQA > 0 ? stats.totalPendingQA : null}
-                  variants={item}
-                />
-              )}
-              {((session?.user as any)?.role === "super_admin" || permissions?.manage_supervision_requests) && (
-                <ActionCard
-                  href="/dashboard/supervision/requests"
-                  title="คำร้องการนิเทศ"
-                  icon={ShieldCheck}
-                  desc="ตรวจพิจารณาและอนุมัติผลการนิเทศ"
-                  variants={item}
-                />
-              )}
-              <ActionCard
-                href="/"
-                title="ดูเว็บไซต์จริง"
-                icon={ArrowUpRight}
-                desc="เปิดหน้าเว็บไซต์หลักในแท็บใหม่"
-                external
-                variants={item}
-              />
-            </div>
-          </div>
-
-          {/* --- OIT Section --- */}
-          {[
-            "super_admin",
-            "admin",
-            "editor",
-            "hr",
-            "director",
-            "deputy_resource",
-            "deputy_strategy",
-            "deputy_academic",
-            "deputy_student_affairs",
-            "teacher",
-            "staff",
-          ].includes(((session?.user as any)?.role || "").toLowerCase()) && (
+          {/* ============================== */}
+          {/* 1. STUDENT WORKSPACE */}
+          {/* ============================== */}
+          {(permissions?.student_dashboard ||
+            ((session?.user as any)?.role || "").toLowerCase() === "student" ||
+            ["super_admin", "admin"].includes(
+              ((session?.user as any)?.role || "").toLowerCase(),
+            )) && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
-                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (OIT)
-                  <span className="h-px bg-teal-500/10 flex-1" />
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 flex items-center gap-4">
+                  <Clock className="w-4 h-4" /> สำหรับนักเรียน นักศึกษา (Student Workspace)
+                  <span className="h-px bg-indigo-500/10 flex-1" />
                 </h2>
                 <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  เครื่องมือประเมินคุณธรรมและความโปร่งใสสำหรับการเผยแพร่ข้อมูลต่อสาธารณะ
+                  พื้นที่เข้าใช้งานการเช็คชื่อเข้าเรียน ศูนย์เรียนรู้ทวิภาคี และระบบแชท
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <ActionCard
+                  href="/student/flagpole"
+                  title="เช็คชื่อเข้าแถว"
+                  icon={Clock}
+                  desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/dve/student"
+                  title="ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)"
+                  icon={BookOpen}
+                  desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/chat"
+                  title="กล่องข้อความ"
+                  icon={MessageSquare}
+                  desc="ระบบติดต่อสื่อสาร ส่งข้อความ และคุยแชทประสานงานอาจารย์"
+                  variants={item}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ============================== */}
+          {/* 2. TEACHER WORKSPACE */}
+          {/* ============================== */}
+          {["super_admin", "admin", "editor", "teacher"].includes(
+            ((session?.user as any)?.role || "").toLowerCase()
+          ) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 flex items-center gap-4">
+                  <Users className="w-4 h-4" /> สำหรับครูและอาจารย์ผู้สอน (Teacher Workspace)
+                  <span className="h-px bg-violet-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  เครื่องมือจัดการและตรวจสอบข้อมูลนักเรียนในที่ปรึกษา / ประจำแผนกวิชา
                 </span>
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                <ActionCard
+                  href="/teacher/students"
+                  title="รายชื่อนักเรียนประจำแผนก"
+                  icon={Users}
+                  desc="ตรวจสอบประวัตินักเรียน แยกตามห้องเรียนและกลุ่มเรียน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/supervision"
+                  title="การนิเทศนักศึกษาฝึกงาน"
+                  icon={ClipboardList}
+                  desc="จัดการข้อมูลและบันทึกผลการนิเทศนักเรียนนักศึกษา"
+                  variants={item}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ============================== */}
+          {/* 3. STAFF & HR WORKSPACE */}
+          {/* ============================== */}
+          {["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(
+            ((session?.user as any)?.role || "").toLowerCase()
+          ) && (
+            <div>
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
+                  <ClipboardList className="w-4 h-4" /> สำหรับบุคลากร และ เจ้าหน้าที่ (Staff & HR Workspace)
+                  <span className="h-px bg-teal-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  เครื่องมือจัดการข่าวสาร คลังเอกสาร และระบบติดตามผู้เรียน
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                {!["user", "student"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
+                  <ActionCard
+                    href="/dashboard/drive"
+                    title="คลังไฟล์ (Drive)"
+                    icon={HardDrive}
+                    desc="จัดการไฟล์เอกสารและสื่อดิจิทัลทั้งหมด"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_news && (
+                  <ActionCard
+                    href="/dashboard/news"
+                    title="จัดการข่าวสาร / ประชาสัมพันธ์"
+                    icon={Newspaper}
+                    desc="ลงข่าวประชาสัมพันธ์และกิจกรรมล่าสุด"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_qa && (
+                  <ActionCard
+                    href="/dashboard/questions"
+                    title="ระบบถาม-ตอบ"
+                    icon={MessageSquare}
+                    desc="จัดการคำถามและข้อร้องเรียนจากผู้ใช้"
+                    badge={stats?.totalPendingQA > 0 ? stats.totalPendingQA : null}
+                    variants={item}
+                  />
+                )}
+                {(permissions?.manage_flagpole_data || ["super_admin", "admin", "deputy_student_affairs"].includes(((session?.user as any)?.role || "").toLowerCase())) && (
+                  <ActionCard
+                    href="/dashboard/flagpole-data-management"
+                    title="แก้ไขข้อมูลการเข้าแถว"
+                    icon={ClipboardList}
+                    desc="เครื่องมือปรับแก้พิกัด ระยะห่าง และวันเวลาลงชื่อของนักเรียน"
+                    variants={item}
+                  />
+                )}
+                {(["super_admin", "admin", "deputy_student_affairs"].includes(((session?.user as any)?.role || "").toLowerCase()) || (permissions?.student_dashboard && ((session?.user as any)?.role || "").toLowerCase() !== "student")) && (
+                  <>
+                    <ActionCard
+                      href="/dashboard/flagpole-dashboard"
+                      title="ภาพรวมการเข้าแถว"
+                      icon={Layers}
+                      desc="รายงานสถิติ แผนที่ และภาพรวมการเข้าแถวหน้าเสาธง"
+                      variants={item}
+                    />
+                    <ActionCard
+                      href="/dashboard/flagpole-reports"
+                      title="ระบบรายงานการเข้าแถว"
+                      icon={FileText}
+                      desc="ตรวจสอบ แก้ไข และออกรายงานสรุปประวัติเข้าแถวนักศึกษา"
+                      variants={item}
+                    />
+                  </>
+                )}
+                <ActionCard
+                  href="/student-data-validation"
+                  title="ตรวจสอบข้อมูลนักเรียน"
+                  icon={ShieldCheck}
+                  desc="ตรวจสอบความถูกต้องของข้อมูลส่วนตัวนักเรียน"
+                  variants={item}
+                />
                 <ActionCard
                   href="/dashboard/ita"
                   title="จัดการข้อมูล ITA / OIT"
@@ -557,222 +613,18 @@ export default function DashboardLoader() {
             </div>
           )}
 
-          {/* --- Super Admin Management Section --- */}
-          {(session?.user as any)?.role === "super_admin" && (
+          {/* ============================== */}
+          {/* 4. EXECUTIVE WORKSPACE */}
+          {/* ============================== */}
+          {(permissions?.access_teacher_verification || permissions?.access_teacher_dashboard || permissions?.access_lesson_plans || permissions?.access_dpa_evaluation || permissions?.access_plc || permissions?.access_student_care || ["super_admin", "admin", "director", "hr"].includes(((session?.user as any)?.role || "").toLowerCase())) && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 flex items-center gap-4">
-                  <Shield className="w-4 h-4" /> ระบบจัดการข้อมูล
-                  <span className="h-px bg-sky-500/10 flex-1" />
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-rose-600 dark:text-rose-400 flex items-center gap-4">
+                  <UserCog className="w-4 h-4" /> สำหรับผู้บริหาร (Executive Workspace)
+                  <span className="h-px bg-rose-500/10 flex-1" />
                 </h2>
                 <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  เครื่องมือบริหารจัดการระบบและบุคลากร
-                </span>
-              </motion.div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                <ActionCard
-                  href="/dashboard/permissions"
-                  title="จัดการสิทธิ์การเข้าถึงเมนูและฟังก์ชันต่างๆ"
-                  icon={Shield}
-                  desc="กำหนดสิทธิ์การเข้าถึงแยกตามรายบุคคล"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/dashboard/data-management"
-                  title="แก้ไขข้อมูลการลงเวลา"
-                  icon={ClipboardList}
-                  desc="ตรวจสอบและแก้ไขข้อมูลการเข้า-ออกงาน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/work-reports-management"
-                  title="แก้ไขรายงานการปฏิบัติงาน"
-                  icon={FileText}
-                  desc="บริหารจัดการข้อมูลรายงานการปฏิบัติงาน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/attendance-dashboard"
-                  title="ภาพรวมการเข้างาน"
-                  icon={CalendarCheck}
-                  desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/attendance-report"
-                  title="รายงานการเข้างาน"
-                  icon={Clock}
-                  desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/work-reports"
-                  title="รายงานการปฏิบัติงาน"
-                  icon={FileText}
-                  desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/leave-approvals"
-                  title="อนุมัติการลางาน"
-                  icon={CalendarCheck}
-                  desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/manage-roles"
-                  title="จัดการ สิทธิ์บุคลากร"
-                  icon={UserCog}
-                  desc="จัดการระดับผู้ใช้งานและบทบาทหน้าที่"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/attendance-settings"
-                  title="ตั้งค่าระบบลงเวลา"
-                  icon={Settings}
-                  desc="กำหนดตารางเวลาทำงานและเกณฑ์สาย"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/student-data-validation"
-                  title="ตรวจสอบข้อมูลนักเรียน"
-                  icon={ShieldCheck}
-                  desc="ตรวจสอบความถูกต้องของข้อมูลส่วนตัวนักเรียน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/broadcast-notification"
-                  title="ส่งข้อความแจ้งเตือน"
-                  icon={Bell}
-                  desc="ส่งข้อความแจ้งเตือนถึงแผนก/บทบาทที่เลือก"
-                  variants={item}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* --- Drive Section --- */}
-          {!["user", "student"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
-            <div>
-              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 flex items-center gap-4">
-                  <HardDrive className="w-4 h-4" /> คลังไฟล์งาน
-                  <span className="h-px bg-amber-500/10 flex-1" />
-                </h2>
-              </motion.div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-                <ActionCard
-                  href="/dashboard/drive"
-                  title="คลังไฟล์ (Drive)"
-                  icon={HardDrive}
-                  desc="จัดการไฟล์เอกสารและสื่อดิจิทัลทั้งหมด"
-                  variants={item}
-                />
-
-                {((session?.user as any)?.role || "").toLowerCase() === "super_admin" && (
-                  <>
-                    <motion.div variants={item}>
-                      <button
-                        onClick={async () => {
-                          if (
-                            confirm(
-                              "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตจำนวนผู้เข้าชมทั้งหมดของทุกโฟลเดอร์ให้กลับเป็น 0?",
-                            )
-                          ) {
-                            try {
-                              const res = await fetch("/api/drive/folders?reset=true");
-                              if (res.ok) {
-                                alert("รีเซ็ตจำนวนผู้เข้าชมทั้งหมดเป็น 0 เรียบร้อยแล้ว!");
-                              } else {
-                                alert("เกิดข้อผิดพลาดในการรีเซ็ต");
-                              }
-                            } catch (e) {
-                              alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
-                            }
-                          }
-                        }}
-                        className="text-left w-full h-full group relative flex flex-col p-px rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-amber-500 hover:to-orange-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-2 cursor-pointer"
-                      >
-                        <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-7 rounded-[2.45rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
-                          <div className="absolute -right-4 -bottom-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
-                            <Settings size={120} />
-                          </div>
-
-                          <div className="w-14 h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center mb-6 group-hover:bg-linear-to-br group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner text-amber-500">
-                            <Settings size={24} />
-                          </div>
-
-                          <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-2 truncate">
-                            รีเซ็ตยอดดูเป็น 0
-                          </h3>
-                          <p className="text-zinc-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-snug mb-6">
-                            รีเซ็ตยอดเข้าชมสะสมของโฟลเดอร์ทั้งหมดกลับเป็นศูนย์
-                          </p>
-
-                          <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
-                            ล้างค่าทันที <ArrowUpRight size={14} strokeWidth={3} />
-                          </div>
-                        </div>
-                      </button>
-                    </motion.div>
-
-                    <motion.div
-                      variants={item}
-                      className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 flex flex-col justify-center p-6 bg-amber-50/50 dark:bg-amber-950/10 border border-amber-100/30 rounded-[2.5rem]"
-                    >
-                      <h4 className="text-xs font-black text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                        💡 <strong>คำอธิบายระบบรีเซ็ต (Reset Views Junction)</strong>
-                      </h4>
-                      <p className="text-[11px] text-slate-600 dark:text-zinc-400 leading-relaxed font-bold">
-                        ปุ่มด้านซ้ายนี้จะทำหน้าที่ล้างยอดผู้เข้าชมสะสม (Views) ของทุกๆ
-                        โฟลเดอร์ในระบบคลังเอกสาร Drive ให้กลับเป็น 0 เพื่อเริ่มเก็บสถิติใหม่ทั้งหมด
-                      </p>
-                      <p className="text-[10px] text-slate-500 dark:text-zinc-500 mt-2 font-medium">
-                        โดยตัวปุ่มจะเรียกใช้ API เบื้องหลังซึ่งเข้าถึงได้ผ่าน URL เหล่านี้โดยตรง:
-                      </p>
-                      <div className="mt-1 space-y-1 font-mono text-[9px] break-all">
-                        <p>
-                          • Local:{" "}
-                          <a
-                            href="http://localhost:3000/api/drive/folders?reset=true"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline"
-                          >
-                            http://localhost:3000/api/drive/folders?reset=true
-                          </a>
-                        </p>
-                        <p>
-                          • Prod:{" "}
-                          <a
-                            href="https://ktltc.ac.th/api/drive/folders?reset=true"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline"
-                          >
-                            https://ktltc.ac.th/api/drive/folders?reset=true
-                          </a>
-                        </p>
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* --- Executive Section --- */}
-          {(permissions?.access_teacher_verification || permissions?.access_teacher_dashboard || permissions?.access_lesson_plans || permissions?.access_dpa_evaluation || permissions?.access_plc || permissions?.access_student_care) && (
-            <div>
-              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 flex items-center gap-4">
-                  <UserCog className="w-4 h-4" /> เมนูสำหรับผู้บริหาร
-                  <span className="h-px bg-violet-500/10 flex-1" />
-                </h2>
-                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  เครื่องมือติดตาม ตรวจสอบ และวิเคราะห์การปฏิบัติงานจัดการเรียนการสอนของครู
+                  เครื่องมือติดตาม ตรวจสอบ และวิเคราะห์ภาพรวมการปฏิบัติงาน
                 </span>
               </motion.div>
 
@@ -831,132 +683,179 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
+                <ActionCard
+                  href="/attendance-dashboard"
+                  title="ภาพรวมการเข้างาน"
+                  icon={CalendarCheck}
+                  desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/attendance-report"
+                  title="รายงานการเข้างาน"
+                  icon={Clock}
+                  desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/work-reports"
+                  title="รายงานการปฏิบัติงาน"
+                  icon={FileText}
+                  desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/leave-approvals"
+                  title="อนุมัติการลางาน"
+                  icon={CalendarCheck}
+                  desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
+                  variants={item}
+                />
+                {((session?.user as any)?.role === "super_admin" || permissions?.manage_supervision_requests) && (
+                  <ActionCard
+                    href="/dashboard/supervision/requests"
+                    title="คำร้องการนิเทศ"
+                    icon={ShieldCheck}
+                    desc="ตรวจพิจารณาและอนุมัติผลการนิเทศ"
+                    variants={item}
+                  />
+                )}
               </div>
             </div>
           )}
 
-          {/* --- Teacher Section --- */}
-          {["super_admin", "admin", "editor", "teacher"].includes(
-            ((session?.user as any)?.role || "").toLowerCase()
-          ) && (
+          {/* ============================== */}
+          {/* 5. SUPER ADMIN WORKSPACE */}
+          {/* ============================== */}
+          {(session?.user as any)?.role === "super_admin" && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 flex items-center gap-4">
-                  <Users className="w-4 h-4" /> สำหรับครูและอาจารย์ผู้สอน
-                  <span className="h-px bg-violet-500/10 flex-1" />
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 flex items-center gap-4">
+                  <Shield className="w-4 h-4" /> สำหรับผู้ดูแลระบบสูงสุด (Super Admin Only)
+                  <span className="h-px bg-sky-500/10 flex-1" />
                 </h2>
                 <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  เครื่องมือจัดการและตรวจสอบข้อมูลนักเรียนในที่ปรึกษา / ประจำแผนกวิชา
-                </span>
-              </motion.div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-                <ActionCard
-                  href="/teacher/students"
-                  title="รายชื่อนักเรียนประจำแผนก"
-                  icon={Users}
-                  desc="ตรวจสอบประวัตินักเรียน แยกตามห้องเรียนและกลุ่มเรียน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/dashboard/supervision"
-                  title="การนิเทศนักศึกษาฝึกงาน"
-                  icon={ClipboardList}
-                  desc="จัดการข้อมูลและบันทึกผลการนิเทศนักเรียนนักศึกษา"
-                  variants={item}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* --- Student Section --- */}
-          {(permissions?.student_dashboard ||
-            ((session?.user as any)?.role || "").toLowerCase() === "student" ||
-            ["super_admin", "admin"].includes(
-              ((session?.user as any)?.role || "").toLowerCase(),
-            )) && (
-            <div>
-              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 flex items-center gap-4">
-                  <Clock className="w-4 h-4" /> สำหรับนักเรียน นักศึกษา (Student Workspace)
-                  <span className="h-px bg-indigo-500/10 flex-1" />
-                </h2>
-                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  พื้นที่เข้าใช้งานการเช็คชื่อเข้าเรียน ตารางเรียน และระบบแชทติดต่อสื่อสาร
+                  เครื่องมือบริหารจัดการระบบและบุคลากรขั้นสูง
                 </span>
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 <ActionCard
-                  href="/student/flagpole"
-                  title="เช็คชื่อเข้าแถว"
-                  icon={Clock}
-                  desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
+                  href="/dashboard/permissions"
+                  title="จัดการสิทธิ์การเข้าถึงเมนูและฟังก์ชันต่างๆ"
+                  icon={Shield}
+                  desc="กำหนดสิทธิ์การเข้าถึงแยกตามรายบุคคล"
                   variants={item}
                 />
-
                 <ActionCard
-                  href="/dashboard/dve/student"
-                  title="ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)"
-                  icon={BookOpen}
-                  desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
+                  href="/manage-roles"
+                  title="จัดการ สิทธิ์บุคลากร"
+                  icon={UserCog}
+                  desc="จัดการระดับผู้ใช้งานและบทบาทหน้าที่"
                   variants={item}
                 />
-
                 <ActionCard
-                  href="/dashboard/chat"
-                  title="กล่องข้อความ"
-                  icon={MessageSquare}
-                  desc="ระบบติดต่อสื่อสาร ส่งข้อความ และคุยแชทประสานงานอาจารย์"
+                  href="/attendance-settings"
+                  title="ตั้งค่าระบบลงเวลา"
+                  icon={Settings}
+                  desc="กำหนดตารางเวลาทำงานและเกณฑ์สาย"
                   variants={item}
                 />
+                <ActionCard
+                  href="/dashboard/flagpole-settings"
+                  title="ตั้งค่าเวลาเข้าแถว"
+                  icon={Settings}
+                  desc="จัดการกฎและเวลาเข้าแถวเสาธงของนักเรียน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/broadcast-notification"
+                  title="ส่งข้อความแจ้งเตือน"
+                  icon={Bell}
+                  desc="ส่งข้อความแจ้งเตือนถึงแผนก/บทบาทที่เลือก"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/manage-home"
+                  title="ปรับแต่งหน้าหลัก"
+                  icon={Globe}
+                  desc="จัดการแบนเนอร์และประกาศหน้าแรก"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/navbar"
+                  title="เมนูเว็บไซต์"
+                  icon={Navigation}
+                  desc="ตั้งค่าโครงสร้างเมนูและลิงก์เชื่อมโยง"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/pages"
+                  title="เนื้อหาหน้าเว็บ"
+                  icon={FileText}
+                  desc="จัดการข้อมูลและเนื้อหาในแต่ละหน้า"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/dashboard/data-management"
+                  title="แก้ไขข้อมูลการลงเวลา"
+                  icon={ClipboardList}
+                  desc="ตรวจสอบและแก้ไขข้อมูลการเข้า-ออกงาน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/work-reports-management"
+                  title="แก้ไขรายงานการปฏิบัติงาน"
+                  icon={FileText}
+                  desc="บริหารจัดการข้อมูลรายงานการปฏิบัติงาน"
+                  variants={item}
+                />
+                
+                {/* Reset views logic component directly here for super admin */}
+                <motion.div variants={item}>
+                  <button
+                    onClick={async () => {
+                      if (
+                        confirm(
+                          "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตจำนวนผู้เข้าชมทั้งหมดของทุกโฟลเดอร์ให้กลับเป็น 0?",
+                        )
+                      ) {
+                        try {
+                          const res = await fetch("/api/drive/folders?reset=true");
+                          if (res.ok) {
+                            alert("รีเซ็ตจำนวนผู้เข้าชมทั้งหมดเป็น 0 เรียบร้อยแล้ว!");
+                          } else {
+                            alert("เกิดข้อผิดพลาดในการรีเซ็ต");
+                          }
+                        } catch (e) {
+                          alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+                        }
+                      }
+                    }}
+                    className="text-left w-full h-full group relative flex flex-col p-px rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-amber-500 hover:to-orange-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-2 cursor-pointer"
+                  >
+                    <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-7 rounded-[2.45rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
+                      <div className="absolute -right-4 -bottom-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
+                        <Settings size={120} />
+                      </div>
 
-                {(["super_admin", "admin", "deputy_student_affairs"].includes(
-                  ((session?.user as any)?.role || "").toLowerCase(),
-                ) ||
-                  (permissions?.student_dashboard &&
-                    ((session?.user as any)?.role || "").toLowerCase() !== "student")) && (
-                  <>
-                    <ActionCard
-                      href="/dashboard/flagpole-dashboard"
-                      title="ภาพรวมการเข้าแถว"
-                      icon={Layers}
-                      desc="รายงานสถิติ แผนที่ และภาพรวมการเข้าแถวหน้าเสาธง"
-                      variants={item}
-                    />
-                    <ActionCard
-                      href="/dashboard/flagpole-reports"
-                      title="ระบบรายงานการเข้าแถว"
-                      icon={FileText}
-                      desc="ตรวจสอบ แก้ไข และออกรายงานสรุปประวัติเข้าแถวนักศึกษา"
-                      variants={item}
-                    />
-                    {(permissions?.manage_flagpole_data ||
-                      ["super_admin", "admin", "deputy_student_affairs"].includes(
-                        ((session?.user as any)?.role || "").toLowerCase(),
-                      )) && (
-                      <ActionCard
-                        href="/dashboard/flagpole-data-management"
-                        title="แก้ไขข้อมูลการเข้าแถว"
-                        icon={ClipboardList}
-                        desc="เครื่องมือปรับแก้พิกัด ระยะห่าง และวันเวลาลงชื่อของนักเรียน"
-                        variants={item}
-                      />
-                    )}
-                    {(permissions?.manage_flagpole_settings ||
-                      ["super_admin", "admin", "deputy_student_affairs"].includes(
-                        ((session?.user as any)?.role || "").toLowerCase(),
-                      )) && (
-                      <ActionCard
-                        href="/dashboard/flagpole-settings"
-                        title="ตั้งค่าเวลาเข้าแถว"
-                        icon={Settings}
-                        desc="จัดการกฎและเวลาเข้าแถวเสาธงของนักเรียน"
-                        variants={item}
-                      />
-                    )}
-                  </>
-                )}
+                      <div className="w-14 h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center mb-6 group-hover:bg-linear-to-br group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner text-amber-500">
+                        <Settings size={24} />
+                      </div>
+
+                      <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-2 truncate">
+                        รีเซ็ตยอดดูเป็น 0
+                      </h3>
+                      <p className="text-zinc-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-snug mb-6">
+                        รีเซ็ตยอดเข้าชมสะสมของโฟลเดอร์ทั้งหมดกลับเป็นศูนย์
+                      </p>
+
+                      <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
+                        ล้างค่าทันที <ArrowUpRight size={14} strokeWidth={3} />
+                      </div>
+                    </div>
+                  </button>
+                </motion.div>
               </div>
             </div>
           )}
