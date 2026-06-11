@@ -14,9 +14,10 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  Users,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Select, InputNumber, message, Modal, Input } from "antd";
+import { Select, InputNumber, message, Modal, Input, Collapse } from "antd";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
@@ -41,7 +42,8 @@ interface GradingConfig {
 
 interface StudentGrade {
   id: string;
-  studentId: string;
+  studentId: string;      // MongoDB ObjectId ของ user
+  studentCode?: string;   // รหัสนักศึกษาตัวเลขจริง (จาก users collection)
   studentName: string;
   classGroupId?: string;
   subjectId: string;
@@ -67,9 +69,12 @@ export default function DVEGradingPage() {
   const [newStudentName, setNewStudentName] = useState<string>("");
   const [selectedClassGroup, setSelectedClassGroup] = useState<string>("");
 
-  const classGroups = Array.from(new Set(studentGrades.map(g => g.classGroupId || "ไม่ระบุกลุ่มเรียน"))).filter(Boolean).sort();
-  const filteredGrades = selectedClassGroup 
-    ? studentGrades.filter(g => (g.classGroupId || "ไม่ระบุกลุ่มเรียน") === selectedClassGroup) 
+  const classGroups = Array.from(
+    new Set(studentGrades.map((g) => g.classGroupId).filter((id) => id && id !== "ไม่ระบุห้องเรียน"))
+  ).sort() as string[];
+
+  const filteredGrades = selectedClassGroup
+    ? studentGrades.filter(g => g.classGroupId === selectedClassGroup)
     : studentGrades;
 
   const exportToExcel = () => {
@@ -86,9 +91,9 @@ export default function DVEGradingPage() {
     const data = filteredGrades.map((g, idx) => {
       const row: any = {
         "ลำดับ": idx + 1,
-        "รหัสนักศึกษา": g.studentId || "-",
+        "รหัสนักศึกษา": g.studentCode || "",
         "ชื่อ-นามสกุล": g.studentName || "-",
-        "กลุ่มเรียน": g.classGroupId || "-",
+        "ห้องเรียน": g.classGroupId || "-",
       };
 
       config.categories.forEach((cat) => {
@@ -122,9 +127,9 @@ export default function DVEGradingPage() {
     }
 
     const data = filteredGrades.map((g) => ({
-      "รหัสนักศึกษา": g.studentId || "-",
+      "รหัสนักศึกษา": g.studentCode || "",
       "ชื่อ-นามสกุล": g.studentName || "-",
-      "กลุ่มเรียน": g.classGroupId || "-",
+      "ห้องเรียน": g.classGroupId || "-",
       "เกรด": g.finalGrade,
       "คะแนนรวม": g.totalScore,
     }));
@@ -328,7 +333,36 @@ export default function DVEGradingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-sky-50 to-teal-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 p-6 font-sans">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-sky-50 to-teal-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 p-2 font-sans">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700;800&display=swap');
+        @page {
+          /* ตั้ง margin เป็น 0 เพื่อซ่อน Header/Footer ของ Browser (เช่น URL, เลขหน้า) */
+          margin: 0;
+        }
+        @media print {
+          body {
+            -webkit-print-color-adjust: exact;
+          }
+          #printable-grade-sheet,
+          #printable-grade-sheet * {
+            font-family: 'Sarabun', 'TH Sarabun PSK', 'TH SarabunPSK', sans-serif !important;
+          }
+          #printable-grade-sheet {
+            font-size: 16px;
+            /* ย้ายขอบกระดาษมาไว้ที่ padding แทน เพื่อไม่ให้ทับกับ Header ของ Browser */
+            padding: 10mm 6mm !important;
+          }
+          #printable-grade-sheet table {
+            font-size: 12px;
+          }
+          #printable-grade-sheet th,
+          #printable-grade-sheet td {
+            font-family: 'Sarabun', 'TH Sarabun PSK', 'TH SarabunPSK', sans-serif !important;
+            padding: 4px !important;
+          }
+        }
+      `}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8 p-6 sm:p-8 rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 relative overflow-hidden group">
@@ -351,7 +385,7 @@ export default function DVEGradingPage() {
         </div>
 
         {/* Subject Selection */}
-        <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-6 sm:p-8 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+        <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-4 sm:p-6 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <h2 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
               <span className="p-2 bg-blue-100 text-blue-600 rounded-xl">
@@ -380,15 +414,13 @@ export default function DVEGradingPage() {
             />
             {selectedSubjectId && classGroups.length > 0 && (
               <Select
-                placeholder="-- ทั้งหมด (ทุกห้องเรียน) --"
+                placeholder="-- เลือกห้องเรียน --"
                 value={selectedClassGroup || undefined}
                 onChange={(val) => setSelectedClassGroup(val || "")}
-                options={[
-                  { label: "-- ทั้งหมด (ทุกห้องเรียน) --", value: "" },
-                  ...classGroups.map(cg => ({ label: cg, value: cg }))
-                ]}
+                options={classGroups.map(cg => ({ label: cg, value: cg }))}
                 className="w-full h-12"
                 size="large"
+                allowClear
               />
             )}
           </div>
@@ -396,70 +428,84 @@ export default function DVEGradingPage() {
 
         {/* Grading Configuration */}
         {config && selectedSubjectId && (
-          <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-6 sm:p-8 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-              <h2 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
-                โครงสร้างการให้คะแนน
-              </h2>
-              <div className="text-xs font-black text-blue-700 dark:text-blue-400 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-full border border-blue-100 dark:border-blue-800/50 flex items-center gap-2 shadow-sm">
-                <CheckCircle className="w-3.5 h-3.5" />
-                รวม {config.totalPoints} คะแนน • เกณฑ์ผ่าน {config.passingScore} คะแนน
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {config.categories.map((category) => (
-                <div
-                  key={category.id}
-                  className="bg-white/80 dark:bg-zinc-800/60 rounded-[20px] p-5 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow-md transition-shadow hover:scale-[1.01]"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-black text-zinc-900 dark:text-white mb-1.5 text-sm">
-                        {category.name}
-                      </h3>
-                      <p className="text-sm font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 inline-block px-2.5 py-1 rounded-lg">
-                        {category.points} คะแนน
-                      </p>
+          <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-2 sm:p-4 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+            <Collapse
+              ghost
+              className="w-full"
+              items={[
+                {
+                  key: '1',
+                  label: (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4 pr-4">
+                      <h2 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
+                        โครงสร้างการให้คะแนน
+                      </h2>
+                      <div className="text-xs font-black text-blue-700 dark:text-blue-400 px-4 bg-blue-50 dark:bg-blue-900/20 rounded-full border border-blue-100 dark:border-blue-800/50 flex items-center gap-2 shadow-sm">
+                        <CheckCircle className="w-3.5 h-3.5" />
+                        รวม {config.totalPoints} คะแนน • เกณฑ์ผ่าน {config.passingScore} คะแนน
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-1.5 items-end">
-                      {category.cannotDeduct && (
-                        <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
-                          ลบไม่ได้
-                        </span>
-                      )}
-                      {category.required && (
-                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
-                          จำเป็น
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {category.description && (
-                    <p className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-2">
-                      {category.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+                  ),
+                  children: (
+                    <div className="pt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {config.categories.map((category) => (
+                          <div
+                            key={category.id}
+                            className="bg-white/80 dark:bg-zinc-800/60 rounded-[20px] p-5 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow-md transition-shadow hover:scale-[1.01]"
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <h3 className="font-black text-zinc-900 dark:text-white mb-1.5 text-sm">
+                                  {category.name}
+                                </h3>
+                                <p className="text-sm font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 inline-block px-2.5 py-1 rounded-lg">
+                                  {category.points} คะแนน
+                                </p>
+                              </div>
+                              <div className="flex flex-col gap-1.5 items-end">
+                                {category.cannotDeduct && (
+                                  <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                                    ลบไม่ได้
+                                  </span>
+                                )}
+                                {category.required && (
+                                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                                    จำเป็น
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {category.description && (
+                              <p className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-2">
+                                {category.description}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
 
-            {/* Grade Scale */}
-            <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-              <h3 className="text-sm font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-                เกณฑ์การตัดเกรด
-              </h3>
-              <div className="flex flex-wrap gap-2.5">
-                {config.gradeScale.map((scale) => (
-                  <span
-                    key={scale.grade}
-                    className="px-3.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 rounded-xl text-xs font-black shadow-sm border border-zinc-200 dark:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800 transition-colors"
-                  >
-                    เกรด {scale.grade} : {scale.minScore} ขึ้นไป <span className="opacity-60">({scale.description})</span>
-                  </span>
-                ))}
-              </div>
-            </div>
+                      {/* Grade Scale */}
+                      <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                        <h3 className="text-sm font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
+                          เกณฑ์การตัดเกรด
+                        </h3>
+                        <div className="flex flex-wrap gap-2.5">
+                          {config.gradeScale.map((scale) => (
+                            <span
+                              key={scale.grade}
+                              className="px-3.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 rounded-xl text-xs font-black shadow-sm border border-zinc-200 dark:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800 transition-colors"
+                            >
+                              เกรด {scale.grade} : {scale.minScore} ขึ้นไป <span className="opacity-60">({scale.description})</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+              ]}
+            />
           </div>
         )}
 
@@ -470,7 +516,7 @@ export default function DVEGradingPage() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
                   <span className="p-2 bg-amber-100 text-amber-600 rounded-xl">
-                    <GraduationCap className="w-5 h-5" />
+                    <Users className="w-5 h-5" />
                   </span>
                   คะแนนนักเรียน ({filteredGrades.length} คน)
                 </h2>
@@ -546,7 +592,7 @@ export default function DVEGradingPage() {
                         <p className="text-sm font-black text-zinc-900 dark:text-white">
                           {grade.studentName}
                         </p>
-                        {grade.classGroupId && grade.classGroupId !== "ไม่ระบุกลุ่มเรียน" && (
+                        {grade.classGroupId && grade.classGroupId !== "ไม่ระบุห้องเรียน" && (
                           <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded-full font-bold">
                             {grade.classGroupId}
                           </span>
@@ -752,16 +798,23 @@ export default function DVEGradingPage() {
 
         {/* Printable Area */}
         {config && selectedSubjectId && (
-          <div id="printable-grade-sheet" className="hidden print:block p-8 bg-white text-black font-sans w-full">
+          <div
+            id="printable-grade-sheet"
+            className="hidden print:block p-4 bg-white text-black w-full"
+            style={{ fontFamily: "'Sarabun', 'TH Sarabun PSK', 'TH SarabunPSK', sans-serif" }}
+          >
             <div className="text-center space-y-2 mb-6">
               <h2 className="text-2xl font-black">วิทยาลัยเทคนิคกันทรลักษ์</h2>
               <h3 className="text-xl font-bold">รายงานผลการประเมินการฝึกงานระบบทวิภาคี (Grade Sheet)</h3>
               <p className="text-sm">
                 <strong>วิชา:</strong> [{(subjects.find(s => s.id === selectedSubjectId))?.code}] {(subjects.find(s => s.id === selectedSubjectId))?.name} &nbsp;&nbsp;&nbsp;&nbsp;
                 <strong>แผนกวิชา:</strong> {(subjects.find(s => s.id === selectedSubjectId))?.department}
+                {selectedClassGroup && (
+                  <> &nbsp;&nbsp;&nbsp;&nbsp;<strong>ห้องเรียน:</strong> {selectedClassGroup}</>
+                )}
               </p>
             </div>
-            
+
             <table className="w-full border-collapse border border-black text-xs">
               <thead>
                 <tr>
@@ -777,10 +830,10 @@ export default function DVEGradingPage() {
                 </tr>
               </thead>
               <tbody>
-                {studentGrades.map((g, idx) => (
+                {filteredGrades.map((g, idx) => (
                   <tr key={g.id}>
                     <td className="border border-black p-2 text-center">{idx + 1}</td>
-                    <td className="border border-black p-2 text-center">{g.studentId}</td>
+                    <td className="border border-black p-2 text-center">{g.studentCode || ""}</td>
                     <td className="border border-black p-2 text-left">{g.studentName}</td>
                     {config.categories.map(cat => (
                       <td key={cat.id} className="border border-black p-2 text-center">{g.scores[cat.id] ?? 0}</td>
@@ -792,7 +845,7 @@ export default function DVEGradingPage() {
                 ))}
               </tbody>
             </table>
-            
+
             <div className="mt-12 flex justify-between text-sm">
               <div></div>
               <div className="text-center space-y-8">
@@ -804,7 +857,8 @@ export default function DVEGradingPage() {
           </div>
         )}
 
-        <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           @media print {
             body * {
               visibility: hidden;
