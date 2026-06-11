@@ -290,7 +290,7 @@ export default function StudentCarePage() {
                       <div>
                         <label className="block text-xs font-bold text-slate-500 mb-1.5">พิกัด GPS เยี่ยมบ้าน</label>
                         <div className="flex gap-2">
-                          <input type="text" placeholder="Lat, Lng" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-indigo-500 bg-slate-100 dark:bg-zinc-900 cursor-not-allowed" value={newCare.gpsLat ? `${newCare.gpsLat}, ${newCare.gpsLng}` : ''} readOnly />
+                          <input type="text" placeholder="Lat, Lng" className="w-full p-3 border rounded-xl dark:border-zinc-700 text-sm focus:ring-2 focus:ring-indigo-500 bg-slate-100 dark:bg-zinc-900 cursor-not-allowed" value={newCare.gpsLat ? `${newCare.gpsLat}, ${newCare.gpsLng}` : ''} readOnly />
                           <button onClick={getLocation} className="shrink-0 bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 p-3 rounded-xl hover:bg-indigo-200 transition-colors" title="ดึงพิกัดปัจจุบัน">
                             <MapPin size={20} />
                           </button>
@@ -385,7 +385,7 @@ export default function StudentCarePage() {
                           {r.recordType === 'home_visit' ? <Camera size={32} /> : <ShieldCheck size={32} />}
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-4">
+                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent flex items-end p-4">
                         <p className="text-white font-black text-lg leading-tight">{r.studentName}</p>
                       </div>
                     </div>
