@@ -223,7 +223,7 @@ export async function GET(req: Request) {
     if (studentIdsToFetch.length > 0) {
       const users = await db.collection("users")
         .find({ _id: { $in: studentIdsToFetch } })
-        .project({ _id: 1, classGroupId: 1, groupCode: 1, classroomName: 1 })
+        .project({ _id: 1, name: 1, classGroupId: 1, groupCode: 1, classroomName: 1, studentId: 1, studentIdNum: 1 })
         .toArray();
       userMap = new Map(users.map((u: any) => [u._id.toString(), u]));
     }
@@ -258,12 +258,18 @@ export async function GET(req: Request) {
       }
 
       const user = userMap.get(grade.studentId);
-      const classGroupId = resolveStudentClassGroup(user) || "ไม่ระบุกลุ่มเรียน";
+      const classGroupId = resolveStudentClassGroup(user) || "ไม่ระบุห้องเรียน";
+
+      // รหัสนักศึกษาตัวเลขจริง (studentIdNum หรือ studentId ใน users collection)
+      // ถ้าไม่ใช่ตัวเลขล้วน ให้ return เป็น string ว่าง
+      const rawCode = user?.studentIdNum || user?.studentId || "";
+      const studentCode = /^\d+$/.test(String(rawCode).trim()) ? String(rawCode).trim() : "";
 
       return {
         id: grade._id.toString(),
         studentId: grade.studentId,
-        studentName: grade.studentName,
+        studentCode,
+        studentName: user?.name || grade.studentName,
         classGroupId,
         subjectId: grade.subjectId,
         scores: grade.scores || {},
@@ -420,11 +426,13 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, scores, studentName } = body;
-
-    if (!id || !ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
-    }
+    const {
+      id,
+      scores,
+      studentName,
+      subjectId: bodySubjectId,
+      studentId: bodyStudentId,
+    } = body;
 
     if (!scores) {
       return NextResponse.json({ error: "Missing scores" }, { status: 400 });
@@ -434,14 +442,36 @@ export async function PUT(req: Request) {
     const db = client.db("ktltc_db");
     const userId = (session.user as any).id || "";
 
-    // Check if grade exists and user has access
-    const existing = await db.collection("dve_student_grades").findOne({ _id: new ObjectId(id) });
-    if (!existing) {
-      return NextResponse.json({ error: "Grade not found" }, { status: 404 });
+    // 1. Try to find existing grade by _id
+    let existing: any = null;
+    if (id && ObjectId.isValid(id)) {
+      existing = await db
+        .collection("dve_student_grades")
+        .findOne({ _id: new ObjectId(id) });
+    }
+
+    // 2. Fallback: find by subjectId + studentId
+    //    (นักเรียนที่มีคะแนนจาก attendance เท่านั้น ยังไม่มี grade record จริง)
+    if (!existing && bodySubjectId && bodyStudentId) {
+      existing = await db.collection("dve_student_grades").findOne({
+        subjectId: bodySubjectId,
+        studentId: bodyStudentId,
+      });
+    }
+
+    // Resolve subjectId from existing record or body
+    const subjectId = existing?.subjectId || bodySubjectId;
+    if (!subjectId) {
+      return NextResponse.json(
+        { error: "Missing subject information" },
+        { status: 400 }
+      );
     }
 
     // Check if user owns the subject
-    const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(existing.subjectId) });
+    const subject = await db
+      .collection("dve_subjects")
+      .findOne({ _id: new ObjectId(subjectId) });
     if (!subject) {
       return NextResponse.json({ error: "Subject not found" }, { status: 404 });
     }
@@ -451,7 +481,9 @@ export async function PUT(req: Request) {
     }
 
     // Get grading config
-    let config: any = await db.collection("dve_grading_configs").findOne({ subjectId: existing.subjectId });
+    let config: any = await db
+      .collection("dve_grading_configs")
+      .findOne({ subjectId });
     if (!config) {
       config = DEFAULT_GRADING_CONFIG;
     }
@@ -473,22 +505,43 @@ export async function PUT(req: Request) {
         );
       } else if (score < 0 || score > category.points) {
         return NextResponse.json(
-          { error: `Invalid score for category ${category.name}: must be between 0 and ${category.points}` },
+          {
+            error: `Invalid score for category ${category.name}: must be between 0 and ${category.points}`,
+          },
           { status: 400 }
         );
       }
     }
 
-    await db.collection("dve_student_grades").updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          scores,
-          ...(studentName && { studentName }),
-          updatedAt: new Date(),
-        },
+    if (existing) {
+      // Update existing record
+      await db.collection("dve_student_grades").updateOne(
+        { _id: existing._id },
+        {
+          $set: {
+            scores,
+            ...(studentName && { studentName }),
+            updatedAt: new Date(),
+          },
+        }
+      );
+    } else {
+      // สร้าง record ใหม่ (upsert — นักเรียนที่มีแต่ attendance scores ได้รับการบันทึกคะแนนครั้งแรก)
+      if (!bodyStudentId) {
+        return NextResponse.json(
+          { error: "Missing student ID" },
+          { status: 400 }
+        );
       }
-    );
+      await db.collection("dve_student_grades").insertOne({
+        subjectId,
+        studentId: bodyStudentId,
+        studentName: studentName || "ไม่ทราบชื่อ",
+        scores,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
 
     return NextResponse.json({
       success: true,

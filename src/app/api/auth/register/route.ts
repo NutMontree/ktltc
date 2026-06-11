@@ -172,7 +172,20 @@ export async function POST(req: Request) {
       newUser.citizenId = citizenId;
       newUser.studentId = studentIdNum;
       newUser.studentIdNum = studentIdNum; // Save both for backwards compatibility just in case
-      newUser.classGroupId = classGroupId;
+      
+      let rawGroup = classGroupId || "";
+      rawGroup = rawGroup.trim();
+      const stripped = rawGroup.replace(/[\s\.-]+/g, "");
+      const match = stripped.match(/^([ก-ฮa-zA-Z]+)(.*)$/);
+      let unifiedClassGroup = stripped;
+      if (match) {
+        unifiedClassGroup = match[2] ? `${match[1]}.${match[2]}` : match[1];
+      }
+
+      newUser.classGroupId = unifiedClassGroup;
+      newUser.groupCode = unifiedClassGroup;
+      newUser.classroomName = unifiedClassGroup;
+
       newUser.academicLevel = academicLevel;
       newUser.studentStatus = "กำลังศึกษา"; // ล็อคสถานะเป็นกำลังศึกษา
       newUser.learnerType = "ทวิภาคี"; // ล็อคประเภทผู้เรียนเป็นทวิภาคี

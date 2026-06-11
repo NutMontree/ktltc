@@ -79,6 +79,22 @@ export async function PATCH(req: Request) {
       }
     });
 
+    // Enforce classGroup consistency across all systems with standard formatting
+    if (updateData.groupCode !== undefined || updateData.classGroupId !== undefined || updateData.classroomName !== undefined) {
+      let rawGroup = updateData.classGroupId || updateData.groupCode || updateData.classroomName || "";
+      rawGroup = rawGroup.trim();
+      const stripped = rawGroup.replace(/[\s\.-]+/g, "");
+      const match = stripped.match(/^([ก-ฮa-zA-Z]+)(.*)$/);
+      let unifiedClassGroup = stripped;
+      if (match) {
+        unifiedClassGroup = match[2] ? `${match[1]}.${match[2]}` : match[1];
+      }
+
+      updateData.classGroupId = unifiedClassGroup;
+      updateData.groupCode = unifiedClassGroup;
+      updateData.classroomName = unifiedClassGroup;
+    }
+
     console.log("Final Update Data:", updateData);
 
     if (isSuperAdmin && username) {

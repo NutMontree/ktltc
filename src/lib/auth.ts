@@ -54,18 +54,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           console.log(`[AUTH] User found: ${user.username} (ID: ${user._id})`);
 
-          // 2. ตรวจสอบความถูกต้องของรหัสผ่าน (เปรียบเทียบรหัสผ่านที่กรอกมากับรหัสผ่านที่เข้ารหัสไว้ใน DB)
-          const isPasswordCorrect = await bcrypt.compare(
-            credentials.password as string,
-            user.password,
-          );
+          // 2. ตรวจสอบว่า user มี password field หรือไม่
+          //    (บาง account อาจถูกสร้างโดย admin โดยไม่มี password ทำให้ bcrypt.compare throw Error)
+          if (!user.password) {
+            console.warn(`[AUTH] No password set for: "${cleanUsername}"`);
+            throw new Error("บัญชีนี้ยังไม่ได้ตั้งรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ");
+          }
+
+          // 3. ตรวจสอบความถูกต้องของรหัสผ่าน
+          let isPasswordCorrect = false;
+          try {
+            isPasswordCorrect = await bcrypt.compare(
+              credentials.password as string,
+              user.password,
+            );
+          } catch (bcryptError: any) {
+            console.error(`[AUTH] bcrypt.compare failed for "${cleanUsername}":`, bcryptError?.message);
+            throw new Error("เกิดข้อผิดพลาดในการตรวจสอบรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ");
+          }
 
           if (!isPasswordCorrect) {
             console.warn(`[AUTH] Incorrect password for: "${cleanUsername}"`);
             throw new Error("รหัสผ่านไม่ถูกต้อง");
           }
 
-          // 3. ตรวจสอบสถานะบัญชี (ถ้าโดนระงับ isActive จะเป็น false)
+          // 4. ตรวจสอบสถานะบัญชี (ถ้าโดนระงับ isActive จะเป็น false)
           if (user.isActive === false) {
             console.warn(`[AUTH] Account disabled: "${cleanUsername}"`);
             if (user.role && user.role.toLowerCase() === "student") {
@@ -75,7 +88,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           }
 
-          // 4. ถ้าผ่านทุกขั้นตอน ส่งข้อมูล User กลับไปเก็บใน Session
+          // 5. ถ้าผ่านทุกขั้นตอน ส่งข้อมูล User กลับไปเก็บใน Session
           return {
             id: user._id.toString(),
             name: user.name || user.username,
@@ -84,8 +97,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: user.image || "",
           };
         } catch (error: any) {
-          console.error(`[AUTH] Authorize Error:`, error.message);
-          throw error;
+          const message = error?.message || String(error) || "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
+          console.error(`[AUTH] Authorize Error for "${cleanUsername}":`, message);
+          throw new Error(message);
         }
       },
     }),

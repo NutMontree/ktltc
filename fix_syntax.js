@@ -1,4 +1,4 @@
-แนืหะ ดห ช พำๆีรพำ๖งดหง๗ว
+
 const fs = require('fs');
 const file = 'd:/ktltc/src/app/dashboard/dve/student/page.tsx';
 let content = fs.readFileSync(file, 'utf8');
