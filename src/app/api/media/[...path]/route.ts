@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { existsSync, readFileSync, statSync, readdirSync, mkdirSync, copyFileSync } from 'fs';
 import { join, dirname } from 'path';
+import { getPublicDir } from '@/lib/cwd';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,7 +37,7 @@ function ensureMigration() {
     const cwd = process.cwd();
     // Path to the literal \\192.168.6.179\public folder
     const sourceDir = join(cwd, "\\\\192.168.6.179\\public");
-    const targetDir = join(cwd, "public");
+    const targetDir = getPublicDir();
     if (existsSync(sourceDir)) {
       console.log(`🚀 [Migration] Found legacy network base: ${sourceDir}. Merging into local public...`);
       copyRecursiveSync(sourceDir, targetDir);
@@ -58,7 +59,7 @@ export async function GET(
     const { path: pathSegments } = await params;
     
     // We only use the local public directory now
-    const localBase = join(process.cwd(), 'public');
+    const localBase = getPublicDir();
     const filePath = join(localBase, ...pathSegments);
     let found = existsSync(filePath);
 

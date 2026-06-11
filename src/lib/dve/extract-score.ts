@@ -3,6 +3,7 @@ import { join } from "path";
 import { isDveEvidenceImage } from "./evidence-file";
 import { ocrImageSource } from "./ocr-tesseract";
 import type { ExtractedScore } from "./parse-score-text";
+import { getPublicDir } from "../cwd";
 
 export type { ExtractedScore } from "./parse-score-text";
 export { parseScoreFromText, buildExtractedFromOcrText, formatScoreDisplay } from "./parse-score-text";
@@ -26,7 +27,7 @@ export function resolveLocalMediaPath(imageUrl: string): string | null {
   const rel = match[1].replace(/\\/g, "/");
   if (rel.includes("..")) return null;
 
-  return join(process.cwd(), "public", rel);
+  return join(getPublicDir(), rel);
 }
 
 /** อ่านคะแนนจากไฟล์รูปบนเซิร์ฟเวอร์ (Tesseract OCR ฟรี) */

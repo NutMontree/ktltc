@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getPublicDir } from '@/lib/cwd';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,13 +67,13 @@ export async function POST(req: Request) {
     const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${ext}`;
     
     // Save locally to public folder
-    const baseDir = join(process.cwd(), "public");
-    const uploadDir = join(baseDir, sanitizedFolder);
+    const baseDir = getPublicDir();
+    const uploadDir = `${baseDir}/${sanitizedFolder}`;
     
     // Create directory if it doesn't exist
     await mkdir(uploadDir, { recursive: true });
 
-    const filepath = join(uploadDir, filename);
+    const filepath = `${uploadDir}/${filename}`;
     await writeFile(filepath, buffer);
     console.log(`✅ File uploaded and saved to: ${filepath}`);
 

@@ -3,6 +3,7 @@ import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { execSync } from "child_process";
 import path from "path";
+import { getPublicDir } from "@/lib/cwd";
 
 export const dynamic = "force-dynamic";
 
@@ -105,7 +106,7 @@ export async function GET() {
 
       // Calculate size of all relevant folders
       const fs = require("fs");
-      const publicDir = path.join(process.cwd(), "public");
+      const publicDir = getPublicDir();
       const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
       let totalBytes = 0;
 
@@ -133,7 +134,7 @@ export async function GET() {
       };
 
       foldersToMeasure.forEach((folder) => {
-        const folderPath = path.join(publicDir, folder);
+        const folderPath = `${publicDir}/${folder}`;
         const folderSize = getDirSize(folderPath);
         console.log(`📁 Folder ${folder}: ${(folderSize / (1024 * 1024)).toFixed(2)} MB`);
         totalBytes += folderSize;
@@ -159,7 +160,7 @@ export async function GET() {
         }
 
         // 4.2 Get CPU & RAM stats
-        const isLocal = publicDir === path.join(process.cwd(), "public");
+        const isLocal = publicDir === getPublicDir();
 
         if (isLocal) {
           // --- รันบนเครื่อง Lenovo โดยตรง (ใช้ค่า Real-time จาก OS) ---

@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { unlink } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+import { getPublicDir } from "@/lib/cwd";
 
 async function deletePhysicalFile(fileUrl: string) {
   try {
@@ -13,7 +14,7 @@ async function deletePhysicalFile(fileUrl: string) {
     const cleanPath = pathPart.split('?')[0]; // Remove query params if any
     const pathSegments = cleanPath.split("/");
     
-    const localBase = join(process.cwd(), 'public');
+    const localBase = getPublicDir();
     const filePath = join(localBase, ...pathSegments);
     if (existsSync(filePath)) {
       await unlink(filePath);

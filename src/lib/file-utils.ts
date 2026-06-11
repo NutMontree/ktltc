@@ -1,5 +1,6 @@
 import { unlink } from 'fs/promises';
 import { join } from 'path';
+import { getPublicDir } from './cwd';
 
 /**
  * file-utils.ts: ไฟล์ตัวช่วยสำหรับจัดการไฟล์บนระบบ (File System)
@@ -25,11 +26,12 @@ export async function deleteFileFromUrl(url: string): Promise<boolean> {
     const relativePath = url.replace('/api/media/', '');
     const parts = relativePath.split('/');
     
-    const filePath = join(process.cwd(), 'public', ...parts);
+    const publicDir = getPublicDir();
+    const filePath = join(publicDir, ...parts);
 
     // 2. ตรวจสอบความปลอดภัย (Security Check)
     const allowedPrefixes = [
-      join(process.cwd(), 'public').toLowerCase()
+      publicDir.toLowerCase()
     ];
 
     const normalizedPath = filePath.toLowerCase();

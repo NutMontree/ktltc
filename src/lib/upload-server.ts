@@ -1,5 +1,6 @@
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
+import { getPublicDir } from "./cwd";
 
 /**
  * upload-server.ts: ไฟล์ตัวช่วยสำหรับบันทึกไฟล์ลงบนเครื่อง Server (ฝั่ง Server-side)
@@ -44,7 +45,7 @@ export async function saveFileLocally(
     // 3. ตั้งชื่อไฟล์ใหม่เพื่อป้องกันการซ้ำกัน (Timestamp + Random)
     const filename = `${filenamePrefix}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
     
-    const baseDir = join(process.cwd(), "public");
+    const baseDir = getPublicDir();
     const uploadDir = join(baseDir, folder);
 
     // 4. ตรวจสอบและสร้างโฟลเดอร์หากยังไม่มี

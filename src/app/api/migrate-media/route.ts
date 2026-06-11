@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { getPublicDir } from '@/lib/cwd';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +34,7 @@ export async function GET() {
     const cwd = process.cwd();
     // Path to the literal \\192.168.6.179\public folder
     const sourceDir = path.join(cwd, "\\\\192.168.6.179\\public");
-    const targetDir = path.join(cwd, "public");
+    const targetDir = getPublicDir();
     
     log.push(`CWD: ${cwd}`);
     log.push(`Source directory: ${sourceDir} (exists: ${fs.existsSync(sourceDir)})`);
