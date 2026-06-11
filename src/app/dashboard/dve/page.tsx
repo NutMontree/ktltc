@@ -177,6 +177,7 @@ function getQuizTypeLabel(type: string): string {
 // -------------------------------------------------------------
 function DVETeacherWorkspace() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState<
     "subjects" | "quizzes" | "checkin" | "timeline" | "internship"
@@ -1414,25 +1415,33 @@ function DVETeacherWorkspace() {
   return (
     <div className="space-y-3 px-2 sm:px-4 md:px-6 lg:px-8">
       {/* Teacher Workspace Header */}
-      <div className="relative overflow-hidden rounded-[20px] bg-linear-to-br from-teal-500 to-emerald-700 text-white p-4 sm:p-6 md:p-8 shadow-xl shadow-teal-500/10">
-        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
-          <BookOpen size={140} className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36" />
+      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white p-6 sm:p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 group">
+        {/* Animated Background Mesh */}
+        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
+          <BookOpen size={180} className="w-32 h-32 sm:w-48 sm:h-48 drop-shadow-2xl" />
         </div>
-        <div className="relative z-10 max-w-2xl">
-          <span className="bg-white/20 backdrop-blur-md text-[9px] sm:text-[10px] md:text-[11px] uppercase font-black tracking-widest px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white/90 inline-block">
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none mix-blend-overlay" />
+        <div className="absolute right-1/4 top-0 w-32 h-32 rounded-full bg-blue-300/20 blur-2xl pointer-events-none mix-blend-overlay" />
+
+        <div className="relative z-10 max-w-2xl space-y-4">
+          <span className="bg-white/20 backdrop-blur-xl text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-white/95 border border-white/20 shadow-sm flex items-center gap-1.5 w-fit">
+            <Sparkles className="w-3.5 h-3.5" />
             DVE Administration Panel
           </span>
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mt-2 sm:mt-3 tracking-tight leading-tight">
-            ระบบบริหารการจัดการ<br className="sm:hidden" /> อาชีวศึกษา ทวิภาคี (DVE-KTL-SYSTEM)
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-sm">
+            ระบบบริหารการจัดการ<br className="sm:hidden" /> อาชีวศึกษา ทวิภาคี{" "}
+            <span className="text-cyan-200 block sm:inline relative">
+              (DVE Portal)
+              <div className="absolute -bottom-2 left-0 w-1/3 h-1 bg-cyan-300/50 rounded-full"></div>
+            </span>
           </h1>
-          <p className="text-white/80 font-bold mt-1.5 sm:mt-2 text-[11px] sm:text-xs md:text-sm lg:text-base leading-relaxed">
-            ห้องควบคุมหลักสำหรับอาจารย์: จัดการรายวิชาการเรียนการสอน, สื่อและไฟล์การเรียนรายหน่วย,
-            สร้างแบบทดสอบ และบันทึกประวัติการขาดลามาสายและผลงานนักศึกษา
+          <p className="text-white/90 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
+            ห้องควบคุมหลักสำหรับอาจารย์: จัดการรายวิชาการเรียนการสอน, สื่อและไฟล์การเรียนรายหน่วย, สร้างแบบทดสอบ และบันทึกประวัติการขาดลามาสายและผลงานนักศึกษา
           </p>
-          <div className="mt-4 flex gap-2">
+          <div className="pt-2 flex flex-wrap gap-3">
             <button
               onClick={() => router.push("/dashboard/dve/grading")}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-white text-emerald-700 hover:bg-emerald-50 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 rounded-xl font-bold text-xs sm:text-sm shadow-lg transition-all active:scale-95 cursor-pointer hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
             >
               <ClipboardList className="w-4 h-4" />
               <span>ระบบตรวจงานและให้คะแนน (Grading)</span>
@@ -1441,13 +1450,13 @@ function DVETeacherWorkspace() {
         </div>
       </div>
 
-      {/* Tabs Switcher */}
-      <div className="flex flex-wrap sm:flex-nowrap gap-1.5 sm:gap-2 p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-2xl w-full overflow-x-auto scrollbar-hide">
+      {/* Tabs Switcher - Glassmorphic Capsule Style */}
+      <div className="flex flex-wrap sm:flex-nowrap gap-1.5 sm:gap-2 p-1.5 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-2xl w-full overflow-x-auto scrollbar-hide shadow-sm">
         <button
           onClick={() => setActiveTab("subjects")}
-          className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === "subjects" ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"}`}
+          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "subjects" ? "bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
         >
-          <BookOpen size={13} />
+          <BookOpen size={14} />
           <span className="hidden sm:inline">วิชา & หน่วยเรียน</span>
           <span className="sm:hidden">วิชา</span>
         </button>
@@ -1459,9 +1468,9 @@ function DVETeacherWorkspace() {
               handleLoadQuizzes(subjects[0].id);
             }
           }}
-          className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"}`}
+          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-800 text-cyan-600 dark:text-cyan-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
         >
-          <Award size={13} />
+          <Award size={14} />
           <span className="hidden sm:inline">แบบทดสอบ</span>
           <span className="sm:hidden">ทดสอบ</span>
         </button>
@@ -1472,19 +1481,19 @@ function DVETeacherWorkspace() {
               setCheckinFilter((prev) => ({ ...prev, subjectId: subjects[0].id }));
             }
           }}
-          className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === "checkin" ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"}`}
+          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "checkin" ? "bg-white dark:bg-zinc-800 text-teal-600 dark:text-teal-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
         >
-          <CheckCircle size={13} />
-          <span className="hidden sm:inline">เช็คชื่อ</span>
+          <CheckCircle size={14} />
+          <span className="hidden sm:inline">เช็คชื่อ & ตรวจงาน</span>
           <span className="sm:hidden">เช็คชื่อ</span>
         </button>
         <button
           onClick={() => {
             setActiveTab("internship");
           }}
-          className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === "internship" ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"}`}
+          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "internship" ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
         >
-          <Briefcase size={13} />
+          <Briefcase size={14} />
           <span className="hidden sm:inline">ออกฝึกงาน</span>
           <span className="sm:hidden">ฝึกงาน</span>
         </button>
@@ -1537,7 +1546,7 @@ function DVETeacherWorkspace() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4"
           >
             {/* List of Subjects */}
-            <div className="lg:col-span-1 bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-3 sm:p-4 shadow-sm space-y-3">
+            <div className="lg:col-span-1 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-5 shadow-sm space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
                   <BookOpen size={16} className="text-emerald-500 w-4 h-4 sm:w-5 sm:h-5" />
@@ -1595,7 +1604,7 @@ function DVETeacherWorkspace() {
                         รหัส: {sub.code} • แผนก: {sub.department}
                       </p>
                       {sub.allowedClassGroups && (Array.isArray(sub.allowedClassGroups) ? sub.allowedClassGroups.length > 0 : String(sub.allowedClassGroups).trim()) && (
-                        <p className="text-[10px] text-violet-500 mt-1 font-bold line-clamp-2">
+                        <p className="text-[10px] text-teal-500 mt-1 font-bold line-clamp-2">
                           ห้องเรียนที่อนุญาต: {formatClassGroupsText(sub.allowedClassGroups)}
                         </p>
                       )}
@@ -1955,7 +1964,7 @@ function DVETeacherWorkspace() {
                               onClick={() =>
                                 handleLoadSubmissions(quiz.id, quiz.title, !!quiz.isBuiltIn)
                               }
-                              className="px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-600 hover:text-white border border-indigo-500/20 hover:border-indigo-500 rounded-lg text-xs font-black transition-all shadow-sm flex items-center gap-1"
+                              className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500 text-blue-600 hover:text-white border border-blue-500/20 hover:border-blue-500 rounded-lg text-xs font-black transition-all shadow-sm flex items-center gap-1"
                             >
                               <Eye size={12} />
                               ดูงานที่ส่ง
@@ -2249,12 +2258,12 @@ function DVETeacherWorkspace() {
                                   {(pretestSub || posttestSub) && (
                                     <div className="flex flex-wrap gap-2 mt-1.5">
                                       {pretestSub && (
-                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/30 text-indigo-650 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50 text-[9px] font-black">
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-650 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50 text-[9px] font-black">
                                           ก่อนเรียน: {pretestSub.score} / {pretestSub.maxScore}
                                         </span>
                                       )}
                                       {posttestSub && (
-                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-650 dark:text-purple-400 border border-purple-200/50 dark:border-purple-800/50 text-[9px] font-black">
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-cyan-50 dark:bg-cyan-950/30 text-cyan-650 dark:text-cyan-400 border border-cyan-200/50 dark:border-cyan-800/50 text-[9px] font-black">
                                           หลังเรียน: {posttestSub.score} / {posttestSub.maxScore}
                                         </span>
                                       )}
@@ -2339,7 +2348,7 @@ function DVETeacherWorkspace() {
                       </span>
                     )}
                     {activeStudyUnit && (
-                      <span className="text-indigo-500 dark:text-indigo-400">
+                      <span className="text-blue-500 dark:text-blue-400">
                         แบบทดสอบในหน่วยนี้:{" "}
                         {activeUnitQuizzes.length > 0
                           ? activeUnitQuizzes.map((quiz) => quiz.title).join(", ")
@@ -2628,7 +2637,7 @@ function DVETeacherWorkspace() {
                                   {/* Column 4: Attendance Status Badge */}
                                   <td className="py-4 px-2 text-center">
                                     {rec.status === "Studying" ? (
-                                      <span className="inline-flex flex-col items-center px-2 py-1.5 rounded-full text-[10px] font-black border bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/60 animate-pulse">
+                                      <span className="inline-flex flex-col items-center px-2 py-1.5 rounded-full text-[10px] font-black border bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60 animate-pulse">
                                         <span>กำลังเรียนอยู่ ⏱️</span>
                                         <span className="text-[9px] opacity-85 mt-0.5 font-bold">
                                           {Math.round((rec.studySeconds || 0) / 60)} / {activeStudyUnit?.studyMinutes || 0} นาที
@@ -2681,7 +2690,7 @@ function DVETeacherWorkspace() {
                                   <td className="py-4 px-2 text-center">
                                     {pretestSub ? (
                                       <span className="inline-flex flex-col items-center">
-                                        <span className="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/30 text-indigo-650 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50 font-black text-[10px]">
+                                        <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-650 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50 font-black text-[10px]">
                                           {pretestSub.score} / {pretestSub.maxScore}
                                         </span>
                                         <span className="text-[8px] text-zinc-400 mt-0.5">
@@ -2700,7 +2709,7 @@ function DVETeacherWorkspace() {
                                   <td className="py-4 px-2 text-center">
                                     {posttestSub ? (
                                       <span className="inline-flex flex-col items-center">
-                                        <span className="px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-650 dark:text-purple-400 border border-purple-200/50 dark:border-purple-800/50 font-black text-[10px]">
+                                        <span className="px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-950/30 text-cyan-650 dark:text-cyan-400 border border-cyan-200/50 dark:border-cyan-800/50 font-black text-[10px]">
                                           {posttestSub.score} / {posttestSub.maxScore}
                                         </span>
                                         <span className="text-[8px] text-zinc-400 mt-0.5">
@@ -2722,7 +2731,7 @@ function DVETeacherWorkspace() {
                                         <span className="text-xs font-bold text-zinc-400 block uppercase">
                                           คะแนน
                                         </span>
-                                        <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">
+                                        <span className="text-xs font-black text-blue-600 dark:text-blue-400">
                                           {rec.score ? rec.score : "-"}
                                         </span>
                                       </div>
@@ -2869,7 +2878,7 @@ function DVETeacherWorkspace() {
                               <div className="flex flex-wrap gap-2 border-t dark:border-zinc-800/80 pt-3 items-center justify-between">
                                 <div className="flex flex-wrap gap-1.5">
                                   {rec.status === "Studying" ? (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 border-indigo-500/20 animate-pulse">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border bg-blue-500/10 text-blue-650 dark:text-blue-400 border-blue-500/20 animate-pulse">
                                       กำลังเรียนอยู่ ⏱️ ({Math.round((rec.studySeconds || 0) / 60)}/{activeStudyUnit?.studyMinutes || 0} น.)
                                     </span>
                                   ) : (
@@ -2905,7 +2914,7 @@ function DVETeacherWorkspace() {
                                   </span>
                                   <span className="text-[10px] font-bold text-zinc-500">
                                     คะแนน:{" "}
-                                    <span className="font-black text-indigo-600 dark:text-indigo-400">
+                                    <span className="font-black text-blue-600 dark:text-blue-400">
                                       {rec.score || "-"}
                                     </span>
                                   </span>
@@ -2916,12 +2925,12 @@ function DVETeacherWorkspace() {
                                   <div className="flex flex-wrap gap-2 text-[10px] font-bold text-zinc-500 mt-2 bg-zinc-150/45 dark:bg-zinc-900/40 p-2 rounded-lg border dark:border-zinc-800/80 w-full">
                                     {pretestSub && (
                                       <span className="flex items-center gap-1.5">
-                                        📝 ก่อนเรียน: <span className="font-black text-indigo-600 dark:text-indigo-450 bg-indigo-50 dark:bg-indigo-950/30 px-1.5 py-0.5 rounded border border-indigo-250 dark:border-indigo-800/50">{pretestSub.score} / {pretestSub.maxScore}</span>
+                                        📝 ก่อนเรียน: <span className="font-black text-blue-600 dark:text-blue-450 bg-blue-50 dark:bg-blue-950/30 px-1.5 py-0.5 rounded border border-blue-250 dark:border-blue-800/50">{pretestSub.score} / {pretestSub.maxScore}</span>
                                       </span>
                                     )}
                                     {posttestSub && (
                                       <span className="flex items-center gap-1.5">
-                                        📝 หลังเรียน: <span className="font-black text-purple-650 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 px-1.5 py-0.5 rounded border border-purple-250 dark:border-purple-800/50">{posttestSub.score} / {posttestSub.maxScore}</span>
+                                        📝 หลังเรียน: <span className="font-black text-cyan-650 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/30 px-1.5 py-0.5 rounded border border-cyan-250 dark:border-cyan-800/50">{posttestSub.score} / {posttestSub.maxScore}</span>
                                       </span>
                                     )}
                                   </div>
@@ -3177,7 +3186,7 @@ function DVETeacherWorkspace() {
                                           : "ไม่ส่ง"}
                                     </span>
                                     {submission.score && (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[9px] font-black border border-indigo-200 dark:border-indigo-800/50">
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] font-black border border-blue-200 dark:border-blue-800/50">
                                         คะแนน: {submission.score}
                                       </span>
                                     )}
@@ -3902,7 +3911,7 @@ function DVETeacherWorkspace() {
                 {/* Header */}
                 <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-linear-to-tr from-violet-500 to-indigo-650 text-white rounded-2xl shadow-md shadow-indigo-500/20">
+                    <div className="p-2.5 bg-linear-to-tr from-teal-500 to-blue-650 text-white rounded-2xl shadow-md shadow-blue-500/20">
                       <BookOpen size={20} />
                     </div>
                     <div>
@@ -3928,11 +3937,11 @@ function DVETeacherWorkspace() {
                   {/* Card 1: ข้อมูลหลัก */}
                   <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-4 shadow-sm">
                     <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                      <span className="text-xs font-black text-violet-600 dark:text-violet-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <BookOpen size={14} className="text-violet-500" />
+                      <span className="text-xs font-black text-teal-600 dark:text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <BookOpen size={14} className="text-teal-500" />
                         ข้อมูลหลักของหน่วยเรียน
                       </span>
-                      <span className="px-2 py-0.5 bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-md text-[9px] font-black">
+                      <span className="px-2 py-0.5 bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-md text-[9px] font-black">
                         จำเป็น *
                       </span>
                     </div>
@@ -4897,15 +4906,15 @@ function DVETeacherWorkspace() {
               style={{ maxHeight: "90vh" }}
             >
               {/* Modal Header */}
-              <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-start gap-4 bg-indigo-500/5 shrink-0">
+              <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-start gap-4 bg-blue-500/5 shrink-0">
                 <div className="space-y-1">
                   <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                    <Eye size={18} className="text-indigo-500" />
+                    <Eye size={18} className="text-blue-500" />
                     งานที่นักเรียนส่ง: {submissionsQuizTitle}
                   </h3>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${submissionsIsBuiltIn ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800" : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800"}`}
+                      className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${submissionsIsBuiltIn ? "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800" : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800"}`}
                     >
                       {submissionsIsBuiltIn ? "🧠 แบบทดสอบในระบบ" : "🔗 Google Form / งานภายนอก"}
                     </span>
@@ -4930,7 +4939,7 @@ function DVETeacherWorkspace() {
               <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-6">
                 {loadingSubmissions ? (
                   <div className="flex flex-col justify-center items-center py-16 gap-3">
-                    <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
                     <span className="text-xs text-zinc-400 font-bold">
                       กำลังโหลดข้อมูลงานที่ส่ง...
                     </span>
@@ -4950,7 +4959,7 @@ function DVETeacherWorkspace() {
                       }, {}),
                     ).map(([groupId, groupSubs]) => (
                       <div key={groupId} className="space-y-2">
-                        <h4 className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b dark:border-zinc-800 pb-2 flex items-center gap-2">
+                        <h4 className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest border-b dark:border-zinc-800 pb-2 flex items-center gap-2">
                           <Users size={12} />
                           ห้อง / กลุ่มเรียน: {groupId}
                           <span className="text-zinc-400 font-bold normal-case tracking-normal">
@@ -4977,13 +4986,13 @@ function DVETeacherWorkspace() {
                                 const isExpanded = expandedSubmissionId === sub.id;
                                 return (
                                   <React.Fragment key={sub.id}>
-                                    <tr className="hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10 transition-colors">
+                                    <tr className="hover:bg-blue-50/30 dark:hover:bg-blue-950/10 transition-colors">
                                       <td className="p-3 text-zinc-400 text-[10px] tabular-nums">
                                         {idx + 1}
                                       </td>
                                       <td className="p-3">
                                         <div className="flex items-center gap-2">
-                                          <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-black shrink-0">
+                                          <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] font-black shrink-0">
                                             {(sub.studentName || "?").charAt(0)}
                                           </div>
                                           <div className="flex flex-col">
@@ -5050,7 +5059,7 @@ function DVETeacherWorkspace() {
                                             onClick={() =>
                                               setExpandedSubmissionId(isExpanded ? null : sub.id)
                                             }
-                                            className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg text-[10px] font-black transition-all border-0 cursor-pointer text-zinc-600 dark:text-zinc-300"
+                                            className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg text-[10px] font-black transition-all border-0 cursor-pointer text-zinc-600 dark:text-zinc-300"
                                           >
                                             {isExpanded ? "ซ่อน" : "ตรวจคำตอบ"}
                                           </button>
@@ -5074,9 +5083,9 @@ function DVETeacherWorkspace() {
                                       <tr>
                                         <td
                                           colSpan={7}
-                                          className="p-4 bg-indigo-50/30 dark:bg-indigo-950/10"
+                                          className="p-4 bg-blue-50/30 dark:bg-blue-950/10"
                                         >
-                                          <div className="space-y-2 pl-3 border-l-2 border-indigo-400">
+                                          <div className="space-y-2 pl-3 border-l-2 border-blue-400">
                                             <h5 className="text-[10px] font-black text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wider">
                                               รายละเอียดคำตอบ:
                                             </h5>
@@ -5233,7 +5242,7 @@ function DVETeacherWorkspace() {
                 <div className="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm flex flex-col rounded-2xl overflow-hidden">
                   <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-zinc-900 border-b border-zinc-800 shrink-0">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <FileText size={14} className="text-indigo-400 shrink-0" />
+                      <FileText size={14} className="text-blue-400 shrink-0" />
                       <span className="text-xs font-black text-zinc-200 truncate">
                         {submissionsPreviewName}
                       </span>
@@ -5276,13 +5285,13 @@ function DVETeacherWorkspace() {
                       />
                     ) : (
                       <div className="flex flex-col items-center gap-4 text-center">
-                        <FileText size={32} className="text-indigo-400" />
+                        <FileText size={32} className="text-blue-400" />
                         <p className="text-sm font-black text-zinc-200">{submissionsPreviewName}</p>
                         <a
                           href={submissionsPreviewUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-black transition-colors"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xs font-black transition-colors"
                         >
                           <Download size={13} />
                           ดาวน์โหลดไฟล์
@@ -5445,7 +5454,7 @@ function DVETeacherWorkspace() {
                             );
                           }
                         }}
-                        className="px-2.5 py-1.5 rounded-xl text-[10px] font-black bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20 hover:bg-violet-500/15 disabled:opacity-50 flex items-center gap-1 cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-xl text-[10px] font-black bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 hover:bg-teal-500/15 disabled:opacity-50 flex items-center gap-1 cursor-pointer"
                       >
                         {extractingScoreStudentId === editingStudent.id ? (
                           <Loader2 size={11} className="animate-spin" />

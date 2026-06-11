@@ -34,6 +34,8 @@ import {
   ClipboardList,
   X,
   Sparkles,
+  FileText,
+  Paperclip,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select } from "antd";
@@ -497,6 +499,14 @@ export function DVEStudentPortal() {
       const user = session.user as any;
       const currentUnitId = unitToCheck.id || unitToCheck._id?.toString();
 
+      // Find if we have already completed this unit on ANY day
+      const alreadyCompletedAnyDay = attendances.some(
+        (a) => a.unitId === currentUnitId && (a.status === "Present" || a.status === "Late")
+      );
+      if (alreadyCompletedAnyDay) {
+        return; // Prevent duplicate check-in if already completed
+      }
+
       // Find if we have an existing check-in record for today
       const existingToday = attendances.find(
         (a) =>
@@ -655,7 +665,7 @@ export function DVEStudentPortal() {
     if (studySecondsElapsed > 0 && studySecondsElapsed % 20 === 0) {
       handleSaveStudyProgress(studySecondsElapsed);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studySecondsElapsed]);
 
   // Cleanup timer when study unit changes or unmounts
@@ -672,7 +682,7 @@ export function DVEStudentPortal() {
   // Start timer when entering learning mode
   useEffect(() => {
     // Only start timer when conditions are met and timer isn't already running
-    if (!activeStudyUnit || unitQuizMode !== "learning" || timerActiveRef.current) {
+    if (!activeStudyUnit || unitQuizMode !== "learning" || timerActiveRef.current || isStudyCompleted) {
       return;
     }
 
@@ -701,6 +711,11 @@ export function DVEStudentPortal() {
           // Trigger auto check-in when minimum time is reached
           handleAutoCheckin(activeStudyUnit);
           message.success("เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ สามารถทำแบบทดสอบได้ทันที");
+
+          // Auto-forward to total limit seconds when minimum time is reached
+          if (totalLimitSeconds > studyLimitSeconds) {
+            return totalLimitSeconds;
+          }
         }
 
         // Check if total time is reached
@@ -735,7 +750,7 @@ export function DVEStudentPortal() {
         return nextVal;
       });
     }, 1000);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStudyUnit, unitQuizMode]);
 
   // Handle Pre-test / Post-test flow when Quiz Modal is closed
@@ -988,41 +1003,42 @@ export function DVEStudentPortal() {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto space-y-4 px-2 py-2 sm:py-4">
+    <div className="max-w-[1200px] mx-auto space-y-6 px-4 py-4 sm:py-8 font-sans">
       {/* Student Portal Banner */}
-      <div className="relative overflow-hidden rounded-[20px] bg-linear-to-br from-emerald-600 to-teal-800 text-white p-4 sm:p-6 shadow-xl shadow-emerald-500/10">
-        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10">
-          <GraduationCap size={140} className="w-24 h-24 sm:w-32 sm:h-32" />
+      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 group">
+        {/* Animated Background Mesh */}
+        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
+          <GraduationCap size={180} className="w-32 h-32 sm:w-48 sm:h-48 drop-shadow-2xl" />
         </div>
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none mix-blend-overlay" />
+        <div className="absolute right-1/4 top-0 w-32 h-32 rounded-full bg-blue-300/20 blur-2xl pointer-events-none mix-blend-overlay" />
 
-        {/* Decorative elements */}
-        <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-        <div className="absolute right-1/4 top-1/4 w-20 h-20 rounded-full bg-emerald-400/10 blur-xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
-          <div className="space-y-2 sm:space-y-4 max-w-2xl">
-            <span className="bg-white/20 backdrop-blur-md text-[9px] sm:text-[10px] uppercase font-black tracking-widest px-2 sm:px-3 py-0.5 sm:py-1.5 rounded-full text-white/95 border border-white/10 shadow-xs">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-4 max-w-2xl">
+            <span className="bg-white/20 backdrop-blur-xl text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-white/95 border border-white/20 shadow-sm flex items-center gap-1.5 w-fit">
+              <Sparkles className="w-3.5 h-3.5" />
               Student Learning Hub
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-sm">
               ศูนย์การศึกษาระบบทวิภาคี{" "}
-              <span className="text-emerald-350 block sm:inline">(DVE Portal)</span>
+              <span className="text-cyan-200 block sm:inline relative">
+                (DVE Portal)
+                <div className="absolute -bottom-2 left-0 w-1/3 h-1 bg-cyan-300/50 rounded-full"></div>
+              </span>
             </h1>
-            <p className="text-white/80 font-medium text-[10px] sm:text-xs md:text-sm leading-relaxed">
-              ยินดีต้อนรับสู่ระบบฝึกอาชีพทวิภาคี ค้นหาบทเรียน ดาวน์โหลดสื่อส่งงาน
-              และติดตามประวัติคะแนนของท่านได้ที่นี่
+            <p className="text-white/90 font-medium text-xs sm:text-sm md:text-base leading-relaxed max-w-xl">
+              เข้าถึงเนื้อหาการเรียน ทำแบบทดสอบก่อน-หลังเรียน และส่งผลงานของคุณได้ทุกที่ทุกเวลาในรูปแบบห้องเรียนเสมือนจริง
             </p>
           </div>
 
-          {/* 🌟 Highly Prominent & Premium Glassmorphic Welcome Card */}
+          {/* User Profile Bento Box */}
           {session?.user && (
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-3 sm:p-4 flex items-center gap-3 shadow-2xl min-w-[240px] sm:min-w-[280px] transform hover:scale-[1.02] transition-transform duration-300">
-              {/* User Avatar Image / Thumbnail */}
-              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-linear-to-tr from-emerald-400 to-teal-400 text-white flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg border border-white/30 shrink-0">
+            <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[24px] p-4 sm:p-5 flex items-center gap-4 shadow-xl min-w-[260px] sm:min-w-[300px] hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[18px] overflow-hidden bg-linear-to-tr from-cyan-300 to-blue-400 text-white flex items-center justify-center font-black text-2xl shadow-inner border-2 border-white/30 shrink-0">
                 {session.user.image ? (
                   <img
                     src={session.user.image}
-                    alt={session.user.name || "User Thumbnail"}
+                    alt={session.user.name || "User"}
                     className="w-full h-full object-cover"
                   />
                 ) : session.user.name ? (
@@ -1031,14 +1047,14 @@ export function DVEStudentPortal() {
                   "U"
                 )}
               </div>
-              <div className="space-y-0.5 sm:space-y-1 overflow-hidden flex-1">
-                <span className="text-[8px] sm:text-[9px] font-black uppercase text-emerald-250 tracking-widest block">
-                  ยินดีต้อนรับผู้ใช้งาน
+              <div className="space-y-1 overflow-hidden flex-1">
+                <span className="text-[9px] sm:text-[10px] font-black uppercase text-cyan-200 tracking-widest block drop-shadow-sm">
+                  ผู้ใช้งานระบบ
                 </span>
-                <h2 className="text-lg sm:text-xl font-black text-white truncate leading-tight">
+                <h2 className="text-lg sm:text-xl font-black text-white truncate leading-tight drop-shadow-sm">
                   {session.user.name}
                 </h2>
-                <p className="text-[10px] text-white/70 font-medium truncate">
+                <p className="text-xs text-white/80 font-medium truncate bg-black/10 w-fit px-2 py-0.5 rounded-md mt-0.5">
                   {getRoleThaiLabel((session.user as any)?.role)}
                 </p>
               </div>
@@ -1047,20 +1063,25 @@ export function DVEStudentPortal() {
         </div>
       </div>
 
-      {/* Smart Search Filters */}
-      <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-sm">
-        <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-          <Search size={18} className="text-emerald-500 w-4 h-4 sm:w-5 sm:h-5" />
-          ค้นหารายวิชาเรียนทวิภาคี
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-          <div className="flex flex-col gap-1 sm:gap-1.5">
-            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
+      {/* Smart Search Filters (Glassmorphic Bento) */}
+      <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
+            <Search className="w-5 h-5" />
+          </div>
+          <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white">
+            ค้นหารายวิชาเรียนทวิภาคี
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               1. เลือกแผนกวิชา
             </label>
             <Select
               placeholder="-- เลือกแผนกวิชา --"
-              className="w-full h-9 sm:h-11"
+              className="w-full h-10 sm:h-12 shadow-xs"
               value={searchState.department || undefined}
               onChange={(val) => handleDepartmentChange(val)}
               loading={loadingOptions}
@@ -1068,13 +1089,13 @@ export function DVEStudentPortal() {
             />
           </div>
 
-          <div className="flex flex-col gap-1 sm:gap-1.5">
-            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               2. เลือกอาจารย์ผู้สอน
             </label>
             <Select
               placeholder="-- เลือกอาจารย์ --"
-              className="w-full h-9 sm:h-11"
+              className="w-full h-10 sm:h-12 shadow-xs"
               value={searchState.teacherId || undefined}
               onChange={(val) => handleTeacherChange(val)}
               options={options.teachers.map((t) => ({
@@ -1085,13 +1106,13 @@ export function DVEStudentPortal() {
             />
           </div>
 
-          <div className="flex flex-col gap-1 sm:gap-1.5">
-            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               3. เลือกวิชาเรียน
             </label>
             <Select
               placeholder="-- เลือกวิชาเรียน --"
-              className="w-full h-9 sm:h-11"
+              className="w-full h-10 sm:h-12 shadow-xs"
               value={searchState.subjectId || undefined}
               onChange={handleSubjectSelect}
               options={options.subjects.map((s) => ({
@@ -1104,15 +1125,15 @@ export function DVEStudentPortal() {
         </div>
 
         {/* Advanced Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3">
-          <div className="flex flex-col gap-1 sm:gap-1.5">
-            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-4 pt-4 border-t border-slate-200 dark:border-zinc-800">
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               ค้นหาชื่องาน/แบบทดสอบ
             </label>
             <input
               type="text"
               placeholder="พิมพ์ชื่องาน..."
-              className="w-full h-9 sm:h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-2 sm:px-3 text-xs sm:text-sm focus:outline-hidden dark:text-white placeholder-zinc-400 font-bold"
+              className="w-full h-10 sm:h-12 border border-slate-200/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 rounded-xl px-3 sm:px-4 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 dark:text-white placeholder-zinc-400 font-bold shadow-xs transition-all"
               value={searchState.assignmentName}
               onChange={(e) =>
                 setSearchState((prev) => ({ ...prev, assignmentName: e.target.value }))
@@ -1120,12 +1141,12 @@ export function DVEStudentPortal() {
             />
           </div>
 
-          <div className="flex flex-col gap-1 sm:gap-1.5">
-            <label className="text-[10px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400">
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               ช่วงเวลา
             </label>
             <Select
-              className="w-full h-9 sm:h-11"
+              className="w-full h-10 sm:h-12 shadow-xs"
               value={searchState.timePeriod}
               onChange={(val) => setSearchState((prev) => ({ ...prev, timePeriod: val }))}
               options={[
@@ -1154,37 +1175,42 @@ export function DVEStudentPortal() {
             exit={{ opacity: 0, y: 15 }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4"
           >
-            {/* Subject Roster Info & Personal Attendance Stats */}
-            <div className="lg:col-span-1 space-y-3 sm:space-y-4">
+            {/* Subject Roster Info & Personal Attendance Stats (Bento Grid Left Column) */}
+            <div className="lg:col-span-1 space-y-4 sm:space-y-6">
               {/* Course Info Card */}
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-3 sm:p-4 shadow-sm space-y-3 sm:space-y-4">
-                <div className="p-2 sm:p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-xl w-fit">
-                  <BookOpen size={24} />
+              <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/50 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-4 sm:space-y-5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-emerald-400/10 to-teal-400/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
+
+                <div className="p-3 bg-linear-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl w-fit shadow-inner">
+                  <BookOpen size={24} className="drop-shadow-sm" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+                  <span className="inline-block px-2.5 py-1 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 border border-emerald-100 dark:border-emerald-500/20">
                     {activeSubject.curriculum} • ภาคเรียน {activeSubject.semester} /{" "}
                     {activeSubject.academicYear}
                   </span>
-                  <h2 className="text-xl font-black text-zinc-900 dark:text-white mt-1 leading-tight">
+                  <h2 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mt-1 leading-tight tracking-tight">
                     {activeSubject.name}
                   </h2>
-                  <p className="text-xs text-zinc-500 mt-1">รหัสวิชา: {activeSubject.code}</p>
+                  <p className="text-xs font-bold text-zinc-500 mt-1.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600"></span>
+                    รหัสวิชา: {activeSubject.code}
+                  </p>
                 </div>
-                <div className="border-t dark:border-zinc-800 pt-4 flex items-center gap-3">
+                <div className="border-t border-slate-100 dark:border-zinc-800/80 pt-5 flex items-center gap-3">
                   {activeSubject.teacherImage ? (
                     <img
                       src={activeSubject.teacherImage}
                       alt={activeSubject.teacherName || "อาจารย์ผู้สอน"}
-                      className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20 shadow-sm"
+                      className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20 shadow-md"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-black text-lg shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-black text-lg shadow-md ring-2 ring-emerald-500/20">
                       {activeSubject.teacherName?.charAt(0) || "A"}
                     </div>
                   )}
                   <div>
-                    <p className="text-[10px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">
+                    <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
                       อาจารย์ผู้สอน
                     </p>
                     <p className="text-sm font-black text-zinc-800 dark:text-zinc-200">
@@ -1195,26 +1221,31 @@ export function DVEStudentPortal() {
               </div>
 
               {/* Task Completion Status */}
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
-                <h4 className="text-sm font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-                  <BookmarkCheck size={16} className="text-emerald-500" />
+              <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/50 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <h4 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
+                  <BookmarkCheck size={18} className="text-emerald-500 drop-shadow-sm" />
                   สถานะการทำงาน
                 </h4>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" />
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between p-3.5 bg-linear-to-tr from-emerald-50 to-transparent dark:from-emerald-900/10 dark:to-transparent rounded-2xl border border-emerald-100/50 dark:border-emerald-800/30 hover:border-emerald-200 transition-colors">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-lg">
+                        <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" />
+                      </div>
                       <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
                         เข้าเรียน/งานที่ส่งแล้ว
                       </span>
                     </div>
                     <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                      {attendances.length} / {units.length} หน่วย
+                      {attendances.length} / {units.length}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800/50">
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} className="text-amber-600 dark:text-amber-400" />
+
+                  <div className="flex items-center justify-between p-3.5 bg-linear-to-tr from-amber-50 to-transparent dark:from-amber-900/10 dark:to-transparent rounded-2xl border border-amber-100/50 dark:border-amber-800/30 hover:border-amber-200 transition-colors">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-lg">
+                        <Clock size={16} className="text-amber-600 dark:text-amber-400" />
+                      </div>
                       <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
                         หน่วยเรียน/งานที่ค้าง
                       </span>
@@ -1223,9 +1254,12 @@ export function DVEStudentPortal() {
                       {missingTasksCount}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800/50">
-                    <div className="flex items-center gap-2">
-                      <Award size={16} className="text-blue-600 dark:text-blue-400" />
+
+                  <div className="flex items-center justify-between p-3.5 bg-linear-to-tr from-blue-50 to-transparent dark:from-blue-900/10 dark:to-transparent rounded-2xl border border-blue-100/50 dark:border-blue-800/30 hover:border-blue-200 transition-colors">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
+                        <Award size={16} className="text-blue-600 dark:text-blue-400" />
+                      </div>
                       <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
                         แบบทดสอบที่ทำแล้ว
                       </span>
@@ -1234,9 +1268,12 @@ export function DVEStudentPortal() {
                       {quizzes.filter((q) => q.isSubmitted).length} / {quizzes.length}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-200 dark:border-rose-800/50">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle size={16} className="text-rose-600 dark:text-rose-400" />
+
+                  <div className="flex items-center justify-between p-3.5 bg-linear-to-tr from-rose-50 to-transparent dark:from-rose-900/10 dark:to-transparent rounded-2xl border border-rose-100/50 dark:border-rose-800/30 hover:border-rose-200 transition-colors">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 rounded-lg">
+                        <AlertTriangle size={16} className="text-rose-600 dark:text-rose-400" />
+                      </div>
                       <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
                         งานทั้งหมดที่ค้าง
                       </span>
@@ -1245,34 +1282,42 @@ export function DVEStudentPortal() {
                       {missingTasksCount + quizzes.filter((q) => !q.isSubmitted).length}
                     </span>
                   </div>
+
                   {units.length > 0 &&
                     missingTasksCount === 0 &&
                     quizzes.filter((q) => q.isSubmitted).length === quizzes.length && (
-                      <div className="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-emerald-500 to-teal-500 rounded-xl text-white">
-                        <Sparkles size={16} />
-                        <span className="text-xs font-black">ทำงานครบถ้วนแล้ว! 🎉</span>
-                      </div>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex items-center justify-center gap-2 p-3 mt-4 bg-linear-to-tr from-emerald-500 to-teal-500 rounded-xl text-white shadow-lg shadow-emerald-500/20"
+                      >
+                        <Sparkles size={16} className="animate-pulse" />
+                        <span className="text-xs font-black tracking-wide">ทำงานครบถ้วนแล้ว! 🎉</span>
+                      </motion.div>
                     )}
                 </div>
               </div>
 
               {/* Attendance Analytics Progress */}
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm text-center">
-                <h4 className="text-sm font-black text-zinc-900 dark:text-white mb-4">
+              <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/50 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-tr from-emerald-400 to-teal-500 opacity-50" />
+                <h4 className="text-sm font-black text-zinc-900 dark:text-white mb-6">
                   สรุปประวัติเวลาเรียนของฉัน
                 </h4>
-                <div className="relative w-32 h-32 mx-auto flex items-center justify-center mb-4">
-                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+
+                <div className="relative w-36 h-36 mx-auto flex items-center justify-center mb-6">
+                  <div className="absolute inset-0 rounded-full bg-emerald-50 dark:bg-emerald-900/10 animate-pulse scale-110" />
+                  <svg className="w-full h-full transform -rotate-90 drop-shadow-sm relative z-10" viewBox="0 0 100 100">
                     <circle
                       cx="50"
                       cy="50"
                       r="40"
                       stroke="currentColor"
                       strokeWidth="8"
-                      className="text-zinc-100 dark:text-zinc-800"
+                      className="text-slate-100 dark:text-zinc-800"
                       fill="transparent"
                     />
-                    <circle
+                    <motion.circle
                       cx="50"
                       cy="50"
                       r="40"
@@ -1281,37 +1326,45 @@ export function DVEStudentPortal() {
                       className="text-emerald-500"
                       fill="transparent"
                       strokeDasharray={251.2}
-                      strokeDashoffset={251.2 - (251.2 * attendanceRate) / 100}
+                      initial={{ strokeDashoffset: 251.2 }}
+                      animate={{ strokeDashoffset: 251.2 - (251.2 * attendanceRate) / 100 }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      strokeLinecap="round"
                     />
                   </svg>
-                  <div className="absolute flex flex-col items-center">
-                    <span className="text-2xl font-black text-zinc-900 dark:text-white">
+                  <div className="absolute flex flex-col items-center z-20">
+                    <span className="text-3xl font-black text-zinc-900 dark:text-white drop-shadow-sm">
                       {attendanceRate}%
                     </span>
-                    <span className="text-[9px] font-black text-zinc-450 dark:text-zinc-550 uppercase">
+                    <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest mt-0.5 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
                       การเข้าเรียน
                     </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 border-t dark:border-zinc-800 pt-4 text-xs font-bold">
-                  <div className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/40">
-                    <span className="block text-sm font-black text-emerald-500">
+
+                <div className="grid grid-cols-3 gap-2 border-t border-slate-100 dark:border-zinc-800/80 pt-5 text-xs font-bold">
+                  <div className="p-2.5 rounded-2xl bg-white/50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-700/50 hover:-translate-y-1 transition-transform">
+                    <span className="block text-lg font-black text-emerald-500 drop-shadow-sm">
                       {presentClasses}
                     </span>
-                    <span className="text-[10px] text-zinc-400">ตรงเวลา</span>
+                    <span className="text-[10px] text-zinc-500 uppercase tracking-wider">ตรงเวลา</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/40">
-                    <span className="block text-sm font-black text-amber-500">{lateClasses}</span>
-                    <span className="text-[10px] text-zinc-400">มาสาย</span>
+                  <div className="p-2.5 rounded-2xl bg-white/50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-700/50 hover:-translate-y-1 transition-transform">
+                    <span className="block text-lg font-black text-amber-500 drop-shadow-sm">{lateClasses}</span>
+                    <span className="text-[10px] text-zinc-500 uppercase tracking-wider">มาสาย</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/40">
-                    <span className="block text-sm font-black text-rose-500">{absentClasses}</span>
-                    <span className="text-[10px] text-zinc-400">ขาดเรียน</span>
+                  <div className="p-2.5 rounded-2xl bg-white/50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-700/50 hover:-translate-y-1 transition-transform">
+                    <span className="block text-lg font-black text-rose-500 drop-shadow-sm">{absentClasses}</span>
+                    <span className="text-[10px] text-zinc-500 uppercase tracking-wider">ขาดเรียน</span>
                   </div>
                 </div>
-                <div className="mt-4 p-3 bg-teal-500/5 rounded-xl border border-teal-500/10 text-left flex justify-between items-center text-xs font-black text-teal-600 dark:text-teal-400">
-                  <span>ส่งการบ้านสำเร็จ:</span>
-                  <span>{submittedAssignments} ชิ้น</span>
+
+                <div className="mt-5 p-3.5 bg-linear-to-tr from-teal-50 to-teal-100/50 dark:from-teal-900/20 dark:to-teal-800/10 rounded-2xl border border-teal-200/50 dark:border-teal-800/30 text-left flex justify-between items-center text-xs font-black text-teal-700 dark:text-teal-400">
+                  <span className="flex items-center gap-1.5">
+                    <Upload size={14} className="text-teal-600" />
+                    ส่งการบ้านสำเร็จ:
+                  </span>
+                  <span className="bg-white/60 dark:bg-black/20 px-2 py-1 rounded-lg">{submittedAssignments} ชิ้น</span>
                 </div>
               </div>
             </div>
@@ -1319,17 +1372,20 @@ export function DVEStudentPortal() {
             {/* Units & Document Downloads & Quizzes */}
             <div className="lg:col-span-2 space-y-6">
               {/* Learning Units & Media Card */}
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
-                <h3 className="text-base font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-                  <FolderOpen size={18} className="text-emerald-500" />
+              <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/50 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none" />
+                <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-5 flex items-center gap-2.5 relative z-10">
+                  <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                    <FolderOpen size={20} className="drop-shadow-sm" />
+                  </div>
                   หน่วยการสอนและสื่อดาวน์โหลด
                 </h3>
                 {units.length === 0 ? (
-                  <div className="text-center py-8 text-zinc-400 dark:text-zinc-500 text-sm font-bold">
+                  <div className="text-center py-10 text-zinc-400 dark:text-zinc-500 text-sm font-bold bg-zinc-50/50 dark:bg-zinc-800/30 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700">
                     ยังไม่มีหน่วยการเรียนรู้หรือสื่อการเรียนอัปเดตในขณะนี้
                   </div>
                 ) : (
-                  <div className="divide-y divide-zinc-100 dark:divide-zinc-800 border dark:border-zinc-800 rounded-xl overflow-hidden">
+                  <div className="space-y-3 relative z-10">
                     {units.map((unit, index) => (
                       <button
                         key={unit.id}
@@ -1346,11 +1402,16 @@ export function DVEStudentPortal() {
                           // Find if there is an existing attendance record for this unit
                           const unitAtts = attendances.filter((a) => a.unitId === unitIdStr);
                           const existingAtt = unitAtts.sort((a, b) => (b.studySeconds || 0) - (a.studySeconds || 0))[0];
-                          const savedSeconds = existingAtt?.studySeconds || 0;
 
                           const studyLimitSeconds = (Number(unit.studyMinutes) || 0) * 60;
+                          const totalLimitSeconds = (Number(unit.totalMinutes) || Number(unit.studyMinutes) || 0) * 60;
+
+                          // Treat the unit as fully completed if they already checked in on a past day
+                          const hasPastRecord = existingAtt && (existingAtt.status === "Present" || existingAtt.status === "Late" || (existingAtt.studySeconds || 0) >= studyLimitSeconds);
+                          const savedSeconds = hasPastRecord ? Math.max((existingAtt?.studySeconds || 0), totalLimitSeconds) : (existingAtt?.studySeconds || 0);
+
                           const hasMetMinTime = savedSeconds >= studyLimitSeconds;
-                          const isCompleted = savedSeconds >= (Number(unit.totalMinutes) || Number(unit.studyMinutes) || 0) * 60;
+                          const isCompleted = savedSeconds >= totalLimitSeconds;
 
                           if (pretest && !pretest.isSubmitted) {
                             setUnitQuizMode("pretest");
@@ -1390,28 +1451,32 @@ export function DVEStudentPortal() {
                             }, 100);
                           }
                         }}
-                        className="w-full text-left p-4 hover:bg-zinc-50 dark:hover:bg-zinc-850/50 bg-transparent flex items-center justify-between transition-colors cursor-pointer border-0"
+                        className="w-full text-left p-4 bg-white/50 dark:bg-zinc-800/50 hover:bg-linear-to-tr hover:from-emerald-50/50 hover:to-transparent dark:hover:from-emerald-900/10 dark:hover:to-transparent rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all duration-300 border border-slate-100 dark:border-zinc-700/50 shadow-sm hover:shadow-md hover:border-emerald-200/50 dark:hover:border-emerald-800/50 hover:-translate-y-0.5 group cursor-pointer"
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md shrink-0">
-                            หน่วยที่ {unit.sequence || index + 1}
-                          </span>
-                          <span className="font-bold text-zinc-850 dark:text-zinc-200 text-sm leading-snug truncate">
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-[11px] shadow-inner border border-emerald-200/30 dark:border-emerald-700/30 shrink-0 transition-transform group-hover:scale-110">
+                            EP.{unit.sequence || index + 1}
+                          </div>
+                          <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2 sm:line-clamp-1">
                             {unit.title}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-650">
+                        <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 shrink-0 ml-12 sm:ml-0">
                           {Number(unit.studyMinutes) > 0 && (
-                            <span className="text-[10px] font-bold text-amber-500/90 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
-                              ⏱️ {unit.studyMinutes} นาที
+                            <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-lg border border-amber-100 dark:border-amber-800/30 flex items-center gap-1">
+                              <Clock3 size={12} />
+                              {unit.studyMinutes} นาที
                             </span>
                           )}
                           {unit.dueDate && (
-                            <span className="text-[10px] font-bold text-rose-500/90 bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
-                              📌 {formatThaiDateDisplay(unit.dueDate)}
+                            <span className="text-[10px] font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 px-2.5 py-1 rounded-lg border border-rose-100 dark:border-rose-800/30 flex items-center gap-1">
+                              <Calendar size={12} />
+                              {formatThaiDateDisplay(unit.dueDate)}
                             </span>
                           )}
-                          <ChevronRight size={16} />
+                          <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors ml-1">
+                            <ChevronRight size={16} />
+                          </div>
                         </div>
                       </button>
                     ))}
@@ -1420,18 +1485,20 @@ export function DVEStudentPortal() {
               </div>
 
               {/* บันทึกเวลาเรียนและการส่งหลักฐานคะแนน */}
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                    <ClipboardList size={18} className="text-emerald-500" />
+              <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/50 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2.5">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
+                      <ClipboardList size={20} className="drop-shadow-sm" />
+                    </div>
                     บันทึกเวลาเรียนและการส่งหลักฐานคะแนน
                   </h3>
-                  <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                  <span className="text-xs font-black text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
                     วันที่: {new Date().toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
                 </div>
                 {attendances.length === 0 ? (
-                  <div className="text-center py-8 text-zinc-400 dark:text-zinc-500 text-sm font-bold border border-dashed dark:border-zinc-800 rounded-xl">
+                  <div className="text-center py-10 text-zinc-400 dark:text-zinc-500 text-sm font-bold bg-zinc-50/50 dark:bg-zinc-800/30 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700">
                     ยังไม่มีบันทึกประวัติเข้าเรียนหรือส่งงานในรายวิชานี้
                   </div>
                 ) : (
@@ -1501,6 +1568,11 @@ export function DVEStudentPortal() {
                                     {att.status === "Absent" && (
                                       <span className="px-2.5 py-1 rounded-full text-[10px] bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                                         ขาดเรียน
+                                      </span>
+                                    )}
+                                    {att.status === "Studying" && (
+                                      <span className="px-2.5 py-1 rounded-full text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                        กำลังเรียน
                                       </span>
                                     )}
                                   </td>
@@ -1639,59 +1711,49 @@ export function DVEStudentPortal() {
                                       ค้างส่ง
                                     </span>
                                   )}
-                                  {att.assignmentStatus === "None" && (
-                                    <span className="px-2.5 py-1 rounded-lg text-[10px] bg-zinc-150 dark:bg-zinc-800 text-zinc-555 dark:text-zinc-400 block text-center w-full">
+                                  {(!att.assignmentStatus || att.assignmentStatus === "None") && (
+                                    <span className="text-zinc-500 dark:text-zinc-400 block text-[10px]">
                                       ไม่มีงาน
                                     </span>
                                   )}
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <span className="text-zinc-400 block text-[10px] text-right">
+                                  <span className="text-zinc-400 block text-[10px]">
                                     คะแนนสอบรวม
                                   </span>
-                                  <div className="flex items-center justify-end pt-1">
-                                    {att.score ? (
-                                      <span className="text-sm font-black text-zinc-850 dark:text-zinc-100 tabular-nums">
-                                        {att.score} คะแนน
-                                      </span>
-                                    ) : (
-                                      <span className="text-xs text-zinc-450 font-bold">-</span>
-                                    )}
-                                  </div>
+                                  <span className="font-black text-cyan-600 dark:text-cyan-400">
+                                    {att.score ? `${att.score} คะแนน` : "-"}
+                                  </span>
                                 </div>
                               </div>
 
-                              {/* Image upload / evidence block */}
-                              <div className="bg-zinc-150/45 dark:bg-zinc-850/40 rounded-xl p-3 border border-zinc-200/50 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-                                <span className="text-[10px] font-black text-zinc-450">
-                                  จัดส่งงาน/เอกสารเพิ่มเติม:
-                                </span>
-                                <div className="w-full sm:w-auto flex justify-end">
-                                  {isUploading ? (
-                                    <div className="flex items-center gap-1.5 text-xs text-zinc-555">
-                                      <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-                                      <span>กำลังโหลด...</span>
-                                    </div>
-                                  ) : (
+                              {/* Action Row */}
+                              <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+                                <button
+                                  onClick={() => {
+                                    openImageModal(att);
+                                  }}
+                                  className="text-cyan-600 dark:text-cyan-400 text-xs font-bold hover:underline flex items-center gap-1.5 bg-cyan-50 dark:bg-cyan-900/20 px-3 py-1.5 rounded-xl transition-colors"
+                                >
+                                  <Paperclip size={14} />
+                                  จัดการส่งงาน/เอกสาร
+                                </button>
+
+                                {att.imageUrl && (
+                                  <div className="flex gap-2">
                                     <button
-                                      type="button"
                                       onClick={() => {
-                                        setImageModalAtt({});
-                                        setImageModalOpen(true);
+                                        setFilePreviewUrl(att.imageUrl);
+                                        setFilePreviewName(`เอกสารแนบ - ${att.date}`);
                                       }}
-                                      className="w-full justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 text-[10px] font-black rounded-lg cursor-pointer transition-colors inline-flex items-center gap-1 shadow-2xs"
+                                      className="text-zinc-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
+                                      title="ดูไฟล์แนบ"
                                     >
-                                      <Upload size={11} />
-                                      <span>📎 ส่งงาน/เอกสารเพิ่มเติม</span>
-                                      {quizzes.filter((q) => q.fileUrl).length > 0 && (
-                                        <span className="ml-1 bg-emerald-500 text-white rounded-full px-1.5 py-0.2 text-[8px] font-black leading-none">
-                                          {quizzes.filter((q) => q.fileUrl).length}
-                                        </span>
-                                      )}
+                                      <FileText size={18} />
                                     </button>
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           );
@@ -1793,82 +1855,95 @@ export function DVEStudentPortal() {
                 {/* ⏱️ TIMER BANNER */}
                 {Number(activeStudyUnit.studyMinutes) > 0 && (
                   <div
-                    className={`p-5 rounded-2xl border text-center transition-all ${isStudyCompleted
-                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400 animate-pulse"
-                      : "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400"
+                    className={`p-6 rounded-[24px] border relative overflow-hidden transition-all duration-500 ${isStudyCompleted
+                      ? "bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/10 border-emerald-200 dark:border-emerald-800/50 shadow-sm"
+                      : "bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/10 border-amber-200 dark:border-amber-800/50 shadow-sm"
                       }`}
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex items-center gap-2">
+                    {isStudyCompleted && (
+                      <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
+                    )}
+                    <div className="flex flex-col items-center gap-4 relative z-10">
+                      <div className="flex items-center gap-3">
                         {isStudyCompleted ? (
-                          <Award size={36} className="text-emerald-500" />
+                          <div className="p-3 bg-emerald-100 dark:bg-emerald-800/50 rounded-2xl shadow-inner">
+                            <Award size={36} className="text-emerald-600 dark:text-emerald-400 drop-shadow-sm animate-pulse" />
+                          </div>
                         ) : (
-                          <Clock
-                            size={36}
-                            className="animate-spin text-amber-500"
-                            style={{ animationDuration: "3s" }}
-                          />
+                          <div className="p-3 bg-amber-100 dark:bg-amber-800/50 rounded-2xl shadow-inner relative">
+                            <div className="absolute inset-0 rounded-2xl border-2 border-amber-400 dark:border-amber-500 border-t-transparent border-r-transparent animate-spin opacity-50"></div>
+                            <Clock
+                              size={36}
+                              className="text-amber-600 dark:text-amber-400 drop-shadow-sm"
+                            />
+                          </div>
                         )}
                       </div>
 
-                      {isStudyCompleted ? (
-                        <div>
-                          <h4 className="text-base font-black text-emerald-600 dark:text-emerald-400">
-                            🎉 เรียนครบเวลาทั้งหมดแล้ว!
-                          </h4>
-                          <p className="text-xs text-emerald-500 mt-1 font-bold">
-                            ท่านเข้าเรียนวิชานี้เรียบร้อยแล้ว สามารถศึกษาชีทดาวน์โหลด
-                            หรือทำแบบทดสอบด้านล่างได้ทันที
-                          </p>
-                        </div>
-                      ) : isMinimumTimeReached ? (
-                        <div>
-                          <h4 className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                            ✅ เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ
-                          </h4>
-                          <p className="text-xs text-emerald-500/80 mt-1">
-                            สามารถทำแบบทดสอบได้ทันที หรือศึกษาต่อจนครบเวลาทั้งหมด
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <h4 className="text-sm font-black text-amber-700 dark:text-amber-400">
-                            ⏳ ระบบกำลังจับเวลาเข้าเรียนของท่าน... ห้ามปิดหน้านี้
-                          </h4>
-                          <p className="text-xs text-amber-500/80 mt-1">
-                            สะสมเวลาให้ครบ {activeStudyUnit.studyMinutes} นาที
-                            เพื่อบันทึกชื่อเข้าเรียนอัตโนมัติ
-                          </p>
-                        </div>
-                      )}
+                      <div className="text-center">
+                        {isStudyCompleted ? (
+                          <>
+                            <h4 className="text-lg font-black text-emerald-700 dark:text-emerald-400 tracking-tight">
+                              🎉 เรียนครบเวลาทั้งหมดแล้ว!
+                            </h4>
+                            <p className="text-[13px] text-emerald-600/90 dark:text-emerald-500/90 mt-1 font-bold">
+                              ท่านเข้าเรียนวิชานี้เรียบร้อยแล้ว สามารถศึกษาชีทดาวน์โหลด หรือทำแบบทดสอบด้านล่างได้ทันที
+                            </p>
+                          </>
+                        ) : isMinimumTimeReached ? (
+                          <>
+                            <h4 className="text-base font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+                              ✅ เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ
+                            </h4>
+                            <p className="text-[13px] text-emerald-600/80 dark:text-emerald-500/80 mt-1 font-bold">
+                              สามารถทำแบบทดสอบได้ทันที หรือศึกษาต่อจนครบเวลาทั้งหมด
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <h4 className="text-base font-black text-amber-800 dark:text-amber-400 tracking-tight">
+                              ⏳ ระบบกำลังจับเวลาเข้าเรียนของท่าน... ห้ามปิดหน้านี้
+                            </h4>
+                            <p className="text-[13px] text-amber-700/80 dark:text-amber-500/80 mt-1 font-bold">
+                              สะสมเวลาให้ครบ {activeStudyUnit.studyMinutes} นาที เพื่อบันทึกชื่อเข้าเรียนอัตโนมัติ
+                            </p>
+                          </>
+                        )}
+                      </div>
 
                       {/* Premium Timer Progress Bar */}
-                      <div className="w-full max-w-md mt-4">
-                        <div className="flex justify-between text-xs font-black mb-1">
-                          <span>
-                            สะสมเวลาแล้ว: {Math.floor(studySecondsElapsed / 60)} นาที{" "}
-                            {studySecondsElapsed % 60} วินาที
+                      <div className="w-full max-w-md mt-2 bg-white/50 dark:bg-zinc-950/50 p-4 rounded-[20px] border border-white/50 dark:border-zinc-800/80 shadow-sm backdrop-blur-sm">
+                        <div className="flex justify-between text-[11px] font-black mb-2 uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
+                          <span className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+                            สะสมแล้ว: <span className="text-zinc-900 dark:text-white tabular-nums text-xs">{Math.floor(studySecondsElapsed / 60)} น. {studySecondsElapsed % 60} วิ.</span>
                           </span>
-                          <span>
-                            เป้าหมาย: {Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)} นาที
-                            (ขั้นต่ำ: {Number(activeStudyUnit.studyMinutes)} นาที)
+                          <span className="flex items-center gap-1">
+                            <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md">
+                              ขั้นต่ำ: {Number(activeStudyUnit.studyMinutes)} น.
+                            </span>
                           </span>
                         </div>
-                        <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-3.5 rounded-full overflow-hidden relative">
+                        <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-4 rounded-full overflow-hidden relative shadow-inner">
                           <div
-                            className={`h-full transition-all duration-1000 ${isStudyCompleted ? "bg-emerald-500" : isMinimumTimeReached ? "bg-emerald-500" : "bg-amber-500"
+                            className={`h-full transition-all duration-1000 relative ${isStudyCompleted ? "bg-linear-to-r from-emerald-400 to-emerald-500" : isMinimumTimeReached ? "bg-linear-to-r from-teal-400 to-emerald-500" : "bg-linear-to-r from-amber-400 to-orange-400"
                               }`}
                             style={{
                               width: `${(studySecondsElapsed / ((Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)) * 60)) * 100}%`,
                             }}
-                          />
+                          >
+                            <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-size-[1rem_1rem] animate-[progress_1s_linear_infinite]" />
+                          </div>
                           {/* Minimum time marker */}
                           <div
-                            className="absolute top-0 bottom-0 w-0.5 bg-zinc-400 dark:bg-zinc-600"
+                            className="absolute top-0 bottom-0 w-1 bg-zinc-900/20 dark:bg-zinc-100/30 shadow-[0_0_5px_rgba(0,0,0,0.5)] z-10"
                             style={{
                               left: `${(Number(activeStudyUnit.studyMinutes) / (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes))) * 100}%`,
                             }}
                           />
+                        </div>
+                        <div className="mt-2 text-[10px] text-center font-bold text-zinc-400">
+                          เป้าหมายสูงสุด: {Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)} นาที
                         </div>
                       </div>
                     </div>
@@ -1885,26 +1960,28 @@ export function DVEStudentPortal() {
                   if (!pretest && !posttest) return null;
 
                   return (
-                    <div className="space-y-3 bg-zinc-50 dark:bg-zinc-850 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                      <h3 className="text-sm font-black text-zinc-955 dark:text-white flex items-center gap-1.5 border-b pb-2 dark:border-zinc-800">
-                        <BookmarkCheck size={16} className="text-indigo-500" />
+                    <div className="space-y-4 bg-zinc-50/50 dark:bg-zinc-800/30 p-5 rounded-[24px] border border-zinc-100 dark:border-zinc-800">
+                      <h3 className="text-sm font-black text-zinc-900 dark:text-white flex items-center gap-2 border-b pb-3 dark:border-zinc-800 border-zinc-200">
+                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                          <BookmarkCheck size={16} />
+                        </div>
                         แบบทดสอบประจำหน่วยเรียน
                       </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {pretest && (
-                          <div className={`p-3 rounded-xl border flex flex-col justify-between ${pretest.isSubmitted ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-800' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-sm'}`}>
+                          <div className={`p-4 rounded-2xl border flex flex-col justify-between transition-all ${pretest.isSubmitted ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-800/50 shadow-sm' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-md hover:shadow-lg'}`}>
                             <div>
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full">
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800/50">
                                   Pre-test
                                 </span>
                                 {pretest.isSubmitted && (
-                                  <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
                                     <CheckCircle size={10} /> ทำแล้ว
                                   </span>
                                 )}
                               </div>
-                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-1">{pretest.title}</h4>
+                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-2 leading-relaxed">{pretest.title}</h4>
                             </div>
                             <button
                               onClick={() => {
@@ -1912,26 +1989,27 @@ export function DVEStudentPortal() {
                                 handleOpenQuizFormGlobal(pretest);
                               }}
                               disabled={pretest.isSubmitted}
-                              className={`mt-3 py-1.5 px-3 rounded-lg text-xs font-bold w-full transition-all ${pretest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md active:scale-95'}`}
+                              className={`mt-4 py-2.5 px-4 rounded-xl text-xs font-black w-full transition-all border-0 cursor-pointer flex items-center justify-center gap-1.5 ${pretest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : 'bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white shadow-[0_4px_14px_0_rgba(59,130,246,0.39)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.23)] hover:-translate-y-0.5 active:scale-95'}`}
                             >
                               {pretest.isSubmitted ? 'ส่งคำตอบแล้ว' : 'ทำแบบทดสอบก่อนเรียน'}
+                              {!pretest.isSubmitted && <ArrowRight size={14} />}
                             </button>
                           </div>
                         )}
                         {posttest && (
-                          <div className={`p-3 rounded-xl border flex flex-col justify-between ${posttest.isSubmitted ? 'bg-purple-50/50 dark:bg-purple-900/10 border-purple-100 dark:border-purple-800' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-sm'}`}>
+                          <div className={`p-4 rounded-2xl border flex flex-col justify-between transition-all ${posttest.isSubmitted ? 'bg-cyan-50/50 dark:bg-cyan-900/10 border-cyan-100 dark:border-cyan-800/50 shadow-sm' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-md hover:shadow-lg'}`}>
                             <div>
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 rounded-full">
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-[10px] font-black uppercase text-cyan-600 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-900/50 px-2.5 py-1 rounded-full border border-cyan-200 dark:border-cyan-800/50">
                                   Post-test
                                 </span>
                                 {posttest.isSubmitted && (
-                                  <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
                                     <CheckCircle size={10} /> ทำแล้ว
                                   </span>
                                 )}
                               </div>
-                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-1">{posttest.title}</h4>
+                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-2 leading-relaxed">{posttest.title}</h4>
                             </div>
                             <button
                               onClick={() => {
@@ -1943,9 +2021,10 @@ export function DVEStudentPortal() {
                                 handleOpenQuizFormGlobal(posttest);
                               }}
                               disabled={posttest.isSubmitted}
-                              className={`mt-3 py-1.5 px-3 rounded-lg text-xs font-bold w-full transition-all ${posttest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : !isMinimumTimeReached && Number(activeStudyUnit.studyMinutes) > 0 ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 text-white shadow-md active:scale-95'}`}
+                              className={`mt-4 py-2.5 px-4 rounded-xl text-xs font-black w-full transition-all border-0 cursor-pointer flex items-center justify-center gap-1.5 ${posttest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : !isMinimumTimeReached && Number(activeStudyUnit.studyMinutes) > 0 ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-linear-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white shadow-[0_4px_14px_0_rgba(6,182,212,0.39)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.23)] hover:-translate-y-0.5 active:scale-95'}`}
                             >
                               {posttest.isSubmitted ? 'ส่งคำตอบแล้ว' : !isMinimumTimeReached && Number(activeStudyUnit.studyMinutes) > 0 ? 'ต้องเรียนให้ครบเวลาก่อน' : 'ทำแบบทดสอบหลังเรียน'}
+                              {(!posttest.isSubmitted && (!Number(activeStudyUnit.studyMinutes) || isMinimumTimeReached)) && <ArrowRight size={14} />}
                             </button>
                           </div>
                         )}
@@ -2641,18 +2720,18 @@ export function DVEStudentPortal() {
                     <div className="space-y-3">
                       {quizzes.filter(quiz => {
                         if (!quiz.unitId) return true;
-                        
+
                         const unit = units.find(u => (u.id || u._id?.toString()) === quiz.unitId);
                         if (!unit) return false;
-                        
+
                         const hasAttendance = attendances.some(a => a.unitId === quiz.unitId);
                         const isActive = activeStudyUnit && (activeStudyUnit.id || activeStudyUnit._id?.toString()) === quiz.unitId;
-                        
+
                         if (hasAttendance || isActive) return true;
-                        
+
                         const unitIndex = units.findIndex(u => (u.id || u._id?.toString()) === quiz.unitId);
                         if (unitIndex === 0) return true;
-                        
+
                         let maxCheckedInSeq = 0;
                         units.forEach((u, idx) => {
                           const uId = u.id || u._id?.toString();
@@ -2661,7 +2740,7 @@ export function DVEStudentPortal() {
                             if (seq > maxCheckedInSeq) maxCheckedInSeq = seq;
                           }
                         });
-                        
+
                         const seq = unit.sequence || (unitIndex + 1);
                         return seq <= maxCheckedInSeq + 1;
                       }).map((quiz) => {

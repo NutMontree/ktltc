@@ -45,6 +45,7 @@ interface StudentGrade {
   id: string;
   studentId: string;
   studentName: string;
+  classGroupId?: string;
   subjectId: string;
   scores: Record<string, number>;
   totalScore: number;
@@ -66,20 +67,30 @@ export default function DVEGradingPage() {
   const [editingGrade, setEditingGrade] = useState<StudentGrade | null>(null);
   const [gradeForm, setGradeForm] = useState<Record<string, number>>({});
   const [newStudentName, setNewStudentName] = useState<string>("");
+  const [selectedClassGroup, setSelectedClassGroup] = useState<string>("");
+
+  const classGroups = Array.from(new Set(studentGrades.map(g => g.classGroupId || "ไม่ระบุกลุ่มเรียน"))).filter(Boolean).sort();
+  const filteredGrades = selectedClassGroup 
+    ? studentGrades.filter(g => (g.classGroupId || "ไม่ระบุกลุ่มเรียน") === selectedClassGroup) 
+    : studentGrades;
 
   const exportToExcel = () => {
-    if (studentGrades.length === 0 || !config) {
+    if (filteredGrades.length === 0 || !config) {
       message.error("ไม่พบข้อมูลที่จะส่งออก");
       return;
     }
     const currentSubject = subjects.find((s) => s.id === selectedSubjectId);
-    const subjectNameStr = currentSubject ? `${currentSubject.code} ${currentSubject.name}` : "คะแนน";
+    let subjectNameStr = currentSubject ? `${currentSubject.code} ${currentSubject.name}` : "คะแนน";
+    if (selectedClassGroup) {
+      subjectNameStr += `_${selectedClassGroup}`;
+    }
 
-    const data = studentGrades.map((g, idx) => {
+    const data = filteredGrades.map((g, idx) => {
       const row: any = {
         "ลำดับ": idx + 1,
         "รหัสนักศึกษา": g.studentId || "-",
         "ชื่อ-นามสกุล": g.studentName || "-",
+        "กลุ่มเรียน": g.classGroupId || "-",
       };
 
       config.categories.forEach((cat) => {
@@ -102,15 +113,20 @@ export default function DVEGradingPage() {
   };
 
   const exportToSot02 = () => {
-    if (studentGrades.length === 0 || !config) {
+    if (filteredGrades.length === 0 || !config) {
       message.error("ไม่พบข้อมูลที่จะส่งออก");
       return;
     }
     const currentSubject = subjects.find((s) => s.id === selectedSubjectId);
-    const subjectNameStr = currentSubject ? `${currentSubject.code} ${currentSubject.name}` : "ศธ02";
+    let subjectNameStr = currentSubject ? `${currentSubject.code} ${currentSubject.name}` : "ศธ02";
+    if (selectedClassGroup) {
+      subjectNameStr += `_${selectedClassGroup}`;
+    }
 
-    const data = studentGrades.map((g) => ({
+    const data = filteredGrades.map((g) => ({
       "รหัสนักศึกษา": g.studentId || "-",
+      "ชื่อ-นามสกุล": g.studentName || "-",
+      "กลุ่มเรียน": g.classGroupId || "-",
       "เกรด": g.finalGrade,
       "คะแนนรวม": g.totalScore,
     }));
@@ -136,6 +152,7 @@ export default function DVEGradingPage() {
     if (selectedSubjectId) {
       fetchGradingConfig();
       fetchStudentGrades();
+      setSelectedClassGroup(""); // Reset class group when subject changes
     }
   }, [selectedSubjectId]);
 
@@ -313,52 +330,82 @@ export default function DVEGradingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-zinc-900 dark:to-zinc-950 p-6">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-sky-50 to-teal-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 p-6 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            ระบบจัดการคะแนน
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            ตั้งค่าการให้คะแนนและบันทึกคะแนนนักเรียน
-          </p>
+        <div className="mb-8 p-6 sm:p-8 rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
+            <Calculator size={180} className="w-32 h-32 sm:w-48 sm:h-48 drop-shadow-2xl" />
+          </div>
+          <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none mix-blend-overlay" />
+          <div className="relative z-10 max-w-2xl">
+            <span className="bg-white/20 backdrop-blur-xl text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-white/95 border border-white/20 shadow-sm flex items-center gap-1.5 w-fit mb-4">
+              <GraduationCap className="w-3.5 h-3.5" />
+              ระบบตรวจงานและให้คะแนน
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-2 drop-shadow-sm">
+              ระบบจัดการคะแนน <span className="text-cyan-200">(Grading)</span>
+            </h1>
+            <p className="text-white/90 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
+              ตั้งค่าเกณฑ์การให้คะแนน บันทึกคะแนนนักเรียน และส่งออกข้อมูลผลการเรียน (ศธ.02)
+            </p>
+          </div>
         </div>
 
         {/* Subject Selection */}
-        <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-zinc-700 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+        <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-6 sm:p-8 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <h2 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
+              <span className="p-2 bg-blue-100 text-blue-600 rounded-xl">
+                <Calculator className="w-5 h-5" />
+              </span>
               เลือกวิชาเรียน
             </h2>
             {config && (
               <button
                 onClick={() => setIsConfigModalOpen(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400 rounded-2xl hover:bg-cyan-100 dark:hover:bg-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 font-black shadow-sm cursor-pointer border border-cyan-100 dark:border-cyan-800/50"
               >
                 <Edit2 className="w-4 h-4" />
-                แก้ไขการตั้งค่าคะแนน
+                แก้ไขเกณฑ์การให้คะแนน
               </button>
             )}
           </div>
-          <Select
-            placeholder="-- เลือกวิชาเรียน --"
-            value={selectedSubjectId || undefined}
-            onChange={(val) => setSelectedSubjectId(val || "")}
-            options={subjects.map((s) => ({ label: `[${s.code}] ${s.name}`, value: s.id }))}
-            className="w-full"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Select
+              placeholder="-- เลือกวิชาเรียน --"
+              value={selectedSubjectId || undefined}
+              onChange={(val) => setSelectedSubjectId(val || "")}
+              options={subjects.map((s) => ({ label: `[${s.code}] ${s.name}`, value: s.id }))}
+              className="w-full h-12"
+              size="large"
+            />
+            {selectedSubjectId && classGroups.length > 0 && (
+              <Select
+                placeholder="-- ทั้งหมด (ทุกห้องเรียน) --"
+                value={selectedClassGroup || undefined}
+                onChange={(val) => setSelectedClassGroup(val || "")}
+                options={[
+                  { label: "-- ทั้งหมด (ทุกห้องเรียน) --", value: "" },
+                  ...classGroups.map(cg => ({ label: cg, value: cg }))
+                ]}
+                className="w-full h-12"
+                size="large"
+              />
+            )}
+          </div>
         </div>
 
         {/* Grading Configuration */}
         {config && selectedSubjectId && (
-          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-zinc-700 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                การตั้งค่าการให้คะแนน
+          <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-6 sm:p-8 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+              <h2 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
+                โครงสร้างการให้คะแนน
               </h2>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
-                รวม {config.totalPoints} คะแนน • ผ่าน {config.passingScore} คะแนน
+              <div className="text-xs font-black text-blue-700 dark:text-blue-400 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-full border border-blue-100 dark:border-blue-800/50 flex items-center gap-2 shadow-sm">
+                <CheckCircle className="w-3.5 h-3.5" />
+                รวม {config.totalPoints} คะแนน • เกณฑ์ผ่าน {config.passingScore} คะแนน
               </div>
             </div>
 
@@ -366,32 +413,32 @@ export default function DVEGradingPage() {
               {config.categories.map((category) => (
                 <div
                   key={category.id}
-                  className="bg-slate-50 dark:bg-zinc-700 rounded-lg p-4 border border-slate-200 dark:border-zinc-600"
+                  className="bg-white/80 dark:bg-zinc-800/60 rounded-[20px] p-5 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow-md transition-shadow hover:scale-[1.01]"
                 >
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="font-medium text-slate-900 dark:text-white mb-1">
+                      <h3 className="font-black text-zinc-900 dark:text-white mb-1.5 text-sm">
                         {category.name}
                       </h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                      <p className="text-sm font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 inline-block px-2.5 py-1 rounded-lg">
                         {category.points} คะแนน
                       </p>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex flex-col gap-1.5 items-end">
                       {category.cannotDeduct && (
-                        <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded text-xs">
+                        <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
                           ลบไม่ได้
                         </span>
                       )}
                       {category.required && (
-                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-xs">
+                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
                           จำเป็น
                         </span>
                       )}
                     </div>
                   </div>
                   {category.description && (
-                    <p className="text-xs text-slate-500 dark:text-slate-500">
+                    <p className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-2">
                       {category.description}
                     </p>
                   )}
@@ -400,17 +447,17 @@ export default function DVEGradingPage() {
             </div>
 
             {/* Grade Scale */}
-            <div className="mt-6">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-                เกณฑ์การให้เกรด
+            <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+              <h3 className="text-sm font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
+                เกณฑ์การตัดเกรด
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {config.gradeScale.map((scale) => (
                   <span
                     key={scale.grade}
-                    className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-sm"
+                    className="px-3.5 py-1.5 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 rounded-xl text-xs font-black shadow-sm border border-zinc-200 dark:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                   >
-                    เกรด {scale.grade}: {scale.minScore}+ ({scale.description})
+                    เกรด {scale.grade} : {scale.minScore} ขึ้นไป <span className="opacity-60">({scale.description})</span>
                   </span>
                 ))}
               </div>
@@ -420,32 +467,35 @@ export default function DVEGradingPage() {
 
         {/* Student Grades */}
         {config && selectedSubjectId && (
-          <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-slate-200 dark:border-zinc-700 overflow-hidden">
-            <div className="p-6 border-b border-slate-200 dark:border-zinc-700 print:hidden">
+          <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-800/90 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-zinc-700 overflow-hidden mb-8">
+            <div className="p-6 border-b border-white/40 dark:border-zinc-700 print:hidden bg-white/40 dark:bg-zinc-800/50">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                  คะแนนนักเรียน ({studentGrades.length} คน)
+                <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <span className="p-2 bg-amber-100 text-amber-600 rounded-xl">
+                    <GraduationCap className="w-5 h-5" />
+                  </span>
+                  คะแนนนักเรียน ({filteredGrades.length} คน)
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={exportToExcel}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer"
+                    className="px-4 py-2 bg-emerald-200 hover:bg-emerald-300 text-emerald-900 rounded-xl transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer hover:-translate-y-0.5"
                   >
-                    <Download className="w-3.5 h-3.5" />
+                    <Download className="w-4 h-4" />
                     ส่งออก Excel
                   </button>
                   <button
                     onClick={exportToSot02}
-                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer"
+                    className="px-4 py-2 bg-orange-200 hover:bg-orange-300 text-orange-900 rounded-xl transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer hover:-translate-y-0.5"
                   >
-                    <Upload className="w-3.5 h-3.5" />
+                    <Upload className="w-4 h-4" />
                     ส่งออก ศธ.02
                   </button>
                   <button
                     onClick={triggerPrint}
-                    className="px-3 py-1.5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer"
+                    className="px-4 py-2 bg-amber-100 hover:bg-amber-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-amber-900 dark:text-zinc-200 rounded-xl transition-all flex items-center gap-1.5 text-xs font-black shadow-sm border-0 cursor-pointer hover:-translate-y-0.5"
                   >
-                    <Calculator className="w-3.5 h-3.5" />
+                    <Calculator className="w-4 h-4" />
                     พิมพ์รายงาน (PDF)
                   </button>
                   <button
@@ -455,7 +505,7 @@ export default function DVEGradingPage() {
                       setNewStudentName("");
                       setIsGradeModalOpen(true);
                     }}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-xs font-bold border-0 cursor-pointer"
+                    className="px-5 py-2 bg-sky-300 hover:bg-sky-400 text-sky-900 rounded-xl transition-all flex items-center gap-2 text-xs font-black shadow-sm border-0 cursor-pointer hover:-translate-y-0.5"
                   >
                     <Plus className="w-4 h-4" />
                     เพิ่มคะแนน
@@ -464,77 +514,86 @@ export default function DVEGradingPage() {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-zinc-700/50">
+            <div className="overflow-x-auto p-4 sm:p-6">
+              <table className="w-full border-collapse">
+                <thead className="bg-blue-50/50 dark:bg-zinc-800/80 rounded-[20px]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest rounded-l-2xl">
                       นักเรียน
                     </th>
                     {config.categories.map((cat) => (
-                      <th key={cat.id} className="px-6 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                      <th key={cat.id} className="px-4 py-5 text-center text-[11px] font-black text-cyan-800 dark:text-cyan-400 uppercase tracking-widest">
                         {cat.name}
-                        <br />
-                        <span className="text-xs text-slate-500">({cat.points})</span>
+                        <div className="text-[10px] text-cyan-600/70 dark:text-cyan-400/70 mt-1">({cat.points})</div>
                       </th>
                     ))}
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-center text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest">
                       รวม
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-center text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest">
                       เกรด
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-center text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest">
                       สถานะ
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-5 text-center text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest rounded-r-2xl">
                       จัดการ
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-zinc-700">
-                  {studentGrades.map((grade) => (
-                    <tr key={grade.id} className="hover:bg-slate-50 dark:hover:bg-zinc-700/50 transition-colors">
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
+                  {filteredGrades.map((grade) => (
+                    <tr key={grade.id} className="hover:bg-blue-50/40 dark:hover:bg-zinc-800/40 transition-colors group">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        <p className="text-sm font-black text-zinc-900 dark:text-white">
                           {grade.studentName}
                         </p>
+                        {grade.classGroupId && grade.classGroupId !== "ไม่ระบุกลุ่มเรียน" && (
+                          <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded-full font-bold">
+                            {grade.classGroupId}
+                          </span>
+                        )}
                       </td>
                       {config.categories.map((cat) => (
                         <td key={cat.id} className="px-6 py-4 whitespace-nowrap text-center">
-                          <p className="text-sm text-slate-600 dark:text-slate-400">
-                            {grade.scores[cat.id] || 0}/{cat.points}
+                          <p className="text-sm font-bold text-zinc-600 dark:text-zinc-400">
+                            <span className="text-blue-600 dark:text-blue-400">{grade.scores[cat.id] || 0}</span>
+                            <span className="opacity-50">/{cat.points}</span>
                           </p>
                         </td>
                       ))}
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        <p className="text-sm font-black text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 inline-block px-3 py-1 rounded-lg">
                           {grade.totalScore}
                         </p>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        <p className="text-sm font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 inline-block px-3 py-1 rounded-lg border border-blue-100 dark:border-blue-800/50">
                           {grade.finalGrade}
                         </p>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         {grade.isPassed ? (
-                          <CheckCircle className="w-5 h-5 text-emerald-500 mx-auto" />
+                          <div className="flex justify-center">
+                            <CheckCircle className="w-5 h-5 text-emerald-500 drop-shadow-sm" />
+                          </div>
                         ) : (
-                          <AlertCircle className="w-5 h-5 text-rose-500 mx-auto" />
+                          <div className="flex justify-center">
+                            <AlertCircle className="w-5 h-5 text-rose-500 drop-shadow-sm" />
+                          </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="flex gap-2 justify-center">
+                        <div className="flex gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => handleEditGrade(grade)}
-                            className="p-1 hover:bg-slate-100 dark:hover:bg-zinc-600 rounded transition-colors"
+                            className="p-2 hover:bg-sky-100 dark:hover:bg-zinc-600 rounded-lg transition-colors border-0 cursor-pointer"
                           >
-                            <Edit2 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                            <Edit2 className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                           </button>
                           <button
                             onClick={() => handleDeleteGrade(grade.id)}
-                            className="p-1 hover:bg-rose-100 dark:hover:bg-rose-900/30 rounded transition-colors"
+                            className="p-2 hover:bg-rose-100 dark:hover:bg-rose-900/30 rounded-lg transition-colors border-0 cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                           </button>
@@ -545,7 +604,7 @@ export default function DVEGradingPage() {
                 </tbody>
               </table>
 
-              {studentGrades.length === 0 && (
+              {filteredGrades.length === 0 && (
                 <div className="p-12 text-center text-slate-500 dark:text-slate-400">
                   ยังไม่มีข้อมูลคะแนน
                 </div>

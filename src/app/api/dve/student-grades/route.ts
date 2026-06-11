@@ -7,6 +7,93 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 
+const CLASS_GROUP_FIELDS = ["classGroupId", "groupCode", "classroomName"] as const;
+
+function standardizeClassGroupName(name: string): string {
+  if (!name) return "";
+  let clean = name.trim();
+  const stripped = clean.replace(/[\s\.-]+/g, "");
+  const match = stripped.match(/^([ก-ฮa-zA-Z]+)(.*)$/);
+  if (match) {
+    const prefix = match[1];
+    const rest = match[2];
+    if (rest) {
+      return `${prefix}.${rest}`;
+    }
+    return prefix;
+  }
+  return stripped;
+}
+
+function resolveStudentClassGroup(student: any): string {
+  if (!student) return "";
+  for (const field of CLASS_GROUP_FIELDS) {
+    const value = student[field];
+    if (value && String(value).trim()) {
+      return standardizeClassGroupName(String(value).trim());
+    }
+  }
+  return "";
+}
+
+// Default grading configuration
+const DEFAULT_GRADING_CONFIG = {
+  categories: [
+    {
+      id: "mental_health",
+      name: "จิตพิสัย",
+      points: 20,
+      cannotDeduct: true,
+      required: true,
+      description: "การประเมินจิตพิสัยและความประพฤติ",
+    },
+    {
+      id: "midterm_exam",
+      name: "สอบกลางภาค",
+      points: 10,
+      cannotDeduct: true,
+      required: true,
+      description: "การสอบกลางภาค",
+    },
+    {
+      id: "end_of_chapter_exam",
+      name: "สอบท้ายบท",
+      points: 20,
+      cannotDeduct: true,
+      required: true,
+      description: "การสอบท้ายบท",
+    },
+    {
+      id: "project",
+      name: "โปรเจครายวิชา",
+      points: 20,
+      cannotDeduct: false,
+      required: false,
+      description: "โปรเจครายวิชา",
+    },
+    {
+      id: "class_work",
+      name: "งานอื่นๆ (งานในคาบเรียน)",
+      points: 30,
+      cannotDeduct: false,
+      required: false,
+      description: "งานในคาบเรียนและกิจกรรมอื่นๆ",
+    },
+  ],
+  totalPoints: 100,
+  passingScore: 50,
+  gradeScale: [
+    { minScore: 80, grade: "4.0", description: "ดีเยี่ยม" },
+    { minScore: 75, grade: "3.5", description: "ดีมาก" },
+    { minScore: 70, grade: "3.0", description: "ดี" },
+    { minScore: 65, grade: "2.5", description: "ค่อนข้างดี" },
+    { minScore: 60, grade: "2.0", description: "พอใช้" },
+    { minScore: 55, grade: "1.5", description: "ผ่านเกณฑ์ขั้นต่ำ" },
+    { minScore: 50, grade: "1.0", description: "ผ่านเกณฑ์ปรับปรุง" },
+    { minScore: 0, grade: "0", description: "ต่ำกว่าเกณฑ์ / ไม่ผ่าน" },
+  ],
+};
+
 export async function GET(req: Request) {
   try {
     const session = await auth();
@@ -38,9 +125,9 @@ export async function GET(req: Request) {
     }
 
     // Get grading config for this subject
-    const config = await db.collection("dve_grading_configs").findOne({ subjectId });
+    let config: any = await db.collection("dve_grading_configs").findOne({ subjectId });
     if (!config) {
-      return NextResponse.json({ error: "Grading configuration not found" }, { status: 404 });
+      config = DEFAULT_GRADING_CONFIG;
     }
 
     // Build query for student grades
@@ -49,41 +136,143 @@ export async function GET(req: Request) {
       query.studentId = studentId;
     }
 
+    // 1. Get students who have grades
     const grades = await db
       .collection("dve_student_grades")
       .find(query)
-      .sort({ studentName: 1 })
       .toArray();
 
-    // Calculate final grades for each student
-    const calculatedGrades = grades.map((grade) => {
-      const totalScore = config.categories.reduce((sum: number, cat: any) => {
-        const categoryScore = grade.scores?.[cat.id] || 0;
-        return sum + categoryScore;
-      }, 0);
+    // 2. Get students who have submitted work / quizzes (they have a numeric score in attendances)
+    const attendancesWithScores = await db
+      .collection("dve_attendances")
+      .find({
+        ...query,
+        score: { $exists: true, $nin: ["", null] }
+      })
+      .project({ studentId: 1, studentName: 1, score: 1 })
+      .toArray();
 
-      // Determine grade based on grade scale
-      let finalGrade = "0";
-      let gradeDescription = "ไม่ผ่าน";
-      for (const scale of config.gradeScale) {
-        if (totalScore >= scale.minScore) {
-          finalGrade = scale.grade;
-          gradeDescription = scale.description;
-          break;
+    // Sum quiz scores per student
+    const autoScoresMap = new Map();
+    attendancesWithScores.forEach((a: any) => {
+      const s = Number(a.score);
+      if (!isNaN(s) && a.studentId) {
+        autoScoresMap.set(a.studentId, (autoScoresMap.get(a.studentId) || 0) + s);
+      }
+    });
+
+    const studentMap = new Map();
+
+    // Add students from explicit grades
+    grades.forEach((g: any) => {
+      if (g.studentId) {
+        studentMap.set(g.studentId, {
+          _id: g._id,
+          subjectId,
+          studentId: g.studentId,
+          studentName: g.studentName || "ไม่ทราบชื่อ",
+          scores: g.scores || {},
+          hasGradeRecord: true,
+          updatedAt: g.updatedAt
+        });
+      }
+    });
+
+    // Merge auto scores and add students who ONLY have auto scores
+    attendancesWithScores.forEach((a: any) => {
+      if (a.studentId) {
+        let studentData = studentMap.get(a.studentId);
+        if (!studentData) {
+          studentData = {
+            _id: new ObjectId(),
+            subjectId,
+            studentId: a.studentId,
+            studentName: a.studentName || "ไม่ทราบชื่อ",
+            scores: {},
+            hasGradeRecord: true, // Treat as having a grade so it gets calculated
+            updatedAt: new Date().toISOString()
+          };
+          studentMap.set(a.studentId, studentData);
+        }
+
+        // Find the ID for the "งานอื่นๆ" category (usually "class_work")
+        const classWorkCat = config.categories.find((c: any) => c.id === "class_work" || c.name.includes("งานอื่น")) 
+                             || config.categories[config.categories.length - 1];
+        
+        if (classWorkCat) {
+           studentData.scores[classWorkCat.id] = autoScoresMap.get(a.studentId);
         }
       }
+    });
+
+    // Post-process: Give default max score for "จิตพิสัย" (mental_health) if it's missing
+    const mentalHealthCat = config.categories.find((c: any) => c.id === "mental_health" || c.name.includes("จิตพิสัย"));
+    if (mentalHealthCat) {
+      studentMap.forEach(studentData => {
+        if (studentData.scores[mentalHealthCat.id] === undefined || studentData.scores[mentalHealthCat.id] === null) {
+          studentData.scores[mentalHealthCat.id] = mentalHealthCat.points; // Give max points by default
+        }
+      });
+    }
+
+    const studentIdsToFetch = Array.from(studentMap.keys())
+      .filter((id: string) => ObjectId.isValid(id))
+      .map((id: string) => new ObjectId(id));
+      
+    let userMap = new Map();
+    if (studentIdsToFetch.length > 0) {
+      const users = await db.collection("users")
+        .find({ _id: { $in: studentIdsToFetch } })
+        .project({ _id: 1, classGroupId: 1, groupCode: 1, classroomName: 1 })
+        .toArray();
+      userMap = new Map(users.map((u: any) => [u._id.toString(), u]));
+    }
+
+    const allActiveStudents = Array.from(studentMap.values()).sort((a, b) => 
+      (a.studentName || "").localeCompare(b.studentName || "")
+    );
+
+    // Calculate final grades for each student
+    const calculatedGrades = allActiveStudents.map((grade) => {
+      let totalScore: number | string = "-";
+      let finalGrade = "-";
+      let gradeDescription = "รอการประเมิน";
+      let isPassed: boolean | null = null;
+
+      if (grade.hasGradeRecord) {
+        totalScore = config.categories.reduce((sum: number, cat: any) => {
+          const categoryScore = grade.scores?.[cat.id] || 0;
+          return sum + categoryScore;
+        }, 0);
+
+        finalGrade = "0";
+        gradeDescription = "ไม่ผ่าน";
+        for (const scale of config.gradeScale) {
+          if (totalScore >= scale.minScore) {
+            finalGrade = scale.grade;
+            gradeDescription = scale.description;
+            break;
+          }
+        }
+        isPassed = totalScore >= config.passingScore;
+      }
+
+      const user = userMap.get(grade.studentId);
+      const classGroupId = resolveStudentClassGroup(user) || "ไม่ระบุกลุ่มเรียน";
 
       return {
         id: grade._id.toString(),
         studentId: grade.studentId,
         studentName: grade.studentName,
+        classGroupId,
         subjectId: grade.subjectId,
         scores: grade.scores || {},
         totalScore,
         finalGrade,
         gradeDescription,
-        isPassed: totalScore >= config.passingScore,
-        updatedAt: grade.updatedAt,
+        isPassed,
+        hasGradeRecord: grade.hasGradeRecord,
+        updatedAt: grade.updatedAt || new Date().toISOString(),
       };
     });
 
@@ -116,10 +305,16 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { subjectId, studentId, studentName, scores } = body;
+    const { subjectId, studentName, scores } = body;
+    let { studentId } = body;
 
-    if (!subjectId || !studentId || !studentName || !scores) {
+    if (!subjectId || !studentName || !scores) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    if (!studentId) {
+      // Generate a new ID for manually added students
+      studentId = new ObjectId().toString();
     }
 
     const client = await clientPromise;
@@ -137,9 +332,9 @@ export async function POST(req: Request) {
     }
 
     // Get grading config
-    const config = await db.collection("dve_grading_configs").findOne({ subjectId });
+    let config: any = await db.collection("dve_grading_configs").findOne({ subjectId });
     if (!config) {
-      return NextResponse.json({ error: "Grading configuration not found" }, { status: 404 });
+      config = DEFAULT_GRADING_CONFIG;
     }
 
     // Validate scores against config
@@ -256,9 +451,9 @@ export async function PUT(req: Request) {
     }
 
     // Get grading config
-    const config = await db.collection("dve_grading_configs").findOne({ subjectId: existing.subjectId });
+    let config: any = await db.collection("dve_grading_configs").findOne({ subjectId: existing.subjectId });
     if (!config) {
-      return NextResponse.json({ error: "Grading configuration not found" }, { status: 404 });
+      config = DEFAULT_GRADING_CONFIG;
     }
 
     // Validate scores against config

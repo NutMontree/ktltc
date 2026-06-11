@@ -174,6 +174,14 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
+      let teacherImage = "";
+      if (ObjectId.isValid(subject.teacherId)) {
+        const teacher = await db.collection("users").findOne({ _id: new ObjectId(subject.teacherId) });
+        if (teacher) {
+          teacherImage = teacher.image || "";
+        }
+      }
+
       return NextResponse.json({
         success: true,
         subject: {
@@ -186,6 +194,7 @@ export async function GET(req: Request) {
           academicYear: subject.academicYear,
           teacherId: subject.teacherId,
           teacherName: subject.teacherName,
+          teacherImage: teacherImage,
           totalWeeks: subject.totalWeeks || "",
           daysPerWeek: subject.daysPerWeek || "",
           hoursPerDay: subject.hoursPerDay || "",

@@ -261,7 +261,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const requestDate = String(date).slice(0, 10);
+    const requestDate = String(date).slice(0, 10); // Enforce YYYY-MM-DD
 
     const bulkOps = records.map((rec: any) => {
       const {
@@ -306,12 +306,19 @@ export async function POST(req: Request) {
         updateOne: {
           filter: {
             subjectId,
-            date,
+            date: requestDate, // Use normalized date to prevent duplicates
             studentId,
             unitId: unitId || "",
           },
           update: {
-            $set: updateFields,
+            $set: {
+              ...updateFields,
+              date: requestDate, // Ensure stored date is normalized
+              updatedAt: new Date().toISOString(),
+            },
+            $setOnInsert: {
+              createdAt: new Date().toISOString(),
+            },
           },
           upsert: true,
         },
