@@ -1003,7 +1003,7 @@ export function DVEStudentPortal() {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto space-y-6 px-4 py-4 sm:py-8 font-sans">
+    <div className="max-w-[1600px] mx-auto space-y-6 px-4 py-4 sm:py-8 font-sans">
       {/* Student Portal Banner */}
       <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 group">
         {/* Animated Background Mesh */}
