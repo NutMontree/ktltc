@@ -3028,7 +3028,7 @@ function StudentPortalContent() {
   if (!session) return null;
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] dark:bg-zinc-950 transition-colors duration-500 pb-20">
+    <div className="max-w-[1600px] mx-auto w-full bg-[#f0f2f5] dark:bg-zinc-950 transition-colors duration-500 pb-20">
       <style
         dangerouslySetInnerHTML={{
           __html: `
