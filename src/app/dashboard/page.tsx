@@ -764,7 +764,7 @@ export default function DashboardLoader() {
           )}
 
           {/* --- Executive Section --- */}
-          {(permissions?.access_teacher_verification || permissions?.access_teacher_dashboard) && (
+          {(permissions?.access_teacher_verification || permissions?.access_teacher_dashboard || permissions?.access_lesson_plans || permissions?.access_dpa_evaluation || permissions?.access_plc || permissions?.access_student_care) && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 flex items-center gap-4">
@@ -792,6 +792,42 @@ export default function DashboardLoader() {
                     title="ตรวจสอบการจัดการเรียนการสอนครู"
                     icon={CalendarCheck}
                     desc="ตรวจสอบบันทึกการเรียนการสอนและการเข้าเรียนของนักเรียนแยกตามรายวิชา"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_lesson_plans && (
+                  <ActionCard
+                    href="/dashboard/director/lesson-plans"
+                    title="ตรวจสอบและแผนการสอน"
+                    icon={FileText}
+                    desc="ตรวจสอบและอนุมัติแผนการสอนออนไลน์ของครู"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_dpa_evaluation && (
+                  <ActionCard
+                    href="/dashboard/director/dpa-evaluation"
+                    title="ประเมินผลการปฏิบัติงาน / DPA"
+                    icon={ShieldCheck}
+                    desc="ตรวจสอบแฟ้มพัฒนางานและประเมินผลการสอน"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_plc && (
+                  <ActionCard
+                    href="/dashboard/director/plc"
+                    title="ชุมชนการเรียนรู้ทางวิชาชีพ (PLC)"
+                    icon={Users}
+                    desc="บันทึกการรวมกลุ่มและรายงานผลการจัดทำ PLC"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_student_care && (
+                  <ActionCard
+                    href="/dashboard/director/student-care"
+                    title="ระบบดูแลช่วยเหลือนักเรียน"
+                    icon={ClipboardList}
+                    desc="รายงานเยี่ยมบ้าน คัดกรองนักเรียน และผลสัมฤทธิ์"
                     variants={item}
                   />
                 )}

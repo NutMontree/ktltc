@@ -122,6 +122,30 @@ const FEATURE_LABELS: {
     color: "text-blue-500",
     href: "/teacher-dashboard",
   },
+  access_lesson_plans: {
+    label: "ตรวจสอบแผนการสอน",
+    icon: FiFileText,
+    color: "text-emerald-500",
+    href: "/dashboard/director/lesson-plans",
+  },
+  access_dpa_evaluation: {
+    label: "ประเมินผล PA/DPA",
+    icon: FiCheckCircle,
+    color: "text-rose-500",
+    href: "/dashboard/director/dpa-evaluation",
+  },
+  access_plc: {
+    label: "ชุมชนการเรียนรู้ (PLC)",
+    icon: FiUsers,
+    color: "text-indigo-500",
+    href: "/dashboard/director/plc",
+  },
+  access_student_care: {
+    label: "ระบบดูแลช่วยเหลือนักเรียน",
+    icon: FiShield,
+    color: "text-teal-500",
+    href: "/dashboard/director/student-care",
+  },
 };
 
 const ADVANCED_FEATURE_LABELS: {
