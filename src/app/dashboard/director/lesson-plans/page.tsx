@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FileText, Search, Plus, Check, X } from "lucide-react";
+import { FileText, Search, Plus, Check, X, Pencil, Trash2 } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { useSession } from "next-auth/react";
 
@@ -11,13 +11,18 @@ export default function LessonPlansPage() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [newPlan, setNewPlan] = useState({ subject: "", title: "", fileUrl: "" });
+  const [newPlan, setNewPlan] = useState<any>({ subject: "", title: "", fileUrl: "", semester: "1", academicYear: "2567" });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filterSemester, setFilterSemester] = useState("");
+  const [filterYear, setFilterYear] = useState("");
 
   const user = {
     username: session?.user?.name || (session?.user as any)?.username,
     role: (session?.user as any)?.role,
     image: session?.user?.image,
   };
+
+  const isDirector = user.role === 'director' || user.role === 'super_admin';
 
   useEffect(() => {
     fetchPlans();
@@ -37,15 +42,37 @@ export default function LessonPlansPage() {
 
   const handleAdd = async () => {
     if (!newPlan.subject || !newPlan.title) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+
+    let uploadedUrl = newPlan.fileUrl;
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      try {
+        const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadData.success) {
+          uploadedUrl = uploadData.url;
+        } else {
+          return alert("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
+        }
+      } catch (err) {
+        return alert("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
+      }
+    }
+
     try {
+      const payload = { ...newPlan, fileUrl: uploadedUrl, teacherName: user.username || "Unknown" };
+      const method = newPlan._id ? "PATCH" : "POST";
       const res = await fetch("/api/director/lesson-plans", {
-        method: "POST",
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newPlan, teacherName: user.username || "Unknown" })
+        body: JSON.stringify(payload)
       });
       if (res.ok) {
         setShowAdd(false);
-        setNewPlan({ subject: "", title: "", fileUrl: "" });
+        setNewPlan({ subject: "", title: "", fileUrl: "", semester: "1", academicYear: "2567" });
+        setSelectedFile(null);
         fetchPlans();
       }
     } catch (e) {
@@ -54,11 +81,18 @@ export default function LessonPlansPage() {
   };
 
   const handleStatus = async (id: string, status: string) => {
+    let feedback = "";
+    if (status === "rejected" || status === "approved") {
+      const reason = window.prompt(`ระบุหมายเหตุ/เหตุผลที่${status === "rejected" ? "ไม่อนุมัติ" : "อนุมัติ"} (ถ้ามี):`);
+      if (reason === null) return; // User clicked cancel
+      feedback = reason;
+    }
+
     try {
       await fetch("/api/director/lesson-plans", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ _id: id, status })
+        body: JSON.stringify({ _id: id, status, feedback })
       });
       fetchPlans();
     } catch (e) {
@@ -66,11 +100,18 @@ export default function LessonPlansPage() {
     }
   };
 
+
+  const filteredPlans = plans.filter((p: any) => {
+    if (filterSemester && p.semester !== filterSemester) return false;
+    if (filterYear && p.academicYear !== filterYear) return false;
+    return true;
+  });
+
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
       <div className="max-w-[1600px] mx-auto w-full px-2 py-8 md:py-12 relative">
         <DashboardHeader user={user} />
-        
+
         <div className="px-2 mt-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
@@ -89,68 +130,295 @@ export default function LessonPlansPage() {
             </button>
           </div>
 
+
+          <div className="flex gap-4 mb-6">
+
+            <select className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm font-bold text-zinc-600 dark:text-zinc-300 bg-white shadow-sm" value={filterYear} onChange={e => setFilterYear(e.target.value)}>
+              <option value="">📅 ทุกปีการศึกษา</option>
+              <option value="2566">2566</option>
+              <option value="2567">2567</option>
+              <option value="2568">2568</option>
+            </select>
+            <select className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm font-bold text-zinc-600 dark:text-zinc-300 bg-white shadow-sm" value={filterSemester} onChange={e => setFilterSemester(e.target.value)}>
+              <option value="">📌 ทุกเทอม</option>
+              <option value="1">เทอม 1</option>
+              <option value="2">เทอม 2</option>
+              <option value="3">เทอม 3</option>
+            </select>
+          </div>
           <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-xl border border-zinc-200 dark:border-zinc-800">
             {showAdd && (
-              <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-700">
-                <h3 className="font-bold text-sm mb-4">เพิ่มข้อมูลแผนการสอน</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <input type="text" placeholder="ชื่อวิชา" className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm" value={newPlan.subject} onChange={e => setNewPlan({...newPlan, subject: e.target.value})} />
-                  <input type="text" placeholder="หัวข้อ/เรื่องที่สอน" className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm" value={newPlan.title} onChange={e => setNewPlan({...newPlan, title: e.target.value})} />
-                  <input 
-                    type="file" 
-                    accept=".pdf,.doc,.docx,.xls,.xlsx" 
-                    className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" 
-                    onChange={e => {
-                      if (e.target.files && e.target.files[0]) {
-                        // จำลองการอัปโหลดไฟล์ โดยเก็บเป็นชื่อไฟล์ไว้ก่อน
-                        setNewPlan({...newPlan, fileUrl: e.target.files[0].name});
-                      }
-                    }} 
-                  />
+              <div className="mb-6 p-6 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-700">
+                <h3 className="font-bold text-base text-zinc-800 dark:text-zinc-100 mb-4">
+                  {newPlan._id ? "📝 แก้ไขข้อมูลแผนการสอน" : "📤 ส่งแผนการจัดการเรียนรู้ใหม่"}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-500 mb-1">ชื่อวิชา</label>
+                    <input type="text" placeholder="เช่น ภาษาไทย, คณิตศาสตร์" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-zinc-900" value={newPlan.subject} onChange={e => setNewPlan({ ...newPlan, subject: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-500 mb-1">หัวข้อ/เรื่องที่สอน</label>
+                    <input type="text" placeholder="เช่น บทที่ 1 การอ่านออกเสียง" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-zinc-900" value={newPlan.title} onChange={e => setNewPlan({ ...newPlan, title: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-500 mb-1">ภาคเรียน</label>
+                    <select className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-zinc-900" value={newPlan.semester} onChange={e => setNewPlan({ ...newPlan, semester: e.target.value })}>
+                      <option value="1">ภาคเรียนที่ 1</option>
+                      <option value="2">ภาคเรียนที่ 2</option>
+                      <option value="3">ภาคเรียนที่ 3</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-500 mb-1">ปีการศึกษา</label>
+                    <select className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-zinc-900" value={newPlan.academicYear} onChange={e => setNewPlan({ ...newPlan, academicYear: e.target.value })}>
+                      <option value="2566">2566</option>
+                      <option value="2567">2567</option>
+                      <option value="2568">2568</option>
+                      <option value="2569">2569</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-bold text-zinc-500 mb-1">อัปโหลดไฟล์เอกสาร (PDF, Word, Excel)</label>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      className="w-full p-1.5 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950/40 dark:file:text-emerald-400 hover:file:bg-emerald-100 bg-white dark:bg-zinc-900"
+                      onChange={e => {
+                        if (e.target.files && e.target.files[0]) {
+                          setSelectedFile(e.target.files[0]);
+                          setNewPlan({ ...newPlan, fileUrl: e.target.files[0].name });
+                        }
+                      }}
+                    />
+                    {newPlan.fileUrl && (
+                      <p className="text-xs text-zinc-500 mt-1 truncate">
+                        ไฟล์ปัจจุบัน/ที่เลือก: <span className="font-bold text-emerald-600 dark:text-emerald-400">{newPlan.fileUrl}</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <button onClick={handleAdd} className="bg-emerald-600 text-white px-6 py-2 rounded-xl text-sm font-bold">บันทึกข้อมูล</button>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button onClick={() => { setShowAdd(false); setNewPlan({ subject: "", title: "", fileUrl: "", semester: "1", academicYear: "2567" }); setSelectedFile(null); }} className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 px-4 py-2 rounded-xl text-sm font-bold transition-colors">ยกเลิก</button>
+                  <button onClick={handleAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl text-sm font-bold transition-colors">บันทึกข้อมูล</button>
+                </div>
               </div>
             )}
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-zinc-50 dark:bg-zinc-800/30 text-xs text-zinc-500 uppercase tracking-widest">
-                    <th className="px-4 py-3 rounded-l-xl">ครูผู้สอน</th>
-                    <th className="px-4 py-3">วิชา</th>
-                    <th className="px-4 py-3">หัวข้อ</th>
-                    <th className="px-4 py-3 text-center">สถานะ</th>
-                    <th className="px-4 py-3 rounded-r-xl text-center">จัดการ (ผู้อำนวยการ)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr><td colSpan={5} className="text-center py-10 text-zinc-500">กำลังโหลดข้อมูล...</td></tr>
-                  ) : plans.length === 0 ? (
-                    <tr><td colSpan={5} className="text-center py-10 text-zinc-500">ไม่พบข้อมูลแผนการสอน</td></tr>
-                  ) : (
-                    plans.map((p: any) => (
-                      <tr key={p._id} className="border-b border-zinc-50 dark:border-zinc-800/50">
-                        <td className="px-4 py-4 text-sm font-bold">{p.teacherName}</td>
-                        <td className="px-4 py-4 text-sm">{p.subject}</td>
-                        <td className="px-4 py-4 text-sm">{p.title}</td>
-                        <td className="px-4 py-4 text-center">
-                          <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded-lg ${p.status === 'approved' ? 'bg-emerald-100 text-emerald-600' : p.status === 'rejected' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'}`}>
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="flex items-center justify-center gap-2">
-                            <button onClick={() => handleStatus(p._id, "approved")} className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors" title="อนุมัติ"><Check size={16}/></button>
-                            <button onClick={() => handleStatus(p._id, "rejected")} className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white transition-colors" title="ไม่อนุมัติ"><X size={16}/></button>
-                          </div>
-                        </td>
+            {loading ? (
+              <div className="text-center py-12 text-zinc-500 dark:text-zinc-400 font-bold">
+                กำลังโหลดข้อมูล...
+              </div>
+            ) : plans.length === 0 ? (
+              <div className="text-center py-12 text-zinc-500 dark:text-zinc-400 font-bold">
+                ไม่พบข้อมูลแผนการสอน
+              </div>
+            ) : (
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20 text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
+                        <th className="px-5 py-4 rounded-l-xl">ครูผู้สอน</th>
+                        <th className="px-5 py-4">เทอม/ปีการศึกษา</th>
+                        <th className="px-5 py-4">วิชา</th>
+                        <th className="px-5 py-4">หัวข้อ / เรื่องที่สอน</th>
+                        <th className="px-5 py-4 text-center">ไฟล์เอกสาร</th>
+                        <th className="px-5 py-4 text-center">สถานะ</th>
+                        <th className="px-5 py-4 rounded-r-xl text-center">จัดการ</th>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    </thead>
+                    <tbody>
+                      {filteredPlans.map((p: any) => (
+                        <tr key={p._id} className="border-b border-zinc-100 dark:border-zinc-800/40 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10 transition-all duration-205">
+                          <td className="px-5 py-5 text-sm">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase">
+                                {p.teacherName ? p.teacherName.charAt(0) : "?"}
+                              </div>
+                              <span className="font-semibold text-zinc-800 dark:text-zinc-200">{p.teacherName}</span>
+                            </div>
+                          </td>
+                          <td className="px-5 py-5 text-sm">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
+                              เทอม {p.semester} / {p.academicYear}
+                            </span>
+                          </td>
+                          <td className="px-5 py-5 text-sm font-medium text-zinc-900 dark:text-zinc-100">{p.subject}</td>
+                          <td className="px-5 py-5 text-sm text-zinc-600 dark:text-zinc-350">{p.title}</td>
+                          <td className="px-5 py-5 text-center">
+                            {p.fileUrl ? (
+                              <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
+                                <FileText size={14} /> ดูไฟล์
+                              </a>
+                            ) : (
+                              <span className="text-xs text-zinc-400">-</span>
+                            )}
+                          </td>
+                          <td className="px-5 py-5">
+                            <div className="flex flex-col items-center gap-1">
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold shadow-sm ${
+                                p.status === 'approved' 
+                                  ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-650 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50' 
+                                  : p.status === 'rejected' 
+                                  ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-650 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50' 
+                                  : 'bg-amber-50 dark:bg-amber-950/30 text-amber-650 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50'
+                              }`}>
+                                {p.status === 'approved' ? 'อนุมัติแล้ว' : p.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
+                              </span>
+                              {p.feedback && (
+                                <div className="max-w-[200px] text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 bg-zinc-50 dark:bg-zinc-800/50 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 text-center break-words">
+                                  <span className="font-bold">หมายเหตุ:</span> {p.feedback}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-5 py-5">
+                            <div className="flex items-center justify-center gap-2">
+                              {p.teacherName === user.username && (
+                                <>
+                                  <button 
+                                    onClick={() => { setNewPlan(p); setShowAdd(true); window.scrollTo(0, 0); }} 
+                                    className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500 dark:hover:text-white transition-colors" 
+                                    title="แก้ไข"
+                                  >
+                                    <Pencil size={16} />
+                                  </button>
+                                  <button 
+                                    onClick={async () => { if (confirm('ต้องการลบข้อมูลนี้หรือไม่?')) { await fetch(`/api/director/lesson-plans?id=${p._id}`, { method: 'DELETE' }); fetchPlans(); } }} 
+                                    className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500 dark:hover:text-white transition-colors" 
+                                    title="ลบ"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </>
+                              )}
+                              {isDirector && (
+                                <>
+                                  <button 
+                                    onClick={() => handleStatus(p._id, "approved")} 
+                                    className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:text-white transition-colors" 
+                                    title="อนุมัติ"
+                                  >
+                                    <Check size={16} />
+                                  </button>
+                                  <button 
+                                    onClick={() => handleStatus(p._id, "rejected")} 
+                                    className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500 dark:hover:text-white transition-colors" 
+                                    title="ไม่อนุมัติ"
+                                  >
+                                    <X size={16} />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden grid grid-cols-1 gap-4">
+                  {filteredPlans.map((p: any) => (
+                    <div key={p._id} className="bg-zinc-50 dark:bg-zinc-800/20 p-5 rounded-2xl border border-zinc-100 dark:border-zinc-800/60 flex flex-col gap-4 shadow-sm">
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-sm font-extrabold text-emerald-600 dark:text-emerald-400 uppercase">
+                            {p.teacherName ? p.teacherName.charAt(0) : "?"}
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 leading-tight">{p.teacherName}</h4>
+                            <span className="text-[11px] text-zinc-550 dark:text-zinc-400">
+                              เทอม {p.semester} / {p.academicYear}
+                            </span>
+                          </div>
+                        </div>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                          p.status === 'approved' 
+                            ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50' 
+                            : p.status === 'rejected' 
+                            ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50' 
+                            : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50'
+                        }`}>
+                          {p.status === 'approved' ? 'อนุมัติแล้ว' : p.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
+                        </span>
+                      </div>
+
+                      {/* Content */}
+                      <div className="bg-white dark:bg-zinc-900/40 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/60">
+                        <div className="text-[10px] font-bold text-zinc-400 uppercase mb-0.5">วิชา</div>
+                        <div className="text-sm font-bold text-zinc-800 dark:text-zinc-200 mb-2">{p.subject}</div>
+                        <div className="text-[10px] font-bold text-zinc-400 uppercase mb-0.5">หัวข้อ / เรื่องที่สอน</div>
+                        <div className="text-sm text-zinc-650 dark:text-zinc-350">{p.title}</div>
+                      </div>
+
+                      {/* Feedback */}
+                      {p.feedback && (
+                        <div className="text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-105/60 dark:bg-zinc-800/40 p-3 rounded-xl border border-zinc-200/50 dark:border-zinc-800">
+                          <span className="font-extrabold text-rose-600 dark:text-rose-400">หมายเหตุ:</span> {p.feedback}
+                        </div>
+                      )}
+
+                      {/* Footer Actions */}
+                      <div className="flex items-center justify-between gap-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/40">
+                        <div>
+                          {p.fileUrl ? (
+                            <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-650 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
+                              <FileText size={13} /> ดูไฟล์
+                            </a>
+                          ) : (
+                            <span className="text-xs text-zinc-400">ไม่มีไฟล์</span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          {p.teacherName === user.username && (
+                            <>
+                              <button 
+                                onClick={() => { setNewPlan(p); setShowAdd(true); window.scrollTo(0, 0); }} 
+                                className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-white transition-colors" 
+                                title="แก้ไข"
+                              >
+                                <Pencil size={15} />
+                              </button>
+                              <button 
+                                onClick={async () => { if (confirm('ต้องการลบข้อมูลนี้หรือไม่?')) { await fetch(`/api/director/lesson-plans?id=${p._id}`, { method: 'DELETE' }); fetchPlans(); } }} 
+                                className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition-colors" 
+                                title="ลบ"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </>
+                          )}
+                          {isDirector && (
+                            <>
+                              <button 
+                                onClick={() => handleStatus(p._id, "approved")} 
+                                className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white transition-colors" 
+                                title="อนุมัติ"
+                              >
+                                <Check size={15} />
+                              </button>
+                              <button 
+                                onClick={() => handleStatus(p._id, "rejected")} 
+                                className="p-2 rounded-xl bg-rose-55 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition-colors" 
+                                title="ไม่อนุมัติ"
+                              >
+                                <X size={15} />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

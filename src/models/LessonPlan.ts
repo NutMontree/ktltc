@@ -4,6 +4,9 @@ export interface LessonPlan {
   subject: string;
   title: string;
   fileUrl: string;
+  semester: string;
+  academicYear: string;
+  hasAfterClassNote?: boolean;
   status: "pending" | "approved" | "rejected";
   feedback: string;
   createdAt: Date;
