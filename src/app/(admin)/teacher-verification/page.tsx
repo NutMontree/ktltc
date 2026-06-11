@@ -481,8 +481,8 @@ export default function TeacherVerificationPage() {
                         {selectedTeacher.subjects.map(s => {
                           // กรองแผนการสอนตาม ปี/เทอม ก่อน แล้วค่อย match วิชา
                           const filteredLessonPlans = teacherLessonPlans.filter((lp: any) => {
-                            if (planFilterYear && lp.academicYear !== planFilterYear) return false;
-                            if (planFilterSemester && lp.semester !== planFilterSemester) return false;
+                            if (planFilterYear && String(lp.academicYear) !== String(planFilterYear)) return false;
+                            if (planFilterSemester && String(lp.semester) !== String(planFilterSemester)) return false;
                             return true;
                           });
                           const matchingPlans = filteredLessonPlans.filter((lp: any) =>
@@ -540,8 +540,8 @@ export default function TeacherVerificationPage() {
                       {/* แสดงแผนการสอนที่ไม่ตรงกับวิชาใด */}
                       {teacherLessonPlans.length > 0 && (() => {
                         const filteredAll = teacherLessonPlans.filter((lp: any) => {
-                          if (planFilterYear && lp.academicYear !== planFilterYear) return false;
-                          if (planFilterSemester && lp.semester !== planFilterSemester) return false;
+                          if (planFilterYear && String(lp.academicYear) !== String(planFilterYear)) return false;
+                          if (planFilterSemester && String(lp.semester) !== String(planFilterSemester)) return false;
                           return true;
                         });
                         const unmatchedPlans = filteredAll.filter((lp: any) => {

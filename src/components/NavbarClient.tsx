@@ -354,7 +354,7 @@ export default function NavbarClient({
   const handleLogout = async () => {
     try {
       // 1. ลบคุกกี้ความปลอดภัย "token" ผ่าน API
-      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => { });
       // 2. เรียกใช้ signOut แบบปิด redirect ป้องกันค้าง
       await signOut({ redirect: false });
     } catch (error) {
@@ -391,11 +391,10 @@ export default function NavbarClient({
       className={`fixed top-0 left-0 right-0 z-9999 transition-[padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 lg:px-2" : ""}`}
     >
       <nav
-        className={`w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-          isScrolled
-            ? "bg-white dark:bg-zinc-950 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 lg:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
-            : "py-3 px-4 lg:px-6 bg-white dark:bg-zinc-950 border border-transparent"
-        }`}
+        className={`w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
+          ? "bg-white dark:bg-zinc-950 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 lg:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
+          : "py-3 px-4 lg:px-6 bg-white dark:bg-zinc-950 border border-transparent"
+          }`}
       >
         <div className="flex items-center justify-between gap-4">
           {/* --- 1. LOGO & BRANDING --- */}
@@ -431,11 +430,10 @@ export default function NavbarClient({
                 >
                   <Link
                     href={hasChildren ? "#" : ensureAbsolute(item.path) || "#"}
-                    className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${
-                      isActiveNode
-                        ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
-                        : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
-                    }`}
+                    className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${isActiveNode
+                      ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
+                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
+                      }`}
                   >
                     <span className="px-1">{item.label}</span>
                     {hasChildren && (
@@ -448,16 +446,14 @@ export default function NavbarClient({
                   {/* Mega Menu / Dropdown Content */}
                   {hasChildren && (
                     <div
-                      className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${
-                        activeMenuId === item._id
-                          ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-9999"
-                          : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-                      }`}
+                      className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${activeMenuId === item._id
+                        ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-9999"
+                        : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                        }`}
                     >
                       <div
-                        className={`bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${
-                          item.children!.length > 8 ? "min-w-[460px] w-[460px]" : "min-w-[240px]"
-                        }`}
+                        className={`bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${item.children!.length > 8 ? "min-w-[460px] w-[460px]" : "min-w-[240px]"
+                          }`}
                       >
                         <div
                           className={
@@ -524,11 +520,10 @@ export default function NavbarClient({
                     setIsUserDropdownOpen(!isUserDropdownOpen);
                     setActiveMenuId(null);
                   }}
-                  className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${
-                    isUserDropdownOpen
-                      ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
-                      : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
-                  }`}
+                  className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${isUserDropdownOpen
+                    ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
+                    : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
+                    }`}
                 >
                   <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
                     {image ? (
@@ -563,11 +558,10 @@ export default function NavbarClient({
 
                 {/* เมนู Dropdown สำหรับผู้ใช้ (User Dropdown Menu) */}
                 <div
-                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${
-                    isUserDropdownOpen
-                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
-                      : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-                  }`}
+                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${isUserDropdownOpen
+                    ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
+                    : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                    }`}
                 >
                   <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] overflow-hidden w-72 ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
                     {/* ข้อมูลสรุปผู้ใช้ด้านบนสุด (Profile Header) */}
@@ -656,50 +650,42 @@ export default function NavbarClient({
                           canManageSystem ||
                           canManageNews ||
                           canManageQA) && (
-                          <div>
-                            {!["user", "student"].includes(role?.toLowerCase() || "") && (
-                              <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                                <Shield className="w-3 h-3" /> ระบบจัดการ
-                              </h4>
-                            )}
+                            <div>
+                              {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                                <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                                  <Shield className="w-3 h-3" /> ระบบจัดการ
+                                </h4>
+                              )}
 
-                            {/* การ์ดเมนูเฉพาะผู้มีสิทธิ์พิเศษ */}
-                            {(isSuperAdmin || permissions?.manage_supervision_requests) && (
-                              <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
-                                <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
-                                  <Shield size={12} /> เครื่องมือพิเศษ
-                                </p>
-                                {isSuperAdmin && (
-                                  <>
-                                    <Link
-                                      href="/dashboard/super-admin"
-                                      onClick={() => setIsUserDropdownOpen(false)}
-                                      className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
-                                    >
-                                      <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
-                                    </Link>
-                                    <Link
-                                      href="/dashboard/permissions"
-                                      onClick={() => setIsUserDropdownOpen(false)}
-                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-                                    >
-                                      <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
-                                    </Link>
-                                  </>
-                                )}
-                                {(isSuperAdmin || permissions?.manage_supervision_requests) && (
-                                  <Link
-                                    href="/dashboard/supervision/requests"
-                                    onClick={() => setIsUserDropdownOpen(false)}
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 rounded-xl transition-all"
-                                  >
-                                    <ClipboardList size={14} /> คำร้องการนิเทศ (รออนุมัติ)
-                                  </Link>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
+                              {/* การ์ดเมนูเฉพาะผู้มีสิทธิ์พิเศษ */}
+                              {(isSuperAdmin || permissions?.manage_supervision_requests) && (
+                                <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
+                                  <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
+                                    <Shield size={12} /> เครื่องมือพิเศษ
+                                  </p>
+                                  {isSuperAdmin && (
+                                    <>
+                                      <Link
+                                        href="/dashboard/super-admin"
+                                        onClick={() => setIsUserDropdownOpen(false)}
+                                        className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                      >
+                                        <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
+                                      </Link>
+                                      <Link
+                                        href="/dashboard/permissions"
+                                        onClick={() => setIsUserDropdownOpen(false)}
+                                        className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                                      >
+                                        <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
+                                      </Link>
+                                    </>
+                                  )}
+
+                                </div>
+                              )}
+                            </div>
+                          )}
 
                         {canAccessDashboard && (
                           <Link
@@ -726,20 +712,6 @@ export default function NavbarClient({
                             ระบบแชท / กล่องข้อความ
                           </Link>
 
-                          {["super_admin", "admin", "editor", "teacher"].includes(
-                            role?.toLowerCase() || "",
-                          ) && (
-                            <Link
-                              href="/teacher/students"
-                              onClick={() => setIsUserDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
-                                <GraduationCap size={16} />
-                              </div>
-                              รายชื่อนักเรียนประจำแผนก
-                            </Link>
-                          )}
 
                           {!["student"].includes(role?.toLowerCase() || "") && (
                             <Link
@@ -769,17 +741,17 @@ export default function NavbarClient({
                           {(permissions?.access_dve_teacher ||
                             isSuperAdmin ||
                             role?.toLowerCase() === "teacher") && (
-                            <Link
-                              href="/dashboard/dve"
-                              onClick={() => setIsUserDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors shadow-sm">
-                                <BookOpen size={16} />
-                              </div>
-                              ศูนย์ฝึกทวีภาคี (DVE Portal)
-                            </Link>
-                          )}
+                              <Link
+                                href="/dashboard/dve"
+                                onClick={() => setIsUserDropdownOpen(false)}
+                                className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-2xl transition-all group"
+                              >
+                                <div className="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors shadow-sm">
+                                  <BookOpen size={16} />
+                                </div>
+                                ศูนย์ฝึกทวีภาคี (DVE Portal)
+                              </Link>
+                            )}
 
                           {(permissions?.access_teacher_dashboard ?? isSuperAdmin) && (
                             <Link
@@ -806,20 +778,7 @@ export default function NavbarClient({
                             </Link>
                           )}
 
-                          {(permissions?.access_dve_student ||
-                            role?.toLowerCase() === "student" ||
-                            isSuperAdmin) && (
-                            <Link
-                              href="/dashboard/dve/student"
-                              onClick={() => setIsUserDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
-                                <BookOpen size={16} />
-                              </div>
-                              ศูนย์การศึกษาระบบทวิภาคี
-                            </Link>
-                          )}
+
                         </div>
                       </div>
                     </div>
