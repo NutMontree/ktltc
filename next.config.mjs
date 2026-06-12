@@ -26,6 +26,20 @@ const nextConfig = {
     ];
   },
 
+  async headers() {
+    return [
+      {
+        source: "/models/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
+
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const isVercel = process.env.VERCEL === "1" || process.env.NEXT_PUBLIC_VERCEL_ENV !== undefined;
