@@ -388,12 +388,12 @@ export default function NavbarClient({
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-9999 transition-[padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 lg:px-2" : ""}`}
+      className={`fixed top-0 left-0 right-0 z-9999 transition-[padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 min-[1381px]:px-2" : ""}`}
     >
       <nav
         className={`w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
-          ? "bg-white dark:bg-zinc-950 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 lg:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
-          : "py-3 px-4 lg:px-6 bg-white dark:bg-zinc-950 border border-transparent"
+          ? "bg-white dark:bg-zinc-950 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 min-[1381px]:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
+          : "py-3 px-4 min-[1381px]:px-6 bg-white dark:bg-zinc-950 border border-transparent"
           }`}
       >
         <div className="flex items-center justify-between gap-4">
@@ -415,7 +415,7 @@ export default function NavbarClient({
           </Link>
 
           {/* --- 2. DESKTOP NAVIGATION (รายการเมนูจาก DB) --- */}
-          <div className="hidden lg:flex items-center gap-1.5 desktop-menu-container">
+          <div className="hidden min-[1381px]:flex items-center gap-1.5 desktop-menu-container">
             {filteredMenuTree.map((item) => {
               const hasChildren = item.children && item.children.length > 0;
               const isActiveNode =
@@ -510,7 +510,7 @@ export default function NavbarClient({
               <ThemeToggle />
             </div>
 
-            <div className="hidden lg:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+            <div className="hidden min-[1381px]:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
 
             {userId ? (
               <div className="relative user-dropdown-container">
@@ -804,7 +804,7 @@ export default function NavbarClient({
             )}
 
             {/* ปุ่ม Mobile Menu (แสดงเฉพาะบนจอเล็ก) */}
-            <div className="lg:hidden sm:pl-2">
+            <div className="min-[1381px]:hidden sm:pl-2">
               <MobileMenu
                 menuTree={filteredMenuTree}
                 image={image}
