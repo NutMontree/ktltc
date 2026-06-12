@@ -275,7 +275,7 @@ export default function MobileMenu({
                 )}
 
                 {/* รายการเมนูหลัก (Navigation Group) */}
-                <div className="space-y-6">
+                {/* <div className="space-y-6">
                   <div>
                     <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
                       <Activity className="w-3 h-3" /> เมนูหลัก
@@ -427,7 +427,7 @@ export default function MobileMenu({
                       </div>
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
 
               {/* ส่วนล่างสุดของเมนู (Footer) */}
