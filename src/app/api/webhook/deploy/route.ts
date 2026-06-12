@@ -40,6 +40,35 @@ export async function POST(req: Request) {
     // ใช้สคริปต์เดิมที่เรามีอยู่แล้ว
     exec("bash /home/ktltc/ktltc/scripts/auto-deploy.sh >> /home/ktltc/ktltc/deploy.log 2>&1 &");
 
+    // 4. ส่งการแจ้งเตือนให้ super_admin และ admin ผ่านระบบ Notification
+    try {
+      const clientPromise = (await import("@/lib/db")).default;
+      const client = await clientPromise;
+      const db = client.db("ktltc_db");
+      
+      const targetRoles = ["super_admin", "admin"];
+      const targetUsers = await db.collection("users").find({ role: { $in: targetRoles } }).project({ _id: 1 }).toArray();
+
+      if (targetUsers.length > 0) {
+        const notifications = targetUsers.map(user => ({
+          userId: user._id,
+          type: "system_deploy",
+          title: "มีการอัปโหลดโค้ดใหม่",
+          message: `ระบบมีการอัปโหลดโค้ดใหม่ขึ้น Server ใน branch production แล้ว (อัปเดตเมื่อ ${new Date().toLocaleString('th-TH')})`,
+          from: "SYSTEM",
+          fromName: "System",
+          targetUrl: "/dashboard/admin",
+          isRead: false,
+          read: false,
+          createdAt: new Date(),
+        }));
+
+        await db.collection("notifications").insertMany(notifications);
+      }
+    } catch (notifError) {
+      console.error("Failed to send deployment notification:", notifError);
+    }
+
     return NextResponse.json({ 
       success: true, 
       message: "Deployment triggered successfully" 

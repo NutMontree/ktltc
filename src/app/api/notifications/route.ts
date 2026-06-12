@@ -94,3 +94,44 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+/**
+ * [POST] สร้างการแจ้งเตือนแบบ System (ส่งให้ผู้ดูแลระบบ)
+ */
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { title, message, type, targetRoles } = body;
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // ค้นหาผู้ใช้ที่มี Role ตามที่กำหนด (เช่น ["super_admin", "admin"])
+    const query = targetRoles && targetRoles.length > 0 
+      ? { role: { $in: targetRoles } } 
+      : {}; 
+      
+    const targetUsers = await db.collection("users").find(query).project({ _id: 1 }).toArray();
+
+    if (targetUsers.length > 0) {
+      const notifications = targetUsers.map(user => ({
+        userId: user._id,
+        type: type || "system_update",
+        title: title || "มีการอัปเดตระบบ",
+        message: message || "ระบบมีการอัปเดตข้อมูลใหม่",
+        from: "SYSTEM",
+        fromName: "System",
+        targetUrl: "#",
+        isRead: false,
+        read: false,
+        createdAt: new Date(),
+      }));
+
+      await db.collection("notifications").insertMany(notifications);
+    }
+
+    return NextResponse.json({ success: true, count: targetUsers.length });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
