@@ -1115,7 +1115,7 @@ export default function PermissionsPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
-                    แสดงในหมวดหมู่
+                    แสดงในหมวดหมู่ หน้า /dashbord
                   </label>
                   <select
                     value={newMenu.workspace}
