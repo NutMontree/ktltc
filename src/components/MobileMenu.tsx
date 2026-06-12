@@ -301,99 +301,6 @@ export default function MobileMenu({
                         <Globe className="w-5 h-5" /> เกี่ยวกับเรา / ติดต่อเรา
                       </Link>
 
-                      {userId && (
-                        <Link
-                          href="/dashboard/chat"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/chat" ? "bg-sky-600 text-white shadow-lg shadow-sky-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <MessageSquare className="w-5 h-5" /> ระบบแชท / กล่องข้อความ
-                        </Link>
-                      )}
-
-                      {["super_admin", "admin", "editor", "teacher"].includes(roleLower) && (
-                        <Link
-                          href="/teacher/students"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/teacher/students" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <GraduationCap className="w-5 h-5" /> รายชื่อนักเรียนประจำแผนก
-                        </Link>
-                      )}
-
-                      {canAccessDashboard && (
-                        <Link
-                          href="/dashboard"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <LayoutDashboard className="w-5 h-5" /> Dashboard
-                        </Link>
-                      )}
-
-                      {!["student"].includes(roleLower) && (
-                        <Link
-                          href="/dashboard/drive"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/drive" ? "bg-amber-600 text-white shadow-lg shadow-amber-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <HardDrive className="w-5 h-5" /> คลังไฟล์งาน (Drive)
-                        </Link>
-                      )}
-
-                      {roleLower === "student" && (
-                        <Link
-                          href="/student/flagpole"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/student/flagpole" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <Activity className="w-5 h-5" /> เช็คชื่อเข้าแถว
-                        </Link>
-                      )}
-
-                      {(permissions?.access_dve_teacher ||
-                        isSuperAdmin ||
-                        roleLower === "teacher") && (
-                        <Link
-                          href="/dashboard/dve"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/dve" ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <BookOpen className="w-5 h-5" /> ศูนย์ฝึกทวีภาคี (DVE Portal)
-                        </Link>
-                      )}
-
-                      {(permissions?.access_teacher_dashboard ?? isSuperAdmin) && (
-                        <Link
-                          href="/teacher-dashboard"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/teacher-dashboard" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <Activity className="w-5 h-5" /> แดชบอร์ดผู้บริหาร (ติดตามงานครู)
-                        </Link>
-                      )}
-                      {(permissions?.access_teacher_verification ?? isSuperAdmin) && (
-                        <Link
-                          href="/teacher-verification"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/teacher-verification" ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <Calendar className="w-5 h-5" /> ตรวจสอบการจัดการเรียนการสอนครู
-                        </Link>
-                      )}
-
-                      {(permissions?.access_dve_student ||
-                        roleLower === "student" ||
-                        isSuperAdmin) && (
-                        <Link
-                          href="/dashboard/dve/student"
-                          onClick={closeMenu}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/dashboard/dve/student" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <BookOpen className="w-5 h-5" /> ศูนย์การศึกษาระบบทวิภาคี
-                        </Link>
-                      )}
-
                       {isSuperAdmin && (
                         <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
                           <Link
@@ -429,7 +336,7 @@ export default function MobileMenu({
                       </div>
                     </div>
                   )}
-                </div> 
+                </div>
               </div>
 
               {/* ส่วนล่างสุดของเมนู (Footer) */}
