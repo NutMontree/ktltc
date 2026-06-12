@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth"; // นำเข้า auth เพื่อเช็คว่าใครทำรายการ
+import fs from "fs";
+import path from "path";
 
 /**
  * ฟังก์ชันช่วยบันทึก Log ลง Database
@@ -26,6 +28,24 @@ async function createLog(
     });
   } catch (error) {
     console.error("Failed to create log:", error);
+  }
+}
+
+// ฟังก์ชันลบไฟล์รูปภาพเก่าจาก Server
+async function deleteOldImage(imageUrl: string) {
+  try {
+    if (!imageUrl || !imageUrl.startsWith("/uploads/")) return;
+    const filename = imageUrl.split("/").pop();
+    if (!filename) return;
+    
+    // ใช้ process.cwd() เพื่อให้ชี้ไปยัง Root ของโปรเจกต์
+    const filepath = path.join(process.cwd(), "public", "uploads", filename);
+    if (fs.existsSync(filepath)) {
+      await fs.promises.unlink(filepath);
+      console.log(`Deleted old image: ${filepath}`);
+    }
+  } catch (error) {
+    console.error("Failed to delete old image:", error);
   }
 }
 
@@ -63,6 +83,11 @@ export async function PATCH(
     const original = await db
       .collection("posters")
       .findOne({ _id: new ObjectId(id) });
+
+    // ลบรูปภาพเก่าทิ้ง หากมีการเปลี่ยนรูปภาพหรือลบรูปภาพออก
+    if (updateData.imageUrl !== undefined && original?.imageUrl && original.imageUrl !== updateData.imageUrl) {
+      await deleteOldImage(original.imageUrl);
+    }
 
     await db
       .collection("posters")
@@ -110,6 +135,11 @@ export async function DELETE(
     });
 
     if (result.deletedCount === 1) {
+      // ลบรูปภาพออกจากเซิร์ฟเวอร์
+      if (original?.imageUrl) {
+        await deleteOldImage(original.imageUrl);
+      }
+
       // ✅ เรียกใช้ createLog ที่ปรับปรุงแล้ว
       await createLog(
         db,

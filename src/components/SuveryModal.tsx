@@ -348,7 +348,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 />
                 <DataRow
                   label="ปัญหาในการหางาน"
-                  value={suvery.jobSearchProblem}
+                  value={typeof suvery.jobSearchProblem === "string" ? suvery.jobSearchProblem.replace(/^\d+\s*/, "") : suvery.jobSearchProblem}
                 />
                 <DataRow
                   label="สาเหตุละเอียด"

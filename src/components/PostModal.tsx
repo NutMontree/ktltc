@@ -56,6 +56,24 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
     }
   };
 
+  const renderContentWithLinks = (text: string) => {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    if (!urlRegex.test(text)) return text;
+    
+    const parts = text.split(urlRegex);
+    return parts.map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" onClick={(e) => e.stopPropagation()}>
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   const handleLike = async () => {
     if (!session) {
       signIn();
@@ -311,7 +329,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
               {post.title && (
                 <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">{post.title}</h3>
               )}
-              <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">{post.content}</p>
+              <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">{renderContentWithLinks(post.content)}</p>
 
               {post.image && (
                 <img
@@ -500,7 +518,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                               </button>
                             </div>
                           ) : (
-                            <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-1">{comment.text}</p>
+                            <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-1">{renderContentWithLinks(comment.text)}</p>
                           )}
                           {comment.image && (
                             <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 max-w-[200px]">
@@ -608,7 +626,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                                       </button>
                                     </div>
                                   ) : (
-                                    <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{reply.text}</p>
+                                    <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{renderContentWithLinks(reply.text)}</p>
                                   )}
                                   {reply.image && (
                                     <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 max-w-[150px]">
