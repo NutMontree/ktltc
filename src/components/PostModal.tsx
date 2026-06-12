@@ -16,7 +16,7 @@ interface PostModalProps {
 }
 
 export default function PostModal({ postId, open, onClose }: PostModalProps) {
-
+  const [messageApi, contextHolder] = message.useMessage();
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -99,11 +99,11 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         setCommentImage(null);
         setReplyingTo(null);
         fetchPost(false);
-        message.success(parentId ? "ตอบกลับสำเร็จ" : "คอมเมนต์สำเร็จ");
+        messageApi.success(parentId ? "ตอบกลับสำเร็จ" : "คอมเมนต์สำเร็จ");
       }
     } catch (error) {
       console.error("Comment error:", error);
-      message.error("ไม่สามารถคอมเมนต์ได้");
+      messageApi.error("ไม่สามารถคอมเมนต์ได้");
     } finally {
       setIsSubmittingComment(false);
     }
@@ -125,11 +125,11 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         setEditingCommentId(null);
         setEditingCommentText("");
         fetchPost(false);
-        message.success("แก้ไขคอมเมนต์สำเร็จ");
+        messageApi.success("แก้ไขคอมเมนต์สำเร็จ");
       }
     } catch (error) {
       console.error("Update comment error:", error);
-      message.error("ไม่สามารถแก้ไขคอมเมนต์ได้");
+      messageApi.error("ไม่สามารถแก้ไขคอมเมนต์ได้");
     }
   };
 
@@ -143,11 +143,11 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
       });
       if (res.ok) {
         fetchPost(false);
-        message.success("ลบคอมเมนต์สำเร็จ");
+        messageApi.success("ลบคอมเมนต์สำเร็จ");
       }
     } catch (error) {
       console.error("Delete comment error:", error);
-      message.error("ไม่สามารถลบคอมเมนต์ได้");
+      messageApi.error("ไม่สามารถลบคอมเมนต์ได้");
     }
   };
 
@@ -168,11 +168,11 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         const data = await res.json();
         setCommentImage(data.url);
       } else {
-        message.error("ไม่สามารถอัปโหลดรูปภาพได้");
+        messageApi.error("ไม่สามารถอัปโหลดรูปภาพได้");
       }
     } catch (error) {
       console.error("Upload error:", error);
-      message.error("เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ");
+      messageApi.error("เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ");
     } finally {
       setIsUploadingImage(false);
     }
@@ -238,11 +238,11 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
       if (res.ok) {
         setShowShareModal(false);
         setShareText("");
-        message.success("แชร์โพสต์สำเร็จ");
+        messageApi.success("แชร์โพสต์สำเร็จ");
       }
     } catch (error) {
       console.error("Share error:", error);
-      message.error("ไม่สามารถแชร์โพสต์ได้");
+      messageApi.error("ไม่สามารถแชร์โพสต์ได้");
     } finally {
       setIsSharing(false);
     }
@@ -253,8 +253,10 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
   if (!open) return null;
 
   return (
-    <Modal
-      open={open}
+    <>
+      {contextHolder}
+      <Modal
+        open={open}
       onCancel={onClose}
       footer={null}
       centered
@@ -748,5 +750,6 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         </div>
       </Modal>
     </Modal>
+    </>
   );
 }
