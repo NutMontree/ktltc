@@ -43,6 +43,7 @@ interface User {
   lineId?: string;
   orderIndex?: number;
   image?: string;
+  passwordText?: string;
 }
 
 interface Summary {
@@ -97,6 +98,8 @@ export default function SuperAdminPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [autoApproveSignup, setAutoApproveSignup] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [managingUserId, setManagingUserId] = useState<string | null>(null);
+  const activeManageUser = managingUserId ? (users.find((u) => u._id === managingUserId) || pendingUsers.find((u) => u._id === managingUserId) || null) : null;
 
   const fetchSignupSetting = async () => {
     try {
@@ -888,51 +891,34 @@ export default function SuperAdminPage() {
             </div>
           </div>
 
-          {/* Category Tabs */}
-          <div className="px-4 pt-2 pb-0 flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            <button
-              onClick={() => handleCategoryChange("all")}
-              className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${selectedCategory === "all"
-                ? "bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20"
-                : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
-                }`}
-            >
-              <span className="text-sm">👥</span>
-              <span>ทั้งหมด</span>
-              <span
-                className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${selectedCategory === "all"
-                  ? "bg-white/20 text-white"
-                  : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
-                  }`}
+          {/* Category Filter Dropdown */}
+          <div className="px-4 pt-4 pb-2">
+            <div className="relative max-w-[280px] sm:max-w-sm">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <Users size={16} />
+              </div>
+              <select
+                value={selectedCategory}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                className="w-full pl-11 pr-10 py-3 bg-slate-100 dark:bg-zinc-950 border-2 border-transparent hover:border-slate-200 dark:hover:border-zinc-800 focus:bg-white dark:focus:bg-zinc-900 focus:border-blue-500 rounded-2xl focus:outline-none text-slate-800 dark:text-white font-black text-xs uppercase tracking-widest transition-all appearance-none cursor-pointer shadow-sm"
               >
-                {Object.values(roleCounts).reduce((a, b) => a + b, 0)}
-              </span>
-            </button>
-            {roles.map((roleKey) => {
-              const isActive = selectedCategory === roleKey;
-              const count = roleCounts[roleKey] || 0;
-              if (count === 0) return null;
-              return (
-                <button
-                  key={roleKey}
-                  onClick={() => handleCategoryChange(roleKey)}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap border-2 ${isActive
-                    ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20"
-                    : "bg-white dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-slate-100 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-600"
-                    }`}
-                >
-                  <span>{roleLabels[roleKey] || roleKey}</span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-black tabular-nums ${isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"
-                      }`}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+                <option value="all">
+                  ทั้งหมด ({Object.values(roleCounts).reduce((a, b) => a + b, 0)})
+                </option>
+                {roles.map((roleKey) => {
+                  const count = roleCounts[roleKey] || 0;
+                  if (count === 0) return null;
+                  return (
+                    <option key={roleKey} value={roleKey}>
+                      {roleLabels[roleKey] || roleKey} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                <ChevronDown size={16} />
+              </div>
+            </div>
           </div>
 
           <div className="overflow-x-auto overflow-y-visible">
@@ -1009,13 +995,19 @@ export default function SuperAdminPage() {
                                   </div>
                                 )}
                                 <div>
-                                  <div className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors leading-tight">
+                                  <Link href={`/dashboard/profile/${user._id}`} className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase hover:text-blue-600 transition-colors leading-tight block">
                                     {user.name}
-                                  </div>
-                                  <div className="flex items-center gap-2">
+                                  </Link>
+                                  <div className="flex items-center gap-2 flex-wrap mt-0.5">
                                     <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
                                       @{user.username}
                                     </span>
+                                    {user.passwordText && (
+                                      <span className="text-[10px] font-black text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-700 flex items-center gap-1 shadow-sm">
+                                        <Lock size={10} className="text-amber-500" />
+                                        <span className="font-mono">{user.passwordText}</span>
+                                      </span>
+                                    )}
                                     {!user.isActive && (
                                       <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
                                         รอนุมัติ
@@ -1158,12 +1150,15 @@ export default function SuperAdminPage() {
                                   </div>
                                 )}
                                 <div>
-                                  <div className="font-bold text-slate-800 dark:text-white text-sm sm:text-base tracking-tight uppercase leading-tight">
+                                  <Link href={`/dashboard/profile/${user._id}`} className="font-bold text-slate-800 dark:text-white text-sm sm:text-base tracking-tight uppercase hover:text-blue-600 transition-colors leading-tight block mb-0.5">
                                     {user.name}
-                                  </div>
+                                  </Link>
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
                                       @{user.username}
+                                    </span>
+                                    <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-current/20 ${getRoleStyle(user.role || "user")}`}>
+                                      {roleLabels[user.role || "user"] || user.role || "USER"}
                                     </span>
                                     {!user.isActive && (
                                       <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest">
@@ -1174,82 +1169,13 @@ export default function SuperAdminPage() {
                                 </div>
                               </div>
 
-                              {/* Actions */}
-                              <div className="flex items-center gap-1.5">
-                                <button
-                                  onClick={() => router.push(`/dashboard/users/edit/${user._id}`)}
-                                  className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm cursor-pointer"
-                                  title="แก้ไขข้อมูล"
-                                >
-                                  <Edit3 size={14} />
-                                </button>
-                                <button
-                                  onClick={() => deleteUser(user._id, user.name)}
-                                  className="p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl text-slate-450 hover:text-rose-500 hover:border-rose-200 transition-all shadow-sm cursor-pointer"
-                                  title="ลบผู้ใช้ออกจากระบบ"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Middle inputs: Role selection and Department dropdowns */}
-                            <div className="grid grid-cols-2 gap-3 pt-1">
-                              <div className="space-y-1">
-                                <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                                  สิทธิ์การใช้งาน
-                                </span>
-                                <select
-                                  value={user.role || "user"}
-                                  onChange={(e) => changeRole(user._id, e.target.value, user.name)}
-                                  className={`w-full text-xs font-bold border-2 rounded-2xl px-3 py-2 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
-                                >
-                                  {roles.map((roleKey) => (
-                                    <option key={roleKey} value={roleKey}>
-                                      {roleLabels[roleKey] || roleKey.toUpperCase()}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-
-                              <div className="space-y-1">
-                                <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                                  สังกัด / แผนก
-                                </span>
-                                <select
-                                  value={user.department || "ไม่มีสังกัด"}
-                                  onChange={(e) =>
-                                    changeDepartment(user._id, e.target.value, user.name)
-                                  }
-                                  className="w-full text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-3 py-2 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer"
-                                >
-                                  <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                                  <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                                  {DEPARTMENT_GROUPS.map((group) => (
-                                    <optgroup key={group.label} label={group.label}>
-                                      {group.options.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>
-                                          {opt.label}
-                                        </option>
-                                      ))}
-                                    </optgroup>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-
-                            {/* Bottom Row: Status Activation Switch */}
-                            <div className="flex justify-between items-center bg-slate-50 dark:bg-zinc-900/30 p-2.5 rounded-2xl border border-slate-100 dark:border-zinc-800/40">
-                              <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                                สถานะการใช้งาน
-                              </span>
+                              {/* Manage Button */}
                               <button
-                                onClick={() => toggleActive(user._id, user.isActive, user.name)}
-                                className={`h-7 w-12 rounded-full transition-all relative p-0.5 shadow-inner cursor-pointer ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
+                                onClick={() => setManagingUserId(user._id)}
+                                className="px-3 py-1.5 mt-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-500/20 transition-all border border-blue-500/20 shrink-0 h-fit"
                               >
-                                <div
-                                  className={`h-4.5 w-4.5 rounded-full transition-all duration-300 ${user.isActive ? "translate-x-5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
-                                />
+                                <Settings size={14} className="inline mr-1" />
+                                จัดการ
                               </button>
                             </div>
                           </div>
@@ -1549,6 +1475,139 @@ export default function SuperAdminPage() {
                 >
                   เข้าใจแล้ว
                 </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {activeManageUser && (
+          <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center p-4 sm:p-0">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md"
+              onClick={() => setManagingUserId(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border-t border-x border-slate-100 dark:border-zinc-800 rounded-t-4xl sm:rounded-4xl shadow-2xl p-6 overflow-hidden z-10"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setManagingUserId(null)}
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full bg-slate-50 dark:bg-zinc-800 transition-colors"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="flex items-center gap-4 mb-6">
+                {activeManageUser.image ? (
+                  <img
+                    src={activeManageUser.image}
+                    alt={activeManageUser.name}
+                    className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-200 dark:border-zinc-700"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-slate-200 dark:border-zinc-700">
+                    <Users size={24} className="text-slate-400 dark:text-zinc-600" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <Link href={`/dashboard/profile/${activeManageUser._id}`} className="block font-bold text-slate-800 dark:text-white text-lg leading-tight uppercase tracking-tight hover:text-blue-600 transition-colors">
+                    {activeManageUser.name}
+                  </Link>
+                  <div className="flex flex-col gap-1 mt-1">
+                    <div className="text-xs text-blue-600 font-bold">ชื่อผู้ใช้: {activeManageUser.username}</div>
+                    {activeManageUser.passwordText && (
+                      <div className="text-xs text-slate-600 dark:text-zinc-400 font-bold">
+                        รหัสผ่าน: <span className="font-mono text-green-600 dark:text-green-500">{activeManageUser.passwordText}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                    สิทธิ์การใช้งาน
+                  </span>
+                  <select
+                    value={activeManageUser.role || "user"}
+                    onChange={(e) => changeRole(activeManageUser._id, e.target.value, activeManageUser.name)}
+                    className={`w-full text-sm font-bold border-2 rounded-2xl px-4 py-3 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(activeManageUser.role || "user")}`}
+                  >
+                    {roles.map((roleKey) => (
+                      <option key={roleKey} value={roleKey}>
+                        {roleLabels[roleKey] || roleKey.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                    สังกัด / แผนก
+                  </span>
+                  <select
+                    value={activeManageUser.department || "ไม่มีสังกัด"}
+                    onChange={(e) => changeDepartment(activeManageUser._id, e.target.value, activeManageUser.name)}
+                    className="w-full text-sm font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-3 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer"
+                  >
+                    <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                    <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                    {DEPARTMENT_GROUPS.map((group) => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex justify-between items-center bg-slate-50 dark:bg-zinc-900/50 p-4 rounded-2xl border border-slate-100 dark:border-zinc-800">
+                  <span className="text-xs font-black text-slate-600 dark:text-zinc-400 uppercase tracking-widest">
+                    สถานะการใช้งาน
+                  </span>
+                  <button
+                    onClick={() => toggleActive(activeManageUser._id, activeManageUser.isActive, activeManageUser.name)}
+                    className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner cursor-pointer ${activeManageUser.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
+                  >
+                    <div
+                      className={`h-5 w-5 rounded-full transition-all duration-300 ${activeManageUser.isActive ? "translate-x-6 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "translate-x-0 bg-slate-400 dark:bg-zinc-500"}`}
+                    />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-zinc-800/80">
+                  <button
+                    onClick={() => {
+                      setManagingUserId(null);
+                      router.push(`/dashboard/users/edit/${activeManageUser._id}`);
+                    }}
+                    className="flex items-center justify-center gap-2 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-sm"
+                  >
+                    <Edit3 size={16} /> แก้ไขข้อมูล
+                  </button>
+                  <button
+                    onClick={() => {
+                      setManagingUserId(null);
+                      deleteUser(activeManageUser._id, activeManageUser.name);
+                    }}
+                    className="flex items-center justify-center gap-2 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-sm"
+                  >
+                    <Trash2 size={16} /> ลบผู้ใช้
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

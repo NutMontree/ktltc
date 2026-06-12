@@ -506,7 +506,7 @@ export default function NavbarClient({
                 <NotificationBell />
               </div>
             )}
-            <div className="hidden sm:flex items-center justify-center w-10 h-10">
+            <div className="flex items-center justify-center w-10 h-10">
               <ThemeToggle />
             </div>
 

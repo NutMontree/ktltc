@@ -101,7 +101,9 @@ export default function NotificationBell() {
 
     // Navigate for other notifications
     let url = n.targetUrl;
-    if (!url) {
+    if (n.type === 'system_deploy' || n.title === 'มีการอัปโหลดโค้ดใหม่') {
+      url = '/dashboard/notifications';
+    } else if (!url) {
       if (n.type === 'friend_request' || n.type === 'friend_accept') {
         url = `/dashboard/profile/${n.from}`;
       }
