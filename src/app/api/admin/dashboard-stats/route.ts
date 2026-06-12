@@ -106,39 +106,26 @@ export async function GET() {
 
       // Calculate size of all relevant folders
       const fs = require("fs");
+      const util = require("util");
+      const execAsync = util.promisify(require("child_process").exec);
       const publicDir = getPublicDir();
       const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
       let totalBytes = 0;
 
-      const getDirSize = (dirPath: string) => {
-        let size = 0;
+      for (const folder of foldersToMeasure) {
+        const folderPath = `${publicDir}/${folder}`;
         try {
-          if (!fs.existsSync(dirPath)) {
-            console.log(`❌ Folder not found: ${dirPath}`);
-            return 0;
-          }
-          const files = fs.readdirSync(dirPath);
-          for (let i = 0; i < files.length; i++) {
-            const filePath = path.join(dirPath, files[i]);
-            const stats = fs.statSync(filePath);
-            if (stats.isDirectory()) {
-              size += getDirSize(filePath);
-            } else {
-              size += stats.size;
-            }
+          if (fs.existsSync(folderPath)) {
+            // ใช้ du -sb (Linux) ซึ่งทำงานแบบ Async และเร็วกว่าการวนลูปอ่านไฟล์ทีละไฟล์หลายสิบเท่า
+            const { stdout } = await execAsync(`du -sb "${folderPath}"`);
+            const folderSize = parseInt(stdout.split('\t')[0], 10);
+            console.log(`📁 Folder ${folder}: ${(folderSize / (1024 * 1024)).toFixed(2)} MB`);
+            totalBytes += folderSize;
           }
         } catch (e: any) {
-          console.error(`Error reading ${dirPath}:`, e.message);
+          console.error(`Error reading ${folderPath}:`, e.message);
         }
-        return size;
-      };
-
-      foldersToMeasure.forEach((folder) => {
-        const folderPath = `${publicDir}/${folder}`;
-        const folderSize = getDirSize(folderPath);
-        console.log(`📁 Folder ${folder}: ${(folderSize / (1024 * 1024)).toFixed(2)} MB`);
-        totalBytes += folderSize;
-      });
+      }
       
       storageUsageMB = (totalBytes / (1024 * 1024)).toFixed(2);
 
@@ -172,13 +159,21 @@ export async function GET() {
             percent: Math.round(((totalMem - freeMem) / totalMem) * 100),
           };
 
-          const cpus = os.cpus();
-          let totalIdle = 0, totalTick = 0;
-          cpus.forEach((cpu: any) => {
-            for (let type in cpu.times) totalTick += cpu.times[type];
-            totalIdle += cpu.times.idle;
-          });
-          cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
+          // คำนวณ CPU แบบ Real-time (Delta ช่วง 100ms) แทนที่จะดึงค่าเฉลี่ยสะสมตั้งแต่เปิดเครื่อง
+          const getCpuData = () => {
+            let idle = 0, total = 0;
+            os.cpus().forEach((cpu: any) => {
+              for (let type in cpu.times) total += cpu.times[type];
+              idle += cpu.times.idle;
+            });
+            return { idle, total };
+          };
+          const startCpu = getCpuData();
+          await new Promise(res => setTimeout(res, 100)); // หน่วงเวลา 100ms เพื่อเปรียบเทียบ
+          const endCpu = getCpuData();
+          const idleDelta = endCpu.idle - startCpu.idle;
+          const totalDelta = endCpu.total - startCpu.total;
+          cpuUsage = totalDelta === 0 ? "0" : (100 - Math.round((idleDelta / totalDelta) * 100)).toString();
         } else {
           // --- รันบน PC (ดึงข้อมูลพื้นฐานจาก MongoDB) ---
           try {
@@ -203,13 +198,21 @@ export async function GET() {
               percent: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
             };
             
-            const cpus = os.cpus();
-            let totalIdle = 0, totalTick = 0;
-            cpus.forEach((cpu: any) => {
-              for (let type in cpu.times) totalTick += cpu.times[type];
-              totalIdle += cpu.times.idle;
-            });
-            cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
+            // Fallback CPU แบบ Real-time เช่นกัน
+            const getCpuData = () => {
+              let idle = 0, total = 0;
+              os.cpus().forEach((cpu: any) => {
+                for (let type in cpu.times) total += cpu.times[type];
+                idle += cpu.times.idle;
+              });
+              return { idle, total };
+            };
+            const startCpu = getCpuData();
+            await new Promise(res => setTimeout(res, 100));
+            const endCpu = getCpuData();
+            const idleDelta = endCpu.idle - startCpu.idle;
+            const totalDelta = endCpu.total - startCpu.total;
+            cpuUsage = totalDelta === 0 ? "0" : (100 - Math.round((idleDelta / totalDelta) * 100)).toString();
           }
         }
       } catch (infraErr) {
