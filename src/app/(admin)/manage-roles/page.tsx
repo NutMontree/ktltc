@@ -70,7 +70,8 @@ export default function ManageRolesPage() {
       const res = await fetch("/api/admin/permissions");
       if (res.ok) {
         const data = await res.json();
-        setRoles(data.rolesOrder || Object.keys(data.labels || {}));
+        const fetchedRoles = data.rolesOrder || Object.keys(data.labels || {});
+        setRoles(fetchedRoles.filter((r: string) => r !== "student" && r !== "user"));
         setRoleLabels(data.labels || {});
       }
     } catch (error) {
@@ -86,7 +87,7 @@ export default function ManageRolesPage() {
       if (res.ok) {
         const data = await res.json();
         if (latestQueryRef.current === q) {
-          setUsers(data.users || []);
+          setUsers((data.users || []).filter((u: User) => u.role !== "student" && u.role !== "user"));
         }
       }
     } catch (error) {
