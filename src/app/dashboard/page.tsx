@@ -63,6 +63,7 @@ export default function DashboardLoader() {
   const [isSavingQuota, setIsSavingQuota] = useState(false);
   const [regEnabled, setRegEnabled] = useState(true);
   const [updatingReg, setUpdatingReg] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("all");
 
   useEffect(() => {
     async function fetchData() {
@@ -222,6 +223,13 @@ export default function DashboardLoader() {
     role: (session?.user as any)?.role,
     image: session?.user?.image,
   };
+
+  const userRole = ((session?.user as any)?.role || "").toLowerCase();
+  const hasStudentAccess = permissions?.student_dashboard || userRole === "student" || ["super_admin", "admin"].includes(userRole);
+  const hasTeacherAccess = ["super_admin", "admin", "editor", "teacher"].includes(userRole);
+  const hasStaffAccess = ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);
+  const hasExecAccess = permissions?.access_teacher_verification || permissions?.access_teacher_dashboard || permissions?.access_lesson_plans || permissions?.access_dpa_evaluation || permissions?.access_plc || permissions?.access_student_care || ["super_admin", "admin", "director", "hr"].includes(userRole);
+  const hasSuperAdminAccess = userRole === "super_admin";
 
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
@@ -441,14 +449,60 @@ export default function DashboardLoader() {
           )}
 
           {/* --- Quick Actions Section --- */}
+          {/* --- Quick Actions Tabs --- */}
+          <motion.div variants={item} className="flex flex-wrap gap-2 bg-white dark:bg-zinc-900 p-2 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-fit">
+            <button
+              onClick={() => setActiveTab("all")}
+              className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+            >
+              ทั้งหมด (All)
+            </button>
+            {hasStudentAccess && (
+              <button
+                onClick={() => setActiveTab("student")}
+                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "student" ? "bg-indigo-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+              >
+                นักเรียน
+              </button>
+            )}
+            {hasTeacherAccess && (
+              <button
+                onClick={() => setActiveTab("teacher")}
+                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "teacher" ? "bg-violet-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+              >
+                ครูผู้สอน
+              </button>
+            )}
+            {hasStaffAccess && (
+              <button
+                onClick={() => setActiveTab("staff")}
+                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "staff" ? "bg-teal-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+              >
+                บุคลากร / HR
+              </button>
+            )}
+            {hasExecAccess && (
+              <button
+                onClick={() => setActiveTab("executive")}
+                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "executive" ? "bg-rose-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+              >
+                ผู้บริหาร
+              </button>
+            )}
+            {hasSuperAdminAccess && (
+              <button
+                onClick={() => setActiveTab("superadmin")}
+                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "superadmin" ? "bg-sky-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+              >
+                ผู้ดูแลระบบสูงสุด
+              </button>
+            )}
+          </motion.div>
+
           {/* ============================== */}
           {/* 1. STUDENT WORKSPACE */}
           {/* ============================== */}
-          {(permissions?.student_dashboard ||
-            ((session?.user as any)?.role || "").toLowerCase() === "student" ||
-            ["super_admin", "admin"].includes(
-              ((session?.user as any)?.role || "").toLowerCase(),
-            )) && (
+          {(activeTab === "all" || activeTab === "student") && hasStudentAccess && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 flex items-center gap-4">
@@ -465,14 +519,14 @@ export default function DashboardLoader() {
                   <>
                     <ActionCard
                       href="/student/flagpole"
-                      title="เช็คชื่อเข้าแถว"
+                      title="เช็คชื่อเข้าแถวหน้าเสาธง"
                       icon={Clock}
                       desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
                       variants={item}
                     />
                     <ActionCard
                       href="/dashboard/dve/student"
-                      title="ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)"
+                      title="ศูนย์การศึกษาระบบทวิภาคี (DVE)"
                       icon={BookOpen}
                       desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
                       variants={item}
@@ -481,7 +535,7 @@ export default function DashboardLoader() {
                 )}
                 <ActionCard
                   href="/dashboard/chat"
-                  title="กล่องข้อความ"
+                  title="แชท / กล่องข้อความ"
                   icon={MessageSquare}
                   desc="ระบบติดต่อสื่อสาร ส่งข้อความ และคุยแชทประสานงานอาจารย์"
                   variants={item}
@@ -493,9 +547,7 @@ export default function DashboardLoader() {
           {/* ============================== */}
           {/* 2. TEACHER WORKSPACE */}
           {/* ============================== */}
-          {["super_admin", "admin", "editor", "teacher"].includes(
-            ((session?.user as any)?.role || "").toLowerCase()
-          ) && (
+          {(activeTab === "all" || activeTab === "teacher") && hasTeacherAccess && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 flex items-center gap-4">
@@ -510,14 +562,14 @@ export default function DashboardLoader() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
                 <ActionCard
                   href="/teacher/students"
-                  title="รายชื่อนักเรียนประจำแผนก"
+                  title="ข้อมูลนักเรียนในที่ปรึกษา / แผนก"
                   icon={Users}
                   desc="ตรวจสอบประวัตินักเรียน แยกตามห้องเรียนและกลุ่มเรียน"
                   variants={item}
                 />
                 <ActionCard
                   href="/dashboard/supervision"
-                  title="การนิเทศนักศึกษาฝึกงาน"
+                  title="ระบบนิเทศนักศึกษาฝึกงาน"
                   icon={ClipboardList}
                   desc="จัดการข้อมูลและบันทึกผลการนิเทศนักเรียนนักศึกษา"
                   variants={item}
@@ -529,9 +581,7 @@ export default function DashboardLoader() {
           {/* ============================== */}
           {/* 3. STAFF & HR WORKSPACE */}
           {/* ============================== */}
-          {["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(
-            ((session?.user as any)?.role || "").toLowerCase()
-          ) && (
+          {(activeTab === "all" || activeTab === "staff") && hasStaffAccess && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
@@ -547,7 +597,7 @@ export default function DashboardLoader() {
                 {!["user", "student"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
                   <ActionCard
                     href="/dashboard/drive"
-                    title="คลังไฟล์ (Drive)"
+                    title="คลังเอกสารดิจิทัล (Drive)"
                     icon={HardDrive}
                     desc="จัดการไฟล์เอกสารและสื่อดิจิทัลทั้งหมด"
                     variants={item}
@@ -556,7 +606,7 @@ export default function DashboardLoader() {
                 {permissions?.manage_news && (
                   <ActionCard
                     href="/dashboard/news"
-                    title="จัดการข่าวสาร / ประชาสัมพันธ์"
+                    title="จัดการข่าวสารและกิจกรรม"
                     icon={Newspaper}
                     desc="ลงข่าวประชาสัมพันธ์และกิจกรรมล่าสุด"
                     variants={item}
@@ -575,7 +625,7 @@ export default function DashboardLoader() {
                 {(permissions?.manage_flagpole_data || ["super_admin", "admin", "deputy_student_affairs"].includes(((session?.user as any)?.role || "").toLowerCase())) && (
                   <ActionCard
                     href="/dashboard/flagpole-data-management"
-                    title="แก้ไขข้อมูลการเข้าแถว"
+                    title="จัดการข้อมูลการเข้าแถว"
                     icon={ClipboardList}
                     desc="เครื่องมือปรับแก้พิกัด ระยะห่าง และวันเวลาลงชื่อของนักเรียน"
                     variants={item}
@@ -585,7 +635,7 @@ export default function DashboardLoader() {
                   <>
                     <ActionCard
                       href="/dashboard/flagpole-dashboard"
-                      title="ภาพรวมการเข้าแถว"
+                      title="สถิติภาพรวมการเข้าแถว"
                       icon={Layers}
                       desc="รายงานสถิติ แผนที่ และภาพรวมการเข้าแถวหน้าเสาธง"
                       variants={item}
@@ -608,7 +658,7 @@ export default function DashboardLoader() {
                 />
                 <ActionCard
                   href="/dashboard/ita"
-                  title="จัดการข้อมูล ITA / OIT"
+                  title="ระบบข้อมูล ITA / OIT"
                   icon={ClipboardList}
                   desc="แก้ไขตัวชี้วัดความโปร่งใสรายหัวข้อ O1 - O37"
                   variants={item}
@@ -620,7 +670,7 @@ export default function DashboardLoader() {
           {/* ============================== */}
           {/* 4. EXECUTIVE WORKSPACE */}
           {/* ============================== */}
-          {(permissions?.access_teacher_verification || permissions?.access_teacher_dashboard || permissions?.access_lesson_plans || permissions?.access_dpa_evaluation || permissions?.access_plc || permissions?.access_student_care || ["super_admin", "admin", "director", "hr"].includes(((session?.user as any)?.role || "").toLowerCase())) && (
+          {(activeTab === "all" || activeTab === "executive") && hasExecAccess && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-rose-600 dark:text-rose-400 flex items-center gap-4">
@@ -636,7 +686,7 @@ export default function DashboardLoader() {
                 {permissions?.access_teacher_dashboard && (
                   <ActionCard
                     href="/teacher-dashboard"
-                    title="แดชบอร์ดผู้บริหาร (ติดตามงานครู)"
+                    title="แดชบอร์ดติดตามงานครู"
                     icon={Clock}
                     desc="สถิติภาพรวมและติดตามความก้าวหน้าการเรียนการสอนของครู"
                     variants={item}
@@ -645,7 +695,7 @@ export default function DashboardLoader() {
                 {permissions?.access_teacher_verification && (
                   <ActionCard
                     href="/teacher-verification"
-                    title="ตรวจสอบการจัดการเรียนการสอนครู"
+                    title="ตรวจสอบการจัดการเรียนการสอน"
                     icon={CalendarCheck}
                     desc="ตรวจสอบบันทึกการเรียนการสอนและการเข้าเรียนของนักเรียนแยกตามรายวิชา"
                     variants={item}
@@ -654,7 +704,7 @@ export default function DashboardLoader() {
                 {permissions?.access_lesson_plans && (
                   <ActionCard
                     href="/dashboard/director/lesson-plans"
-                    title="ตรวจสอบและแผนการสอน"
+                    title="ตรวจสอบแผนการสอน"
                     icon={FileText}
                     desc="ตรวจสอบและอนุมัติแผนการสอนออนไลน์ของครู"
                     variants={item}
@@ -691,7 +741,7 @@ export default function DashboardLoader() {
                   <>
                     <ActionCard
                       href="/attendance-dashboard"
-                      title="ภาพรวมการเข้างาน"
+                      title="แดชบอร์ดการเข้างานบุคลากร"
                       icon={CalendarCheck}
                       desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
                       variants={item}
@@ -735,7 +785,7 @@ export default function DashboardLoader() {
           {/* ============================== */}
           {/* 5. SUPER ADMIN WORKSPACE */}
           {/* ============================== */}
-          {(session?.user as any)?.role === "super_admin" && (
+          {(activeTab === "all" || activeTab === "superadmin") && hasSuperAdminAccess && (
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 flex items-center gap-4">
