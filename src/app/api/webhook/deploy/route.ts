@@ -29,12 +29,12 @@ export async function POST(req: Request) {
 
     const body = JSON.parse(payload);
     
-    // ตรวจสอบว่าเป็น branch main หรือไม่
-    if (body.ref !== "refs/heads/main") {
-      return NextResponse.json({ message: "Not main branch, ignore" });
+    // ตรวจสอบว่าเป็น branch production หรือไม่
+    if (body.ref !== "refs/heads/production") {
+      return NextResponse.json({ message: "Not production branch, ignore" });
     }
 
-    console.log("[Webhook] Push detected on main. Triggering auto-deploy...");
+    console.log("[Webhook] Push detected on production. Triggering auto-deploy...");
 
     // 3. รันสคริปต์ Deploy ใน Background (เพื่อไม่ให้ Request ค้าง)
     // ใช้สคริปต์เดิมที่เรามีอยู่แล้ว
