@@ -301,24 +301,6 @@ export default function MobileMenu({
                         <Globe className="w-5 h-5" /> เกี่ยวกับเรา / ติดต่อเรา
                       </Link>
 
-                      {isSuperAdmin && (
-                        <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
-                          <Link
-                            href="/dashboard/super-admin"
-                            onClick={closeMenu}
-                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
-                          >
-                            <Shield className="w-4 h-4" /> ศูนย์ควบคุมจัดการระบบ
-                          </Link>
-                          <Link
-                            href="/dashboard/permissions"
-                            onClick={closeMenu}
-                            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-[16px] text-sky-700 hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-900/40 transition-colors"
-                          >
-                            <Settings className="w-3.5 h-3.5" /> จัดการสิทธิ์แต่ละระดับ
-                          </Link>
-                        </div>
-                      )}
                     </div>
                   </div>
 
