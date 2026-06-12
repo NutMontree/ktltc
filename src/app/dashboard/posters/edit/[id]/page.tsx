@@ -67,7 +67,6 @@ export default function EditPosterPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-2">
-      <Toaster />
       <h1 className="text-2xl font-black uppercase mb-8 tracking-tight">
         แก้ไขโปสเตอร์
       </h1>
