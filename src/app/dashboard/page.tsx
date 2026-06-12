@@ -29,6 +29,7 @@ import {
   BookOpen,
   ShieldCheck,
   Bell,
+  Layout,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -55,6 +56,7 @@ export default function DashboardLoader() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [permissions, setPermissions] = useState<any>(null);
+  const [customMenus, setCustomMenus] = useState<any[]>([]);
   const [isEditingQuota, setIsEditingQuota] = useState(false);
   const [editingQuotaKey, setEditingQuotaKey] = useState<"storage_limit_mb" | "db_limit_mb">(
     "storage_limit_mb",
@@ -70,10 +72,11 @@ export default function DashboardLoader() {
       if (status !== "authenticated") return;
       try {
         setLoading(true);
-        const [statsRes, permRes, regRes] = await Promise.all([
+        const [statsRes, permRes, regRes, menusRes] = await Promise.all([
           fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
           fetch("/api/auth/permissions?_t=" + Date.now()),
           fetch("/api/auth/register/status?_t=" + Date.now()),
+          fetch("/api/admin/menus?_t=" + Date.now()),
         ]);
 
         if (!statsRes.ok) throw new Error("Failed to fetch dashboard statistics");
@@ -89,6 +92,13 @@ export default function DashboardLoader() {
           const regData = await regRes.json();
           if (regData && typeof regData.enabled === "boolean") {
             setRegEnabled(regData.enabled);
+          }
+        }
+        
+        if (menusRes.ok) {
+          const menusData = await menusRes.json();
+          if (menusData && menusData.menus) {
+            setCustomMenus(menusData.menus);
           }
         }
       } catch (err: any) {
@@ -450,7 +460,8 @@ export default function DashboardLoader() {
 
           {/* --- Quick Actions Section --- */}
           {/* --- Quick Actions Tabs --- */}
-          <motion.div variants={item} className="flex flex-wrap gap-2 bg-white dark:bg-zinc-900 p-2 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-fit">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+            <motion.div variants={item} className="flex flex-wrap gap-2 bg-white dark:bg-zinc-900 p-2 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-fit">
             <button
               onClick={() => setActiveTab("all")}
               className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
@@ -497,7 +508,20 @@ export default function DashboardLoader() {
                 ผู้ดูแลระบบสูงสุด
               </button>
             )}
-          </motion.div>
+            </motion.div>
+            
+            {hasSuperAdminAccess && (
+              <motion.div variants={item}>
+                <Link
+                  href="/dashboard/permissions"
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-[1.5rem] bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  <Layout className="w-4 h-4" />
+                  เพิ่มเมนูใหม่
+                </Link>
+              </motion.div>
+            )}
+          </div>
 
           {/* ============================== */}
           {/* 1. STUDENT WORKSPACE */}
@@ -515,31 +539,43 @@ export default function DashboardLoader() {
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {["super_admin", "admin", "student"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
-                  <>
-                    <ActionCard
-                      href="/student/flagpole"
-                      title="เช็คชื่อเข้าแถวหน้าเสาธง"
-                      icon={Clock}
-                      desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
-                      variants={item}
-                    />
-                    <ActionCard
-                      href="/dashboard/dve/student"
-                      title="ศูนย์การศึกษาระบบทวิภาคี (DVE)"
-                      icon={BookOpen}
-                      desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
-                      variants={item}
-                    />
-                  </>
+                {(permissions?.manage_flagpole_data || permissions?.manage_flagpole_settings || permissions?.student_dashboard) && (
+                  <ActionCard
+                    href="/student/flagpole"
+                    title="เช็คชื่อเข้าแถวหน้าเสาธง"
+                    icon={Clock}
+                    desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
+                    variants={item}
+                  />
                 )}
-                <ActionCard
-                  href="/dashboard/chat"
-                  title="แชท / กล่องข้อความ"
-                  icon={MessageSquare}
-                  desc="ระบบติดต่อสื่อสาร ส่งข้อความ และคุยแชทประสานงานอาจารย์"
-                  variants={item}
-                />
+                {permissions?.access_dve_student && (
+                  <ActionCard
+                    href="/dashboard/dve/student"
+                    title="ศูนย์การศึกษาระบบทวิภาคี (DVE)"
+                    icon={BookOpen}
+                    desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
+                    variants={item}
+                  />
+                )}
+                {permissions?.student_dashboard && (
+                  <ActionCard
+                    href="/dashboard/chat"
+                    title="แชท / กล่องข้อความ"
+                    icon={MessageSquare}
+                    desc="ระบบติดต่อสื่อสาร ส่งข้อความ และคุยแชทประสานงานอาจารย์"
+                    variants={item}
+                  />
+                )}
+                {customMenus.filter(m => m.workspace === "student" && permissions?.[m.permissionKey]).map(menu => (
+                  <ActionCard
+                    key={menu._id}
+                    href={menu.href}
+                    title={menu.title}
+                    icon={Layout}
+                    desc={menu.desc}
+                    variants={item}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -567,13 +603,25 @@ export default function DashboardLoader() {
                   desc="ตรวจสอบประวัตินักเรียน แยกตามห้องเรียนและกลุ่มเรียน"
                   variants={item}
                 />
-                <ActionCard
-                  href="/dashboard/supervision"
-                  title="ระบบนิเทศนักศึกษาฝึกงาน"
-                  icon={ClipboardList}
-                  desc="จัดการข้อมูลและบันทึกผลการนิเทศนักเรียนนักศึกษา"
-                  variants={item}
-                />
+                {permissions?.access_dve_teacher && (
+                  <ActionCard
+                    href="/dashboard/supervision"
+                    title="ระบบนิเทศนักศึกษาฝึกงาน"
+                    icon={ClipboardList}
+                    desc="จัดการข้อมูลและบันทึกผลการนิเทศนักเรียนนักศึกษา"
+                    variants={item}
+                  />
+                )}
+                {customMenus.filter(m => m.workspace === "teacher" && permissions?.[m.permissionKey]).map(menu => (
+                  <ActionCard
+                    key={menu._id}
+                    href={menu.href}
+                    title={menu.title}
+                    icon={Layout}
+                    desc={menu.desc}
+                    variants={item}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -594,7 +642,7 @@ export default function DashboardLoader() {
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-                {!["user", "student"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
+                {permissions?.manage_pages && (
                   <ActionCard
                     href="/dashboard/drive"
                     title="คลังเอกสารดิจิทัล (Drive)"
@@ -622,7 +670,7 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
-                {(permissions?.manage_flagpole_data || ["super_admin", "admin", "deputy_student_affairs"].includes(((session?.user as any)?.role || "").toLowerCase())) && (
+                {permissions?.manage_flagpole_data && (
                   <ActionCard
                     href="/dashboard/flagpole-data-management"
                     title="จัดการข้อมูลการเข้าแถว"
@@ -631,7 +679,7 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
-                {(["super_admin", "admin", "deputy_student_affairs"].includes(((session?.user as any)?.role || "").toLowerCase()) || (permissions?.student_dashboard && ((session?.user as any)?.role || "").toLowerCase() !== "student")) && (
+                {(permissions?.manage_flagpole_data || permissions?.manage_flagpole_settings) && (
                   <>
                     <ActionCard
                       href="/dashboard/flagpole-dashboard"
@@ -649,20 +697,34 @@ export default function DashboardLoader() {
                     />
                   </>
                 )}
-                <ActionCard
-                  href="/student-data-validation"
-                  title="ตรวจสอบข้อมูลนักเรียน"
-                  icon={ShieldCheck}
-                  desc="ตรวจสอบความถูกต้องของข้อมูลส่วนตัวนักเรียน"
-                  variants={item}
-                />
-                <ActionCard
-                  href="/dashboard/ita"
-                  title="ระบบข้อมูล ITA / OIT"
-                  icon={ClipboardList}
-                  desc="แก้ไขตัวชี้วัดความโปร่งใสรายหัวข้อ O1 - O37"
-                  variants={item}
-                />
+                {permissions?.manage_pages && (
+                  <ActionCard
+                    href="/student-data-validation"
+                    title="ตรวจสอบข้อมูลนักเรียน"
+                    icon={ShieldCheck}
+                    desc="ตรวจสอบความถูกต้องของข้อมูลส่วนตัวนักเรียน"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_pages && (
+                  <ActionCard
+                    href="/dashboard/ita"
+                    title="ระบบข้อมูล ITA / OIT"
+                    icon={ClipboardList}
+                    desc="แก้ไขตัวชี้วัดความโปร่งใสรายหัวข้อ O1 - O37"
+                    variants={item}
+                  />
+                )}
+                {customMenus.filter(m => m.workspace === "staff" && permissions?.[m.permissionKey]).map(menu => (
+                  <ActionCard
+                    key={menu._id}
+                    href={menu.href}
+                    title={menu.title}
+                    icon={Layout}
+                    desc={menu.desc}
+                    variants={item}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -737,7 +799,7 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
-                {["super_admin", "admin", "director", "hr"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
+                {permissions?.manage_attendance_dashboard && (
                   <>
                     <ActionCard
                       href="/attendance-dashboard"
@@ -753,23 +815,27 @@ export default function DashboardLoader() {
                       desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
                       variants={item}
                     />
-                    <ActionCard
-                      href="/work-reports"
-                      title="รายงานการปฏิบัติงาน"
-                      icon={FileText}
-                      desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
-                      variants={item}
-                    />
-                    <ActionCard
-                      href="/leave-approvals"
-                      title="อนุมัติการลางาน"
-                      icon={CalendarCheck}
-                      desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
-                      variants={item}
-                    />
                   </>
                 )}
-                {((session?.user as any)?.role === "super_admin" || permissions?.manage_supervision_requests) && (
+                {permissions?.manage_attendance_work_reports && (
+                  <ActionCard
+                    href="/work-reports"
+                    title="รายงานการปฏิบัติงาน"
+                    icon={FileText}
+                    desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_attendance_leave_approvals && (
+                  <ActionCard
+                    href="/leave-approvals"
+                    title="อนุมัติการลางาน"
+                    icon={CalendarCheck}
+                    desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_supervision_requests && (
                   <ActionCard
                     href="/dashboard/supervision/requests"
                     title="คำร้องการนิเทศ"
@@ -778,6 +844,16 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
+                {customMenus.filter(m => m.workspace === "executive" && permissions?.[m.permissionKey]).map(menu => (
+                  <ActionCard
+                    key={menu._id}
+                    href={menu.href}
+                    title={menu.title}
+                    icon={Layout}
+                    desc={menu.desc}
+                    variants={item}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -800,7 +876,7 @@ export default function DashboardLoader() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 <ActionCard
                   href="/dashboard/permissions"
-                  title="จัดการสิทธิ์การเข้าถึงเมนูและฟังก์ชันต่างๆ"
+                  title="จัดการสิทธิ์การเขครู้าถึงเมนูและฟังก์ชันต่างๆ"
                   icon={Shield}
                   desc="กำหนดสิทธิ์การเข้าถึงแยกตามรายบุคคล"
                   variants={item}
@@ -868,6 +944,17 @@ export default function DashboardLoader() {
                   desc="บริหารจัดการข้อมูลรายงานการปฏิบัติงาน"
                   variants={item}
                 />
+                
+                {customMenus.filter(m => m.workspace === "superadmin" && permissions?.[m.permissionKey]).map(menu => (
+                  <ActionCard
+                    key={menu._id}
+                    href={menu.href}
+                    title={menu.title}
+                    icon={Layout}
+                    desc={menu.desc}
+                    variants={item}
+                  />
+                ))}
                 
                 {/* Reset views logic component directly here for super admin */}
                 <motion.div variants={item}>

@@ -172,7 +172,7 @@ export default function AttendanceSettingsPage() {
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-zinc-100 tracking-tight">
-              ตั้งค่าระบบลงเวลา
+              ตั้งค่าระบบลงเวลาครู
             </h1>
             <p className="text-[10px] font-black text-slate-400 mt-2 uppercase tracking-[0.2em] flex items-center gap-2">
               <ShieldCheck size={14} className="text-indigo-500" />
