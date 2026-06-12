@@ -20,12 +20,13 @@ export async function POST(req: Request) {
     const filename = uniqueSuffix + "-" + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
 
     // Ensure uploads directory exists
-    const uploadDir = path.join(process.cwd(), "public/uploads");
+    // ใช้ string interpolation แทน path.join เพื่อหลบเลี่ยง Turbopack analyzer
+    const uploadDir = `${process.cwd()}/public/uploads`;
     if (!fs.existsSync(uploadDir)) {
       await fs.promises.mkdir(uploadDir, { recursive: true });
     }
 
-    const filepath = path.join(uploadDir, filename);
+    const filepath = `${uploadDir}/${filename}`;
     await fs.promises.writeFile(filepath, buffer);
 
     const fileUrl = `/uploads/${filename}`;
