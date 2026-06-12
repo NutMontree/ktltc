@@ -390,7 +390,6 @@ export default function MobileMenu({
                         </Link>
                       )}
 
-                      {/* รายการจัดการพิเศษสำหรับ Super Admin */}
                       {isSuperAdmin && (
                         <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
                           <Link
@@ -412,7 +411,6 @@ export default function MobileMenu({
                     </div>
                   </div>
 
-                  {/* เมนูเว็บไซต์ที่ดึงจากฐานข้อมูล (Dynamic Menu) */}
                   {menuTree && menuTree.length > 0 && (
                     <div>
                       {!["user", "student"].includes(roleLower) && (
