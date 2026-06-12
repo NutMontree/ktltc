@@ -69,7 +69,7 @@ export const uploadFile = async (
         try {
           const data = JSON.parse(xhr.responseText);
           if (data.success) {
-            resolve({ secure_url: data.secure_url, thumbnail_url: data.thumbnail_url });
+            resolve({ secure_url: data.secure_url || data.url, thumbnail_url: data.thumbnail_url || data.url });
           } else {
             console.error("❌ Local Upload Error:", data.message);
             resolve({ secure_url: null, thumbnail_url: null });
