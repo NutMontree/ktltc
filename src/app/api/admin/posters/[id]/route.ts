@@ -61,6 +61,11 @@ export async function GET(
     const poster = await db.collection("posters").findOne({
       _id: new ObjectId(id),
     });
+    
+    if (poster && typeof poster.imageUrl === 'object' && poster.imageUrl) {
+      poster.imageUrl = poster.imageUrl.secure_url;
+    }
+    
     return NextResponse.json(poster);
   } catch (error) {
     return NextResponse.json({ error: "Fetch failed" }, { status: 500 });

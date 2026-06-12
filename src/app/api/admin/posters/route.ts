@@ -37,7 +37,14 @@ export async function GET() {
       .find({})
       .sort({ createdAt: -1 })
       .toArray();
-    return NextResponse.json(posters);
+      
+    // Sanitize imageUrl to fix [object Object] issue
+    const sanitizedPosters = posters.map(p => ({
+      ...p,
+      imageUrl: typeof p.imageUrl === 'object' && p.imageUrl ? p.imageUrl.secure_url : p.imageUrl
+    }));
+    
+    return NextResponse.json(sanitizedPosters);
   } catch (error) {
     return NextResponse.json({ error: "Fetch failed" }, { status: 500 });
   }

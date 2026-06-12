@@ -41,9 +41,11 @@ export default function PostersForm({
 
     setUploading(true);
     try {
-      const url = await uploadFile(file, "ktltc_posters");
-      if (url) {
-        setFormData({ ...formData, imageUrl: url });
+      const result = await uploadFile(file, "ktltc_posters");
+      if (result && result.secure_url) {
+        setFormData({ ...formData, imageUrl: result.secure_url });
+      } else {
+        throw new Error("Upload failed, no secure_url returned");
       }
     } catch (error) {
       console.error("Upload failed:", error);
