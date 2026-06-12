@@ -243,7 +243,14 @@ export default function NotificationBell() {
         content={content}
         trigger="click"
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={(newOpen) => {
+          setOpen(newOpen);
+          // เมื่อกดปิด Modal (newOpen === false) และยังมีข้อความที่ยังไม่อ่าน ให้ markAsRead()
+          if (!newOpen && unreadCount > 0) {
+            markAsRead();
+            setNotifications(prev => prev.map(n => ({ ...n, isRead: true, read: true })));
+          }
+        }}
         placement="bottomRight"
         overlayClassName="notification-popover"
         overlayStyle={{ maxWidth: 'calc(100vw - 24px)' }}
