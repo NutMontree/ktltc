@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
     const fileUrl = `/uploads/${filename}`;
 
-    return NextResponse.json({ success: true, url: fileUrl });
+    return NextResponse.json({ success: true, url: fileUrl, secure_url: fileUrl });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: "Failed to upload file." }, { status: 500 });

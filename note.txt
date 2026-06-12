@@ -51,3 +51,7 @@ sudo chown -R ktltc:ktltc /home/ktltc/ktltc/.git
 
 # ปรับสิทธิ์ให้อ่าน/เขียนได้สำหรับเจ้าของไฟล์
 chmod -R u+rw /home/ktltc/ktltc/.git
+
+อัพเดทโค้ดให้ตรงกับ githubถุ 
+git fetch origin
+git reset --hard origin/main
