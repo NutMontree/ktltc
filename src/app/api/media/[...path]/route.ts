@@ -36,7 +36,7 @@ function ensureMigration() {
   try {
     const cwd = process.cwd();
     // Path to the literal \\192.168.6.179\public folder
-    const sourceDir = join(cwd, "\\\\192.168.6.179\\public");
+    const sourceDir = "\\\\192.168.6.179\\public";
     const targetDir = getPublicDir();
     if (existsSync(sourceDir)) {
       console.log(`🚀 [Migration] Found legacy network base: ${sourceDir}. Merging into local public...`);
@@ -66,6 +66,7 @@ export async function GET(
     if (!found) {
       // Fallback for Local Dev environment: try to fetch from production
       if (process.env.NODE_ENV === 'development') {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
         try {
           const prodUrl = `https://ktltc.ac.th/api/media/${pathSegments.join('/')}`;
           

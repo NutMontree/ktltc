@@ -467,7 +467,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                     .slice(0, 5)
                     .map((comment: any) => (
                       <div key={comment.id} className="flex gap-3">
-                        <Link href={`/dashboard/profile/${comment.userId || '#'}`} className="shrink-0 hover:opacity-80 transition-opacity">
+                        <Link href={`/dashboard/profile/${comment.userId || '#'}`} onClick={onClose} className="shrink-0 hover:opacity-80 transition-opacity">
                           {comment.userImage ? (
                             <img
                               src={comment.userImage}
@@ -484,7 +484,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                         </Link>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <Link href={`/dashboard/profile/${comment.userId || '#'}`} className="font-bold text-sm text-zinc-900 dark:text-white hover:underline">
+                            <Link href={`/dashboard/profile/${comment.userId || '#'}`} onClick={onClose} className="font-bold text-sm text-zinc-900 dark:text-white hover:underline">
                               {comment.userName}
                             </Link>
                             <span className="text-xs text-zinc-500">
@@ -575,7 +575,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                             .filter((c: any) => c.parentId === comment.id)
                             .map((reply: any) => (
                               <div key={reply.id} className="mt-3 ml-8 flex gap-2 border-l-2 border-zinc-200 dark:border-zinc-700 pl-3">
-                                <Link href={`/dashboard/profile/${reply.userId || '#'}`} className="shrink-0 hover:opacity-80 transition-opacity">
+                                <Link href={`/dashboard/profile/${reply.userId || '#'}`} onClick={onClose} className="shrink-0 hover:opacity-80 transition-opacity">
                                   {reply.userImage ? (
                                     <img
                                       src={reply.userImage}
@@ -592,7 +592,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                                 </Link>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <Link href={`/dashboard/profile/${reply.userId || '#'}`} className="font-bold text-xs text-zinc-900 dark:text-white hover:underline">
+                                    <Link href={`/dashboard/profile/${reply.userId || '#'}`} onClick={onClose} className="font-bold text-xs text-zinc-900 dark:text-white hover:underline">
                                       {reply.userName}
                                     </Link>
                                     <span className="text-[10px] text-zinc-500">
@@ -743,7 +743,14 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
           ) : likeUsers.length > 0 ? (
             likeUsers.map((u) => (
               <div key={u._id} className="flex items-center gap-3">
-                <Link href={`/dashboard/profile/${u._id}`} className="shrink-0" onClick={() => setLikesModal({ ...likesModal, isOpen: false })}>
+                <Link 
+                  href={`/dashboard/profile/${u._id}`} 
+                  className="shrink-0" 
+                  onClick={() => {
+                    setLikesModal({ ...likesModal, isOpen: false });
+                    onClose && onClose();
+                  }}
+                >
                   {u.image ? (
                     <img src={u.image} alt={u.name} className="w-10 h-10 rounded-full object-cover" />
                   ) : (

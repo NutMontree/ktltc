@@ -271,6 +271,9 @@ export default function StudentVerifyPage() {
         .dark .holographic-badge {
           background: linear-gradient(115deg, rgba(24,24,27,0.98) 0%, rgba(39,39,42,0.95) 30%, rgba(63,63,70,0.9) 45%, rgba(39,39,42,0.95) 60%, rgba(24,24,27,0.98) 100%);
         }
+        .dark .holographic-badge {
+          background: linear-gradient(115deg, rgba(24,24,27,0.98) 0%, rgba(39,39,42,0.95) 30%, rgba(63,63,70,0.9) 45%, rgba(39,39,42,0.95) 60%, rgba(24,24,27,0.98) 100%);
+        }
         .floating-orb-1 {
           animation: float-slow-1 12s ease-in-out infinite;
         }
