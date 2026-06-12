@@ -68,6 +68,25 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
     }
   };
 
+  // Helper function to render links
+  const renderValueWithLinks = (value: any) => {
+    if (typeof value !== "string") return value;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    if (!urlRegex.test(value)) return value;
+
+    const parts = value.split(urlRegex);
+    return parts.map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" onClick={(e) => e.stopPropagation()}>
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   // Component ย่อยสำหรับแสดงข้อมูล 1 บรรทัด
   const DataRow = ({
     label,
@@ -87,7 +106,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
           {label}
         </span>
         <span className="text-base font-medium text-gray-800 dark:text-gray-200 wrap-break-word [word-break:break-word] overflow-hidden leading-relaxed">
-          {value}
+          {renderValueWithLinks(value)}
         </span>
       </div>
     );
@@ -246,9 +265,9 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 <DataRow
                   label="ตรงสายงานหรือไม่"
                   value={
-                    suvery.jobMatch === "1" || suvery.jobMatch === "ตรง"
+                    String(suvery.jobMatch) === "1" || suvery.jobMatch === "ตรง"
                       ? "ตรงสาขา"
-                      : suvery.jobMatch === "2" || suvery.jobMatch === "ไม่ตรง"
+                      : String(suvery.jobMatch) === "2" || suvery.jobMatch === "ไม่ตรง"
                         ? "ไม่ตรงสาขา"
                         : suvery.jobMatch
                   }
@@ -256,9 +275,9 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 <DataRow
                   label="ความพึงพอใจ"
                   value={
-                    suvery.jobSatisfaction === "1" || suvery.jobSatisfaction === "พึงพอใจ"
+                    String(suvery.jobSatisfaction) === "1" || suvery.jobSatisfaction === "พึงพอใจ"
                       ? "พึงพอใจ"
-                      : suvery.jobSatisfaction === "2" || suvery.jobSatisfaction === "ไม่พึงพอใจ"
+                      : String(suvery.jobSatisfaction) === "2" || suvery.jobSatisfaction === "ไม่พึงพอใจ"
                         ? "ไม่พึงพอใจ"
                         : suvery.jobSatisfaction
                   }
@@ -302,13 +321,13 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 <DataRow
                   label="เหตุผล"
                   value={
-                    suvery.furtherStudyReason === "4"
+                    String(suvery.furtherStudyReason) === "4"
                       ? "อื่นๆ"
                       : suvery.furtherStudyReason
                   }
-                  fullWidth={suvery.furtherStudyReason !== "4" || !suvery.furtherStudyReasonOther}
+                  fullWidth={String(suvery.furtherStudyReason) !== "4" || !suvery.furtherStudyReasonOther}
                 />
-                {suvery.furtherStudyReason === "4" && suvery.furtherStudyReasonOther && (
+                {String(suvery.furtherStudyReason) === "4" && suvery.furtherStudyReasonOther && (
                   <DataRow
                     label="เหตุผลอื่น"
                     value={suvery.furtherStudyReasonOther}
@@ -333,7 +352,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
                 />
                 <DataRow
                   label="สาเหตุละเอียด"
-                  value={getUnemployedReasonText(suvery.unemployedReason || "")}
+                  value={getUnemployedReasonText(String(suvery.unemployedReason || ""))}
                 />
                 <DataRow
                   label="สาเหตุอื่น"
@@ -349,8 +368,8 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
               <h5 className="font-bold text-yellow-800 dark:text-yellow-500 mb-2 flex items-center gap-2">
                 <FileText size={18} /> ข้อเสนอแนะ
               </h5>
-              <p className="text-gray-700 dark:text-gray-300 italic">
-                "{suvery.suggestion}"
+              <p className="text-gray-700 dark:text-gray-300 italic wrap-break-word [word-break:break-word]">
+                "{renderValueWithLinks(suvery.suggestion)}"
               </p>
             </div>
           )}

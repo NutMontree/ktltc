@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Modal, App } from "antd";
+import { Modal, App, message } from "antd";
 import { motion, AnimatePresence } from "framer-motion";
 import { CloseOutlined, HeartOutlined, HeartFilled, CommentOutlined, ShareAltOutlined, SendOutlined, UserOutlined, PictureOutlined } from "@ant-design/icons";
 import { formatDistanceToNow } from "date-fns";
@@ -16,7 +16,7 @@ interface PostModalProps {
 }
 
 export default function PostModal({ postId, open, onClose }: PostModalProps) {
-  const { message } = App.useApp();
+
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -68,7 +68,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         body: JSON.stringify({ type: "LIKE" }),
       });
       if (res.ok) {
-        fetchPost();
+        fetchPost(false);
       }
     } catch (error) {
       console.error("Like error:", error);
@@ -80,7 +80,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
       signIn();
       return;
     }
-    if (!commentText.trim()) return;
+    if (!commentText.trim() && !commentImage) return;
 
     setIsSubmittingComment(true);
     try {
@@ -190,7 +190,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         body: JSON.stringify({ type: "LIKE_COMMENT", commentId }),
       });
       if (res.ok) {
-        fetchPost();
+        fetchPost(false);
       }
     } catch (error) {
       console.error("Like comment error:", error);
