@@ -195,8 +195,12 @@ export default function MobileMenu({
               {/* ส่วนหัวเมนู (Drawer Header) */}
               <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl italic shadow-lg shadow-blue-600/20">
-                    K
+                  <div className="w-10 h-10 flex items-center justify-center">
+                    <img 
+                      src="/images/favicon.ico" 
+                      alt="KTLTC Logo" 
+                      className="w-full h-full object-contain drop-shadow-lg" 
+                    />
                   </div>
                   <div>
                     <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">
@@ -275,7 +279,8 @@ export default function MobileMenu({
                 )}
 
                 {/* รายการเมนูหลัก (Navigation Group) */}
-                {/* <div className="space-y-6">
+                {false && (
+                  <div className="space-y-6">
                   <div>
                     <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
                       <Activity className="w-3 h-3" /> เมนูหลัก
@@ -425,7 +430,8 @@ export default function MobileMenu({
                       </div>
                     </div>
                   )}
-                </div> */}
+                  </div>
+                )}
               </div>
 
               {/* ส่วนล่างสุดของเมนู (Footer) */}
