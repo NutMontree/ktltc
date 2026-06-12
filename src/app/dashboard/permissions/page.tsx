@@ -199,8 +199,14 @@ export default function PermissionsPage() {
   const [permissions, setPermissions] = useState<any>(null);
   const [roleLabels, setRoleLabels] = useState<any>({});
   const [rolesOrder, setRolesOrder] = useState<string[]>([]);
+  const [customFeatures, setCustomFeatures] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [savingRole, setSavingRole] = useState<string | null>(null);
+
+  // For Adding Custom Menu
+  const [showAddMenuModal, setShowAddMenuModal] = useState(false);
+  const [newMenu, setNewMenu] = useState({ title: "", href: "", workspace: "staff" });
+  const [isAddingMenu, setIsAddingMenu] = useState(false);
 
   // For Adding Role
   const [showAddModal, setShowAddModal] = useState(false);
@@ -224,6 +230,18 @@ export default function PermissionsPage() {
         setPermissions(data.permissions);
         setRoleLabels(data.labels);
         setRolesOrder(data.rolesOrder || Object.keys(data.permissions));
+        
+        // Ensure custom features get mapped with a generic icon since we can't easily eval string to React component dynamically without a map
+        const parsedCustomFeatures: any = {};
+        if (data.customFeatureLabels) {
+          Object.keys(data.customFeatureLabels).forEach(key => {
+            parsedCustomFeatures[key] = {
+              ...data.customFeatureLabels[key],
+              icon: FiLayout, // generic fallback
+            };
+          });
+        }
+        setCustomFeatures(parsedCustomFeatures);
       } else {
         toast.error("ไม่สามารถโหลดข้อมูลสิทธิ์ได้");
       }
@@ -433,6 +451,35 @@ export default function PermissionsPage() {
     );
   }
 
+  const handleAddMenu = async () => {
+    if (!newMenu.title || !newMenu.href || !newMenu.workspace) {
+      toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+    try {
+      setIsAddingMenu(true);
+      const res = await fetch("/api/admin/menus", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newMenu),
+      });
+      if (res.ok) {
+        toast.success("เพิ่มเมนูใหม่สำเร็จ");
+        setShowAddMenuModal(false);
+        setNewMenu({ title: "", href: "", workspace: "staff" });
+        fetchPermissions(); // Reload matrix
+      } else {
+        toast.error("ไม่สามารถเพิ่มเมนูได้");
+      }
+    } catch {
+      toast.error("เกิดข้อผิดพลาด");
+    } finally {
+      setIsAddingMenu(false);
+    }
+  };
+
+  const MERGED_FEATURE_LABELS = { ...FEATURE_LABELS, ...customFeatures };
+
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
       {/* Background Mesh Gradients */}
@@ -490,13 +537,22 @@ export default function PermissionsPage() {
                 <span>จัดการรายบุคคล</span>
               </Link>
             </div>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-blue-500/40"
-            >
-              <FiUsers size={16} />
-              <span>เพิ่มบทบาทใหม่</span>
-            </button>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+              <button
+                onClick={() => setShowAddMenuModal(true)}
+                className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-xl shadow-emerald-500/20"
+              >
+                <FiLayout size={16} />
+                <span>เพิ่มเมนูใหม่</span>
+              </button>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-500/20"
+              >
+                <FiUsers size={16} />
+                <span>เพิ่มบทบาทใหม่</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -524,25 +580,25 @@ export default function PermissionsPage() {
                       <th className="p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[220px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
                         บทบาท / Role Name
                       </th>
-                      {Object.keys(FEATURE_LABELS).map((key) => (
+                      {Object.keys(MERGED_FEATURE_LABELS).map((key) => (
                         <th
                           key={key}
                           className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
                         >
                           <Link
-                            href={FEATURE_LABELS[key].href || "#"}
+                            href={MERGED_FEATURE_LABELS[key].href || "#"}
                             className="flex flex-col items-center gap-2 group/header cursor-pointer"
                           >
                             <div
-                              className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 ${FEATURE_LABELS[key].color}`}
+                              className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 ${MERGED_FEATURE_LABELS[key].color}`}
                             >
                               {(() => {
-                                const Icon = FEATURE_LABELS[key].icon;
+                                const Icon = MERGED_FEATURE_LABELS[key].icon;
                                 return <Icon size={18} />;
                               })()}
                             </div>
                             <span className="max-w-[100px] text-center leading-tight group-hover/header:text-blue-600 transition-colors">
-                              {FEATURE_LABELS[key].label}
+                              {MERGED_FEATURE_LABELS[key].label}
                             </span>
                           </Link>
                         </th>
@@ -580,7 +636,7 @@ export default function PermissionsPage() {
                           </div>
                         </td>
 
-                        {Object.keys(FEATURE_LABELS).map((feature) => (
+                        {Object.keys(MERGED_FEATURE_LABELS).map((feature) => (
                           <td
                             key={feature}
                             className="p-2 text-center border-b border-zinc-50 dark:border-zinc-800/50"
@@ -593,13 +649,13 @@ export default function PermissionsPage() {
                               </div>
                             ) : (
                               <button
-                                disabled={FEATURE_LABELS[feature].isSuperAdminOnly}
+                                disabled={MERGED_FEATURE_LABELS[feature].isSuperAdminOnly}
                                 onClick={() =>
-                                  !FEATURE_LABELS[feature].isSuperAdminOnly &&
+                                  !MERGED_FEATURE_LABELS[feature].isSuperAdminOnly &&
                                   handleToggle(role, feature)
                                 }
                                 className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
-                                  FEATURE_LABELS[feature].isSuperAdminOnly
+                                  MERGED_FEATURE_LABELS[feature].isSuperAdminOnly
                                     ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
                                     : permissions[role][feature]
                                       ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20"
@@ -607,7 +663,7 @@ export default function PermissionsPage() {
                                 }`}
                               >
                                 {permissions[role][feature] &&
-                                !FEATURE_LABELS[feature].isSuperAdminOnly ? (
+                                !MERGED_FEATURE_LABELS[feature].isSuperAdminOnly ? (
                                   <FiCheckCircle size={20} />
                                 ) : (
                                   <FiXCircle size={20} />
@@ -1000,6 +1056,92 @@ export default function PermissionsPage() {
                     className="flex-2 py-5 rounded-3xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/30"
                   >
                     {isEditing ? "กำลังบันทึก..." : "ยืนยันการแก้ไข"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* --- Add Custom Menu Modal --- */}
+      <AnimatePresence>
+        {showAddMenuModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAddMenuModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800 z-10 overflow-hidden"
+            >
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
+                เพิ่มเมนูแบบกำหนดเอง
+              </h3>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-6">
+                ระบบจะสร้างสิทธิ์เข้าถึงเมนูนี้ในตารางโดยอัตโนมัติ
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    ชื่อเมนู
+                  </label>
+                  <input
+                    type="text"
+                    value={newMenu.title}
+                    onChange={(e) => setNewMenu({ ...newMenu, title: e.target.value })}
+                    placeholder="เช่น: เมนูพิเศษ, ระบบจัดการหลังบ้าน"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    URL ของหน้าเว็บ
+                  </label>
+                  <input
+                    type="text"
+                    value={newMenu.href}
+                    onChange={(e) => setNewMenu({ ...newMenu, href: e.target.value })}
+                    placeholder="เช่น: /dashboard/my-page"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    แสดงในหมวดหมู่
+                  </label>
+                  <select
+                    value={newMenu.workspace}
+                    onChange={(e) => setNewMenu({ ...newMenu, workspace: e.target.value })}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                  >
+                    <option value="student">นักเรียน นักศึกษา</option>
+                    <option value="teacher">ครูผู้สอน</option>
+                    <option value="staff">บุคลากร / HR</option>
+                    <option value="executive">ผู้บริหาร</option>
+                    <option value="superadmin">ผู้ดูแลระบบสูงสุด</option>
+                  </select>
+                </div>
+                <div className="flex gap-3 pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800">
+                  <button
+                    onClick={() => setShowAddMenuModal(false)}
+                    className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleAddMenu}
+                    disabled={isAddingMenu}
+                    className="flex-2 py-4 rounded-2xl bg-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    {isAddingMenu ? <FiLoader className="animate-spin" /> : "บันทึกข้อมูล"}
                   </button>
                 </div>
               </div>

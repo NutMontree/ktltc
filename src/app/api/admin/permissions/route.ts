@@ -422,7 +422,19 @@ export async function GET() {
       }
     });
 
-    return NextResponse.json({ permissions, labels, rolesOrder });
+    // Fetch custom menus to expose their permission keys
+    const customMenus = await db.collection("custom_menus").find({}).toArray();
+    const customFeatureLabels: any = {};
+    customMenus.forEach(menu => {
+      customFeatureLabels[menu.permissionKey] = {
+        label: menu.title,
+        icon: menu.icon, // string, will map to Lucide icon on frontend
+        color: "text-amber-500", // Default color
+        href: menu.href
+      };
+    });
+
+    return NextResponse.json({ permissions, labels, rolesOrder, customFeatureLabels });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
