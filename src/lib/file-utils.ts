@@ -17,13 +17,20 @@ import { getPublicDir } from './cwd';
  */
 export async function deleteFileFromUrl(url: string): Promise<boolean> {
   // ตรวจสอบเบื้องต้นว่าเป็น URL ของไฟล์สื่อในระบบเราหรือไม่
-  if (!url || !url.startsWith('/api/media/')) {
+  if (!url) return false;
+
+  let relativePath = "";
+  if (url.startsWith('/api/media/')) {
+    relativePath = url.replace('/api/media/', '');
+  } else if (url.startsWith('/uploads/')) {
+    // ให้ relative path เป็นแบบ uploads/filename.ext เพื่อนำไปต่อกับ publicDir
+    relativePath = url.replace(/^\//, ''); 
+  } else {
     return false;
   }
 
   try {
     // 1. แปลง URL เป็น Path จริงในเครื่อง Server
-    const relativePath = url.replace('/api/media/', '');
     const parts = relativePath.split('/');
     
     const publicDir = getPublicDir();

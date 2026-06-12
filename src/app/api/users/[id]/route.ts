@@ -3,6 +3,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { auth, hasPermission } from "@/lib/auth";
+import { deleteFileFromUrl } from "@/lib/file-utils";
 
 const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
 const ALLOWED_ADMIN_ROLES = [
@@ -138,6 +139,15 @@ export async function PATCH(
 
     // ป้องกันไม่ให้แก้ _id
     delete updateData._id;
+
+    // 🗑 ลบรูปภาพเดิมถ้ามีการเปลี่ยนรูปโปรไฟล์ หรือลบรูปโปรไฟล์ (เมื่อ body ส่ง image มาและไม่เท่ากับของเดิม)
+    if (updateData.image !== undefined && targetUser.image && updateData.image !== targetUser.image) {
+      await deleteFileFromUrl(targetUser.image);
+    }
+    // 🗑 ลบรูปหน้าปกเดิมถ้ามีการเปลี่ยนรูป
+    if (updateData.coverImage !== undefined && targetUser.coverImage && updateData.coverImage !== targetUser.coverImage) {
+      await deleteFileFromUrl(targetUser.coverImage);
+    }
 
     const result = await db
       .collection("users")

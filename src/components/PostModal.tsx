@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { Modal, App } from "antd";
 import { motion, AnimatePresence } from "framer-motion";
-import { CloseOutlined, HeartOutlined, HeartFilled, CommentOutlined, ShareAltOutlined, SendOutlined, UserOutlined } from "@ant-design/icons";
+import { CloseOutlined, HeartOutlined, HeartFilled, CommentOutlined, ShareAltOutlined, SendOutlined, UserOutlined, PictureOutlined } from "@ant-design/icons";
 import { formatDistanceToNow } from "date-fns";
 import { th } from "date-fns/locale";
 import { useSession, signIn } from "next-auth/react";
+import Link from "next/link";
 
 interface PostModalProps {
   postId: string | null;
@@ -19,24 +20,29 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [commentImage, setCommentImage] = useState<string | null>(null);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareText, setShareText] = useState("");
   const [isSharing, setIsSharing] = useState(false);
   const [replyingTo, setReplyingTo] = useState<{ postId: string; commentId: string; userName: string } | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingCommentText, setEditingCommentText] = useState("");
+  const [likesModal, setLikesModal] = useState<{ isOpen: boolean; type: 'post' | 'comment'; targetId: string | null }>({ isOpen: false, type: 'post', targetId: null });
+  const [likeUsers, setLikeUsers] = useState<any[]>([]);
+  const [isLoadingLikes, setIsLoadingLikes] = useState(false);
   const { data: session } = useSession();
   const userId = (session?.user as any)?.id;
 
   useEffect(() => {
     if (open && postId) {
-      fetchPost();
+      fetchPost(true);
     }
   }, [open, postId]);
 
-  const fetchPost = async () => {
-    setLoading(true);
+  const fetchPost = async (showLoading: boolean = false) => {
+    if (showLoading) setLoading(true);
     try {
       const res = await fetch(`/api/posts/${postId}`);
       if (res.ok) {
@@ -46,7 +52,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
     } catch (error) {
       console.error("Error fetching post:", error);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
@@ -84,13 +90,15 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         body: JSON.stringify({
           type: "COMMENT",
           text: commentText,
+          image: commentImage,
           parentId,
         }),
       });
       if (res.ok) {
         setCommentText("");
+        setCommentImage(null);
         setReplyingTo(null);
-        fetchPost();
+        fetchPost(false);
         message.success(parentId ? "ตอบกลับสำเร็จ" : "คอมเมนต์สำเร็จ");
       }
     } catch (error) {
@@ -116,7 +124,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
       if (res.ok) {
         setEditingCommentId(null);
         setEditingCommentText("");
-        fetchPost();
+        fetchPost(false);
         message.success("แก้ไขคอมเมนต์สำเร็จ");
       }
     } catch (error) {
@@ -134,12 +142,79 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         body: JSON.stringify({ type: "DELETE_COMMENT", commentId }),
       });
       if (res.ok) {
-        fetchPost();
+        fetchPost(false);
         message.success("ลบคอมเมนต์สำเร็จ");
       }
     } catch (error) {
       console.error("Delete comment error:", error);
       message.error("ไม่สามารถลบคอมเมนต์ได้");
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCommentImage(data.url);
+      } else {
+        message.error("ไม่สามารถอัปโหลดรูปภาพได้");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      message.error("เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleLikeComment = async (commentId: string) => {
+    if (!session) {
+      signIn();
+      return;
+    }
+    try {
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "LIKE_COMMENT", commentId }),
+      });
+      if (res.ok) {
+        fetchPost();
+      }
+    } catch (error) {
+      console.error("Like comment error:", error);
+    }
+  };
+
+  const openLikesModal = async (type: 'post' | 'comment', targetId: string | null) => {
+    setLikesModal({ isOpen: true, type, targetId });
+    setIsLoadingLikes(true);
+    setLikeUsers([]);
+    try {
+      let url = `/api/posts/${postId}/likes`;
+      if (type === 'comment' && targetId) {
+        url += `?commentId=${targetId}`;
+      }
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        setLikeUsers(data.users || []);
+      }
+    } catch (err) {
+      console.error("Error fetching likes:", err);
+    } finally {
+      setIsLoadingLikes(false);
     }
   };
 
@@ -183,6 +258,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
       onCancel={onClose}
       footer={null}
       centered
+      zIndex={9999}
       width="90vw"
       style={{ maxWidth: "800px" }}
       className="post-modal"
@@ -205,21 +281,23 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
           >
             {/* Post Header */}
             <div className="flex items-center gap-3 p-4 border-b dark:border-zinc-800">
-              {post.authorImage ? (
-                <img
-                  src={post.authorImage}
-                  alt={post.authorName}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
-                  <span className="text-zinc-500 dark:text-zinc-400 text-sm font-bold">
-                    {post.authorName?.charAt(0) || "?"}
-                  </span>
-                </div>
-              )}
+              <Link href={`/dashboard/profile/${post.authorId || post.userId || '#'}`} className="shrink-0 hover:opacity-80 transition-opacity">
+                {post.authorImage ? (
+                  <img
+                    src={post.authorImage}
+                    alt={post.authorName}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
+                    <span className="text-zinc-500 dark:text-zinc-400 text-sm font-bold">
+                      {post.authorName?.charAt(0) || "?"}
+                    </span>
+                  </div>
+                )}
+              </Link>
               <div className="flex-1">
-                <div className="font-bold text-zinc-900 dark:text-white">{post.authorName}</div>
+                <Link href={`/dashboard/profile/${post.authorId || post.userId || '#'}`} className="font-bold text-zinc-900 dark:text-white hover:underline block">{post.authorName}</Link>
                 <div className="text-xs text-zinc-500">
                   {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: th })}
                 </div>
@@ -257,13 +335,17 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
 
             {/* Post Actions */}
             <div className="flex items-center gap-6 p-4 border-t dark:border-zinc-800">
-              <button
-                onClick={handleLike}
-                className={`flex items-center gap-2 transition-colors ${isLiked ? 'text-red-500' : 'text-zinc-600 dark:text-zinc-400 hover:text-red-500'}`}
-              >
-                {isLiked ? <HeartFilled className="text-xl" /> : <HeartOutlined className="text-xl" />}
-                <span className="text-sm">{post.likes?.length || 0}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleLike}
+                  className={`transition-colors ${isLiked ? 'text-red-500' : 'text-zinc-600 dark:text-zinc-400 hover:text-red-500'}`}
+                >
+                  {isLiked ? <HeartFilled className="text-xl" /> : <HeartOutlined className="text-xl" />}
+                </button>
+                <button onClick={() => openLikesModal('post', postId)} className="text-sm text-zinc-600 dark:text-zinc-400 hover:underline cursor-pointer">
+                  {post.likes?.length || 0}
+                </button>
+              </div>
               <button className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-blue-500 transition-colors">
                 <CommentOutlined className="text-xl" />
                 <span className="text-sm">{post.comments?.length || 0}</span>
@@ -299,26 +381,56 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                     <UserOutlined className="text-zinc-400 text-xs" />
                   )}
                 </div>
-                <div className="flex-1 flex gap-2">
-                  <input
-                    type="text"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder={replyingTo ? "เขียนการตอบกลับ..." : "เขียนคอมเมนต์..."}
-                    className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onKeyPress={(e) => e.key === 'Enter' && handleComment(replyingTo?.commentId || null)}
-                  />
-                  <button
-                    onClick={() => handleComment(replyingTo?.commentId || null)}
-                    disabled={!commentText.trim() || isSubmittingComment}
-                    className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {isSubmittingComment ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <SendOutlined className="text-sm" />
-                    )}
-                  </button>
+                <div className="flex-1 flex flex-col gap-2">
+                  {commentImage && (
+                    <div className="relative w-24 h-24 rounded-lg overflow-hidden border dark:border-zinc-700">
+                      <img src={commentImage} alt="Comment Preview" className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => setCommentImage(null)}
+                        className="absolute top-1 right-1 w-6 h-6 bg-black/50 hover:bg-black text-white rounded-full flex items-center justify-center text-xs transition-colors"
+                      >
+                        <CloseOutlined />
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder={replyingTo ? "เขียนการตอบกลับ..." : "เขียนคอมเมนต์..."}
+                      className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onKeyPress={(e) => e.key === 'Enter' && handleComment(replyingTo?.commentId || null)}
+                    />
+                    <input
+                      type="file"
+                      id="comment-image-upload"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+                    <label
+                      htmlFor="comment-image-upload"
+                      className={`w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors ${isUploadingImage ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                      {isUploadingImage ? (
+                        <div className="w-4 h-4 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <PictureOutlined className="text-zinc-600 dark:text-zinc-400" />
+                      )}
+                    </label>
+                    <button
+                      onClick={() => handleComment(replyingTo?.commentId || null)}
+                      disabled={(!commentText.trim() && !commentImage) || isSubmittingComment || isUploadingImage}
+                      className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isSubmittingComment ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <SendOutlined className="text-sm" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -335,24 +447,26 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                     .slice(0, 5)
                     .map((comment: any) => (
                       <div key={comment.id} className="flex gap-3">
-                        {comment.userImage ? (
-                          <img
-                            src={comment.userImage}
-                            alt={comment.userName}
-                            className="w-8 h-8 rounded-full object-cover shrink-0"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0">
-                            <span className="text-zinc-500 dark:text-zinc-400 text-xs font-bold">
-                              {comment.userName?.charAt(0) || "?"}
-                            </span>
-                          </div>
-                        )}
+                        <Link href={`/dashboard/profile/${comment.userId || '#'}`} className="shrink-0 hover:opacity-80 transition-opacity">
+                          {comment.userImage ? (
+                            <img
+                              src={comment.userImage}
+                              alt={comment.userName}
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
+                              <span className="text-zinc-500 dark:text-zinc-400 text-xs font-bold">
+                                {comment.userName?.charAt(0) || "?"}
+                              </span>
+                            </div>
+                          )}
+                        </Link>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-zinc-900 dark:text-white">
+                            <Link href={`/dashboard/profile/${comment.userId || '#'}`} className="font-bold text-sm text-zinc-900 dark:text-white hover:underline">
                               {comment.userName}
-                            </span>
+                            </Link>
                             <span className="text-xs text-zinc-500">
                               {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, locale: th })}
                             </span>
@@ -386,8 +500,26 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                           ) : (
                             <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-1">{comment.text}</p>
                           )}
+                          {comment.image && (
+                            <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 max-w-[200px]">
+                              <img src={comment.image} alt="Comment attachment" className="w-full h-auto" />
+                            </div>
+                          )}
 
                           <div className="flex items-center gap-3 mt-2">
+                            <div className="flex items-center gap-1 text-xs">
+                              <button
+                                onClick={() => handleLikeComment(comment.id)}
+                                className={`transition-colors ${comment.likes?.includes(userId) ? 'text-red-500' : 'text-zinc-500 hover:text-red-500'}`}
+                              >
+                                {comment.likes?.includes(userId) ? <HeartFilled /> : <HeartOutlined />}
+                              </button>
+                              {comment.likes?.length > 0 && (
+                                <button onClick={() => openLikesModal('comment', comment.id)} className="text-zinc-500 hover:underline">
+                                  <span>{comment.likes.length}</span>
+                                </button>
+                              )}
+                            </div>
                             <button
                               onClick={() => {
                                 setReplyingTo({ postId: postId || "", commentId: comment.id, userName: comment.userName });
@@ -423,24 +555,26 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                             .filter((c: any) => c.parentId === comment.id)
                             .map((reply: any) => (
                               <div key={reply.id} className="mt-3 ml-8 flex gap-2 border-l-2 border-zinc-200 dark:border-zinc-700 pl-3">
-                                {reply.userImage ? (
-                                  <img
-                                    src={reply.userImage}
-                                    alt={reply.userName}
-                                    className="w-6 h-6 rounded-full object-cover shrink-0"
-                                  />
-                                ) : (
-                                  <div className="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0">
-                                    <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold">
-                                      {reply.userName?.charAt(0) || "?"}
-                                    </span>
-                                  </div>
-                                )}
+                                <Link href={`/dashboard/profile/${reply.userId || '#'}`} className="shrink-0 hover:opacity-80 transition-opacity">
+                                  {reply.userImage ? (
+                                    <img
+                                      src={reply.userImage}
+                                      alt={reply.userName}
+                                      className="w-6 h-6 rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
+                                      <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold">
+                                        {reply.userName?.charAt(0) || "?"}
+                                      </span>
+                                    </div>
+                                  )}
+                                </Link>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="font-bold text-xs text-zinc-900 dark:text-white">
+                                    <Link href={`/dashboard/profile/${reply.userId || '#'}`} className="font-bold text-xs text-zinc-900 dark:text-white hover:underline">
                                       {reply.userName}
-                                    </span>
+                                    </Link>
                                     <span className="text-[10px] text-zinc-500">
                                       {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true, locale: th })}
                                     </span>
@@ -474,8 +608,26 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
                                   ) : (
                                     <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{reply.text}</p>
                                   )}
+                                  {reply.image && (
+                                    <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 max-w-[150px]">
+                                      <img src={reply.image} alt="Reply attachment" className="w-full h-auto" />
+                                    </div>
+                                  )}
 
                                   <div className="flex items-center gap-2 mt-1">
+                                    <div className="flex items-center gap-1 text-[10px]">
+                                      <button
+                                        onClick={() => handleLikeComment(reply.id)}
+                                        className={`transition-colors ${reply.likes?.includes(userId) ? 'text-red-500' : 'text-zinc-500 hover:text-red-500'}`}
+                                      >
+                                        {reply.likes?.includes(userId) ? <HeartFilled /> : <HeartOutlined />}
+                                      </button>
+                                      {reply.likes?.length > 0 && (
+                                        <button onClick={() => openLikesModal('comment', reply.id)} className="text-zinc-500 hover:underline">
+                                          <span>{reply.likes.length}</span>
+                                        </button>
+                                      )}
+                                    </div>
                                     {String(reply.userId) === String(userId) && (
                                       <>
                                         <button
@@ -525,6 +677,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
         title="แชร์โพสต์"
         footer={null}
         centered
+        zIndex={10000}
       >
         <div className="space-y-4">
           <textarea
@@ -549,6 +702,49 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
               {isSharing ? "กำลังแชร์..." : "แชร์"}
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Likes Modal */}
+      <Modal
+        open={likesModal.isOpen}
+        onCancel={() => setLikesModal({ ...likesModal, isOpen: false })}
+        title="รายชื่อคนถูกใจ"
+        footer={null}
+        centered
+        zIndex={10001}
+        width={400}
+      >
+        <div className="max-h-96 overflow-y-auto mt-4 space-y-3">
+          {isLoadingLikes ? (
+            <div className="flex justify-center p-4">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : likeUsers.length > 0 ? (
+            likeUsers.map((u) => (
+              <div key={u._id} className="flex items-center gap-3">
+                <Link href={`/dashboard/profile/${u._id}`} className="shrink-0" onClick={() => setLikesModal({ ...likesModal, isOpen: false })}>
+                  {u.image ? (
+                    <img src={u.image} alt={u.name} className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
+                      <span className="text-sm font-bold text-zinc-500">{u.name?.charAt(0)}</span>
+                    </div>
+                  )}
+                </Link>
+                <div className="flex-1">
+                  <Link href={`/dashboard/profile/${u._id}`} className="font-bold text-sm hover:underline text-zinc-900 dark:text-white" onClick={() => setLikesModal({ ...likesModal, isOpen: false })}>
+                    {u.name}
+                  </Link>
+                  {u.role && (
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-widest">{u.role}</div>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-zinc-500 p-4">ไม่มีผู้ถูกใจ</div>
+          )}
         </div>
       </Modal>
     </Modal>
