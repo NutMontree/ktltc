@@ -268,6 +268,9 @@ export default function StudentVerifyPage() {
         .holographic-badge:hover {
           animation: holographic-shimmer 4s linear infinite;
         }
+        .dark .holographic-badge {
+          background: linear-gradient(115deg, rgba(24,24,27,0.98) 0%, rgba(39,39,42,0.95) 30%, rgba(63,63,70,0.9) 45%, rgba(39,39,42,0.95) 60%, rgba(24,24,27,0.98) 100%);
+        }
         .floating-orb-1 {
           animation: float-slow-1 12s ease-in-out infinite;
         }
@@ -550,7 +553,7 @@ export default function StudentVerifyPage() {
                     <span className="text-6xl font-black text-blue-500/5 group-hover:text-blue-555/10 transition-colors duration-500 absolute right-6 top-2 select-none font-mono">
                       01
                     </span>
-                    <div className="w-10 h-10 bg-slate-55 text-blue-600 border border-slate-100 dark:border-zinc-700 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 border border-slate-100 dark:border-zinc-700 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                       <Fingerprint className="w-5 h-5" />
                     </div>
                     <span className="text-xs font-black text-slate-800 dark:text-zinc-100 leading-none relative z-10">
@@ -567,7 +570,7 @@ export default function StudentVerifyPage() {
                     <span className="text-6xl font-black text-blue-500/5 group-hover:text-blue-555/10 transition-colors duration-500 absolute right-6 top-2 select-none font-mono">
                       02
                     </span>
-                    <div className="w-10 h-10 bg-slate-55 text-indigo-600 border border-slate-100 dark:border-zinc-700 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 border border-slate-100 dark:border-zinc-700 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                       <Search className="w-5 h-5" />
                     </div>
                     <span className="text-xs font-black text-slate-800 dark:text-zinc-100 leading-none relative z-10">
@@ -584,7 +587,7 @@ export default function StudentVerifyPage() {
                     <span className="text-6xl font-black text-blue-500/5 group-hover:text-blue-555/10 transition-colors duration-500 absolute right-6 top-2 select-none font-mono">
                       03
                     </span>
-                    <div className="w-10 h-10 bg-slate-55 text-purple-600 border border-slate-100 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 text-purple-600 dark:text-purple-400 border border-slate-100 dark:border-zinc-700 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                       <Award className="w-5 h-5" />
                     </div>
                     <span className="text-xs font-black text-slate-800 dark:text-zinc-100 leading-none relative z-10">
@@ -646,7 +649,7 @@ export default function StudentVerifyPage() {
                     return (
                       <div
                         key={student.id}
-                        className="bg-linear-to-r from-blue-200 via-indigo-100 to-purple-100 p-[1.5px] rounded-[32px] shadow-lg relative overflow-hidden group/card"
+                        className="bg-linear-to-r from-blue-200 via-indigo-100 to-purple-100 dark:from-blue-900 dark:via-indigo-900 dark:to-purple-900 p-[1.5px] rounded-[32px] shadow-lg relative overflow-hidden group/card"
                       >
                         <div
                           className={`holographic-badge rounded-[30.5px] p-6 relative overflow-hidden border ${isActiveStudent ? "border-emerald-250/60" : "border-amber-250/60"
@@ -682,8 +685,8 @@ export default function StudentVerifyPage() {
                               {/* Pulsing Active indicator */}
                               <span
                                 className={`inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${isActiveStudent
-                                  ? "bg-emerald-50 text-emerald-600 border-emerald-200 shadow-[0_4px_12px_rgba(16,185,129,0.05)]"
-                                  : "bg-amber-50 text-amber-600 border-amber-200 shadow-[0_4px_12px_rgba(245,158,11,0.05)]"
+                                  ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50 shadow-[0_4px_12px_rgba(16,185,129,0.05)]"
+                                  : "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/50 shadow-[0_4px_12px_rgba(245,158,11,0.05)]"
                                   }`}
                               >
                                 {isActiveStudent ? (
@@ -706,8 +709,8 @@ export default function StudentVerifyPage() {
                               {/* Profile credential avatar badge */}
                               <div
                                 className={`w-14 h-14 rounded-full flex items-center justify-center border shrink-0 relative shadow-inner overflow-hidden ${isVocational
-                                  ? "bg-blue-50 text-blue-600 border-blue-200"
-                                  : "bg-indigo-50 text-indigo-650 border-indigo-205"
+                                  ? "bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/50"
+                                  : "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-650 dark:text-indigo-400 border-indigo-205 dark:border-indigo-800/50"
                                   }`}
                               >
                                 {student.image ? (
@@ -735,15 +738,15 @@ export default function StudentVerifyPage() {
                                   {/* Level details tag */}
                                   <span
                                     className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg border ${isVocational
-                                      ? "bg-blue-50/50 text-blue-600 border-blue-200/50"
-                                      : "bg-indigo-50/50 text-indigo-600 border-indigo-200/50"
+                                      ? "bg-blue-50/50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-800/30"
+                                      : "bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 border-indigo-200/50 dark:border-indigo-800/30"
                                       }`}
                                   >
                                     ระดับชั้น: {student.academicLevel}
                                   </span>
 
                                   {/* Learner Mode Tag */}
-                                  <span className="text-[9px] font-bold bg-slate-50 text-slate-655 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                                  <span className="text-[9px] font-bold bg-slate-50 dark:bg-zinc-800/50 text-slate-655 dark:text-zinc-300 px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-zinc-700">
                                     รูปแบบ: {student.learnerType}
                                   </span>
                                 </div>
