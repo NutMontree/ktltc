@@ -55,3 +55,8 @@ chmod -R u+rw /home/ktltc/ktltc/.git
 อัพเดทโค้ดให้ตรงกับ githubถุ 
 git fetch origin
 git reset --hard origin/main
+
+
+
+
+https://expo.dev/accounts/allmaster/projects/mobile-app
