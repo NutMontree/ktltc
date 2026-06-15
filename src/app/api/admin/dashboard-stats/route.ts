@@ -142,7 +142,7 @@ export async function GET() {
       };
 
       for (const folder of foldersToMeasure) {
-        const folderPath = `${publicDir}/${folder}`;
+        const folderPath = [publicDir, folder].join("/");
         try {
           if (fs.existsSync(folderPath)) {
             const folderSize = await getFolderSize(folderPath);
