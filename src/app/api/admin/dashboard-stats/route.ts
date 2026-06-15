@@ -108,19 +108,34 @@ export async function GET() {
 
       // Calculate size of all relevant folders
       const fs = require("fs");
-      const util = require("util");
-      const execAsync = util.promisify(require("child_process").exec);
       const publicDir = getPublicDir();
       const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
       let totalBytes = 0;
+
+      const getFolderSize = async (dirPath: string): Promise<number> => {
+        let size = 0;
+        try {
+          const files = await fs.promises.readdir(dirPath, { withFileTypes: true });
+          for (const file of files) {
+            const fullPath = path.join(dirPath, file.name);
+            if (file.isDirectory()) {
+              size += await getFolderSize(fullPath);
+            } else {
+              const stats = await fs.promises.stat(fullPath);
+              size += stats.size;
+            }
+          }
+        } catch (e) {
+          // Ignore
+        }
+        return size;
+      };
 
       for (const folder of foldersToMeasure) {
         const folderPath = `${publicDir}/${folder}`;
         try {
           if (fs.existsSync(folderPath)) {
-            // ใช้ du -sb (Linux) ซึ่งทำงานแบบ Async และเร็วกว่าการวนลูปอ่านไฟล์ทีละไฟล์หลายสิบเท่า
-            const { stdout } = await execAsync(`du -sb "${folderPath}"`);
-            const folderSize = parseInt(stdout.split('\t')[0], 10);
+            const folderSize = await getFolderSize(folderPath);
             console.log(`📁 Folder ${folder}: ${(folderSize / (1024 * 1024)).toFixed(2)} MB`);
             totalBytes += folderSize;
           }
