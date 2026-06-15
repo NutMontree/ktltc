@@ -199,6 +199,7 @@ export async function GET(req: Request) {
           unitSequence: l.unitSequence !== undefined ? l.unitSequence : "",
           studySeconds: l.studySeconds !== undefined ? l.studySeconds : 0,
           checkedBy: l.checkedBy,
+          createdAt: l.createdAt,
           updatedAt: l.updatedAt,
         };
       }),

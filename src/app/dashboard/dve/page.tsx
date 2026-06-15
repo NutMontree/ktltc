@@ -2856,6 +2856,12 @@ function DVETeacherWorkspace() {
                                         )}
                                       </span>
                                     )}
+                                    {rec.createdAt && (rec.status !== "Absent") && (
+                                      <div className="mt-1.5 text-[9px] font-bold text-zinc-400 dark:text-zinc-500 flex items-center justify-center gap-1">
+                                        <Clock size={10} />
+                                        เข้าเมื่อ: {new Date(rec.createdAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.
+                                      </div>
+                                    )}
                                   </td>
 
                                   {/* Column 5: Assignment Status Badge */}

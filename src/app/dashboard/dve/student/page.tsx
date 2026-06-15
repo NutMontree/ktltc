@@ -712,10 +712,7 @@ export function DVEStudentPortal() {
           handleAutoCheckin(activeStudyUnit);
           message.success("เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ สามารถทำแบบทดสอบได้ทันที");
 
-          // Auto-forward to total limit seconds when minimum time is reached
-          if (totalLimitSeconds > studyLimitSeconds) {
-            return totalLimitSeconds;
-          }
+          // Removed auto-forward to total limit seconds to prevent time jump
         }
 
         // Check if total time is reached
@@ -1405,8 +1402,10 @@ export function DVEStudentPortal() {
                           const studyLimitSeconds = (Number(unit.studyMinutes) || 0) * 60;
                           const totalLimitSeconds = (Number(unit.totalMinutes) || Number(unit.studyMinutes) || 0) * 60;
 
-                          // Treat the unit as fully completed if they already checked in on a past day
-                          const hasPastRecord = existingAtt && (existingAtt.status === "Present" || existingAtt.status === "Late" || (existingAtt.studySeconds || 0) >= studyLimitSeconds);
+                          // Treat the unit as having a past record if it has a record from a previous day
+                          const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
+                          const isPastDay = existingAtt && existingAtt.date !== todayStr;
+                          const hasPastRecord = existingAtt && isPastDay && (existingAtt.status === "Present" || existingAtt.status === "Late" || (existingAtt.studySeconds || 0) >= studyLimitSeconds);
                           const savedSeconds = hasPastRecord ? Math.max((existingAtt?.studySeconds || 0), totalLimitSeconds) : (existingAtt?.studySeconds || 0);
 
                           const hasMetMinTime = savedSeconds >= studyLimitSeconds;
