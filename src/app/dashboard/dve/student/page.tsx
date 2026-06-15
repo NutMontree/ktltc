@@ -546,6 +546,26 @@ export function DVEStudentPortal() {
         ],
       };
 
+      // Optimistically update the state so clicking out and back quickly doesn't reset the timer
+      setAttendances((prev) => {
+        const existingIdx = prev.findIndex((a) => a.unitId === currentUnitId && a.date === todayStr);
+        if (existingIdx > -1) {
+          const newAtt = [...prev];
+          newAtt[existingIdx] = { ...newAtt[existingIdx], studySeconds: Math.max(newAtt[existingIdx].studySeconds || 0, seconds), status: currentStatus };
+          return newAtt;
+        } else {
+          return [...prev, {
+            id: Date.now().toString(),
+            unitId: currentUnitId,
+            date: todayStr,
+            studySeconds: seconds,
+            status: currentStatus,
+            assignmentStatus: "None",
+            score: "",
+          } as any];
+        }
+      });
+
       const res = await fetch("/api/dve/attendances", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
