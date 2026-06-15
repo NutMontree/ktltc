@@ -174,12 +174,14 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Missing department parameter" }, { status: 400 });
     }
 
-    const ownedSubject = await db.collection("dve_subjects").findOne({
-      teacherId: userId,
-      department: { $regex: escapeRegex(department), $options: "i" },
-    });
-    if (!ownedSubject) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (role !== "super_admin" && role !== "admin") {
+      const ownedSubject = await db.collection("dve_subjects").findOne({
+        teacherId: userId,
+        department: { $regex: escapeRegex(department), $options: "i" },
+      });
+      if (!ownedSubject) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
     }
 
     const query: any = { role: "student" };

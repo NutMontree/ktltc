@@ -29,6 +29,11 @@ export async function GET() {
       { role: "teacher", roleName: "ครู (Teacher)", checkInStart: "05:00", checkInLimit: "08:00", checkOutStart: "16:30", checkOutEnd: "18:00" },
       { role: "staff", roleName: "เจ้าหน้าที่ (Staff)", checkInStart: "05:00", checkInLimit: "07:30", checkOutStart: "16:30", checkOutEnd: "18:00" },
       { role: "janitor", roleName: "แม่บ้าน/นักการ (Maid/Janitor)", checkInStart: "05:00", checkInLimit: "07:00", checkOutStart: "16:00", checkOutEnd: "18:00" },
+      { role: "director", roleName: "ผู้บริหาร (Director)", checkInStart: "05:00", checkInLimit: "08:30", checkOutStart: "16:30", checkOutEnd: "18:00" },
+      { role: "deputy_academic", roleName: "รองผู้อำนวยการฝ่ายวิชาการ", checkInStart: "05:00", checkInLimit: "08:30", checkOutStart: "16:30", checkOutEnd: "18:00" },
+      { role: "deputy_resource", roleName: "รองผู้อำนวยการฝ่ายบริหารทรัพยากร", checkInStart: "05:00", checkInLimit: "08:30", checkOutStart: "16:30", checkOutEnd: "18:00" },
+      { role: "deputy_strategy", roleName: "รองผู้อำนวยการฝ่ายยุทธศาสตร์และแผนงาน", checkInStart: "05:00", checkInLimit: "08:30", checkOutStart: "16:30", checkOutEnd: "18:00" },
+      { role: "deputy_student_affairs", roleName: "รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ", checkInStart: "05:00", checkInLimit: "08:30", checkOutStart: "16:30", checkOutEnd: "18:00" },
       { role: "student", roleName: "นักเรียน (Student)", checkInStart: "05:00", checkInLimit: "08:30", checkOutStart: "15:30", checkOutEnd: "18:00" },
       { 
         role: "system_global", 

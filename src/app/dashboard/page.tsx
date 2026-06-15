@@ -308,6 +308,14 @@ export default function DashboardLoader() {
                       variants={item}
                     />
                     <StatCard
+                      label="User กำลังใช้งาน"
+                      value={stats.activeUsers || 0}
+                      icon={Users}
+                      color="blue"
+                      unit=" Users"
+                      variants={item}
+                    />
+                    <StatCard
                       label="จำนวนรูปภาพ"
                       value={stats.totalImagesCount}
                       icon={ImageIcon}

@@ -4563,7 +4563,7 @@ function DVETeacherWorkspace() {
                           วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
                         </label>
                         <DatePicker
-                          format="DD/MM/BBBB"
+                          format="DD/MM/YYYY"
                           placeholder="วว/ดด/ปปปป"
                           className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                           value={quizForm.startDate ? dayjs(quizForm.startDate) : null}
@@ -4577,7 +4577,7 @@ function DVETeacherWorkspace() {
                           วันหมดเขตส่งกระดาษคำตอบ (Deadline)
                         </label>
                         <DatePicker
-                          format="DD/MM/BBBB"
+                          format="DD/MM/YYYY"
                           placeholder="วว/ดด/ปปปป"
                           className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                           value={quizForm.deadline ? dayjs(quizForm.deadline) : null}

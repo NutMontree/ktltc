@@ -40,6 +40,7 @@ export async function GET() {
       totalPendingQA,
       totalDriveFiles,
       totalDriveFolders,
+      activeUsers,
     ] = await Promise.all([
       db.collection("news").countDocuments(),
       db.collection("navbar").countDocuments({ parentId: null }),
@@ -49,6 +50,7 @@ export async function GET() {
       db.collection("questions").countDocuments({ status: "pending" }),
       db.collection("drive_files").countDocuments(),
       db.collection("drive_folders").countDocuments(),
+      db.collection("sessions").countDocuments({ expires: { $gt: new Date() } }),
     ]);
 
     // 2. Media Stats (Image Count from News + Drive)
@@ -241,6 +243,7 @@ export async function GET() {
       ramUsage: ramUsage,
       totalPendingQA,
       totalUsers,
+      activeUsers,
     });
   } catch (error) {
     console.error("Dashboard Stats API Error:", error);

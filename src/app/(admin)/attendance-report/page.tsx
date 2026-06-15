@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import { Download, Search, FileText, Loader2, X, Camera, Calendar, Clock, AlertCircle } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -50,8 +52,12 @@ export default function AttendanceReportPage() {
         const res = await fetch("/api/admin/role-settings");
         const data = await res.json();
         const map: Record<string, string> = { all: "ทั้งหมด" };
+        const allowedRoles = [
+          "teacher", "staff", "janitor", "director", 
+          "deputy_academic", "deputy_resource", "deputy_strategy", "deputy_student_affairs"
+        ];
         data.forEach((r: any) => {
-          if (r.role !== "system_global") {
+          if (allowedRoles.includes(r.role)) {
             map[r.role] = r.roleName;
           }
         });
@@ -302,12 +308,12 @@ export default function AttendanceReportPage() {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                   size={18}
                 />
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
-                />
+                <DatePicker
+  format="DD/MM/YYYY"
+  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
+  value={startDate ? dayjs(startDate) : null}
+  onChange={(date) => setStartDate(date ? date.format("YYYY-MM-DD") : "")}
+/>
               </div>
             </div>
           </div>
@@ -321,12 +327,12 @@ export default function AttendanceReportPage() {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                 size={18}
               />
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
-              />
+              <DatePicker
+  format="DD/MM/YYYY"
+  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
+  value={endDate ? dayjs(endDate) : null}
+  onChange={(date) => setEndDate(date ? date.format("YYYY-MM-DD") : "")}
+/>
             </div>
           </div>
         </div>

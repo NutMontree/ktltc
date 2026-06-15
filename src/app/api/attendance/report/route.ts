@@ -61,6 +61,12 @@ export async function GET(req: Request) {
 
     if (roleParam && roleParam !== "all") {
       pipeline.push({ $match: { "userDetails.role": roleParam } });
+    } else {
+      const allowedRoles = [
+        "teacher", "staff", "janitor", "director", 
+        "deputy_academic", "deputy_resource", "deputy_strategy", "deputy_student_affairs"
+      ];
+      pipeline.push({ $match: { "userDetails.role": { $in: allowedRoles } } });
     }
 
     pipeline.push({

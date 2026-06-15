@@ -65,3 +65,34 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1aa; /* สีจะเข้มขึ้นเมื่อเอาเมาส์ชี้ */
 }
+
+/* Premium Antd Select Override for DVE Dashboard */
+.custom-antd-select .ant-select-selector {
+  border-radius: 0.75rem !important;
+  border-width: 2px !important;
+  border-color: #e4e4e7 !important;
+  height: 3rem !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+
+html.dark .custom-antd-select .ant-select-selector {
+  background-color: #09090b !important;
+  border-color: #27272a !important;
+  color: white !important;
+}
+
+.custom-antd-select.ant-select-focused .ant-select-selector {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2) !important;
+}
+
+.custom-antd-select .ant-select-selection-item {
+  line-height: 2.7rem !important;
+}
+.custom-antd-select .ant-select-selection-placeholder {
+  line-height: 2.7rem !important;
+  color: #a1a1aa !important;
+}

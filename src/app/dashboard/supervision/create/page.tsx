@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeftOutlined,
@@ -264,10 +266,10 @@ export default function CreateSupervisionPage() {
                       <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                         วันที่เริ่ม *
                       </label>
-                      <input
-                        type="date"
-                        value={formData.startDate}
-                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                      <DatePicker
+                        format="DD/MM/YYYY"
+                        value={formData.startDate ? dayjs(formData.startDate) : null}
+                        onChange={(date) => setFormData({ ...formData, startDate: date ? date.format("YYYY-MM-DD") : "" })}
                         className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-4 text-sm font-bold text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       />
                     </div>
@@ -276,10 +278,10 @@ export default function CreateSupervisionPage() {
                       <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                         วันที่สิ้นสุด *
                       </label>
-                      <input
-                        type="date"
-                        value={formData.endDate}
-                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                      <DatePicker
+                        format="DD/MM/YYYY"
+                        value={formData.endDate ? dayjs(formData.endDate) : null}
+                        onChange={(date) => setFormData({ ...formData, endDate: date ? date.format("YYYY-MM-DD") : "" })}
                         className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-4 text-sm font-bold text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       />
                     </div>
