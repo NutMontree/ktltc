@@ -423,7 +423,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
               >
                 {/* Thumbnail */}
                 <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                  {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video')) || (!/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(displayImage) && displayImage !== "/no-image.png")) ? (
+                  {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video'))) ? (
                     <video
                       src={displayImage}
                       className="w-full h-full object-cover object-top"
@@ -553,7 +553,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
               >
                 {/* Thumbnail */}
                 <div className="relative w-20 h-14 rounded-xl overflow-hidden shrink-0 bg-zinc-100 dark:bg-zinc-800">
-                  {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video')) || (!/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(displayImage) && displayImage !== "/no-image.png")) ? (
+                  {((/\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(displayImage) || displayImage.includes('video'))) ? (
                     <video
                       src={displayImage}
                       className="w-full h-full object-cover object-top"
