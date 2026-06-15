@@ -195,6 +195,420 @@ export default function TeacherVerificationPage() {
     setLoadingPlans(false);
   };
 
+  const exportAllTeachersToPdf = () => {
+    if (filteredTeachers.length === 0) {
+      message.warning("ไม่มีข้อมูลให้ส่งออก");
+      return;
+    }
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      message.error("กรุณาอนุญาต Pop-up เพื่อดูรายงาน PDF");
+      return;
+    }
+
+    const d = new Date();
+    const currentDate = d.toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>รายงานระบบตรวจสอบข้อมูลครู</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+            body {
+              font-family: 'Sarabun', sans-serif;
+              padding: 30px;
+              color: #1f2937;
+              background-color: #ffffff;
+              line-height: 1.5;
+            }
+            h1 {
+              text-align: center;
+              font-size: 22px;
+              font-weight: 700;
+              margin-bottom: 5px;
+              color: #111827;
+            }
+            .subtitle {
+              text-align: center;
+              font-size: 13px;
+              color: #4b5563;
+              margin-bottom: 25px;
+              font-weight: 400;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              font-size: 11px;
+            }
+            th, td {
+              border: 1px solid #e5e7eb;
+              padding: 8px 6px;
+              text-align: left;
+            }
+            th {
+              background-color: #f3f4f6;
+              font-weight: 700;
+              color: #374151;
+              text-transform: uppercase;
+            }
+            tr:nth-child(even) {
+              background-color: #f9fafb;
+            }
+            .status-badge {
+              display: inline-block;
+              padding: 2px 8px;
+              font-size: 9px;
+              font-weight: 600;
+              border-radius: 9999px;
+            }
+            .status-active { background-color: #d1fae5; color: #065f46; }
+            .status-inactive { background-color: #fee2e2; color: #b91c1c; }
+            @media print {
+              body { padding: 0; }
+              @page { size: A4 landscape; margin: 15mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>รายงานระบบตรวจสอบข้อมูลครู (Teacher Verification)</h1>
+          <div class="subtitle">วิทยาลัยเทคนิคกันทรลักษ์ • ข้อมูล ณ วันที่ ${currentDate}</div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 5%; text-align: center;">ลำดับ</th>
+                <th style="width: 25%;">ชื่อ-นามสกุล</th>
+                <th style="width: 20%;">แผนกวิชา</th>
+                <th style="width: 10%; text-align: center;">จำนวนวิชา</th>
+                <th style="width: 15%; text-align: center;">สถานะแผนการสอน</th>
+                <th style="width: 15%; text-align: center;">ชั่วโมง/สัปดาห์</th>
+                <th style="width: 10%; text-align: center;">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredTeachers.map((t, idx) => `
+                <tr>
+                  <td style="text-align: center;">${idx + 1}</td>
+                  <td style="font-weight: 600;">${t.name}</td>
+                  <td>${t.department}</td>
+                  <td style="text-align: center;">${t.subjects.length}</td>
+                  <td style="text-align: center;">
+                    ${t.lessonPlanStatus === 'submitted' ? '<span style="color:#059669;">✓ ส่งแล้ว</span>' : '<span style="color:#dc2626;">✗ ค้างส่ง</span>'}
+                  </td>
+                  <td style="text-align: center; ${(t.teachingHours || 0) < 12 ? 'color:#dc2626; font-weight:bold;' : ''}">${t.teachingHours || 0}</td>
+                  <td style="text-align: center;">
+                    <span class="status-badge ${t.isActive ? 'status-active' : 'status-inactive'}">
+                      ${t.isActive ? 'สอนปกติ' : 'ไม่ได้สอน'}
+                    </span>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                setTimeout(function() { window.close(); }, 500);
+              }, 500);
+            }
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
+  const exportTeacherReportToPdf = () => {
+    if (!selectedTeacher) return;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      message.error("กรุณาอนุญาต Pop-up เพื่อดูรายงาน PDF");
+      return;
+    }
+
+    const d = new Date();
+    const currentDate = d.toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>รายงานการตรวจสอบข้อมูลครู - ${selectedTeacher.name}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+            body {
+              font-family: 'Sarabun', sans-serif;
+              padding: 40px;
+              color: #1f2937;
+              background-color: #ffffff;
+              line-height: 1.5;
+            }
+            h1 {
+              text-align: center;
+              font-size: 24px;
+              font-weight: 700;
+              margin-bottom: 5px;
+              color: #111827;
+            }
+            .subtitle {
+              text-align: center;
+              font-size: 14px;
+              color: #4b5563;
+              margin-bottom: 30px;
+              font-weight: 400;
+            }
+            .section-title {
+              font-size: 16px;
+              font-weight: 700;
+              margin-top: 25px;
+              margin-bottom: 15px;
+              border-bottom: 2px solid #e5e7eb;
+              padding-bottom: 5px;
+              color: #374151;
+            }
+            .info-grid {
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 15px;
+              margin-bottom: 20px;
+            }
+            .info-item {
+              background-color: #f9fafb;
+              padding: 12px 16px;
+              border-radius: 8px;
+              border: 1px solid #e5e7eb;
+            }
+            .info-label {
+              font-size: 12px;
+              color: #6b7280;
+              text-transform: uppercase;
+              font-weight: 600;
+              margin-bottom: 4px;
+            }
+            .info-value {
+              font-size: 16px;
+              font-weight: 700;
+              color: #1f2937;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              margin-bottom: 20px;
+              font-size: 13px;
+            }
+            th, td {
+              border: 1px solid #e5e7eb;
+              padding: 10px;
+              text-align: left;
+            }
+            th {
+              background-color: #f3f4f6;
+              font-weight: 700;
+              color: #374151;
+            }
+            tr:nth-child(even) {
+              background-color: #f9fafb;
+            }
+            .status-badge {
+              display: inline-block;
+              padding: 4px 10px;
+              font-size: 11px;
+              font-weight: 600;
+              border-radius: 9999px;
+            }
+            .status-good {
+              background-color: #d1fae5;
+              color: #065f46;
+            }
+            .status-warn {
+              background-color: #fef3c7;
+              color: #92400e;
+            }
+            .status-bad {
+              background-color: #fee2e2;
+              color: #b91c1c;
+            }
+            .checklist-item {
+              display: flex;
+              align-items: center;
+              margin-bottom: 10px;
+              font-size: 14px;
+            }
+            .check-icon {
+              color: #059669;
+              margin-right: 10px;
+              font-weight: bold;
+            }
+            .cross-icon {
+              color: #dc2626;
+              margin-right: 10px;
+              font-weight: bold;
+            }
+            .signature-section {
+              margin-top: 60px;
+              display: flex;
+              justify-content: space-around;
+              text-align: center;
+              page-break-inside: avoid;
+            }
+            .signature-box {
+              width: 40%;
+            }
+            .signature-line {
+              border-bottom: 1px dotted #1f2937;
+              margin-bottom: 10px;
+              height: 40px;
+            }
+            @media print {
+              body { padding: 0; }
+              @page { size: A4 portrait; margin: 15mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>รายงานสรุปผลการปฏิบัติงานรายบุคคล</h1>
+          <div class="subtitle">วิทยาลัยเทคนิคกันทรลักษ์ • ข้อมูล ณ วันที่ ${currentDate}</div>
+          
+          <div class="section-title">ข้อมูลส่วนตัวและภาระงานสอน</div>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">ชื่อ-นามสกุล</div>
+              <div class="info-value">${selectedTeacher.name}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">แผนกวิชา</div>
+              <div class="info-value">${selectedTeacher.department}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">ชั่วโมงสอน</div>
+              <div class="info-value">${selectedTeacher.teachingHours || 0} ชั่วโมง/สัปดาห์</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">คลาสทั้งหมด / ความคืบหน้า SDQ</div>
+              <div class="info-value">${selectedTeacher.teachingActivity?.totalClasses || 0} คลาส / ${selectedTeacher.sdqCompletion || 0}%</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">ชั่วโมง PLC</div>
+              <div class="info-value">${selectedTeacher.plcHours || 0} ชั่วโมง</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">สถานะข้อตกลง PA</div>
+              <div class="info-value">
+                ${selectedTeacher.paStatus === "approved" ? "ผู้อำนวยการอนุมัติแล้ว" : selectedTeacher.paStatus === "pending" ? "รอพิจารณา" : "ยังไม่ดำเนินการ"}
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">รายวิชาที่รับผิดชอบและแผนการสอน</div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 5%; text-align: center;">ลำดับ</th>
+                <th style="width: 15%;">รหัสวิชา</th>
+                <th style="width: 45%;">ชื่อรายวิชา</th>
+                <th style="width: 15%; text-align: center;">คาบ/สัปดาห์</th>
+                <th style="width: 20%; text-align: center;">แผนการสอน</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${selectedTeacher.subjects && selectedTeacher.subjects.length > 0 ? selectedTeacher.subjects.map((s, idx) => {
+                const matchingPlans = teacherLessonPlans.filter((lp: any) =>
+                  lp.subject === s.name || lp.subject === s.code || lp.subject?.includes(s.name) || s.name?.includes(lp.subject)
+                );
+                const hasPlan = matchingPlans.length > 0;
+                return `
+                  <tr>
+                    <td style="text-align: center;">${idx + 1}</td>
+                    <td>${s.code}</td>
+                    <td>${s.name}</td>
+                    <td style="text-align: center;">${s.hoursPerDay || 2}</td>
+                    <td style="text-align: center;">
+                      <span class="status-badge ${hasPlan ? 'status-good' : 'status-bad'}">
+                        ${hasPlan ? 'มีแผนการสอน' : 'ไม่มีแผน'}
+                      </span>
+                    </td>
+                  </tr>
+                `;
+              }).join("") : `<tr><td colspan="5" style="text-align: center;">ไม่มีข้อมูลรายวิชา</td></tr>`}
+            </tbody>
+          </table>
+
+          <div class="section-title">ความพร้อมสำหรับการประเมิน ว.PA / DPA</div>
+          <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+            <div class="checklist-item">
+              <span class="${selectedTeacher.checklist?.hasLessonPlan ? 'check-icon' : 'cross-icon'}">${selectedTeacher.checklist?.hasLessonPlan ? '✓' : '✗'}</span>
+              1. จัดทำแผนการสอนล่วงหน้า
+            </div>
+            <div class="checklist-item">
+              <span class="${selectedTeacher.checklist?.hasAfterClassNote ? 'check-icon' : 'cross-icon'}">${selectedTeacher.checklist?.hasAfterClassNote ? '✓' : '✗'}</span>
+              2. บันทึกหลังสอนครบถ้วน
+            </div>
+            <div class="checklist-item">
+              <span class="${(selectedTeacher.checklist?.videoCount || 0) >= 2 ? 'check-icon' : 'cross-icon'}">${(selectedTeacher.checklist?.videoCount || 0) >= 2 ? '✓' : '✗'}</span>
+              3. อัปโหลดคลิปวิดีโอการสอน (${selectedTeacher.checklist?.videoCount || 0}/2 คลิป)
+            </div>
+            <div class="checklist-item">
+              <span class="${selectedTeacher.checklist?.hasStudentOutcome ? 'check-icon' : 'cross-icon'}">${selectedTeacher.checklist?.hasStudentOutcome ? '✓' : '✗'}</span>
+              4. รายงานผลลัพธ์ผู้เรียน
+            </div>
+          </div>
+
+          <div class="section-title">ผลการนิเทศการสอนภายใน</div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 10%; text-align: center;">ครั้งที่</th>
+                <th style="width: 45%;">วันที่รับการนิเทศ</th>
+                <th style="width: 45%; text-align: center;">ผลการประเมิน (คะแนน)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${selectedTeacher.supervisions && selectedTeacher.supervisions.length > 0 ? selectedTeacher.supervisions.map((sup, idx) => `
+                <tr>
+                  <td style="text-align: center;">${idx + 1}</td>
+                  <td>${new Date(sup.date).toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}</td>
+                  <td style="text-align: center; font-weight: bold;">
+                    ${sup.score} / ${sup.maxScore}
+                  </td>
+                </tr>
+              `).join("") : `<tr><td colspan="3" style="text-align: center;">ยังไม่มีข้อมูลการนิเทศการสอน</td></tr>`}
+            </tbody>
+          </table>
+
+          <div class="signature-section">
+            <div class="signature-box">
+              <div class="signature-line"></div>
+              <div>(...............................................................)</div>
+              <div style="font-size: 13px; margin-top: 8px; color: #4b5563;">ผู้รับการประเมิน / ผู้รายงาน</div>
+            </div>
+            <div class="signature-box">
+              <div class="signature-line"></div>
+              <div>(...............................................................)</div>
+              <div style="font-size: 13px; margin-top: 8px; color: #4b5563;">ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์</div>
+            </div>
+          </div>
+
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                setTimeout(function() { window.close(); }, 500);
+              }, 500);
+            }
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   if (status === "loading" || checkingAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
@@ -217,14 +631,23 @@ export default function TeacherVerificationPage() {
               เจาะลึกข้อมูลรายบุคคล เพื่อประกอบการประเมินเลื่อนวิทยฐานะ
             </p>
           </div>
-          <button
-            onClick={() => fetchTeachers()}
-            disabled={loading}
-            className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold hover:scale-105 transition-transform flex items-center gap-2"
-          >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Filter className="w-4 h-4" />}
-            รีโหลดข้อมูล
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={exportAllTeachersToPdf}
+              disabled={loading}
+              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold transition-all shadow-md active:scale-95 flex items-center gap-2"
+            >
+              <FileText size={16} /> ดาวน์โหลดประวัติ (PDF)
+            </button>
+            <button
+              onClick={() => fetchTeachers()}
+              disabled={loading}
+              className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold hover:scale-105 transition-transform flex items-center gap-2"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Filter className="w-4 h-4" />}
+              รีโหลดข้อมูล
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -388,7 +811,7 @@ export default function TeacherVerificationPage() {
                   <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">{selectedTeacher.name}</h2>
                   <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">{selectedTeacher.department}</p>
                 </div>
-                <button onClick={() => window.print()} className="hidden md:flex px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold items-center gap-2 mb-2 hover:scale-105 transition-transform text-sm">
+                <button onClick={exportTeacherReportToPdf} className="hidden md:flex px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold items-center gap-2 mb-2 hover:scale-105 transition-transform text-sm">
                   <Printer size={16} /> พิมพ์รายงาน (PDF)
                 </button>
               </div>

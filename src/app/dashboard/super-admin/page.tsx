@@ -781,7 +781,7 @@ export default function SuperAdminPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="text-[10px] font-black text-amber-600 lowercase italic opacity-60">
-                                @{user.username}
+                                {user.username}
                               </span>
                               {user.phone && (
                                 <span className="text-[10px] font-bold text-slate-400">
@@ -1000,7 +1000,7 @@ export default function SuperAdminPage() {
                                   </Link>
                                   <div className="flex items-center gap-2 flex-wrap mt-0.5">
                                     <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
-                                      @{user.username}
+                                      {user.username}
                                     </span>
                                     {user.passwordText && (
                                       <span className="text-[10px] font-black text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-700 flex items-center gap-1 shadow-sm">
@@ -1155,7 +1155,7 @@ export default function SuperAdminPage() {
                                   </Link>
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="text-[10px] font-black text-blue-600 lowercase italic opacity-60">
-                                      @{user.username}
+                                      {user.username}
                                     </span>
                                     <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-current/20 ${getRoleStyle(user.role || "user")}`}>
                                       {roleLabels[user.role || "user"] || user.role || "USER"}

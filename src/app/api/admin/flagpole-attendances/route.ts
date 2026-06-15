@@ -34,15 +34,24 @@ export async function GET(req: Request) {
 
     // สร้างเงื่อนไขการค้นหาช่วงเวลา
     let query: any = {};
-    if (startDateParam && endDateParam) {
+    if (startDateParam && startDateParam !== "undefined" && endDateParam && endDateParam !== "undefined") {
       const start = new Date(startDateParam);
       start.setUTCHours(0, 0, 0, 0);
       const end = new Date(endDateParam);
       end.setUTCHours(23, 59, 59, 999);
-      query.date = { $gte: start, $lte: end };
+      
+      // รองรับทั้ง Date object และ String (เผื่อในฐานข้อมูลมีการเก็บทั้งสองแบบ)
+      const startStr = start.toISOString();
+      const endStr = end.toISOString();
+      
+      query.$or = [
+        { date: { $gte: start, $lte: end } },
+        { date: { $gte: startStr, $lte: endStr } },
+        { date: { $gte: startDateParam, $lte: endDateParam + "T23:59:59.999Z" } }
+      ];
     }
 
-    if (statusFilter !== 'all') {
+    if (statusFilter && statusFilter !== 'all') {
       query.status = statusFilter;
     }
 
@@ -50,16 +59,16 @@ export async function GET(req: Request) {
     let userFilterQuery: any = { role: "student" };
     let hasUserFilters = false;
 
-    if (department) {
+    if (department && department !== "undefined") {
       userFilterQuery.department = department;
       hasUserFilters = true;
     }
-    if (classGroupId) {
+    if (classGroupId && classGroupId !== "undefined") {
       userFilterQuery.classGroupId = classGroupId;
       hasUserFilters = true;
     }
 
-    if (searchQuery) {
+    if (searchQuery && searchQuery !== "undefined") {
       const searchRegex = { $regex: searchQuery, $options: "i" };
       userFilterQuery.$or = [
         { name: searchRegex },
@@ -82,7 +91,8 @@ export async function GET(req: Request) {
       const userMatch = {
         $or: [
           { userId: { $in: userIds } },
-          { userId: { $in: userIdsStrings } }
+          { userId: { $in: userIdsStrings } },
+          { uId: { $in: userIds } }
         ]
       };
 
@@ -151,6 +161,7 @@ export async function GET(req: Request) {
           },
           lat: "$checkIn.location.lat",
           lng: "$checkIn.location.lng",
+          statusTag: "$checkIn.statusTag",
           user: {
             name: { $ifNull: ["$userDetails.name", "นักศึกษา"] },
             academicLevel: { $ifNull: ["$userDetails.academicLevel", "ไม่ระบุชั้นปี"] },
@@ -168,7 +179,8 @@ export async function GET(req: Request) {
       data: attendances,
       hasMore: skip + attendances.length < totalCount,
       total: totalCount,
-      classGroups
+      classGroups,
+      debugQuery: query
     });
   } catch (error: any) {
     console.error("Flagpole Attendances GET Error:", error);

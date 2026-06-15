@@ -206,10 +206,10 @@ function FlagpoleReportsManagementContent() {
       return;
 
     const securityCode = prompt(
-      'กรุณาพิมพ์คำว่า "DELETE ALL" เพื่อยืนยันการล้างประวัติเสาธงทั้งหมด:',
+      'กรุณาพิมพ์รหัสยืนยัน "admin1234" เพื่อล้างประวัติเสาธงทั้งหมด:',
     );
-    if (securityCode !== "DELETE ALL") {
-      return toast.error("ยืนยันไม่ถูกต้อง ยกเลิกคำสั่งล้างข้อมูล");
+    if (securityCode !== "admin1234") {
+      return toast.error("รหัสยืนยันไม่ถูกต้อง ยกเลิกคำสั่งล้างข้อมูล");
     }
 
     setActionLoading(true);
@@ -293,6 +293,12 @@ function FlagpoleReportsManagementContent() {
       }
 
       const printWindow = window.open("", "_blank");
+      
+      const formatDisplayDate = (dateStr: string) => {
+        const d = new Date(dateStr);
+        return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear() + 543}`;
+      };
+      
       if (printWindow) {
         printWindow.document.write(`
           <html>
@@ -301,7 +307,7 @@ function FlagpoleReportsManagementContent() {
               <style>
                 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
                 body {
-                  font-family: 'Sarabun', sans-serif;
+                  font-family: 'TH Sarabun PSK', 'Sarabun', sans-serif;
                   padding: 30px;
                   color: #1f2937;
                   background-color: #ffffff;
@@ -388,7 +394,12 @@ function FlagpoleReportsManagementContent() {
             </head>
             <body>
               <h1>รายงานประวัติการเข้าร่วมกิจกรรมหน้าเสาธง</h1>
-              <div class="subtitle">วิทยาลัยเทคนิคกันทรลักษ์ • ช่วงวันที่ ${new Date(startDate).toLocaleDateString("th-TH")} ถึง ${new Date(endDate).toLocaleDateString("th-TH")}</div>
+              <div class="subtitle">
+                วิทยาลัยเทคนิคกันทรลักษ์
+                ${departmentFilter ? ` • แผนกวิชา${departmentFilter.replace('แผนกวิชา', '')}` : ' • แผนกวิชาทั้งหมด'}
+                ${classGroupFilter ? ` (ห้อง ${classGroupFilter})` : ''} 
+                • ช่วงวันที่ ${formatDisplayDate(startDate)} ถึง ${formatDisplayDate(endDate)}
+              </div>
               
               <div class="summary-cards">
                 <div class="summary-item">
@@ -414,7 +425,7 @@ function FlagpoleReportsManagementContent() {
                     <th style="width: 15%;">แผนกวิชา / ชั้นเรียน</th>
                     <th style="width: 10%;">ห้องเรียน</th>
                     <th style="width: 12%;">วันที่เข้าร่วม</th>
-                    <th style="width: 13%;">เวลาที่บันทึก</th>
+                    <th style="width: 18%;">ข้อมูลการสแกน</th>
                     <th style="width: 12%;">สถานะ</th>
                   </tr>
                 </thead>
@@ -424,6 +435,19 @@ function FlagpoleReportsManagementContent() {
                     const statusText = r.status === "Present" ? "ตรงเวลา" : "มาสาย";
                     const dateText = new Date(r.date).toLocaleDateString("th-TH");
                     const timeText = r.time ? new Date(r.time).toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " น." : "-";
+                    
+                    const distanceText = r.distance !== undefined ? `ห่าง: ${Math.round(r.distance)} เมตร` : "";
+                    const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่ (In-Site)" : "นอกพื้นที่") : "ไม่ทราบพิกัด");
+
+                    const scanDetailsHTML = `
+                      <div style="font-size: 11px; line-height: 1.4; text-align: left;">
+                        <div style="font-weight: bold; color: #1e293b;">${timeText}</div>
+                        ${distanceText ? `<div style="color: #3b82f6;">${distanceText}</div>` : ''}
+                        <div style="color: ${inAreaStatus.includes('ในพื้นที่') ? '#059669' : '#d97706'}; font-weight: bold; margin-top: 2px;">
+                          ${inAreaStatus}
+                        </div>
+                      </div>
+                    `;
 
                     return `
                       <tr>
@@ -433,7 +457,7 @@ function FlagpoleReportsManagementContent() {
                         <td>${r.user?.department || "-"} (${r.user?.academicLevel || "-"})</td>
                         <td>${r.user?.classGroupId || "-"}</td>
                         <td>${dateText}</td>
-                        <td>${timeText}</td>
+                        <td>${scanDetailsHTML}</td>
                         <td>
                           <span class="status-badge ${statusClass}">
                             ${statusText}
@@ -592,11 +616,18 @@ function FlagpoleReportsManagementContent() {
                   size={16}
                 />
                 <input
+                  type="text"
+                  readOnly
+                  value={startDate ? `${startDate.split('-')[2]}/${startDate.split('-')[1]}/${parseInt(startDate.split('-')[0]) + 543}` : ''}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs text-slate-800 dark:text-zinc-200 shadow-inner"
+                />
+                <input
                   type="date"
+                  lang="th-TH"
                   value={startDate}
                   onClick={(e) => 'showPicker' in e.target && (e.target as any).showPicker()}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 />
               </div>
             </div>
@@ -611,11 +642,18 @@ function FlagpoleReportsManagementContent() {
                   size={16}
                 />
                 <input
+                  type="text"
+                  readOnly
+                  value={endDate ? `${endDate.split('-')[2]}/${endDate.split('-')[1]}/${parseInt(endDate.split('-')[0]) + 543}` : ''}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs text-slate-800 dark:text-zinc-200 shadow-inner"
+                />
+                <input
                   type="date"
+                  lang="th-TH"
                   value={endDate}
                   onClick={(e) => 'showPicker' in e.target && (e.target as any).showPicker()}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 />
               </div>
             </div>

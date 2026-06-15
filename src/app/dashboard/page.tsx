@@ -85,7 +85,17 @@ export default function DashboardLoader() {
 
         if (permRes.ok) {
           const permData = await permRes.json();
-          setPermissions(permData);
+          let finalPerms = permData;
+          const userRole = ((session?.user as any)?.role || "").toLowerCase();
+          if (userRole === "super_admin") {
+            finalPerms = new Proxy(permData || {}, {
+              get: function (target, prop) {
+                if (typeof prop === "string") return true;
+                return Reflect.get(target, prop);
+              }
+            });
+          }
+          setPermissions(finalPerms);
         }
 
         if (regRes.ok) {
@@ -94,7 +104,7 @@ export default function DashboardLoader() {
             setRegEnabled(regData.enabled);
           }
         }
-        
+
         if (menusRes.ok) {
           const menusData = await menusRes.json();
           if (menusData && menusData.menus) {
@@ -181,7 +191,7 @@ export default function DashboardLoader() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
         <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">
-        กำลังเริ่มต้นใช้งานแดชบอร์ด...
+          กำลังเริ่มต้นใช้งานแดชบอร์ด...
         </p>
       </div>
     );
@@ -260,261 +270,261 @@ export default function DashboardLoader() {
             ((session?.user as any)?.role || "").toLowerCase(),
           ) ||
             permissions?.access_dashboard) && (
-            <div>
-              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">
-                  ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)
-                  <span className="h-px bg-blue-500/10 flex-1" />
-                </h2>
-                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์
-                </span>
-              </motion.div>
+              <div>
+                <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                  <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">
+                    ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)
+                    <span className="h-px bg-blue-500/10 flex-1" />
+                  </h2>
+                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                    ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์
+                  </span>
+                </motion.div>
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                {/* Status Dashboard */}
-                <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <TelemetryCard
-                    label="ภาระการประมวลผล (CPU)"
-                    value={stats.cpuUsage}
-                    unit="%"
-                    icon={Database}
-                    color="blue"
-                  />
-                  <TelemetryCard
-                    label="หน่วยความจำ (RAM)"
-                    value={stats.ramUsage.percent}
-                    unit="%"
-                    subValue={`ใช้งาน ${(stats.ramUsage.used / 1024).toFixed(1)} จาก ${(stats.ramUsage.total / 1024).toFixed(1)} GB`}
-                    icon={HardDrive}
-                    color="purple"
-                  />
-                  <StatCard
-                    label="User ในระบบ"
-                    value={stats.totalUsers}
-                    icon={Users}
-                    color="emerald"
-                    unit=" Users"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="จำนวนรูปภาพ"
-                    value={stats.totalImagesCount}
-                    icon={ImageIcon}
-                    color="indigo"
-                    unit=" ไฟล์"
-                    variants={item}
-                  />
-
-                  <StatCard
-                    label="ข่าวสารทั้งหมด"
-                    value={stats.totalNews}
-                    icon={Newspaper}
-                    color="blue"
-                    unit=" ข่าว"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="แบนเนอร์"
-                    value={stats.totalBanners}
-                    icon={ImageIcon}
-                    color="pink"
-                    unit=" รูป"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="ไฟล์ในคลัง"
-                    value={stats.totalDriveFiles}
-                    icon={HardDrive}
-                    color="orange"
-                    unit=" ไฟล์"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="โฟลเดอร์"
-                    value={stats.totalDriveFolders}
-                    icon={Folder}
-                    color="amber"
-                    unit=" โฟลเดอร์"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="เมนูหลัก"
-                    value={stats.totalNav}
-                    icon={Navigation}
-                    color="purple"
-                    unit=" เมนู"
-                    variants={item}
-                  />
-                  <StatCard
-                    label="หน้าเนื้อหา"
-                    value={stats.totalPages}
-                    icon={FileText}
-                    color="amber"
-                    unit=" หน้า"
-                    variants={item}
-                  />
-                </div>
-
-                {/* Usage Cards */}
-                <div className="md:col-span-4 flex flex-col gap-4">
-                  <UsageCard
-                    title="MongoDB"
-                    value={stats.dbSizeMB}
-                    max={stats.dbLimitMB}
-                    unit="MB"
-                    icon={Database}
-                    color="emerald"
-                    variants={item}
-                    isSuperAdmin={session?.user?.role === "super_admin"}
-                    serverTotalMB={stats.serverTotalMB}
-                    serverUsedMB={stats.serverUsedMB}
-                    serverAvailableMB={stats.serverAvailableMB}
-                    onEdit={() => {
-                      const currentGB =
-                        stats.dbLimitMB === 0 ? "0" : (stats.dbLimitMB / 1024).toFixed(1);
-                      setEditingQuotaKey("db_limit_mb");
-                      setTempQuota(currentGB);
-                      setIsEditingQuota(true);
-                    }}
-                  />
-                  <UsageCard
-                    title="Storage & Drive"
-                    value={stats.cloudUsageMB}
-                    max={stats.cloudLimitMB}
-                    unit="MB"
-                    icon={Database}
-                    color="blue"
-                    variants={item}
-                    isSuperAdmin={session?.user?.role === "super_admin"}
-                    serverTotalMB={stats.serverTotalMB}
-                    serverUsedMB={stats.serverUsedMB}
-                    serverAvailableMB={stats.serverAvailableMB}
-                    onEdit={() => {
-                      // Convert MB to GB for display in modal
-                      const currentGB =
-                        stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
-                      setEditingQuotaKey("storage_limit_mb");
-                      setTempQuota(currentGB);
-                      setIsEditingQuota(true);
-                    }}
-                  />
-
-                  {/* Registration Toggle Card */}
-                  {((session?.user as any)?.role || "").toLowerCase() === "super_admin" && (
-                    <motion.div
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                  {/* Status Dashboard */}
+                  <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <TelemetryCard
+                      label="ภาระการประมวลผล (CPU)"
+                      value={stats.cpuUsage}
+                      unit="%"
+                      icon={Database}
+                      color="blue"
+                    />
+                    <TelemetryCard
+                      label="หน่วยความจำ (RAM)"
+                      value={stats.ramUsage.percent}
+                      unit="%"
+                      subValue={`ใช้งาน ${(stats.ramUsage.used / 1024).toFixed(1)} จาก ${(stats.ramUsage.total / 1024).toFixed(1)} GB`}
+                      icon={HardDrive}
+                      color="purple"
+                    />
+                    <StatCard
+                      label="User ในระบบ"
+                      value={stats.totalUsers}
+                      icon={Users}
+                      color="emerald"
+                      unit=" Users"
                       variants={item}
-                      className="group relative flex flex-col p-px rounded-3xl bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-md hover:shadow-xl"
-                    >
-                      <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-5 rounded-[1.7rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-inner ${regEnabled ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
+                    />
+                    <StatCard
+                      label="จำนวนรูปภาพ"
+                      value={stats.totalImagesCount}
+                      icon={ImageIcon}
+                      color="indigo"
+                      unit=" ไฟล์"
+                      variants={item}
+                    />
+
+                    <StatCard
+                      label="ข่าวสารทั้งหมด"
+                      value={stats.totalNews}
+                      icon={Newspaper}
+                      color="blue"
+                      unit=" ข่าว"
+                      variants={item}
+                    />
+                    <StatCard
+                      label="แบนเนอร์"
+                      value={stats.totalBanners}
+                      icon={ImageIcon}
+                      color="pink"
+                      unit=" รูป"
+                      variants={item}
+                    />
+                    <StatCard
+                      label="ไฟล์ในคลัง"
+                      value={stats.totalDriveFiles}
+                      icon={HardDrive}
+                      color="orange"
+                      unit=" ไฟล์"
+                      variants={item}
+                    />
+                    <StatCard
+                      label="โฟลเดอร์"
+                      value={stats.totalDriveFolders}
+                      icon={Folder}
+                      color="amber"
+                      unit=" โฟลเดอร์"
+                      variants={item}
+                    />
+                    <StatCard
+                      label="เมนูหลัก"
+                      value={stats.totalNav}
+                      icon={Navigation}
+                      color="purple"
+                      unit=" เมนู"
+                      variants={item}
+                    />
+                    <StatCard
+                      label="หน้าเนื้อหา"
+                      value={stats.totalPages}
+                      icon={FileText}
+                      color="amber"
+                      unit=" หน้า"
+                      variants={item}
+                    />
+                  </div>
+
+                  {/* Usage Cards */}
+                  <div className="md:col-span-4 flex flex-col gap-4">
+                    <UsageCard
+                      title="MongoDB"
+                      value={stats.dbSizeMB}
+                      max={stats.dbLimitMB}
+                      unit="MB"
+                      icon={Database}
+                      color="emerald"
+                      variants={item}
+                      isSuperAdmin={session?.user?.role === "super_admin"}
+                      serverTotalMB={stats.serverTotalMB}
+                      serverUsedMB={stats.serverUsedMB}
+                      serverAvailableMB={stats.serverAvailableMB}
+                      onEdit={() => {
+                        const currentGB =
+                          stats.dbLimitMB === 0 ? "0" : (stats.dbLimitMB / 1024).toFixed(1);
+                        setEditingQuotaKey("db_limit_mb");
+                        setTempQuota(currentGB);
+                        setIsEditingQuota(true);
+                      }}
+                    />
+                    <UsageCard
+                      title="Storage & Drive"
+                      value={stats.cloudUsageMB}
+                      max={stats.cloudLimitMB}
+                      unit="MB"
+                      icon={Database}
+                      color="blue"
+                      variants={item}
+                      isSuperAdmin={session?.user?.role === "super_admin"}
+                      serverTotalMB={stats.serverTotalMB}
+                      serverUsedMB={stats.serverUsedMB}
+                      serverAvailableMB={stats.serverAvailableMB}
+                      onEdit={() => {
+                        // Convert MB to GB for display in modal
+                        const currentGB =
+                          stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
+                        setEditingQuotaKey("storage_limit_mb");
+                        setTempQuota(currentGB);
+                        setIsEditingQuota(true);
+                      }}
+                    />
+
+                    {/* Registration Toggle Card */}
+                    {((session?.user as any)?.role || "").toLowerCase() === "super_admin" && (
+                      <motion.div
+                        variants={item}
+                        className="group relative flex flex-col p-px rounded-3xl bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-md hover:shadow-xl"
+                      >
+                        <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-5 rounded-[1.7rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-inner ${regEnabled ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
+                              >
+                                <Users size={18} />
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
+                                  รับสมัครสมาชิกทั่วไป
+                                </h4>
+                                <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
+                                  URL: /register
+                                </p>
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={handleToggleRegistration}
+                              disabled={updatingReg}
+                              className={`w-12 h-6 rounded-full transition-all relative ${regEnabled ? "bg-emerald-500" : "bg-rose-500"} disabled:opacity-50`}
                             >
-                              <Users size={18} />
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
-                                รับสมัครสมาชิกทั่วไป
-                              </h4>
-                              <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
-                                URL: /register
-                              </p>
-                            </div>
+                              <motion.div
+                                layout
+                                className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-md left-1"
+                                animate={{ x: regEnabled ? 24 : 0 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                              />
+                            </button>
                           </div>
 
-                          <button
-                            onClick={handleToggleRegistration}
-                            disabled={updatingReg}
-                            className={`w-12 h-6 rounded-full transition-all relative ${regEnabled ? "bg-emerald-500" : "bg-rose-500"} disabled:opacity-50`}
-                          >
-                            <motion.div
-                              layout
-                              className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-md left-1"
-                              animate={{ x: regEnabled ? 24 : 0 }}
-                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            />
-                          </button>
+                          <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold">
+                            <span className="text-zinc-500">สถานะ:</span>
+                            <span
+                              className={
+                                regEnabled
+                                  ? "text-emerald-500 font-extrabold"
+                                  : "text-rose-500 font-extrabold"
+                              }
+                            >
+                              {regEnabled ? "🟢 เปิดรับสมัครทั่วไป" : "🔴 ปิดรับสมัครชั่วคราว"}
+                            </span>
+                          </div>
                         </div>
-
-                        <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold">
-                          <span className="text-zinc-500">สถานะ:</span>
-                          <span
-                            className={
-                              regEnabled
-                                ? "text-emerald-500 font-extrabold"
-                                : "text-rose-500 font-extrabold"
-                            }
-                          >
-                            {regEnabled ? "🟢 เปิดรับสมัครทั่วไป" : "🔴 ปิดรับสมัครชั่วคราว"}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* --- Quick Actions Section --- */}
           {/* --- Quick Actions Tabs --- */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
-            <motion.div variants={item} className="flex flex-wrap gap-2 bg-white dark:bg-zinc-900 p-2 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-fit">
-            <button
-              onClick={() => setActiveTab("all")}
-              className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-            >
-              ทั้งหมด (All)
-            </button>
-            {hasStudentAccess && (
+            <motion.div variants={item} className="flex flex-wrap gap-2 bg-white dark:bg-zinc-900 p-2 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-fit">
               <button
-                onClick={() => setActiveTab("student")}
-                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "student" ? "bg-indigo-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                onClick={() => setActiveTab("all")}
+                className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
               >
-                นักเรียน
+                ทั้งหมด (All)
               </button>
-            )}
-            {hasTeacherAccess && (
-              <button
-                onClick={() => setActiveTab("teacher")}
-                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "teacher" ? "bg-violet-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-              >
-                ครูผู้สอน
-              </button>
-            )}
-            {hasStaffAccess && (
-              <button
-                onClick={() => setActiveTab("staff")}
-                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "staff" ? "bg-teal-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-              >
-                บุคลากร / HR
-              </button>
-            )}
-            {hasExecAccess && (
-              <button
-                onClick={() => setActiveTab("executive")}
-                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "executive" ? "bg-rose-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-              >
-                ผู้บริหาร
-              </button>
-            )}
-            {hasSuperAdminAccess && (
-              <button
-                onClick={() => setActiveTab("superadmin")}
-                className={`px-6 py-3 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === "superadmin" ? "bg-sky-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-              >
-                ผู้ดูแลระบบสูงสุด
-              </button>
-            )}
+              {hasStudentAccess && (
+                <button
+                  onClick={() => setActiveTab("student")}
+                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "student" ? "bg-indigo-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                >
+                  นักเรียน
+                </button>
+              )}
+              {hasTeacherAccess && (
+                <button
+                  onClick={() => setActiveTab("teacher")}
+                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "teacher" ? "bg-violet-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                >
+                  ครูผู้สอน
+                </button>
+              )}
+              {hasStaffAccess && (
+                <button
+                  onClick={() => setActiveTab("staff")}
+                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "staff" ? "bg-teal-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                >
+                  บุคลากร / HR
+                </button>
+              )}
+              {hasExecAccess && (
+                <button
+                  onClick={() => setActiveTab("executive")}
+                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "executive" ? "bg-rose-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                >
+                  ผู้บริหาร
+                </button>
+              )}
+              {hasSuperAdminAccess && (
+                <button
+                  onClick={() => setActiveTab("superadmin")}
+                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "superadmin" ? "bg-sky-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                >
+                  ผู้ดูแลระบบสูงสุด
+                </button>
+              )}
             </motion.div>
-            
+
             {hasSuperAdminAccess && (
               <motion.div variants={item}>
                 <Link
                   href="/dashboard/permissions"
-                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-[1.5rem] bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-3xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
                 >
                   <Layout className="w-4 h-4" />
                   เพิ่มเมนูใหม่
@@ -944,7 +954,7 @@ export default function DashboardLoader() {
                   desc="บริหารจัดการข้อมูลรายงานการปฏิบัติงาน"
                   variants={item}
                 />
-                
+
                 {customMenus.filter(m => m.workspace === "superadmin" && permissions?.[m.permissionKey]).map(menu => (
                   <ActionCard
                     key={menu._id}
@@ -955,7 +965,7 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 ))}
-                
+
                 {/* Reset views logic component directly here for super admin */}
                 <motion.div variants={item}>
                   <button

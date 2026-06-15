@@ -35,6 +35,13 @@ export async function GET() {
       manage_supervision_requests: ["super_admin"].includes(role),
       access_teacher_verification: ["super_admin"].includes(role),
       access_teacher_dashboard: ["super_admin"].includes(role),
+      access_lesson_plans: ["super_admin"].includes(role),
+      access_dpa_evaluation: ["super_admin"].includes(role),
+      access_plc: ["super_admin"].includes(role),
+      access_student_care: ["super_admin"].includes(role),
+      manage_attendance_dashboard: ["super_admin"].includes(role),
+      manage_attendance_work_reports: ["super_admin"].includes(role),
+      manage_attendance_leave_approvals: ["super_admin"].includes(role),
       ...(dbPermission?.permissions || {}) // เอาค่าจาก DB มาทับถ้ามี
     };
 
