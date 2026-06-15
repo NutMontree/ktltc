@@ -26,6 +26,7 @@ import {
   MapPin,
   Smartphone,
   MapIcon,
+  Users,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -39,6 +40,7 @@ const STATUS_TH: Record<string, string> = {
   all: "สถานะทั้งหมด",
   Present: "ตรงเวลา",
   Late: "มาสาย",
+  Absent: "ไม่ได้เข้าแถว",
 };
 
 function FlagpoleReportsManagementContent() {
@@ -76,6 +78,7 @@ function FlagpoleReportsManagementContent() {
   });
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [studentTypeFilter, setStudentTypeFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [classGroupFilter, setClassGroupFilter] = useState("");
   const [availableClassGroups, setAvailableClassGroups] = useState<string[]>([]);
@@ -102,7 +105,7 @@ function FlagpoleReportsManagementContent() {
     try {
       const currentPage = isLoadMore ? page + 1 : 1;
       const res = await fetch(
-        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&search=${encodeURIComponent(searchQuery)}&department=${encodeURIComponent(departmentFilter)}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=${currentPage}&limit=${LIMIT}`,
+        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&studentType=${studentTypeFilter}&search=${encodeURIComponent(searchQuery)}&department=${encodeURIComponent(departmentFilter)}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=${currentPage}&limit=${LIMIT}`,
       );
       const json = await res.json();
       if (json.success) {
@@ -128,7 +131,7 @@ function FlagpoleReportsManagementContent() {
     if (status === "authenticated") {
       fetchReports();
     }
-  }, [startDate, endDate, statusFilter, searchQuery, departmentFilter, classGroupFilter, status]);
+  }, [startDate, endDate, statusFilter, studentTypeFilter, searchQuery, departmentFilter, classGroupFilter, status]);
 
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setDepartmentFilter(e.target.value);
@@ -283,7 +286,7 @@ function FlagpoleReportsManagementContent() {
     const loadToast = toast.loading("กำลังเตรียมดึงข้อมูลกิจกรรมเสาธงเพื่อออกรายงาน PDF...");
     try {
       const res = await fetch(
-        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&search=${encodeURIComponent(searchQuery)}&department=${encodeURIComponent(departmentFilter)}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=1&limit=10000`,
+        `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&status=${statusFilter}&studentType=${studentTypeFilter}&search=${encodeURIComponent(searchQuery)}&department=${encodeURIComponent(departmentFilter)}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=1&limit=10000`,
       );
       const json = await res.json();
       if (!json.success || !json.data || json.data.length === 0) {
@@ -386,6 +389,10 @@ function FlagpoleReportsManagementContent() {
                   background-color: #fef3c7;
                   color: #92400e;
                 }
+                .status-absent {
+                  background-color: #fee2e2;
+                  color: #991b1b;
+                }
                 @media print {
                   body { padding: 0; }
                   @page { size: A4 landscape; margin: 15mm; }
@@ -412,7 +419,11 @@ function FlagpoleReportsManagementContent() {
                 </div>
                 <div class="summary-item">
                   <div class="summary-label">เข้าร่วมสาย</div>
-                  <div class="summary-value" style="color: #d97706;">${json.data.filter((r: any) => r.status !== "Present").length} รายการ</div>
+                  <div class="summary-value" style="color: #d97706;">${json.data.filter((r: any) => r.status === "Late").length} รายการ</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">ไม่ได้เข้าแถว</div>
+                  <div class="summary-value" style="color: #ef4444;">${json.data.filter((r: any) => r.status === "Absent").length} รายการ</div>
                 </div>
               </div>
 
@@ -431,8 +442,8 @@ function FlagpoleReportsManagementContent() {
                 </thead>
                 <tbody>
                   ${json.data.map((r: any, idx: number) => {
-                    const statusClass = r.status === "Present" ? "status-present" : "status-late";
-                    const statusText = r.status === "Present" ? "ตรงเวลา" : "มาสาย";
+                    const statusClass = r.status === "Present" ? "status-present" : r.status === "Absent" ? "status-absent" : "status-late";
+                    const statusText = r.status === "Present" ? "ตรงเวลา" : r.status === "Absent" ? "ไม่ได้เข้าแถว" : "มาสาย";
                     const dateText = new Date(r.date).toLocaleDateString("th-TH");
                     const timeText = r.time ? new Date(r.time).toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " น." : "-";
                     
@@ -660,7 +671,7 @@ function FlagpoleReportsManagementContent() {
           </div>
 
           {/* Row 2 */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-6 items-end">
             <div className="md:col-span-2">
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
                 แผนกวิชา
@@ -706,6 +717,27 @@ function FlagpoleReportsManagementContent() {
                       {g}
                     </option>
                   ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-2">
+                ประเภทนักศึกษา
+              </label>
+              <div className="relative group">
+                <Users
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  size={16}
+                />
+                <select
+                  value={studentTypeFilter}
+                  onChange={(e) => setStudentTypeFilter(e.target.value)}
+                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner cursor-pointer"
+                >
+                  <option value="all">นักศึกษาทั้งหมด</option>
+                  <option value="normal">เรียนปกติ</option>
+                  <option value="internship">ฝึกงาน</option>
                 </select>
               </div>
             </div>
@@ -922,13 +954,17 @@ function FlagpoleReportsManagementContent() {
                             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-[10px] shadow-xs uppercase tracking-widest ${
                               report.status === "Present"
                                 ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/30"
+                                : report.status === "Absent"
+                                ? "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-100/50 dark:border-rose-900/30"
                                 : "bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-100/50 dark:border-amber-900/30"
                             }`}
                           >
                             <span
-                              className={`w-1.5 h-1.5 rounded-full ${report.status === "Present" ? "bg-emerald-500" : "bg-amber-500"}`}
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                report.status === "Present" ? "bg-emerald-500" : report.status === "Absent" ? "bg-rose-500" : "bg-amber-500"
+                              }`}
                             />
-                            {report.status === "Present" ? "ตรงเวลา" : "มาสาย"}
+                            {STATUS_TH[report.status] || report.status}
                           </span>
                         </td>
                         {isAdmin && (

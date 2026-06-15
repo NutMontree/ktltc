@@ -21,7 +21,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
-    const statusFilter = searchParams.get('status') || 'all'; // all, Present, Late
+    const statusFilter = searchParams.get('status') || 'all'; // all, Present, Late, Absent
+    const studentType = searchParams.get('studentType') || 'all'; // all, normal, internship
     const searchQuery = searchParams.get('search') || '';
     const department = searchParams.get('department') || '';
     const classGroupId = searchParams.get('classGroupId') || '';
@@ -78,6 +79,14 @@ export async function GET(req: Request) {
       hasUserFilters = true;
     }
 
+    if (studentType === "normal") {
+      userFilterQuery.isInternship = { $ne: true };
+      hasUserFilters = true;
+    } else if (studentType === "internship") {
+      userFilterQuery.isInternship = true;
+      hasUserFilters = true;
+    }
+
     if (hasUserFilters) {
       // ค้นหารายชื่อนักเรียนที่ตรงตามตัวกรองทั้งหมด (ไม่จำกัดจำนวนเพื่อให้เช็คสถิติรายห้องได้ครบ)
       const matchingUsers = await db.collection("users")
@@ -114,6 +123,95 @@ export async function GET(req: Request) {
       classGroups = classGroups.filter(Boolean).sort();
     } catch (err) {
       console.error("Fetch distinct class groups error:", err);
+    }
+
+    if (statusFilter === "Absent") {
+      // For Absent, if not explicitly querying internship, we usually ignore interns
+      if (studentType !== "internship" && studentType !== "all") {
+        userFilterQuery.isInternship = { $ne: true };
+      } else if (studentType === "all") {
+        userFilterQuery.isInternship = { $ne: true }; // Default to not showing interns absent by default, unless they specifically want 'all'
+        // Actually, if studentType === "all", let's respect it and show absent for both. 
+        // But usually interns don't have to check in. Let's just use what's already set in userFilterQuery.
+      }
+      const students = await db.collection("users").find(userFilterQuery).project({
+        _id: 1, name: 1, academicLevel: 1, studentId: 1, department: 1, classGroupId: 1, image: 1
+      }).toArray();
+
+      const attendances = await db.collection("flagpole_attendances").find(
+        { date: { $gte: startDateParam, $lte: endDateParam + "T23:59:59.999Z" } }
+      ).project({ userId: 1, uId: 1, date: 1 }).toArray();
+
+      const attendanceSet = new Set();
+      for (const a of attendances) {
+        const id = a.userId ? a.userId.toString() : (a.uId ? a.uId.toString() : "");
+        let dateStr = "";
+        if (typeof a.date === 'string') {
+          dateStr = a.date.split('T')[0];
+        } else if (a.date instanceof Date) {
+          dateStr = a.date.toISOString().split('T')[0];
+        }
+        if (id && dateStr) {
+          attendanceSet.add(`${id}_${dateStr}`);
+        }
+      }
+
+      const dates = [];
+      if (startDateParam && endDateParam) {
+        const startD = new Date(startDateParam);
+        const endD = new Date(endDateParam);
+        while(startD <= endD) {
+          dates.push(startD.toISOString().split('T')[0]);
+          startD.setUTCDate(startD.getUTCDate() + 1);
+        }
+      } else {
+        dates.push(new Date().toISOString().split('T')[0]);
+      }
+
+      if (dates.length > 31) {
+        return NextResponse.json({ success: false, message: "ช่วงวันที่กว้างเกินไปสำหรับการค้นหาผู้ที่ไม่ได้เข้าแถว (จำกัด 31 วัน)" }, { status: 400 });
+      }
+
+      const absentRecords = [];
+      for (const student of students) {
+        const sId = student._id.toString();
+        for (const d of dates) {
+          if (!attendanceSet.has(`${sId}_${d}`)) {
+            absentRecords.push({
+              id: `absent_${sId}_${d}`,
+              date: d,
+              status: "Absent",
+              photoUrl: null,
+              time: null,
+              distance: undefined,
+              deviceId: null,
+              address: null,
+              lat: null,
+              lng: null,
+              statusTag: null,
+              user: {
+                name: student.name || "นักศึกษา",
+                academicLevel: student.academicLevel || "ไม่ระบุชั้นปี",
+                studentId: student.studentId || "-",
+                department: student.department || "-",
+                classGroupId: student.classGroupId || "-",
+                image: student.image
+              }
+            });
+          }
+        }
+      }
+
+      const totalCount = absentRecords.length;
+      const paginatedRecords = absentRecords.slice(skip, skip + limit);
+
+      return NextResponse.json({
+        success: true,
+        data: paginatedRecords,
+        hasMore: skip + paginatedRecords.length < totalCount,
+        total: totalCount,
+        classGroups
+      });
     }
 
     //Aggregate เพื่อ Join ข้อมูลผู้ใช้

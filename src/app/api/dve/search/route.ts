@@ -13,7 +13,9 @@ function toUserProfile(uDoc: any) {
     role: uDoc.role,
     department: uDoc.department || "",
     studentId: uDoc.studentId || "",
-    classGroupId: uDoc.classGroupId || uDoc.groupCode || uDoc.classroomName || "",
+    classGroupId: uDoc.classGroupId || "",
+    groupCode: uDoc.groupCode || "",
+    classroomName: uDoc.classroomName || "",
   };
 }
 
@@ -24,14 +26,15 @@ function standardizeClassGroupName(name: string): string {
   return String(name).trim().replace(/[\s\.-]+/g, ".");
 }
 
-function resolveStudentClassGroup(userProfile: any) {
+function resolveStudentClassGroups(userProfile: any): string[] {
+  const groups: string[] = [];
   for (const field of CLASS_GROUP_FIELDS) {
     const value = userProfile?.[field];
     if (value && String(value).trim()) {
-      return standardizeClassGroupName(String(value).trim());
+      groups.push(standardizeClassGroupName(String(value).trim()));
     }
   }
-  return "";
+  return groups;
 }
 
 function parseAllowedClassGroups(value: any): string[] {
@@ -61,18 +64,29 @@ function parseAllowedClassGroups(value: any): string[] {
 
 function subjectMatchesStudent(subject: any, userProfile: any): boolean {
   const subjectGroups = parseAllowedClassGroups(subject?.allowedClassGroups);
-  const studentClassGroup = resolveStudentClassGroup(userProfile);
+  const studentGroups = resolveStudentClassGroups(userProfile);
   if (subjectGroups.length > 0) {
-    if (!studentClassGroup) return false;
+    if (studentGroups.length === 0) return false;
     return subjectGroups.some((group) => {
       const target = standardizeClassGroupName(group);
-      const actual = standardizeClassGroupName(studentClassGroup);
-      return target === actual || target.includes(actual) || actual.includes(target);
+      return studentGroups.some((actual) => {
+        return target === actual || target.includes(actual) || actual.includes(target);
+      });
     });
   }
 
+  let studentDept = normalizeDept((userProfile?.department || "").trim());
+  if (!studentDept) {
+    for (const g of studentGroups) {
+      const d = getDeptFromClassGroup(g);
+      if (d) {
+        studentDept = normalizeDept(d);
+        break;
+      }
+    }
+  }
+  
   const subjectDept = normalizeDept(subject?.department || "");
-  const studentDept = normalizeDept((userProfile?.department || "").trim() || getDeptFromClassGroup(studentClassGroup));
   if (!subjectDept) return true;
   if (!studentDept) return false;
   return subjectDept.includes(studentDept) || studentDept.includes(subjectDept);
@@ -127,7 +141,12 @@ function normalizeDept(value: string) {
 function resolveStudentDept(userProfile: any) {
   const dept = (userProfile?.department || "").trim();
   if (dept) return dept;
-  return getDeptFromClassGroup(userProfile?.classGroupId || "");
+  const groups = resolveStudentClassGroups(userProfile);
+  for (const g of groups) {
+    const d = getDeptFromClassGroup(g);
+    if (d) return d;
+  }
+  return "";
 }
 
 function deptMatches(a: string, b: string) {
