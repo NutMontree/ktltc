@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   BookOpen,
   FolderOpen,
@@ -489,6 +490,8 @@ function DVETeacherWorkspace() {
       unitTitle?: string;
       unitSequence?: string | number;
       studySeconds?: number;
+      createdAt?: string;
+      updatedAt?: string;
     };
   }>({});
   const [loadingRoster, setLoadingRoster] = useState(false);
@@ -534,6 +537,7 @@ function DVETeacherWorkspace() {
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
   const [selectedStudentLogs, setSelectedStudentLogs] = useState<any[]>([]);
   const [loadingStudentProgress, setLoadingStudentProgress] = useState(false);
+  const [selectedMobileStudent, setSelectedMobileStudent] = useState<any | null>(null);
 
   const handleSelectStudentProgress = async (studentId: string) => {
     setSelectedStudentId(studentId);
@@ -2750,6 +2754,8 @@ function DVETeacherWorkspace() {
                                 assignmentStatus: "None" as const,
                                 score: "",
                                 studySeconds: 0,
+                                createdAt: undefined,
+                                updatedAt: undefined,
                               };
                               const hasPretest = activeUnitQuizzes.some(q => q.quizType === "pretest");
                               const hasPosttest = activeUnitQuizzes.some(q => q.quizType === "posttest");
@@ -2770,16 +2776,18 @@ function DVETeacherWorkspace() {
                                   <td className="py-4 px-2">
                                     <div className="flex flex-col gap-2.5">
                                       <div className="flex items-center gap-3">
-                                        {student.image ? (
-                                          <img
-                                            src={student.image}
-                                            className="w-9 h-9 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-800 shadow-sm shrink-0"
-                                          />
-                                        ) : (
-                                          <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 shrink-0">
-                                            <User size={14} />
-                                          </div>
-                                        )}
+                                        <Link href={`/dashboard/profile/${student.id}`} className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                                          {student.image ? (
+                                            <img
+                                              src={student.image}
+                                              className="w-9 h-9 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-800 shadow-sm"
+                                            />
+                                          ) : (
+                                            <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400">
+                                              <User size={14} />
+                                            </div>
+                                          )}
+                                        </Link>
                                         <div className="flex flex-col gap-1">
                                           <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">
                                             {student.name}
@@ -3010,31 +3018,26 @@ function DVETeacherWorkspace() {
                             score: "",
                             studySeconds: 0,
                           };
-                          const hasPretest = activeUnitQuizzes.some(q => q.quizType === "pretest");
-                          const hasPosttest = activeUnitQuizzes.some(q => q.quizType === "posttest");
-                          const pretestSub = unitQuizResultsByStudent[student.id]?.find(
-                            (s) => s.quizType === "pretest"
-                          );
-                          const posttestSub = unitQuizResultsByStudent[student.id]?.find(
-                            (s) => s.quizType === "posttest"
-                          );
                           return (
                             <div
                               key={student.id}
-                              className="p-4 bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 rounded-2xl space-y-4 shadow-xs"
+                              onClick={() => setSelectedMobileStudent(student)}
+                              className="p-4 bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 rounded-2xl space-y-3 shadow-xs cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors active:scale-[0.99]"
                             >
                               {/* Student Info Row */}
                               <div className="flex items-center gap-3">
-                                {student.image ? (
-                                  <img
-                                    src={student.image}
-                                    className="w-10 h-10 rounded-full object-cover shrink-0"
-                                  />
-                                ) : (
-                                  <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                                    <User size={16} />
-                                  </div>
-                                )}
+                                <Link href={`/dashboard/profile/${student.id}`} className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                                  {student.image ? (
+                                    <img
+                                      src={student.image}
+                                      className="w-10 h-10 rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                                      <User size={16} />
+                                    </div>
+                                  )}
+                                </Link>
                                 <div className="min-w-0 flex-1">
                                   <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm leading-tight flex items-center gap-1.5 flex-wrap">
                                     <span className="truncate">{student.name}</span>
@@ -3044,150 +3047,19 @@ function DVETeacherWorkspace() {
                                     {standardizeClassGroupName(student.classGroupId)}
                                   </p>
                                 </div>
-                              </div>
-
-                              {studentSubmissionsById[student.id]?.length > 0 && (
-                                <div className="flex flex-wrap gap-1.5 mt-1 bg-zinc-100/50 dark:bg-zinc-900/50 p-2 rounded-xl border dark:border-zinc-800/80">
-                                  {studentSubmissionsById[student.id].map((att, idx) => {
-                                    const isDone = att.assignmentStatus === "Submitted";
-                                    const isPending = att.assignmentStatus === "Pending";
-                                    return (
-                                      <div
-                                        key={`${att.unitId || idx}-${att.studentId}-${att.date}`}
-                                        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-black shadow-xs ${isDone
-                                          ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
-                                          : isPending
-                                            ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400"
-                                            : "bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400"
-                                          }`}
-                                      >
-                                        <span className="opacity-80">
-                                          บทที่ {att.unitSequence || "-"}:
-                                        </span>
-                                        <span className="truncate max-w-[60px]">
-                                          {att.unitTitle || "-"}
-                                        </span>
-                                        <span className="flex items-center gap-1 border-l border-current pl-1 opacity-90">
-                                          {isDone ? "✅" : isPending ? "⌛" : "❌"}
-                                          {att.score ? ` ${att.score}` : ""}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-
-                              <div className="flex flex-wrap gap-2 border-t dark:border-zinc-800/80 pt-3 items-center justify-between">
-                                <div className="flex flex-wrap gap-1.5">
+                                <div className="shrink-0">
                                   {rec.status === "Studying" ? (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border bg-blue-500/10 text-blue-650 dark:text-blue-400 border-blue-500/20 animate-pulse">
-                                      กำลังเรียนอยู่ ⏱️ ({Math.round((rec.studySeconds || 0) / 60)}/{activeStudyUnit?.studyMinutes || 0} น.)
+                                    <span className="flex h-3 w-3 relative">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                                     </span>
+                                  ) : rec.status === "Present" || rec.status === "Late" ? (
+                                    <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block shadow-sm"></span>
                                   ) : (
-                                    <span
-                                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${rec.status === "Present"
-                                        ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
-                                        : rec.status === "Late"
-                                          ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
-                                          : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
-                                        }`}
-                                    >
-                                      {rec.status === "Present"
-                                        ? "ตรงเวลา"
-                                        : rec.status === "Late"
-                                          ? "มาสาย"
-                                          : "ยังไม่เข้าเรียน"}
-                                      {(rec.studySeconds || 0) > 0 && ` (${Math.round((rec.studySeconds || 0) / 60)} น.)`}
+                                    <span className="text-zinc-300 dark:text-zinc-600">
+                                      <ChevronRight size={18} />
                                     </span>
                                   )}
-                                  <span
-                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border ${rec.assignmentStatus === "Submitted"
-                                      ? "bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/60"
-                                      : rec.assignmentStatus === "Pending"
-                                        ? "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60"
-                                        : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60"
-                                      }`}
-                                  >
-                                    {rec.assignmentStatus === "Submitted"
-                                      ? "ส่งแล้ว"
-                                      : rec.assignmentStatus === "Pending"
-                                        ? "ค้างส่ง"
-                                        : "ไม่มีงาน"}
-                                  </span>
-                                  <span className="text-[10px] font-bold text-zinc-500">
-                                    คะแนน:{" "}
-                                    <span className="font-black text-blue-600 dark:text-blue-400">
-                                      {rec.score || "-"}
-                                    </span>
-                                  </span>
-                                </div>
-
-                                {/* Quiz Scores on Mobile */}
-                                {(hasPretest || hasPosttest || pretestSub || posttestSub) && (
-                                  <div className="flex flex-wrap gap-2 text-[10px] font-bold text-zinc-500 mt-2 bg-zinc-150/45 dark:bg-zinc-900/40 p-2 rounded-lg border dark:border-zinc-800/80 w-full">
-                                    <span className="flex items-center gap-1.5 w-full sm:w-auto">
-                                      📝 ก่อนเรียน: {pretestSub ? <span className="font-black text-blue-600 dark:text-blue-450 bg-blue-50 dark:bg-blue-950/30 px-1.5 py-0.5 rounded border border-blue-250 dark:border-blue-800/50">{pretestSub.score} / {pretestSub.maxScore}</span> : hasPretest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
-                                    </span>
-                                    <span className="flex items-center gap-1.5 w-full sm:w-auto">
-                                      📝 หลังเรียน: {posttestSub ? <span className="font-black text-cyan-650 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/30 px-1.5 py-0.5 rounded border border-cyan-250 dark:border-cyan-800/50">{posttestSub.score} / {posttestSub.maxScore}</span> : hasPosttest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
-                                    </span>
-                                  </div>
-                                )}
-                                <div className="flex gap-2">
-                                  {rec.imageUrl && (
-                                    <a
-                                      href={rec.imageUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer border border-emerald-500/10 shadow-sm"
-                                    >
-                                      <Eye size={11} />
-                                      <span>ดูงาน</span>
-                                    </a>
-                                  )}
-
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setEditingStudent({
-                                        id: student.id,
-                                        name: student.name,
-                                        studentIdNum: student.studentIdNum,
-                                        classGroupId: student.classGroupId,
-                                        status: rec.status,
-                                        assignmentStatus: rec.assignmentStatus,
-                                        score: rec.score,
-                                        imageUrl: rec.imageUrl,
-                                        unitId: rec.unitId,
-                                        unitTitle: rec.unitTitle || activeStudyUnit?.title || "",
-                                        unitSequence:
-                                          rec.unitSequence !== undefined && rec.unitSequence !== ""
-                                            ? rec.unitSequence
-                                            : activeStudyUnit?.sequence || "",
-                                        studySeconds: rec.studySeconds || 0,
-                                      });
-                                    }}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
-                                  >
-                                    <Edit2 size={11} />
-                                    <span>แก้ไข</span>
-                                  </button>
-
-                                  <Popconfirm
-                                    title={`คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลของ ${student.name}?`}
-                                    onConfirm={() => handleDeleteIndividualAttendance(student.id)}
-                                    okText="ใช่, ลบ"
-                                    cancelText="ยกเลิก"
-                                    okButtonProps={{ danger: true }}
-                                  >
-                                    <button
-                                      type="button"
-                                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
-                                    >
-                                      <Trash2 size={11} />
-                                      <span>ลบ</span>
-                                    </button>
-                                  </Popconfirm>
                                 </div>
                               </div>
                             </div>
@@ -5796,6 +5668,207 @@ function DVETeacherWorkspace() {
                 </button>
               </div>
             </motion.div>
+        {/* Mobile Student Details Modal */}
+        <Modal
+          title={null}
+          open={!!selectedMobileStudent}
+          onCancel={() => setSelectedMobileStudent(null)}
+          footer={null}
+          centered
+          width={400}
+          className="dve-mobile-student-modal"
+          closeIcon={<X className="w-5 h-5 text-zinc-500" />}
+        >
+          {selectedMobileStudent && (() => {
+            const student = selectedMobileStudent;
+            const rec = attendanceRecords[student.id] || {
+              status: "Absent" as const,
+              assignmentStatus: "None" as const,
+              score: "",
+              studySeconds: 0,
+              createdAt: undefined,
+              updatedAt: undefined,
+            };
+            const hasPretest = activeUnitQuizzes.some(q => q.quizType === "pretest");
+            const hasPosttest = activeUnitQuizzes.some(q => q.quizType === "posttest");
+            const pretestSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizType === "pretest");
+            const posttestSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizType === "posttest");
+            
+            return (
+              <div className="pt-4 space-y-4">
+                <div className="flex items-center gap-3 border-b dark:border-zinc-800 pb-3">
+                  <Link href={`/dashboard/profile/${student.id}`} className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                    {student.image ? (
+                      <img src={student.image} className="w-12 h-12 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                        <User size={20} />
+                      </div>
+                    )}
+                  </Link>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-base leading-tight">
+                      {student.name}
+                    </h4>
+                    <p className="text-xs text-zinc-500 font-bold mt-1">
+                      ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม: {standardizeClassGroupName(student.classGroupId)}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* ประวัติการส่งงาน */}
+                {studentSubmissionsById[student.id]?.length > 0 && (
+                  <div className="flex flex-col gap-2 bg-zinc-50 dark:bg-zinc-850/50 p-3 rounded-xl border dark:border-zinc-800/80">
+                    <h5 className="text-[10px] uppercase font-black tracking-wider text-zinc-400">ประวัติงานที่ผ่านมา</h5>
+                    <div className="flex flex-wrap gap-1.5">
+                      {studentSubmissionsById[student.id].map((att: any, idx: number) => {
+                        const isDone = att.assignmentStatus === "Submitted";
+                        const isPending = att.assignmentStatus === "Pending";
+                        return (
+                          <div
+                            key={`${att.unitId || idx}-${att.studentId}-${att.date}`}
+                            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-black shadow-xs ${isDone
+                              ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
+                              : isPending
+                                ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400"
+                                : "bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400"
+                              }`}
+                          >
+                            <span className="opacity-80">บทที่ {att.unitSequence || "-"}:</span>
+                            <span className="truncate max-w-[80px]">{att.unitTitle || "-"}</span>
+                            <span className="flex items-center gap-1 border-l border-current pl-1.5 opacity-90">
+                              {isDone ? "✅" : isPending ? "⌛" : "❌"}
+                              {att.score ? ` ${att.score}` : ""}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-500">สถานะเวลาเรียน:</span>
+                    {rec.status === "Studying" ? (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border bg-blue-500/10 text-blue-650 dark:text-blue-400 border-blue-500/20 animate-pulse">
+                        กำลังเรียนอยู่ ⏱️ ({Math.round((rec.studySeconds || 0) / 60)}/{activeStudyUnit?.studyMinutes || 0} น.)
+                      </span>
+                    ) : (
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border ${rec.status === "Present"
+                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+                          : rec.status === "Late"
+                            ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+                            : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
+                          }`}
+                      >
+                        {rec.status === "Present" ? "ตรงเวลา" : rec.status === "Late" ? "มาสาย" : "ยังไม่เข้าเรียน"}
+                        {(rec.studySeconds || 0) > 0 && ` (${Math.round((rec.studySeconds || 0) / 60)} น.)`}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-500">การส่งงาน:</span>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border ${rec.assignmentStatus === "Submitted"
+                        ? "bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/60"
+                        : rec.assignmentStatus === "Pending"
+                          ? "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60"
+                          : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60"
+                        }`}
+                    >
+                      {rec.assignmentStatus === "Submitted" ? "ส่งแล้ว" : rec.assignmentStatus === "Pending" ? "ค้างส่ง" : "ไม่มีงาน"}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-500">คะแนน:</span>
+                    <span className="font-black text-blue-600 dark:text-blue-400 text-sm">
+                      {rec.score || "-"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quiz Scores on Mobile */}
+                {(hasPretest || hasPosttest || pretestSub || posttestSub) && (
+                  <div className="flex flex-col gap-2 text-[11px] font-bold text-zinc-500 mt-2 bg-zinc-150/45 dark:bg-zinc-900/40 p-3 rounded-xl border dark:border-zinc-800/80">
+                    <div className="flex items-center justify-between">
+                      <span>📝 ก่อนเรียน:</span> 
+                      {pretestSub ? <span className="font-black text-blue-600 dark:text-blue-450 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded border border-blue-250 dark:border-blue-800/50">{pretestSub.score} / {pretestSub.maxScore}</span> : hasPretest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>📝 หลังเรียน:</span> 
+                      {posttestSub ? <span className="font-black text-cyan-650 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-250 dark:border-cyan-800/50">{posttestSub.score} / {posttestSub.maxScore}</span> : hasPosttest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex flex-wrap gap-2 border-t dark:border-zinc-800/80 pt-4 mt-2 justify-end">
+                  {rec.imageUrl && (
+                    <a
+                      href={rec.imageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-xl transition-all cursor-pointer border border-emerald-500/10 shadow-sm"
+                    >
+                      <Eye size={14} />
+                      <span>ดูงาน</span>
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedMobileStudent(null);
+                      setEditingStudent({
+                        id: student.id,
+                        name: student.name,
+                        studentIdNum: student.studentIdNum,
+                        classGroupId: student.classGroupId,
+                        status: rec.status,
+                        assignmentStatus: rec.assignmentStatus,
+                        score: rec.score,
+                        imageUrl: rec.imageUrl,
+                        unitId: rec.unitId,
+                        unitTitle: rec.unitTitle || activeStudyUnit?.title || "",
+                        unitSequence:
+                          rec.unitSequence !== undefined && rec.unitSequence !== ""
+                            ? rec.unitSequence
+                            : activeStudyUnit?.sequence || "",
+                        studySeconds: rec.studySeconds || 0,
+                      });
+                    }}
+                    className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm"
+                  >
+                    <Edit2 size={14} />
+                    <span>แก้ไข</span>
+                  </button>
+
+                  <Popconfirm
+                    title={`ลบข้อมูลของ ${student.name}?`}
+                    onConfirm={() => {
+                      setSelectedMobileStudent(null);
+                      handleDeleteIndividualAttendance(student.id);
+                    }}
+                    okText="ลบ"
+                    cancelText="ยกเลิก"
+                  >
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-xs font-black rounded-xl transition-all cursor-pointer border border-rose-500/10 shadow-sm"
+                    >
+                      <Trash2 size={14} />
+                      <span>ลบ</span>
+                    </button>
+                  </Popconfirm>
+                </div>
+              </div>
+            );
+          })()}
+        </Modal>
+
           </div>
         )}
       </AnimatePresence>

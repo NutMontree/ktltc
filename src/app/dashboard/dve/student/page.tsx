@@ -1873,42 +1873,42 @@ export function DVEStudentPortal() {
                 >
                   <X size={18} />
                 </button>
-                <span className="bg-white/20 backdrop-blur-md text-[9px] uppercase font-black tracking-widest px-3 py-1 rounded-full text-white/90">
+                <span className="bg-white/20 backdrop-blur-md text-[8px] sm:text-[9px] uppercase font-black tracking-widest px-2.5 sm:px-3 py-1 rounded-full text-white/90 wrap-break-word line-clamp-1 max-w-[80%]">
                   ห้องเรียนเสมือนระบบออนไลน์ (DVE Virtual Study Room)
                 </span>
-                <h2 className="text-xl sm:text-2xl font-black mt-2 tracking-tight">
+                <h2 className="text-base sm:text-xl font-black mt-2 tracking-tight leading-snug">
                   {activeStudyUnit.title}
                 </h2>
-                <p className="text-white/80 text-xs mt-1 font-bold">
+                <p className="text-white/80 text-[10px] sm:text-xs mt-1 font-bold">
                   วิชา: {activeSubject.name} ({activeSubject.code})
                 </p>
               </div>
 
               {/* Study Area content */}
-              <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
+              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[60vh] overflow-y-auto">
                 {/* ⏱️ TIMER BANNER */}
                 {Number(activeStudyUnit.studyMinutes) > 0 && (
                   <div
-                    className={`p-6 rounded-[24px] border relative overflow-hidden transition-all duration-500 ${isStudyCompleted
+                    className={`p-4 sm:p-5 rounded-2xl border relative overflow-hidden transition-all duration-500 ${isStudyCompleted
                       ? "bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/10 border-emerald-200 dark:border-emerald-800/50 shadow-sm"
-                      : "bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/10 border-amber-200 dark:border-amber-800/50 shadow-sm"
+                      : "bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-200 dark:border-blue-800/50 shadow-sm"
                       }`}
                   >
                     {isStudyCompleted && (
                       <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
                     )}
-                    <div className="flex flex-col items-center gap-4 relative z-10">
+                    <div className="flex flex-col items-center gap-3 sm:gap-4 relative z-10">
                       <div className="flex items-center gap-3">
                         {isStudyCompleted ? (
-                          <div className="p-3 bg-emerald-100 dark:bg-emerald-800/50 rounded-2xl shadow-inner">
-                            <Award size={36} className="text-emerald-600 dark:text-emerald-400 drop-shadow-sm animate-pulse" />
+                          <div className="p-2.5 sm:p-3 bg-emerald-100 dark:bg-emerald-800/50 rounded-2xl shadow-inner">
+                            <Award size={32} className="text-emerald-600 dark:text-emerald-400 drop-shadow-sm animate-pulse" />
                           </div>
                         ) : (
-                          <div className="p-3 bg-amber-100 dark:bg-amber-800/50 rounded-2xl shadow-inner relative">
-                            <div className="absolute inset-0 rounded-2xl border-2 border-amber-400 dark:border-amber-500 border-t-transparent border-r-transparent animate-spin opacity-50"></div>
+                          <div className="p-2.5 sm:p-3 bg-blue-100 dark:bg-blue-800/50 rounded-2xl shadow-inner relative">
+                            <div className="absolute inset-0 rounded-2xl border-2 border-blue-400 dark:border-blue-500 border-t-transparent border-r-transparent animate-spin opacity-50"></div>
                             <Clock
-                              size={36}
-                              className="text-amber-600 dark:text-amber-400 drop-shadow-sm"
+                              size={32}
+                              className="text-blue-600 dark:text-blue-400 drop-shadow-sm"
                             />
                           </div>
                         )}
@@ -1917,28 +1917,28 @@ export function DVEStudentPortal() {
                       <div className="text-center">
                         {isStudyCompleted ? (
                           <>
-                            <h4 className="text-lg font-black text-emerald-700 dark:text-emerald-400 tracking-tight">
+                            <h4 className="text-sm sm:text-base font-black text-emerald-700 dark:text-emerald-400 tracking-tight">
                               🎉 เรียนครบเวลาทั้งหมดแล้ว!
                             </h4>
-                            <p className="text-[13px] text-emerald-600/90 dark:text-emerald-500/90 mt-1 font-bold">
+                            <p className="text-[11px] sm:text-[13px] text-emerald-600/90 dark:text-emerald-500/90 mt-1 font-bold">
                               ท่านเข้าเรียนวิชานี้เรียบร้อยแล้ว สามารถศึกษาชีทดาวน์โหลด หรือทำแบบทดสอบด้านล่างได้ทันที
                             </p>
                           </>
                         ) : isMinimumTimeReached ? (
                           <>
-                            <h4 className="text-base font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+                            <h4 className="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
                               ✅ เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ
                             </h4>
-                            <p className="text-[13px] text-emerald-600/80 dark:text-emerald-500/80 mt-1 font-bold">
+                            <p className="text-[11px] sm:text-[13px] text-emerald-600/80 dark:text-emerald-500/80 mt-1 font-bold">
                               สามารถทำแบบทดสอบได้ทันที หรือศึกษาต่อจนครบเวลาทั้งหมด
                             </p>
                           </>
                         ) : (
                           <>
-                            <h4 className="text-base font-black text-amber-800 dark:text-amber-400 tracking-tight">
+                            <h4 className="text-sm sm:text-base font-black text-blue-800 dark:text-blue-400 tracking-tight">
                               ⏳ ระบบกำลังจับเวลาเข้าเรียนของท่าน... ห้ามปิดหน้านี้
                             </h4>
-                            <p className="text-[13px] text-amber-700/80 dark:text-amber-500/80 mt-1 font-bold">
+                            <p className="text-[11px] sm:text-[13px] text-blue-700/80 dark:text-blue-500/80 mt-1 font-bold">
                               สะสมเวลาให้ครบ {activeStudyUnit.studyMinutes} นาที เพื่อบันทึกชื่อเข้าเรียนอัตโนมัติ
                             </p>
                           </>
@@ -1946,21 +1946,21 @@ export function DVEStudentPortal() {
                       </div>
 
                       {/* Premium Timer Progress Bar */}
-                      <div className="w-full max-w-md mt-2 bg-white/50 dark:bg-zinc-950/50 p-4 rounded-[20px] border border-white/50 dark:border-zinc-800/80 shadow-sm backdrop-blur-sm">
-                        <div className="flex justify-between text-[11px] font-black mb-2 uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
+                      <div className="w-full max-w-md mt-1 sm:mt-2 bg-white/50 dark:bg-zinc-950/50 p-3 sm:p-4 rounded-2xl border border-white/50 dark:border-zinc-800/80 shadow-sm backdrop-blur-sm">
+                        <div className="flex justify-between text-[10px] sm:text-[11px] font-black mb-2 uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
                           <span className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-                            สะสมแล้ว: <span className="text-zinc-900 dark:text-white tabular-nums text-xs">{Math.floor(studySecondsElapsed / 60)} น. {studySecondsElapsed % 60} วิ.</span>
+                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                            สะสมแล้ว: <span className="text-zinc-900 dark:text-white tabular-nums text-[10px] sm:text-xs">{Math.floor(studySecondsElapsed / 60)} น. {studySecondsElapsed % 60} วิ.</span>
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md">
+                            <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded-md">
                               ขั้นต่ำ: {Number(activeStudyUnit.studyMinutes)} น.
                             </span>
                           </span>
                         </div>
-                        <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-4 rounded-full overflow-hidden relative shadow-inner">
+                        <div className="w-full bg-zinc-200/60 dark:bg-zinc-800 h-3 sm:h-4 rounded-full overflow-hidden relative shadow-inner">
                           <div
-                            className={`h-full transition-all duration-1000 relative ${isStudyCompleted ? "bg-linear-to-r from-emerald-400 to-emerald-500" : isMinimumTimeReached ? "bg-linear-to-r from-teal-400 to-emerald-500" : "bg-linear-to-r from-amber-400 to-orange-400"
+                            className={`h-full transition-all duration-1000 relative ${isStudyCompleted ? "bg-linear-to-r from-emerald-400 to-emerald-500" : isMinimumTimeReached ? "bg-linear-to-r from-teal-400 to-emerald-500" : "bg-linear-to-r from-blue-400 to-indigo-400"
                               }`}
                             style={{
                               width: `${(studySecondsElapsed / ((Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)) * 60)) * 100}%`,
@@ -1976,7 +1976,7 @@ export function DVEStudentPortal() {
                             }}
                           />
                         </div>
-                        <div className="mt-2 text-[10px] text-center font-bold text-zinc-400">
+                        <div className="mt-2 text-[9px] sm:text-[10px] text-center font-bold text-zinc-400">
                           เป้าหมายสูงสุด: {Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)} นาที
                         </div>
                       </div>
