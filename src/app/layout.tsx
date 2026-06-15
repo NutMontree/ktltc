@@ -22,6 +22,7 @@ import { SessionProvider } from "next-auth/react";
 import ScrollUp from "@/components/Common/ScrollUp";
 import ScrollToTop from "@/components/Common/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
+import ActiveUserTracker from "@/components/ActiveUserTracker";
 import SessionWatcher from "@/components/SessionWatcher";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
@@ -86,6 +87,7 @@ export default async function RootLayout({
             refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
             refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
           >
+            <ActiveUserTracker />
             {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
             <ThemeProvider
               attribute="class"

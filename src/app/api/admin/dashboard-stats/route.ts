@@ -50,19 +50,28 @@ export async function GET() {
       db.collection("questions").countDocuments({ status: "pending" }),
       db.collection("drive_files").countDocuments(),
       db.collection("drive_folders").countDocuments(),
-      db.collection("sessions").countDocuments({ expires: { $gt: new Date() } }),
+      db
+        .collection("users")
+        .countDocuments({ lastActiveAt: { $gt: new Date(Date.now() - 15 * 60 * 1000) } }),
     ]);
 
     // 2. Media Stats (Image Count from News + Drive)
     const [newsImageStats, driveImageCount] = await Promise.all([
-      db.collection("news")
+      db
+        .collection("news")
         .aggregate([
           {
             $project: {
               imageCount: {
                 $add: [
                   { $cond: { if: { $isArray: "$images" }, then: { $size: "$images" }, else: 0 } },
-                  { $cond: { if: { $isArray: "$announcementImages" }, then: { $size: "$announcementImages" }, else: 0 } },
+                  {
+                    $cond: {
+                      if: { $isArray: "$announcementImages" },
+                      then: { $size: "$announcementImages" },
+                      else: 0,
+                    },
+                  },
                 ],
               },
             },
@@ -70,15 +79,16 @@ export async function GET() {
           { $group: { _id: null, total: { $sum: "$imageCount" } } },
         ])
         .toArray(),
-      db.collection("drive_files").countDocuments({ type: { $regex: /^image\//i } })
+      db.collection("drive_files").countDocuments({ type: { $regex: /^image\//i } }),
     ]);
 
-    const totalImagesCount = (newsImageStats.length > 0 ? newsImageStats[0].total : 0) + driveImageCount;
+    const totalImagesCount =
+      (newsImageStats.length > 0 ? newsImageStats[0].total : 0) + driveImageCount;
 
     // 3. Infrastructure Usage (MongoDB)
     const dbStats = await db.stats();
     const dbSizeMB = (dbStats.storageSize / (1024 * 1024)).toFixed(2);
-    
+
     // 4. Local Storage & DB Quotas
     let storageUsageMB = "0.00";
     let storageLimitMB = 20000; // Default fallback
@@ -88,12 +98,12 @@ export async function GET() {
     let serverAvailableMB = 0;
     let cpuUsage = "0";
     let ramUsage = { total: 0, used: 0, percent: 0 };
-    
+
     try {
       // Fetch custom limits from database
       const [storageLimit, dbLimit] = await Promise.all([
         db.collection("site_settings").findOne({ key: "storage_limit_mb" }),
-        db.collection("site_settings").findOne({ key: "db_limit_mb" })
+        db.collection("site_settings").findOne({ key: "db_limit_mb" }),
       ]);
 
       if (storageLimit) {
@@ -143,7 +153,7 @@ export async function GET() {
           console.error(`Error reading ${folderPath}:`, e.message);
         }
       }
-      
+
       storageUsageMB = (totalBytes / (1024 * 1024)).toFixed(2);
 
       // 4. Get real disk stats and Lenovo Host Info
@@ -178,7 +188,8 @@ export async function GET() {
 
           // คำนวณ CPU แบบ Real-time (Delta ช่วง 100ms) แทนที่จะดึงค่าเฉลี่ยสะสมตั้งแต่เปิดเครื่อง
           const getCpuData = () => {
-            let idle = 0, total = 0;
+            let idle = 0,
+              total = 0;
             os.cpus().forEach((cpu: any) => {
               for (let type in cpu.times) total += cpu.times[type];
               idle += cpu.times.idle;
@@ -186,11 +197,12 @@ export async function GET() {
             return { idle, total };
           };
           const startCpu = getCpuData();
-          await new Promise(res => setTimeout(res, 100)); // หน่วงเวลา 100ms เพื่อเปรียบเทียบ
+          await new Promise((res) => setTimeout(res, 100)); // หน่วงเวลา 100ms เพื่อเปรียบเทียบ
           const endCpu = getCpuData();
           const idleDelta = endCpu.idle - startCpu.idle;
           const totalDelta = endCpu.total - startCpu.total;
-          cpuUsage = totalDelta === 0 ? "0" : (100 - Math.round((idleDelta / totalDelta) * 100)).toString();
+          cpuUsage =
+            totalDelta === 0 ? "0" : (100 - Math.round((idleDelta / totalDelta) * 100)).toString();
         } else {
           // --- รันบน PC (ดึงข้อมูลพื้นฐานจาก MongoDB) ---
           try {
@@ -202,10 +214,12 @@ export async function GET() {
               percent: 0,
             };
             // แสดงเลข 1 เพื่อให้เข็มไมล์ขยับ (แทนสถานะเชื่อมต่อได้)
-            cpuUsage = "1"; 
+            cpuUsage = "1";
           } catch (mongoErr: any) {
             if (mongoErr.code === 13 || mongoErr.message?.includes("not authorized")) {
-              console.warn("⚠️ MongoDB user is not authorized on admin db for hostInfo (falling back to OS stats)");
+              console.warn(
+                "⚠️ MongoDB user is not authorized on admin db for hostInfo (falling back to OS stats)",
+              );
             } else {
               console.error("MongoDB HostInfo Error:", mongoErr);
             }
@@ -214,10 +228,11 @@ export async function GET() {
               used: Math.round((os.totalmem() - os.freemem()) / (1024 * 1024)),
               percent: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
             };
-            
+
             // Fallback CPU แบบ Real-time เช่นกัน
             const getCpuData = () => {
-              let idle = 0, total = 0;
+              let idle = 0,
+                total = 0;
               os.cpus().forEach((cpu: any) => {
                 for (let type in cpu.times) total += cpu.times[type];
                 idle += cpu.times.idle;
@@ -225,11 +240,14 @@ export async function GET() {
               return { idle, total };
             };
             const startCpu = getCpuData();
-            await new Promise(res => setTimeout(res, 100));
+            await new Promise((res) => setTimeout(res, 100));
             const endCpu = getCpuData();
             const idleDelta = endCpu.idle - startCpu.idle;
             const totalDelta = endCpu.total - startCpu.total;
-            cpuUsage = totalDelta === 0 ? "0" : (100 - Math.round((idleDelta / totalDelta) * 100)).toString();
+            cpuUsage =
+              totalDelta === 0
+                ? "0"
+                : (100 - Math.round((idleDelta / totalDelta) * 100)).toString();
           }
         }
       } catch (infraErr) {

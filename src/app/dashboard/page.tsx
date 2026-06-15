@@ -66,6 +66,27 @@ export default function DashboardLoader() {
   const [regEnabled, setRegEnabled] = useState(true);
   const [updatingReg, setUpdatingReg] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [isActiveUsersModalOpen, setIsActiveUsersModalOpen] = useState(false);
+  const [activeUsersList, setActiveUsersList] = useState<any[]>([]);
+  const [loadingActiveUsers, setLoadingActiveUsers] = useState(false);
+
+  const handleViewActiveUsers = async () => {
+    setIsActiveUsersModalOpen(true);
+    setLoadingActiveUsers(true);
+    try {
+      const res = await fetch("/api/admin/active-users?_t=" + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setActiveUsersList(data.data || []);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingActiveUsers(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -307,14 +328,17 @@ export default function DashboardLoader() {
                       unit=" Users"
                       variants={item}
                     />
-                    <StatCard
-                      label="User กำลังใช้งาน"
-                      value={stats.activeUsers || 0}
-                      icon={Users}
-                      color="blue"
-                      unit=" Users"
-                      variants={item}
-                    />
+                    {!["student", "user"].includes(((session?.user as any)?.role || "").toLowerCase()) && (
+                      <StatCard
+                        label="User กำลังใช้งาน"
+                        value={stats.activeUsers || 0}
+                        icon={Users}
+                        color="blue"
+                        unit=" Users"
+                        variants={item}
+                        onClick={handleViewActiveUsers}
+                      />
+                    )}
                     <StatCard
                       label="จำนวนรูปภาพ"
                       value={stats.totalImagesCount}
@@ -1037,6 +1061,81 @@ export default function DashboardLoader() {
         </motion.div>
       </div>
 
+      {/* --- Active Users Modal --- */}
+      <AnimatePresence>
+        {isActiveUsersModalOpen && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsActiveUsersModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl overflow-hidden max-h-[80vh] flex flex-col"
+            >
+              <div className="absolute top-0 right-0 p-8 pointer-events-none">
+                <Users className="w-12 h-12 text-blue-500/10" />
+              </div>
+
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
+                ผู้ใช้งานระบบขณะนี้
+              </h3>
+              <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                รายชื่อผู้ใช้งานที่มีการเคลื่อนไหวในช่วง 15 นาทีที่ผ่านมา
+              </p>
+
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+                {loadingActiveUsers ? (
+                  <div className="flex justify-center items-center py-12">
+                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                  </div>
+                ) : activeUsersList.length === 0 ? (
+                  <div className="text-center py-12 text-zinc-500 font-bold">
+                    ไม่พบผู้ใช้งานในระบบขณะนี้
+                  </div>
+                ) : (
+                  activeUsersList.map((u) => (
+                    <div key={u._id} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden">
+                        {u.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={u.image} alt={u.name} className="w-full h-full object-cover" />
+                        ) : (
+                          (u.name || u.username || "?")[0]
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-zinc-900 dark:text-white">{u.name || u.username}</p>
+                        <p className="text-[10px] text-zinc-500 font-medium tracking-widest uppercase">{u.role} • {u.username}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
+                          Online
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <button
+                  onClick={() => setIsActiveUsersModalOpen(false)}
+                  className="w-full py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                >
+                  ปิดหน้าต่าง
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* --- Quota Edit Modal --- */}
       <AnimatePresence>
         {isEditingQuota && (
@@ -1177,7 +1276,7 @@ function TelemetryCard({ label, value, unit, subValue, icon: Icon, color }: any)
   );
 }
 
-function StatCard({ label, value, icon: Icon, color, unit, variants }: any) {
+function StatCard({ label, value, icon: Icon, color, unit, variants, onClick }: any) {
   const colors: any = {
     blue: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
     purple: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
@@ -1201,7 +1300,8 @@ function StatCard({ label, value, icon: Icon, color, unit, variants }: any) {
   return (
     <motion.div
       variants={variants}
-      className={`group relative p-6 rounded-[2.5rem] bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-500/30 ${glows[color]}`}
+      onClick={onClick}
+      className={`group relative p-6 rounded-[2.5rem] bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-500/30 ${glows[color]} ${onClick ? "cursor-pointer" : ""}`}
     >
       <div className="flex justify-between items-start mb-5">
         <div
