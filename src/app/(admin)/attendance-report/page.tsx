@@ -53,8 +53,9 @@ export default function AttendanceReportPage() {
         const data = await res.json();
         const map: Record<string, string> = { all: "ทั้งหมด" };
         const allowedRoles = [
-          "teacher", "staff", "janitor", "director", 
-          "deputy_academic", "deputy_resource", "deputy_strategy", "deputy_student_affairs"
+          "admin", "editor", "hr", "director", 
+          "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs",
+          "teacher", "janitor", "staff"
         ];
         data.forEach((r: any) => {
           if (allowedRoles.includes(r.role)) {

@@ -123,13 +123,13 @@ const FEATURE_LABELS: {
     href: "/teacher-dashboard",
   },
   access_lesson_plans: {
-    label: "ตรวจสอบแผนการสอน",
+    label: "จัดการแผนการสอน",
     icon: FiFileText,
     color: "text-emerald-500",
     href: "/dashboard/director/lesson-plans",
   },
   access_dpa_evaluation: {
-    label: "ประเมินผล PA/DPA",
+    label: "แฟ้มพัฒนางาน / DPA",
     icon: FiCheckCircle,
     color: "text-rose-500",
     href: "/dashboard/director/dpa-evaluation",

@@ -59,13 +59,15 @@ export async function GET(req: Request) {
       { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } }
     ];
 
+    const allowedRoles = [
+      "admin", "editor", "hr", "director", 
+      "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs",
+      "teacher", "janitor", "staff"
+    ];
+
     if (roleParam && roleParam !== "all") {
       pipeline.push({ $match: { "userDetails.role": roleParam } });
     } else {
-      const allowedRoles = [
-        "teacher", "staff", "janitor", "director", 
-        "deputy_academic", "deputy_resource", "deputy_strategy", "deputy_student_affairs"
-      ];
       pipeline.push({ $match: { "userDetails.role": { $in: allowedRoles } } });
     }
 
@@ -96,6 +98,8 @@ export async function GET(req: Request) {
     const userQuery: any = { isActive: true };
     if (roleParam && roleParam !== "all") {
       userQuery.role = roleParam;
+    } else {
+      userQuery.role = { $in: allowedRoles };
     }
     const allUsers = await db.collection("users").find(userQuery).toArray();
     

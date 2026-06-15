@@ -630,6 +630,42 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
+                {permissions?.access_lesson_plans && (
+                  <ActionCard
+                    href="/dashboard/director/lesson-plans"
+                    title="จัดการแผนการสอน"
+                    icon={FileText}
+                    desc="ระบบส่งและติดตามแผนการสอนออนไลน์"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_dpa_evaluation && (
+                  <ActionCard
+                    href="/dashboard/director/dpa-evaluation"
+                    title="ประเมินผลการปฏิบัติงาน / DPA"
+                    icon={ShieldCheck}
+                    desc="แฟ้มพัฒนางานและประเมินผลการสอน"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_plc && (
+                  <ActionCard
+                    href="/dashboard/director/plc"
+                    title="ชุมชนการเรียนรู้ทางวิชาชีพ (PLC)"
+                    icon={Users}
+                    desc="บันทึกการรวมกลุ่มและรายงานผลการจัดทำ PLC"
+                    variants={item}
+                  />
+                )}
+                {permissions?.access_student_care && (
+                  <ActionCard
+                    href="/dashboard/director/student-care"
+                    title="ระบบดูแลช่วยเหลือนักเรียน"
+                    icon={ClipboardList}
+                    desc="รายงานเยี่ยมบ้าน คัดกรองนักเรียน และผลสัมฤทธิ์"
+                    variants={item}
+                  />
+                )}
                 {customMenus.filter(m => m.workspace === "teacher" && permissions?.[m.permissionKey]).map(menu => (
                   <ActionCard
                     key={menu._id}
@@ -781,42 +817,7 @@ export default function DashboardLoader() {
                     variants={item}
                   />
                 )}
-                {permissions?.access_lesson_plans && (
-                  <ActionCard
-                    href="/dashboard/director/lesson-plans"
-                    title="ตรวจสอบแผนการสอน"
-                    icon={FileText}
-                    desc="ตรวจสอบและอนุมัติแผนการสอนออนไลน์ของครู"
-                    variants={item}
-                  />
-                )}
-                {permissions?.access_dpa_evaluation && (
-                  <ActionCard
-                    href="/dashboard/director/dpa-evaluation"
-                    title="ประเมินผลการปฏิบัติงาน / DPA"
-                    icon={ShieldCheck}
-                    desc="ตรวจสอบแฟ้มพัฒนางานและประเมินผลการสอน"
-                    variants={item}
-                  />
-                )}
-                {permissions?.access_plc && (
-                  <ActionCard
-                    href="/dashboard/director/plc"
-                    title="ชุมชนการเรียนรู้ทางวิชาชีพ (PLC)"
-                    icon={Users}
-                    desc="บันทึกการรวมกลุ่มและรายงานผลการจัดทำ PLC"
-                    variants={item}
-                  />
-                )}
-                {permissions?.access_student_care && (
-                  <ActionCard
-                    href="/dashboard/director/student-care"
-                    title="ระบบดูแลช่วยเหลือนักเรียน"
-                    icon={ClipboardList}
-                    desc="รายงานเยี่ยมบ้าน คัดกรองนักเรียน และผลสัมฤทธิ์"
-                    variants={item}
-                  />
-                )}
+
                 {permissions?.manage_attendance_dashboard && (
                   <>
                     <ActionCard
