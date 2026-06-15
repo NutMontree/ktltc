@@ -704,6 +704,11 @@ export function DVEStudentPortal() {
       setStudySecondsElapsed((prev) => {
         const nextVal = prev + 1;
 
+        // Sync progress to backend every 60 seconds so teachers can see live updates
+        if (nextVal > 0 && nextVal % 60 === 0) {
+          handleSaveStudyProgress(nextVal);
+        }
+
         // Check if minimum time is reached (use ref to avoid stale closure)
         if (!isMinimumTimeReachedRef.current && nextVal >= studyLimitSeconds) {
           setIsMinimumTimeReached(true);
@@ -789,8 +794,14 @@ export function DVEStudentPortal() {
 
   // Load subject contents once selected
   const handleSubjectSelect = async (subjectId: string) => {
+    // Save current unit's progress before switching subjects
+    if (activeStudyUnit && studySecondsElapsed > 0) {
+      handleSaveStudyProgressDirect(activeStudyUnit, studySecondsElapsed);
+    }
+
     setSearchState((prev) => ({ ...prev, subjectId }));
     if (!subjectId) {
+      setActiveStudyUnit(null);
       setActiveSubject(null);
       return;
     }
@@ -1388,6 +1399,11 @@ export function DVEStudentPortal() {
                         key={unit.id}
                         type="button"
                         onClick={() => {
+                          // Save current unit's progress before switching
+                          if (activeStudyUnit && activeStudyUnit.id !== unit.id && studySecondsElapsed > 0) {
+                            handleSaveStudyProgressDirect(activeStudyUnit, studySecondsElapsed);
+                          }
+
                           const unitIdStr = unit.id || unit._id?.toString();
                           const pretest = quizzes.find(
                             (q) =>
@@ -1948,88 +1964,6 @@ export function DVEStudentPortal() {
                   </div>
                 )}
 
-                {/* 📝 QUIZZES (Pre-test & Post-test) */}
-                {(() => {
-                  const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
-                  const targetQuizzes = quizzes.filter((q) => q.unitId === currentUnitId);
-                  const pretest = targetQuizzes.find((q) => q.quizType === "pretest" || q.title?.includes("ก่อนเรียน"));
-                  const posttest = targetQuizzes.find((q) => q.quizType === "posttest" || q.title?.includes("หลังเรียน"));
-
-                  if (!pretest && !posttest) return null;
-
-                  return (
-                    <div className="space-y-4 bg-zinc-50/50 dark:bg-zinc-800/30 p-5 rounded-[24px] border border-zinc-100 dark:border-zinc-800">
-                      <h3 className="text-sm font-black text-zinc-900 dark:text-white flex items-center gap-2 border-b pb-3 dark:border-zinc-800 border-zinc-200">
-                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-                          <BookmarkCheck size={16} />
-                        </div>
-                        แบบทดสอบประจำหน่วยเรียน
-                      </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {pretest && (
-                          <div className={`p-4 rounded-2xl border flex flex-col justify-between transition-all ${pretest.isSubmitted ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-800/50 shadow-sm' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-md hover:shadow-lg'}`}>
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800/50">
-                                  Pre-test
-                                </span>
-                                {pretest.isSubmitted && (
-                                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
-                                    <CheckCircle size={10} /> ทำแล้ว
-                                  </span>
-                                )}
-                              </div>
-                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-2 leading-relaxed">{pretest.title}</h4>
-                            </div>
-                            <button
-                              onClick={() => {
-                                setUnitQuizMode("pretest");
-                                handleOpenQuizFormGlobal(pretest);
-                              }}
-                              disabled={pretest.isSubmitted}
-                              className={`mt-4 py-2.5 px-4 rounded-xl text-xs font-black w-full transition-all border-0 cursor-pointer flex items-center justify-center gap-1.5 ${pretest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : 'bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white shadow-[0_4px_14px_0_rgba(59,130,246,0.39)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.23)] hover:-translate-y-0.5 active:scale-95'}`}
-                            >
-                              {pretest.isSubmitted ? 'ส่งคำตอบแล้ว' : 'ทำแบบทดสอบก่อนเรียน'}
-                              {!pretest.isSubmitted && <ArrowRight size={14} />}
-                            </button>
-                          </div>
-                        )}
-                        {posttest && (
-                          <div className={`p-4 rounded-2xl border flex flex-col justify-between transition-all ${posttest.isSubmitted ? 'bg-cyan-50/50 dark:bg-cyan-900/10 border-cyan-100 dark:border-cyan-800/50 shadow-sm' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-md hover:shadow-lg'}`}>
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-[10px] font-black uppercase text-cyan-600 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-900/50 px-2.5 py-1 rounded-full border border-cyan-200 dark:border-cyan-800/50">
-                                  Post-test
-                                </span>
-                                {posttest.isSubmitted && (
-                                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
-                                    <CheckCircle size={10} /> ทำแล้ว
-                                  </span>
-                                )}
-                              </div>
-                              <h4 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 line-clamp-2 leading-relaxed">{posttest.title}</h4>
-                            </div>
-                            <button
-                              onClick={() => {
-                                if (!isMinimumTimeReached && !posttest.isSubmitted && Number(activeStudyUnit.studyMinutes) > 0) {
-                                  message.warning(`กรุณาเรียนให้ครบเวลาขั้นต่ำ ${activeStudyUnit.studyMinutes} นาที ก่อนทำแบบทดสอบหลังเรียน`);
-                                  return;
-                                }
-                                setUnitQuizMode("posttest");
-                                handleOpenQuizFormGlobal(posttest);
-                              }}
-                              disabled={posttest.isSubmitted}
-                              className={`mt-4 py-2.5 px-4 rounded-xl text-xs font-black w-full transition-all border-0 cursor-pointer flex items-center justify-center gap-1.5 ${posttest.isSubmitted ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' : !isMinimumTimeReached && Number(activeStudyUnit.studyMinutes) > 0 ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-linear-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white shadow-[0_4px_14px_0_rgba(6,182,212,0.39)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.23)] hover:-translate-y-0.5 active:scale-95'}`}
-                            >
-                              {posttest.isSubmitted ? 'ส่งคำตอบแล้ว' : !isMinimumTimeReached && Number(activeStudyUnit.studyMinutes) > 0 ? 'ต้องเรียนให้ครบเวลาก่อน' : 'ทำแบบทดสอบหลังเรียน'}
-                              {(!posttest.isSubmitted && (!Number(activeStudyUnit.studyMinutes) || isMinimumTimeReached)) && <ArrowRight size={14} />}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
                 {/* 📝 LESSON CONTENT */}
                 <div className="space-y-2">
                   <h3 className="text-sm font-black text-zinc-955 dark:text-white flex items-center gap-1.5 border-b pb-2 dark:border-zinc-800">
