@@ -30,6 +30,7 @@ import {
   ShieldCheck,
   Bell,
   Layout,
+  ScanLine,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -643,6 +644,20 @@ export default function DashboardLoader() {
                   title="ข้อมูลนักเรียนในที่ปรึกษา / แผนก"
                   icon={Users}
                   desc="ตรวจสอบประวัตินักเรียน แยกตามห้องเรียนและกลุ่มเรียน"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/teacher/gate-scanner"
+                  title="ระบบสแกนเข้า-ออก (Gate)"
+                  icon={ScanLine}
+                  desc="สแกน QR Code เพื่อบันทึกการออกนอกสถานศึกษาและเปิด GPS"
+                  variants={item}
+                />
+                <ActionCard
+                  href="/teacher/tracking"
+                  title="ระบบติดตามตำแหน่ง (GPS)"
+                  icon={Navigation}
+                  desc="แสดงตำแหน่งพิกัดของนักเรียนบนแผนที่แบบเรียลไทม์"
                   variants={item}
                 />
                 {permissions?.access_dve_teacher && (
