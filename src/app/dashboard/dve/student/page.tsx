@@ -635,7 +635,7 @@ export function DVEStudentPortal() {
           // Find posttest or just use the first quiz for this unit
           const targetQuiz =
             targetQuizzes.find(
-              (q) => q.title.toLowerCase().includes("post") || q.title.includes("หลังเรียน"),
+              (q) => q.quizType === "posttest" || q.title?.toLowerCase().includes("post") || q.title?.includes("หลังเรียน"),
             ) || targetQuizzes[0];
           message.loading("📝 เรียนจบเวลาแล้ว! กำลังเตรียมแบบทดสอบประเมินผล...", 3);
           setTimeout(() => {
@@ -733,7 +733,7 @@ export function DVEStudentPortal() {
           const posttest = quizzes.find(
             (q) =>
               q.unitId === currentUnitIdStr &&
-              (q.title.includes("หลังเรียน") || q.title.toLowerCase().includes("post")),
+              (q.quizType === "posttest" || q.title?.includes("หลังเรียน") || q.title?.toLowerCase().includes("post")),
           );
           if (posttest && !posttest.isSubmitted) {
             setUnitQuizMode("posttest");
@@ -761,7 +761,7 @@ export function DVEStudentPortal() {
         const pretest = quizzes.find(
           (q) =>
             q.unitId === unitIdStr &&
-            (q.title.includes("ก่อนเรียน") || q.title.toLowerCase().includes("pre")),
+            (q.quizType === "pretest" || q.title?.includes("ก่อนเรียน") || q.title?.toLowerCase().includes("pre")),
         );
         if (pretest?.isSubmitted) {
           // After pre-test is submitted, switch to learning mode (timer)
@@ -1395,8 +1395,7 @@ export function DVEStudentPortal() {
                           const pretest = quizzes.find(
                             (q) =>
                               q.unitId === unitIdStr &&
-                              (q.title.includes("ก่อนเรียน") ||
-                                q.title.toLowerCase().includes("pre")),
+                              (q.quizType === "pretest" || q.title?.includes("ก่อนเรียน") || q.title?.toLowerCase().includes("pre")),
                           );
 
                           // Find if there is an existing attendance record for this unit
