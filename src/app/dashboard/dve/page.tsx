@@ -5668,6 +5668,9 @@ function DVETeacherWorkspace() {
                 </button>
               </div>
             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
         {/* Mobile Student Details Modal */}
         <Modal
           title={null}
@@ -5868,10 +5871,6 @@ function DVETeacherWorkspace() {
             );
           })()}
         </Modal>
-
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
