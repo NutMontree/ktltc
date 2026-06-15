@@ -1831,13 +1831,13 @@ export function DVEStudentPortal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md"
+            className="fixed inset-0 z-9999 flex bg-zinc-950/80 backdrop-blur-md"
           >
             <motion.div
               initial={{ scale: 0.95, y: 30 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 30 }}
-              className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl relative"
+              className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 w-full h-full overflow-y-auto shadow-2xl relative"
             >
               {/* Header Banner */}
               <div className="bg-linear-to-br from-emerald-500 to-teal-600 text-white p-6 relative">
@@ -2248,26 +2248,18 @@ export function DVEStudentPortal() {
       {/* 📝 In-App Google Forms Replica Quiz Filler Modal */}
       <AnimatePresence>
         {isQuizModalOpen && activeQuiz && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 z-9999 flex">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => {
-                if (
-                  !quizResult &&
-                  !confirm("คุณต้องการปิดข้อสอบนี้ใช่หรือไม่? (คำตอบที่ตอบไว้จะสูญหาย)")
-                )
-                  return;
-                setIsQuizModalOpen(false);
-              }}
               className="absolute inset-0 bg-slate-900/50 dark:bg-zinc-950/80 backdrop-blur-xs"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-2xl bg-[#f0ebf8] dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden text-left flex flex-col my-8 border dark:border-zinc-800"
+              className="relative w-full h-full bg-[#f0ebf8] dark:bg-zinc-900 shadow-2xl overflow-y-auto text-left flex flex-col border dark:border-zinc-800"
             >
               {/* iconic Google Forms top purple bar */}
               <div className="h-2.5 w-full bg-[#673ab7]" />
@@ -2596,7 +2588,7 @@ export function DVEStudentPortal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-9999 flex items-center justify-center p-4"
+            className="fixed inset-0 z-9999 flex"
           >
             {/* Backdrop */}
             <motion.div
@@ -2604,7 +2596,6 @@ export function DVEStudentPortal() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-zinc-950/75 backdrop-blur-md"
-              onClick={closeImageModal}
             />
 
             {/* Modal Card */}
@@ -2613,7 +2604,7 @@ export function DVEStudentPortal() {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.92, y: 24, opacity: 0 }}
               transition={{ type: "spring", stiffness: 320, damping: 28 }}
-              className="relative z-10 w-full max-w-xl bg-white dark:bg-zinc-900 rounded-[28px] shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[85vh]"
+              className="relative z-10 w-full h-full bg-white dark:bg-zinc-900 shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-y-auto flex flex-col"
             >
               {/* Header */}
               <div className="bg-linear-to-r from-emerald-500 to-teal-650 px-6 py-5 flex items-center justify-between text-white shadow-xs shrink-0">

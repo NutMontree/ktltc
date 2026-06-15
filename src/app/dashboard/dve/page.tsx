@@ -38,11 +38,21 @@ import {
   Eye,
   Filter,
   EyeOff,
+  XCircle,
+  MinusCircle,
+  FileCheck,
+  AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker, Modal } from "antd";
 import { uploadFile } from "@/lib/upload";
 import { DEPARTMENTS } from "@/lib/constants";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+import "dayjs/locale/th";
+
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
 
 type DveExtractScoreResult = {
   score: string | null;
@@ -1707,6 +1717,11 @@ function DVETeacherWorkspace() {
                           ห้องเรียนที่อนุญาต: {formatClassGroupsText(sub.allowedClassGroups)}
                         </p>
                       )}
+                      {(((session?.user as any)?.role || "").toLowerCase() === "super_admin" || ((session?.user as any)?.role || "").toLowerCase() === "admin") && sub.teacherName && (
+                        <p className="text-[10px] text-blue-500 dark:text-blue-400 mt-1 font-bold truncate">
+                          ผู้สอน: {sub.teacherName}
+                        </p>
+                      )}
                       <div
                         className="flex justify-end gap-2 mt-3 border-t dark:border-zinc-800 pt-2"
                         onClick={(e) => e.stopPropagation()}
@@ -2206,15 +2221,16 @@ function DVETeacherWorkspace() {
                       ดูวันที่มีงาน
                     </button>
                   </div>
-                  <input
-                    type="date"
-                    className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
-                    value={checkinFilter.date}
-                    onChange={(e) => {
-                      setCheckinFilter((prev) => ({ ...prev, date: e.target.value }));
+                  <DatePicker
+                    format="DD/MM/BBBB"
+                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white font-bold"
+                    value={checkinFilter.date ? dayjs(checkinFilter.date) : null}
+                    onChange={(date) => {
+                      setCheckinFilter((prev) => ({ ...prev, date: date ? date.format("YYYY-MM-DD") : "" }));
                       setAttendanceLogs([]);
                       setAttendanceRecords({});
                     }}
+                    placeholder="วว/ดด/ปปปป"
                   />
                 </div>
 
@@ -2225,7 +2241,7 @@ function DVETeacherWorkspace() {
                   <input
                     type="text"
                     placeholder="🔍 พิมพ์ชื่อ หรือ รหัส..."
-                    className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white placeholder-zinc-400 font-bold"
+                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white placeholder-zinc-400 font-bold"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -2234,9 +2250,9 @@ function DVETeacherWorkspace() {
                 <button
                   onClick={handleLoadRoster}
                   disabled={!checkinFilter.subjectId}
-                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-100 disabled:text-zinc-400 dark:disabled:bg-zinc-800 text-white font-black rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/10 cursor-pointer"
+                  className="w-full h-12 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:from-zinc-200 disabled:to-zinc-300 disabled:text-zinc-400 dark:disabled:from-zinc-800 dark:disabled:to-zinc-800 text-white font-black rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 cursor-pointer border-0 active:scale-95"
                 >
-                  <Search size={16} />
+                  <Search size={18} />
                   ดึงรายชื่อเด็ก
                 </button>
               </div>
@@ -2254,9 +2270,13 @@ function DVETeacherWorkspace() {
               onCancel={() => setIsDateModalOpen(false)}
               footer={null}
               centered
+              maskClosable={false}
+              keyboard={false}
+              width="100vw"
+              style={{ top: 0, padding: 0, margin: 0, maxWidth: '100vw', height: '100vh', paddingBottom: 0 }}
               styles={{
                 header: { padding: "20px 24px 0" },
-                body: { padding: "20px 24px" }
+                body: { padding: "20px 24px", height: 'calc(100vh - 60px)', overflowY: 'auto' }
               }}
             >
               {loadingDates ? (
@@ -3400,7 +3420,7 @@ function DVETeacherWorkspace() {
                   <input
                     type="text"
                     placeholder="🔍 พิมพ์เพื่อค้นหา..."
-                    className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white placeholder-zinc-400 font-bold"
+                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white placeholder-zinc-400 font-bold"
                     value={internshipSearchQuery}
                     onChange={(e) => setInternshipSearchQuery(e.target.value)}
                   />
@@ -3591,31 +3611,31 @@ function DVETeacherWorkspace() {
       {/* 1. Add/Edit Subject Modal */}
       <AnimatePresence>
         {isSubjectModalOpen && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-9999 flex">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsSubjectModalOpen(false)}
               className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-4xl shadow-2xl overflow-hidden text-left flex flex-col max-h-[90vh]"
+              className="relative w-full h-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl overflow-hidden text-left flex flex-col"
             >
               <form onSubmit={handleSaveSubject} className="flex flex-col h-full overflow-hidden">
-                <div className="shrink-0 px-8 py-5 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                      <BookOpen size={20} />
+                <div className="shrink-0 px-8 py-6 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center bg-linear-to-r from-emerald-500/10 to-teal-500/5 dark:from-emerald-500/20 dark:to-teal-500/10 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+                  <div className="flex items-center gap-4 relative z-10">
+                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white">
+                      <BookOpen size={24} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-black text-zinc-900 dark:text-white leading-tight">
+                      <h3 className="text-xl font-black text-emerald-900 dark:text-emerald-100">
                         {subjectForm.id ? "แก้ไขข้อมูลรายวิชา" : "สร้างรายวิชาทวิภาคีใหม่"}
                       </h3>
-                      <p className="text-xs font-bold text-zinc-500">
+                      <p className="text-xs text-emerald-700/70 dark:text-emerald-400/80 font-bold mt-1">
                         กรอกรายละเอียดวิชาและตั้งค่าชั่วโมงเรียน
                       </p>
                     </div>
@@ -3623,9 +3643,9 @@ function DVETeacherWorkspace() {
                   <button
                     type="button"
                     onClick={() => setIsSubjectModalOpen(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-200/50 dark:bg-zinc-800/50 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer transition-colors relative z-10 border-0 bg-transparent"
                   >
-                    <X size={16} />
+                    <X size={20} />
                   </button>
                 </div>
 
@@ -3639,7 +3659,7 @@ function DVETeacherWorkspace() {
                         type="text"
                         placeholder="เช่น 30201-2001"
                         required
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={subjectForm.code}
                         onChange={(e) =>
                           setSubjectForm((prev) => ({ ...prev, code: e.target.value }))
@@ -3651,7 +3671,7 @@ function DVETeacherWorkspace() {
                         ระดับหลักสูตร *
                       </label>
                       <select
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer"
                         value={subjectForm.curriculum}
                         onChange={(e) =>
                           setSubjectForm((prev) => ({ ...prev, curriculum: e.target.value }))
@@ -3671,7 +3691,7 @@ function DVETeacherWorkspace() {
                       type="text"
                       placeholder="เช่น การฝึกอาชีพทวิภาคี 1"
                       required
-                      className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                      className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                       value={subjectForm.name}
                       onChange={(e) =>
                         setSubjectForm((prev) => ({ ...prev, name: e.target.value }))
@@ -3711,7 +3731,7 @@ function DVETeacherWorkspace() {
                           <div key={idx} className="flex gap-2 items-center">
                             <select
                               required
-                              className="flex-1 h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                              className="flex-1 h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer"
                               value={currentDept}
                               onChange={(e) => {
                                 const newDepts = [...depts];
@@ -3835,7 +3855,7 @@ function DVETeacherWorkspace() {
                         type="text"
                         placeholder="เช่น 1/2569"
                         required
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={subjectForm.semester}
                         onChange={(e) =>
                           setSubjectForm((prev) => ({ ...prev, semester: e.target.value }))
@@ -3850,7 +3870,7 @@ function DVETeacherWorkspace() {
                         type="text"
                         placeholder="เช่น 2569"
                         required
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={subjectForm.academicYear}
                         onChange={(e) =>
                           setSubjectForm((prev) => ({ ...prev, academicYear: e.target.value }))
@@ -3873,7 +3893,7 @@ function DVETeacherWorkspace() {
                       <input
                         type="number"
                         placeholder="เช่น 18"
-                        className="w-full h-11 border border-emerald-200 dark:border-emerald-800/50 bg-white/50 dark:bg-zinc-900/50 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        className="w-full h-12 border-2 border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={(subjectForm as any).totalWeeks || ""}
                         onChange={(e) => {
                           const w = e.target.value;
@@ -3892,7 +3912,7 @@ function DVETeacherWorkspace() {
                       <input
                         type="number"
                         placeholder="เช่น 1"
-                        className="w-full h-11 border border-emerald-200 dark:border-emerald-800/50 bg-white/50 dark:bg-zinc-900/50 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        className="w-full h-12 border-2 border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={(subjectForm as any).daysPerWeek || ""}
                         onChange={(e) => {
                           const d = e.target.value;
@@ -3911,7 +3931,7 @@ function DVETeacherWorkspace() {
                       <input
                         type="number"
                         placeholder="เช่น 2"
-                        className="w-full h-11 border border-emerald-200 dark:border-emerald-800/50 bg-white/50 dark:bg-zinc-900/50 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                        className="w-full h-12 border-2 border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={(subjectForm as any).hoursPerDay || ""}
                         onChange={(e) => {
                           const h = e.target.value;
@@ -3931,7 +3951,7 @@ function DVETeacherWorkspace() {
                         type="number"
                         required
                         placeholder="เช่น 36"
-                        className="w-full h-11 border border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 text-sm font-black focus:outline-hidden dark:text-amber-400"
+                        className="w-full h-12 border-2 border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-950/20 rounded-xl px-4 text-sm font-black focus:outline-hidden focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all dark:text-amber-400"
                         value={(subjectForm as any).totalHours || ""}
                         onChange={(e) =>
                           setSubjectForm((prev) => ({ ...prev, totalHours: e.target.value }))
@@ -3940,20 +3960,23 @@ function DVETeacherWorkspace() {
                     </div>
                   </div>
                 </div>
-                <div className="shrink-0 px-8 py-5 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md flex justify-end gap-3 border-t border-zinc-200/50 dark:border-zinc-800/50">
+                <div className="shrink-0 px-8 py-5 bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-md flex justify-end gap-3 border-t border-zinc-200/50 dark:border-zinc-800/50">
                   <button
                     type="button"
                     onClick={() => setIsSubjectModalOpen(false)}
-                    className="px-6 py-3 rounded-xl text-sm font-black text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                    className="px-6 py-3 rounded-xl text-sm font-black text-zinc-500 bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                   >
                     ยกเลิก
                   </button>
                   <button
                     type="submit"
-                    className="px-8 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-black shadow-lg shadow-emerald-500/25 transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+                    className="relative overflow-hidden px-8 py-3 rounded-2xl bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:via-teal-400 hover:to-emerald-500 text-white text-sm font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 border-0 cursor-pointer group ring-1 ring-white/20 inset-ring inset-ring-white/10 flex items-center gap-2"
                   >
-                    <CheckCircle size={16} />
-                    บันทึกข้อมูล
+                    <span className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Sparkles size={18} className="text-emerald-100 group-hover:text-white transition-colors" />
+                      บันทึกข้อมูลรายวิชา
+                    </span>
                   </button>
                 </div>
               </form>
@@ -3965,19 +3988,18 @@ function DVETeacherWorkspace() {
       {/* 2. Add/Edit Learning Unit Modal */}
       <AnimatePresence>
         {isUnitModalOpen && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-2 sm:p-4">
+          <div className="fixed inset-0 z-9999 flex">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsUnitModalOpen(false)}
               className="absolute inset-0 bg-zinc-955/65 dark:bg-zinc-950/80 backdrop-blur-md"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden text-left"
+              className="relative w-full h-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-y-auto text-left"
             >
               <form onSubmit={handleSaveUnit}>
                 {/* Header */}
@@ -4026,7 +4048,7 @@ function DVETeacherWorkspace() {
                         type="text"
                         placeholder="เช่น หน่วยที่ 1: แนะนำวิชา"
                         required
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 rounded-xl px-4 text-xs focus:outline-hidden dark:text-white placeholder:text-zinc-400 font-medium"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={unitForm.title}
                         onChange={(e) =>
                           setUnitForm((prev) => ({ ...prev, title: e.target.value }))
@@ -4343,9 +4365,13 @@ function DVETeacherWorkspace() {
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl bg-linear-to-r from-emerald-500 to-teal-650 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black shadow-md shadow-emerald-500/10 hover:scale-[1.02] active:scale-98 transition-all duration-150 border-0 cursor-pointer"
+                    className="relative overflow-hidden px-8 py-3 rounded-2xl bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:via-teal-400 hover:to-emerald-500 text-white text-sm font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 border-0 cursor-pointer group ring-1 ring-white/20 inset-ring inset-ring-white/10"
                   >
-                    บันทึกหน่วยเรียน
+                    <span className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Sparkles size={16} className="text-emerald-100 group-hover:text-white transition-colors" />
+                      บันทึกหน่วยเรียน
+                    </span>
                   </button>
                 </div>
               </form>
@@ -4358,32 +4384,38 @@ function DVETeacherWorkspace() {
       {/* 3. Add/Edit Quiz Modal */}
       <AnimatePresence>
         {isQuizModalOpen && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-9999 flex">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsQuizModalOpen(false)}
               className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-3xl bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-left"
+              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl overflow-y-auto text-left"
             >
               <form onSubmit={handleSaveQuiz}>
-                <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-center">
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                    <Award size={20} className="text-emerald-500" />
-                    {quizForm.id ? "แก้ไขแบบทดสอบ" : "สร้างแบบทดสอบ (Test Builder)"}
-                  </h3>
+                <div className="shrink-0 px-8 py-6 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center bg-linear-to-r from-emerald-500/10 to-teal-500/5 dark:from-emerald-500/20 dark:to-teal-500/10 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+                  <div className="flex items-center gap-4 relative z-10">
+                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white">
+                      <Award size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-emerald-900 dark:text-emerald-100">
+                        {quizForm.id ? "แก้ไขแบบทดสอบ" : "สร้างแบบทดสอบ (Test Builder)"}
+                      </h3>
+                    </div>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setIsQuizModalOpen(false)}
-                    className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-bold text-zinc-500"
+                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer transition-colors relative z-10 border-0 bg-transparent"
                   >
-                    ปิด
+                    <X size={20} />
                   </button>
                 </div>
 
@@ -4404,7 +4436,7 @@ function DVETeacherWorkspace() {
                         type="text"
                         placeholder="เช่น แบบทดสอบหลังเรียนหน่วยที่ 1"
                         required
-                        className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                         value={quizForm.title}
                         onChange={(e) =>
                           setQuizForm((prev) => ({ ...prev, title: e.target.value }))
@@ -4418,7 +4450,7 @@ function DVETeacherWorkspace() {
                           ผูกกับหน่วยการเรียน (Link to Unit)
                         </label>
                         <select
-                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer"
                           value={quizForm.unitId}
                           onChange={(e) =>
                             setQuizForm((prev) => ({ ...prev, unitId: e.target.value }))
@@ -4447,7 +4479,7 @@ function DVETeacherWorkspace() {
                           ประเภทของแบบทดสอบ / การวัดผล
                         </label>
                         <select
-                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent dark:bg-zinc-900 rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer"
                           value={quizForm.quizType || "general"}
                           onChange={(e) =>
                             setQuizForm((prev) => ({ ...prev, quizType: e.target.value }))
@@ -4515,7 +4547,7 @@ function DVETeacherWorkspace() {
                             type="url"
                             placeholder="https://docs.google.com/forms/d/..."
                             required={!quizForm.isBuiltIn}
-                            className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white"
+                            className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                             value={quizForm.googleFormUrl}
                             onChange={(e) =>
                               setQuizForm((prev) => ({ ...prev, googleFormUrl: e.target.value }))
@@ -4530,12 +4562,13 @@ function DVETeacherWorkspace() {
                         <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                           วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
                         </label>
-                        <input
-                          type="date"
-                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
-                          value={quizForm.startDate}
-                          onChange={(e) =>
-                            setQuizForm((prev) => ({ ...prev, startDate: e.target.value }))
+                        <DatePicker
+                          format="DD/MM/BBBB"
+                          placeholder="วว/ดด/ปปปป"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                          value={quizForm.startDate ? dayjs(quizForm.startDate) : null}
+                          onChange={(date) =>
+                            setQuizForm((prev) => ({ ...prev, startDate: date ? date.format("YYYY-MM-DD") : "" }))
                           }
                         />
                       </div>
@@ -4543,12 +4576,13 @@ function DVETeacherWorkspace() {
                         <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                           วันหมดเขตส่งกระดาษคำตอบ (Deadline)
                         </label>
-                        <input
-                          type="date"
-                          className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold"
-                          value={quizForm.deadline}
-                          onChange={(e) =>
-                            setQuizForm((prev) => ({ ...prev, deadline: e.target.value }))
+                        <DatePicker
+                          format="DD/MM/BBBB"
+                          placeholder="วว/ดด/ปปปป"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                          value={quizForm.deadline ? dayjs(quizForm.deadline) : null}
+                          onChange={(date) =>
+                            setQuizForm((prev) => ({ ...prev, deadline: date ? date.format("YYYY-MM-DD") : "" }))
                           }
                         />
                       </div>
@@ -4677,8 +4711,8 @@ function DVETeacherWorkspace() {
                             type="button"
                             onClick={() => setShowQuizAnswers(!showQuizAnswers)}
                             className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all border cursor-pointer flex items-center gap-1 ${showQuizAnswers
-                                ? "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800"
-                                : "bg-zinc-100 text-zinc-500 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
+                              ? "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800"
+                              : "bg-zinc-100 text-zinc-500 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
                               }`}
                           >
                             {showQuizAnswers ? <EyeOff size={10} /> : <Eye size={10} />}
@@ -4987,23 +5021,18 @@ function DVETeacherWorkspace() {
       {/* 4. Quiz Submissions & Grades Modal */}
       <AnimatePresence>
         {isSubmissionsModalOpen && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-9999 flex">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => {
-                setIsSubmissionsModalOpen(false);
-                setSubmissionsPreviewUrl(null);
-              }}
               className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-5xl bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-left flex flex-col"
-              style={{ maxHeight: "90vh" }}
+              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl overflow-hidden text-left flex flex-col"
             >
               {/* Modal Header */}
               <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-start gap-4 bg-blue-500/5 shrink-0">
@@ -5409,37 +5438,36 @@ function DVETeacherWorkspace() {
       {/* 5. Teacher Edit Student Attendance & Score Modal */}
       <AnimatePresence>
         {editingStudent && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-9999 flex">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setEditingStudent(null)}
               className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-left"
+              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl overflow-y-auto text-left"
             >
-              <div className="px-6 py-4 border-b dark:border-zinc-800 flex justify-between items-center bg-teal-500/5">
-                <div className="space-y-0.5">
-                  <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                    <Edit2 size={18} className="text-emerald-500" />
+              <div className="px-6 py-5 border-b dark:border-zinc-800 flex justify-between items-center bg-linear-to-r from-teal-500/10 to-emerald-500/5 dark:from-teal-500/20 dark:to-emerald-500/10 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+                <div className="space-y-1 relative z-10">
+                  <h3 className="text-lg font-black text-teal-800 dark:text-teal-200 flex items-center gap-2">
+                    <Edit2 size={20} className="text-teal-600 dark:text-teal-400" />
                     แก้ไขข้อมูล: {editingStudent.name}
                   </h3>
-                  <p className="text-[10px] text-zinc-400 font-bold">
-                    รหัสนักศึกษา: {maskSensitiveData(editingStudent.studentIdNum)} • กลุ่ม:{" "}
-                    {standardizeClassGroupName(editingStudent.classGroupId)}
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-bold flex items-center gap-1.5">
+                    <User size={12} /> {maskSensitiveData(editingStudent.studentIdNum)} <span className="text-zinc-300 dark:text-zinc-700">|</span> <Users size={12} /> {standardizeClassGroupName(editingStudent.classGroupId)}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setEditingStudent(null)}
-                  className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-bold text-zinc-500 cursor-pointer border-0 bg-transparent"
+                  className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer transition-colors relative z-10 border-0 bg-transparent"
                 >
-                  ปิด
+                  <X size={20} />
                 </button>
               </div>
 
@@ -5457,13 +5485,14 @@ function DVETeacherWorkspace() {
                           : statusOption === "Late"
                             ? "มาสาย"
                             : "ขาดเรียน";
-                      const colorClass =
-                        statusOption === "Present"
-                          ? "bg-emerald-500 text-white shadow-sm"
-                          : statusOption === "Late"
-                            ? "bg-amber-500 text-white shadow-sm"
-                            : "bg-rose-500 text-white shadow-sm";
                       const active = editingStudent.status === statusOption;
+                      const Icon = statusOption === "Present" ? CheckCircle : statusOption === "Late" ? Clock : XCircle;
+
+                      const activeColor =
+                        statusOption === "Present" ? "bg-emerald-50 text-emerald-700 ring-2 ring-emerald-500/50 dark:bg-emerald-500/20 dark:text-emerald-300 shadow-sm" :
+                          statusOption === "Late" ? "bg-amber-50 text-amber-700 ring-2 ring-amber-500/50 dark:bg-amber-500/20 dark:text-amber-300 shadow-sm" :
+                            "bg-rose-50 text-rose-700 ring-2 ring-rose-500/50 dark:bg-rose-500/20 dark:text-rose-300 shadow-sm";
+
                       return (
                         <button
                           key={statusOption}
@@ -5471,11 +5500,12 @@ function DVETeacherWorkspace() {
                           onClick={() =>
                             setEditingStudent({ ...editingStudent, status: statusOption })
                           }
-                          className={`py-2.5 rounded-xl text-xs font-black transition-all ${active
-                            ? colorClass
-                            : "bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-750"
+                          className={`flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl text-xs font-black transition-all border-0 cursor-pointer ${active
+                            ? activeColor
+                            : "bg-white dark:bg-zinc-800/50 ring-1 ring-zinc-200 dark:ring-zinc-700/60 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:ring-zinc-300 dark:hover:ring-zinc-600"
                             }`}
                         >
+                          <Icon size={18} className={active ? "" : "opacity-60"} />
                           {label}
                         </button>
                       );
@@ -5505,14 +5535,15 @@ function DVETeacherWorkspace() {
                           : statusOption === "Submitted"
                             ? "ส่งแล้ว"
                             : "ค้างส่ง";
-                      const colorClass =
-                        statusOption === "None"
-                          ? "bg-zinc-300 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200"
-                          : statusOption === "Submitted"
-                            ? "bg-teal-500 text-white shadow-sm"
-                            : "bg-orange-500 text-white shadow-sm";
                       const active = editingStudent.assignmentStatus === statusOption;
                       const disabled = !editingStudent.unitId;
+                      const Icon = statusOption === "None" ? MinusCircle : statusOption === "Submitted" ? FileCheck : AlertCircle;
+
+                      const activeColor =
+                        statusOption === "None" ? "bg-zinc-100 text-zinc-700 ring-2 ring-zinc-400/50 dark:bg-zinc-800 dark:text-zinc-300 shadow-sm" :
+                          statusOption === "Submitted" ? "bg-teal-50 text-teal-700 ring-2 ring-teal-500/50 dark:bg-teal-500/20 dark:text-teal-300 shadow-sm" :
+                            "bg-orange-50 text-orange-700 ring-2 ring-orange-500/50 dark:bg-orange-500/20 dark:text-orange-300 shadow-sm";
+
                       return (
                         <button
                           key={statusOption}
@@ -5521,11 +5552,12 @@ function DVETeacherWorkspace() {
                           onClick={() =>
                             setEditingStudent({ ...editingStudent, assignmentStatus: statusOption })
                           }
-                          className={`py-2.5 rounded-xl text-xs font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed ${active
-                            ? colorClass
-                            : "bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-750"
+                          className={`flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl text-xs font-black transition-all border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${active
+                            ? activeColor
+                            : "bg-white dark:bg-zinc-800/50 ring-1 ring-zinc-200 dark:ring-zinc-700/60 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:ring-zinc-300 dark:hover:ring-zinc-600"
                             }`}
                         >
+                          <Icon size={18} className={active ? "" : "opacity-60"} />
                           {label}
                         </button>
                       );
@@ -5573,7 +5605,7 @@ function DVETeacherWorkspace() {
                         ? "ป้อนคะแนนดิบหรือข้อสังเกต..."
                         : "ไม่สามารถป้อนคะแนนในเซสชันเช็คชื่อปกติ"
                     }
-                    className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-transparent rounded-lg px-3 text-sm focus:outline-hidden dark:text-white font-bold disabled:opacity-50 disabled:bg-zinc-100 dark:disabled:bg-zinc-950"
+                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white font-bold disabled:opacity-50 disabled:bg-zinc-50 dark:disabled:bg-zinc-900"
                     value={editingStudent.score}
                     onChange={(e) =>
                       setEditingStudent({ ...editingStudent, score: e.target.value })
@@ -5629,11 +5661,11 @@ function DVETeacherWorkspace() {
                 )}
               </div>
 
-              <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
+              <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-900/80 flex justify-end gap-3 border-t dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setEditingStudent(null)}
-                  className="px-5 py-2.5 rounded-lg text-xs font-black text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  className="px-5 py-2.5 rounded-xl text-xs font-black text-zinc-500 bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                 >
                   ยกเลิก
                 </button>
@@ -5662,7 +5694,7 @@ function DVETeacherWorkspace() {
                     );
                     setEditingStudent(null);
                   }}
-                  className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-black shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all hover:-translate-y-0.5 active:translate-y-0 border-0 cursor-pointer"
                 >
                   ยืนยันแก้ไข
                 </button>
@@ -5671,206 +5703,210 @@ function DVETeacherWorkspace() {
           </div>
         )}
       </AnimatePresence>
-        {/* Mobile Student Details Modal */}
-        <Modal
-          title={null}
-          open={!!selectedMobileStudent}
-          onCancel={() => setSelectedMobileStudent(null)}
-          footer={null}
-          centered
-          width={400}
-          className="dve-mobile-student-modal"
-          closeIcon={<X className="w-5 h-5 text-zinc-500" />}
-        >
-          {selectedMobileStudent && (() => {
-            const student = selectedMobileStudent;
-            const rec = attendanceRecords[student.id] || {
-              status: "Absent" as const,
-              assignmentStatus: "None" as const,
-              score: "",
-              studySeconds: 0,
-              createdAt: undefined,
-              updatedAt: undefined,
-            };
-            const hasPretest = activeUnitQuizzes.some(q => q.quizType === "pretest");
-            const hasPosttest = activeUnitQuizzes.some(q => q.quizType === "posttest");
-            const pretestSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizType === "pretest");
-            const posttestSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizType === "posttest");
-            
-            return (
-              <div className="pt-4 space-y-4">
-                <div className="flex items-center gap-3 border-b dark:border-zinc-800 pb-3">
-                  <Link href={`/dashboard/profile/${student.id}`} className="shrink-0" onClick={(e) => e.stopPropagation()}>
-                    {student.image ? (
-                      <img src={student.image} className="w-12 h-12 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
-                        <User size={20} />
-                      </div>
-                    )}
-                  </Link>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-base leading-tight">
-                      {student.name}
-                    </h4>
-                    <p className="text-xs text-zinc-500 font-bold mt-1">
-                      ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม: {standardizeClassGroupName(student.classGroupId)}
-                    </p>
-                  </div>
-                </div>
-                
-                {/* ประวัติการส่งงาน */}
-                {studentSubmissionsById[student.id]?.length > 0 && (
-                  <div className="flex flex-col gap-2 bg-zinc-50 dark:bg-zinc-850/50 p-3 rounded-xl border dark:border-zinc-800/80">
-                    <h5 className="text-[10px] uppercase font-black tracking-wider text-zinc-400">ประวัติงานที่ผ่านมา</h5>
-                    <div className="flex flex-wrap gap-1.5">
-                      {studentSubmissionsById[student.id].map((att: any, idx: number) => {
-                        const isDone = att.assignmentStatus === "Submitted";
-                        const isPending = att.assignmentStatus === "Pending";
-                        return (
-                          <div
-                            key={`${att.unitId || idx}-${att.studentId}-${att.date}`}
-                            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-black shadow-xs ${isDone
-                              ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
-                              : isPending
-                                ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400"
-                                : "bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400"
-                              }`}
-                          >
-                            <span className="opacity-80">บทที่ {att.unitSequence || "-"}:</span>
-                            <span className="truncate max-w-[80px]">{att.unitTitle || "-"}</span>
-                            <span className="flex items-center gap-1 border-l border-current pl-1.5 opacity-90">
-                              {isDone ? "✅" : isPending ? "⌛" : "❌"}
-                              {att.score ? ` ${att.score}` : ""}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-zinc-500">สถานะเวลาเรียน:</span>
-                    {rec.status === "Studying" ? (
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border bg-blue-500/10 text-blue-650 dark:text-blue-400 border-blue-500/20 animate-pulse">
-                        กำลังเรียนอยู่ ⏱️ ({Math.round((rec.studySeconds || 0) / 60)}/{activeStudyUnit?.studyMinutes || 0} น.)
-                      </span>
-                    ) : (
-                      <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border ${rec.status === "Present"
-                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
-                          : rec.status === "Late"
-                            ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
-                            : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
-                          }`}
-                      >
-                        {rec.status === "Present" ? "ตรงเวลา" : rec.status === "Late" ? "มาสาย" : "ยังไม่เข้าเรียน"}
-                        {(rec.studySeconds || 0) > 0 && ` (${Math.round((rec.studySeconds || 0) / 60)} น.)`}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-zinc-500">การส่งงาน:</span>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border ${rec.assignmentStatus === "Submitted"
-                        ? "bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/60"
-                        : rec.assignmentStatus === "Pending"
-                          ? "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60"
-                          : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60"
-                        }`}
-                    >
-                      {rec.assignmentStatus === "Submitted" ? "ส่งแล้ว" : rec.assignmentStatus === "Pending" ? "ค้างส่ง" : "ไม่มีงาน"}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-zinc-500">คะแนน:</span>
-                    <span className="font-black text-blue-600 dark:text-blue-400 text-sm">
-                      {rec.score || "-"}
-                    </span>
-                  </div>
-                </div>
+      {/* Mobile Student Details Modal */}
+      <Modal
+        title={null}
+        open={!!selectedMobileStudent}
+        onCancel={() => setSelectedMobileStudent(null)}
+        footer={null}
+        centered
+        maskClosable={false}
+        keyboard={false}
+        width="100vw"
+        style={{ top: 0, padding: 0, margin: 0, maxWidth: '100vw', height: '100vh', paddingBottom: 0 }}
+        styles={{ body: { height: '100vh', overflowY: 'auto', padding: "20px 24px" } }}
+        className="dve-mobile-student-modal"
+        closeIcon={<X className="w-5 h-5 text-zinc-500" />}
+      >
+        {selectedMobileStudent && (() => {
+          const student = selectedMobileStudent;
+          const rec = attendanceRecords[student.id] || {
+            status: "Absent" as const,
+            assignmentStatus: "None" as const,
+            score: "",
+            studySeconds: 0,
+            createdAt: undefined,
+            updatedAt: undefined,
+          };
+          const hasPretest = activeUnitQuizzes.some(q => q.quizType === "pretest");
+          const hasPosttest = activeUnitQuizzes.some(q => q.quizType === "posttest");
+          const pretestSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizType === "pretest");
+          const posttestSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizType === "posttest");
 
-                {/* Quiz Scores on Mobile */}
-                {(hasPretest || hasPosttest || pretestSub || posttestSub) && (
-                  <div className="flex flex-col gap-2 text-[11px] font-bold text-zinc-500 mt-2 bg-zinc-150/45 dark:bg-zinc-900/40 p-3 rounded-xl border dark:border-zinc-800/80">
-                    <div className="flex items-center justify-between">
-                      <span>📝 ก่อนเรียน:</span> 
-                      {pretestSub ? <span className="font-black text-blue-600 dark:text-blue-450 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded border border-blue-250 dark:border-blue-800/50">{pretestSub.score} / {pretestSub.maxScore}</span> : hasPretest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
+          return (
+            <div className="pt-4 space-y-4">
+              <div className="flex items-center gap-3 border-b dark:border-zinc-800 pb-3">
+                <Link href={`/dashboard/profile/${student.id}`} className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                  {student.image ? (
+                    <img src={student.image} className="w-12 h-12 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                      <User size={20} />
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span>📝 หลังเรียน:</span> 
-                      {posttestSub ? <span className="font-black text-cyan-650 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-250 dark:border-cyan-800/50">{posttestSub.score} / {posttestSub.maxScore}</span> : hasPosttest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex flex-wrap gap-2 border-t dark:border-zinc-800/80 pt-4 mt-2 justify-end">
-                  {rec.imageUrl && (
-                    <a
-                      href={rec.imageUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-xl transition-all cursor-pointer border border-emerald-500/10 shadow-sm"
-                    >
-                      <Eye size={14} />
-                      <span>ดูงาน</span>
-                    </a>
                   )}
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedMobileStudent(null);
-                      setEditingStudent({
-                        id: student.id,
-                        name: student.name,
-                        studentIdNum: student.studentIdNum,
-                        classGroupId: student.classGroupId,
-                        status: rec.status,
-                        assignmentStatus: rec.assignmentStatus,
-                        score: rec.score,
-                        imageUrl: rec.imageUrl,
-                        unitId: rec.unitId,
-                        unitTitle: rec.unitTitle || activeStudyUnit?.title || "",
-                        unitSequence:
-                          rec.unitSequence !== undefined && rec.unitSequence !== ""
-                            ? rec.unitSequence
-                            : activeStudyUnit?.sequence || "",
-                        studySeconds: rec.studySeconds || 0,
-                      });
-                    }}
-                    className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm"
-                  >
-                    <Edit2 size={14} />
-                    <span>แก้ไข</span>
-                  </button>
-
-                  <Popconfirm
-                    title={`ลบข้อมูลของ ${student.name}?`}
-                    onConfirm={() => {
-                      setSelectedMobileStudent(null);
-                      handleDeleteIndividualAttendance(student.id);
-                    }}
-                    okText="ลบ"
-                    cancelText="ยกเลิก"
-                  >
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-xs font-black rounded-xl transition-all cursor-pointer border border-rose-500/10 shadow-sm"
-                    >
-                      <Trash2 size={14} />
-                      <span>ลบ</span>
-                    </button>
-                  </Popconfirm>
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-base leading-tight">
+                    {student.name}
+                  </h4>
+                  <p className="text-xs text-zinc-500 font-bold mt-1">
+                    ID: {maskSensitiveData(student.studentIdNum)} • กลุ่ม: {standardizeClassGroupName(student.classGroupId)}
+                  </p>
                 </div>
               </div>
-            );
-          })()}
-        </Modal>
+
+              {/* ประวัติการส่งงาน */}
+              {studentSubmissionsById[student.id]?.length > 0 && (
+                <div className="flex flex-col gap-2 bg-zinc-50 dark:bg-zinc-850/50 p-3 rounded-xl border dark:border-zinc-800/80">
+                  <h5 className="text-[10px] uppercase font-black tracking-wider text-zinc-400">ประวัติงานที่ผ่านมา</h5>
+                  <div className="flex flex-wrap gap-1.5">
+                    {studentSubmissionsById[student.id].map((att: any, idx: number) => {
+                      const isDone = att.assignmentStatus === "Submitted";
+                      const isPending = att.assignmentStatus === "Pending";
+                      return (
+                        <div
+                          key={`${att.unitId || idx}-${att.studentId}-${att.date}`}
+                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-black shadow-xs ${isDone
+                            ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
+                            : isPending
+                              ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400"
+                              : "bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400"
+                            }`}
+                        >
+                          <span className="opacity-80">บทที่ {att.unitSequence || "-"}:</span>
+                          <span className="truncate max-w-[80px]">{att.unitTitle || "-"}</span>
+                          <span className="flex items-center gap-1 border-l border-current pl-1.5 opacity-90">
+                            {isDone ? "✅" : isPending ? "⌛" : "❌"}
+                            {att.score ? ` ${att.score}` : ""}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-zinc-500">สถานะเวลาเรียน:</span>
+                  {rec.status === "Studying" ? (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border bg-blue-500/10 text-blue-650 dark:text-blue-400 border-blue-500/20 animate-pulse">
+                      กำลังเรียนอยู่ ⏱️ ({Math.round((rec.studySeconds || 0) / 60)}/{activeStudyUnit?.studyMinutes || 0} น.)
+                    </span>
+                  ) : (
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border ${rec.status === "Present"
+                        ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+                        : rec.status === "Late"
+                          ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+                          : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
+                        }`}
+                    >
+                      {rec.status === "Present" ? "ตรงเวลา" : rec.status === "Late" ? "มาสาย" : "ยังไม่เข้าเรียน"}
+                      {(rec.studySeconds || 0) > 0 && ` (${Math.round((rec.studySeconds || 0) / 60)} น.)`}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-zinc-500">การส่งงาน:</span>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black border ${rec.assignmentStatus === "Submitted"
+                      ? "bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/60"
+                      : rec.assignmentStatus === "Pending"
+                        ? "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60"
+                        : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60"
+                      }`}
+                  >
+                    {rec.assignmentStatus === "Submitted" ? "ส่งแล้ว" : rec.assignmentStatus === "Pending" ? "ค้างส่ง" : "ไม่มีงาน"}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-zinc-500">คะแนน:</span>
+                  <span className="font-black text-blue-600 dark:text-blue-400 text-sm">
+                    {rec.score || "-"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Quiz Scores on Mobile */}
+              {(hasPretest || hasPosttest || pretestSub || posttestSub) && (
+                <div className="flex flex-col gap-2 text-[11px] font-bold text-zinc-500 mt-2 bg-zinc-150/45 dark:bg-zinc-900/40 p-3 rounded-xl border dark:border-zinc-800/80">
+                  <div className="flex items-center justify-between">
+                    <span>📝 ก่อนเรียน:</span>
+                    {pretestSub ? <span className="font-black text-blue-600 dark:text-blue-450 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded border border-blue-250 dark:border-blue-800/50">{pretestSub.score} / {pretestSub.maxScore}</span> : hasPretest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>📝 หลังเรียน:</span>
+                    {posttestSub ? <span className="font-black text-cyan-650 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-250 dark:border-cyan-800/50">{posttestSub.score} / {posttestSub.maxScore}</span> : hasPosttest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-2 border-t dark:border-zinc-800/80 pt-4 mt-2 justify-end">
+                {rec.imageUrl && (
+                  <a
+                    href={rec.imageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-xl transition-all cursor-pointer border border-emerald-500/10 shadow-sm"
+                  >
+                    <Eye size={14} />
+                    <span>ดูงาน</span>
+                  </a>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedMobileStudent(null);
+                    setEditingStudent({
+                      id: student.id,
+                      name: student.name,
+                      studentIdNum: student.studentIdNum,
+                      classGroupId: student.classGroupId,
+                      status: rec.status,
+                      assignmentStatus: rec.assignmentStatus,
+                      score: rec.score,
+                      imageUrl: rec.imageUrl,
+                      unitId: rec.unitId,
+                      unitTitle: rec.unitTitle || activeStudyUnit?.title || "",
+                      unitSequence:
+                        rec.unitSequence !== undefined && rec.unitSequence !== ""
+                          ? rec.unitSequence
+                          : activeStudyUnit?.sequence || "",
+                      studySeconds: rec.studySeconds || 0,
+                    });
+                  }}
+                  className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm"
+                >
+                  <Edit2 size={14} />
+                  <span>แก้ไข</span>
+                </button>
+
+                <Popconfirm
+                  title={`ลบข้อมูลของ ${student.name}?`}
+                  onConfirm={() => {
+                    setSelectedMobileStudent(null);
+                    handleDeleteIndividualAttendance(student.id);
+                  }}
+                  okText="ลบ"
+                  cancelText="ยกเลิก"
+                >
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center flex-1 gap-1.5 px-3 py-2 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-xs font-black rounded-xl transition-all cursor-pointer border border-rose-500/10 shadow-sm"
+                  >
+                    <Trash2 size={14} />
+                    <span>ลบ</span>
+                  </button>
+                </Popconfirm>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
     </div>
   );
 }

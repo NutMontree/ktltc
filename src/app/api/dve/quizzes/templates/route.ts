@@ -104,7 +104,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Template not found" }, { status: 404 });
     }
 
-    if (existingTemplate.teacherId !== userId) {
+    if (role !== "super_admin" && role !== "admin" && existingTemplate.teacherId !== userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -116,3 +116,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
   }
 }
+

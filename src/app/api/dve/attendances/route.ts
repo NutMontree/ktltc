@@ -239,7 +239,7 @@ export async function POST(req: Request) {
       if (isCheckingOthers) {
         return NextResponse.json({ error: "Forbidden: Students can only check in themselves" }, { status: 403 });
       }
-    } else if (!(await isOwnedSubject(db, subjectId, userId))) {
+    } else if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, subjectId, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -375,7 +375,7 @@ export async function DELETE(req: Request) {
         return NextResponse.json({ error: "Record not found" }, { status: 404 });
       }
 
-      if (!(await isOwnedSubject(db, record.subjectId, userId))) {
+      if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, record.subjectId, userId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
@@ -391,7 +391,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Missing required parameters subjectId or date" }, { status: 400 });
     }
 
-    if (!(await isOwnedSubject(db, subjectId, userId))) {
+    if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, subjectId, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -421,3 +421,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
   }
 }
+

@@ -170,7 +170,7 @@ export async function GET(req: Request) {
         if (!allowed) {
           return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
-      } else if (subject.teacherId !== userId) {
+      } else if (userRole !== "super_admin" && userRole !== "admin" && subject.teacherId !== userId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
@@ -432,3 +432,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
   }
 }
+

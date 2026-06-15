@@ -76,7 +76,7 @@ export async function GET(req: Request) {
       if (!(await isStudentAllowedSubject(db, subjectId, userId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-    } else if (!(await isOwnedSubject(db, subjectId, userId))) {
+    } else if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, subjectId, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
     const db = client.db("ktltc_db");
     const userId = (session.user as any).id || "";
 
-    if (!(await isOwnedSubject(db, subjectId, userId))) {
+    if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, subjectId, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -176,7 +176,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Unit not found" }, { status: 404 });
     }
 
-    if (!(await isOwnedSubject(db, existingUnit.subjectId, (session.user as any).id || ""))) {
+    if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, existingUnit.subjectId, (session.user as any).id || ""))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -226,7 +226,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Unit not found" }, { status: 404 });
     }
 
-    if (!(await isOwnedSubject(db, existingUnit.subjectId, (session.user as any).id || ""))) {
+    if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, existingUnit.subjectId, (session.user as any).id || ""))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -238,3 +238,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });
   }
 }
+
