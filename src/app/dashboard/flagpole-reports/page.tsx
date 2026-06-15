@@ -296,12 +296,12 @@ function FlagpoleReportsManagementContent() {
       }
 
       const printWindow = window.open("", "_blank");
-      
+
       const formatDisplayDate = (dateStr: string) => {
         const d = new Date(dateStr);
         return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear() + 543}`;
       };
-      
+
       if (printWindow) {
         printWindow.document.write(`
           <html>
@@ -442,15 +442,15 @@ function FlagpoleReportsManagementContent() {
                 </thead>
                 <tbody>
                   ${json.data.map((r: any, idx: number) => {
-                    const statusClass = r.status === "Present" ? "status-present" : r.status === "Absent" ? "status-absent" : "status-late";
-                    const statusText = r.status === "Present" ? "ตรงเวลา" : r.status === "Absent" ? "ไม่ได้เข้าแถว" : "มาสาย";
-                    const dateText = new Date(r.date).toLocaleDateString("th-TH");
-                    const timeText = r.time ? new Date(r.time).toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " น." : "-";
-                    
-                    const distanceText = r.distance !== undefined ? `ห่าง: ${Math.round(r.distance)} เมตร` : "";
-                    const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่ (In-Site)" : "นอกพื้นที่") : "ไม่ทราบพิกัด");
+          const statusClass = r.status === "Present" ? "status-present" : r.status === "Absent" ? "status-absent" : "status-late";
+          const statusText = r.status === "Present" ? "ตรงเวลา" : r.status === "Absent" ? "ไม่ได้เข้าแถว" : "มาสาย";
+          const dateText = new Date(r.date).toLocaleDateString("th-TH");
+          const timeText = r.time ? new Date(r.time).toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " น." : "-";
 
-                    const scanDetailsHTML = `
+          const distanceText = r.distance !== undefined ? `ห่าง: ${Math.round(r.distance)} เมตร` : "";
+          const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่ (In-Site)" : "นอกพื้นที่") : "ไม่ทราบพิกัด");
+
+          const scanDetailsHTML = `
                       <div style="font-size: 11px; line-height: 1.4; text-align: left;">
                         <div style="font-weight: bold; color: #1e293b;">${timeText}</div>
                         ${distanceText ? `<div style="color: #3b82f6;">${distanceText}</div>` : ''}
@@ -460,7 +460,7 @@ function FlagpoleReportsManagementContent() {
                       </div>
                     `;
 
-                    return `
+          return `
                       <tr>
                         <td style="text-align: center;">${idx + 1}</td>
                         <td>${r.user?.studentId || "-"}</td>
@@ -476,7 +476,7 @@ function FlagpoleReportsManagementContent() {
                         </td>
                       </tr>
                     `;
-                  }).join("")}
+        }).join("")}
                 </tbody>
               </table>
               <script>
@@ -875,10 +875,10 @@ function FlagpoleReportsManagementContent() {
                               <Clock size={12} className="text-slate-400" />
                               {report.time
                                 ? new Date(report.time).toLocaleTimeString("th-TH", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    second: "2-digit",
-                                  }) + " น."
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  second: "2-digit",
+                                }) + " น."
                                 : "-"}
                             </div>
                             {report.distance !== undefined && (
@@ -896,15 +896,15 @@ function FlagpoleReportsManagementContent() {
                               <span className="truncate" title={report.deviceId || "ไม่ระบุอุปกรณ์"}>
                                 {report.deviceId && report.deviceId !== "device-student"
                                   ? (() => {
-                                      const ua = report.deviceId;
-                                      if (ua.includes("iPhone")) return "📱 iPhone";
-                                      if (ua.includes("Android")) return "📱 Android";
-                                      if (ua.includes("iPad")) return "📱 iPad";
-                                      if (ua.includes("Chrome")) return "🌐 Chrome Browser";
-                                      if (ua.includes("Firefox")) return "🌐 Firefox Browser";
-                                      if (ua.includes("Safari")) return "🌐 Safari Browser";
-                                      return ua.substring(0, 20) + "…";
-                                    })()
+                                    const ua = report.deviceId;
+                                    if (ua.includes("iPhone")) return "📱 iPhone";
+                                    if (ua.includes("Android")) return "📱 Android";
+                                    if (ua.includes("iPad")) return "📱 iPad";
+                                    if (ua.includes("Chrome")) return "🌐 Chrome Browser";
+                                    if (ua.includes("Firefox")) return "🌐 Firefox Browser";
+                                    if (ua.includes("Safari")) return "🌐 Safari Browser";
+                                    return ua.substring(0, 20) + "…";
+                                  })()
                                   : <span className="text-slate-300 dark:text-zinc-600 italic">ข้อมูลเก่า</span>
                                 }
                               </span>
@@ -951,18 +951,16 @@ function FlagpoleReportsManagementContent() {
                         </td>
                         <td className="px-8 py-5 border-b border-slate-50 dark:border-zinc-800/50">
                           <span
-                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-[10px] shadow-xs uppercase tracking-widest ${
-                              report.status === "Present"
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-[10px] shadow-xs uppercase tracking-widest ${report.status === "Present"
                                 ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/30"
                                 : report.status === "Absent"
-                                ? "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-100/50 dark:border-rose-900/30"
-                                : "bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-100/50 dark:border-amber-900/30"
-                            }`}
+                                  ? "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-100/50 dark:border-rose-900/30"
+                                  : "bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-100/50 dark:border-amber-900/30"
+                              }`}
                           >
                             <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                report.status === "Present" ? "bg-emerald-500" : report.status === "Absent" ? "bg-rose-500" : "bg-amber-500"
-                              }`}
+                              className={`w-1.5 h-1.5 rounded-full ${report.status === "Present" ? "bg-emerald-500" : report.status === "Absent" ? "bg-rose-500" : "bg-amber-500"
+                                }`}
                             />
                             {STATUS_TH[report.status] || report.status}
                           </span>
@@ -1093,13 +1091,12 @@ function FlagpoleReportsManagementContent() {
                       <button
                         key={s.id}
                         onClick={() => setEditStatus(s.id as any)}
-                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all cursor-pointer ${
-                          editStatus === s.id
+                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all cursor-pointer ${editStatus === s.id
                             ? s.id === "Present"
                               ? "bg-emerald-50/50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
                               : "bg-amber-50/50 border-amber-500 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400"
                             : "border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-400"
-                        }`}
+                          }`}
                       >
                         <span className="font-black text-sm">{s.label}</span>
                       </button>

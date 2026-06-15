@@ -732,7 +732,7 @@ export function DVEStudentPortal() {
           const currentUnitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
           const posttest = quizzes.find(
             (q) =>
-              q.unitId === currentUnitIdStr &&
+              (q.unitId === currentUnitIdStr || !q.unitId) &&
               (q.quizType === "posttest" || q.title?.includes("หลังเรียน") || q.title?.toLowerCase().includes("post")),
           );
           if (posttest && !posttest.isSubmitted) {
@@ -760,7 +760,7 @@ export function DVEStudentPortal() {
         const unitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
         const pretest = quizzes.find(
           (q) =>
-            q.unitId === unitIdStr &&
+            (q.unitId === unitIdStr || !q.unitId) &&
             (q.quizType === "pretest" || q.title?.includes("ก่อนเรียน") || q.title?.toLowerCase().includes("pre")),
         );
         if (pretest?.isSubmitted) {
@@ -1394,7 +1394,7 @@ export function DVEStudentPortal() {
                           const unitIdStr = unit.id || unit._id?.toString();
                           const pretest = quizzes.find(
                             (q) =>
-                              q.unitId === unitIdStr &&
+                              (q.unitId === unitIdStr || !q.unitId) &&
                               (q.quizType === "pretest" || q.title?.includes("ก่อนเรียน") || q.title?.toLowerCase().includes("pre")),
                           );
 
