@@ -154,6 +154,13 @@ export default function ManageHomePage() {
             icon: "Feed",
             color: "bg-blue-600",
           },
+          {
+            title: "Visual Effects",
+            sub: "เอฟเฟคตกแต่งหน้าจอ (71 แบบ)",
+            link: "/dashboard/effects",
+            icon: "✨",
+            color: "bg-blue-600",
+          },
         ].map((card, idx) => (
           <div
             key={idx}

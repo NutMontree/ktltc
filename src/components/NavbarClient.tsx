@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { signOut } from "next-auth/react";
 import {
   FileText,
@@ -506,6 +507,9 @@ export default function NavbarClient({
                 <NotificationBell />
               </div>
             )}
+            <div className="flex items-center justify-center w-10 h-10">
+              <LanguageSwitcher />
+            </div>
             <div className="flex items-center justify-center w-10 h-10">
               <ThemeToggle />
             </div>

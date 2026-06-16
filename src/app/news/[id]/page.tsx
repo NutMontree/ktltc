@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FootTitle } from "@/components/FootTitle";
 import NewsShareBar from "@/components/news/NewsShareBar";
+import NewsGallery from "@/components/news/NewsGallery";
 
 // --- Icons (เพิ่ม Icon User สำหรับผู้โพสต์) ---
 const IconUser = () => (
@@ -507,48 +508,9 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
           {/* --- Gallery Section --- */}
           {((news.images && news.images.length > 0) ||
             (news.thumbnails && news.thumbnails.length > 0)) && (
-            <section className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="h-6 w-1.5 bg-blue-600 rounded-full"></div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  ประมวลภาพกิจกรรม{" "}
-                  <span className="text-slate-400 font-normal ml-2">
-                    ({(news.images?.length || 0) + (news.thumbnails?.length || 0)})
-                  </span>
-                </h3>
-              </div>
-              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
-                {(() => {
-                  const allMedia = [...(news.thumbnails || []), ...(news.images || [])];
-                  const uniqueMedia = Array.from(new Set(allMedia));
-
-                  return uniqueMedia.map((img, idx) => (
-                    <div
-                      key={`media-${idx}`}
-                      className="break-inside-avoid w-full mb-4 flex justify-center items-start overflow-hidden rounded-xl group cursor-pointer"
-                    >
-                      {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (
-                        <video
-                          src={img}
-                          className="w-full h-auto rounded-xl transition-transform duration-500 group-hover:scale-105"
-                          controls
-                          playsInline
-                        />
-                      ) : (
-                        <Image
-                          src={img}
-                          alt={`Gallery Media ${idx + 1}`}
-                          width={800}
-                          height={600}
-                          unoptimized
-                          className="w-full h-auto object-contain rounded-xl transition-transform duration-500 group-hover:scale-105"
-                        />
-                      )}
-                    </div>
-                  ));
-                })()}
-              </div>
-            </section>
+            <NewsGallery
+              media={Array.from(new Set([...(news.thumbnails || []), ...(news.images || [])]))}
+            />
           )}
 
           {/* --- Navigation --- */}

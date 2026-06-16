@@ -26,6 +26,9 @@ import ActiveUserTracker from "@/components/ActiveUserTracker";
 import SessionWatcher from "@/components/SessionWatcher";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import GlobalEffectRenderer from "@/components/effects/GlobalEffectRenderer";
+import GoogleTranslate from "@/components/GoogleTranslate";
+import CustomSlangTranslator from "@/components/CustomSlangTranslator";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt)
 const prompt = {
@@ -65,12 +68,27 @@ export const metadata: Metadata = {
   },
 };
 
+import clientPromise from "@/lib/db";
+
 // 3. ฟังก์ชัน RootLayout: โครงสร้างหลักของหน้าเว็บ
 export default async function RootLayout({
   children, // children คือเนื้อหาของแต่ละหน้า (Page) ที่จะถูกแทรกเข้ามาตรงกลาง
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+  // ดึงค่า Global Effect จากฐานข้อมูลเพื่อนำไปเรนเดอร์ให้กับทุกคน
+  let globalEffect = "none";
+  try {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const effectSetting = await db.collection("site_settings").findOne({ key: "global_effect" });
+    if (effectSetting) {
+      globalEffect = effectSetting.value;
+    }
+  } catch (error) {
+    console.error("Failed to fetch global_effect:", error);
+  }
 
   return (
     // suppressHydrationWarning ใส่ไว้เพื่อแก้ Error ที่เกิดจาก ThemeProvider (Dark Mode)
@@ -81,7 +99,7 @@ export default async function RootLayout({
       </head>
 
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
-      <body className={`${prompt.className} ${prompt.variable} antialiased`}>
+      <body className={`${prompt.className} ${prompt.variable} antialiased`} suppressHydrationWarning={true}>
         <AntdRegistry>
           <SessionProvider
             refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
@@ -99,10 +117,20 @@ export default async function RootLayout({
               <Suspense fallback={<NavbarSkeleton />}>
                 <Navbar />
               </Suspense>
+              
+              {/* เรนเดอร์เอฟเฟคหน้าเว็บแบบ Global */}
+              <GlobalEffectRenderer initialEffect={globalEffect} />
+
               {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
               <Suspense fallback={null}>
                 <div className="pt-20">{children}</div>
               </Suspense>
+
+              {/* วิดเจ็ตแปลภาษา Google Translate ซ่อนอยู่หลังฉาก */}
+              <GoogleTranslate />
+              
+              {/* สคริปต์แปลภาษาพิเศษ (ภาษาเจนซี / ภาษากะเทย) */}
+              <CustomSlangTranslator />
 
               {/* ปิดการใช้งาน Vercel Analytics & Speed Insights ชั่วคราว */}
               {/* <SpeedInsights /> */}

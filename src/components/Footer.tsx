@@ -118,7 +118,7 @@ export default async function Footer() {
           <div className="lg:col-span-1 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 shadow-sm">
-                <Image src="/images/favicon.ico" alt="KTL Logo" width={48} height={48} />
+                <Image src="/images/favicon.ico" alt="KTL Logo" width={48} height={48} priority={true} />
               </div>
               <div>
                 <h2 className="font-bold text-lg leading-tight text-white">KTL-TC</h2>

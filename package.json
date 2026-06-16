@@ -89,6 +89,7 @@
     "tailgrids": "^2.2.7",
     "tailwind-merge": "^3.4.0",
     "tesseract.js": "^7.0.0",
+    "tsparticles": "^3.9.1",
     "use-debounce": "^10.1.0",
     "uuid": "^13.0.0",
     "xlsx": "^0.18.5"
