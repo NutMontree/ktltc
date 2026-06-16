@@ -989,14 +989,14 @@ function DriveContent() {
               onClick={(e) => e.stopPropagation()}
               className={`flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : ""}`}
             >
-              <div className="flex items-center gap-2 shrink-0 max-w-[50%]">
-                <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border border-white dark:border-zinc-700 shrink-0">
-                  <User size={12} className="text-slate-400" />
+              <div className="flex items-center gap-1.5 shrink-0 max-w-[40%] sm:max-w-[50%]">
+                <div className="h-5 w-5 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border border-white dark:border-zinc-700 shrink-0">
+                  <User size={10} className="text-slate-400" />
                 </div>
                 <span className="truncate">{folder.ownerName}</span>
               </div>
 
-              <div className="flex items-center gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
+              <div className="flex flex-wrap items-center gap-0.5 sm:gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
                 {isStaff && (isSuperAdmin || folder.ownerId === userId) && (
                   <>
                     <button
@@ -1011,7 +1011,7 @@ function DriveContent() {
                         setIsCollaborative(!!folder.isCollaborative);
                         setIsRenameModalOpen(true);
                       }}
-                      className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
                       title="การตั้งค่า"
                     >
                       <Edit3 size={14} />
@@ -1021,14 +1021,14 @@ function DriveContent() {
                         setSelectedItem({ id: folder._id, name: folder.name, type: "folder" });
                         setIsMoveModalOpen(true);
                       }}
-                      className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
                       title="ย้าย"
                     >
                       <Move size={14} />
                     </button>
                     <button
                       onClick={() => deleteItem(folder._id, "folder")}
-                      className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
                       title="ลบ"
                       >
                         <Trash2 size={14} />
@@ -1119,22 +1119,22 @@ function DriveContent() {
               </div>
 
               <div
-                className={`flex items-center justify-between text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "pt-4 border-t border-slate-50 dark:border-zinc-800/50" : "hidden sm:flex"}`}
+                className={`flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : "hidden sm:flex"}`}
               >
-                <div className="flex items-center gap-2">
-                  <div className="h-5 w-5 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
+                <div className="flex items-center gap-1.5 shrink-0 max-w-[40%] sm:max-w-[50%]">
+                  <div className="h-5 w-5 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 shrink-0">
                     <User size={10} />
                   </div>
-                  <span className="truncate max-w-[70px]">{file.ownerName}</span>
+                  <span className="truncate">{file.ownerName}</span>
                 </div>
                 <div
-                  className="flex items-center gap-1 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl"
+                  className="flex flex-wrap items-center gap-0.5 sm:gap-1 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl shrink-0 ml-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <a
                     href={file.url}
                     download={file.name}
-                    className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                    className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
                     title="ดาวน์โหลด"
                   >
                     <Download size={14} />
@@ -1147,7 +1147,7 @@ function DriveContent() {
                             setNewItemName(file.name);
                             setIsRenameModalOpen(true);
                           }}
-                          className="p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                          className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
                           title="เปลี่ยนชื่อ"
                         >
                           <Edit3 size={14} />
@@ -1157,14 +1157,14 @@ function DriveContent() {
                             setSelectedItem({ id: file._id, name: file.name, type: "file" });
                             setIsMoveModalOpen(true);
                           }}
-                          className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                          className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
                           title="ย้าย"
                         >
                           <Move size={14} />
                         </button>
                         <button
                           onClick={() => deleteItem(file._id, "file")}
-                          className="p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                          className="p-1.5 sm:p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
                           title="ลบ"
                         >
                           <Trash2 size={14} />
