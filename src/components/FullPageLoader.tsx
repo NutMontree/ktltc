@@ -39,17 +39,17 @@ export default function FullPageLoader({
       <div className="relative flex flex-col items-center w-full px-4">
         {/* Main Icon Container with Animated Rings */}
         <div className="relative group mb-10 mt-6">
-          {/* Outer rotating ring */}
+          {/* Outer fading ring */}
           <motion.div 
-            className="absolute -inset-8 rounded-full border border-dashed border-blue-500/40 dark:border-blue-400/30"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute -inset-8 rounded-full border border-blue-500/40 dark:border-blue-400/30"
+            animate={{ scale: [0.95, 1.05, 0.95], opacity: [0.3, 0.8, 0.3] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
-          {/* Inner rotating ring */}
+          {/* Inner fading ring */}
           <motion.div 
             className="absolute -inset-4 rounded-full border border-indigo-500/50 dark:border-indigo-400/40"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            animate={{ scale: [1.02, 0.98, 1.02], opacity: [0.8, 0.3, 0.8] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
           
           {/* Main Container */}
