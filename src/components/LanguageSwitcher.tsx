@@ -1,148 +1,248 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Globe } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AVAILABLE_SLANG_MODES } from "./CustomSlangTranslator";
+
+const FOREIGN_LANGUAGES = [
+  { id: "en", label: "🇬🇧 English" },
+  { id: "zh-CN", label: "🇨🇳 中文" },
+  { id: "ja", label: "🇯🇵 日本語" },
+  { id: "ko", label: "🇰🇷 한국어" },
+  { id: "vi", label: "🇻🇳 Tiếng Việt" },
+  { id: "lo", label: "🇱🇦 ລາວ (Lao)" },
+  { id: "fr", label: "🇫🇷 Français" },
+  { id: "de", label: "🇩🇪 Deutsch" },
+];
 
 export default function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState("th");
+  const [currentMode, setCurrentMode] = useState("normal");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check custom slang mode first
+    // อ่านค่าโหมดปัจจุบันจาก Cookie
     const slangMatch = document.cookie.match(/ktltc_slang_mode=([^;]+)/);
-    if (slangMatch) {
-      setCurrentLang(slangMatch[1]);
+    const googleMatch = document.cookie.match(/googtrans=\/th\/([^;]+)/);
+    
+    if (googleMatch) {
+      setCurrentMode(googleMatch[1]);
+    } else if (slangMatch) {
+      setCurrentMode(slangMatch[1]);
     } else {
-      // อ่านค่า cookie googtrans เพื่อแสดงภาษาที่กำลังใช้งาน
-      const match = document.cookie.match(/googtrans=\/th\/([^;]+)/);
-      if (match) {
-        setCurrentLang(match[1]);
-      } else {
-        setCurrentLang("th");
-      }
+      const localMode = localStorage.getItem("ktltc_slang_mode");
+      setCurrentMode(localMode || "normal");
     }
 
-    // ปิดเมนูเมื่อคลิกที่อื่น (Click Outside)
-    const handleClickOutside = (event: MouseEvent) => {
+    function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
-    };
+    }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const changeLanguage = (lang: string) => {
-    if (lang === "th") {
-      // ล้างค่า cookie ทั้งหมดเพื่อกลับไปใช้ภาษาไทยดั้งเดิม
+  const handleSelectMode = (modeId: string, isForeign = false) => {
+    if (modeId === "normal" || (!isForeign && modeId !== "normal")) {
+      // ปิด Google Translate
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname}`;
+      
+      // ตั้งค่า Slang Mode
+      localStorage.setItem("ktltc_slang_mode", modeId);
+      document.cookie = `ktltc_slang_mode=${modeId}; path=/; max-age=31536000`;
+    } else if (isForeign) {
+      // เปิด Google Translate และปิด Slang Mode
       document.cookie = `ktltc_slang_mode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    } else if (lang === "kathoey" || lang === "genz") {
-      // โหมดภาษาวัยรุ่น / กะเทย
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname}`;
-      document.cookie = `ktltc_slang_mode=${lang}; path=/; max-age=86400`;
-    } else {
-      // โหมดแปลภาษา Google Translate ปกติ
-      document.cookie = `ktltc_slang_mode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `googtrans=/th/${lang}; path=/;`;
-      document.cookie = `googtrans=/th/${lang}; path=/; domain=.${window.location.hostname}`;
+      localStorage.removeItem("ktltc_slang_mode");
+      
+      document.cookie = `googtrans=/th/${modeId}; path=/;`;
+      document.cookie = `googtrans=/th/${modeId}; path=/; domain=.${window.location.hostname}`;
     }
-    // รีเฟรชหน้าเว็บเพื่อให้ Google Translate อ่าน cookie ใหม่
+    
+    setCurrentMode(modeId);
+    setIsOpen(false);
     window.location.reload();
   };
 
+  // จัดกลุ่ม Slang Modes
+  const groupedModes = AVAILABLE_SLANG_MODES.reduce((acc, curr) => {
+    if (!acc[curr.group]) acc[curr.group] = [];
+    acc[curr.group].push(curr);
+    return acc;
+  }, {} as Record<string, typeof AVAILABLE_SLANG_MODES>);
+
+  // จัดการไอคอนและชื่อปุ่มหลัก
+  let currentIcon = "🇹🇭";
+  let currentName = "ภาษาไทยปกติ";
+  
+  const slangObj = AVAILABLE_SLANG_MODES.find(m => m.id === currentMode);
+  if (slangObj) {
+    const parts = slangObj.label.split(" ");
+    currentIcon = parts[0];
+    currentName = parts.slice(1).join(" ");
+  } else {
+    const foreignObj = FOREIGN_LANGUAGES.find(m => m.id === currentMode);
+    if (foreignObj) {
+      const parts = foreignObj.label.split(" ");
+      currentIcon = parts[0];
+      currentName = parts.slice(1).join(" ");
+    }
+  }
+
+  // แยกกลุ่ม "มาตรฐาน" ออกมาเพื่อไว้บนสุด
+  const standardGroup = groupedModes["มาตรฐาน"];
+  
+  // กลุ่ม Slang อื่นๆ ที่เหลือ
+  const otherSlangGroups = Object.entries(groupedModes).filter(([group]) => group !== "มาตรฐาน");
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative inline-block text-left z-[999]" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-center w-10 h-10 rounded-full bg-white/50 dark:bg-zinc-900/30 border border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 transition-all shadow-sm group"
-        title="เปลี่ยนภาษา (Change Language)"
+        title={`เปลี่ยนสไตล์ภาษา: ${currentName}`}
       >
-        <Globe size={18} className="text-zinc-600 dark:text-zinc-300 group-hover:text-blue-500 transition-colors" />
-        <span className="absolute -bottom-1 -right-1 text-[9px] font-black uppercase bg-blue-500 text-white rounded-full px-1 shadow-sm">
-          {currentLang}
-        </span>
+        <span className="text-xl leading-none transition-transform group-hover:scale-110">{currentIcon}</span>
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-44 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] overflow-hidden z-9999 py-1 origin-top-right animate-in fade-in zoom-in-95 duration-200 h-64 overflow-y-auto custom-scrollbar-thin">
-          <button
-            onClick={() => changeLanguage('th')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'th' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-zinc-200 dark:border-zinc-800 focus:outline-none z-[9999] overflow-hidden"
           >
-            <span className="text-lg">🇹🇭</span> ไทย
-          </button>
-          <button
-            onClick={() => changeLanguage('en')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'en' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇬🇧</span> English
-          </button>
-          <button
-            onClick={() => changeLanguage('zh-CN')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'zh-CN' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇨🇳</span> 中文
-          </button>
-          <button
-            onClick={() => changeLanguage('ja')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'ja' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇯🇵</span> 日本語
-          </button>
-          <button
-            onClick={() => changeLanguage('ko')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'ko' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇰🇷</span> 한국어
-          </button>
-          <button
-            onClick={() => changeLanguage('vi')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'vi' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇻🇳</span> Tiếng Việt
-          </button>
-          <button
-            onClick={() => changeLanguage('lo')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'lo' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇱🇦</span> ລາວ (Lao)
-          </button>
-          
-          {/* --- Slang Modes --- */}
-          <div className="h-px bg-zinc-200/80 dark:bg-zinc-800/80 my-1 mx-2"></div>
-          
-          <button
-            onClick={() => changeLanguage('kathoey')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'kathoey' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">💅</span> ภาษาตัวแม่
-          </button>
-          <button
-            onClick={() => changeLanguage('genz')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'genz' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">😎</span> ภาษาวัยรุ่น (Gen Z)
-          </button>
-          
-          <div className="h-px bg-zinc-200/80 dark:bg-zinc-800/80 my-1 mx-2"></div>
-          <button
-            onClick={() => changeLanguage('fr')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'fr' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇫🇷</span> Français
-          </button>
-          <button
-            onClick={() => changeLanguage('de')}
-            className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center gap-3 transition-colors ${currentLang === 'de' ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'}`}
-          >
-            <span className="text-lg">🇩🇪</span> Deutsch
-          </button>
-        </div>
-      )}
+            <div className="max-h-[60vh] overflow-y-auto p-2 scrollbar-hide">
+              {/* --- 1. ภาษาไทยปกติ (เดี่ยวๆ อยู่บนสุด) --- */}
+              {standardGroup && standardGroup.find(item => item.id === "normal") && (
+                <div className="mb-3">
+                  <button
+                    onClick={() => handleSelectMode("normal", false)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
+                      currentMode === "normal"
+                        ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
+                        : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                    }`}
+                  >
+                    <span className="text-xl">🇹🇭</span>
+                    <span>ภาษาไทยปกติ</span>
+                    {currentMode === "normal" && (
+                      <svg className="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* --- 2. ภาษาต่างประเทศ (Google Translate) --- */}
+              <div className="mb-3">
+                <div className="px-3 py-1.5 text-xs font-black text-blue-500 dark:text-blue-400 uppercase tracking-wider">
+                  แปลภาษา (Google Translate)
+                </div>
+                <div className="space-y-0.5">
+                  {FOREIGN_LANGUAGES.map((lang) => {
+                    const [langIcon, ...langNameParts] = lang.label.split(" ");
+                    const langName = langNameParts.join(" ");
+                    return (
+                      <button
+                        key={lang.id}
+                        onClick={() => handleSelectMode(lang.id, true)}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
+                          currentMode === lang.id
+                            ? "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold"
+                            : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                        }`}
+                      >
+                        <span className="text-xl">{langIcon}</span>
+                        <span>{langName}</span>
+                        {currentMode === lang.id && (
+                          <svg className="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* --- 3. กลุ่มมาตรฐานอื่นๆ (ไม่รวมภาษาไทยปกติ) --- */}
+              {standardGroup && standardGroup.filter(item => item.id !== "normal").length > 0 && (
+                <div>
+                  <div className="px-3 py-1.5 text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                    มาตรฐาน
+                  </div>
+                  <div className="space-y-0.5">
+                    {standardGroup.filter(item => item.id !== "normal").map((item) => {
+                      const [itemIcon, ...itemNameParts] = item.label.split(" ");
+                      const itemName = itemNameParts.join(" ");
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => handleSelectMode(item.id, false)}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
+                            currentMode === item.id
+                              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
+                              : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                          }`}
+                        >
+                          <span className="text-xl">{itemIcon}</span>
+                          <span>{itemName}</span>
+                          {currentMode === item.id && (
+                            <svg className="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* --- 4. โหมดภาษาและ Persona พิเศษ (Slang Modes) อื่นๆ --- */}
+              {otherSlangGroups.map(([group, items]) => (
+                <div key={group} className="mt-3">
+                  <div className="px-3 py-1.5 text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                    {group}
+                  </div>
+                  <div className="space-y-0.5">
+                    {items.map((item) => {
+                      const [itemIcon, ...itemNameParts] = item.label.split(" ");
+                      const itemName = itemNameParts.join(" ");
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => handleSelectMode(item.id, false)}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
+                            currentMode === item.id
+                              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
+                              : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                          }`}
+                        >
+                          <span className="text-xl">{itemIcon}</span>
+                          <span>{itemName}</span>
+                          {currentMode === item.id && (
+                            <svg className="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
