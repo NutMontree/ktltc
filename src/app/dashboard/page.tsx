@@ -210,11 +210,62 @@ export default function DashboardLoader() {
 
   if (status === "loading" || (status === "authenticated" && loading)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-        <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">
-          กำลังเริ่มต้นใช้งานแดชบอร์ด...
-        </p>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute inset-0 z-[-1] pointer-events-none flex items-center justify-center">
+          <div className="w-[300px] h-[300px] bg-blue-500/20 dark:bg-blue-600/10 rounded-full blur-[100px] animate-pulse" />
+          <div className="absolute w-[200px] h-[200px] bg-indigo-500/20 dark:bg-indigo-600/10 rounded-full blur-[80px] animate-pulse delay-500" />
+        </div>
+        
+        <div className="relative group mt-10">
+          {/* Outer rotating ring */}
+          <motion.div 
+            className="absolute -inset-6 rounded-full border border-dashed border-blue-500/30 dark:border-blue-400/30"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          />
+          {/* Inner rotating ring */}
+          <motion.div 
+            className="absolute -inset-3 rounded-full border border-indigo-500/40 dark:border-indigo-400/40"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          />
+          
+          {/* Main Icon Container */}
+          <div className="relative w-20 h-20 md:w-24 md:h-24 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/20 border border-white/50 dark:border-zinc-800/50">
+            <Layout className="w-10 h-10 md:w-12 md:h-12 text-blue-600 dark:text-blue-400" />
+            
+            {/* Ping effect on icon */}
+            <div className="absolute inset-0 rounded-3xl border-2 border-blue-500/30 animate-ping" style={{ animationDuration: '2s' }} />
+          </div>
+        </div>
+
+        <div className="text-center space-y-3 z-10 mt-4">
+          <h2 className="text-xl md:text-2xl font-black bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+            กำลังเตรียมพื้นที่ทำงาน
+          </h2>
+          <div className="flex items-center justify-center gap-2 text-zinc-500 dark:text-zinc-400">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <p className="font-bold uppercase tracking-widest text-[11px] animate-pulse">
+              กำลังเริ่มต้นใช้งานแดชบอร์ด...
+            </p>
+          </div>
+        </div>
+        
+        {/* Animated Progress Bar */}
+        <div className="w-64 h-1.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full overflow-hidden relative shadow-inner">
+          <motion.div 
+            className="absolute top-0 bottom-0 w-1/3 bg-linear-to-r from-blue-500 via-indigo-500 to-blue-500 rounded-full"
+            animate={{ 
+              x: ["-100%", "300%"],
+            }}
+            transition={{ 
+              duration: 1.5, 
+              repeat: Infinity, 
+              ease: "easeInOut" 
+            }}
+          />
+        </div>
       </div>
     );
   }

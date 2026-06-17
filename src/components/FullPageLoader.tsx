@@ -24,65 +24,101 @@ export default function FullPageLoader({
   subtitle = "กรุณารอสักครู่ ระบบกำลังรวบรวมข้อมูลทั้งหมดเพื่อคุณ"
 }: FullPageLoaderProps) {
   return (
-    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/80 dark:bg-zinc-950/90 backdrop-blur-2xl">
-      {/* เอฟเฟกต์สีพื้นหลังไล่ระดับแบบนุ่มนวล (Animated Background Gradients) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-blue-500/10 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-indigo-500/10 blur-[120px] rounded-full animate-pulse delay-700" />
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/80 dark:bg-zinc-950/90 backdrop-blur-2xl overflow-hidden"
+    >
+      {/* Background glow (Animated Gradients) */}
+      <div className="absolute inset-0 z-[-1] pointer-events-none flex items-center justify-center">
+        <div className="absolute top-1/4 -left-1/4 w-[400px] h-[400px] bg-blue-500/20 dark:bg-blue-600/10 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-1/4 -right-1/4 w-[300px] h-[300px] bg-indigo-500/20 dark:bg-indigo-600/10 rounded-full blur-[80px] animate-pulse delay-500" />
       </div>
 
-      <div className="relative flex flex-col items-center">
-        {/* คอนเทนเนอร์ตัวหมุนโหลด (Main Spinner Container) */}
-        <div className="relative">
-          {/* เงาเรืองแสงด้านนอก (Subtle Outer Glow) */}
-          <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full scale-150 animate-pulse" />
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative p-8 bg-white dark:bg-zinc-900 rounded-[3rem] shadow-2xl border border-white/20 flex flex-col items-center gap-6"
+      <div className="relative flex flex-col items-center w-full px-4">
+        {/* Main Icon Container with Animated Rings */}
+        <div className="relative group mb-10 mt-6">
+          {/* Outer rotating ring */}
+          <motion.div 
+            className="absolute -inset-8 rounded-full border border-dashed border-blue-500/40 dark:border-blue-400/30"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          />
+          {/* Inner rotating ring */}
+          <motion.div 
+            className="absolute -inset-4 rounded-full border border-indigo-500/50 dark:border-indigo-400/40"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          />
+          
+          {/* Main Container */}
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="relative w-24 h-24 md:w-28 md:h-28 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-500/20 border border-white/60 dark:border-zinc-800/60"
           >
-            <div className="relative">
-              <Loader2
-                size={48}
-                className="text-blue-500 animate-spin"
-                strokeWidth={2.5}
-              />
-              <div className="absolute inset-0 border-4 border-blue-500/10 rounded-full" />
-            </div>
-
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-tight uppercase">
-                {message}
-              </h2>
-              <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.2em] max-w-[200px] leading-relaxed mx-auto">
-                {subtitle}
-              </p>
-            </div>
+            <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-blue-600 dark:text-blue-400 animate-spin" strokeWidth={2.5} />
+            
+            {/* Ping effect */}
+            <div className="absolute inset-0 rounded-[2rem] border-2 border-blue-500/30 animate-ping" style={{ animationDuration: '2s' }} />
           </motion.div>
         </div>
 
-        {/* สถานะการทำงานของระบบ (System Operational Note) */}
+        {/* Text Section */}
+        <div className="text-center space-y-3 z-10 max-w-md w-full">
+          <motion.h2 
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-xl md:text-2xl lg:text-3xl font-black bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm tracking-tight"
+          >
+            {message}
+          </motion.h2>
+          <motion.p 
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-[11px] md:text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-[0.15em] leading-relaxed"
+          >
+            {subtitle}
+          </motion.p>
+        </div>
+        
+        {/* Animated Progress Bar */}
+        <motion.div 
+          initial={{ opacity: 0, scaleX: 0.8 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8 w-64 md:w-80 h-1.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full overflow-hidden relative shadow-inner"
+        >
+          <motion.div 
+            className="absolute top-0 bottom-0 w-1/3 bg-linear-to-r from-blue-500 via-indigo-500 to-blue-500 rounded-full"
+            animate={{ x: ["-100%", "300%"] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
+
+        {/* Operational Note */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 flex items-center gap-2"
+          className="mt-12 flex items-center gap-2.5 px-5 py-2.5 bg-white/50 dark:bg-zinc-900/50 rounded-full border border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-md shadow-sm"
         >
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[9px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-widest">
-            ระบบ KTLTC พร้อมใช้งานแล้ว
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+          <span className="text-[10px] md:text-xs font-black text-slate-600 dark:text-zinc-400 uppercase tracking-widest">
+            ระบบ KTLTC กำลังประมวลผล
           </span>
         </motion.div>
       </div>
 
-      {/* ปิดการ Scroll หน้าเว็บ (Global Style Overlay) */}
+      {/* ปิดการ Scroll หน้าเว็บ */}
       <style jsx global>{`
-        body {
-          overflow: hidden !important;
-        }
+        body { overflow: hidden !important; }
       `}</style>
-    </div>
+    </motion.div>
   );
 }
 
