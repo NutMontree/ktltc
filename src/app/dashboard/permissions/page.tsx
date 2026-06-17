@@ -208,6 +208,12 @@ export default function PermissionsPage() {
   const [newMenu, setNewMenu] = useState({ title: "", href: "", workspace: "staff" });
   const [isAddingMenu, setIsAddingMenu] = useState(false);
 
+  // For Editing/Deleting Custom Menu
+  const [customMenusList, setCustomMenusList] = useState<any[]>([]);
+  const [showEditMenuModal, setShowEditMenuModal] = useState(false);
+  const [editMenu, setEditMenu] = useState({ id: "", title: "", href: "", workspace: "staff" });
+  const [isEditingMenu, setIsEditingMenu] = useState(false);
+
   // For Adding Role
   const [showAddModal, setShowAddModal] = useState(false);
   const [newRoleID, setNewRoleID] = useState("");
@@ -253,8 +259,21 @@ export default function PermissionsPage() {
     }
   };
 
+  const fetchMenus = async () => {
+    try {
+      const res = await fetch("/api/admin/menus");
+      if (res.ok) {
+        const data = await res.json();
+        setCustomMenusList(data.menus || []);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchPermissions();
+    fetchMenus();
   }, []);
 
   const handleToggle = async (role: string, feature: string) => {
@@ -475,6 +494,51 @@ export default function PermissionsPage() {
       toast.error("เกิดข้อผิดพลาด");
     } finally {
       setIsAddingMenu(false);
+    }
+  };
+
+  const handleEditMenuSubmit = async () => {
+    if (!editMenu.title || !editMenu.href || !editMenu.workspace) {
+      toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+    try {
+      setIsEditingMenu(true);
+      const res = await fetch("/api/admin/menus", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editMenu),
+      });
+      if (res.ok) {
+        toast.success("แก้ไขเมนูสำเร็จ");
+        setShowEditMenuModal(false);
+        fetchPermissions();
+        fetchMenus();
+      } else {
+        toast.error("ไม่สามารถแก้ไขเมนูได้");
+      }
+    } catch {
+      toast.error("เกิดข้อผิดพลาด");
+    } finally {
+      setIsEditingMenu(false);
+    }
+  };
+
+  const handleDeleteMenu = async (id: string, title: string) => {
+    if (!window.confirm(`ยืนยันการลบเมนู "${title}" ใช่หรือไม่? (สิทธิ์ที่เกี่ยวข้องจะถูกลบไปด้วย)`)) return;
+    try {
+      const res = await fetch(`/api/admin/menus?id=${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success("ลบเมนูสำเร็จ");
+        fetchPermissions();
+        fetchMenus();
+      } else {
+        toast.error("ไม่สามารถลบเมนูได้");
+      }
+    } catch {
+      toast.error("เกิดข้อผิดพลาด");
     }
   };
 
@@ -892,6 +956,89 @@ export default function PermissionsPage() {
               </div>
             </div>
           </div>
+
+          {/* --- Section 3: Custom Menus Manager --- */}
+          <div className="xl:col-span-12">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+                  <FiLayout size={18} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none mb-1">
+                    Custom Menus
+                  </h2>
+                  <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest">
+                    จัดการเมนูที่กำหนดเองในระบบ
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl overflow-hidden max-w-4xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800">
+                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                        ชื่อเมนู (Title)
+                      </th>
+                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                        URL (href)
+                      </th>
+                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                        หมวดหมู่
+                      </th>
+                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest text-center">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                    {customMenusList.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-8 text-center text-zinc-500 text-sm">
+                          ยังไม่มีเมนูแบบกำหนดเอง
+                        </td>
+                      </tr>
+                    ) : (
+                      customMenusList.map((menu) => (
+                        <tr key={menu._id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                          <td className="px-6 py-4 font-bold text-zinc-900 dark:text-white text-sm">
+                            {menu.title}
+                          </td>
+                          <td className="px-6 py-4 text-zinc-500 text-sm">
+                            {menu.href}
+                          </td>
+                          <td className="px-6 py-4 text-zinc-500 text-sm capitalize">
+                            {menu.workspace}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex justify-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditMenu({ id: menu._id, title: menu.title, href: menu.href, workspace: menu.workspace });
+                                  setShowEditMenuModal(true);
+                                }}
+                                className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95"
+                              >
+                                <FiEdit3 size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteMenu(menu._id, menu.title)}
+                                className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-sm active:scale-95"
+                              >
+                                <FiTrash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="mt-16 bg-blue-600 rounded-[3.5rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl shadow-blue-500/20">
@@ -1142,6 +1289,87 @@ export default function PermissionsPage() {
                     className="flex-2 py-4 rounded-2xl bg-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
                     {isAddingMenu ? <FiLoader className="animate-spin" /> : "บันทึกข้อมูล"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* --- Edit Custom Menu Modal --- */}
+      <AnimatePresence>
+        {showEditMenuModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowEditMenuModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800 z-10 overflow-hidden"
+            >
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
+                แก้ไขเมนู
+              </h3>
+
+              <div className="space-y-4 mt-6">
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    ชื่อเมนู
+                  </label>
+                  <input
+                    type="text"
+                    value={editMenu.title}
+                    onChange={(e) => setEditMenu({ ...editMenu, title: e.target.value })}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    URL ของหน้าเว็บ
+                  </label>
+                  <input
+                    type="text"
+                    value={editMenu.href}
+                    onChange={(e) => setEditMenu({ ...editMenu, href: e.target.value })}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    แสดงในหมวดหมู่ หน้า /dashbord
+                  </label>
+                  <select
+                    value={editMenu.workspace}
+                    onChange={(e) => setEditMenu({ ...editMenu, workspace: e.target.value })}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                  >
+                    <option value="student">นักเรียน นักศึกษา</option>
+                    <option value="teacher">ครูผู้สอน</option>
+                    <option value="staff">บุคลากร / HR</option>
+                    <option value="executive">ผู้บริหาร</option>
+                    <option value="superadmin">ผู้ดูแลระบบสูงสุด</option>
+                  </select>
+                </div>
+                <div className="flex gap-3 pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800">
+                  <button
+                    onClick={() => setShowEditMenuModal(false)}
+                    className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleEditMenuSubmit}
+                    disabled={isEditingMenu}
+                    className="flex-2 py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    {isEditingMenu ? <FiLoader className="animate-spin" /> : "บันทึกการแก้ไข"}
                   </button>
                 </div>
               </div>

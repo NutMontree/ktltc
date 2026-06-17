@@ -67,15 +67,14 @@ function FlagpoleReportsManagementContent() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Filters State
-  const [startDate, setStartDate] = useState(() => {
+  const getLocalTodayDateString = () => {
     const d = new Date();
-    d.setDate(d.getDate() - 30); // ย้อนหลัง 30 วันเป็นค่าเริ่มต้น
-    return d.toISOString().split("T")[0];
-  });
-  const [endDate, setEndDate] = useState(() => {
-    const d = new Date();
-    return d.toISOString().split("T")[0];
-  });
+    const thaiTime = new Date(d.getTime() + 7 * 60 * 60 * 1000);
+    return thaiTime.toISOString().split("T")[0];
+  };
+
+  const [startDate, setStartDate] = useState(() => getLocalTodayDateString());
+  const [endDate, setEndDate] = useState(() => getLocalTodayDateString());
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState("all");
   const [studentTypeFilter, setStudentTypeFilter] = useState("all");

@@ -63,6 +63,45 @@ export async function POST(req: Request) {
   }
 }
 
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth();
+    const role = ((session?.user as any)?.role || "").toLowerCase();
+    
+    if (!["super_admin", "admin"].includes(role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { id, title, href, icon, desc, workspace } = body;
+
+    if (!id || !title || !href || !workspace) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    
+    await db.collection("custom_menus").updateOne(
+      { _id: new ObjectId(id) },
+      { 
+        $set: { 
+          title, 
+          href, 
+          icon: icon || "Layout", 
+          desc: desc || "", 
+          workspace,
+          updatedAt: new Date()
+        } 
+      }
+    );
+    
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
@@ -81,6 +120,15 @@ export async function DELETE(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    
+    // Cleanup permissions in roles first
+    const menu = await db.collection("custom_menus").findOne({ _id: new ObjectId(id) });
+    if (menu && menu.permissionKey) {
+      await db.collection("roles").updateMany(
+        {},
+        { $unset: { [`permissions.${menu.permissionKey}`]: "" } as any }
+      );
+    }
     
     await db.collection("custom_menus").deleteOne({ _id: new ObjectId(id) });
     
