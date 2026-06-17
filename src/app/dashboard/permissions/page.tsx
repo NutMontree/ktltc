@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import {
   FiShield,
@@ -21,6 +21,7 @@ import {
 } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 
 const FEATURE_LABELS: {
   [key: string]: {
@@ -197,6 +198,8 @@ const ADVANCED_FEATURE_LABELS: {
 
 export default function PermissionsPage() {
   const [permissions, setPermissions] = useState<any>(null);
+  const [departmentPermissions, setDepartmentPermissions] = useState<any>({});
+  const [activeTab, setActiveTab] = useState<"roles" | "departments">("roles");
   const [roleLabels, setRoleLabels] = useState<any>({});
   const [rolesOrder, setRolesOrder] = useState<string[]>([]);
   const [customFeatures, setCustomFeatures] = useState<any>({});
@@ -205,13 +208,13 @@ export default function PermissionsPage() {
 
   // For Adding Custom Menu
   const [showAddMenuModal, setShowAddMenuModal] = useState(false);
-  const [newMenu, setNewMenu] = useState({ title: "", href: "", workspace: "staff" });
+  const [newMenu, setNewMenu] = useState({ title: "", href: "", workspace: "staff", displayIn: "both" });
   const [isAddingMenu, setIsAddingMenu] = useState(false);
 
   // For Editing/Deleting Custom Menu
   const [customMenusList, setCustomMenusList] = useState<any[]>([]);
   const [showEditMenuModal, setShowEditMenuModal] = useState(false);
-  const [editMenu, setEditMenu] = useState({ id: "", title: "", href: "", workspace: "staff" });
+  const [editMenu, setEditMenu] = useState({ id: "", title: "", href: "", workspace: "staff", displayIn: "both" });
   const [isEditingMenu, setIsEditingMenu] = useState(false);
 
   // For Adding Role
@@ -248,6 +251,9 @@ export default function PermissionsPage() {
           });
         }
         setCustomFeatures(parsedCustomFeatures);
+        if (data.departmentPermissions) {
+          setDepartmentPermissions(data.departmentPermissions);
+        }
       } else {
         toast.error("ไม่สามารถโหลดข้อมูลสิทธิ์ได้");
       }
@@ -323,6 +329,35 @@ export default function PermissionsPage() {
     }
   };
 
+  const handleToggleDepartment = (department: string, feature: string) => {
+    const updatedDeptPermissions = {
+      ...(departmentPermissions[department] || {}),
+      [feature]: !(departmentPermissions[department]?.[feature] || false),
+    };
+
+    setDepartmentPermissions((prev: any) => ({
+      ...prev,
+      [department]: updatedDeptPermissions,
+    }));
+    
+    // Auto save (similar to handleToggle)
+    fetch("/api/admin/permissions", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        deptUpdates: [
+          {
+            department,
+            permissions: updatedDeptPermissions,
+          },
+        ],
+      }),
+    }).then(res => {
+      if (res.ok) toast.success(`อัปเดตสิทธิ์ ${department} สำเร็จ`, { duration: 1500, icon: "✅" });
+      else fetchPermissions();
+    }).catch(() => fetchPermissions());
+  };
+
   const handleSaveAll = async () => {
     if (!permissions) return;
     try {
@@ -335,12 +370,17 @@ export default function PermissionsPage() {
           label: roleLabels[role],
         }));
 
-      console.log("💾 [Frontend] Saving all permissions:", updates);
+      const deptUpdates = Object.keys(departmentPermissions).map((dept) => ({
+        department: dept,
+        permissions: departmentPermissions[dept],
+      }));
+
+      console.log("💾 [Frontend] Saving all permissions:", { updates, deptUpdates });
 
       const res = await fetch("/api/admin/permissions", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ updates }),
+        body: JSON.stringify({ updates, deptUpdates }),
       });
 
       if (res.ok) {
@@ -542,7 +582,21 @@ export default function PermissionsPage() {
     }
   };
 
-  const MERGED_FEATURE_LABELS = { ...FEATURE_LABELS, ...customFeatures };
+  const rolesCustomFeatures = Object.keys(customFeatures).reduce((acc: any, key) => {
+    if (customFeatures[key].displayIn === "roles" || customFeatures[key].displayIn === "both" || !customFeatures[key].displayIn) {
+      acc[key] = customFeatures[key];
+    }
+    return acc;
+  }, {});
+
+  const deptCustomFeatures = Object.keys(customFeatures).reduce((acc: any, key) => {
+    if (customFeatures[key].displayIn === "departments" || customFeatures[key].displayIn === "both") {
+      acc[key] = customFeatures[key];
+    }
+    return acc;
+  }, {});
+
+  const MERGED_FEATURE_LABELS = { ...FEATURE_LABELS, ...rolesCustomFeatures };
 
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
@@ -620,7 +674,114 @@ export default function PermissionsPage() {
           </div>
         </div>
 
-        <div className="space-y-20">
+        <div className="space-y-8 mt-12">
+          <div className="flex gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+            <button
+              onClick={() => setActiveTab("roles")}
+              className={`px-6 py-3 rounded-t-xl font-bold uppercase tracking-widest text-xs transition-all ${activeTab === "roles" ? "bg-blue-600 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"}`}
+            >
+              สิทธิ์ตามบทบาท (Roles)
+            </button>
+            <button
+              onClick={() => setActiveTab("departments")}
+              className={`px-6 py-3 rounded-t-xl font-bold uppercase tracking-widest text-xs transition-all ${activeTab === "departments" ? "bg-amber-600 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"}`}
+            >
+              สิทธิ์ตามแผนก (Departments)
+            </button>
+          </div>
+          
+          {activeTab === "departments" && (
+            <div className="xl:col-span-12">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white shadow-xl">
+                  <FiLayers size={20} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none mb-1">
+                    Department Permissions Matrix
+                  </h2>
+                  <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+                    จัดการสิทธิ์การเข้าใช้งานของแต่ละแผนก/งาน
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
+                <div className="overflow-auto max-h-[70vh]">
+                  <table className="w-full text-left border-separate border-spacing-0 min-w-[1200px]">
+                    <thead>
+                      <tr className="bg-slate-50/95 dark:bg-zinc-800/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
+                        <th className="p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[220px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
+                          แผนก / งาน (Department)
+                        </th>
+
+                        {/* Custom Features */}
+                        {Object.keys(deptCustomFeatures).map((key) => (
+                          <th
+                            key={key}
+                            className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
+                          >
+                            <div className="flex flex-col items-center gap-2 group">
+                              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white dark:bg-zinc-800 shadow-sm border border-zinc-200 dark:border-zinc-700 transition-transform group-hover:scale-110 text-amber-500">
+                                <FiLayout size={14} />
+                              </div>
+                              <span className="truncate w-full block px-2" title={customFeatures[key].label}>
+                                {customFeatures[key].label}
+                              </span>
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+                      {DEPARTMENT_GROUPS.flatMap(group => group.options).map((dept) => (
+                        <motion.tr
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          key={dept.value}
+                          className="group hover:bg-slate-50/50 dark:hover:bg-zinc-800/50 transition-colors"
+                        >
+                          <td className="p-4 sticky left-0 z-30 bg-white dark:bg-zinc-900 group-hover:bg-slate-50 dark:group-hover:bg-zinc-800 border-r border-zinc-100 dark:border-zinc-800/50">
+                            <div className="flex items-center gap-3">
+                              <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+                                {dept.label}
+                              </div>
+                            </div>
+                          </td>
+
+
+                          
+                          {Object.keys(deptCustomFeatures).map((feature) => (
+                            <td
+                              key={feature}
+                              className="p-2 text-center border-b border-zinc-50 dark:border-zinc-800/50"
+                            >
+                              <button
+                                onClick={() => handleToggleDepartment(dept.value, feature)}
+                                className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
+                                  departmentPermissions[dept.value]?.[feature]
+                                    ? "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-500/20"
+                                    : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-amber-300"
+                                }`}
+                              >
+                                {departmentPermissions[dept.value]?.[feature] ? (
+                                  <FiCheckCircle size={20} />
+                                ) : (
+                                  <FiXCircle size={20} />
+                                )}
+                              </button>
+                            </td>
+                          ))}
+                        </motion.tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className={activeTab === "roles" ? "block space-y-20" : "hidden"}>
           {/* --- Section 1: Permissions Matrix --- */}
           <div className="xl:col-span-12">
             <div className="flex items-center gap-4 mb-8">
@@ -1016,7 +1177,7 @@ export default function PermissionsPage() {
                             <div className="flex justify-center gap-2">
                               <button
                                 onClick={() => {
-                                  setEditMenu({ id: menu._id, title: menu.title, href: menu.href, workspace: menu.workspace });
+                                  setEditMenu({ id: menu._id, title: menu.title, href: menu.href, workspace: menu.workspace, displayIn: menu.displayIn || "both" });
                                   setShowEditMenuModal(true);
                                 }}
                                 className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95"
@@ -1276,6 +1437,20 @@ export default function PermissionsPage() {
                     <option value="superadmin">ผู้ดูแลระบบสูงสุด</option>
                   </select>
                 </div>
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    แสดงคอลัมน์ในตาราง
+                  </label>
+                  <select
+                    value={newMenu.displayIn}
+                    onChange={(e) => setNewMenu({ ...newMenu, displayIn: e.target.value })}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                  >
+                    <option value="both">แสดงทั้งสองตาราง</option>
+                    <option value="roles">เฉพาะตาราง "สิทธิ์ตามบทบาท"</option>
+                    <option value="departments">เฉพาะตาราง "สิทธิ์ตามแผนก"</option>
+                  </select>
+                </div>
                 <div className="flex gap-3 pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800">
                   <button
                     onClick={() => setShowAddMenuModal(false)}
@@ -1355,6 +1530,20 @@ export default function PermissionsPage() {
                     <option value="staff">บุคลากร / HR</option>
                     <option value="executive">ผู้บริหาร</option>
                     <option value="superadmin">ผู้ดูแลระบบสูงสุด</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 block">
+                    แสดงคอลัมน์ในตาราง
+                  </label>
+                  <select
+                    value={editMenu.displayIn}
+                    onChange={(e) => setEditMenu({ ...editMenu, displayIn: e.target.value })}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                  >
+                    <option value="both">แสดงทั้งสองตาราง</option>
+                    <option value="roles">เฉพาะตาราง "สิทธิ์ตามบทบาท"</option>
+                    <option value="departments">เฉพาะตาราง "สิทธิ์ตามแผนก"</option>
                   </select>
                 </div>
                 <div className="flex gap-3 pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800">

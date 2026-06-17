@@ -430,11 +430,18 @@ export async function GET() {
         label: menu.title,
         icon: menu.icon, // string, will map to Lucide icon on frontend
         color: "text-amber-500", // Default color
-        href: menu.href
+        href: menu.href,
+        displayIn: menu.displayIn || "both"
       };
     });
 
-    return NextResponse.json({ permissions, labels, rolesOrder, customFeatureLabels });
+    const deptPermDocs = await db.collection("department_permissions").find({}).toArray();
+    const departmentPermissions: any = {};
+    deptPermDocs.forEach(p => {
+      departmentPermissions[p.department] = p.permissions;
+    });
+
+    return NextResponse.json({ permissions, labels, rolesOrder, customFeatureLabels, departmentPermissions });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -521,7 +528,37 @@ export async function PATCH(req: Request) {
     }
 
     // Case 2: Bulk Permissions Update
-    const { updates } = body; 
+    const { updates, deptUpdates } = body; 
+    
+    if (deptUpdates && Array.isArray(deptUpdates)) {
+      const deptBulkOps = deptUpdates.map((u: any) => ({
+        updateOne: {
+          filter: { department: u.department },
+          update: { 
+            $set: { 
+              permissions: u.permissions, 
+              updatedAt: new Date() 
+            } 
+          },
+          upsert: true
+        }
+      }));
+
+      if (deptBulkOps.length > 0) {
+        await db.collection("department_permissions").bulkWrite(deptBulkOps);
+        await db.collection("logs").insertOne({
+          userName: (session.user as any).name || "Super Admin",
+          action: "UPDATE_BULK_DEPT_PERMISSIONS",
+          details: `Updated permissions for ${deptBulkOps.length} departments`,
+          timestamp: new Date(),
+          role: "super_admin"
+        });
+      }
+      if (!updates || updates.length === 0) {
+        return NextResponse.json({ success: true });
+      }
+    }
+
     if (!updates || !Array.isArray(updates)) {
       return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
     }

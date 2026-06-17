@@ -17,6 +17,8 @@ declare module "next-auth" {
     user: {
       id: string;   // เพิ่ม id เข้าไปใน User Session
       role: string; // เพิ่มบทบาท (Role) เข้าไปใน User Session
+      department?: string;
+      faction?: string;
     } & DefaultSession["user"];
   }
 
@@ -24,6 +26,8 @@ declare module "next-auth" {
   interface User {
     id: string;
     role: string;
+    department?: string;
+    faction?: string;
   }
 }
 
@@ -32,6 +36,8 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: string;
+    department?: string;
+    faction?: string;
   }
 }
 

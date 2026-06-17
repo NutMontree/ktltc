@@ -22,6 +22,8 @@ const callbacks: NextAuthConfig["callbacks"] = {
       token.role = (user as any).role;
       token.username = (user as any).username;
       token.image = (user as any).image;
+      token.department = (user as any).department;
+      token.faction = (user as any).faction;
       token.sessionId = (user as any).sessionId;
       token.loginTimestamp = Date.now(); // บันทึกเวลาที่ Login
     }
@@ -53,6 +55,8 @@ const callbacks: NextAuthConfig["callbacks"] = {
       (session.user as any).role = token.role;
       (session.user as any).username = token.username;
       (session.user as any).image = token.image;
+      (session.user as any).department = token.department;
+      (session.user as any).faction = token.faction;
     }
     return session;
   },

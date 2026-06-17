@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { title, href, icon, desc, workspace } = body;
+    const { title, href, icon, desc, workspace, displayIn } = body;
 
     if (!title || !href || !workspace) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -51,6 +51,7 @@ export async function POST(req: Request) {
       icon: icon || "Layout",
       desc: desc || "",
       workspace,
+      displayIn: displayIn || "both", // Default to both
       permissionKey,
       createdAt: new Date(),
     };
@@ -73,7 +74,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { id, title, href, icon, desc, workspace } = body;
+    const { id, title, href, icon, desc, workspace, displayIn } = body;
 
     if (!id || !title || !href || !workspace) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -91,6 +92,7 @@ export async function PATCH(req: Request) {
           icon: icon || "Layout", 
           desc: desc || "", 
           workspace,
+          displayIn: displayIn || "both",
           updatedAt: new Date()
         } 
       }

@@ -19,8 +19,26 @@ export default function LessonPlansPage() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [newPlan, setNewPlan] = useState<any>({ subject: "", title: "", fileUrl: "", semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false });
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [newPlan, setNewPlan] = useState<any>({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" });
+  
+  const handleEditClick = (plan: any) => {
+    setNewPlan({
+      _id: plan._id,
+      subject: plan.subject,
+      title: plan.title,
+      fileUrls: plan.fileUrls || (plan.fileUrl ? [plan.fileUrl] : []),
+      semester: plan.semester || "1",
+      academicYear: plan.academicYear || String(currentBuddhistYear),
+      hasAfterClassNote: plan.hasAfterClassNote || false,
+      afterClassNoteUrl: plan.afterClassNoteUrl || (plan.afterClassNoteUrls && plan.afterClassNoteUrls.length > 0 ? plan.afterClassNoteUrls[0] : "")
+    });
+    setSelectedFiles([]);
+    setSelectedAfterClassFile(null);
+    setShowAdd(true);
+  };
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedAfterClassFile, setSelectedAfterClassFile] = useState<File | null>(null);
   const [filterSemester, setFilterSemester] = useState("");
   const [filterYear, setFilterYear] = useState("");
   const [filterTeacher, setFilterTeacher] = useState("");
@@ -56,26 +74,46 @@ export default function LessonPlansPage() {
   const handleAdd = async () => {
     if (!newPlan.subject || !newPlan.title) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
 
-    let uploadedUrl = newPlan.fileUrl;
-
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      try {
-        const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
-        const uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          uploadedUrl = uploadData.url;
-        } else {
-          return alert("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
+    let uploadedUrls = [...(newPlan.fileUrls || [])];
+    
+    // Upload main files
+    if (selectedFiles.length > 0) {
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+        formData.append("file", file);
+        try {
+          const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+          const uploadData = await uploadRes.json();
+          if (uploadData.success) {
+            uploadedUrls.push(uploadData.url);
+          } else {
+            return alert(`เกิดข้อผิดพลาดในการอัปโหลดไฟล์ ${file.name}`);
+          }
+        } catch (err) {
+          return alert(`เกิดข้อผิดพลาดในการอัปโหลดไฟล์ ${file.name}`);
         }
-      } catch (err) {
-        return alert("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
+      }
+    }
+
+    let uploadedAfterClassUrl = newPlan.afterClassNoteUrl;
+    if (newPlan.hasAfterClassNote && selectedAfterClassFile) {
+      const formData = new FormData();
+      formData.append("file", selectedAfterClassFile);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const uploadData = await res.json();
+      if (uploadData.success) {
+        uploadedAfterClassUrl = uploadData.url;
       }
     }
 
     try {
-      const payload = { ...newPlan, fileUrl: uploadedUrl, teacherName: user.username || "Unknown" };
+      const payload = { 
+        ...newPlan, 
+        fileUrls: uploadedUrls, 
+        afterClassNoteUrl: uploadedAfterClassUrl,
+        teacherName: user.username || "Unknown" 
+      };
+      
       const method = newPlan._id ? "PATCH" : "POST";
       const res = await fetch("/api/director/lesson-plans", {
         method,
@@ -84,8 +122,9 @@ export default function LessonPlansPage() {
       });
       if (res.ok) {
         setShowAdd(false);
-        setNewPlan({ subject: "", title: "", fileUrl: "", semester: "1", academicYear: "2567", hasAfterClassNote: false });
-        setSelectedFile(null);
+        setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" });
+        setSelectedFiles([]);
+        setSelectedAfterClassFile(null);
         fetchPlans();
       }
     } catch (e) {
@@ -128,7 +167,6 @@ export default function LessonPlansPage() {
     return true;
   });
 
-  // Stats
   const statsPending = plans.filter(p => p.status === 'pending' || !p.status).length;
   const statsApproved = plans.filter(p => p.status === 'approved').length;
   const statsRejected = plans.filter(p => p.status === 'rejected').length;
@@ -136,10 +174,7 @@ export default function LessonPlansPage() {
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
       <div className="max-w-[1600px] mx-auto w-full px-2 py-8 md:py-12 relative">
-        {/* Header Removed */}
-
         <div className="px-2 mt-8">
-          {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
@@ -161,7 +196,6 @@ export default function LessonPlansPage() {
             )}
           </div>
 
-          {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {isDirector ? (
               <>
@@ -204,7 +238,6 @@ export default function LessonPlansPage() {
             )}
           </div>
 
-          {/* Teacher filter banner */}
           {teacherQuery && (
             <div className="mb-6 p-4 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 flex items-center justify-between gap-4 shadow-sm">
               <div className="flex items-center gap-2 text-sm font-bold">
@@ -220,7 +253,6 @@ export default function LessonPlansPage() {
             </div>
           )}
 
-          {/* Filters Row */}
           <div className="flex flex-wrap gap-4 mb-6">
             <select className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm font-bold text-zinc-600 dark:text-zinc-300 bg-white shadow-sm" value={filterYear} onChange={e => setFilterYear(e.target.value)}>
               <option value="">📅 ทุกปีการศึกษา</option>
@@ -252,9 +284,7 @@ export default function LessonPlansPage() {
             )}
           </div>
 
-          {/* Main Content Card */}
           <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-xl border border-zinc-200 dark:border-zinc-800">
-            {/* Add/Edit Form */}
             {showAdd && (
               <div className="mb-6 p-6 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-700">
                 <h3 className="font-bold text-base text-zinc-800 dark:text-zinc-100 mb-4">
@@ -289,21 +319,37 @@ export default function LessonPlansPage() {
                     <label className="block text-xs font-bold text-zinc-500 mb-1">อัปโหลดไฟล์เอกสาร (PDF, Word, Excel)</label>
                     <input
                       type="file"
+                      multiple
                       accept=".pdf,.doc,.docx,.xls,.xlsx"
                       className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950/40 dark:file:text-emerald-400 hover:file:bg-emerald-100 bg-white dark:bg-zinc-900"
                       onChange={e => {
-                        if (e.target.files && e.target.files[0]) {
-                          setSelectedFile(e.target.files[0]);
-                          setNewPlan({ ...newPlan, fileUrl: e.target.files[0].name });
+                        if (e.target.files && e.target.files.length > 0) {
+                          const newFiles = Array.from(e.target.files);
+                          setSelectedFiles(prev => [...prev, ...newFiles]);
                         }
                       }}
                     />
-                    {newPlan.fileUrl && (
-                      <p className="text-xs text-zinc-500 mt-1 truncate">
-                        ไฟล์ปัจจุบัน/ที่เลือก: <span className="font-bold text-emerald-600 dark:text-emerald-400">{newPlan.fileUrl}</span>
-                      </p>
-                    )}
+                    {/* Display existing files and newly selected files */}
+                    <div className="mt-2 space-y-1">
+                      {newPlan.fileUrls?.map((url: string, idx: number) => (
+                        <div key={`exist-${idx}`} className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 p-2 rounded-lg text-xs">
+                          <span className="truncate max-w-[80%] text-emerald-600 dark:text-emerald-400">{url.split('/').pop()}</span>
+                          <button onClick={() => {
+                            const updated = [...newPlan.fileUrls];
+                            updated.splice(idx, 1);
+                            setNewPlan({...newPlan, fileUrls: updated});
+                          }} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                        </div>
+                      ))}
+                      {selectedFiles.map((f, idx) => (
+                        <div key={`new-${idx}`} className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-lg text-xs border border-emerald-100 dark:border-emerald-800/50">
+                          <span className="truncate max-w-[80%] font-bold text-emerald-700 dark:text-emerald-400">{f.name}</span>
+                          <button onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                  
                   <div className="md:col-span-2 lg:col-span-3">
                     <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-xl dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
                       <input 
@@ -314,10 +360,46 @@ export default function LessonPlansPage() {
                       />
                       <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">แนบบันทึกหลังสอนแล้ว (has After Class Note)</span>
                     </label>
+
+                    {newPlan.hasAfterClassNote && (
+                      <div className="mt-3 ml-6">
+                        <label className="block text-xs font-bold text-zinc-500 mb-1">อัปโหลดไฟล์บันทึกหลังสอน</label>
+                        <input
+                          type="file"
+                          multiple
+                          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
+                          className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-50 file:text-amber-700 dark:file:bg-amber-950/40 dark:file:text-amber-400 hover:file:bg-amber-100 bg-white dark:bg-zinc-900"
+                          onChange={e => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              const newFiles = Array.from(e.target.files);
+                              setSelectedAfterClassFiles(prev => [...prev, ...newFiles]);
+                            }
+                          }}
+                        />
+                        <div className="mt-2 space-y-1">
+                          {newPlan.afterClassNoteUrls?.map((url: string, idx: number) => (
+                            <div key={`exist-after-${idx}`} className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 p-2 rounded-lg text-xs">
+                              <span className="truncate max-w-[80%] text-amber-600 dark:text-amber-400">{url.split('/').pop()}</span>
+                              <button onClick={() => {
+                                const updated = [...newPlan.afterClassNoteUrls];
+                                updated.splice(idx, 1);
+                                setNewPlan({...newPlan, afterClassNoteUrls: updated});
+                              }} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                            </div>
+                          ))}
+                          {selectedAfterClassFiles.map((f, idx) => (
+                            <div key={`new-after-${idx}`} className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg text-xs border border-amber-100 dark:border-amber-800/50">
+                              <span className="truncate max-w-[80%] font-bold text-amber-700 dark:text-amber-400">{f.name}</span>
+                              <button onClick={() => setSelectedAfterClassFiles(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button onClick={() => { setShowAdd(false); setNewPlan({ subject: "", title: "", fileUrl: "", semester: "1", academicYear: "2567", hasAfterClassNote: false }); setSelectedFile(null); }} className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 px-4 py-2 rounded-xl text-sm font-bold transition-colors">ยกเลิก</button>
+                  <button onClick={() => { setShowAdd(false); setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrls: [] }); setSelectedFiles([]); setSelectedAfterClassFiles([]); }} className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 px-4 py-2 rounded-xl text-sm font-bold transition-colors">ยกเลิก</button>
                   <button onClick={handleAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl text-sm font-bold transition-colors">บันทึกข้อมูล</button>
                 </div>
               </div>
@@ -353,27 +435,48 @@ export default function LessonPlansPage() {
                         <tr key={p._id} className="border-b border-zinc-100 dark:border-zinc-800/40 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10 transition-all">
                           <td className="px-5 py-5 text-sm">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase shrink-0">
-                                {p.teacherName ? p.teacherName.charAt(0) : "?"}
-                              </div>
+                              {p.teacherImage ? (
+                                <img src={p.teacherImage} alt={p.teacherName} className="w-8 h-8 rounded-full object-cover shadow-sm shrink-0 border border-zinc-200 dark:border-zinc-700" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase shrink-0 border border-emerald-200 dark:border-emerald-800/50">
+                                  {p.teacherName ? p.teacherName.charAt(0) : "?"}
+                                </div>
+                              )}
                               <span className="font-semibold text-zinc-800 dark:text-zinc-200">{p.teacherName}</span>
                             </div>
                           </td>
                           <td className="px-5 py-5 text-sm">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-                              เทอม {p.semester} / {p.academicYear}
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50 shadow-sm">
+                              เทอม {p.semester} <span className="text-indigo-200 dark:text-indigo-700">|</span> ปีการศึกษา {p.academicYear}
                             </span>
                           </td>
                           <td className="px-5 py-5 text-sm font-medium text-zinc-900 dark:text-zinc-100">{p.subject}</td>
                           <td className="px-5 py-5 text-sm text-zinc-600 dark:text-zinc-300">{p.title}</td>
                           <td className="px-5 py-5 text-center">
-                            {p.fileUrl ? (
-                              <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
-                                <FileText size={14} /> ดูไฟล์
-                              </a>
-                            ) : (
-                              <span className="text-xs text-zinc-400">-</span>
-                            )}
+                            <div className="flex flex-col gap-1.5 items-center">
+                              {/* Legacy single file */}
+                              {p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (
+                                <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
+                                  <FileText size={14} /> เอกสารแผน
+                                </a>
+                              )}
+                              {/* Multiple lesson plan files */}
+                              {p.fileUrls?.map((url: string, idx: number) => (
+                                <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
+                                  <FileText size={14} /> เอกสารแผน {p.fileUrls.length > 1 ? idx + 1 : ""}
+                                </a>
+                              ))}
+                              {/* After class note file */}
+                              {p.hasAfterClassNote && (p.afterClassNoteUrl || (p.afterClassNoteUrls && p.afterClassNoteUrls.length > 0)) && (
+                                <a href={p.afterClassNoteUrl || p.afterClassNoteUrls[0]} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors">
+                                  <FileText size={14} /> บันทึกหลังสอน
+                                </a>
+                              )}
+                              {/* Fallback */}
+                              {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (!p.hasAfterClassNote || (!p.afterClassNoteUrl && (!p.afterClassNoteUrls || p.afterClassNoteUrls.length === 0))) && (
+                                <span className="text-xs text-zinc-400">-</span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-5 py-5 text-center">
                             <div className="flex flex-col items-center gap-1">
@@ -454,14 +557,19 @@ export default function LessonPlansPage() {
                       {/* Header */}
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-sm font-extrabold text-emerald-600 dark:text-emerald-400 uppercase shrink-0">
-                            {p.teacherName ? p.teacherName.charAt(0) : "?"}
-                          </div>
+                          {p.teacherImage ? (
+                            <img src={p.teacherImage} alt={p.teacherName} className="w-9 h-9 rounded-full object-cover shadow-sm shrink-0 border border-zinc-200 dark:border-zinc-700" />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-sm font-extrabold text-emerald-600 dark:text-emerald-400 uppercase shrink-0 border border-emerald-200 dark:border-emerald-800/50">
+                              {p.teacherName ? p.teacherName.charAt(0) : "?"}
+                            </div>
+                          )}
                           <div>
                             <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 leading-tight">{p.teacherName}</h4>
-                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                              เทอม {p.semester} / {p.academicYear}
-                            </span>
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                              <span className="bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-900/50">เทอม {p.semester}</span>
+                              <span className="bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-900/50">ปี {p.academicYear}</span>
+                            </div>
                           </div>
                         </div>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
@@ -492,12 +600,27 @@ export default function LessonPlansPage() {
 
                       {/* Footer Actions */}
                       <div className="flex items-center justify-between gap-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/40">
-                        <div>
-                          {p.fileUrl ? (
-                            <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
-                              <FileText size={13} /> ดูไฟล์
+                        <div className="flex flex-col gap-1.5">
+                          {/* Legacy single file */}
+                          {p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (
+                            <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
+                              <FileText size={13} /> เอกสารแผน
                             </a>
-                          ) : (
+                          )}
+                          {/* Multiple lesson plan files */}
+                          {p.fileUrls?.map((url: string, idx: number) => (
+                            <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
+                              <FileText size={13} /> เอกสารแผน {p.fileUrls.length > 1 ? idx + 1 : ""}
+                            </a>
+                          ))}
+                          {/* After class note file */}
+                          {p.hasAfterClassNote && (p.afterClassNoteUrl || (p.afterClassNoteUrls && p.afterClassNoteUrls.length > 0)) && (
+                            <a href={p.afterClassNoteUrl || p.afterClassNoteUrls[0]} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors uppercase tracking-wider">
+                              <FileText size={13} /> บันทึกหลังสอน
+                            </a>
+                          )}
+                          {/* Fallback */}
+                          {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (!p.hasAfterClassNote || (!p.afterClassNoteUrl && (!p.afterClassNoteUrls || p.afterClassNoteUrls.length === 0))) && (
                             <span className="text-xs text-zinc-400">ไม่มีไฟล์</span>
                           )}
                         </div>

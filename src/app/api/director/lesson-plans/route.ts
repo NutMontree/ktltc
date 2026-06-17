@@ -29,7 +29,43 @@ export async function GET(req: Request) {
       query = { teacherName: teacherParam };
     }
 
-    const plans = await db.collection("lesson_plans").find(query).sort({ createdAt: -1 }).toArray();
+    const pipeline: any[] = [
+      { $match: query },
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "users",
+          let: { tName: "$teacherName" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    { $eq: ["$name", "$$tName"] },
+                    { $eq: ["$username", "$$tName"] }
+                  ]
+                }
+              }
+            },
+            { $limit: 1 },
+            { $project: { image: 1 } }
+          ],
+          as: "teacherInfo"
+        }
+      },
+      {
+        $addFields: {
+          teacherImage: { $arrayElemAt: ["$teacherInfo.image", 0] }
+        }
+      },
+      {
+        $project: {
+          teacherInfo: 0
+        }
+      }
+    ];
+
+    const plans = await db.collection("lesson_plans").aggregate(pipeline).toArray();
     return NextResponse.json(plans);
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch lesson plans" }, { status: 500 });
@@ -85,7 +121,7 @@ export async function PATCH(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const body = await req.json();
-    const { _id, status, feedback, subject, title, fileUrl, semester, academicYear, hasAfterClassNote } = body;
+    const { _id, status, feedback, subject, title, fileUrl, fileUrls, semester, academicYear, hasAfterClassNote, afterClassNoteUrls } = body;
     
     if (!_id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
     
@@ -97,9 +133,11 @@ export async function PATCH(req: Request) {
     if (subject) updateData.subject = subject;
     if (title) updateData.title = title;
     if (fileUrl) updateData.fileUrl = fileUrl;
+    if (fileUrls !== undefined) updateData.fileUrls = fileUrls;
     if (semester) updateData.semester = semester;
     if (academicYear) updateData.academicYear = academicYear;
     if (hasAfterClassNote !== undefined) updateData.hasAfterClassNote = hasAfterClassNote;
+    if (afterClassNoteUrls !== undefined) updateData.afterClassNoteUrls = afterClassNoteUrls;
 
 
     await db.collection("lesson_plans").updateOne(

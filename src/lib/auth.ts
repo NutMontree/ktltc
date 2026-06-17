@@ -95,6 +95,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             username: user.username,
             role: (user.role || "user").toLowerCase(),
             image: user.image || "",
+            department: user.department || "",
+            faction: user.faction || "",
           };
         } catch (error: any) {
           const message = error?.message || String(error) || "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
@@ -112,7 +114,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
  * หน้าที่: ตรวจสอบว่าบทบาท (Role) ของผู้ใช้มีสิทธิ์ใช้งาน Feature นั้นๆ หรือไม่
  * ใช้ใน: API Routes หรือ Server Components ที่ต้องการความปลอดภัยสูง
  */
-export async function hasPermission(role: string, feature: string): Promise<boolean> {
+export async function hasPermission(role: string, feature: string, department?: string): Promise<boolean> {
   if (!role) return false;
   const roleLower = role.toLowerCase();
   
@@ -125,10 +127,22 @@ export async function hasPermission(role: string, feature: string): Promise<bool
     // ค้นหาตารางสิทธิ์ (role_permissions) จากฐานข้อมูล
     const rolePermissions = await db.collection("role_permissions").findOne({ role: roleLower });
     
-    if (!rolePermissions || !rolePermissions.permissions) return false;
-    
-    // ตรวจสอบว่า Feature ที่ระบุมีค่าเป็น true หรือไม่
-    return !!rolePermissions.permissions[feature];
+    let hasRolePermission = false;
+    if (rolePermissions && rolePermissions.permissions) {
+      hasRolePermission = !!rolePermissions.permissions[feature];
+    }
+
+    if (hasRolePermission) return true;
+
+    // ตรวจสอบสิทธิ์จากแผนก (department_permissions) ถ้ามีการส่ง department มา
+    if (department) {
+      const deptPermissions = await db.collection("department_permissions").findOne({ department });
+      if (deptPermissions && deptPermissions.permissions) {
+        return !!deptPermissions.permissions[feature];
+      }
+    }
+
+    return false;
   } catch (error) {
     console.error("hasPermission Error:", error);
     return false;
