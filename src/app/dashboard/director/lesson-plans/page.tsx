@@ -366,40 +366,36 @@ export default function LessonPlansPage() {
                         <label className="block text-xs font-bold text-zinc-500 mb-1">อัปโหลดไฟล์บันทึกหลังสอน</label>
                         <input
                           type="file"
-                          multiple
                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
                           className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-50 file:text-amber-700 dark:file:bg-amber-950/40 dark:file:text-amber-400 hover:file:bg-amber-100 bg-white dark:bg-zinc-900"
                           onChange={e => {
                             if (e.target.files && e.target.files.length > 0) {
-                              const newFiles = Array.from(e.target.files);
-                              setSelectedAfterClassFiles(prev => [...prev, ...newFiles]);
+                              setSelectedAfterClassFile(e.target.files[0]);
+                            } else {
+                              setSelectedAfterClassFile(null);
                             }
                           }}
                         />
                         <div className="mt-2 space-y-1">
-                          {newPlan.afterClassNoteUrls?.map((url: string, idx: number) => (
-                            <div key={`exist-after-${idx}`} className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 p-2 rounded-lg text-xs">
-                              <span className="truncate max-w-[80%] text-amber-600 dark:text-amber-400">{url.split('/').pop()}</span>
-                              <button onClick={() => {
-                                const updated = [...newPlan.afterClassNoteUrls];
-                                updated.splice(idx, 1);
-                                setNewPlan({...newPlan, afterClassNoteUrls: updated});
-                              }} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                          {newPlan.afterClassNoteUrl && !selectedAfterClassFile && (
+                            <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 p-2 rounded-lg text-xs">
+                              <span className="truncate max-w-[80%] text-amber-600 dark:text-amber-400">{newPlan.afterClassNoteUrl.split('/').pop()}</span>
+                              <button onClick={() => setNewPlan({...newPlan, afterClassNoteUrl: ""})} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
                             </div>
-                          ))}
-                          {selectedAfterClassFiles.map((f, idx) => (
-                            <div key={`new-after-${idx}`} className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg text-xs border border-amber-100 dark:border-amber-800/50">
-                              <span className="truncate max-w-[80%] font-bold text-amber-700 dark:text-amber-400">{f.name}</span>
-                              <button onClick={() => setSelectedAfterClassFiles(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                          )}
+                          {selectedAfterClassFile && (
+                            <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg text-xs border border-amber-100 dark:border-amber-800/50">
+                              <span className="truncate max-w-[80%] font-bold text-amber-700 dark:text-amber-400">{selectedAfterClassFile.name}</span>
+                              <button onClick={() => setSelectedAfterClassFile(null)} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
                             </div>
-                          ))}
+                          )}
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button onClick={() => { setShowAdd(false); setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrls: [] }); setSelectedFiles([]); setSelectedAfterClassFiles([]); }} className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 px-4 py-2 rounded-xl text-sm font-bold transition-colors">ยกเลิก</button>
+                  <button onClick={() => { setShowAdd(false); setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" }); setSelectedFiles([]); setSelectedAfterClassFile(null); }} className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 px-4 py-2 rounded-xl text-sm font-bold transition-colors">ยกเลิก</button>
                   <button onClick={handleAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl text-sm font-bold transition-colors">บันทึกข้อมูล</button>
                 </div>
               </div>
