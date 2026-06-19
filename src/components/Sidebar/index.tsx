@@ -133,6 +133,25 @@ const menuGroups = [
         label: "ระบบสร้างเอกสาร",
         route: "/InternalPdcaPage",
       },
+      {
+        icon: (
+          <svg
+            className="fill-current"
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 2H4.5C3.675 2 3 2.675 3 3.5V14.5C3 15.325 3.675 16 4.5 16H13.5C14.325 16 15 15.325 15 14.5V3.5C15 2.675 14.325 2 13.5 2ZM13.5 14.5H4.5V3.5H13.5V14.5ZM6 12.5H12V11H6V12.5ZM6 9.5H12V8H6V9.5ZM6 6.5H12V5H6V6.5Z"
+              fill="currentColor"
+            />
+          </svg>
+        ),
+        label: "บันทึกข้อความทั่วไป",
+        route: "/GeneralMemoPage",
+      },
 
       // {
       //   icon: (

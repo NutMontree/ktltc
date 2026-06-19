@@ -5,6 +5,8 @@ import PdcaCard from "@/app/(components)/PdcaCard";
 import Link from "next/link";
 import { internalPdcaItems } from "@/app/(components)/EditInternalPdcaForm";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import DeletePdca from "@/app/(components)/DeletePdca";
 
 const PdcaDashboard = () => {
   const [pdcas, setPdcas] = useState([]);
@@ -16,6 +18,7 @@ const PdcaDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [pdcaItems, setPdcaItems] = useState([]);
   
+  const router = useRouter();
   const { data: session } = useSession();
   const currentUser = session?.user || null;
 
@@ -296,12 +299,36 @@ const PdcaDashboard = () => {
                   {selectedPdca.nameproject}
                 </h3>
               </div>
-              <button
-                onClick={() => setSelectedPdca(null)}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm transition-all hover:rotate-90 hover:bg-danger hover:text-white dark:bg-meta-4 dark:text-gray-300"
-              >
-                <span className="text-2xl">✕</span>
-              </button>
+
+              <div className="flex items-center gap-4">
+                {(() => {
+                  const isOwner = currentUser?.id && selectedPdca.userId === currentUser.id;
+                  const adminRoles = ["super_admin"];
+                  const isAdmin = currentUser?.role && adminRoles.includes(currentUser.role.toLowerCase());
+                  const canEdit = isOwner || isAdmin || !selectedPdca.userId;
+                  
+                  if (!canEdit) return null;
+                  
+                  return (
+                    <div className="flex items-center gap-3 mr-2 border-r border-stroke pr-6 dark:border-strokedark">
+                      <button
+                        onClick={() => router.push(selectedPdca.type === "internal" ? `/InternalPdcaPage/${selectedPdca._id}` : `/PdcaPage/${selectedPdca._id}`)}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition hover:bg-blue-600 hover:text-white shadow-sm dark:bg-blue-900/30 dark:text-blue-400"
+                        title="แก้ไขเอกสาร"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                      </button>
+                      <DeletePdca id={selectedPdca._id} type={selectedPdca.type} />
+                    </div>
+                  );
+                })()}
+                <button
+                  onClick={() => setSelectedPdca(null)}
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm transition-all hover:rotate-90 hover:bg-danger hover:text-white dark:bg-meta-4 dark:text-gray-300"
+                >
+                  <span className="text-2xl">✕</span>
+                </button>
+              </div>
             </div>
 
             {/* Modal Body */}

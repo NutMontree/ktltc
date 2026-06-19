@@ -97,7 +97,8 @@ export async function PUT(req, { params }) {
     }
 
     const session = await auth();
-    const isAdmin = session?.user?.role && ["super_admin", "director", "admin"].includes(session.user.role.toLowerCase());
+    const adminRoles = ["super_admin"];
+    const isAdmin = session?.user?.role && adminRoles.includes(session.user.role.toLowerCase());
     const isOwner = session?.user?.id && existingPdca.userId === session.user.id;
     
     // Allow edit if it's an old doc with no owner, OR if the user is owner/admin
@@ -124,7 +125,8 @@ export async function DELETE(req, { params }) {
     }
 
     const session = await auth();
-    const isAdmin = session?.user?.role && ["super_admin", "director", "admin"].includes(session.user.role.toLowerCase());
+    const adminRoles = ["super_admin"];
+    const isAdmin = session?.user?.role && adminRoles.includes(session.user.role.toLowerCase());
     const isOwner = session?.user?.id && pdcaToDelete.userId === session.user.id;
     
     // Allow delete if it's an old doc with no owner, OR if the user is owner/admin

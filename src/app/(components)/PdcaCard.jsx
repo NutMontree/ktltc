@@ -9,7 +9,8 @@ const PdcaCard = ({ pdca, activeItems = [], currentUser }) => {
   const router = useRouter();
 
   const isOwner = currentUser?.id && pdca.userId === currentUser.id;
-  const isAdmin = currentUser?.role && ["super_admin", "director", "admin"].includes(currentUser.role.toLowerCase());
+  const adminRoles = ["super_admin"];
+  const isAdmin = currentUser?.role && adminRoles.includes(currentUser.role.toLowerCase());
   // Allow edit if user is owner, admin, or if it's an old document without an owner
   const canEdit = isOwner || isAdmin || !pdca.userId;
 
