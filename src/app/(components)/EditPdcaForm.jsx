@@ -17,8 +17,11 @@ const EditPdcaForm = ({ pdca }) => {
   const [pdcaItems, setPdcaItems] = useState([]);
   const [loadingConfig, setLoadingConfig] = useState(true);
 
+  const currentYear = (new Date().getFullYear() + 543).toString();
+  const displayFiscalYears = fiscalYears.includes(currentYear) ? fiscalYears : [...fiscalYears, currentYear].sort();
+
   const [formData, setFormData] = useState({
-    year: "2567",
+    year: currentYear,
     department: departments[0],
     namework: "",
     nameproject: "",
@@ -90,7 +93,7 @@ const EditPdcaForm = ({ pdca }) => {
 
       setFormData((prev) => ({
         ...prev,
-        year: pdca.year || "2567",
+        year: pdca.year || currentYear,
         department: pdca.department || departments[0],
         namework: pdca.namework || "",
         nameproject: pdca.nameproject || "",
@@ -289,7 +292,7 @@ const EditPdcaForm = ({ pdca }) => {
                         onChange={handleChange}
                         className="w-full appearance-none rounded-2xl border-2 border-stroke bg-gray-50 px-4 py-3 text-base font-bold text-black outline-none transition focus:border-primary focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary md:px-6 md:py-4 md:text-lg"
                       >
-                        {fiscalYears.map((y) => (
+                        {displayFiscalYears.map((y) => (
                           <option key={y} value={y}>
                             {y}
                           </option>

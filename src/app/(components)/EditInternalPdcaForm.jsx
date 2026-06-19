@@ -63,8 +63,11 @@ const EditInternalPdcaForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  const currentYear = (new Date().getFullYear() + 543).toString();
+  const displayFiscalYears = fiscalYears.includes(currentYear) ? fiscalYears : [...fiscalYears, currentYear].sort();
+
   const [formData, setFormData] = useState({
-    year: pdca.year || "2567",
+    year: pdca.year || currentYear,
     department: pdca.department || departments[0] || "",
     namework: pdca.namework || "",
     nameproject: pdca.nameproject || "",
@@ -228,7 +231,7 @@ const EditInternalPdcaForm = ({
                 required
                 className="w-full rounded-xl border bg-gray-50 p-3 dark:bg-meta-4"
               >
-                {fiscalYears.map((y) => (
+                {displayFiscalYears.map((y) => (
                   <option key={y} value={y}>
                     {y}
                   </option>
