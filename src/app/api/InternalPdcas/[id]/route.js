@@ -43,11 +43,7 @@ async function parseFormData(req) {
       if (key.startsWith("itempdf_")) {
          console.log("itempdf_ fell into else block!", { key, valueType: typeof value, isFile: value instanceof File, hasName: !!value?.name });
       }
-      // Don't let empty pdf/pdfName values overwrite file uploads
-      if ((key.startsWith("pdf") || key.startsWith("pdfName")) && !value) {
-        continue;
-      }
-      // Don't overwrite pdf fields already set by itempdf_ upload
+      // Don't overwrite pdf fields already set by an itempdf_ upload in this same request
       if (key.match(/^pdf\d+$/) && data[key]) {
         continue;
       }

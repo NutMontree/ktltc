@@ -77,6 +77,7 @@ const EditInternalPdcaForm = ({
   const [itemPdfs, setItemPdfs] = useState({});
   // Existing per-item PDFs from database: { [itemId]: { url, name } }
   const [existingItemPdfs, setExistingItemPdfs] = useState({});
+  const [isChecklistOpen, setIsChecklistOpen] = useState(true);
 
   useEffect(() => {
     if (EDITMODE) {
@@ -117,67 +118,7 @@ const EditInternalPdcaForm = ({
     }
   };
 
-  const handleExportPDF = () => {
-    const printWindow = window.open("", "_blank");
-    const completedItemsCount = internalPdcaItems.filter(
-      (item) => !!formData[`id${item.id}`]
-    ).length;
-    const progressPercent = Math.round(
-      (completedItemsCount / internalPdcaItems.length) * 100,
-    );
-
-    const renderItems = (items) =>
-      items
-        .map(
-          (item) => `
-      <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
-        <div style="width: 20px; height: 20px; border: 1px solid #000; margin-right: 10px; display: flex; align-items: center; justify-content: center; font-family: 'TH Sarabun New', sans-serif;">
-          ${formData[`id${item.id}`] ? "✓" : ""}
-        </div>
-        <div style="flex: 1;">${item.label}</div>
-      </div>
-    `,
-        )
-        .join("");
-
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>รายงาน PDCA - ${formData.nameproject}</title>
-          <style>
-            @font-face {
-              font-family: 'TH Sarabun New';
-              src: url('https://cdn.jsdelivr.net/gh/Sarabun-New/font@master/fonts/THSarabunNew.ttf') format('truetype');
-            }
-            body { font-family: 'TH Sarabun New', sans-serif; font-size: 16pt; line-height: 1.5; padding: 1in; }
-            .header { text-align: center; margin-bottom: 30px; position: relative; }
-            .logo { width: 60px; height: auto; position: absolute; left: 0; top: 0; }
-            .title { font-size: 20pt; font-weight: bold; }
-            .section-title { font-size: 18pt; font-weight: bold; margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #000; }
-            .info { margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <img src="/images/logo/logo.svg" class="logo" onerror="this.style.display='none'">
-            <div class="title">รายงานสรุปผลการดำเนินงาน PDCA (เอกสารภายใน)</div>
-            <div>วิทยาลัยเทคนิคกันทรลักษ์</div>
-          </div>
-          <div class="info">
-            <strong>โครงการ:</strong> ${formData.nameproject}<br/>
-            <strong>ฝ่าย:</strong> ${formData.department}<br/>
-            <strong>งาน/สายงาน:</strong> ${formData.namework}<br/>
-            <strong>ปีงบประมาณ:</strong> ${formData.year}<br/>
-            <strong>ความสำเร็จ:</strong> ${progressPercent}%
-          </div>
-          <div class="section-title">รายการตรวจสอบ (Checklist)</div>
-          ${renderItems(internalPdcaItems)}
-          <script>window.onload = () => { window.print(); }</script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-  };
+  // PDF Export removed
 
   const handleItemPdfSelect = (itemId, file) => {
     setItemPdfs((prev) => ({ ...prev, [itemId]: file }));
@@ -219,12 +160,17 @@ const EditInternalPdcaForm = ({
         }
       });
 
-      // For items that had existing PDFs and were NOT replaced with a new file, send them back
-      Object.entries(existingItemPdfs).forEach(([itemId, pdfData]) => {
-        if (!itemPdfs[itemId]) {
-          // No new file was selected, keep existing
-          formToSend.append(`pdf${itemId}`, pdfData.url);
-          formToSend.append(`pdfName${itemId}`, pdfData.name);
+      // Handle existing or removed PDFs by explicitly sending empty strings for missing ones
+      internalPdcaItems.forEach((item) => {
+        const itemId = item.id;
+        if (existingItemPdfs[itemId] && !itemPdfs[itemId]) {
+          // Keep existing
+          formToSend.append(`pdf${itemId}`, existingItemPdfs[itemId].url);
+          formToSend.append(`pdfName${itemId}`, existingItemPdfs[itemId].name);
+        } else if (!itemPdfs[itemId]) {
+          // Explicitly clear removed/non-existent PDFs
+          formToSend.append(`pdf${itemId}`, "");
+          formToSend.append(`pdfName${itemId}`, "");
         }
       });
 
@@ -256,15 +202,13 @@ const EditInternalPdcaForm = ({
           <div className="flex items-center justify-between border-b pb-4">
             <h2 className="text-2xl font-bold">ข้อมูลเอกสาร</h2>
             <div className="flex gap-2">
-              {EDITMODE && (
-                <button
-                  type="button"
-                  onClick={handleExportPDF}
-                  className="rounded-lg bg-success px-4 py-2 font-bold text-white"
-                >
-                  PDF รายงาน
-                </button>
-              )}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="rounded-lg bg-primary px-4 py-2 font-bold text-white transition hover:bg-opacity-90 shadow-md"
+              >
+                {isSubmitting ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
+              </button>
               <Link
                 href="/InternalPdcaPage"
                 className="rounded-lg bg-gray-200 px-4 py-2 font-bold"
@@ -330,13 +274,41 @@ const EditInternalPdcaForm = ({
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b pb-2">
-              <h3 className="text-xl font-bold text-primary">รายการตรวจสอบ</h3>
-              <span className="text-xs font-bold text-gray-400">
-                * คลิกที่ชื่อเพื่อดาวน์โหลดเทมเพลต (.doc)
-              </span>
+          <div className="space-y-4 rounded-2xl border border-stroke bg-gray-50/50 p-6 shadow-sm dark:border-strokedark dark:bg-meta-4">
+            <div 
+              className="flex cursor-pointer items-center justify-between border-b border-stroke pb-4 transition hover:opacity-80 dark:border-strokedark"
+              onClick={() => setIsChecklistOpen(!isChecklistOpen)}
+            >
+              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                <h3 className="text-xl font-bold text-primary">รายการตรวจสอบ</h3>
+                <span className="text-xs font-bold text-gray-400">
+                  * คลิกที่ชื่อเพื่อดาวน์โหลดเทมเพลต (.doc)
+                </span>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const isAllSelected = internalPdcaItems.every(item => formData[`id${item.id}`]);
+                    const newFormData = { ...formData };
+                    internalPdcaItems.forEach(item => {
+                      newFormData[`id${item.id}`] = isAllSelected ? "" : `${item.label} ✅`;
+                    });
+                    setFormData(newFormData);
+                  }}
+                  className="rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-bold text-blue-600 transition hover:bg-blue-200 shadow-sm dark:bg-blue-900/30 dark:text-blue-400"
+                >
+                  {internalPdcaItems.every(item => formData[`id${item.id}`]) ? "ยกเลิกการเลือกทั้งหมด" : "☑ เลือกทั้งหมด"}
+                </button>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm transition-transform dark:bg-gray-800 dark:text-gray-300 ${isChecklistOpen ? 'rotate-180' : ''}`}>
+                  ▼
+                </div>
+              </div>
             </div>
+
+            {isChecklistOpen && (
+              <div className="mt-4 space-y-4 transition-all">
 
             {!EDITMODE && (
               <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm font-bold text-yellow-800">
@@ -450,6 +422,8 @@ const EditInternalPdcaForm = ({
                 );
               })}
             </div>
+              </div>
+            )}
           </div>
 
           {/* File Upload Section */}

@@ -272,7 +272,7 @@ const PdcaDashboard = () => {
                 }}
                 className="cursor-pointer"
               >
-                <PdcaCard pdca={pdca} totalItems={pdca.type === 'internal' ? internalPdcaItems.length : (pdcaItems.length || 20)} />
+                <PdcaCard pdca={pdca} activeItems={pdca.type === 'internal' ? internalPdcaItems : pdcaItems} />
               </div>
             ))}
           </div>

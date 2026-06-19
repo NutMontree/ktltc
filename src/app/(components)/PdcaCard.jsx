@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const PdcaCard = ({ pdca, totalItems = 20 }) => {
+const PdcaCard = ({ pdca, activeItems = [] }) => {
   const router = useRouter();
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinInput, setPinInput] = useState("");
@@ -41,7 +41,8 @@ const PdcaCard = ({ pdca, totalItems = 20 }) => {
   const createdDateTime = formatThaiDate(pdca.createdAt);
   
   // Calculate completion percentage dynamically based on form configuration
-  const completedItems = Array.from({ length: totalItems }, (_, i) => pdca[`id${i + 1}`]).filter(Boolean).length;
+  const totalItems = activeItems.length;
+  const completedItems = activeItems.filter(item => pdca[`id${item.id || item.value}`]).length;
   const percentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
   return (
