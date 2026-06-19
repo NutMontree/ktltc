@@ -251,7 +251,7 @@ const EditPdcaForm = ({ pdca }) => {
                     ข้อมูลจะถูกบันทึกเข้าระบบเพื่อติดตามประเมินผล
                   </p>
                 </div>
-                <div className="hidden h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 to-blue-500/10 text-4xl shadow-inner backdrop-blur-md md:flex">
+                <div className="hidden h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 to-blue-500/10 text-4xl shadow-inner backdrop-blur-md md:flex">
                   📝
                 </div>
               </div>
@@ -672,9 +672,9 @@ const EditPdcaForm = ({ pdca }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group relative flex h-12 flex-1 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-primary to-blue-600 px-12 py-3 font-black text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] hover:shadow-primary/40 active:scale-95 disabled:opacity-50 sm:h-14 sm:min-w-[280px] sm:flex-none"
+              className="group relative flex h-12 flex-1 items-center justify-center overflow-hidden rounded-xl bg-linear-to-r from-primary to-blue-600 px-12 py-3 font-black text-white shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] hover:shadow-primary/40 active:scale-95 disabled:opacity-50 sm:h-14 sm:min-w-[280px] sm:flex-none"
             >
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full"></div>
+              <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full"></div>
               <div className="relative z-10 flex items-center gap-3">
                 {isSubmitting ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
