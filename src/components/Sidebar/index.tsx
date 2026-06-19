@@ -15,7 +15,7 @@ interface SidebarProps {
 
 const menuGroups = [
   {
-    name: "MENU",
+    name: "เมนูหลัก",
     menuItems: [
       {
         icon: (
@@ -92,47 +92,47 @@ const menuGroups = [
       //   label: "เพิ่มเอกสารภายใน",
       //   route: "/InternalPdcaPage/new",
       // },
-      {
-        icon: (
-          <svg
-            className="fill-current"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <polyline
-              points="14 2 14 8 20 8"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="16"
-              y1="13"
-              x2="8"
-              y2="13"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <line
-              x1="16"
-              y1="17"
-              x2="8"
-              y2="17"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-          </svg>
-        ),
-        label: "ระบบสร้างเอกสาร",
-        route: "/InternalPdcaPage",
-      },
+      // {
+      //   icon: (
+      //     <svg
+      //       className="fill-current"
+      //       width="18"
+      //       height="18"
+      //       viewBox="0 0 18 18"
+      //       fill="none"
+      //       xmlns="http://www.w3.org/2000/svg"
+      //     >
+      //       <path
+      //         d="M12 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+      //         stroke="currentColor"
+      //         strokeWidth="2"
+      //       />
+      //       <polyline
+      //         points="14 2 14 8 20 8"
+      //         stroke="currentColor"
+      //         strokeWidth="2"
+      //       />
+      //       <line
+      //         x1="16"
+      //         y1="13"
+      //         x2="8"
+      //         y2="13"
+      //         stroke="currentColor"
+      //         strokeWidth="2"
+      //       />
+      //       <line
+      //         x1="16"
+      //         y1="17"
+      //         x2="8"
+      //         y2="17"
+      //         stroke="currentColor"
+      //         strokeWidth="2"
+      //       />
+      //     </svg>
+      //   ),
+      //   label: "ระบบสร้างเอกสาร",
+      //   route: "/InternalPdcaPage",
+      // },
       {
         icon: (
           <svg
@@ -304,7 +304,7 @@ const menuGroups = [
   },
 
   {
-    name: "OTHERS",
+    name: "อื่น ๆ",
     menuItems: [
       {
         icon: (

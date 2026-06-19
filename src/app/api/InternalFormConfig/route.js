@@ -25,7 +25,7 @@ export async function GET() {
         type: "internal_pdca_form",
         pdcaItems: DEFAULT_ITEMS.map((label, index) => ({ id: index + 1, label })),
         departments: [
-          "ฝ่ายยุธศาสตร์และแผนงาน",
+          "ฝ่ายยุทธศาสตร์และแผนงาน",
           "ฝ่ายพัฒนากิจการนักเรียน",
           "ฝ่ายวิชาการ",
           "ฝ่ายบริหารทรัพยากร",
