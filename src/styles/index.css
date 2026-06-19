@@ -41,6 +41,23 @@
   --color-body-color: #6b7280;   /* สีตัวอักษรทั่วไป (Gray-500) */
   --color-white: #ffffff;        /* สีขาว */
 
+  /* TailAdmin Custom Colors for Dark Mode */
+  --color-body: #64748b;
+  --color-bodydark: #aeb7c0;
+  --color-bodydark1: #dee4ee;
+  --color-bodydark2: #8a99af;
+  --color-stroke: #e2e8f0;
+  --color-graydark: #333a48;
+  --color-whiten: #f1f5f9;
+  --color-whiter: #f5f7fd;
+  --color-boxdark: #24303f;
+  --color-boxdark-2: #1a222c;
+  --color-strokedark: #2e3a47;
+  --color-meta-4: #313d4a;
+  --color-success: #219653;
+  --color-danger: #d34053;
+  --color-warning: #ffa70b;
+
   /* กำหนด Animation เช่น เอฟเฟกต์ดาวตก (Meteor) */
   --animate-meteor-effect: meteor 5s linear infinite;
 

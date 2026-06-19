@@ -17,7 +17,7 @@ export default function Planning() {
             <ProjectOutlined /> Planning & Cooperation Overview
           </div>
           <p className="text-slate-500 dark:text-zinc-400 font-medium max-w-lg mx-auto">
-            แผนภูมิโครงสร้างการบริหารงานฝ่ายแผนงานและความร่วมมือ
+            แผนภูมิโครงสร้างการบริหารงานฝ่ายยุทธศาสตร์และแผนงาน
             อยู่ในระหว่างการปรับปรุงข้อมูลให้เป็นปัจจุบัน
           </p>
         </motion.div>

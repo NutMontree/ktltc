@@ -218,7 +218,7 @@ export default function ManageRolesPage() {
           <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none">
             <UserCog size={220} />
           </div>
-          
+
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-4">
@@ -262,7 +262,7 @@ export default function ManageRolesPage() {
         </div>
 
         {/* Content Section */}
-        <motion.div 
+        <motion.div
           variants={container}
           initial="hidden"
           animate="show"

@@ -24,11 +24,11 @@ export default function FullPageLoader({
   subtitle = "กรุณารอสักครู่ ระบบกำลังรวบรวมข้อมูลทั้งหมดเพื่อคุณ"
 }: FullPageLoaderProps) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/80 dark:bg-zinc-950/90 backdrop-blur-2xl overflow-hidden"
+      className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white/80 dark:bg-zinc-950/90 backdrop-blur-2xl overflow-hidden"
     >
       {/* Background glow (Animated Gradients) */}
       <div className="absolute inset-0 z-[-1] pointer-events-none flex items-center justify-center">
@@ -40,35 +40,35 @@ export default function FullPageLoader({
         {/* Main Icon Container with Animated Rings */}
         <div className="relative group mb-10 mt-6">
           {/* Outer fading ring */}
-          <motion.div 
+          <motion.div
             className="absolute -inset-8 rounded-full border border-blue-500/40 dark:border-blue-400/30"
             animate={{ scale: [0.95, 1.05, 0.95], opacity: [0.3, 0.8, 0.3] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
           {/* Inner fading ring */}
-          <motion.div 
+          <motion.div
             className="absolute -inset-4 rounded-full border border-indigo-500/50 dark:border-indigo-400/40"
             animate={{ scale: [1.02, 0.98, 1.02], opacity: [0.8, 0.3, 0.8] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
-          
+
           {/* Main Container */}
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="relative w-24 h-24 md:w-28 md:h-28 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-500/20 border border-white/60 dark:border-zinc-800/60"
+            className="relative w-24 h-24 md:w-28 md:h-28 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-4xl flex items-center justify-center shadow-2xl shadow-blue-500/20 border border-white/60 dark:border-zinc-800/60"
           >
             <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-blue-600 dark:text-blue-400 animate-spin" strokeWidth={2.5} />
-            
+
             {/* Ping effect */}
-            <div className="absolute inset-0 rounded-[2rem] border-2 border-blue-500/30 animate-ping" style={{ animationDuration: '2s' }} />
+            <div className="absolute inset-0 rounded-4xl border-2 border-blue-500/30 animate-ping" style={{ animationDuration: '2s' }} />
           </motion.div>
         </div>
 
         {/* Text Section */}
         <div className="text-center space-y-3 z-10 max-w-md w-full">
-          <motion.h2 
+          <motion.h2
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -76,7 +76,7 @@ export default function FullPageLoader({
           >
             {message}
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -85,15 +85,15 @@ export default function FullPageLoader({
             {subtitle}
           </motion.p>
         </div>
-        
+
         {/* Animated Progress Bar */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scaleX: 0.8 }}
           animate={{ opacity: 1, scaleX: 1 }}
           transition={{ delay: 0.4 }}
           className="mt-8 w-64 md:w-80 h-1.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full overflow-hidden relative shadow-inner"
         >
-          <motion.div 
+          <motion.div
             className="absolute top-0 bottom-0 w-1/3 bg-linear-to-r from-blue-500 via-indigo-500 to-blue-500 rounded-full"
             animate={{ x: ["-100%", "300%"] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}

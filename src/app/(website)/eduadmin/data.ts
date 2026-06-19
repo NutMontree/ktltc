@@ -67,7 +67,7 @@ export const Data1 = [
   {
     title: `นายสมศักดิ์ จันทานิตย์`,
     secondary: `รองผู้อำนวยการ`,
-    description: `ฝ่ายแผนงานและความร่วมมือ`,
+    description: `ฝ่ายยุทธศาสตร์และแผนงาน`,
     img: `/images/ผู้บริหาร/3.webp`,
     phone: `045-810-777`,
     email: `somsak@ktltc.ac.th`,

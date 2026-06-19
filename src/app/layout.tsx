@@ -76,7 +76,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+
   // ดึงค่า Global Effect จากฐานข้อมูลเพื่อนำไปเรนเดอร์ให้กับทุกคน
   let globalEffect = "none";
   try {
@@ -117,7 +117,7 @@ export default async function RootLayout({
               <Suspense fallback={<NavbarSkeleton />}>
                 <Navbar />
               </Suspense>
-              
+
               {/* เรนเดอร์เอฟเฟคหน้าเว็บแบบ Global */}
               <GlobalEffectRenderer initialEffect={globalEffect} />
 
@@ -128,7 +128,7 @@ export default async function RootLayout({
 
               {/* วิดเจ็ตแปลภาษา Google Translate ซ่อนอยู่หลังฉาก */}
               <GoogleTranslate />
-              
+
               {/* สคริปต์แปลภาษาพิเศษ (ภาษาเจนซี / ภาษากะเทย) */}
               <CustomSlangTranslator />
 

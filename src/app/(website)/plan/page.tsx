@@ -159,10 +159,7 @@ export default function PlanningPage() {
           </span>
 
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
-            ฝ่ายแผนงาน
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-              และความร่วมมือ
-            </span>
+            ฝ่ายยุธศาสตร์และแผนงาน
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400 font-medium">
             Planning and Cooperation Division

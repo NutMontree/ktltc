@@ -24,7 +24,7 @@ export default function LanguageSwitcher() {
     // อ่านค่าโหมดปัจจุบันจาก Cookie
     const slangMatch = document.cookie.match(/ktltc_slang_mode=([^;]+)/);
     const googleMatch = document.cookie.match(/googtrans=\/th\/([^;]+)/);
-    
+
     if (googleMatch) {
       setCurrentMode(googleMatch[1]);
     } else if (slangMatch) {
@@ -48,7 +48,7 @@ export default function LanguageSwitcher() {
       // ปิด Google Translate
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname}`;
-      
+
       // ตั้งค่า Slang Mode
       localStorage.setItem("ktltc_slang_mode", modeId);
       document.cookie = `ktltc_slang_mode=${modeId}; path=/; max-age=31536000`;
@@ -56,11 +56,11 @@ export default function LanguageSwitcher() {
       // เปิด Google Translate และปิด Slang Mode
       document.cookie = `ktltc_slang_mode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       localStorage.removeItem("ktltc_slang_mode");
-      
+
       document.cookie = `googtrans=/th/${modeId}; path=/;`;
       document.cookie = `googtrans=/th/${modeId}; path=/; domain=.${window.location.hostname}`;
     }
-    
+
     setCurrentMode(modeId);
     setIsOpen(false);
     window.location.reload();
@@ -76,7 +76,7 @@ export default function LanguageSwitcher() {
   // จัดการไอคอนและชื่อปุ่มหลัก
   let currentIcon = "🇹🇭";
   let currentName = "ภาษาไทยปกติ";
-  
+
   const slangObj = AVAILABLE_SLANG_MODES.find(m => m.id === currentMode);
   if (slangObj) {
     const parts = slangObj.label.split(" ");
@@ -93,12 +93,12 @@ export default function LanguageSwitcher() {
 
   // แยกกลุ่ม "มาตรฐาน" ออกมาเพื่อไว้บนสุด
   const standardGroup = groupedModes["มาตรฐาน"];
-  
+
   // กลุ่ม Slang อื่นๆ ที่เหลือ
   const otherSlangGroups = Object.entries(groupedModes).filter(([group]) => group !== "มาตรฐาน");
 
   return (
-    <div className="relative inline-block text-left z-[999]" ref={dropdownRef}>
+    <div className="relative inline-block text-left z-999" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-center w-10 h-10 rounded-full bg-white/50 dark:bg-zinc-900/30 border border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 transition-all shadow-sm group"
@@ -114,7 +114,7 @@ export default function LanguageSwitcher() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-zinc-200 dark:border-zinc-800 focus:outline-none z-[9999] overflow-hidden"
+            className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-zinc-200 dark:border-zinc-800 focus:outline-none z-9999 overflow-hidden"
           >
             <div className="max-h-[60vh] overflow-y-auto p-2 scrollbar-hide">
               {/* --- 1. ภาษาไทยปกติ (เดี่ยวๆ อยู่บนสุด) --- */}
@@ -122,11 +122,10 @@ export default function LanguageSwitcher() {
                 <div className="mb-3">
                   <button
                     onClick={() => handleSelectMode("normal", false)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
-                      currentMode === "normal"
-                        ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
-                        : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
-                    }`}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${currentMode === "normal"
+                      ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
+                      : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                      }`}
                   >
                     <span className="text-xl">🇹🇭</span>
                     <span>ภาษาไทยปกติ</span>
@@ -152,11 +151,10 @@ export default function LanguageSwitcher() {
                       <button
                         key={lang.id}
                         onClick={() => handleSelectMode(lang.id, true)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
-                          currentMode === lang.id
-                            ? "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold"
-                            : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
-                        }`}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${currentMode === lang.id
+                          ? "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold"
+                          : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                          }`}
                       >
                         <span className="text-xl">{langIcon}</span>
                         <span>{langName}</span>
@@ -185,11 +183,10 @@ export default function LanguageSwitcher() {
                         <button
                           key={item.id}
                           onClick={() => handleSelectMode(item.id, false)}
-                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
-                            currentMode === item.id
-                              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
-                              : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
-                          }`}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${currentMode === item.id
+                            ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
+                            : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                            }`}
                         >
                           <span className="text-xl">{itemIcon}</span>
                           <span>{itemName}</span>
@@ -219,11 +216,10 @@ export default function LanguageSwitcher() {
                         <button
                           key={item.id}
                           onClick={() => handleSelectMode(item.id, false)}
-                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
-                            currentMode === item.id
-                              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
-                              : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
-                          }`}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${currentMode === item.id
+                            ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold"
+                            : "text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
+                            }`}
                         >
                           <span className="text-xl">{itemIcon}</span>
                           <span>{itemName}</span>
