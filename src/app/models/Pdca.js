@@ -29,6 +29,10 @@ const PdcaSchema = new Schema(
         originalFileName: String,
       }
     ],
+    userId: String,
+    authorName: String,
+    authorImage: String,
+    authorRole: String,
     // ฟิลด์อื่น ๆ ตามที่ต้องการ
     id1: String,
     id2: String,

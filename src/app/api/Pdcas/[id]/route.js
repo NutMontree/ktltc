@@ -1,5 +1,6 @@
 import Pdca from "@/app/models/Pdca";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { promises as fs } from "fs";
 
 // --- ฟังก์ชันช่วย: parseFormData ---
@@ -79,6 +80,19 @@ export async function PUT(req, { params }) {
     const pdcaData = await parseFormData(req);
     const existingPdca = await Pdca.findById(id);
 
+    if (!existingPdca) {
+      return NextResponse.json({ message: "PDCA not found" }, { status: 404 });
+    }
+
+    const session = await auth();
+    const isAdmin = session?.user?.role && ["super_admin", "director", "admin"].includes(session.user.role.toLowerCase());
+    const isOwner = session?.user?.id && existingPdca.userId === session.user.id;
+    
+    // Allow edit if it's an old doc with no owner, OR if the user is owner/admin
+    if (existingPdca.userId && !isAdmin && !isOwner) {
+      return NextResponse.json({ message: "Unauthorized to edit this document" }, { status: 403 });
+    }
+
     // ตรวจสอบและจัดการไฟล์เก่า
     if (existingPdca) {
       // 1. ตรวจสอบว่ามีการลบไฟล์เก่า หรือมีการอัปโหลดไฟล์ใหม่หรือไม่
@@ -151,6 +165,19 @@ export async function DELETE(req, { params }) {
   try {
     const { id } = await params;
     const pdcaToDelete = await Pdca.findById(id);
+
+    if (!pdcaToDelete) {
+      return NextResponse.json({ message: "PDCA not found" }, { status: 404 });
+    }
+
+    const session = await auth();
+    const isAdmin = session?.user?.role && ["super_admin", "director", "admin"].includes(session.user.role.toLowerCase());
+    const isOwner = session?.user?.id && pdcaToDelete.userId === session.user.id;
+    
+    // Allow delete if it's an old doc with no owner, OR if the user is owner/admin
+    if (pdcaToDelete.userId && !isAdmin && !isOwner) {
+      return NextResponse.json({ message: "Unauthorized to delete this document" }, { status: 403 });
+    }
 
     // 🗑️ ลบไฟล์ออกจาก local filesystem ก่อนลบเอกสาร
     if (pdcaToDelete && pdcaToDelete.fileUrl) {

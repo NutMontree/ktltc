@@ -1,5 +1,6 @@
 import InternalPdca, { connectDB } from "@/app/models/InternalPdca";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { promises as fs } from "fs";
 
 async function parseFormData(req) {
@@ -87,6 +88,15 @@ export async function POST(req) {
   try {
     await connectDB();
     const data = await parseFormData(req);
+
+    const session = await auth();
+    if (session?.user) {
+      data.userId = session.user.id;
+      data.authorName = session.user.name;
+      data.authorImage = session.user.image;
+      data.authorRole = session.user.role;
+    }
+
     const newPdca = await InternalPdca.create(data);
     return NextResponse.json({ message: "Success", pdca: newPdca }, { status: 201 });
   } catch (err) {

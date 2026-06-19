@@ -1,5 +1,6 @@
 import InternalPdca, { connectDB } from "@/app/models/InternalPdca";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { promises as fs } from "fs";
 
 async function parseFormData(req) {
@@ -89,6 +90,21 @@ export async function PUT(req, { params }) {
     await connectDB();
     const { id } = await params;
     const data = await parseFormData(req);
+    
+    const existingPdca = await InternalPdca.findById(id);
+    if (!existingPdca) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    const session = await auth();
+    const isAdmin = session?.user?.role && ["super_admin", "director", "admin"].includes(session.user.role.toLowerCase());
+    const isOwner = session?.user?.id && existingPdca.userId === session.user.id;
+    
+    // Allow edit if it's an old doc with no owner, OR if the user is owner/admin
+    if (existingPdca.userId && !isAdmin && !isOwner) {
+      return NextResponse.json({ message: "Unauthorized to edit this document" }, { status: 403 });
+    }
+
     const updated = await InternalPdca.findByIdAndUpdate(id, data, { new: true });
     return NextResponse.json({ message: "Updated", pdca: updated }, { status: 200 });
   } catch (err) {
@@ -103,6 +119,19 @@ export async function DELETE(req, { params }) {
     
     // Find the document to get the file URLs before deleting
     const pdcaToDelete = await InternalPdca.findById(id);
+    if (!pdcaToDelete) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    const session = await auth();
+    const isAdmin = session?.user?.role && ["super_admin", "director", "admin"].includes(session.user.role.toLowerCase());
+    const isOwner = session?.user?.id && pdcaToDelete.userId === session.user.id;
+    
+    // Allow delete if it's an old doc with no owner, OR if the user is owner/admin
+    if (pdcaToDelete.userId && !isAdmin && !isOwner) {
+      return NextResponse.json({ message: "Unauthorized to delete this document" }, { status: 403 });
+    }
+
     if (pdcaToDelete && pdcaToDelete.fileUrl && Array.isArray(pdcaToDelete.fileUrl)) {
       for (const fileUrl of pdcaToDelete.fileUrl) {
         if (fileUrl.startsWith('/uploads/pdca/')) {

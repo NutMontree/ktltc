@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import PdcaCard from "@/app/(components)/PdcaCard";
 import Link from "next/link";
 import { internalPdcaItems } from "@/app/(components)/EditInternalPdcaForm";
+import { useSession } from "next-auth/react";
 
 const PdcaDashboard = () => {
   const [pdcas, setPdcas] = useState([]);
@@ -14,6 +15,9 @@ const PdcaDashboard = () => {
   const [selectedFileUrl, setSelectedFileUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pdcaItems, setPdcaItems] = useState([]);
+  
+  const { data: session } = useSession();
+  const currentUser = session?.user || null;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,14 +134,6 @@ const PdcaDashboard = () => {
               <span className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100"></span>
               <span className="mr-2 text-xl">+</span>
               เพิ่มเอกสารภายใน
-            </Link>
-            <Link
-              href="/PdcaPage/new"
-              className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-primary px-6 py-4 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              <span className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100"></span>
-              <span className="mr-2 text-xl">+</span>
-              เพิ่มเอกสารภายนอก
             </Link>
           </div>
         </div>
@@ -272,7 +268,7 @@ const PdcaDashboard = () => {
                 }}
                 className="cursor-pointer"
               >
-                <PdcaCard pdca={pdca} activeItems={pdca.type === 'internal' ? internalPdcaItems : pdcaItems} />
+                <PdcaCard pdca={pdca} activeItems={pdca.type === 'internal' ? internalPdcaItems : pdcaItems} currentUser={currentUser} />
               </div>
             ))}
           </div>

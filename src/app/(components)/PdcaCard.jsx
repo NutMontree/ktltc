@@ -5,27 +5,17 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const PdcaCard = ({ pdca, activeItems = [] }) => {
+const PdcaCard = ({ pdca, activeItems = [], currentUser }) => {
   const router = useRouter();
-  const [showPinModal, setShowPinModal] = useState(false);
-  const [pinInput, setPinInput] = useState("");
-  const [pinError, setPinError] = useState("");
+
+  const isOwner = currentUser?.id && pdca.userId === currentUser.id;
+  const isAdmin = currentUser?.role && ["super_admin", "director", "admin"].includes(currentUser.role.toLowerCase());
+  // Allow edit if user is owner, admin, or if it's an old document without an owner
+  const canEdit = isOwner || isAdmin || !pdca.userId;
 
   const handleEditClick = (e) => {
     e.stopPropagation();
-    setShowPinModal(true);
-    setPinInput("");
-    setPinError("");
-  };
-
-  const handlePinSubmit = (e) => {
-    e.preventDefault();
-    if (pinInput === "admin1234") {
-      setShowPinModal(false);
-      router.push(pdca.type === "internal" ? `/InternalPdcaPage/${pdca._id}` : `/PdcaPage/${pdca._id}`);
-    } else {
-      setPinError("รหัส PIN ไม่ถูกต้อง");
-    }
+    router.push(pdca.type === "internal" ? `/InternalPdcaPage/${pdca._id}` : `/PdcaPage/${pdca._id}`);
   };
   const formatThaiDate = (timestamp) => {
     if (!timestamp) return "-";
@@ -54,30 +44,48 @@ const PdcaCard = ({ pdca, activeItems = [] }) => {
         {/* Header Section */}
         <div className="mb-6 flex items-start justify-between">
           <div className="flex-1 pr-4">
-            <span className="mb-2 inline-block rounded-md bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
-              {pdca.year} Budget Year
-            </span>
-            {pdca.type === "internal" && (
-              <span className="mb-2 ml-2 inline-block rounded-md bg-purple-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-600">
-                เอกสารภายใน
+            <div className="mb-2 flex items-center gap-2 flex-wrap">
+              <span className="inline-block rounded-md bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
+                {pdca.year} Budget Year
               </span>
-            )}
+              {pdca.type === "internal" && (
+                <span className="inline-block rounded-md bg-purple-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-600">
+                  เอกสารภายใน
+                </span>
+              )}
+            </div>
+            {/* Author Profile */}
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gray-200 border border-white shadow-sm">
+                {pdca.authorImage ? (
+                  <img src={pdca.authorImage} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  <svg className="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                )}
+              </div>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                {pdca.authorName || "ไม่ระบุผู้สร้าง"} {pdca.authorRole && `(${pdca.authorRole})`}
+              </span>
+            </div>
+            
             <h3 className="line-clamp-2 text-lg font-bold text-black transition-colors duration-300 group-hover:text-primary dark:text-white">
               {pdca.nameproject}
             </h3>
           </div>
-          <div 
-            className="flex shrink-0 gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 relative z-20"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={handleEditClick}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition hover:bg-blue-600 hover:text-white dark:bg-blue-900/30 dark:text-blue-400"
+          {canEdit && (
+            <div 
+              className="flex shrink-0 gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 relative z-20"
+              onClick={(e) => e.stopPropagation()}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-            </button>
-            <DeletePdca id={pdca._id} type={pdca.type} />
-          </div>
+              <button
+                onClick={handleEditClick}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition hover:bg-blue-600 hover:text-white dark:bg-blue-900/30 dark:text-blue-400"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+              </button>
+              <DeletePdca id={pdca._id} type={pdca.type} />
+            </div>
+          )}
         </div>
 
         {/* Info Grid - Changed to vertical for better readability of long names */}
@@ -166,56 +174,6 @@ const PdcaCard = ({ pdca, activeItems = [] }) => {
           </div>
         </div>
       </div>
-
-      {/* PIN Verification Modal for Editing */}
-      {showPinModal && (
-        <div 
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="w-[90%] max-w-sm rounded-2xl bg-white p-8 text-center shadow-2xl dark:bg-boxdark">
-            <h3 className="mb-4 text-xl font-black text-black dark:text-white uppercase tracking-widest">
-              🔐 ยืนยันสิทธิ์
-            </h3>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-              กรุณากรอกรหัส PIN (8 หลัก) เพื่อแก้ไขข้อมูล
-            </p>
-            
-            <form onSubmit={handlePinSubmit}>
-              <input
-                type="password"
-                placeholder="รหัส PIN"
-                value={pinInput}
-                onChange={(e) => setPinInput(e.target.value)}
-                autoFocus
-                className="mb-4 w-full rounded-xl border-2 border-stroke bg-gray-50 px-6 py-3 text-center text-xl font-black tracking-[0.5em] outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
-              />
-              
-              {pinError && (
-                <p className="mb-4 text-sm font-bold text-red-500 animate-pulse">
-                  {pinError}
-                </p>
-              )}
-              
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => setShowPinModal(false)}
-                  className="flex-1 rounded-xl bg-gray-100 py-3 font-bold text-gray-600 transition hover:bg-gray-200 dark:bg-meta-4 dark:text-gray-300 dark:hover:bg-meta-4/80"
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 rounded-xl bg-primary py-3 font-bold text-white transition hover:bg-opacity-90 shadow-lg shadow-primary/30"
-                >
-                  ยืนยัน
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

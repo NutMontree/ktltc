@@ -30,6 +30,10 @@ const InternalPdcaSchema = new mongoose.Schema(
     pdcaLink: { type: String },
     fileUrl: [{ type: String }],
     originalFileName: [{ type: String }],
+    userId: String,
+    authorName: String,
+    authorImage: String,
+    authorRole: String,
     // Steps 1-11
     id1: String, id2: String, id3: String, id4: String, id5: String,
     id6: String, id7: String, id8: String, id9: String, id10: String, id11: String,

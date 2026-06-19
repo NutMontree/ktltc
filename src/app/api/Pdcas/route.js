@@ -1,6 +1,7 @@
 import Pdca from "@/app/models/Pdca";
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
+import { auth } from "@/auth";
 
 // --- ฟังก์ชันช่วย: parseFormData ---
 
@@ -75,6 +76,14 @@ export async function POST(req) {
       pdcaData = body.formData || body;
     } else {
       return NextResponse.json({ message: "Unsupported content type" }, { status: 400 });
+    }
+
+    const session = await auth();
+    if (session?.user) {
+      pdcaData.userId = session.user.id;
+      pdcaData.authorName = session.user.name;
+      pdcaData.authorImage = session.user.image;
+      pdcaData.authorRole = session.user.role;
     }
 
     const newPdca = await Pdca.create(pdcaData);
