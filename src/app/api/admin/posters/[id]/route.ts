@@ -38,8 +38,9 @@ async function deleteOldImage(imageUrl: string) {
     const filename = imageUrl.split("/").pop();
     if (!filename) return;
     
-    // ใช้ process.cwd() เพื่อให้ชี้ไปยัง Root ของโปรเจกต์
-    const filepath = `${process.cwd()}/public/uploads/${filename}`;
+    // ใช้ path.join เพื่อป้องกันปัญหา Webpack/Turbopack Overly broad pattern
+    const cwd = process.cwd();
+    const filepath = path.join(cwd, "public", "uploads", filename);
     if (fs.existsSync(filepath)) {
       await fs.promises.unlink(filepath);
       console.log(`Deleted old image: ${filepath}`);
