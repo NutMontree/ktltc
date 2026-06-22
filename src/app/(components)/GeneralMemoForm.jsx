@@ -219,7 +219,7 @@ const GeneralMemoForm = ({ memoId, initialData = {} }) => {
                 ? `
             <div style="margin-top: 20px;">
               <div class="comment-line">
-                <span class="comment-label">ความคิดเห็นของ ${toThaiDigits(formData.deputyPosition)}</span>
+                <span class="comment-label">ความคิดเห็นของรองผู้อำนวยการ</span>
                 <span class="comment-dots">&nbsp;</span>
               </div>
               <div class="comment-line"><span class="comment-dots">&nbsp;</span></div>
