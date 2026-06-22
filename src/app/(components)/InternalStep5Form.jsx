@@ -302,7 +302,7 @@ const InternalStep5Form = ({ projectId, initialData = {} }) => {
           </style>
         </head>
         <body>
-          <img src="/pdf/pdca/ตราครุฑ.jpg" class="garuda" onerror="this.style.display='none'">
+          <img src="/pdf/pdca/ตราครุฑ.webp" class="garuda" onerror="this.style.display='none'">
           <div class="order-title">คำสั่งวิทยาลัยเทคนิคกันทรลักษ์</div>
           <div class="order-title">ที่ ${clean(formData.orderNumber) || "............. / ............."}</div>
           <div class="order-subject">เรื่อง แต่งตั้งคณะกรรมการดำเนินงานโครงการ ${clean(formData.projectName)}</div>

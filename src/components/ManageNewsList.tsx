@@ -438,6 +438,8 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                       src={displayImage}
                       alt={news.title}
                       fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      unoptimized={displayImage.startsWith('/api')}
                       priority={index < 4}
                       className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
@@ -473,6 +475,8 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                             src={authorAvatar}
                             alt={authorName}
                             fill
+                            sizes="20px"
+                            unoptimized={authorAvatar.startsWith('/api')}
                             className="object-cover"
                           />
                         </div>
@@ -567,6 +571,8 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                       src={displayImage}
                       alt={news.title}
                       fill
+                      sizes="80px"
+                      unoptimized={displayImage.startsWith('/api')}
                       priority={index < 4}
                       className="object-cover object-top"
                     />
@@ -595,6 +601,8 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                           src={authorAvatar}
                           alt={authorName}
                           fill
+                          sizes="16px"
+                          unoptimized={authorAvatar.startsWith('/api')}
                           className="object-cover"
                         />
                       </div>

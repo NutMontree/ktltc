@@ -321,16 +321,26 @@ export default function StudentFlagpolePortal() {
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocationStatus("found");
+        if (pos.coords.accuracy > 500) {
+          setLocationStatus("error");
+          setLocationError(`GPS คลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม. กรุณาอยู่ในที่โล่ง`);
+        } else {
+          setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setLocationStatus("found");
+        }
       },
       (err) => {
         console.error("GPS High Accuracy Error:", err);
         // Fallback to standard accuracy which is much more reliable indoors/on certain devices
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-            setLocationStatus("found");
+            if (pos.coords.accuracy > 500) {
+              setLocationStatus("error");
+              setLocationError(`สัญญาณ GPS อ่อน (ความคลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม.)`);
+            } else {
+              setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+              setLocationStatus("found");
+            }
           },
           (fallbackErr) => {
             console.error("GPS Fallback Error:", fallbackErr);
@@ -389,6 +399,37 @@ export default function StudentFlagpolePortal() {
     }
 
     setIsProcessing(true);
+    setStatusMsg("กำลังอัปเดตพิกัด GPS ปัจจุบัน...");
+
+    // ฟอร์ซดึงพิกัด GPS ใหม่ล่าสุดก่อนบันทึก
+    let finalLocation = location;
+    try {
+      if (navigator.geolocation) {
+        finalLocation = await new Promise<{lat: number, lng: number}>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              if (pos.coords.accuracy > 500) {
+                reject(new Error(`สัญญาณ GPS อ่อน (ความคลาดเคลื่อน ${Math.round(pos.coords.accuracy)} เมตร) กรุณาออกไปที่โล่งแจ้ง`));
+              } else {
+                resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+              }
+            },
+            (err) => reject(err),
+            { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 } // บังคับไม่ใช้แคช
+          );
+        });
+        setLocation(finalLocation); // Update UI
+      }
+    } catch (e: any) {
+      console.warn("High accuracy GPS refresh failed before submit, using last known location.", e);
+      if (e.message && e.message.includes("ความคลาดเคลื่อน")) {
+        alert(e.message);
+        setIsProcessing(false);
+        return;
+      }
+    }
+
+    setStatusMsg("กำลังประมวลผล...");
     try {
       let photoUrl = "";
 
@@ -424,12 +465,12 @@ export default function StudentFlagpolePortal() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          lat: location?.lat,
-          lng: location?.lng,
+          lat: finalLocation?.lat,
+          lng: finalLocation?.lng,
           photoUrl,
           deviceId: navigator.userAgent.substring(0, 80),
-          address: location
-            ? `พิกัด: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`
+          address: finalLocation
+            ? `พิกัด: ${finalLocation.lat.toFixed(6)}, ${finalLocation.lng.toFixed(6)}`
             : "ไม่ระบุตำแหน่ง",
         }),
       });

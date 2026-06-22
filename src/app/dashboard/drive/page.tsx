@@ -40,6 +40,45 @@ import {
 } from "lucide-react";
 import { uploadFile } from "@/lib/upload";
 import { motion, AnimatePresence } from "framer-motion";
+import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, DragStartEvent, DragEndEvent, closestCenter } from "@dnd-kit/core";
+import { SelectionArea, SelectionEvent } from "@viselect/react";
+
+function DnDFolderWrapper({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
+  const { setNodeRef: setDropRef, isOver } = useDroppable({ id });
+  const { setNodeRef: setDragRef, attributes, listeners, transform, isDragging } = useDraggable({ id, data: { type: 'folder' } });
+  
+  const setNodeRef = (node: HTMLElement | null) => {
+    setDropRef(node);
+    setDragRef(node);
+  };
+  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 50, position: 'relative' as any } : undefined;
+
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} data-selectable="true" data-id={id} className={`selectable-item ${className || ''} ${isDragging ? 'opacity-40 z-50' : ''} ${isOver ? 'ring-4 ring-blue-500 rounded-[24px] bg-blue-50/20' : ''}`}>
+      {children}
+    </div>
+  );
+}
+
+function DnDFileWrapper({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
+  const { setNodeRef, attributes, listeners, transform, isDragging } = useDraggable({ id, data: { type: 'file' } });
+  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 50, position: 'relative' as any } : undefined;
+
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} data-selectable="true" data-id={id} className={`selectable-item ${className || ''} ${isDragging ? 'opacity-40 z-50' : ''}`}>
+      {children}
+    </div>
+  );
+}
+
+function DroppableBreadcrumb({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
+  const { isOver, setNodeRef } = useDroppable({ id });
+  return (
+    <div ref={setNodeRef} className={`${className || ''} ${isOver ? 'ring-2 ring-blue-500 bg-blue-50/50 rounded-lg' : ''}`}>
+      {children}
+    </div>
+  );
+}
 
 let isFirstMount = true;
 
@@ -298,7 +337,32 @@ function DriveContent() {
     }
   };
 
-  const moveItem = async (newParentId: string | null) => {
+  const moveItem = async (newParentId: string | null, specificItemId?: string, specificItemType?: "file" | "folder") => {
+    if (specificItemId && specificItemType) {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/drive/item/${specificItemId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: specificItemType,
+            newParentId: newParentId === "root" ? "null" : newParentId,
+          }),
+        });
+        if (res.ok) {
+          fetchItems(currentFolderId);
+        } else {
+          const data = await res.json();
+          alert(data.error || "ไม่สามารถย้ายได้");
+        }
+      } catch (error) {
+        alert("เกิดข้อผิดพลาดในการย้าย");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (selectedIds.size > 0) {
       setLoading(true);
       try {
@@ -371,6 +435,52 @@ function DriveContent() {
       }
     } catch (error) {
       alert("เกิดข้อผิดพลาดในการลบ");
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+    
+    if (active.id === over.id) return;
+
+    const targetId = over.id === "root" ? "null" : String(over.id);
+    
+    if (selectedIds.has(String(active.id))) {
+      moveItem(targetId);
+    } else {
+      const activeItem = [...folders, ...files].find(i => i._id === active.id);
+      if (activeItem) {
+        const type = (activeItem as any).url ? "file" : "folder";
+        moveItem(targetId, String(active.id), type);
+      }
+    }
+  };
+
+  const handleSelectionChange = (e: SelectionEvent) => {
+    const {
+      store: { changed, stored }
+    } = e;
+    
+    const newSelectedIds = new Set<string>();
+    for (const item of stored) {
+      const id = item.getAttribute("data-id");
+      if (id) newSelectedIds.add(id);
+    }
+    
+    setSelectedIds(newSelectedIds);
+    if (newSelectedIds.size > 0) {
+      setIsSelectionMode(true);
+    } else {
+      setIsSelectionMode(false);
     }
   };
 
@@ -689,7 +799,26 @@ function DriveContent() {
   }
 
   return (
-    <div className="mx-auto max-w-[1600px] px-2 pt-28 pb-10 lg:pt-32 animate-in fade-in duration-700">
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+    <SelectionArea
+      className="mx-auto max-w-[1600px] px-2 pt-28 pb-10 lg:pt-32 animate-in fade-in duration-700 min-h-screen"
+      onStart={handleSelectionChange}
+      onMove={handleSelectionChange}
+      selectables=".selectable-item"
+      features={{
+        singleTap: {
+          allow: false,
+        },
+      }}
+    >
+      <style>{`
+        .selection-area {
+          background: rgba(37, 99, 235, 0.1) !important;
+          border: 2px solid rgba(37, 99, 235, 0.4) !important;
+          border-radius: 8px !important;
+          z-index: 999 !important;
+        }
+      `}</style>
       {/* Header Section */}
       <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
         <div>
@@ -828,22 +957,26 @@ function DriveContent() {
               </span>
             </button>
           )}
+          <DroppableBreadcrumb id="root" className="shrink-0 flex items-center">
           <button
             onClick={() => handleBreadcrumbClick(-1)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all shrink-0 ${breadcrumbs.length === 0 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
           >
             <HardDrive size={14} /> <span className="hidden xs:inline">หน้าแรก</span>
           </button>
+          </DroppableBreadcrumb>
 
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={crumb.id || idx}>
               <span className="text-slate-300 dark:text-zinc-700 text-xs">/</span>
+              <DroppableBreadcrumb id={crumb.id || "root"} className="shrink-0 flex items-center">
               <button
                 onClick={() => handleBreadcrumbClick(idx)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all whitespace-nowrap shrink-0 ${idx === breadcrumbs.length - 1 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
               >
                 {crumb.name}
               </button>
+              </DroppableBreadcrumb>
             </React.Fragment>
           ))}
         </div>
@@ -913,14 +1046,14 @@ function DriveContent() {
       >
         {/* Folders */}
         {folders.map((folder) => (
+          <DnDFolderWrapper id={folder._id} key={folder._id} className="flex">
           <motion.div
             layout
-            key={folder._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={!isSelectionMode ? { y: -8 } : {}}
             onClick={() => isSelectionMode && toggleSelection(folder._id)}
-            className={`group relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
+            className={`group w-full relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
               selectedIds.has(folder._id)
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50 dark:bg-blue-900/10"
                 : "border-slate-100 dark:border-zinc-800 hover:shadow-xl hover:border-blue-100 dark:hover:border-blue-900/30"
@@ -1038,20 +1171,21 @@ function DriveContent() {
               </div>
             </div>
           </motion.div>
+          </DnDFolderWrapper>
         ))}
 
         {/* Files */}
         {filteredFiles.map((file) => (
+          <DnDFileWrapper id={file._id} key={file._id} className="flex">
           <motion.div
             layout
-            key={file._id}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             whileHover={!isSelectionMode ? { scale: 1.02 } : {}}
             onClick={() => {
               if (isSelectionMode) toggleSelection(file._id);
             }}
-            className={`group relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
+            className={`group w-full relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
               selectedIds.has(file._id)
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50 dark:bg-blue-900/10"
                 : "border-slate-100 dark:border-zinc-800 hover:shadow-xl hover:border-blue-100 dark:hover:border-blue-900/30"
@@ -1175,6 +1309,7 @@ function DriveContent() {
               </div>
             </div>
           </motion.div>
+          </DnDFileWrapper>
         ))}
       </div>
 
@@ -1571,6 +1706,7 @@ function DriveContent() {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </SelectionArea>
+    </DndContext>
   );
 }

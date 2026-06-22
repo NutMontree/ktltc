@@ -169,7 +169,7 @@ const InternalMeetingMemoForm = ({ projectId, initialData = {} }) => {
           </style>
         </head>
         <body>
-          <img src="/pdf/pdca/ตราครุฑ.jpg" class="garuda" onerror="this.style.display='none'">
+          <img src="/pdf/pdca/ตราครุฑ.webp" class="garuda" onerror="this.style.display='none'">
           <div class="header-title">บันทึกข้อความ</div>
           
           <div class="flex-row">
