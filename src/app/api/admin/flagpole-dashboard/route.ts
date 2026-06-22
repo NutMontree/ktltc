@@ -12,9 +12,14 @@ export async function GET(req: Request) {
 
     const role = (session.user as any)?.role?.toLowerCase();
     
+    const STAFF_ROLES = [
+      "super_admin", "admin", "director", "deputy_director", 
+      "deputy_academic", "deputy_student_affairs", "deputy_resource", "deputy_plan",
+      "hr", "head_department", "staff", "editor", "teacher"
+    ];
+    
     // ตรวจสอบสิทธิ์ว่ามีสิทธิ์เข้าใช้งานหรือไม่ (ดูจากระบบ Permissions Matrix)
-    const hasAccess = ["super_admin", "admin", "deputy_student_affairs"].includes(role) || 
-                      (role !== "student" && await hasPermission(role, "student_dashboard"));
+    const hasAccess = STAFF_ROLES.includes(role) && role !== "student";
                       
     if (!hasAccess) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });

@@ -14,5 +14,5 @@ export default function VisitorTracker() {
     }
   }, []);
 
-  return null; // Component นี้ไม่มีหน้าตา แค่ทำงานเบื้องหลัง
+  return <div style={{ display: "none" }} aria-hidden="true" data-visitor-tracker="true"></div>;
 }
