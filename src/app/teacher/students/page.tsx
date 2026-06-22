@@ -73,12 +73,34 @@ export default function TeacherStudentsPage() {
   const [hasFetched, setHasFetched] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const [permissions, setPermissions] = useState<any>(null);
+  const [isPermsLoading, setIsPermsLoading] = useState(true);
+
   // Redirect if not allowed
   useEffect(() => {
     if (status === "loading") return;
-    if (!session || !ALLOWED_ROLES.includes(userRole)) {
+    if (!session) {
       router.replace("/login");
+      return;
     }
+
+    fetch("/api/auth/permissions")
+      .then((res) => res.json())
+      .then((data) => {
+        const perms = data || {};
+        if (
+          userRole === "super_admin" || 
+          ALLOWED_ROLES.includes(userRole) || 
+          perms.access_teacher_students ||
+          perms.access_teacher_workspace
+        ) {
+          setPermissions(perms);
+          setIsPermsLoading(false);
+        } else {
+          router.replace("/dashboard");
+        }
+      })
+      .catch(() => router.replace("/dashboard"));
   }, [status, session, userRole, router]);
 
   // Auto-select department for teachers
@@ -146,7 +168,7 @@ export default function TeacherStudentsPage() {
 
   const activeCount = students.filter((s) => s.studentStatus === "กำลังศึกษา").length;
 
-  if (status === "loading") {
+  if (status === "loading" || isPermsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />

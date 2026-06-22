@@ -16,9 +16,13 @@ export async function GET(req: Request) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userRole = (session.user as any)?.role;
-    if (!["super_admin", "admin", "hr"].includes(userRole)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const userRole = (session.user as any)?.role?.toLowerCase();
+    const allowedRoles = [
+      "super_admin", "admin", "editor", "teacher", "hr", "director", "staff",
+      "deputy_student_affairs", "deputy_academic", "deputy_strategy", "deputy_resource"
+    ];
+    if (!allowedRoles.includes(userRole)) {
+      return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);

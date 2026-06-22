@@ -147,6 +147,22 @@ const FEATURE_LABELS: {
     color: "text-teal-500",
     href: "/dashboard/director/student-care",
   },
+
+
+  access_teacher_students: { label: "ข้อมูลนักเรียนในที่ปรึกษา", icon: FiUsers, color: "text-violet-500", href: "/teacher/students" },
+  access_gate_scanner: { label: "ระบบสแกนเข้า-ออก (Gate)", icon: FiCheckCircle, color: "text-violet-500", href: "/teacher/gate-scanner" },
+  access_gps_tracking: { label: "ระบบติดตามตำแหน่ง (GPS)", icon: FiCheckCircle, color: "text-violet-500", href: "/teacher/tracking" },
+
+  manage_student_data_validation: { label: "ตรวจสอบข้อมูลนักเรียน", icon: FiCheckCircle, color: "text-teal-500", href: "/student-data-validation" },
+  manage_ita: { label: "ระบบข้อมูล ITA / OIT", icon: FiFileText, color: "text-teal-500", href: "/dashboard/ita" },
+  manage_drive: { label: "คลังเอกสารดิจิทัล (Drive)", icon: FiFileText, color: "text-blue-500", href: "/dashboard/drive" },
+  manage_flagpole_dashboard: { label: "สถิติภาพรวมการเข้าแถว", icon: FiFileText, color: "text-amber-500", href: "/dashboard/flagpole-dashboard" },
+  manage_flagpole_reports: { label: "ระบบรายงานการเข้าแถว", icon: FiFileText, color: "text-amber-500", href: "/dashboard/flagpole-reports" },
+
+  manage_broadcast_notification: { label: "ส่งข้อความแจ้งเตือน", icon: FiMessageSquare, color: "text-sky-500", href: "/broadcast-notification" },
+  manage_attendance_data: { label: "แก้ไขข้อมูลการลงเวลา", icon: FiEdit3, color: "text-sky-500", href: "/dashboard/data-management" },
+  manage_work_reports_admin: { label: "แก้ไขรายงานปฏิบัติงาน (Admin)", icon: FiEdit3, color: "text-sky-500", href: "/work-reports-management" },
+  manage_reset_views: { label: "รีเซ็ตยอดเข้าชม", icon: FiTrash2, color: "text-red-500", href: "/dashboard" },
 };
 
 const ADVANCED_FEATURE_LABELS: {
@@ -525,7 +541,7 @@ export default function PermissionsPage() {
       if (res.ok) {
         toast.success("เพิ่มเมนูใหม่สำเร็จ");
         setShowAddMenuModal(false);
-        setNewMenu({ title: "", href: "", workspace: "staff" });
+        setNewMenu({ title: "", href: "", workspace: "staff", displayIn: "both" });
         fetchPermissions(); // Reload matrix
       } else {
         toast.error("ไม่สามารถเพิ่มเมนูได้");

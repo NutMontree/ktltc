@@ -15,7 +15,11 @@ export async function GET(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const role = (session.user as any)?.role?.toLowerCase();
-    if (!["super_admin", "admin", "editor", "teacher"].includes(role)) {
+    const allowedRoles = [
+      "super_admin", "admin", "editor", "teacher", "hr", "director", "staff",
+      "deputy_student_affairs", "deputy_academic", "deputy_strategy", "deputy_resource"
+    ];
+    if (!allowedRoles.includes(role)) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 

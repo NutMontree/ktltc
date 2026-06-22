@@ -39,12 +39,33 @@ export default function BroadcastNotificationPage() {
   const [isSending, setIsSending] = useState(false);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
 
+  const [permissions, setPermissions] = useState<any>(null);
+  const [isPermsLoading, setIsPermsLoading] = useState(true);
+
   // Redirect if not allowed
   useEffect(() => {
     if (status === "loading") return;
-    if (!session || !ALLOWED_ROLES.includes(userRole)) {
+    if (!session) {
       router.replace("/login");
+      return;
     }
+
+    fetch("/api/auth/permissions")
+      .then((res) => res.json())
+      .then((data) => {
+        const perms = data || {};
+        if (
+          userRole === "super_admin" || 
+          ALLOWED_ROLES.includes(userRole) || 
+          perms.manage_broadcast_notification
+        ) {
+          setPermissions(perms);
+          setIsPermsLoading(false);
+        } else {
+          router.replace("/dashboard");
+        }
+      })
+      .catch(() => router.replace("/dashboard"));
   }, [status, session, userRole, router]);
 
   const allDepartments = DEPARTMENT_GROUPS.flatMap((group) => group.options);
@@ -166,7 +187,7 @@ export default function BroadcastNotificationPage() {
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" || isPermsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />

@@ -50,7 +50,7 @@ function FlagpoleReportsManagementContent() {
   const initialSearch = searchParams ? (searchParams.get("search") || "") : "";
 
   const role = (session?.user as any)?.role?.toLowerCase();
-  const isAdmin = ["super_admin", "admin"].includes(role);
+  const isSuperAdmin = role === "super_admin";
 
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +62,9 @@ function FlagpoleReportsManagementContent() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const LIMIT = 20;
+
+  const [permissions, setPermissions] = useState<any>(null);
+  const [isPermsLoading, setIsPermsLoading] = useState(true);
 
   // Zoom Image State
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -86,11 +89,29 @@ function FlagpoleReportsManagementContent() {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
+      return;
     } else if (status === "authenticated") {
-      const role = (session?.user as any)?.role?.toLowerCase();
-      if (!["super_admin", "admin", "editor", "teacher"].includes(role)) {
-        router.replace("/");
-      }
+      fetch("/api/auth/permissions")
+        .then((res) => res.json())
+        .then((data) => {
+          const perms = data || {};
+          const role = (session?.user as any)?.role?.toLowerCase();
+          
+          if (
+            role === "super_admin" || 
+            ["super_admin", "admin", "editor", "teacher"].includes(role) || 
+            perms.manage_flagpole_reports ||
+            perms.manage_flagpole_data ||
+            perms.manage_flagpole_settings ||
+            perms.manage_flagpole_dashboard
+          ) {
+            setPermissions(perms);
+            setIsPermsLoading(false);
+          } else {
+            router.replace("/");
+          }
+        })
+        .catch(() => router.replace("/"));
     }
   }, [status, session]);
 
@@ -522,7 +543,7 @@ function FlagpoleReportsManagementContent() {
     return colors[index];
   };
 
-  if (status === "loading" || (loading && reports.length === 0)) {
+  if (status === "loading" || isPermsLoading || (loading && reports.length === 0)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-zinc-950 gap-4 text-left">
         <Loader2 className="animate-spin text-indigo-500 w-10 h-10" />
@@ -581,7 +602,7 @@ function FlagpoleReportsManagementContent() {
               <FileText size={16} /> ดาวน์โหลดประวัติ (PDF)
             </button>
 
-            {isAdmin && (
+            {isSuperAdmin && (
               <button
                 onClick={handleDeleteAll}
                 disabled={actionLoading}
@@ -790,7 +811,7 @@ function FlagpoleReportsManagementContent() {
                   <th className="px-8 py-5.5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800">
                     สถานะการเช็คแถว
                   </th>
-                  {isAdmin && (
+                  {isSuperAdmin && (
                     <th className="px-8 py-5.5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">
                       จัดการข้อมูล
                     </th>
@@ -801,7 +822,7 @@ function FlagpoleReportsManagementContent() {
                 <AnimatePresence mode="popLayout">
                   {filteredReports.length === 0 ? (
                     <tr>
-                      <td colSpan={isAdmin ? 7 : 6} className="py-20 text-center">
+                      <td colSpan={isSuperAdmin ? 7 : 6} className="py-20 text-center">
                         <AlertCircle
                           size={48}
                           className="text-slate-200 dark:text-neutral-800 mx-auto mb-4"
@@ -964,7 +985,7 @@ function FlagpoleReportsManagementContent() {
                             {STATUS_TH[report.status] || report.status}
                           </span>
                         </td>
-                        {isAdmin && (
+                        {isSuperAdmin && (
                           <td className="px-8 py-5 border-b border-slate-50 dark:border-zinc-800/50 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button

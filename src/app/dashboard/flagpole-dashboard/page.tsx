@@ -186,8 +186,14 @@ export default function StudentFlagpoleDashboard() {
           // ดึงสิทธิ์ที่ตั้งค่าไว้จากระบบ Permissions Matrix
           const res = await fetch("/api/auth/permissions?_t=" + Date.now());
           if (res.ok) {
-            const permissions = await res.json();
-            if (permissions?.student_dashboard) {
+            const data = await res.json();
+            const perms = data || {};
+            if (
+              perms.manage_flagpole_dashboard ||
+              perms.manage_flagpole_reports ||
+              perms.manage_flagpole_data ||
+              perms.manage_flagpole_settings
+            ) {
               return; // ได้รับสิทธิ์
             }
           }

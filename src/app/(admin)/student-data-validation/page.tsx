@@ -60,15 +60,37 @@ export default function StudentDataValidationPage() {
   const [hasValidated, setHasValidated] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const [permissions, setPermissions] = useState<any>(null);
+  const [isPermsLoading, setIsPermsLoading] = useState(true);
+
   const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
   const [isSendingNotification, setIsSendingNotification] = useState(false);
 
   // Redirect if not allowed
   useEffect(() => {
     if (status === "loading") return;
-    if (!session || !ALLOWED_ROLES.includes(userRole)) {
+    if (!session) {
       router.replace("/login");
+      return;
     }
+
+    fetch("/api/auth/permissions")
+      .then((res) => res.json())
+      .then((data) => {
+        const perms = data || {};
+        if (
+          userRole === "super_admin" || 
+          ALLOWED_ROLES.includes(userRole) || 
+          perms.manage_student_data_validation || 
+          perms.manage_pages
+        ) {
+          setPermissions(perms);
+          setIsPermsLoading(false);
+        } else {
+          router.replace("/dashboard");
+        }
+      })
+      .catch(() => router.replace("/dashboard"));
   }, [status, session, userRole, router]);
 
   const academicDepts = DEPARTMENT_GROUPS.find((g) => g.label.includes("แผนกวิชา"))?.options || [];
@@ -160,7 +182,7 @@ export default function StudentDataValidationPage() {
   const studentsWithErrors = validationResults.filter((s) => s.hasErrors);
   const validStudents = validationResults.filter((s) => !s.hasErrors);
 
-  if (status === "loading") {
+  if (status === "loading" || isPermsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
