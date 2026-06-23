@@ -401,7 +401,7 @@ const GeneralMemoForm = ({ memoId, initialData = {} }) => {
                   <textarea
                     value={p}
                     onChange={(e) => handleParagraphChange(index, e.target.value)}
-                    rows={4}
+                    rows={10}
                     className="w-full rounded-2xl border-2 border-stroke bg-white p-4 outline-none transition-all focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
                     placeholder="พิมพ์เนื้อหาที่ต้องการ (จะมีการย่อหน้าอัตโนมัติในหน้า PDF)"
                   />
