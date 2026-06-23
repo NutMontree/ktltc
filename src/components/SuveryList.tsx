@@ -409,6 +409,7 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedRoomId, setSelectedRoomId] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   // Get all unique departments and roomIds from the entire dataset for filter options
   const uniqueDepartments = Array.from(
@@ -417,6 +418,10 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
 
   const uniqueRooms = Array.from(
     new Set(suverys.map((s) => s.roomId).filter(Boolean))
+  ).sort();
+
+  const uniqueStatuses = Array.from(
+    new Set(suverys.map((s) => s.currentStatus).filter(Boolean))
   ).sort();
 
   // Dynamic room options based on selected department
@@ -445,6 +450,12 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
     // 3. RoomId
     if (selectedRoomId) {
       if (sv.roomId !== selectedRoomId) {
+        return false;
+      }
+    }
+    // 4. Status
+    if (selectedStatus) {
+      if (sv.currentStatus !== selectedStatus) {
         return false;
       }
     }
@@ -837,9 +848,9 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
         </button>
       </div>
       {/* ------------------------------------------- */}
-      {/* FILTER PANEL: Search, Department & Room */}
+      {/* FILTER PANEL: Search, Department, Room, Status */}
       {/* ------------------------------------------- */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 p-5 bg-white border border-gray-100 rounded-2xl shadow-xs dark:bg-gray-900 dark:border-gray-800">
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-5 gap-4 p-5 bg-white border border-gray-100 rounded-2xl shadow-xs dark:bg-gray-900 dark:border-gray-800">
         {/* Search */}
         <div className="relative md:col-span-2">
           <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2 ml-1">
@@ -899,17 +910,37 @@ const SuveryList: FC<SuveryListProps> = ({ suverys, isLoading, isError }) => {
           </select>
         </div>
 
+        {/* Status Dropdown */}
+        <div>
+          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2 ml-1">
+            สถานะงาน
+          </label>
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/25 focus:border-green-500 text-sm text-gray-850 dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200 cursor-pointer"
+          >
+            <option value="">สถานะงานทั้งหมด</option>
+            {uniqueStatuses.map((st) => (
+              <option key={st} value={st}>
+                {st === "1" ? "ไม่ได้ทำงาน" : st === "2" ? "ทำงานแล้ว" : st}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Clear Filters Helper Row */}
-        <div className="md:col-span-4 flex items-center justify-between border-t border-gray-50 pt-3 dark:border-gray-800/40">
+        <div className="md:col-span-5 flex items-center justify-between border-t border-gray-50 pt-3 dark:border-gray-800/40">
           <span className="text-xs text-gray-500 dark:text-gray-400">
             พบข้อมูล: <b>{filteredSuverys.length}</b> จาก {suverys.length}
           </span>
-          {(searchQuery || selectedDepartment || selectedRoomId) && (
+          {(searchQuery || selectedDepartment || selectedRoomId || selectedStatus) && (
             <button
               onClick={() => {
                 setSearchQuery("");
                 setSelectedDepartment("");
                 setSelectedRoomId("");
+                setSelectedStatus("");
               }}
               className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors flex items-center gap-1 cursor-pointer"
             >
