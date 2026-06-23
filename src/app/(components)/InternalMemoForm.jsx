@@ -118,7 +118,7 @@ const InternalMemoForm = ({ projectId, initialData = {} }) => {
               font-size: 16pt; 
               line-height: 1.1; 
               margin: 0;
-              padding-top: 2.5cm; padding-bottom: 2.5cm;
+              padding-top: 2.5cm; padding-bottom: 2cm;
               padding-left: 3cm; padding-right: 2cm;
               color: black;
               position: relative;
@@ -209,14 +209,14 @@ const InternalMemoForm = ({ projectId, initialData = {} }) => {
           <!-- 3. ส่วนลงนาม (ผู้เสนอ) -->
           <div class="approval-flow">
             
-            <div style="text-align: center;">
+            <div style="text-align: center; page-break-inside: avoid; break-inside: avoid;">
               <div style="text-align: left;">ลงชื่อ</div>
               <div style="margin-bottom: 5px;">( ${toThaiDigits((formData.signerName || "").trim().replace(/\s+/g, "&nbsp;&nbsp;")) || "................................................"} )</div>
               <div>${toThaiDigits(formData.signerPosition)}</div>
             </div>
 
             <!-- 4. ผู้อนุมัติ (รองผู้อำนวยการ) -->
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 15px; page-break-inside: avoid; break-inside: avoid;">
               <div class="comment-line">
                 <span class="comment-label">ความคิดเห็นรองฝ่าย</span>
                 <span class="comment-dots">&nbsp;</span>
@@ -224,7 +224,7 @@ const InternalMemoForm = ({ projectId, initialData = {} }) => {
               <div class="comment-line"><span class="comment-dots">&nbsp;</span></div>
               <div class="comment-line"><span class="comment-dots">&nbsp;</span></div>
               
-              <div style="text-align: center; margin-top: 35px;">
+              <div style="text-align: center; margin-top: 20px;">
                 <div style="text-align: left;">ลงชื่อ</div>
                 <div style="margin-bottom: 5px;">( ${toThaiDigits((formData.deputy2Name || "").trim().replace(/\s+/g, "&nbsp;&nbsp;")) || "................................................"} )</div>
                 <div>${toThaiDigits(formData.deputy2Position)}</div>
@@ -232,7 +232,7 @@ const InternalMemoForm = ({ projectId, initialData = {} }) => {
             </div>
 
             <!-- 5. ผู้อนุมัติ (ผู้อำนวยการ) -->
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 15px; page-break-inside: avoid; break-inside: avoid;">
               <div class="comment-line">
                 <span class="comment-label">ความคิดเห็นของผู้อำนวยการ</span>
                 <span class="comment-dots">&nbsp;</span>
@@ -240,7 +240,7 @@ const InternalMemoForm = ({ projectId, initialData = {} }) => {
               <div class="comment-line"><span class="comment-dots">&nbsp;</span></div>
               <div class="comment-line"><span class="comment-dots">&nbsp;</span></div>
               
-              <div style="text-align: center; margin-top: 35px;">
+              <div style="text-align: center; margin-top: 20px;">
                 <div style="text-align: left;">ลงชื่อ</div>
                 <div style="margin-bottom: 5px;">( ${toThaiDigits((formData.directorName || "").trim().replace(/\s+/g, "&nbsp;&nbsp;")) || "................................................"} )</div>
                 <div>ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์</div>
