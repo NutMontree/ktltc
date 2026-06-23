@@ -271,7 +271,7 @@ const InternalStep5Form = ({ projectId, initialData = {} }) => {
             .order-title { font-size: 20pt; font-weight: bold; text-align: center; margin-bottom: 5px; }
             .order-subject { font-size: 18pt; font-weight: bold; text-align: center; margin-bottom: 20px; }
             
-            .rationale { text-indent: 2.5cm; text-align: justify; margin-bottom: 15px; }
+            .rationale { text-indent: 2.5cm; text-align: justify; text-justify: distribute; margin-bottom: 15px; }
             
             .group-block { margin-top: 15px; margin-bottom: 15px; }
             .group-title { font-weight: bold; text-indent: 1cm; margin-bottom: 5px; }
