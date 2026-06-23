@@ -153,7 +153,7 @@ const GeneralMemoForm = ({ memoId, initialData = {} }) => {
               border-bottom: 1.5px dotted #000;
             }
             
-            .para { text-indent: 2.5cm; margin-top: 8px; text-align: justify; }
+            .para { text-indent: 2.5cm; margin-top: 8px; text-align: justify; text-justify: distribute; }
             
             .signature-block { width: 50%; margin-left: 50%; margin-top: 15px; text-align: center; }
             .sig-line { text-align: left; padding-left: 20px; margin-bottom: 5px; }

@@ -129,7 +129,7 @@ const PermissionForm = ({ projectId, initialData = {} }) => {
             .label { font-weight: bold; font-size: 16pt; white-space: nowrap; }
             .value { position: relative; white-space: nowrap; }
             .value::after { content: ''; position: absolute; left: 0; right: 0; bottom: 6px; border-bottom: 1.5px dotted #000; }
-            .para { text-indent: 2.5cm; margin-top: 8px; text-align: justify; }
+            .para { text-indent: 2.5cm; margin-top: 8px; text-align: justify; text-justify: distribute; }
             .approval-flow { width: 50%; margin-left: 50%; margin-top: 15px; }
             .comment-line { display: flex; align-items: baseline; margin-bottom: 5px; min-height: 25px; }
             .comment-dots { flex: 1; color: transparent; position: relative; }
