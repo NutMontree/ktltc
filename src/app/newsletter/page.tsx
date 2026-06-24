@@ -42,7 +42,7 @@ async function getNewsletters(): Promise<NewsItem[]> {
       .collection("news")
       .find(query)
       .sort({ createdAt: -1 })
-      .limit(3)
+      .limit(4)
       .toArray();
 
     return JSON.parse(JSON.stringify(newsletters));
@@ -77,7 +77,7 @@ export default async function NewsletterPage() {
       <section className="pb-20">
         {newsletters.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {newsletters.map((news, index) => {
                 const coverImage =
                   news.thumbnails && news.thumbnails.length > 0
@@ -92,7 +92,9 @@ export default async function NewsletterPage() {
                   <Link
                     key={news._id}
                     href={`/news/${news._id}`}
-                    className="group relative block rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:-translate-y-2 aspect-3/4 dark:border-slate-800 dark:shadow-black/40"
+                    className={`group relative block rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:-translate-y-2 aspect-3/4 dark:border-slate-800 dark:shadow-black/40 ${
+                      index === 3 ? "lg:hidden" : ""
+                    }`}
                   >
                     {/* Image Area */}
                     <div className="absolute inset-0 w-full h-full bg-slate-100 dark:bg-slate-800">

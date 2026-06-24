@@ -41,7 +41,7 @@ async function getAnnouncements(): Promise<NewsItem[]> {
       .collection("news")
       .find(query)
       .sort({ createdAt: -1 })
-      .limit(3)
+      .limit(4)
       // ✅ มั่นใจว่าไม่ได้ใช้ .project() ที่ไปตัด author ออก
       .toArray();
 
@@ -110,7 +110,7 @@ export default async function AnnouncementPage() {
         {/* --- Grid Section --- */}
         {announcements.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {announcements.map((news) => {
+            {announcements.map((news, index) => {
               const coverImage =
                 news.announcementImages && news.announcementImages.length > 0
                   ? news.announcementImages[0]
@@ -122,7 +122,9 @@ export default async function AnnouncementPage() {
                 <Link
                   key={news._id}
                   href={`/news/${news._id}`}
-                  className="group flex flex-col rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full bg-white dark:bg-slate-900 dark:border-slate-800"
+                  className={`group flex flex-col rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full bg-white dark:bg-slate-900 dark:border-slate-800 ${
+                    index === 3 ? "lg:hidden" : ""
+                  }`}
                 >
                   {/* Image Area */}
                   <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">

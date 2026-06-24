@@ -56,8 +56,10 @@ interface NewsItem {
 
 export default function NewsListClient({
   initialNews = [],
+  hideFourthOnLg = false,
 }: {
   initialNews: NewsItem[];
+  hideFourthOnLg?: boolean;
 }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedMonth, setSelectedMonth] = useState("All");
@@ -165,8 +167,8 @@ export default function NewsListClient({
 
       {/* --- News Grid --- */}
       {paginatedNews.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-          {paginatedNews.map((news) => {
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${hideFourthOnLg ? '' : 'xl:grid-cols-4'} gap-2`}>
+          {paginatedNews.map((news, index) => {
             const coverImage =
               news.images?.[0] ||
               news.announcementImages?.[0] ||
@@ -185,7 +187,9 @@ export default function NewsListClient({
               <Link
                 key={news._id}
                 href={`/news/${news._id}`}
-                className="group relative flex flex-col bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
+                className={`group relative flex flex-col bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ${
+                  hideFourthOnLg && index === 3 ? "lg:hidden" : ""
+                }`}
               >
                 {/* Thumbnail */}
                 <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden">

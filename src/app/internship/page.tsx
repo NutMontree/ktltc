@@ -36,7 +36,7 @@ async function getInternshipData(): Promise<NewsItem[]> {
         ],
       })
       .sort({ createdAt: -1 })
-      .limit(3)
+      .limit(4)
       // ✅ ดึง author มาด้วยโดยไม่ใช้ .project()
       .toArray();
 
@@ -97,7 +97,7 @@ export default async function InternshipPage() {
         {/* --- Grid Content --- */}
         {internshipData.length > 0 ? (
           <div className="[&_.mb-16.bg-white\/70]:hidden [&_.mb-16.dark\:bg-slate-900\/80]:hidden">
-            <NewsListClient initialNews={internshipData} />
+            <NewsListClient initialNews={internshipData} hideFourthOnLg={true} />
           </div>
         ) : (
           /* --- Empty State --- */

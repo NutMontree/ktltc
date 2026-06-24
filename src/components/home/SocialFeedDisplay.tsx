@@ -59,53 +59,60 @@ export default function SocialFeedDisplay({
         </div>
 
         {/* รายการวิดีโอ (Accordion) */}
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {youtubeFeeds.length > 0 ? (
             youtubeFeeds.slice(0, itemsToShow).map((feed) => (
-              <details
+              <div
                 key={feed._id}
-                className="group border border-zinc-100 dark:border-zinc-800 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md"
+                className="group relative flex flex-col bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
               >
-                {/* ส่วนหัวของรายการ (กดเพื่อกางออก) */}
-                <summary className="flex items-center justify-between p-4 cursor-pointer list-none bg-white dark:bg-zinc-900 outline-none">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500">
-                      <FiYoutube size={20} />
-                    </div>
-                    <div className="text-left">
-                      <h3 className="font-bold text-zinc-800 dark:text-zinc-200 leading-tight">
-                        {feed.title}
-                      </h3>
-                      <p className="text-[10px] text-zinc-400 font-bold mt-1 uppercase tracking-wider">
-                        KTLTC Official • Video ID: {feed.embedId || "N/A"}
-                      </p>
-                    </div>
-                  </div>
-                  <FiChevronDown
-                    className="text-zinc-400 transition-transform duration-300 group-open:rotate-180"
-                    size={24}
-                  />
-                </summary>
-
-                {/* ส่วนเนื้อหา (Iframe วิดีโอ) */}
-                <div className="p-6 pt-0 bg-zinc-50 dark:bg-zinc-800/30">
+                {/* Iframe Area */}
+                <div className="relative aspect-video w-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                   {feed.embedId ? (
-                    <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-inner border border-zinc-200 dark:border-zinc-700">
-                      <iframe
-                        src={`https://www.youtube-nocookie.com/embed/${feed.embedId}`}
-                        title={feed.title}
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${feed.embedId}`}
+                      title={feed.title}
+                      className="w-full h-full object-cover"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      loading="lazy"
+                    />
                   ) : (
-                    <div className="py-10 text-center text-zinc-400 italic text-sm">
-                      ไม่พบข้อมูลรหัสวิดีโอ (ID)
+                    <div className="flex items-center justify-center w-full h-full text-zinc-400 italic text-sm">
+                      ไม่พบรหัสวิดีโอ
                     </div>
                   )}
+                  {/* subtle overlay border */}
+                  <div className="pointer-events-none absolute inset-0 border border-black/5 dark:border-white/5 rounded-t-3xl" />
                 </div>
-              </details>
+                
+                {/* Content Area */}
+                <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500">
+                      <FiYoutube size={14} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      KTLTC OFFICIAL
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-100 leading-snug line-clamp-2 group-hover:text-red-500 transition-colors">
+                    {feed.title}
+                  </h3>
+                  
+                  <div className="mt-auto pt-6 flex items-center justify-between border-t border-zinc-50 dark:border-zinc-800/50">
+                    <span className="text-[10px] text-zinc-400 font-mono bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
+                      ID: {feed.embedId || "N/A"}
+                    </span>
+                    <span className="text-xs font-bold text-red-500 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      WATCH NOW 
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
             ))
           ) : (
             // กรณีไม่มีข้อมูลวิดีโอ

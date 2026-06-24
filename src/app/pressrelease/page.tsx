@@ -34,7 +34,7 @@ async function getLatestNews(): Promise<NewsItem[]> {
       .collection("news")
       .find({})
       .sort({ createdAt: -1 })
-      .limit(3)
+      .limit(4)
       // ✅ 2. เอา .project() ออก เพื่อให้ข้อมูล author ติดมาด้วย (หรือใส่ author: 1)
       .toArray();
 
@@ -87,11 +87,13 @@ export default async function PressRelease() {
         {/* --- News Grid --- */}
         {latestNews.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestNews.map((news) => (
+            {latestNews.map((news, index) => (
               <Link
                 href={`/news/${news._id}`}
                 key={news._id}
-                className="group flex flex-col rounded-2xl overflow-hidden border border-zinc-100 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full dark:bg-zinc-900 dark:border-zinc-800"
+                className={`group flex flex-col rounded-2xl overflow-hidden border border-zinc-100 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full dark:bg-zinc-900 dark:border-zinc-800 ${
+                  index === 3 ? "lg:hidden" : ""
+                }`}
               >
                 <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                   {(

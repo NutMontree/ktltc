@@ -20,11 +20,7 @@ const videoList = [
     src: "https://www.youtube-nocookie.com/embed/k7hgxrwGgrw?si=VWg12pZKYfKEVnUz",
     title: "Video 2",
   },
-  // หมายเหตุ: คลิปนี้เป็น Facebook Reel ถ้าเป็นไปได้ควรแยก Section หรือใช้ Embed ของ Youtube ทั้งหมดจะดีกว่าครับ แต่ใส่ไว้ให้ตามเดิม
-  {
-    src: "https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1804472173610242%2F&show_text=true&width=560&t=0",
-    title: "Facebook Reel",
-  },
+  // ลบ Facebook Reel ออกเพื่อให้มี 9 วิดีโอพอดีและไม่ทำให้เลย์เอาต์พังบนมือถือ
   {
     src: "https://www.youtube-nocookie.com/embed/tVReYxrSav0?si=HZpppAn8DwMvccUr",
     title: "Video 4",
@@ -82,7 +78,7 @@ export default function ShowYoutube() {
               รับชมวิดีโอ <span className="text-[#FF0000]">YouTube</span>
             </h1>
             <p className="text-slate-500 dark:text-slate-400">
-              รวมคลิปกิจกรรมและผลงานที่น่าสนใจ
+              คลิกที่รายการเพื่อรับชมวิดีโอกิจกรรม (มีทั้งหมด 9 วิดีโอ)
             </p>
           </div>
         </div>
