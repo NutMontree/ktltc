@@ -252,7 +252,7 @@ const InternalStep9Form = ({ projectId, initialData = {} }) => {
 
           <div class="footer">${toThaiDigits(formData.footerText)}</div>
 
-          <script>window.onload = () => { window.print(); }</script>
+          <script>setTimeout(() => { window.print(); window.close(); }, 500);</script>
         </body>
       </html>
     `);

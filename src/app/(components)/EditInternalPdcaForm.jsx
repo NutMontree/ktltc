@@ -545,7 +545,7 @@ const EditInternalPdcaForm = ({
                     const hasExistingPdf = !!existingItemPdfs[item.id];
                     const hasNewPdf = !!itemPdfs[item.id];
                     const hasPdf = hasExistingPdf || hasNewPdf;
-                    const stepMap = { 1: 'step1', 3: 'step2', 7: 'step3', 4: 'step4', 5: 'step5', 6: 'step6', 8: 'step8', 9: 'step9', 10: 'step10', 11: 'step11', 12: 'step12', 13: 'step13', 14: 'step14', 15: 'step15', 16: 'step16', 17: 'step17', 18: 'step18', 19: 'step19', 20: 'step20', 21: 'step21' };
+                    const stepMap = { 1: 'step1', 3: 'step2', 7: 'step3', 4: 'step4', 5: 'step5', 6: 'step6', 8: 'step8', 9: 'step9', 10: 'step10', 11: 'step11', 14: 'step14', 15: 'step15', 16: 'step16', 17: 'step17', 18: 'step18', 19: 'step19', 20: 'step20', 21: 'step21' };
                     const stepPath = stepMap[item.id];
 
                     return (
