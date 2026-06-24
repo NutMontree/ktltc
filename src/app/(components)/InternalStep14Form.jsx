@@ -300,15 +300,7 @@ const InternalStep14Form = ({ projectId, initialData = {}, projectData = {} }) =
           />
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="rounded-2xl bg-primary px-20 py-4 text-lg font-bold text-white shadow-lg shadow-primary/30 transition-all hover:scale-105 hover:bg-opacity-90 active:scale-95 disabled:opacity-50"
-          >
-            {loading ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
-          </button>
-        </div>
+
 
         {message && (
           <div
