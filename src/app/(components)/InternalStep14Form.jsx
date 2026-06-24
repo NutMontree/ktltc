@@ -74,12 +74,27 @@ const InternalStep14Form = ({ projectId, initialData = {}, projectData = {} }) =
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
     
+    const formatPosition = (text) => {
+      if (!text) return '';
+      
+      // If position contains "และ", smartly truncate before it to keep meaning intact
+      const andIndex = text.indexOf("และ");
+      if (andIndex > 15) {
+        return text.substring(0, andIndex).trim() + " ฯ";
+      }
+      
+      if (text.length > 30) {
+        return text.substring(0, 30).trim() + " ฯ";
+      }
+      return text;
+    };
+
     // Generate HTML for participants
     const participantsHtml = participants.map((p, index) => `
       <tr>
         <td class="text-center">${toThaiNumerals(index + 1)}</td>
         <td>${p.name || ''}</td>
-        <td class="text-center">${p.position || ''}</td>
+        <td class="text-center">${formatPosition(p.position)}</td>
         <td></td>
         <td>${p.remark || ''}</td>
       </tr>
@@ -90,10 +105,10 @@ const InternalStep14Form = ({ projectId, initialData = {}, projectData = {} }) =
         <head>
           <title>รายชื่อผู้เข้าร่วมกิจกรรม</title>
           <style>
-            @page { size: A4 portrait; margin: 20mm; }
+            @page { size: A4 portrait; margin: 10mm; }
             body {
               font-family: 'TH SarabunIT๙';
-              font-size: 16pt;
+              font-size: 14px;
               margin: 0;
               padding: 0;
               color: black;
@@ -105,25 +120,31 @@ const InternalStep14Form = ({ projectId, initialData = {}, projectData = {} }) =
             }
             .text-center { text-align: center; }
             .font-bold { font-weight: bold; }
-            h1 { font-size: 18pt; margin: 0 0 5px 0; font-weight: bold; }
-            h2 { font-size: 16pt; margin: 0 0 10px 0; font-weight: bold; }
-            .divider { font-size: 14pt; margin-bottom: 20px; letter-spacing: 2px; height: 20px; overflow: hidden; display: flex; justify-content: center; font-weight: bold; }
+            h1 { font-size: 20px; margin: 0 0 5px 0; font-weight: bold; }
+            h2 { font-size: 20px; margin: 0 0 10px 0; font-weight: bold; }
+            .divider { font-size: 14px; margin-bottom: 20px; letter-spacing: 2px; height: 20px; overflow: hidden; display: flex; justify-content: center; font-weight: bold; }
             
             table {
-              width: 100%;
+              width: calc(100% - 2px);
+              margin: 0 auto;
               border-collapse: collapse;
-              font-size: 14pt;
+              font-size: 14px;
+              table-layout: fixed;
             }
             th, td {
+              font-weight: normal;
               border: 1px solid black;
-              padding: 10px 8px;
+              padding: 10px 4px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
             }
-            th { font-weight: bold; text-align: center; }
+            th { text-align: center; }
             
             .footer {
               margin-top: auto;
               text-align: center;
-              font-size: 16pt;
+              font-size: 14px;
               font-weight: bold;
               padding-top: 30px;
               padding-bottom: 10px;
@@ -142,11 +163,11 @@ const InternalStep14Form = ({ projectId, initialData = {}, projectData = {} }) =
           <table>
             <thead>
               <tr>
-                <th style="width: 10%;">ลำดับ</th>
-                <th style="width: 25%;">ชื่อ-สกุล</th>
-                <th style="width: 25%;">ตำแหน่ง</th>
-                <th style="width: 20%;">ลงชื่อ</th>
-                <th style="width: 20%;">หมายเหตุ</th>
+                <th style="width: 6%;">ลำดับ</th>
+                <th style="width: 30%;">ชื่อ-สกุล</th>
+                <th style="width: 26%;">ตำแหน่ง</th>
+                <th style="width: 16%;">ลงชื่อ</th>
+                <th style="width: 22%;">หมายเหตุ</th>
               </tr>
             </thead>
             <tbody>
