@@ -34,7 +34,7 @@ async function getHomeData() {
     const [visibilityData, siteData, postersData, feeds, banners] = await Promise.all([
       db.collection("home_settings").find().toArray(),
       db.collection("site_settings").find().toArray(),
-      db.collection("posters").find({ isActive: true }).sort({ createdAt: -1 }).toArray(),
+      db.collection("posters").find({ isActive: true }).sort({ orderIndex: 1, createdAt: -1 }).toArray(),
       db.collection("social_feeds").find({}).sort({ createdAt: -1 }).toArray(),
       db.collection("banners").find({ isActive: true }).toArray(),
     ]);

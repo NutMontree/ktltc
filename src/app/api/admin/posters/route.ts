@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 /**
  * ฟังก์ชันช่วยบันทึก Log (ใช้โครงสร้างเดียวกับ PATCH/DELETE)
@@ -75,6 +76,8 @@ export async function POST(req: Request) {
         `เพิ่มโปสเตอร์ใหม่: ${body.title || "ไม่ได้ระบุชื่อ"}`,
         req,
       );
+
+      revalidatePath("/");
 
       return NextResponse.json(
         { success: true, id: result.insertedId },

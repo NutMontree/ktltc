@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth"; // นำเข้า auth เพื่อเช็คว่าใครทำรายการ
 import fs from "fs";
 import path from "path";
+import { revalidatePath } from "next/cache";
 
 /**
  * ฟังก์ชันช่วยบันทึก Log ลง Database
@@ -117,6 +118,8 @@ export async function PATCH(
       req, // ส่ง req ไปเพื่อเก็บ IP
     );
 
+    revalidatePath("/");
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
@@ -154,6 +157,9 @@ export async function DELETE(
         `ลบโปสเตอร์: ${original?.title || id}`,
         req,
       );
+      
+      revalidatePath("/");
+      
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json({ error: "ไม่พบข้อมูล" }, { status: 404 });
