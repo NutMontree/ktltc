@@ -400,12 +400,12 @@ function DVETeacherWorkspace() {
     deadline: "",
     startDate: "",
     unitId: "",
-    isBuiltIn: false,
+    isBuiltIn: true,
     questions: [] as any[],
     isShuffle: false,
     quizType: "general",
   });
-  const [showQuizAnswers, setShowQuizAnswers] = useState(true);
+  const [showQuizAnswers, setShowQuizAnswers] = useState(false);
 
   const [templates, setTemplates] = useState<any[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
@@ -982,7 +982,7 @@ function DVETeacherWorkspace() {
           deadline: "",
           startDate: "",
           unitId: "",
-          isBuiltIn: false,
+          isBuiltIn: true,
           questions: [],
           isShuffle: false,
           quizType: "general",
@@ -2096,7 +2096,7 @@ function DVETeacherWorkspace() {
                           deadline: "",
                           startDate: "",
                           unitId: "",
-                          isBuiltIn: false,
+                          isBuiltIn: true,
                           questions: [],
                           isShuffle: false,
                           quizType: "general",
@@ -4834,8 +4834,9 @@ function DVETeacherWorkspace() {
                               id: Date.now().toString(),
                               type: "multiple_choice",
                               text: "",
-                              options: ["ตัวเลือกที่ 1", "ตัวเลือกที่ 2"],
+                              options: ["", "", "", ""],
                               correctAnswer: "",
+                              correctAnswerIndex: null as number | null,
                               points: 1,
                             };
                             setQuizForm((prev) => ({
@@ -4953,16 +4954,22 @@ function DVETeacherWorkspace() {
                                           updated[qIdx].type = e.target.value;
                                           if (e.target.value === "checkboxes") {
                                             updated[qIdx].options = updated[qIdx].options || [
-                                              "ตัวเลือกที่ 1",
-                                              "ตัวเลือกที่ 2",
+                                              "",
+                                              "",
+                                              "",
+                                              "",
                                             ];
                                             updated[qIdx].correctAnswer = [];
+                                            updated[qIdx].correctAnswerIndex = [];
                                           } else if (e.target.value === "multiple_choice") {
                                             updated[qIdx].options = updated[qIdx].options || [
-                                              "ตัวเลือกที่ 1",
-                                              "ตัวเลือกที่ 2",
+                                              "",
+                                              "",
+                                              "",
+                                              "",
                                             ];
                                             updated[qIdx].correctAnswer = "";
+                                            updated[qIdx].correctAnswerIndex = null;
                                           } else {
                                             delete updated[qIdx].options;
                                             updated[qIdx].correctAnswer = "";
@@ -5013,51 +5020,54 @@ function DVETeacherWorkspace() {
                                               <input
                                                 type="radio"
                                                 name={`q_correct_${q.id}`}
-                                                checked={showQuizAnswers ? q.correctAnswer === opt : false}
-                                                disabled={!showQuizAnswers}
+                                                checked={showQuizAnswers ? (opt === "" ? q.correctAnswerIndex === optIdx : q.correctAnswer === opt) : false}
                                                 onChange={() => {
+                                                  if (!showQuizAnswers) setShowQuizAnswers(true);
                                                   const updated = [...quizForm.questions];
                                                   updated[qIdx].correctAnswer = opt;
+                                                  updated[qIdx].correctAnswerIndex = optIdx;
                                                   setQuizForm((prev) => ({
                                                     ...prev,
                                                     questions: updated,
                                                   }));
                                                 }}
-                                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
                                               />
                                             ) : (
                                               <input
                                                 type="checkbox"
                                                 checked={
                                                   showQuizAnswers ? (
-                                                    Array.isArray(q.correctAnswer) &&
-                                                    q.correctAnswer.includes(opt)
+                                                    opt === ""
+                                                      ? (Array.isArray(q.correctAnswerIndex) && q.correctAnswerIndex.includes(optIdx))
+                                                      : (Array.isArray(q.correctAnswer) && q.correctAnswer.includes(opt))
                                                   ) : false
                                                 }
-                                                disabled={!showQuizAnswers}
                                                 onChange={(e) => {
+                                                  if (!showQuizAnswers) setShowQuizAnswers(true);
                                                   const updated = [...quizForm.questions];
-                                                  let currentArr = Array.isArray(q.correctAnswer)
-                                                    ? [...q.correctAnswer]
-                                                    : [];
+                                                  let currentArr = Array.isArray(q.correctAnswer) ? [...q.correctAnswer] : [];
+                                                  let currentIdxArr = Array.isArray(q.correctAnswerIndex) ? [...q.correctAnswerIndex] : [];
                                                   if (e.target.checked) {
-                                                    currentArr.push(opt);
+                                                    if (opt !== "") currentArr.push(opt);
+                                                    currentIdxArr.push(optIdx);
                                                   } else {
-                                                    currentArr = currentArr.filter(
-                                                      (v: string) => v !== opt,
-                                                    );
+                                                    currentArr = currentArr.filter((v: string) => v !== opt);
+                                                    currentIdxArr = currentIdxArr.filter((v: number) => v !== optIdx);
                                                   }
                                                   updated[qIdx].correctAnswer = currentArr;
+                                                  updated[qIdx].correctAnswerIndex = currentIdxArr;
                                                   setQuizForm((prev) => ({
                                                     ...prev,
                                                     questions: updated,
                                                   }));
                                                 }}
-                                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
                                               />
                                             )}
                                             <input
                                               type="text"
+                                              placeholder=""
                                               required
                                               value={opt}
                                               onChange={(e) => {
@@ -5065,19 +5075,19 @@ function DVETeacherWorkspace() {
                                                 const oldVal = updated[qIdx].options[optIdx];
                                                 updated[qIdx].options[optIdx] = e.target.value;
 
-                                                if (
-                                                  q.type === "multiple_choice" &&
-                                                  q.correctAnswer === oldVal
-                                                ) {
-                                                  updated[qIdx].correctAnswer = e.target.value;
-                                                } else if (
-                                                  q.type === "checkboxes" &&
-                                                  Array.isArray(q.correctAnswer)
-                                                ) {
-                                                  updated[qIdx].correctAnswer = q.correctAnswer.map(
-                                                    (v: string) =>
-                                                      v === oldVal ? e.target.value : v,
-                                                  );
+                                                if (q.type === "multiple_choice") {
+                                                  if (oldVal === "" && q.correctAnswer === "" && q.correctAnswerIndex === optIdx) {
+                                                    updated[qIdx].correctAnswer = e.target.value;
+                                                  } else if (oldVal !== "" && q.correctAnswer === oldVal) {
+                                                    updated[qIdx].correctAnswer = e.target.value;
+                                                  }
+                                                } else if (q.type === "checkboxes") {
+                                                  if (oldVal === "" && Array.isArray(q.correctAnswerIndex) && q.correctAnswerIndex.includes(optIdx)) {
+                                                    if (!Array.isArray(updated[qIdx].correctAnswer)) updated[qIdx].correctAnswer = [];
+                                                    updated[qIdx].correctAnswer.push(e.target.value);
+                                                  } else if (oldVal !== "" && Array.isArray(q.correctAnswer)) {
+                                                    updated[qIdx].correctAnswer = q.correctAnswer.map((v: string) => v === oldVal ? e.target.value : v);
+                                                  }
                                                 }
                                                 setQuizForm((prev) => ({
                                                   ...prev,
@@ -5133,8 +5143,7 @@ function DVETeacherWorkspace() {
                                           type="button"
                                           onClick={() => {
                                             const updated = [...quizForm.questions];
-                                            const newOptName = `ตัวเลือกที่ ${updated[qIdx].options.length + 1}`;
-                                            updated[qIdx].options.push(newOptName);
+                                            updated[qIdx].options.push("");
                                             setQuizForm((prev) => ({ ...prev, questions: updated }));
                                           }}
                                           className="mt-3 w-full h-10 border-2 border-dashed border-emerald-200 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all"
