@@ -920,10 +920,27 @@ function DVETeacherWorkspace() {
   const handleLoadQuizzes = async (subjectId: string) => {
     setLoadingQuizzes(true);
     try {
-      const res = await fetch(`/api/dve/quizzes?subjectId=${subjectId}`);
-      if (res.ok) {
-        const data = await res.json();
+      const [resQuizzes, resUnits] = await Promise.all([
+        fetch(`/api/dve/quizzes?subjectId=${subjectId}`),
+        fetch(`/api/dve/units?subjectId=${subjectId}`)
+      ]);
+
+      if (resQuizzes.ok) {
+        const data = await resQuizzes.json();
         if (data.success) setQuizzes(data.quizzes || []);
+      }
+
+      if (resUnits.ok) {
+        const data = await resUnits.json();
+        if (data.success) {
+          const sortedUnits = (data.units || []).sort((a: any, b: any) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            if (dateA !== dateB) return dateB - dateA;
+            return (b.sequence || 0) - (a.sequence || 0);
+          });
+          setUnits(sortedUnits);
+        }
       }
     } catch (err) {
       console.error(err);
