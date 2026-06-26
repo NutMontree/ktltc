@@ -649,8 +649,14 @@ export default function DVEGradingPage() {
               </table>
 
               {filteredGrades.length === 0 && (
-                <div className="p-12 text-center text-slate-500 dark:text-slate-400">
-                  ยังไม่มีข้อมูลคะแนน
+                <div className="py-24 flex flex-col items-center justify-center text-center px-4">
+                  <div className="w-24 h-24 bg-zinc-100 dark:bg-zinc-800/80 rounded-full flex items-center justify-center mb-4">
+                    <Users className="w-10 h-10 text-zinc-300 dark:text-zinc-600" />
+                  </div>
+                  <h4 className="text-zinc-600 dark:text-zinc-400 text-lg font-black mb-1">ยังไม่มีข้อมูลคะแนนนักเรียน</h4>
+                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-500 max-w-sm">
+                    คลิกที่ปุ่ม <strong className="text-sky-500">"เพิ่มคะแนน"</strong> ด้านบนเพื่อเริ่มบันทึกคะแนนนักศึกษา หรือรอการดึงข้อมูลจากระบบ
+                  </p>
                 </div>
               )}
             </div>
@@ -669,76 +675,94 @@ export default function DVEGradingPage() {
               okText="บันทึก"
               cancelText="ยกเลิก"
             >
-              <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                 {config.categories.map((category) => (
-                  <div key={category.id} className="bg-slate-50 dark:bg-zinc-700 rounded-lg p-4">
-                    <div className="grid grid-cols-2 gap-4 mb-2">
+                  <div key={category.id} className="bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 rounded-[20px] p-5 shadow-sm relative overflow-hidden group transition-all hover:border-blue-300 dark:hover:border-blue-700">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        <label className="block text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
                           ชื่อหมวดหมู่
                         </label>
                         <Input
                           value={category.name}
                           onChange={(e) => handleUpdateCategory(category.id, "name", e.target.value)}
+                          className="h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 font-bold text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                          คะแนน
+                        <label className="block text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
+                          คะแนนเต็ม
                         </label>
                         <InputNumber
                           value={category.points}
                           onChange={(val) => handleUpdateCategory(category.id, "points", val || 0)}
-                          className="w-full"
+                          className="w-full h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 font-black text-blue-600 dark:text-blue-400 [&>.ant-input-number-input-wrap>input]:h-10 [&>.ant-input-number-input-wrap>input]:font-black text-sm flex items-center"
                           min={0}
                           max={100}
                         />
                       </div>
                     </div>
-                    <div className="flex gap-4 mb-2">
-                      <label className="flex items-center gap-2">
+                    
+                    <div className="flex flex-wrap items-center gap-6 mb-4 p-3 bg-zinc-50/80 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                      <label className="flex items-center gap-2.5 cursor-pointer group/cb">
+                        <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${category.cannotDeduct ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 group-hover/cb:border-emerald-500'}`}>
+                          {category.cannotDeduct && <CheckCircle size={14} className="stroke-3" />}
+                        </div>
                         <input
                           type="checkbox"
+                          className="hidden"
                           checked={category.cannotDeduct}
                           onChange={(e) => handleUpdateCategory(category.id, "cannotDeduct", e.target.checked)}
                         />
-                        <span className="text-sm text-slate-700 dark:text-slate-300">ลบไม่ได้</span>
+                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">หักคะแนนไม่ได้ (พฤติกรรม)</span>
                       </label>
-                      <label className="flex items-center gap-2">
+                      
+                      <label className="flex items-center gap-2.5 cursor-pointer group/cb">
+                        <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${category.required ? 'bg-blue-500 border-blue-500 text-white' : 'bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 group-hover/cb:border-blue-500'}`}>
+                          {category.required && <CheckCircle size={14} className="stroke-3" />}
+                        </div>
                         <input
                           type="checkbox"
+                          className="hidden"
                           checked={category.required}
                           onChange={(e) => handleUpdateCategory(category.id, "required", e.target.checked)}
                         />
-                        <span className="text-sm text-slate-700 dark:text-slate-300">จำเป็น</span>
+                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">หมวดหมู่บังคับพื้นฐาน</span>
                       </label>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                        คำอธิบาย
+                    
+                    <div className="mb-4">
+                      <label className="block text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
+                        คำอธิบายเพิ่มเติม
                       </label>
                       <Input
                         value={category.description}
                         onChange={(e) => handleUpdateCategory(category.id, "description", e.target.value)}
+                        className="h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 text-sm"
+                        placeholder="เช่น คะแนนเข้าเรียน, สอบกลางภาค..."
                       />
                     </div>
+                    
                     {!category.required && (
-                      <button
-                        onClick={() => handleRemoveCategory(category.id)}
-                        className="mt-2 text-sm text-rose-600 hover:text-rose-700 flex items-center gap-1"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        ลบหมวดหมู่
-                      </button>
+                      <div className="flex justify-end border-t border-zinc-100 dark:border-zinc-700/50 pt-3 mt-2">
+                        <button
+                          onClick={() => handleRemoveCategory(category.id)}
+                          className="px-4 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500 dark:hover:text-white rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Trash2 size={12} />
+                          ลบหมวดหมู่นี้
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))}
                 <button
                   onClick={handleAddCategory}
-                  className="w-full py-2 border-2 border-dashed border-slate-300 dark:border-zinc-600 rounded-lg text-slate-600 dark:text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
+                  className="w-full h-14 border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-blue-500 dark:hover:border-blue-500 bg-zinc-50/50 hover:bg-blue-50/50 dark:bg-zinc-900/30 dark:hover:bg-blue-900/20 rounded-[20px] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 transition-all flex items-center justify-center gap-2 font-black text-sm cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
-                  เพิ่มหมวดหมู่
+                  <Plus size={18} />
+                  เพิ่มหมวดหมู่คะแนนใหม่
                 </button>
               </div>
             </Modal>
@@ -762,35 +786,48 @@ export default function DVEGradingPage() {
               okText="บันทึก"
               cancelText="ยกเลิก"
             >
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                 {!editingGrade && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                      ชื่อนักเรียน
+                  <div className="bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 rounded-[20px] p-5 shadow-sm">
+                    <label className="block text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+                      <Users size={12} className="inline mr-1" />
+                      ชื่อ-นามสกุล นักเรียน
                     </label>
                     <Input
                       value={newStudentName}
                       onChange={(e) => setNewStudentName(e.target.value)}
+                      placeholder="กรอกชื่อนักเรียนใหม่..."
+                      className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 font-bold text-base"
                     />
                   </div>
                 )}
-                {config.categories.map((category) => (
-                  <div key={category.id}>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                      {category.name} ({category.points} คะแนน)
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {config.categories.map((category) => (
+                    <div key={category.id} className="bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 rounded-[20px] p-4 shadow-sm relative overflow-hidden group hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <label className="flex text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 items-center justify-between gap-2">
+                        <span className="truncate">{category.name}</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full shrink-0">
+                          {category.points} คะแนน
+                        </span>
+                      </label>
+                      <InputNumber
+                        value={gradeForm[category.id] || 0}
+                        onChange={(val) => setGradeForm({ ...gradeForm, [category.id]: val || 0 })}
+                        className="w-full h-12 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-emerald-500 font-black text-emerald-600 dark:text-emerald-400 [&>.ant-input-number-input-wrap>input]:h-12 [&>.ant-input-number-input-wrap>input]:text-center text-lg"
+                        min={category.cannotDeduct ? category.points : 0}
+                        max={category.points}
+                      />
                       {category.cannotDeduct && (
-                        <span className="ml-2 text-xs text-emerald-600">(ลบไม่ได้)</span>
+                        <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-2 text-center bg-emerald-50 dark:bg-emerald-900/20 py-1 rounded-lg">
+                          <CheckCircle size={10} className="inline mr-1" />
+                          หมวดหมู่นี้หักคะแนนไม่ได้
+                        </p>
                       )}
-                    </label>
-                    <InputNumber
-                      value={gradeForm[category.id] || 0}
-                      onChange={(val) => setGradeForm({ ...gradeForm, [category.id]: val || 0 })}
-                      className="w-full"
-                      min={category.cannotDeduct ? category.points : 0}
-                      max={category.points}
-                    />
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </Modal>
           )}

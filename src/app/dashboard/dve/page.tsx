@@ -42,6 +42,9 @@ import {
   MinusCircle,
   FileCheck,
   AlertCircle,
+  Settings2,
+  ListChecks,
+  Save,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker, Modal } from "antd";
@@ -1518,90 +1521,125 @@ function DVETeacherWorkspace() {
   };
 
   return (
-    <div className="space-y-3 px-2 sm:px-4 md:px-6 lg:px-8">
-      {/* Teacher Workspace Header */}
-      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white p-6 sm:p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 group">
+    <div className="space-y-4 px-2 sm:px-4 md:px-6 lg:px-8">
+      {/* Teacher Workspace Header (Premium Glassmorphism) */}
+      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-slate-900 via-blue-950 to-slate-900 text-white p-6 sm:p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-white/10 group">
         {/* Animated Background Mesh */}
-        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
-          <BookOpen size={180} className="w-32 h-32 sm:w-48 sm:h-48 drop-shadow-2xl" />
+        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-1000">
+          <BookOpen size={180} className="w-32 h-32 sm:w-56 sm:h-56 drop-shadow-2xl" />
         </div>
-        <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none mix-blend-overlay" />
-        <div className="absolute right-1/4 top-0 w-32 h-32 rounded-full bg-blue-300/20 blur-2xl pointer-events-none mix-blend-overlay" />
+        <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl pointer-events-none mix-blend-screen" />
+        <div className="absolute right-1/4 top-0 w-48 h-48 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none mix-blend-screen" />
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none mix-blend-screen -translate-x-1/2 -translate-y-1/2" />
 
-        <div className="relative z-10 max-w-2xl space-y-4">
-          <span className="bg-white/20 backdrop-blur-xl text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-white/95 border border-white/20 shadow-sm flex items-center gap-1.5 w-fit">
-            <Sparkles className="w-3.5 h-3.5" />
+        <div className="relative z-10 max-w-2xl space-y-5">
+          <span className="bg-white/10 backdrop-blur-md text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-blue-200 border border-white/10 shadow-sm flex items-center gap-1.5 w-fit">
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
             DVE Administration Panel
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-sm">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
             ระบบบริหารการจัดการ<br className="sm:hidden" /> อาชีวศึกษา ทวิภาคี{" "}
-            <span className="text-cyan-200 block sm:inline relative">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-400 block sm:inline relative">
               (DVE Portal)
-              <div className="absolute -bottom-2 left-0 w-1/3 h-1 bg-cyan-300/50 rounded-full"></div>
             </span>
           </h1>
-          <p className="text-white/90 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
+          <p className="text-zinc-300 font-medium text-xs sm:text-sm md:text-base leading-relaxed max-w-xl">
             ห้องควบคุมหลักสำหรับอาจารย์: จัดการรายวิชาการเรียนการสอน, สื่อและไฟล์การเรียนรายหน่วย, สร้างแบบทดสอบ และบันทึกประวัติการขาดลามาสายและผลงานนักศึกษา
           </p>
-          <div className="pt-2 flex flex-wrap gap-3">
+          <div className="pt-3 flex flex-wrap gap-3">
             <button
               onClick={() => router.push("/dashboard/dve/grading")}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 rounded-xl font-bold text-xs sm:text-sm shadow-lg transition-all active:scale-95 cursor-pointer hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-2xl font-black text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-95 cursor-pointer border border-white/10 hover:shadow-blue-500/40"
             >
               <ClipboardList className="w-4 h-4" />
               <span>ระบบตรวจงานและให้คะแนน (Grading)</span>
+              <ArrowRight className="w-4 h-4 ml-1 opacity-70" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Tabs Switcher - Glassmorphic Capsule Style */}
-      <div className="flex flex-wrap sm:flex-nowrap gap-1.5 sm:gap-2 p-1.5 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-2xl w-full overflow-x-auto scrollbar-hide shadow-sm">
-        <button
-          onClick={() => setActiveTab("subjects")}
-          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "subjects" ? "bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
-        >
-          <BookOpen size={14} />
-          <span className="hidden sm:inline">วิชา & หน่วยเรียน</span>
-          <span className="sm:hidden">วิชา</span>
-        </button>
-        <button
-          onClick={() => {
-            setActiveTab("quizzes");
-            if (subjects.length > 0) {
-              setQuizForm((prev) => ({ ...prev, subjectId: subjects[0].id }));
-              handleLoadQuizzes(subjects[0].id);
-            }
-          }}
-          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-800 text-cyan-600 dark:text-cyan-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
-        >
-          <Award size={14} />
-          <span className="hidden sm:inline">แบบทดสอบ</span>
-          <span className="sm:hidden">ทดสอบ</span>
-        </button>
-        <button
-          onClick={() => {
-            setActiveTab("checkin");
-            if (subjects.length > 0) {
-              setCheckinFilter((prev) => ({ ...prev, subjectId: subjects[0].id }));
-            }
-          }}
-          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "checkin" ? "bg-white dark:bg-zinc-800 text-teal-600 dark:text-teal-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
-        >
-          <CheckCircle size={14} />
-          <span className="hidden sm:inline">เช็คชื่อ & ตรวจงาน</span>
-          <span className="sm:hidden">เช็คชื่อ</span>
-        </button>
-        <button
-          onClick={() => {
-            setActiveTab("internship");
-          }}
-          className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "internship" ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-zinc-100 dark:border-zinc-700" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50 border border-transparent"}`}
-        >
-          <Briefcase size={14} />
-          <span className="hidden sm:inline">ออกฝึกงาน</span>
-          <span className="sm:hidden">ฝึกงาน</span>
-        </button>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* Tabs Switcher - Premium Glassmorphic Capsule Style */}
+        <div className="flex flex-wrap sm:flex-nowrap gap-1.5 sm:gap-2 p-1.5 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/50 dark:border-zinc-800/80 rounded-[20px] w-full md:w-auto overflow-x-auto scrollbar-hide shadow-xs">
+          <button
+            onClick={() => setActiveTab("subjects")}
+            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "subjects" ? "bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+          >
+            <BookOpen size={14} className={activeTab === "subjects" ? "text-blue-500" : ""} />
+            <span className="hidden sm:inline">วิชา & หน่วยเรียน</span>
+            <span className="sm:hidden">วิชา</span>
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("quizzes");
+              if (subjects.length > 0) {
+                setQuizForm((prev) => ({ ...prev, subjectId: subjects[0].id }));
+                handleLoadQuizzes(subjects[0].id);
+              }
+            }}
+            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-800 text-cyan-600 dark:text-cyan-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+          >
+            <Award size={14} className={activeTab === "quizzes" ? "text-cyan-500" : ""} />
+            <span className="hidden sm:inline">แบบทดสอบ</span>
+            <span className="sm:hidden">ทดสอบ</span>
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("checkin");
+              if (subjects.length > 0) {
+                setCheckinFilter((prev) => ({ ...prev, subjectId: subjects[0].id }));
+              }
+            }}
+            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "checkin" ? "bg-white dark:bg-zinc-800 text-teal-600 dark:text-teal-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+          >
+            <CheckCircle size={14} className={activeTab === "checkin" ? "text-teal-500" : ""} />
+            <span className="hidden sm:inline">เช็คชื่อ & ตรวจงาน</span>
+            <span className="sm:hidden">เช็คชื่อ</span>
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("internship");
+            }}
+            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "internship" ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+          >
+            <Briefcase size={14} className={activeTab === "internship" ? "text-emerald-500" : ""} />
+            <span className="hidden sm:inline">ออกฝึกงาน</span>
+            <span className="sm:hidden">ฝึกงาน</span>
+          </button>
+        </div>
+
+        {/* Global Filter UI */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/50 dark:border-zinc-800/80 px-4 py-2 rounded-[18px] shadow-xs">
+            <Calendar size={14} className="text-zinc-400" />
+            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-wider hidden sm:inline">ปีการศึกษา</label>
+            <select
+              value={globalAcademicYear}
+              onChange={(e) => setGlobalAcademicYear(e.target.value)}
+              className="bg-transparent text-xs font-bold text-zinc-900 dark:text-zinc-100 focus:outline-hidden cursor-pointer"
+            >
+              <option value="all">ทุกปี</option>
+              {availableAcademicYears.map((year) => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/50 dark:border-zinc-800/80 px-4 py-2 rounded-[18px] shadow-xs">
+            <Filter size={14} className="text-zinc-400" />
+            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-wider hidden sm:inline">เทอม</label>
+            <select
+              value={globalSemester}
+              onChange={(e) => setGlobalSemester(e.target.value)}
+              className="bg-transparent text-xs font-bold text-zinc-900 dark:text-zinc-100 focus:outline-hidden cursor-pointer"
+            >
+              <option value="all">ทุกเทอม</option>
+              {availableSemesters.map((term) => (
+                <option key={term} value={term}>เทอม {term}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Tab Description */}
@@ -1611,7 +1649,7 @@ function DVETeacherWorkspace() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -5 }}
         transition={{ duration: 0.2 }}
-        className="text-center mb-2"
+        className="px-2 mb-2"
       >
         {activeTab === "subjects" && (
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
@@ -1639,36 +1677,6 @@ function DVETeacherWorkspace() {
           </p>
         )}
       </motion.div>
-
-      {/* Global Filter UI */}
-      <div className="flex items-center justify-center gap-3 mb-4">
-        <div className="flex items-center gap-2 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-xl shadow-sm">
-          <label className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-wider">ปีการศึกษา</label>
-          <select
-            value={globalAcademicYear}
-            onChange={(e) => setGlobalAcademicYear(e.target.value)}
-            className="bg-transparent text-xs font-bold text-zinc-900 dark:text-zinc-100 focus:outline-hidden"
-          >
-            <option value="all">แสดงทั้งหมด</option>
-            {availableAcademicYears.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center gap-2 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-xl shadow-sm">
-          <label className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-wider">เทอม</label>
-          <select
-            value={globalSemester}
-            onChange={(e) => setGlobalSemester(e.target.value)}
-            className="bg-transparent text-xs font-bold text-zinc-900 dark:text-zinc-100 focus:outline-hidden"
-          >
-            <option value="all">แสดงทั้งหมด</option>
-            {availableSemesters.map((term) => (
-              <option key={term} value={term}>เทอม {term}</option>
-            ))}
-          </select>
-        </div>
-      </div>
 
       <AnimatePresence mode="wait">
         {/* Tab 1: Subjects & Units Management */}
@@ -1706,7 +1714,7 @@ function DVETeacherWorkspace() {
                     setSubjectAllowedClassGroupRows([""]);
                     setIsSubjectModalOpen(true);
                   }}
-                  className="p-1.5 sm:p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all flex items-center gap-1 text-[10px] sm:text-xs font-black"
+                  className="p-1.5 sm:px-3 sm:py-2 bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-[14px] transition-all flex items-center gap-1.5 text-[10px] sm:text-xs font-black shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-95 border border-white/10"
                 >
                   <Plus size={14} className="w-3 h-3 sm:w-4 sm:h-4" />
                   เพิ่มวิชา
@@ -1714,42 +1722,71 @@ function DVETeacherWorkspace() {
               </div>
 
               {loadingSubjects ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-500 animate-spin" />
+                <div className="flex justify-center py-12">
+                  <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 animate-spin opacity-80" />
                 </div>
               ) : filteredSubjects.length === 0 ? (
-                <div className="text-center py-6 text-zinc-400 text-[10px] sm:text-xs font-bold">
-                  ไม่พบรายวิชาในภาคเรียนที่เลือก หรือยังไม่ได้เพิ่มวิชาลงในระบบ
+                <div className="text-center py-10 px-4 flex flex-col items-center gap-3">
+                  <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                    <BookOpen size={24} className="text-zinc-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-zinc-700 dark:text-zinc-300">ไม่มีรายวิชา</h4>
+                    <p className="text-zinc-400 dark:text-zinc-500 text-[10px] sm:text-xs font-bold mt-1 max-w-[250px] mx-auto">
+                      ไม่พบรายวิชาในภาคเรียนที่เลือก หรือยังไม่ได้เพิ่มวิชาลงในระบบ
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {filteredSubjects.map((sub) => (
                     <div
                       key={sub.id}
                       onClick={() => handleManageUnits(sub)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer text-left ${activeSubject?.id === sub.id ? "bg-emerald-500/5 border-emerald-500/30" : "bg-zinc-50 dark:bg-zinc-800/40 border-zinc-100 dark:border-zinc-800 hover:bg-zinc-100/50"}`}
+                      className={`p-4 sm:p-5 rounded-[20px] border transition-all duration-300 cursor-pointer text-left group relative overflow-hidden ${activeSubject?.id === sub.id
+                          ? "bg-linear-to-br from-blue-500/10 to-cyan-500/5 border-blue-500/30 shadow-md shadow-blue-500/10 dark:from-blue-900/20 dark:to-cyan-900/10"
+                          : "bg-white/50 dark:bg-zinc-900/50 border-white/40 dark:border-zinc-800/80 hover:bg-white hover:border-blue-200 dark:hover:bg-zinc-800/80 dark:hover:border-blue-500/30 hover:shadow-sm"
+                        }`}
                     >
-                      <span className="text-[9px] sm:text-[10px] font-black text-emerald-500 uppercase tracking-wide">
-                        {sub.curriculum} • ภาคเรียน {sub.semester}
-                      </span>
-                      <h4 className="font-black text-zinc-950 dark:text-zinc-100 text-sm mt-1 truncate">
-                        {sub.name}
-                      </h4>
-                      <p className="text-xs text-zinc-500 mt-0.5 truncate">
-                        รหัส: {sub.code} • แผนก: {sub.department}
-                      </p>
+                      {/* Active indicator */}
+                      {activeSubject?.id === sub.id && (
+                        <div className="absolute top-0 left-0 w-1.5 h-full bg-linear-to-b from-blue-400 to-cyan-500 rounded-l-[20px]" />
+                      )}
+
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="min-w-0">
+                          <span className="text-[9px] sm:text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 px-2.5 py-0.5 rounded-lg inline-block mb-1.5">
+                            {sub.curriculum} • ภาคเรียน {sub.semester}
+                          </span>
+                          <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm sm:text-base truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                            {sub.name}
+                          </h4>
+                          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1 truncate font-medium">
+                            รหัส: <span className="font-bold text-zinc-700 dark:text-zinc-300">{sub.code}</span> <span className="text-zinc-300 dark:text-zinc-700 mx-1">•</span> แผนก: <span className="font-bold text-zinc-700 dark:text-zinc-300">{sub.department}</span>
+                          </p>
+                        </div>
+                      </div>
+
                       {sub.allowedClassGroups && (Array.isArray(sub.allowedClassGroups) ? sub.allowedClassGroups.length > 0 : String(sub.allowedClassGroups).trim()) && (
-                        <p className="text-[10px] text-teal-500 mt-1 font-bold line-clamp-2">
-                          ห้องเรียนที่อนุญาต: {formatClassGroupsText(sub.allowedClassGroups)}
-                        </p>
+                        <div className="mt-3.5 flex items-center gap-1.5 text-[10px] sm:text-[11px] bg-teal-50 dark:bg-teal-950/30 w-fit px-2 py-1 rounded-lg border border-teal-100 dark:border-teal-900/50">
+                          <Users size={12} className="text-teal-600 dark:text-teal-400" />
+                          <p className="text-teal-700 dark:text-teal-300 font-bold line-clamp-1">
+                            {formatClassGroupsText(sub.allowedClassGroups)}
+                          </p>
+                        </div>
                       )}
+
                       {(((session?.user as any)?.role || "").toLowerCase() === "super_admin" || ((session?.user as any)?.role || "").toLowerCase() === "admin") && sub.teacherName && (
-                        <p className="text-[10px] text-blue-500 dark:text-blue-400 mt-1 font-bold truncate">
-                          ผู้สอน: {sub.teacherName}
-                        </p>
+                        <div className="mt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] bg-indigo-50 dark:bg-indigo-950/30 w-fit px-2 py-1 rounded-lg border border-indigo-100 dark:border-indigo-900/50">
+                          <User size={12} className="text-indigo-600 dark:text-indigo-400" />
+                          <p className="text-indigo-700 dark:text-indigo-300 font-bold truncate">
+                            ผู้สอน: {sub.teacherName}
+                          </p>
+                        </div>
                       )}
+
                       <div
-                        className="flex justify-end gap-2 mt-3 border-t dark:border-zinc-800 pt-2"
+                        className="flex justify-end gap-2 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
@@ -1766,20 +1803,22 @@ function DVETeacherWorkspace() {
                             );
                             setIsSubjectModalOpen(true);
                           }}
-                          className="p-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-600 dark:text-zinc-300 rounded"
+                          className="p-1.5 sm:px-3 sm:py-1.5 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 text-zinc-600 dark:text-zinc-400 rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black"
                         >
                           <Edit2 size={12} />
+                          <span className="hidden sm:inline">แก้ไขวิชา</span>
                         </button>
                         <Popconfirm
-                          title="ลบรายวิชา?"
-                          description="การลบวิชานี้จะลบหน่วยการเรียน แบบทดสอบ และเวลาเรียนของนักศึกษาทั้งหมดอย่างถาวร"
+                          title="ลบรายวิชาทวิภาคี?"
+                          description="การลบวิชานี้จะลบข้อมูลทั้งหมดที่เกี่ยวข้องอย่างถาวร ยืนยันใช่หรือไม่?"
                           onConfirm={() => handleDeleteSubject(sub.id)}
-                          okText="ยืนยัน"
+                          okText="ยืนยันลบ"
                           cancelText="ยกเลิก"
                           okButtonProps={{ danger: true }}
                         >
-                          <button className="p-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded">
+                          <button className="p-1.5 sm:px-3 sm:py-1.5 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-500 text-rose-600 dark:text-rose-400 hover:text-white rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black">
                             <Trash2 size={12} />
+                            <span className="hidden sm:inline">ลบ</span>
                           </button>
                         </Popconfirm>
                       </div>
@@ -1816,30 +1855,37 @@ function DVETeacherWorkspace() {
                         });
                         setIsUnitModalOpen(true);
                       }}
-                      className="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all flex items-center gap-1 text-xs font-black"
+                      className="p-1.5 sm:px-3 sm:py-2 bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-[14px] transition-all flex items-center gap-1.5 text-[10px] sm:text-xs font-black shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-95 border border-white/10"
                     >
-                      <Plus size={14} />
+                      <Plus size={14} className="w-3 h-3 sm:w-4 sm:h-4" />
                       เพิ่มหน่วยเรียน
                     </button>
                   </div>
 
                   {loadingUnits ? (
                     <div className="flex justify-center py-12">
-                      <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                      <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 animate-spin opacity-80" />
                     </div>
                   ) : units.length === 0 ? (
-                    <div className="text-center py-12 text-zinc-400 dark:text-zinc-500 text-sm font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
-                      <FolderOpen size={32} className="text-zinc-300 dark:text-zinc-700" />
-                      วิชานี้ยังไม่มีการสร้างหน่วยเรียนใดๆ เลยในระบบ
+                    <div className="text-center py-16 px-4 flex flex-col items-center gap-3">
+                      <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center">
+                        <FolderOpen size={32} className="text-zinc-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-black text-zinc-700 dark:text-zinc-300">ยังไม่มีหน่วยเรียน</h4>
+                        <p className="text-zinc-400 dark:text-zinc-500 text-[11px] sm:text-xs font-bold mt-1.5 max-w-[280px] mx-auto">
+                          วิชานี้ยังไม่มีการสร้างหน่วยเรียนใดๆ ในระบบ คลิก "เพิ่มหน่วยเรียน" เพื่อเริ่มต้น
+                        </p>
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       {units.map((unit, index) => (
                         <div
                           key={unit.id}
-                          className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 relative group"
+                          className="p-4 sm:p-5 rounded-[24px] bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/80 relative group hover:bg-white dark:hover:bg-zinc-900 transition-all duration-300 hover:shadow-sm"
                         >
-                          <div className="absolute top-4 right-4 flex gap-2  transition-opacity">
+                          <div className="absolute top-4 right-4 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
                               onClick={() => {
                                 setUnitForm({
@@ -1854,32 +1900,38 @@ function DVETeacherWorkspace() {
                                 });
                                 setIsUnitModalOpen(true);
                               }}
-                              className="p-1.5 bg-zinc-200/60 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-700 dark:text-zinc-300 rounded"
+                              className="p-1.5 sm:px-3 sm:py-1.5 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 text-zinc-600 dark:text-zinc-400 rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black"
                             >
                               <Edit2 size={12} />
+                              <span className="hidden sm:inline">แก้ไข</span>
                             </button>
                             <Popconfirm
                               title="ลบหน่วยการเรียน?"
                               onConfirm={() => handleDeleteUnit(unit.id)}
+                              okText="ยืนยันลบ"
+                              cancelText="ยกเลิก"
+                              okButtonProps={{ danger: true }}
                             >
-                              <button className="p-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded">
+                              <button className="p-1.5 sm:px-3 sm:py-1.5 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-500 text-rose-600 dark:text-rose-400 hover:text-white rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black">
                                 <Trash2 size={12} />
+                                <span className="hidden sm:inline">ลบ</span>
                               </button>
                             </Popconfirm>
                           </div>
 
-                          <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-500 font-black text-xs">
+                          <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                            <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-linear-to-br from-blue-500/10 to-cyan-500/10 text-blue-600 dark:text-blue-400 font-black text-sm sm:text-base border border-blue-500/20 shadow-inner">
                               #{unit.sequence}
                             </div>
-                            <div>
-                              <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm">
+                            <div className="flex-1 min-w-0 pr-16 md:pr-0">
+                              <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm sm:text-base leading-tight">
                                 {unit.title}
                               </h4>
-                              <div className="flex items-center gap-3 mt-1 flex-wrap">
+                              <div className="flex items-center gap-2 mt-2 flex-wrap">
                                 {unit.createdAt && (
-                                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold flex items-center gap-1">
-                                    📅 โพสต์เมื่อ: {new Date(unit.createdAt).toLocaleDateString("th-TH", {
+                                  <span className="text-[10px] sm:text-[11px] text-zinc-500 font-bold flex items-center gap-1">
+                                    <Calendar size={12} className="text-zinc-400" />
+                                    {new Date(unit.createdAt).toLocaleDateString("th-TH", {
                                       day: "numeric",
                                       month: "short",
                                       year: "numeric",
@@ -1887,13 +1939,13 @@ function DVETeacherWorkspace() {
                                   </span>
                                 )}
                                 {unit.studyMinutes > 0 && (
-                                  <span className="text-[10px] text-amber-500 font-bold bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
-                                    ⏱️ {unit.studyMinutes} นาที
+                                  <span className="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-md border border-amber-200/50 dark:border-amber-900/50 flex items-center gap-1">
+                                    <Clock size={12} /> {unit.studyMinutes} นาที
                                   </span>
                                 )}
                                 {unit.dueDate && (
-                                  <span className="text-[10px] text-rose-500 font-bold bg-rose-500/5 px-2 py-0.5 rounded border border-rose-500/10">
-                                    📅 กำหนดส่ง: {new Date(unit.dueDate).toLocaleDateString("th-TH", {
+                                  <span className="text-[10px] sm:text-[11px] text-rose-600 dark:text-rose-400 font-bold bg-rose-50 dark:bg-rose-950/30 px-2 py-0.5 rounded-md border border-rose-200/50 dark:border-rose-900/50 flex items-center gap-1">
+                                    <AlertCircle size={12} /> ส่ง: {new Date(unit.dueDate).toLocaleDateString("th-TH", {
                                       day: "numeric",
                                       month: "short",
                                       year: "numeric",
@@ -1901,13 +1953,18 @@ function DVETeacherWorkspace() {
                                   </span>
                                 )}
                               </div>
-                              {unit.content && (
-                                <p className="text-xs text-zinc-500 mt-2 whitespace-pre-line leading-relaxed line-clamp-3">
-                                  {unit.content}
-                                </p>
-                              )}
                             </div>
                           </div>
+
+                          {unit.content && (
+                            <div className="mt-4 pl-0 sm:pl-16">
+                              <div className="p-3 bg-zinc-50/80 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800/80">
+                                <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-line leading-relaxed">
+                                  {unit.content}
+                                </p>
+                              </div>
+                            </div>
+                          )}
 
                           {unit.files &&
                             unit.files.length > 0 &&
@@ -1922,11 +1979,11 @@ function DVETeacherWorkspace() {
                                 (f: any) => !directFiles.includes(f),
                               );
                               return (
-                                <div className="mt-3 space-y-2.5 pl-12">
+                                <div className="mt-4 space-y-3 pl-0 sm:pl-16">
                                   {directFiles.length > 0 && (
-                                    <div className="space-y-1">
-                                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
-                                        📂 ไฟล์เอกสารแนบ:
+                                    <div className="space-y-1.5">
+                                      <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                                        <FileText size={12} /> ไฟล์เอกสารแนบ
                                       </span>
                                       <div className="flex flex-wrap gap-2">
                                         {directFiles.map((file: any, fIdx: number) => (
@@ -1935,9 +1992,9 @@ function DVETeacherWorkspace() {
                                             href={file.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 text-[10px] font-black rounded transition-colors border border-emerald-500/10"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-[11px] font-bold rounded-lg transition-colors border border-blue-200/50 dark:border-blue-800/50"
                                           >
-                                            <Download size={10} />
+                                            <Download size={12} className="text-blue-500" />
                                             {file.name}
                                           </a>
                                         ))}
@@ -1945,9 +2002,9 @@ function DVETeacherWorkspace() {
                                     </div>
                                   )}
                                   {externalLinks.length > 0 && (
-                                    <div className="space-y-1">
-                                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
-                                        🔗 ลิงก์และแหล่งข้อมูลภายนอก:
+                                    <div className="space-y-1.5">
+                                      <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                                        <ExternalLink size={12} /> ลิงก์ภายนอก
                                       </span>
                                       <div className="flex flex-wrap gap-2">
                                         {externalLinks.map((file: any, fIdx: number) => (
@@ -1956,9 +2013,9 @@ function DVETeacherWorkspace() {
                                             href={file.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 text-[10px] font-black rounded transition-colors border border-blue-500/10"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-[11px] font-bold rounded-lg transition-colors border border-indigo-200/50 dark:border-indigo-800/50"
                                           >
-                                            <ExternalLink size={10} />
+                                            <ExternalLink size={12} className="text-indigo-500" />
                                             {file.name}
                                           </a>
                                         ))}
@@ -1974,9 +2031,14 @@ function DVETeacherWorkspace() {
                   )}
                 </>
               ) : (
-                <div className="text-center py-20 text-zinc-400 dark:text-zinc-500 text-sm font-bold flex flex-col items-center justify-center gap-2">
-                  <BookOpen size={48} className="text-zinc-200 dark:text-zinc-800" />
-                  กรุณาเลือกรายวิชาในแผงด้านซ้ายเพื่อดูหรือเริ่มเขียนหน่วยการสอน
+                <div className="text-center py-24 text-zinc-400 dark:text-zinc-500 text-sm font-bold flex flex-col items-center justify-center gap-4 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[28px] bg-zinc-50/50 dark:bg-zinc-900/20">
+                  <div className="w-20 h-20 rounded-full bg-white dark:bg-zinc-900 shadow-sm flex items-center justify-center">
+                    <BookOpen size={32} className="text-zinc-300 dark:text-zinc-700" />
+                  </div>
+                  <div className="max-w-xs">
+                    <h4 className="text-zinc-600 dark:text-zinc-400 text-base mb-1">ยังไม่ได้เลือกรายวิชา</h4>
+                    <p className="text-xs font-medium">กรุณาเลือกรายวิชาในแผงด้านซ้ายเพื่อดูหรือเริ่มเขียนหน่วยการสอน</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -1993,9 +2055,9 @@ function DVETeacherWorkspace() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             {/* Subject Selector for quiz management */}
-            <div className="lg:col-span-1 bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
-              <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                <Award size={16} className="text-emerald-500" />
+            <div className="lg:col-span-1 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-5 shadow-sm space-y-4">
+              <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                <Award size={16} className="text-emerald-500 w-4 h-4 sm:w-5 sm:h-5" />
                 เลือกรายวิชาเพื่อทำแบบทดสอบ
               </h3>
               <div className="space-y-2">
@@ -2006,9 +2068,9 @@ function DVETeacherWorkspace() {
                       setQuizForm((prev) => ({ ...prev, subjectId: s.id }));
                       handleLoadQuizzes(s.id);
                     }}
-                    className={`w-full p-4 rounded-xl text-left border transition-all ${quizForm.subjectId === s.id ? "bg-emerald-500/5 border-emerald-500/30 text-emerald-600 dark:text-emerald-400" : "bg-zinc-50 dark:bg-zinc-800/40 border-zinc-100 dark:border-zinc-800 hover:bg-zinc-100 text-zinc-700 dark:text-zinc-300"}`}
+                    className={`w-full p-4 rounded-2xl text-left border transition-all ${quizForm.subjectId === s.id ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 shadow-[0_4px_12px_rgb(16,185,129,0.12)] scale-[1.02]" : "bg-white/60 dark:bg-zinc-800/40 border-white/60 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:scale-[1.01]"}`}
                   >
-                    <span className="text-[9px] font-black opacity-80 block">{s.code}</span>
+                    <span className="text-[10px] font-black opacity-80 block tracking-wider uppercase">{s.code}</span>
                     <span className="font-black text-sm truncate block mt-0.5">{s.name}</span>
                   </button>
                 ))}
@@ -2016,7 +2078,7 @@ function DVETeacherWorkspace() {
             </div>
 
             {/* Quizzes List and Add Quiz */}
-            <div className="lg:col-span-2 bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
+            <div className="lg:col-span-2 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm space-y-4">
               {quizForm.subjectId ? (
                 <>
                   <div className="flex justify-between items-center">
@@ -2179,15 +2241,18 @@ function DVETeacherWorkspace() {
             className="space-y-6"
           >
             {/* Filter control box */}
-            <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-black text-zinc-600 dark:text-zinc-400">
-                    1. เลือกรายวิชาเรียน
+            <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[28px] p-5 sm:p-8 shadow-sm relative overflow-hidden group">
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-400/20 transition-all duration-1000" />
+              <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5 items-end relative z-10">
+                <div className="flex flex-col gap-1.5 lg:col-span-1">
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide">
+                    <span className="text-teal-500 mr-1">1.</span>เลือกรายวิชาเรียน
                   </label>
                   <Select
                     placeholder="-- เลือกวิชาเรียน --"
-                    className="w-full h-11"
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-xl! [&>.ant-select-selector]:border-zinc-200! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/50! dark:[&>.ant-select-selector]:bg-zinc-950/50! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center"
                     value={checkinFilter.subjectId || undefined}
                     onChange={(val) => {
                       const selectedSubject = subjects.find((s) => s.id === val);
@@ -2203,13 +2268,13 @@ function DVETeacherWorkspace() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                    2. เลือกหน่วยเรียน / บทเรียน
+                <div className="flex flex-col gap-1.5 lg:col-span-1">
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide">
+                    <span className="text-teal-500 mr-1">2.</span>เลือกหน่วยเรียน
                   </label>
                   <Select
                     placeholder="-- เลือกหน่วยเรียน --"
-                    className="w-full h-11"
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-xl! [&>.ant-select-selector]:border-zinc-200! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/50! dark:[&>.ant-select-selector]:bg-zinc-950/50! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center"
                     value={activeStudyUnitId || undefined}
                     onChange={(val) => {
                       const nextUnit = units.find((unit) => getDveEntityId(unit) === val) || null;
@@ -2226,13 +2291,13 @@ function DVETeacherWorkspace() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                    3. เลือกห้องเรียน
+                <div className="flex flex-col gap-1.5 lg:col-span-1">
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide">
+                    <span className="text-teal-500 mr-1">3.</span>เลือกห้องเรียน
                   </label>
                   <Select
                     placeholder="-- เลือกห้องเรียน --"
-                    className="w-full h-11"
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-xl! [&>.ant-select-selector]:border-zinc-200! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/50! dark:[&>.ant-select-selector]:bg-zinc-950/50! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center"
                     value={checkinFilter.classGroupId || undefined}
                     onChange={(val) => {
                       setCheckinFilter((prev) => ({ ...prev, classGroupId: val }));
@@ -2249,22 +2314,22 @@ function DVETeacherWorkspace() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 lg:col-span-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                      4. วันที่เช็คแถว / คาบเรียน
+                    <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide truncate pr-2">
+                      <span className="text-teal-500 mr-1">4.</span>วันที่เช็คชื่อ
                     </label>
                     <button
                       onClick={handleFetchActiveDates}
-                      className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-2 py-0.5 rounded-md transition-colors flex items-center gap-1 border border-blue-200 dark:border-blue-500/30"
+                      className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-2 py-0.5 rounded-lg transition-colors flex items-center gap-1 border border-blue-200/50 dark:border-blue-500/30"
                     >
                       <Calendar size={12} />
-                      ดูวันที่มีงาน
+                      <span className="hidden xl:inline">ดูประวัติ</span>
                     </button>
                   </div>
                   <DatePicker
                     format="DD/MM/BBBB"
-                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white font-bold"
+                    className="w-full h-12 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/50 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white font-bold"
                     value={checkinFilter.date ? dayjs(checkinFilter.date) : null}
                     onChange={(date) => {
                       setCheckinFilter((prev) => ({ ...prev, date: date ? date.format("YYYY-MM-DD") : "" }));
@@ -2275,27 +2340,29 @@ function DVETeacherWorkspace() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
-                    5. ค้นหารายชื่อนักเรียน / รหัสนักศึกษา
+                <div className="flex flex-col gap-1.5 lg:col-span-1">
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide truncate">
+                    <span className="text-teal-500 mr-1">5.</span>ค้นหาชื่อ / รหัส
                   </label>
                   <input
                     type="text"
-                    placeholder="🔍 พิมพ์ชื่อ หรือ รหัส..."
-                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white placeholder-zinc-400 font-bold"
+                    placeholder="🔍 พิมพ์ค้นหา..."
+                    className="w-full h-12 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/50 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white placeholder-zinc-400 font-bold"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
 
-                <button
-                  onClick={handleLoadRoster}
-                  disabled={!checkinFilter.subjectId}
-                  className="w-full h-12 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:from-zinc-200 disabled:to-zinc-300 disabled:text-zinc-400 dark:disabled:from-zinc-800 dark:disabled:to-zinc-800 text-white font-black rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 cursor-pointer border-0 active:scale-95"
-                >
-                  <Search size={18} />
-                  ดึงรายชื่อเด็ก
-                </button>
+                <div className="lg:col-span-1 h-[48px]">
+                  <button
+                    onClick={handleLoadRoster}
+                    disabled={!checkinFilter.subjectId}
+                    className="w-full h-full bg-linear-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 disabled:from-zinc-200 disabled:to-zinc-300 disabled:text-zinc-400 dark:disabled:from-zinc-800 dark:disabled:to-zinc-800 text-white font-black rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-teal-500/20 hover:shadow-teal-500/40 cursor-pointer border border-white/10 active:scale-95"
+                  >
+                    <Search size={16} />
+                    ดึงรายชื่อ
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -2380,7 +2447,7 @@ function DVETeacherWorkspace() {
 
             {/* 🔍 Individual Student Progress Analyzer */}
             {studentRoster.length > 0 && (
-              <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
+              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm space-y-4">
                 <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
                   <User className="text-emerald-500" size={18} />
                   ตรวจสอบข้อมูลการส่งงานรายบุคคล (งานที่ส่งและยังไม่ส่ง)
@@ -2574,7 +2641,7 @@ function DVETeacherWorkspace() {
             )}
 
             {/* Student Roster attendance checkboxes sheet */}
-            <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b-2 border-zinc-100 dark:border-zinc-800 pb-4">
                 <div className="space-y-2">
                   <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
@@ -3357,7 +3424,7 @@ function DVETeacherWorkspace() {
           >
             {/* 1. Statistics Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 shadow-sm flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-blue-600">
                   <Users size={72} strokeWidth={1.5} />
                 </div>
@@ -3375,7 +3442,7 @@ function DVETeacherWorkspace() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 shadow-sm flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-emerald-600">
                   <Briefcase size={72} strokeWidth={1.5} />
                 </div>
@@ -3393,7 +3460,7 @@ function DVETeacherWorkspace() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-5 shadow-xs flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 shadow-sm flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-zinc-500">
                   <BookOpen size={72} strokeWidth={1.5} />
                 </div>
@@ -3413,7 +3480,7 @@ function DVETeacherWorkspace() {
             </div>
 
             {/* 2. Filter controls */}
-            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
@@ -3470,7 +3537,7 @@ function DVETeacherWorkspace() {
             </div>
 
             {/* 3. Students Table / Card view */}
-            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm">
               <div className="flex items-center justify-between gap-4 mb-6 border-b dark:border-zinc-800 pb-4">
                 <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
                   <Briefcase size={18} className="text-emerald-500" />
@@ -3652,21 +3719,22 @@ function DVETeacherWorkspace() {
       {/* 1. Add/Edit Subject Modal */}
       <AnimatePresence>
         {isSubjectModalOpen && (
-          <div className="fixed inset-0 z-9999 flex">
+          <div className="fixed inset-0 z-9999 flex items-center justify-center sm:p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-950/65 dark:bg-zinc-950/80 backdrop-blur-md"
+              onClick={() => setIsSubjectModalOpen(false)}
             />
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full h-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl overflow-hidden text-left flex flex-col"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-4xl"
             >
-              <form onSubmit={handleSaveSubject} className="flex flex-col h-full overflow-hidden">
-                <div className="shrink-0 px-8 py-6 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center bg-linear-to-r from-emerald-500/10 to-teal-500/5 dark:from-emerald-500/20 dark:to-teal-500/10 relative overflow-hidden">
+              <form onSubmit={handleSaveSubject} className="flex flex-col flex-1 min-h-0 w-full">
+                <div className="shrink-0 px-8 py-6 border-b border-zinc-100 dark:border-zinc-800/50 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
                   <div className="flex items-center gap-4 relative z-10">
                     <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white">
@@ -4029,22 +4097,23 @@ function DVETeacherWorkspace() {
       {/* 2. Add/Edit Learning Unit Modal */}
       <AnimatePresence>
         {isUnitModalOpen && (
-          <div className="fixed inset-0 z-9999 flex">
+          <div className="fixed inset-0 z-9999 flex items-center justify-center sm:p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-zinc-955/65 dark:bg-zinc-950/80 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-950/65 dark:bg-zinc-950/80 backdrop-blur-md"
+              onClick={() => setIsUnitModalOpen(false)}
             />
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full h-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl text-left flex flex-col"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-4xl"
             >
-              <form onSubmit={handleSaveUnit} className="flex flex-col h-full w-full">
+              <form onSubmit={handleSaveUnit} className="flex flex-col flex-1 min-h-0 w-full">
                 {/* Header */}
-                <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 shrink-0">
+                <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-linear-to-tr from-teal-500 to-blue-650 text-white rounded-2xl shadow-md shadow-blue-500/20">
                       <BookOpen size={20} />
@@ -4425,21 +4494,22 @@ function DVETeacherWorkspace() {
       {/* 3. Add/Edit Quiz Modal */}
       <AnimatePresence>
         {isQuizModalOpen && (
-          <div className="fixed inset-0 z-9999 flex">
+          <div className="fixed inset-0 z-9999 flex items-center justify-center sm:p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-950/65 dark:bg-zinc-950/80 backdrop-blur-md"
+              onClick={() => setIsQuizModalOpen(false)}
             />
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl text-left flex flex-col"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-4xl"
             >
-              <form onSubmit={handleSaveQuiz} className="flex flex-col h-full w-full">
-                <div className="shrink-0 px-8 py-6 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center bg-linear-to-r from-emerald-500/10 to-teal-500/5 dark:from-emerald-500/20 dark:to-teal-500/10 relative overflow-hidden">
+              <form onSubmit={handleSaveQuiz} className="flex flex-col flex-1 min-h-0 w-full">
+                <div className="shrink-0 px-8 py-6 border-b border-zinc-100 dark:border-zinc-800/50 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
                   <div className="flex items-center gap-4 relative z-10">
                     <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white">
@@ -4460,12 +4530,12 @@ function DVETeacherWorkspace() {
                   </button>
                 </div>
 
-                <div className="p-2 space-y-6 flex-1 overflow-y-auto min-h-0 bg-zinc-50/30 dark:bg-zinc-950/30">
+                <div className="p-4 sm:p-6 space-y-6 flex-1 overflow-y-auto min-h-0 bg-zinc-50/50 dark:bg-zinc-950/50 custom-scrollbar">
                   {/* Section 1: ข้อมูลทั่วไป (General Information) */}
-                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 pace-y-4 shadow-sm">
-                    <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
-                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                        ℹ️ ข้อมูลทั่วไป (General Info)
+                  <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5">
+                    <div className="flex items-center gap-2 border-b border-zinc-200/50 dark:border-zinc-800 pb-3 mb-2">
+                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                        <FileText size={16} /> ข้อมูลทั่วไป (General Info)
                       </span>
                     </div>
 
@@ -4535,10 +4605,10 @@ function DVETeacherWorkspace() {
                   </div>
 
                   {/* Section 2: การตั้งค่าระบบ (System Settings) */}
-                  <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 pace-y-4 shadow-sm">
-                    <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
-                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                        ⚙️ การตั้งค่าระบบ (Settings)
+                  <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5">
+                    <div className="flex items-center gap-2 border-b border-zinc-200/50 dark:border-zinc-800 pb-3 mb-2">
+                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                        <Settings2 size={16} /> การตั้งค่าระบบ (Settings)
                       </span>
                     </div>
 
@@ -4630,17 +4700,17 @@ function DVETeacherWorkspace() {
 
                   {/* Section 3: จัดการคำถามแบบทดสอบ (Quiz Content) */}
                   {quizForm.isBuiltIn && (
-                    <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 pace-y-4 shadow-sm animate-fade-in">
-                      <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
-                        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                          📝 จัดการคำถามแบบทดสอบ (Quiz Content)
+                    <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5 animate-fade-in flex flex-col">
+                      <div className="flex items-center gap-2 border-b border-zinc-200/50 dark:border-zinc-800 pb-3 mb-2">
+                        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                          <ListChecks size={16} /> จัดการคำถามแบบทดสอบ (Quiz Content)
                         </span>
                       </div>
 
                       {/* Reusable Templates Box */}
-                      <div className="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl space-y-3">
+                      <div className="p-4 sm:p-5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-[20px] space-y-4 shadow-xs">
                         <h4 className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                          💾 การจัดการแม่แบบแบบทดสอบเพื่อใช้งานซ้ำ
+                          <Save size={14} className="text-emerald-500" /> การจัดการแม่แบบแบบทดสอบเพื่อใช้งานซ้ำ
                         </h4>
 
                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
@@ -4720,20 +4790,19 @@ function DVETeacherWorkspace() {
                                   <span>
                                     {tpl.title} ({tpl.questions?.length || 0} ข้อ)
                                   </span>
-                                  <Popconfirm
-                                    title="ลบแม่แบบคำถามนี้อย่างถาวร?"
-                                    onConfirm={() => handleDeleteTemplate(tpl.id)}
-                                    okText="ลบออก"
-                                    cancelText="ยกเลิก"
-                                    okButtonProps={{ danger: true }}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (window.confirm("ลบแม่แบบคำถามนี้อย่างถาวร?")) {
+                                        handleDeleteTemplate(tpl.id);
+                                      }
+                                    }}
+                                    className="p-1 hover:bg-rose-50 hover:text-rose-500 rounded border-0 bg-transparent cursor-pointer text-zinc-400 transition-colors"
+                                    title="ลบแม่แบบคำถามนี้"
                                   >
-                                    <button
-                                      type="button"
-                                      className="p-1 hover:bg-rose-50 hover:text-rose-500 rounded border-0 bg-transparent cursor-pointer text-zinc-400 transition-colors"
-                                    >
-                                      <X size={10} />
-                                    </button>
-                                  </Popconfirm>
+                                    <X size={10} />
+                                  </button>
                                 </div>
                               ))}
                             </div>
@@ -4774,9 +4843,9 @@ function DVETeacherWorkspace() {
                               questions: [...(prev.questions || []), newQ],
                             }));
                           }}
-                          className="px-2.5 py-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 border-0 cursor-pointer"
+                          className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/30 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
                         >
-                          <Plus size={10} /> เพิ่มโจทย์คำถาม
+                          <Plus size={14} /> เพิ่มโจทย์คำถาม
                         </button>
                       </div>
 
@@ -4791,7 +4860,7 @@ function DVETeacherWorkspace() {
                             return (
                               <div
                                 key={q.id}
-                                className="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-xl space-y-3 relative"
+                                className="p-5 sm:p-6 bg-white dark:bg-zinc-900/90 shadow-md border border-zinc-200/50 dark:border-zinc-800/80 rounded-[24px] space-y-4 relative transition-all hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-900/50 group"
                               >
                                 <div className="flex justify-between items-center gap-2">
                                   <span className="text-xs font-black text-emerald-600">
@@ -4822,7 +4891,7 @@ function DVETeacherWorkspace() {
                                       updated[qIdx].text = e.target.value;
                                       setQuizForm((prev) => ({ ...prev, questions: updated }));
                                     }}
-                                    className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold shadow-sm"
+                                    className="w-full h-12 border-2 border-zinc-200/80 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 transition-all dark:text-white font-bold"
                                   />
 
                                   <div className="flex flex-col gap-1 mt-2">
@@ -4851,7 +4920,7 @@ function DVETeacherWorkspace() {
                                             onChange={async (e) => {
                                               const file = e.target.files?.[0];
                                               if (!file) return;
-                                              
+
                                               message.loading({ content: "กำลังอัปโหลดรูปภาพ...", key: "uploadingImage" });
                                               const { secure_url } = await uploadFile(file, "dve_quiz");
                                               if (secure_url) {
@@ -4900,7 +4969,7 @@ function DVETeacherWorkspace() {
                                           }
                                           setQuizForm((prev) => ({ ...prev, questions: updated }));
                                         }}
-                                        className="h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-2 text-xs focus:outline-hidden dark:text-white shadow-sm"
+                                        className="h-10 border-2 border-zinc-200/80 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 transition-all dark:text-white font-bold shadow-sm cursor-pointer"
                                       >
                                         <option value="multiple_choice">
                                           ปรนัย (เลือกตอบ 1 ข้อ)
@@ -4926,7 +4995,7 @@ function DVETeacherWorkspace() {
                                           updated[qIdx].points = parseInt(e.target.value) || 1;
                                           setQuizForm((prev) => ({ ...prev, questions: updated }));
                                         }}
-                                        className="h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold shadow-sm"
+                                        className="h-10 border-2 border-zinc-200/80 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 transition-all dark:text-white font-bold shadow-sm"
                                       />
                                     </div>
                                   </div>
@@ -4939,7 +5008,7 @@ function DVETeacherWorkspace() {
                                       </label>
                                       <div className="space-y-1.5">
                                         {(q.options || []).map((opt: string, optIdx: number) => (
-                                          <div key={optIdx} className="flex items-center gap-2">
+                                          <div key={optIdx} className="flex items-center gap-3 bg-white dark:bg-zinc-900/50 p-2 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 hover:border-emerald-200 dark:hover:border-emerald-900/50 transition-all">
                                             {q.type === "multiple_choice" ? (
                                               <input
                                                 type="radio"
@@ -5015,7 +5084,7 @@ function DVETeacherWorkspace() {
                                                   questions: updated,
                                                 }));
                                               }}
-                                              className="flex-1 h-8 border-b border-zinc-200 dark:border-zinc-800 bg-transparent px-2 text-[11px] focus:outline-hidden dark:text-white"
+                                              className="flex-1 h-10 border-2 border-zinc-200/50 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-950 hover:bg-white dark:hover:bg-zinc-900 focus:bg-white dark:focus:bg-zinc-900 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all dark:text-white font-bold"
                                             />
                                             {showQuizAnswers && (
                                               (q.type === "multiple_choice" && q.correctAnswer === opt) ||
@@ -5060,18 +5129,18 @@ function DVETeacherWorkspace() {
                                           </div>
                                         ))}
                                       </div>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const updated = [...quizForm.questions];
-                                          const newOptName = `ตัวเลือกที่ ${updated[qIdx].options.length + 1}`;
-                                          updated[qIdx].options.push(newOptName);
-                                          setQuizForm((prev) => ({ ...prev, questions: updated }));
-                                        }}
-                                        className="mt-1.5 text-[10px] text-emerald-600 hover:text-emerald-700 font-black flex items-center gap-0.5 border-0 bg-transparent cursor-pointer dark:bg-emerald-950/30 px-2 py-1 rounded-md"
-                                      >
-                                        <Plus size={10} /> เพิ่มช่องตัวเลือกใหม่
-                                      </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const updated = [...quizForm.questions];
+                                            const newOptName = `ตัวเลือกที่ ${updated[qIdx].options.length + 1}`;
+                                            updated[qIdx].options.push(newOptName);
+                                            setQuizForm((prev) => ({ ...prev, questions: updated }));
+                                          }}
+                                          className="mt-3 w-full h-10 border-2 border-dashed border-emerald-200 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                                        >
+                                          <Plus size={14} /> เพิ่มช่องตัวเลือกใหม่
+                                        </button>
                                     </div>
                                   )}
                                 </div>
@@ -5524,20 +5593,21 @@ function DVETeacherWorkspace() {
       {/* 5. Teacher Edit Student Attendance & Score Modal */}
       <AnimatePresence>
         {editingStudent && (
-          <div className="fixed inset-0 z-9999 flex">
+          <div className="fixed inset-0 z-9999 flex items-center justify-center sm:p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-white/80 dark:bg-zinc-950/85 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-950/65 dark:bg-zinc-950/80 backdrop-blur-md"
+              onClick={() => setEditingStudent(null)}
             />
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl text-left flex flex-col"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-2xl"
             >
-              <div className="px-6 py-5 border-b dark:border-zinc-800 flex justify-between items-center bg-linear-to-r from-teal-500/10 to-emerald-500/5 dark:from-teal-500/20 dark:to-emerald-500/10 relative overflow-hidden shrink-0">
+              <div className="px-6 py-5 border-b dark:border-zinc-800 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl relative overflow-hidden shrink-0">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
                 <div className="space-y-1 relative z-10">
                   <h3 className="text-lg font-black text-teal-800 dark:text-teal-200 flex items-center gap-2">
