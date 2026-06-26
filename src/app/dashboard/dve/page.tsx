@@ -95,16 +95,32 @@ function formatExtractedScoreMessage(extracted: DveExtractScoreResult | null): s
 }
 function formatThaiDateDisplay(dateString?: string) {
   if (!dateString) return "-";
-  const parts = dateString.split("-");
-  if (parts.length !== 3) return dateString;
-  const [year, month, day] = parts;
-  const date = new Date(Number(year), Number(month) - 1, Number(day));
-  if (isNaN(date.getTime())) return dateString;
-  return date.toLocaleDateString("th-TH", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  try {
+    const [datePart, timePart] = dateString.split(" ");
+    const dateParts = datePart.split("-");
+    if (dateParts.length !== 3) return dateString;
+    const [year, month, day] = dateParts;
+    
+    let hours = 0, minutes = 0, seconds = 0;
+    if (timePart) {
+      const timeParts = timePart.split(":");
+      hours = Number(timeParts[0]) || 0;
+      minutes = Number(timeParts[1]) || 0;
+      seconds = Number(timeParts[2]) || 0;
+    }
+    
+    const date = new Date(Number(year), Number(month) - 1, Number(day), hours, minutes, seconds);
+    if (isNaN(date.getTime())) return dateString;
+    
+    return date.toLocaleDateString("th-TH", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      ...(timePart && { hour: "2-digit", minute: "2-digit" })
+    });
+  } catch {
+    return dateString;
+  }
 }
 
 function standardizeClassGroupName(name: string): string {
@@ -2043,6 +2059,21 @@ function DVETeacherWorkspace() {
                               <h4 className="font-black text-sm text-zinc-900 dark:text-white">
                                 {quiz.title}
                               </h4>
+                              {quiz.quizType === "pretest" && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black leading-none border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
+                                  ก่อนเรียน (Pre-test)
+                                </span>
+                              )}
+                              {quiz.quizType === "posttest" && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black leading-none border bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
+                                  หลังเรียน (Post-test)
+                                </span>
+                              )}
+                              {(!quiz.quizType || quiz.quizType === "general") && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black leading-none border bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20">
+                                  ทั่วไป
+                                </span>
+                              )}
                               <span
                                 className={`px-2 py-0.5 rounded-full text-[9px] font-black leading-none border ${quiz.isBuiltIn ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-blue-500/10 text-blue-600 border-blue-500/20"}`}
                               >

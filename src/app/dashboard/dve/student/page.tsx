@@ -83,16 +83,32 @@ function formatExtractedScoreMessage(extracted: DveExtractScoreResult | null): s
 
 function formatThaiDateDisplay(dateString?: string) {
   if (!dateString) return "-";
-  const parts = dateString.split("-");
-  if (parts.length !== 3) return dateString;
-  const [year, month, day] = parts;
-  const date = new Date(Number(year), Number(month) - 1, Number(day));
-  if (isNaN(date.getTime())) return dateString;
-  return date.toLocaleDateString("th-TH", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  try {
+    const [datePart, timePart] = dateString.split(" ");
+    const dateParts = datePart.split("-");
+    if (dateParts.length !== 3) return dateString;
+    const [year, month, day] = dateParts;
+    
+    let hours = 0, minutes = 0, seconds = 0;
+    if (timePart) {
+      const timeParts = timePart.split(":");
+      hours = Number(timeParts[0]) || 0;
+      minutes = Number(timeParts[1]) || 0;
+      seconds = Number(timeParts[2]) || 0;
+    }
+    
+    const date = new Date(Number(year), Number(month) - 1, Number(day), hours, minutes, seconds);
+    if (isNaN(date.getTime())) return dateString;
+    
+    return date.toLocaleDateString("th-TH", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      ...(timePart && { hour: "2-digit", minute: "2-digit" })
+    });
+  } catch {
+    return dateString;
+  }
 }
 
 function getBangkokDateString(value?: string | Date | null) {
@@ -851,10 +867,16 @@ export function DVEStudentPortal() {
           setUnits(sortedUnits);
         }
         if (quizzesData.success) {
-          const today = new Date().toISOString().split("T")[0];
+          const now = new Date();
           const filteredQuizzes = (quizzesData.quizzes || []).filter((q: any) => {
             if (!q.startDate) return true;
-            return today >= q.startDate;
+            const [datePart, timePart] = q.startDate.split(" ");
+            const dateParts = datePart.split("-");
+            if (dateParts.length !== 3) return true;
+            const [y, m, d] = dateParts;
+            const timeParts = timePart ? timePart.split(":") : ["0", "0", "0"];
+            const start = new Date(Number(y), Number(m) - 1, Number(d), Number(timeParts[0]), Number(timeParts[1]), Number(timeParts[2] || "0"));
+            return now >= start;
           });
           setQuizzes(filteredQuizzes);
         }
@@ -2080,7 +2102,11 @@ export function DVEStudentPortal() {
                 {/* 📝 QUIZ REDIRECT */}
                 {(() => {
                   const currentUnitId = activeStudyUnit.id || activeStudyUnit._id?.toString();
-                  const unitQuizzes = quizzes.filter((q) => q.unitId === currentUnitId);
+                  const unitQuizzes = quizzes.filter((q) => {
+                    if (q.unitId === currentUnitId) return true;
+                    if (!q.unitId && (q.quizType === "pretest" || q.quizType === "posttest" || q.title?.includes("ก่อนเรียน") || q.title?.includes("หลังเรียน") || q.title?.toLowerCase().includes("pre") || q.title?.toLowerCase().includes("post"))) return true;
+                    return false;
+                  });
                   if (unitQuizzes.length === 0) return null;
 
                   return (
