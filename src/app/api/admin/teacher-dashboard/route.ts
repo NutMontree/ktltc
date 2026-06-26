@@ -1,29 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import clientPromise from "@/lib/db";
-import { ObjectId } from "mongodb";
+import { getTeacherMetrics } from "@/lib/teacher";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60; // Revalidate every 60 seconds
-
-const ALLOWED_ROLES = [
-  "super_admin",
-  "admin",
-  "director",
-  "deputy_resource",
-  "deputy_strategy",
-  "deputy_academic",
-  "deputy_student_affairs",
-];
-
-function normalizeDept(value: string) {
-  if (!value) return "";
-  // Remove "แผนกวิชา" or "แผนก" prefix and normalize
-  let normalized = (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
-  // Also handle case where "แผนกวิชา" is in the middle or end
-  normalized = normalized.replace(/แผนกวิชา/g, "").trim();
-  return normalized;
-}
 
 export async function GET(req: Request) {
   try {
@@ -64,89 +45,32 @@ export async function GET(req: Request) {
     const endOfLastWeek = new Date(endOfWeek);
     endOfLastWeek.setDate(endOfWeek.getDate() - 7);
 
-    // Build query for teachers
-    const teacherQuery: any = { role: "teacher" };
-
-    // Get teachers
-    let teachers = await db
-      .collection("users")
-      .find(teacherQuery)
-      .project({
-        _id: 1,
-        name: 1,
-        department: 1,
-        image: 1,
-      })
-      .toArray();
-
-    // Get unique departments from teachers for the dropdown
-    const uniqueDepartments = Array.from(
-      new Set(teachers.map(t => t.department).filter(Boolean))
-    ).sort();
-
-    // Filter by department using normalized comparison for better matching
-    if (department) {
-      const normalizedFilter = normalizeDept(department);
-      teachers = teachers.filter((teacher) => {
-        const normalizedTeacherDept = normalizeDept(teacher.department || "");
-        // Check if the normalized department name contains the filter or vice versa
-        return normalizedTeacherDept.includes(normalizedFilter) || normalizedFilter.includes(normalizedTeacherDept);
-      });
-    }
-
-    const teacherIds = teachers.map((t) => t._id.toString());
-
-    // Get DVE subjects first (needed for attendances query)
-    const subjects = await db
-      .collection("dve_subjects")
-      .find({ teacherId: { $in: teacherIds } })
-      .project({ _id: 1, teacherId: 1, name: 1, code: 1, department: 1 })
-      .toArray();
-
-    const subjectIds = subjects.map((s) => s._id.toString());
-
-    // Build date filter for attendances
-    const dateFilter: any = {};
-    if (startDate) {
-      dateFilter.$gte = startDate;
-    }
-    if (endDate) {
-      dateFilter.$lte = endDate;
-    }
-
-    // Get attendances
-    const attendances = await db
-      .collection("dve_attendances")
-      .find({
-        subjectId: { $in: subjectIds },
-        ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
-      })
-      .project({ _id: 1, subjectId: 1, studentId: 1, date: 1, score: 1 })
-      .toArray();
+    // Fetch data using the centralized utility
+    const metrics = await getTeacherMetrics(db, { department, startDate, endDate });
 
     // Get this week's attendances
-    const thisWeekAttendances = attendances.filter((a) => {
+    const thisWeekAttendances = metrics.attendances.filter((a) => {
       const attDate = new Date(a.date);
       return attDate >= startOfWeek && attDate <= endOfWeek;
     });
 
     // Get last week's attendances
-    const lastWeekAttendances = attendances.filter((a) => {
+    const lastWeekAttendances = metrics.attendances.filter((a) => {
       const attDate = new Date(a.date);
       return attDate >= startOfLastWeek && attDate <= endOfLastWeek;
     });
 
     // Calculate overall stats
-    const totalTeachers = teachers.length;
+    const totalTeachers = metrics.teachers.length;
     const activeTeachers = new Set(
-      attendances.map((a) => {
-        const subject = subjects.find((s) => s._id.toString() === a.subjectId);
+      metrics.attendances.map((a) => {
+        const subject = metrics.subjects.find((s) => s._id.toString() === a.subjectId);
         return subject?.teacherId;
       })
     ).size;
-    const totalSubjects = subjects.length;
-    const totalClasses = attendances.length;
-    const totalStudents = attendances.reduce((sum, a) => sum + (a.students?.length || 0), 0);
+    const totalSubjects = metrics.subjects.length;
+    const totalClasses = metrics.attendances.length;
+    const totalStudents = metrics.attendances.reduce((sum, a) => sum + (a.students?.length || 0), 0);
     const avgStudentsPerClass = totalClasses > 0 ? Math.round(totalStudents / totalClasses) : 0;
     const thisWeekClasses = thisWeekAttendances.length;
     const lastWeekClasses = lastWeekAttendances.length;
@@ -154,22 +78,12 @@ export async function GET(req: Request) {
       ? Math.round(((thisWeekClasses - lastWeekClasses) / lastWeekClasses) * 100) 
       : 0;
 
-
-    const teacherNames = teachers.map((t) => t.name);
-
-    // Fetch real metrics from collections
-    const lessonPlans = await db.collection("lesson_plans").find({ teacherName: { $in: teacherNames } }).toArray();
-    const plcRecords = await db.collection("plc_records").find({ participants: { $in: teacherNames } }).toArray();
-    const dpaEvaluations = await db.collection("dpa_evaluations").find({ teacherName: { $in: teacherNames } }).toArray();
-    const studentCares = await db.collection("student_care_records").find({ teacherName: { $in: teacherNames } }).toArray();
-
     // Calculate teacher activities
-
-    const teacherActivities = teachers.map((teacher) => {
+    const teacherActivities = metrics.teachers.map((teacher) => {
       const teacherIdStr = teacher._id.toString();
-      const teacherSubjects = subjects.filter((s) => s.teacherId === teacherIdStr);
+      const teacherSubjects = metrics.subjects.filter((s) => s.teacherId === teacherIdStr);
       const teacherSubjectIds = teacherSubjects.map((s) => s._id.toString());
-      const teacherAttendances = attendances.filter((a) => teacherSubjectIds.includes(a.subjectId));
+      const teacherAttendances = metrics.attendances.filter((a) => teacherSubjectIds.includes(a.subjectId));
       const teacherThisWeekAttendances = thisWeekAttendances.filter((a) => teacherSubjectIds.includes(a.subjectId));
 
       const totalClassesCount = teacherAttendances.length;
@@ -184,7 +98,6 @@ export async function GET(req: Request) {
       if (thisWeekClassesCount > 0) {
         status = "active";
       } else if (totalClassesCount > 0) {
-        // Check if last activity was within last 14 days
         if (lastActivity) {
           const lastActivityDate = new Date(lastActivity);
           const fourteenDaysAgo = new Date();
@@ -195,17 +108,16 @@ export async function GET(req: Request) {
         }
       }
 
-
       // Real Data calculation
-      const lessonPlanSubmitted = lessonPlans.some(lp => lp.teacherName === teacher.name);
-      const plcHours = plcRecords
+      const lessonPlanSubmitted = metrics.lessonPlans.some(lp => lp.teacherName === teacher.name);
+      const plcHours = metrics.plcRecords
         .filter(p => p.participants && p.participants.includes(teacher.name))
         .reduce((sum, p) => sum + (Number(p.durationHours) || 0), 0);
       
-      const teacherDpa = dpaEvaluations.find(d => d.teacherName === teacher.name);
+      const teacherDpa = metrics.dpaEvaluations.find(d => d.teacherName === teacher.name);
       const paStatus = teacherDpa && (teacherDpa.status === "evaluated" || teacherDpa.status === "approved") ? "approved" : "pending";
       
-      const hasStudentCare = studentCares.some(sc => sc.teacherName === teacher.name);
+      const hasStudentCare = metrics.studentCares.some(sc => sc.teacherName === teacher.name);
       const sdqCompleted = hasStudentCare;
       
       const teachingHoursPerWeek = teacherSubjects.length > 0 
@@ -248,7 +160,7 @@ export async function GET(req: Request) {
         weeklyGrowth,
       },
       activities: teacherActivities,
-      departments: uniqueDepartments,
+      departments: metrics.uniqueDepartments,
     });
   } catch (error: any) {
     console.error("[Admin Teacher Dashboard API] Error:", error);

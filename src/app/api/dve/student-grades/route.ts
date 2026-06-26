@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
+const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher", "director", "deputy_academic"];
 
 const CLASS_GROUP_FIELDS = ["classGroupId", "groupCode", "classroomName"] as const;
 

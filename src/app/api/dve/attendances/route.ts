@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
 export const dynamic = "force-dynamic";
 export const revalidate = 0; // Disable cache for attendances
 
-const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
+const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher", "director", "deputy_academic"];
 
 function normalizeDept(value: string) {
   return (value || "").replace(/^(แผนกวิชา|แผนก)/, "").trim().toLowerCase();
@@ -142,7 +142,7 @@ export async function GET(req: Request) {
       if (!(await isStudentAllowedSubject(db, subjectId, userId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-    } else if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, subjectId, userId))) {
+    } else if (role !== "super_admin" && role !== "admin" && role !== "director" && role !== "deputy_academic" && !(await isOwnedSubject(db, subjectId, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

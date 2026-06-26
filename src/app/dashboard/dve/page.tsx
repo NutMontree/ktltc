@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   BookOpen,
@@ -202,7 +202,19 @@ function getQuizTypeLabel(type: string): string {
 function DVETeacherWorkspace() {
   const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const teacherId = searchParams.get("teacherId");
+  const teacherName = searchParams.get("teacherName");
+  const teacherDept = searchParams.get("teacherDept");
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
+
+  const checkReadOnly = () => {
+    if (teacherId) {
+      message.warning("ในโหมดผู้ตรวจสอบ คุณไม่สามารถแก้ไขข้อมูลได้");
+      return true;
+    }
+    return false;
+  };
   const [activeTab, setActiveTab] = useState<
     "subjects" | "quizzes" | "checkin" | "timeline" | "internship"
   >("subjects");
@@ -660,7 +672,8 @@ function DVETeacherWorkspace() {
   const fetchSubjects = async () => {
     try {
       setLoadingSubjects(true);
-      const res = await fetch("/api/dve/subjects");
+      const url = teacherId ? `/api/dve/subjects?teacherId=${teacherId}` : "/api/dve/subjects";
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         if (data.success) setSubjects(data.subjects || []);
@@ -777,6 +790,7 @@ function DVETeacherWorkspace() {
   // SUBJECT ACTIONS
   const handleSaveSubject = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (checkReadOnly()) return;
     if (!subjectForm.code || !subjectForm.name || !subjectForm.department) {
       message.error("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
       return;
@@ -819,6 +833,7 @@ function DVETeacherWorkspace() {
   };
 
   const handleDeleteSubject = async (id: string) => {
+    if (checkReadOnly()) return;
     try {
       const res = await fetch(`/api/dve/subjects?id=${id}`, { method: "DELETE" });
       if (res.ok) {
@@ -864,6 +879,7 @@ function DVETeacherWorkspace() {
 
   const handleSaveUnit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (checkReadOnly()) return;
     if (!unitForm.title) {
       message.error("กรุณาระบุหัวข้อหน่วยเรียน");
       return;
@@ -908,6 +924,7 @@ function DVETeacherWorkspace() {
   };
 
   const handleDeleteUnit = async (unitId: string) => {
+    if (checkReadOnly()) return;
     try {
       const res = await fetch(`/api/dve/units?id=${unitId}`, { method: "DELETE" });
       if (res.ok) {
@@ -954,6 +971,7 @@ function DVETeacherWorkspace() {
 
   const handleSaveQuiz = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (checkReadOnly()) return;
     if (
       !quizForm.subjectId ||
       !quizForm.title ||
@@ -1041,6 +1059,7 @@ function DVETeacherWorkspace() {
     questionId: string,
     isCorrect: boolean,
   ) => {
+    if (checkReadOnly()) return;
     try {
       const res = await fetch("/api/dve/quizzes/submissions", {
         method: "PATCH",
@@ -1084,6 +1103,7 @@ function DVETeacherWorkspace() {
   };
 
   const handleDeleteQuiz = async (quizId: string, subId: string) => {
+    if (checkReadOnly()) return;
     try {
       const res = await fetch(`/api/dve/quizzes?id=${quizId}`, { method: "DELETE" });
       if (res.ok) {
@@ -1096,6 +1116,7 @@ function DVETeacherWorkspace() {
   };
 
   const handleDeleteSubmission = async (submissionId: string) => {
+    if (checkReadOnly()) return;
     console.log("handleDeleteSubmission called with submissionId:", submissionId);
     try {
       const res = await fetch(`/api/dve/quizzes/submissions?submissionId=${submissionId}`, { method: "DELETE" });
@@ -1118,6 +1139,7 @@ function DVETeacherWorkspace() {
   };
 
   const handleDeleteAttendanceRecord = async (recordId: string) => {
+    if (checkReadOnly()) return;
     console.log("handleDeleteAttendanceRecord called with recordId:", recordId);
     try {
       const res = await fetch(`/api/dve/attendances?id=${recordId}`, { method: "DELETE" });
@@ -1207,6 +1229,7 @@ function DVETeacherWorkspace() {
   };
 
   const handleToggleInternship = async (student: any) => {
+    if (checkReadOnly()) return;
     try {
       const newStatus = !student.isInternship;
       setStudentRoster((prev) =>
@@ -1426,6 +1449,7 @@ function DVETeacherWorkspace() {
   };
 
   const handleBulkSaveAttendance = async () => {
+    if (checkReadOnly()) return;
     const { subjectId, date } = checkinFilter;
     if (!subjectId || !date) {
       message.error("กรุณาระบุข้อมูลที่จำเป็น");
@@ -1522,6 +1546,20 @@ function DVETeacherWorkspace() {
 
   return (
     <div className="space-y-4 px-2 sm:px-4 md:px-6 lg:px-8">
+      {teacherId && (
+        <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <div className="flex-1">
+            <h4 className="text-sm font-bold text-amber-800 dark:text-amber-200">โหมดผู้ตรวจสอบ (ผู้บริหาร)</h4>
+            <p className="text-xs text-amber-700 dark:text-amber-300">
+              กำลังดูข้อมูลรายวิชาและการสอนของครู: {teacherName || teacherId} {teacherDept ? `(${teacherDept})` : ""}
+            </p>
+          </div>
+          <Link href="/teacher-verification" className="px-4 py-2 bg-amber-100 hover:bg-amber-200 dark:bg-amber-800/50 dark:hover:bg-amber-800 rounded-xl text-amber-800 dark:text-amber-200 text-xs font-bold transition-colors">
+            กลับไปหน้าตรวจสอบ
+          </Link>
+        </div>
+      )}
       {/* Teacher Workspace Header (Premium Glassmorphism) */}
       <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-slate-900 via-blue-950 to-slate-900 text-white p-6 sm:p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-white/10 group">
         {/* Animated Background Mesh */}
@@ -6083,7 +6121,7 @@ function DVEPortalContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const role = ((session?.user as any)?.role || "").toLowerCase();
-  const canAccessDvePortal = role === "teacher" || role === "super_admin";
+  const canAccessDvePortal = ["teacher", "super_admin", "admin", "editor", "director", "deputy_academic"].includes(role);
 
   useEffect(() => {
     if (status === "unauthenticated") {

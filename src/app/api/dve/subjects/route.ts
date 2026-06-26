@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
+const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher", "director", "deputy_academic"];
 
 function getDeptFromClassGroup(classGroupId: string): string {
   if (!classGroupId) return "";
@@ -170,7 +170,7 @@ export async function GET(req: Request) {
         if (!allowed) {
           return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
-      } else if (userRole !== "super_admin" && userRole !== "admin" && subject.teacherId !== userId) {
+      } else if (userRole !== "super_admin" && userRole !== "admin" && userRole !== "director" && userRole !== "deputy_academic" && subject.teacherId !== userId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
@@ -249,11 +249,17 @@ export async function GET(req: Request) {
       });
     }
 
+    const teacherIdQuery = searchParams.get("teacherId")?.trim();
+
     const query: any = {};
-    if (userRole !== "student" && userRole !== "super_admin" && userRole !== "admin") {
+    if (userRole !== "student" && userRole !== "super_admin" && userRole !== "admin" && userRole !== "director" && userRole !== "deputy_academic") {
       query.teacherId = userId;
-    } else if (department) {
-      query.department = { $regex: escapeRegex(department), $options: "i" };
+    } else {
+      if (teacherIdQuery) {
+        query.teacherId = teacherIdQuery;
+      } else if (department) {
+        query.department = { $regex: escapeRegex(department), $options: "i" };
+      }
     }
 
     const subjects = await db

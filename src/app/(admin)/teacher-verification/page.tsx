@@ -811,9 +811,14 @@ export default function TeacherVerificationPage() {
                   <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">{selectedTeacher.name}</h2>
                   <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">{selectedTeacher.department}</p>
                 </div>
-                <button onClick={exportTeacherReportToPdf} className="hidden md:flex px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold items-center gap-2 mb-2 hover:scale-105 transition-transform text-sm">
-                  <Printer size={16} /> พิมพ์รายงาน (PDF)
-                </button>
+                <div className="flex flex-col gap-2 mb-2 items-end">
+                  <a href={`/dashboard/dve?teacherId=${selectedTeacher.id}&teacherName=${encodeURIComponent(selectedTeacher.name)}&teacherDept=${encodeURIComponent(selectedTeacher.department)}`} target="_blank" rel="noopener noreferrer" className="flex px-4 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl font-bold items-center gap-2 hover:scale-105 transition-transform text-sm shadow-md shadow-indigo-500/20">
+                    <BookOpen size={16} /> ดูในมุมมองผู้สอน (DVE)
+                  </a>
+                  <button onClick={exportTeacherReportToPdf} className="flex px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold items-center gap-2 hover:scale-105 transition-transform text-sm shadow-md">
+                    <Printer size={16} /> พิมพ์รายงาน (PDF)
+                  </button>
+                </div>
               </div>
 
               {/* Tabs */}
