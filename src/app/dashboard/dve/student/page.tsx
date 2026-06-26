@@ -36,6 +36,7 @@ import {
   Sparkles,
   FileText,
   Paperclip,
+  Lock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select } from "antd";
@@ -1104,17 +1105,23 @@ export function DVEStudentPortal() {
       </div>
 
       {/* Smart Search Filters (Glassmorphic Bento) */}
-      <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
-        <div className="flex items-center gap-3 mb-5">
+      <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex items-center gap-3 mb-2 relative z-10">
           <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
             <Search className="w-5 h-5" />
           </div>
-          <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white">
-            ค้นหารายวิชาเรียนทวิภาคี
-          </h3>
+          <div>
+            <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white leading-tight">
+              ค้นหารายวิชาเรียนทวิภาคี
+            </h3>
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-0.5">
+              เลือกข้อมูลตามลำดับ 1-3 เพื่อเริ่มต้นเข้าสู่บทเรียน
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mt-5 relative z-10">
           <div className="flex flex-col gap-2">
             <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               1. เลือกแผนกวิชา
@@ -1497,31 +1504,41 @@ export function DVEStudentPortal() {
                             }, 100);
                           }
                         }}
-                        className="w-full text-left p-4 bg-white/50 dark:bg-zinc-800/50 hover:bg-linear-to-tr hover:from-emerald-50/50 hover:to-transparent dark:hover:from-emerald-900/10 dark:hover:to-transparent rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all duration-300 border border-slate-100 dark:border-zinc-700/50 shadow-sm hover:shadow-md hover:border-emerald-200/50 dark:hover:border-emerald-800/50 hover:-translate-y-0.5 group cursor-pointer"
+                        className="w-full text-left p-4 sm:p-5 bg-white/70 dark:bg-zinc-800/70 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 rounded-[20px] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300 border border-slate-200/60 dark:border-zinc-700/60 shadow-xs hover:shadow-md hover:border-emerald-300/50 dark:hover:border-emerald-700/50 group cursor-pointer relative overflow-hidden"
                       >
-                        <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-[11px] shadow-inner border border-emerald-200/30 dark:border-emerald-700/30 shrink-0 transition-transform group-hover:scale-110">
-                            EP.{unit.sequence || index + 1}
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div className="flex items-start sm:items-center gap-4">
+                          <div className="w-12 h-12 rounded-[14px] bg-linear-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-800/50 group-hover:from-emerald-100 group-hover:to-teal-50 dark:group-hover:from-emerald-900/40 dark:group-hover:to-teal-900/20 flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 shadow-inner border border-zinc-200/50 dark:border-zinc-700/50 shrink-0 transition-all group-hover:scale-105">
+                            <span className="text-[9px] font-black uppercase tracking-wider leading-none mb-0.5">EP</span>
+                            <span className="text-lg font-black leading-none">{unit.sequence || index + 1}</span>
                           </div>
-                          <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2 sm:line-clamp-1">
-                            {unit.title}
-                          </span>
+                          <div>
+                            <span className="font-black text-zinc-900 dark:text-zinc-100 text-sm sm:text-base leading-snug group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
+                              {unit.title}
+                            </span>
+                            <div className="flex flex-wrap items-center gap-2 mt-1.5 text-zinc-500 dark:text-zinc-400">
+                              {Number(unit.studyMinutes) > 0 && (
+                                <span className="text-[10px] font-bold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md border border-amber-200/50 dark:border-amber-800/30 flex items-center gap-1">
+                                  <Clock3 size={10} />
+                                  จับเวลาเรียน {unit.studyMinutes} นาที
+                                </span>
+                              )}
+                              {unit.dueDate && (
+                                <span className="text-[10px] font-bold bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 px-2 py-0.5 rounded-md border border-rose-200/50 dark:border-rose-800/30 flex items-center gap-1">
+                                  <Calendar size={10} />
+                                  กำหนดส่ง: {formatThaiDateDisplay(unit.dueDate)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 shrink-0 ml-12 sm:ml-0">
-                          {Number(unit.studyMinutes) > 0 && (
-                            <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-lg border border-amber-100 dark:border-amber-800/30 flex items-center gap-1">
-                              <Clock3 size={12} />
-                              {unit.studyMinutes} นาที
-                            </span>
-                          )}
-                          {unit.dueDate && (
-                            <span className="text-[10px] font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 px-2.5 py-1 rounded-lg border border-rose-100 dark:border-rose-800/30 flex items-center gap-1">
-                              <Calendar size={12} />
-                              {formatThaiDateDisplay(unit.dueDate)}
-                            </span>
-                          )}
-                          <div className="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors ml-1">
-                            <ChevronRight size={16} />
+                        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-slate-100 dark:border-zinc-800/80 sm:border-0 shrink-0">
+                          <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                            เริ่มเรียนเลย <ArrowRight size={14} />
+                          </span>
+                          <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:bg-emerald-500 group-hover:text-white shadow-sm border border-slate-200 dark:border-zinc-700 group-hover:border-emerald-500 transition-all">
+                            <ChevronRight size={20} className="group-hover:translate-x-0.5 transition-transform" />
                           </div>
                         </div>
                       </button>
@@ -1530,16 +1547,20 @@ export function DVEStudentPortal() {
                 )}
               </div>
 
-              {/* บันทึกเวลาเรียนและการส่งหลักฐานคะแนน */}
-              <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/50 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2.5">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
-                      <ClipboardList size={20} className="drop-shadow-sm" />
-                    </div>
-                    บันทึกเวลาเรียนและการส่งหลักฐานคะแนน
-                  </h3>
-                  <span className="text-xs font-black text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
+              {/* ประวัติการเรียนและงานของฉัน */}
+              <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/50 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-400/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-3 relative z-10">
+                  <div>
+                    <h3 className="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2.5">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
+                        <ClipboardList size={20} className="drop-shadow-sm" />
+                      </div>
+                      ประวัติการเรียนและส่งงานของฉัน
+                    </h3>
+                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1 ml-11">ตรวจสอบสถานะการเข้าเรียนและส่งหลักฐานผลงานต่างๆ</p>
+                  </div>
+                  <span className="text-xs font-black text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 shrink-0 w-fit">
                     วันที่: {new Date().toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
                 </div>
@@ -1816,19 +1837,59 @@ export function DVEStudentPortal() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 15 }}
-              className="text-center py-20 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-3xl max-w-2xl mx-auto flex flex-col items-center justify-center gap-4 shadow-sm"
+              className="py-10 max-w-4xl mx-auto"
             >
-              <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center">
-                <BookOpen size={28} />
+              <div className="text-center mb-10">
+                <div className="w-20 h-20 bg-linear-to-br from-blue-500 to-cyan-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/20 rotate-3">
+                  <BookOpen size={36} className="-rotate-3" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mb-3 tracking-tight">ยินดีต้อนรับสู่ DVE Portal 🚀</h2>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-base font-medium">เริ่มต้นการเรียนรู้ออนไลน์และส่งงานของคุณง่ายๆ ใน 3 ขั้นตอน</p>
               </div>
-              <div className="space-y-2 px-6">
-                <h3 className="text-base font-black text-zinc-900 dark:text-white">
-                  กรุณาเลือกข้อมูลเพื่อแสดงรายละเอียดรายวิชา
-                </h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto font-medium">
-                  กรุณาเลือก <b>แผนกวิชา</b>, <b>อาจารย์ผู้สอน</b> และ <b>รายวิชาทวิภาคี</b>{" "}
-                  ให้ครบทั้ง 3 รายการด้านบน เพื่อเปิดหอเรียนรู้เสมือนจริง ดาวน์โหลดเอกสารประกอบ
-                  และเช็คชื่อเข้าเรียนครับ
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Step 1 */}
+                <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-200 dark:hover:border-blue-800/50">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+                  <div className="w-14 h-14 bg-linear-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-900/10 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center font-black text-2xl mb-5 shadow-inner border border-blue-200/50 dark:border-blue-800/50 group-hover:scale-110 transition-transform">
+                    1
+                  </div>
+                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">ค้นหาวิชาเรียน</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                    เลือกแผนกวิชา, ชื่ออาจารย์ผู้สอน และวิชาเรียนที่คุณต้องการเรียนจากกล่องค้นหาด้านบนสุดของหน้าจอ
+                  </p>
+                </div>
+                
+                {/* Step 2 */}
+                <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-200 dark:hover:border-emerald-800/50">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+                  <div className="w-14 h-14 bg-linear-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-900/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center font-black text-2xl mb-5 shadow-inner border border-emerald-200/50 dark:border-emerald-800/50 group-hover:scale-110 transition-transform">
+                    2
+                  </div>
+                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">เข้าเรียน & จับเวลา</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                    เลือกหน่วยการเรียนรู้เพื่อเข้าสู่ห้องเรียนเสมือน ระบบจะเริ่มนับเวลาเรียนของคุณอัตโนมัติเพื่อใช้ในการเช็คชื่อ
+                  </p>
+                </div>
+
+                {/* Step 3 */}
+                <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/10 hover:border-amber-200 dark:hover:border-amber-800/50">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+                  <div className="w-14 h-14 bg-linear-to-br from-amber-100 to-amber-50 dark:from-amber-900/40 dark:to-amber-900/10 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center font-black text-2xl mb-5 shadow-inner border border-amber-200/50 dark:border-amber-800/50 group-hover:scale-110 transition-transform">
+                    3
+                  </div>
+                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">ทำแบบทดสอบ</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                    หลังจากเรียนครบเวลาที่กำหนดแล้ว สามารถทำแบบทดสอบหรือส่งไฟล์ผลงานแนบ เพื่อให้ได้คะแนนครบถ้วน
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mt-14 text-center animate-bounce">
+                <p className="text-sm font-bold text-blue-500 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/20 w-fit mx-auto px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800/50">
+                  <ArrowRight size={16} className="-rotate-90" />
+                  เลื่อนขึ้นไปด้านบนเพื่อเลือกแผนกและรายวิชา
+                  <ArrowRight size={16} className="-rotate-90" />
                 </p>
               </div>
             </motion.div>
@@ -1852,15 +1913,43 @@ export function DVEStudentPortal() {
               className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 w-full h-full flex flex-col shadow-2xl relative"
             >
               {/* Header Banner */}
-              <div className="bg-linear-to-br from-emerald-500 to-teal-600 text-white p-6 relative shrink-0">
-                <button
-                  onClick={() => {
-                    if (Number(activeStudyUnit.studyMinutes) > 0 && !isStudyCompleted) {
-                      if (
-                        confirm(
-                          "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",
-                        )
-                      ) {
+              <div className="bg-linear-to-r from-emerald-600 via-teal-500 to-cyan-600 text-white p-5 sm:p-8 relative shrink-0 overflow-hidden shadow-md">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-20 -left-10 w-40 h-40 bg-teal-400/20 rounded-full blur-2xl pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div className="max-w-2xl">
+                    <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md text-[9px] uppercase font-black tracking-widest px-3 py-1.5 rounded-full text-white/95 shadow-sm border border-white/20 mb-3">
+                      <Sparkles size={12} className="animate-pulse text-amber-300" />
+                      ห้องเรียนเสมือน (DVE Virtual Study Room)
+                    </span>
+                    <h2 className="text-xl sm:text-3xl font-black tracking-tight leading-tight drop-shadow-sm mb-1.5">
+                      {activeStudyUnit.title}
+                    </h2>
+                    <p className="text-white/85 text-[10px] sm:text-xs font-bold flex items-center gap-1.5 bg-black/10 w-fit px-2 py-1 rounded-md">
+                      <BookOpen size={12} className="opacity-80" />
+                      วิชา: {activeSubject.name} ({activeSubject.code})
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (Number(activeStudyUnit.studyMinutes) > 0 && !isStudyCompleted) {
+                        if (
+                          confirm(
+                            "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",
+                          )
+                        ) {
+                          if (timerRef.current) {
+                            clearInterval(timerRef.current);
+                            timerRef.current = null;
+                          }
+                          timerActiveRef.current = false;
+                          handleSaveStudyProgress(studySecondsElapsed);
+                          setActiveStudyUnit(null);
+                          setUnitQuizMode(null);
+                        }
+                      } else {
                         if (timerRef.current) {
                           clearInterval(timerRef.current);
                           timerRef.current = null;
@@ -1870,30 +1959,14 @@ export function DVEStudentPortal() {
                         setActiveStudyUnit(null);
                         setUnitQuizMode(null);
                       }
-                    } else {
-                      if (timerRef.current) {
-                        clearInterval(timerRef.current);
-                        timerRef.current = null;
-                      }
-                      timerActiveRef.current = false;
-                      handleSaveStudyProgress(studySecondsElapsed);
-                      setActiveStudyUnit(null);
-                      setUnitQuizMode(null);
-                    }
-                  }}
-                  className="absolute top-6 right-6 p-2 bg-white/20 hover:bg-white/35 rounded-full transition-all text-white border-0 cursor-pointer flex items-center justify-center"
-                >
-                  <X size={18} />
-                </button>
-                <span className="bg-white/20 backdrop-blur-md text-[8px] sm:text-[9px] uppercase font-black tracking-widest px-2.5 sm:px-3 py-1 rounded-full text-white/90 wrap-break-word line-clamp-1 max-w-[80%]">
-                  ห้องเรียนเสมือนระบบออนไลน์ (DVE Virtual Study Room)
-                </span>
-                <h2 className="text-base sm:text-xl font-black mt-2 tracking-tight leading-snug">
-                  {activeStudyUnit.title}
-                </h2>
-                <p className="text-white/80 text-[10px] sm:text-xs mt-1 font-bold">
-                  วิชา: {activeSubject.name} ({activeSubject.code})
-                </p>
+                    }}
+                    className="self-end sm:self-start bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-xl transition-all text-white font-black text-[10px] sm:text-xs cursor-pointer flex items-center gap-1.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 group"
+                    title="ออกจากห้องเรียน"
+                  >
+                    <X size={14} className="group-hover:rotate-90 transition-transform" />
+                    <span>ปิดหน้าต่าง</span>
+                  </button>
+                </div>
               </div>
 
               {/* Study Area content */}
@@ -1901,95 +1974,118 @@ export function DVEStudentPortal() {
                 {/* ⏱️ TIMER BANNER */}
                 {Number(activeStudyUnit.studyMinutes) > 0 && (
                   <div
-                    className={`p-4 sm:p-5 rounded-2xl border relative overflow-hidden transition-all duration-500 ${isStudyCompleted
-                      ? "bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/10 border-emerald-200 dark:border-emerald-800/50 shadow-sm"
-                      : "bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-200 dark:border-blue-800/50 shadow-sm"
+                    className={`p-5 sm:p-6 rounded-[24px] border relative overflow-hidden transition-all duration-700 ${isStudyCompleted
+                      ? "bg-linear-to-br from-emerald-500/10 to-teal-500/5 dark:from-emerald-900/20 dark:to-teal-900/10 border-emerald-500/20 shadow-md shadow-emerald-500/5"
+                      : isMinimumTimeReached
+                      ? "bg-linear-to-br from-teal-500/10 to-cyan-500/5 dark:from-teal-900/20 dark:to-cyan-900/10 border-teal-500/20 shadow-md shadow-teal-500/5"
+                      : "bg-linear-to-br from-blue-500/10 to-indigo-500/5 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-500/20 shadow-md shadow-blue-500/5"
                       }`}
                   >
                     {isStudyCompleted && (
-                      <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
+                      <div className="absolute -right-10 -top-10 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
                     )}
-                    <div className="flex flex-col items-center gap-3 sm:gap-4 relative z-10">
-                      <div className="flex items-center gap-3">
-                        {isStudyCompleted ? (
-                          <div className="p-2.5 sm:p-3 bg-emerald-100 dark:bg-emerald-800/50 rounded-2xl shadow-inner">
-                            <Award size={32} className="text-emerald-600 dark:text-emerald-400 drop-shadow-sm animate-pulse" />
-                          </div>
-                        ) : (
-                          <div className="p-2.5 sm:p-3 bg-blue-100 dark:bg-blue-800/50 rounded-2xl shadow-inner relative">
-                            <div className="absolute inset-0 rounded-2xl border-2 border-blue-400 dark:border-blue-500 border-t-transparent border-r-transparent animate-spin opacity-50"></div>
-                            <Clock
-                              size={32}
-                              className="text-blue-600 dark:text-blue-400 drop-shadow-sm"
-                            />
-                          </div>
-                        )}
-                      </div>
+                    {!isStudyCompleted && !isMinimumTimeReached && (
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl pointer-events-none animate-pulse" />
+                    )}
 
-                      <div className="text-center">
+                    <div className="flex flex-col md:flex-row items-center gap-5 sm:gap-6 relative z-10">
+                      {/* Left: Icon Status */}
+                      <div className="shrink-0 flex items-center justify-center relative">
                         {isStudyCompleted ? (
                           <>
-                            <h4 className="text-sm sm:text-base font-black text-emerald-700 dark:text-emerald-400 tracking-tight">
-                              🎉 เรียนครบเวลาทั้งหมดแล้ว!
-                            </h4>
-                            <p className="text-[11px] sm:text-[13px] text-emerald-600/90 dark:text-emerald-500/90 mt-1 font-bold">
-                              ท่านเข้าเรียนวิชานี้เรียบร้อยแล้ว สามารถศึกษาชีทดาวน์โหลด หรือทำแบบทดสอบด้านล่างได้ทันที
-                            </p>
+                            <div className="absolute inset-0 bg-emerald-400/30 rounded-full blur-xl animate-ping opacity-50"></div>
+                            <div className="w-16 h-16 bg-linear-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30 text-white relative z-10 border-4 border-white dark:border-zinc-800">
+                              <Award size={32} className="drop-shadow-sm" />
+                            </div>
                           </>
                         ) : isMinimumTimeReached ? (
                           <>
-                            <h4 className="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
-                              ✅ เรียนครบเวลาขั้นต่ำแล้ว! บันทึกเข้าเรียนสำเร็จ
-                            </h4>
-                            <p className="text-[11px] sm:text-[13px] text-emerald-600/80 dark:text-emerald-500/80 mt-1 font-bold">
-                              สามารถทำแบบทดสอบได้ทันที หรือศึกษาต่อจนครบเวลาทั้งหมด
-                            </p>
+                            <div className="absolute inset-0 bg-teal-400/20 rounded-full blur-xl animate-pulse"></div>
+                            <div className="w-16 h-16 bg-linear-to-br from-teal-400 to-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/20 text-white relative z-10 border-4 border-white dark:border-zinc-800">
+                              <CheckCircle size={32} className="drop-shadow-sm" />
+                            </div>
                           </>
                         ) : (
                           <>
-                            <h4 className="text-sm sm:text-base font-black text-blue-800 dark:text-blue-400 tracking-tight">
-                              ⏳ ระบบกำลังจับเวลาเข้าเรียนของท่าน... ห้ามปิดหน้านี้
-                            </h4>
-                            <p className="text-[11px] sm:text-[13px] text-blue-700/80 dark:text-blue-500/80 mt-1 font-bold">
-                              สะสมเวลาให้ครบ {activeStudyUnit.studyMinutes} นาที เพื่อบันทึกชื่อเข้าเรียนอัตโนมัติ
-                            </p>
+                            <div className="absolute inset-0 rounded-full border-2 border-blue-400/50 border-t-transparent animate-[spin_2s_linear_infinite] scale-125"></div>
+                            <div className="absolute inset-0 rounded-full border-2 border-indigo-400/30 border-b-transparent animate-[spin_3s_linear_infinite_reverse] scale-110"></div>
+                            <div className="w-16 h-16 bg-linear-to-br from-blue-100 to-indigo-50 dark:from-blue-900/60 dark:to-indigo-900/40 rounded-full flex items-center justify-center shadow-inner text-blue-600 dark:text-blue-400 relative z-10 border-2 border-blue-200 dark:border-blue-700/50">
+                              <Clock size={28} className="drop-shadow-sm" />
+                            </div>
                           </>
                         )}
                       </div>
 
-                      {/* Premium Timer Progress Bar */}
-                      <div className="w-full max-w-md mt-1 sm:mt-2 bg-white/50 dark:bg-zinc-950/50 p-3 sm:p-4 rounded-2xl border border-white/50 dark:border-zinc-800/80 shadow-sm backdrop-blur-sm">
-                        <div className="flex justify-between text-[10px] sm:text-[11px] font-black mb-2 uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
-                          <span className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                            สะสมแล้ว: <span className="text-zinc-900 dark:text-white tabular-nums text-[10px] sm:text-xs">{Math.floor(studySecondsElapsed / 60)} น. {studySecondsElapsed % 60} วิ.</span>
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded-md">
-                              ขั้นต่ำ: {Number(activeStudyUnit.studyMinutes)} น.
-                            </span>
-                          </span>
+                      {/* Right: Text & Progress */}
+                      <div className="flex-1 w-full flex flex-col md:flex-row gap-4 items-center md:items-start justify-between">
+                        <div className="text-center md:text-left space-y-1">
+                          {isStudyCompleted ? (
+                            <>
+                              <h4 className="text-lg font-black text-emerald-700 dark:text-emerald-400 tracking-tight">
+                                เรียนครบเวลาทั้งหมดแล้ว! 🎉
+                              </h4>
+                              <p className="text-xs text-emerald-600/90 dark:text-emerald-500/90 font-bold max-w-sm">
+                                ท่านเข้าเรียนและศึกษาเนื้อหาวิชานี้เรียบร้อยแล้ว สามารถทำแบบทดสอบท้ายบทหรือดาวน์โหลดเอกสารได้ทันที
+                              </p>
+                            </>
+                          ) : isMinimumTimeReached ? (
+                            <>
+                              <h4 className="text-lg font-black text-teal-700 dark:text-teal-400 tracking-tight">
+                                บันทึกเข้าเรียนสำเร็จ! ✅
+                              </h4>
+                              <p className="text-xs text-teal-600/90 dark:text-teal-500/90 font-bold max-w-sm">
+                                เวลาเรียนถึงเกณฑ์ขั้นต่ำแล้ว สามารถทำแบบทดสอบได้ทันที หรือเปิดทิ้งไว้เพื่อสะสมเวลาต่อ
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <h4 className="text-lg font-black text-blue-800 dark:text-blue-400 tracking-tight flex items-center justify-center md:justify-start gap-1.5">
+                                กำลังจับเวลาเข้าเรียน <span className="flex gap-0.5"><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></span><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span></span>
+                              </h4>
+                              <p className="text-xs text-blue-700/80 dark:text-blue-500/80 font-bold max-w-sm">
+                                กรุณาเปิดหน้านี้ทิ้งไว้จนกว่าจะครบเวลาขั้นต่ำ {activeStudyUnit.studyMinutes} นาที เพื่อรักษาสิทธิ์การเข้าเรียน
+                              </p>
+                            </>
+                          )}
                         </div>
-                        <div className="w-full bg-zinc-200/60 dark:bg-zinc-800 h-3 sm:h-4 rounded-full overflow-hidden relative shadow-inner">
-                          <div
-                            className={`h-full transition-all duration-1000 relative ${isStudyCompleted ? "bg-linear-to-r from-emerald-400 to-emerald-500" : isMinimumTimeReached ? "bg-linear-to-r from-teal-400 to-emerald-500" : "bg-linear-to-r from-blue-400 to-indigo-400"
-                              }`}
-                            style={{
-                              width: `${(studySecondsElapsed / ((Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)) * 60)) * 100}%`,
-                            }}
-                          >
-                            <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-size-[1rem_1rem] animate-[progress_1s_linear_infinite]" />
+
+                        {/* Focus Bar */}
+                        <div className="w-full md:w-[280px] shrink-0 bg-white/70 dark:bg-zinc-900/60 p-3 rounded-2xl border border-white/50 dark:border-zinc-800/80 shadow-xs backdrop-blur-sm relative mt-2 md:mt-0">
+                          <div className="flex justify-between items-end mb-2">
+                            <div>
+                              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-0.5">
+                                เวลาที่สะสมได้
+                              </span>
+                              <span className="text-lg font-black text-zinc-900 dark:text-white leading-none tabular-nums flex items-baseline gap-1">
+                                {Math.floor(studySecondsElapsed / 60)} <span className="text-xs text-zinc-400">น.</span>
+                                {String(studySecondsElapsed % 60).padStart(2, '0')} <span className="text-xs text-zinc-400">วิ.</span>
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-0.5">
+                                เป้าหมายขั้นต่ำ
+                              </span>
+                              <span className="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-md inline-block">
+                                {Number(activeStudyUnit.studyMinutes)} นาที
+                              </span>
+                            </div>
                           </div>
-                          {/* Minimum time marker */}
-                          <div
-                            className="absolute top-0 bottom-0 w-1 bg-zinc-900/20 dark:bg-zinc-100/30 shadow-[0_0_5px_rgba(0,0,0,0.5)] z-10"
-                            style={{
-                              left: `${(Number(activeStudyUnit.studyMinutes) / (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes))) * 100}%`,
-                            }}
-                          />
-                        </div>
-                        <div className="mt-2 text-[9px] sm:text-[10px] text-center font-bold text-zinc-400">
-                          เป้าหมายสูงสุด: {Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)} นาที
+                          
+                          <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-2.5 rounded-full overflow-hidden relative shadow-inner">
+                            <div
+                              className={`h-full transition-all duration-1000 relative ${isStudyCompleted ? "bg-linear-to-r from-emerald-400 to-emerald-500" : isMinimumTimeReached ? "bg-linear-to-r from-teal-400 to-emerald-500" : "bg-linear-to-r from-blue-400 to-indigo-500"}`}
+                              style={{ width: `${Math.min(100, (studySecondsElapsed / ((Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)) * 60)) * 100)}%` }}
+                            >
+                              {!isStudyCompleted && (
+                                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-size-[1rem_1rem] animate-[progress_1s_linear_infinite]" />
+                              )}
+                            </div>
+                            {/* Minimum time marker */}
+                            <div
+                              className="absolute top-0 bottom-0 w-0.5 bg-zinc-900/30 dark:bg-zinc-100/40 z-10"
+                              style={{ left: `${(Number(activeStudyUnit.studyMinutes) / (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes))) * 100}%` }}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2175,12 +2271,12 @@ export function DVEStudentPortal() {
                                 </div>
                                 <button
                                   type="button"
-                                  disabled={isQuizSubmitted}
-                                  className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-1.5 transition-all shadow-sm border-0 ${isQuizSubmitted
-                                    ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed select-none"
-                                    : isMinimumTimeReached
-                                      ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
-                                      : "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-650 cursor-not-allowed"
+                                  disabled={isQuizSubmitted || !isMinimumTimeReached}
+                                  className={`px-4 py-2 text-xs font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-300 border shadow-sm ${isQuizSubmitted
+                                    ? "bg-zinc-100 text-zinc-400 border-zinc-200 dark:bg-zinc-900/50 dark:text-zinc-600 dark:border-zinc-800 cursor-not-allowed select-none"
+                                    : !isMinimumTimeReached
+                                      ? "bg-zinc-50 text-zinc-400 border-zinc-200 dark:bg-zinc-800/50 dark:text-zinc-500 dark:border-zinc-700 cursor-not-allowed opacity-80"
+                                      : "bg-linear-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 border-transparent text-white cursor-pointer hover:-translate-y-0.5 shadow-teal-500/25 hover:shadow-lg group"
                                     }`}
                                   onClick={() => {
                                     if (isQuizSubmitted) return;
@@ -2195,8 +2291,15 @@ export function DVEStudentPortal() {
                                 >
                                   {isQuizSubmitted ? (
                                     <>
-                                      <CheckCircle size={12} className="text-emerald-500" />
+                                      <CheckCircle size={14} className="text-emerald-500" />
                                       ทำแบบทดสอบแล้ว
+                                    </>
+                                  ) : !isMinimumTimeReached ? (
+                                    <>
+                                      <span className="flex items-center gap-1">
+                                        <Lock size={12} />
+                                        รอเวลาครบกำหนด
+                                      </span>
                                     </>
                                   ) : (
                                     <>
@@ -2204,9 +2307,9 @@ export function DVEStudentPortal() {
                                         ? "เริ่มทำข้อสอบท้ายบทเรียน"
                                         : "เริ่มทำแบบทดสอบประเมิน"}
                                       {quiz.isBuiltIn ? (
-                                        <ArrowRight size={12} />
+                                        <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
                                       ) : (
-                                        <ExternalLink size={12} />
+                                        <ExternalLink size={14} className="group-hover:translate-x-0.5 transition-transform" />
                                       )}
                                     </>
                                   )}
