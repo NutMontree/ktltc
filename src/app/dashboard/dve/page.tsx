@@ -4563,12 +4563,14 @@ function DVETeacherWorkspace() {
                           วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
                         </label>
                         <DatePicker
-                          format="DD/MM/YYYY"
-                          placeholder="วว/ดด/ปปปป"
+                          showTime
+                          format="DD/MM/YYYY HH:mm"
+                          placeholder="เลือกวันและเวลา (วว/ดด/ปปปป ชม:นที)"
+                          getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}
                           className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                           value={quizForm.startDate ? dayjs(quizForm.startDate) : null}
                           onChange={(date) =>
-                            setQuizForm((prev) => ({ ...prev, startDate: date ? date.format("YYYY-MM-DD") : "" }))
+                            setQuizForm((prev) => ({ ...prev, startDate: date ? date.format("YYYY-MM-DD HH:mm:ss") : "" }))
                           }
                         />
                       </div>
@@ -4577,12 +4579,14 @@ function DVETeacherWorkspace() {
                           วันหมดเขตส่งกระดาษคำตอบ (Deadline)
                         </label>
                         <DatePicker
-                          format="DD/MM/YYYY"
-                          placeholder="วว/ดด/ปปปป"
+                          showTime
+                          format="DD/MM/YYYY HH:mm"
+                          placeholder="เลือกวันและเวลา (วว/ดด/ปปปป ชม:นที)"
+                          getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}
                           className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
                           value={quizForm.deadline ? dayjs(quizForm.deadline) : null}
                           onChange={(date) =>
-                            setQuizForm((prev) => ({ ...prev, deadline: date ? date.format("YYYY-MM-DD") : "" }))
+                            setQuizForm((prev) => ({ ...prev, deadline: date ? date.format("YYYY-MM-DD HH:mm:ss") : "" }))
                           }
                         />
                       </div>
@@ -4785,6 +4789,53 @@ function DVETeacherWorkspace() {
                                     }}
                                     className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold shadow-sm"
                                   />
+
+                                  <div className="flex flex-col gap-1 mt-2">
+                                    <div className="flex items-center gap-2">
+                                      {q.image ? (
+                                        <div className="relative">
+                                          <img src={q.image} alt="Question" className="h-20 w-auto object-cover rounded-lg border border-zinc-200 dark:border-zinc-800" />
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const updated = [...quizForm.questions];
+                                              updated[qIdx].image = "";
+                                              setQuizForm((prev) => ({ ...prev, questions: updated }));
+                                            }}
+                                            className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full p-0.5"
+                                          >
+                                            <X size={10} />
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <label className="flex items-center justify-center h-8 px-3 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                              const file = e.target.files?.[0];
+                                              if (!file) return;
+                                              
+                                              message.loading({ content: "กำลังอัปโหลดรูปภาพ...", key: "uploadingImage" });
+                                              const { secure_url } = await uploadFile(file, "dve_quiz");
+                                              if (secure_url) {
+                                                const updated = [...quizForm.questions];
+                                                updated[qIdx].image = secure_url;
+                                                setQuizForm((prev) => ({ ...prev, questions: updated }));
+                                                message.success({ content: "อัปโหลดรูปภาพสำเร็จ!", key: "uploadingImage" });
+                                              } else {
+                                                message.error({ content: "เกิดข้อผิดพลาดในการอัปโหลด", key: "uploadingImage" });
+                                              }
+                                            }}
+                                          />
+                                          <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-500">
+                                            <ImageIcon size={14} /> เพิ่มรูปภาพประกอบ (ตัวเลือก)
+                                          </div>
+                                        </label>
+                                      )}
+                                    </div>
+                                  </div>
 
                                   <div className="grid grid-cols-2 gap-2 mt-2">
                                     <div className="flex flex-col gap-1">
