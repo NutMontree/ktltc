@@ -147,28 +147,45 @@ export default function SpeedTest() {
     ip: "Detecting...",
     isp: "Detecting...",
     location: "Detecting...",
-    server: "NT Bangrak",
+    server: "KTLTC Server",
   });
 
   // Fetch real user connection details on mount
   useEffect(() => {
-    fetch("https://ipapi.co/json/")
+    // Try ipwho.is first (free, no rate limit, no API key needed, has CORS)
+    fetch("https://ipwho.is/")
       .then((res) => res.json())
       .then((data) => {
-        setUserInfo({
-          ip: data.ip,
-          isp: data.org || "Unknown ISP",
-          location: `${data.city}, ${data.region}`,
-          server: "NT Bangrak", // Standard server in Bangkok
-        });
+        if (data.success) {
+          setUserInfo({
+            ip: data.ip,
+            isp: data.connection.isp || data.connection.org || "Unknown ISP",
+            location: `${data.city}, ${data.region}`,
+            server: "KTLTC Server",
+          });
+        } else {
+          throw new Error("Fallback to ipapi");
+        }
       })
       .catch(() => {
-        setUserInfo({
-          ip: "1.4.196.225",
-          isp: "TOT",
-          location: "Bangkok, Thailand",
-          server: "NT Bangrak",
-        });
+        fetch("https://ipapi.co/json/")
+          .then((res) => res.json())
+          .then((data) => {
+            setUserInfo({
+              ip: data.ip,
+              isp: data.org || "Unknown ISP",
+              location: `${data.city}, ${data.region}`,
+              server: "KTLTC Server",
+            });
+          })
+          .catch(() => {
+            setUserInfo({
+              ip: "Unknown IP",
+              isp: "Unknown ISP",
+              location: "Unknown Location",
+              server: "KTLTC Server",
+            });
+          });
       });
   }, []);
 
@@ -204,70 +221,96 @@ export default function SpeedTest() {
 
     // 2. Real Download phase
     setPhase("download");
-    const downloadSize = 15 * 1024 * 1024; // 15MB (Optimize for Vercel-safe bandwidth)
+    const downloadDuration = 5000; // 5 seconds
     const startD = performance.now();
-    let loaded = 0;
+    let totalLoadedD = 0;
+    let currentD = 0;
 
-    try {
-      const response = await fetch(`/api/speedtest?size=${downloadSize}`, {
-        cache: "no-store",
-        mode: "cors",
-      });
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("No body");
+    // Fetch in a loop until 5 seconds have passed
+    while (performance.now() - startD < downloadDuration) {
+      try {
+        const response = await fetch(`/api/speedtest?size=${20 * 1024 * 1024}`, {
+          cache: "no-store",
+          mode: "cors",
+        });
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error("No body");
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        loaded += value.length;
-        const now = performance.now();
-        const duration = (now - startD) / 1000;
-        const speedMbps = (loaded * 8) / (duration * 1e6);
-        setCurrentDisplaySpeed(speedMbps);
+        while (performance.now() - startD < downloadDuration) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          totalLoadedD += value.length;
+          const now = performance.now();
+          const duration = (now - startD) / 1000;
+          if (duration > 0.1) {
+            const speedMbps = (totalLoadedD * 8) / (duration * 1e6);
+            setCurrentDisplaySpeed(speedMbps);
+            currentD = speedMbps;
+          }
+        }
+        
+        // Cancel the stream if time is up
+        if (performance.now() - startD >= downloadDuration) {
+          reader.cancel();
+          break;
+        }
+      } catch (e) {
+        console.error(e);
+        break;
       }
-    } catch (e) {
-      console.error(e);
     }
 
-    const finalDTime = (performance.now() - startD) / 1000;
-    const finalDSpeed = (downloadSize * 8) / (finalDTime * 1e6);
-    setCurrentDisplaySpeed(finalDSpeed);
     setMetrics((prev) => ({
       ...prev,
-      download: Number(finalDSpeed.toFixed(1)),
+      download: Number(currentD.toFixed(1)),
     }));
 
     // 3. Real Upload phase
     setPhase("upload");
     setCurrentDisplaySpeed(0);
 
-    const uploadSize = 4 * 1024 * 1024; // 4MB (Stay under Vercel's 4.5MB Payload Limit)
-    const dummyData = new Uint8Array(uploadSize);
+    const uploadDuration = 5000; // 5 seconds
+    const uploadChunkSize = 2 * 1024 * 1024; // 2MB chunks
+    const dummyData = new Uint8Array(uploadChunkSize);
     const startU = performance.now();
+    let totalLoadedU = 0;
+    let currentU = 0;
 
-    // Use XMLHttpRequest for real progress monitoring
-    await new Promise<void>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "/api/speedtest");
+    // Worker function for parallel uploading
+    const runUploadWorker = async () => {
+      while (performance.now() - startU < uploadDuration) {
+        await new Promise<void>((resolve) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", "/api/speedtest");
+          
+          let lastLoaded = 0;
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const delta = e.loaded - lastLoaded;
+              lastLoaded = e.loaded;
+              totalLoadedU += delta;
+              
+              const now = performance.now();
+              const duration = (now - startU) / 1000;
+              if (duration > 0.1) {
+                const speedMbps = (totalLoadedU * 8) / (duration * 1e6);
+                setCurrentDisplaySpeed(speedMbps);
+                currentU = speedMbps;
+              }
+            }
+          };
 
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) {
-          const now = performance.now();
-          const duration = (now - startU) / 1000;
-          const speedMbps = (e.loaded * 8) / (duration * 1e6);
-          setCurrentDisplaySpeed(speedMbps);
-        }
-      };
+          xhr.onload = () => resolve();
+          xhr.onerror = () => resolve();
+          xhr.send(dummyData);
+        });
+      }
+    };
 
-      xhr.onload = () => resolve();
-      xhr.onerror = () => reject();
-      xhr.send(dummyData);
-    });
+    // Run 2 parallel connections to saturate upstream bandwidth
+    await Promise.all([runUploadWorker(), runUploadWorker()]);
 
-    const finalUTime = (performance.now() - startU) / 1000;
-    const finalUSpeed = (uploadSize * 8) / (finalUTime * 1e6);
-    setCurrentDisplaySpeed(finalUSpeed);
-    setMetrics((prev) => ({ ...prev, upload: Number(finalUSpeed.toFixed(1)) }));
+    setMetrics((prev) => ({ ...prev, upload: Number(currentU.toFixed(1)) }));
 
     setPhase("finished");
     setCurrentDisplaySpeed(0);
