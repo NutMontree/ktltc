@@ -135,7 +135,7 @@ const callbacks: NextAuthConfig["callbacks"] = {
           !pathname.startsWith("/dashboard/flagpole-dashboard") &&
           !pathname.startsWith("/dashboard/notifications")
         ) {
-          return Response.redirect(new URL("/", nextUrl));
+          return Response.redirect(new URL("/dashboard", nextUrl));
         }
       }
 
@@ -176,7 +176,7 @@ const callbacks: NextAuthConfig["callbacks"] = {
             ) {
               return Response.redirect(new URL(callbackUrl, nextUrl));
             }
-            return Response.redirect(new URL("/", nextUrl));
+            return Response.redirect(new URL("/dashboard", nextUrl));
           }
           // สิทธิ์ปกติ (user) ไม่ควรเข้าหน้าควบคุมระบบ (Dashboard/Admin) ยกเว้นหน้าแรกแดชบอร์ด, หน้าภาพรวมเสาธง, หน้าโปรไฟล์, หน้าแชท, หน้าสมาชิก และหน้าทวิภาคี
           if (
@@ -193,18 +193,12 @@ const callbacks: NextAuthConfig["callbacks"] = {
               callbackUrl.startsWith("/manage-roles") ||
               callbackUrl.startsWith("/attendance-"))
           ) {
-            return Response.redirect(new URL("/", nextUrl));
+            return Response.redirect(new URL("/dashboard", nextUrl));
           }
           return Response.redirect(new URL(callbackUrl, nextUrl));
         }
 
-        if (role === "student") {
-          return Response.redirect(new URL("/", nextUrl));
-        } else if (role === "user") {
-          return Response.redirect(new URL("/", nextUrl));
-        } else {
-          return Response.redirect(new URL("/", nextUrl));
-        }
+        return Response.redirect(new URL("/dashboard", nextUrl));
       }
     }
 

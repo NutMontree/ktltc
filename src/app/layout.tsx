@@ -18,7 +18,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import NavbarSkeleton from "@/components/NavbarSkeleton";
 import { Suspense } from "react";
-import { SessionProvider } from "next-auth/react";
+import NextAuthProvider from "@/providers/NextAuthProvider";
 import ScrollUp from "@/components/Common/ScrollUp";
 import ScrollToTop from "@/components/Common/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
@@ -101,7 +101,7 @@ export default async function RootLayout({
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
       <body className={`${prompt.className} ${prompt.variable} antialiased`} suppressHydrationWarning={true}>
         <AntdRegistry>
-          <SessionProvider
+          <NextAuthProvider
             refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
             refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
           >
@@ -150,7 +150,7 @@ export default async function RootLayout({
               </Suspense> */}
               <Footer />
             </ThemeProvider>
-          </SessionProvider>
+          </NextAuthProvider>
         </AntdRegistry>
       </body>
     </html>

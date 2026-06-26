@@ -105,31 +105,11 @@ export default function LoginPage() {
           retries--;
         }
 
-        // 3. นำทางผู้ใช้งานไปยังหน้าปลายทางที่ถูกต้องตามสิทธิ์และ callbackUrl (ใช้ window.location.href เพื่อบังคับให้ระบบรีเฟรช 1 ครั้งเพื่อแก้ไขปัญหาเซสชัน)
-        if (role === "student") {
-          if (callbackUrl && callbackUrl.startsWith("/student")) {
-            window.location.href = callbackUrl;
-          } else {
-            window.location.href = "/student/flagpole";
-          }
-        } else if (["super_admin", "admin"].includes(role)) {
-          if (callbackUrl && !callbackUrl.startsWith("/login")) {
-            window.location.href = callbackUrl;
-          } else {
-            window.location.href = "/dashboard";
-          }
+        // 3. นำทางผู้ใช้งานไปยังหน้าปลายทาง (ใช้ window.location.href เพื่อบังคับให้ระบบรีเฟรช 1 ครั้งเพื่อแก้ไขปัญหาเซสชัน)
+        if (callbackUrl && !callbackUrl.startsWith("/login")) {
+          window.location.href = callbackUrl;
         } else {
-          // สิทธิ์ปกติ (user)
-          if (
-            callbackUrl &&
-            !callbackUrl.startsWith("/dashboard") &&
-            !callbackUrl.startsWith("/manage-roles") &&
-            !callbackUrl.startsWith("/attendance-")
-          ) {
-            window.location.href = callbackUrl;
-          } else {
-            window.location.href = "/";
-          }
+          window.location.href = "/dashboard";
         }
       }
     } catch (err) {

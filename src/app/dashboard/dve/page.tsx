@@ -96,27 +96,20 @@ function formatExtractedScoreMessage(extracted: DveExtractScoreResult | null): s
 function formatThaiDateDisplay(dateString?: string) {
   if (!dateString) return "-";
   try {
-    const [datePart, timePart] = dateString.split(" ");
-    const dateParts = datePart.split("-");
-    if (dateParts.length !== 3) return dateString;
-    const [year, month, day] = dateParts;
-    
-    let hours = 0, minutes = 0, seconds = 0;
-    if (timePart) {
-      const timeParts = timePart.split(":");
-      hours = Number(timeParts[0]) || 0;
-      minutes = Number(timeParts[1]) || 0;
-      seconds = Number(timeParts[2]) || 0;
+    let dateStr = dateString;
+    if (dateStr.includes(" ") && !dateStr.includes("T")) {
+      dateStr = dateStr.replace(" ", "T");
     }
-    
-    const date = new Date(Number(year), Number(month) - 1, Number(day), hours, minutes, seconds);
+    const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateString;
-    
+
+    const hasTime = dateString.includes(":") || dateString.includes("T");
+
     return date.toLocaleDateString("th-TH", {
       day: "numeric",
       month: "long",
       year: "numeric",
-      ...(timePart && { hour: "2-digit", minute: "2-digit" })
+      ...(hasTime && { hour: "2-digit", minute: "2-digit" })
     });
   } catch {
     return dateString;
@@ -4030,11 +4023,11 @@ function DVETeacherWorkspace() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full h-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-y-auto text-left"
+              className="relative w-full h-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl text-left flex flex-col"
             >
-              <form onSubmit={handleSaveUnit}>
+              <form onSubmit={handleSaveUnit} className="flex flex-col h-full w-full">
                 {/* Header */}
-                <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900">
+                <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-linear-to-tr from-teal-500 to-blue-650 text-white rounded-2xl shadow-md shadow-blue-500/20">
                       <BookOpen size={20} />
@@ -4058,7 +4051,7 @@ function DVETeacherWorkspace() {
                 </div>
 
                 {/* Body Content */}
-                <div className="p-3 sm:p-6 space-y-6 max-h-[70vh] overflow-y-auto px-2">
+                <div className="p-3 sm:p-6 space-y-6 flex-1 overflow-y-auto min-h-0 px-2">
                   {/* Card 1: ข้อมูลหลัก */}
                   <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-4 shadow-sm">
                     <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
@@ -4152,7 +4145,7 @@ function DVETeacherWorkspace() {
                         วันกำหนดส่งของหน่วยเรียน
                       </label>
                       <input
-                        type="date"
+                        type="datetime-local"
                         className="w-full h-9 border border-rose-200 dark:border-rose-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-rose-600 dark:text-rose-400 focus:outline-hidden"
                         value={unitForm.dueDate}
                         onChange={(e) =>
@@ -4386,7 +4379,7 @@ function DVETeacherWorkspace() {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="px-4 py-4 sm:px-6 bg-zinc-50 dark:bg-zinc-900/50 flex justify-end gap-2.5 border-t border-zinc-150 dark:border-zinc-800">
+                <div className="px-4 py-4 sm:px-6 bg-zinc-50 dark:bg-zinc-900/50 flex justify-end gap-2.5 border-t border-zinc-150 dark:border-zinc-800 shrink-0">
                   <button
                     type="button"
                     onClick={() => setIsUnitModalOpen(false)}
@@ -4426,9 +4419,9 @@ function DVETeacherWorkspace() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl overflow-y-auto text-left"
+              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl text-left flex flex-col"
             >
-              <form onSubmit={handleSaveQuiz}>
+              <form onSubmit={handleSaveQuiz} className="flex flex-col h-full w-full">
                 <div className="shrink-0 px-8 py-6 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center bg-linear-to-r from-emerald-500/10 to-teal-500/5 dark:from-emerald-500/20 dark:to-teal-500/10 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
                   <div className="flex items-center gap-4 relative z-10">
@@ -4450,7 +4443,7 @@ function DVETeacherWorkspace() {
                   </button>
                 </div>
 
-                <div className="p-2 space-y-6 max-h-[75vh] overflow-y-auto bg-zinc-50/30 dark:bg-zinc-950/30">
+                <div className="p-2 space-y-6 flex-1 overflow-y-auto min-h-0 bg-zinc-50/30 dark:bg-zinc-950/30">
                   {/* Section 1: ข้อมูลทั่วไป (General Information) */}
                   <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 pace-y-4 shadow-sm">
                     <div className="flex items-center gap-2 border-b dark:border-zinc-800 pb-3 mb-2">
@@ -4593,15 +4586,12 @@ function DVETeacherWorkspace() {
                         <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                           วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
                         </label>
-                        <DatePicker
-                          showTime
-                          format="DD/MM/YYYY HH:mm"
-                          placeholder="เลือกวันและเวลา (วว/ดด/ปปปป ชม:นที)"
-                          getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}
+                        <input
+                          type="datetime-local"
                           className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
-                          value={quizForm.startDate ? dayjs(quizForm.startDate) : null}
-                          onChange={(date) =>
-                            setQuizForm((prev) => ({ ...prev, startDate: date ? date.format("YYYY-MM-DD HH:mm:ss") : "" }))
+                          value={quizForm.startDate}
+                          onChange={(e) =>
+                            setQuizForm((prev) => ({ ...prev, startDate: e.target.value }))
                           }
                         />
                       </div>
@@ -4609,15 +4599,12 @@ function DVETeacherWorkspace() {
                         <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                           วันหมดเขตส่งกระดาษคำตอบ (Deadline)
                         </label>
-                        <DatePicker
-                          showTime
-                          format="DD/MM/YYYY HH:mm"
-                          placeholder="เลือกวันและเวลา (วว/ดด/ปปปป ชม:นที)"
-                          getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}
+                        <input
+                          type="datetime-local"
                           className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
-                          value={quizForm.deadline ? dayjs(quizForm.deadline) : null}
-                          onChange={(date) =>
-                            setQuizForm((prev) => ({ ...prev, deadline: date ? date.format("YYYY-MM-DD HH:mm:ss") : "" }))
+                          value={quizForm.deadline}
+                          onChange={(e) =>
+                            setQuizForm((prev) => ({ ...prev, deadline: e.target.value }))
                           }
                         />
                       </div>
@@ -5531,9 +5518,9 @@ function DVETeacherWorkspace() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl overflow-y-auto text-left"
+              className="relative w-full h-full bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl text-left flex flex-col"
             >
-              <div className="px-6 py-5 border-b dark:border-zinc-800 flex justify-between items-center bg-linear-to-r from-teal-500/10 to-emerald-500/5 dark:from-teal-500/20 dark:to-emerald-500/10 relative overflow-hidden">
+              <div className="px-6 py-5 border-b dark:border-zinc-800 flex justify-between items-center bg-linear-to-r from-teal-500/10 to-emerald-500/5 dark:from-teal-500/20 dark:to-emerald-500/10 relative overflow-hidden shrink-0">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
                 <div className="space-y-1 relative z-10">
                   <h3 className="text-lg font-black text-teal-800 dark:text-teal-200 flex items-center gap-2">
@@ -5553,7 +5540,7 @@ function DVETeacherWorkspace() {
                 </button>
               </div>
 
-              <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+              <div className="p-6 space-y-5 flex-1 overflow-y-auto min-h-0">
                 {/* 1. Status Check-in */}
                 <div className="space-y-2">
                   <label className="text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">
@@ -5743,7 +5730,7 @@ function DVETeacherWorkspace() {
                 )}
               </div>
 
-              <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-900/80 flex justify-end gap-3 border-t dark:border-zinc-800">
+              <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-900/80 flex justify-end gap-3 border-t dark:border-zinc-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditingStudent(null)}

@@ -84,27 +84,20 @@ function formatExtractedScoreMessage(extracted: DveExtractScoreResult | null): s
 function formatThaiDateDisplay(dateString?: string) {
   if (!dateString) return "-";
   try {
-    const [datePart, timePart] = dateString.split(" ");
-    const dateParts = datePart.split("-");
-    if (dateParts.length !== 3) return dateString;
-    const [year, month, day] = dateParts;
-    
-    let hours = 0, minutes = 0, seconds = 0;
-    if (timePart) {
-      const timeParts = timePart.split(":");
-      hours = Number(timeParts[0]) || 0;
-      minutes = Number(timeParts[1]) || 0;
-      seconds = Number(timeParts[2]) || 0;
+    let dateStr = dateString;
+    if (dateStr.includes(" ") && !dateStr.includes("T")) {
+      dateStr = dateStr.replace(" ", "T");
     }
-    
-    const date = new Date(Number(year), Number(month) - 1, Number(day), hours, minutes, seconds);
+    const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateString;
-    
+
+    const hasTime = dateString.includes(":") || dateString.includes("T");
+
     return date.toLocaleDateString("th-TH", {
       day: "numeric",
       month: "long",
       year: "numeric",
-      ...(timePart && { hour: "2-digit", minute: "2-digit" })
+      ...(hasTime && { hour: "2-digit", minute: "2-digit" })
     });
   } catch {
     return dateString;
@@ -870,12 +863,12 @@ export function DVEStudentPortal() {
           const now = new Date();
           const filteredQuizzes = (quizzesData.quizzes || []).filter((q: any) => {
             if (!q.startDate) return true;
-            const [datePart, timePart] = q.startDate.split(" ");
-            const dateParts = datePart.split("-");
-            if (dateParts.length !== 3) return true;
-            const [y, m, d] = dateParts;
-            const timeParts = timePart ? timePart.split(":") : ["0", "0", "0"];
-            const start = new Date(Number(y), Number(m) - 1, Number(d), Number(timeParts[0]), Number(timeParts[1]), Number(timeParts[2] || "0"));
+            let dateStr = q.startDate;
+            if (dateStr.includes(" ") && !dateStr.includes("T")) {
+              dateStr = dateStr.replace(" ", "T");
+            }
+            const start = new Date(dateStr);
+            if (isNaN(start.getTime())) return true;
             return now >= start;
           });
           setQuizzes(filteredQuizzes);
@@ -1859,10 +1852,10 @@ export function DVEStudentPortal() {
               initial={{ scale: 0.95, y: 30 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 30 }}
-              className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 w-full h-full overflow-y-auto shadow-2xl relative"
+              className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 w-full h-full flex flex-col shadow-2xl relative"
             >
               {/* Header Banner */}
-              <div className="bg-linear-to-br from-emerald-500 to-teal-600 text-white p-6 relative">
+              <div className="bg-linear-to-br from-emerald-500 to-teal-600 text-white p-6 relative shrink-0">
                 <button
                   onClick={() => {
                     if (Number(activeStudyUnit.studyMinutes) > 0 && !isStudyCompleted) {
@@ -1907,7 +1900,7 @@ export function DVEStudentPortal() {
               </div>
 
               {/* Study Area content */}
-              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[60vh] overflow-y-auto">
+              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 flex-1 overflow-y-auto">
                 {/* ⏱️ TIMER BANNER */}
                 {Number(activeStudyUnit.studyMinutes) > 0 && (
                   <div
@@ -2231,7 +2224,7 @@ export function DVEStudentPortal() {
               </div>
 
               {/* Close Button / Bottom Bar */}
-              <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end border-t dark:border-zinc-800">
+              <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end border-t dark:border-zinc-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -2288,9 +2281,9 @@ export function DVEStudentPortal() {
               className="relative w-full h-full bg-[#f0ebf8] dark:bg-zinc-900 shadow-2xl overflow-y-auto text-left flex flex-col border dark:border-zinc-800"
             >
               {/* iconic Google Forms top purple bar */}
-              <div className="h-2.5 w-full bg-[#673ab7]" />
+              <div className="h-2.5 w-full bg-[#673ab7] shrink-0" />
 
-              <div className="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
+              <div className="p-4 md:p-6 space-y-4 max-w-3xl mx-auto w-full pb-24">
                 {!quizResult ? (
                   <>
                     {/* Header Card */}
@@ -2495,7 +2488,7 @@ export function DVEStudentPortal() {
                       <h3 className="text-xs font-black text-zinc-500 dark:text-zinc-400 block">
                         แผ่นตรวจคำตอบของคุณ:
                       </h3>
-                      <div className="space-y-3 max-h-[30vh] overflow-y-auto pr-1">
+                      <div className="space-y-3">
                         {(activeQuiz.questions || []).map((q: any, qIdx: number) => {
                           const studentAnsObj = quizAnswers.find(
                             (a) => String(a.questionId) === String(q.id),
