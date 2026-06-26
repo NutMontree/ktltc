@@ -4,7 +4,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 10; // Revalidate every 10 seconds (attendances change frequently)
+export const revalidate = 0; // Disable cache for attendances
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 

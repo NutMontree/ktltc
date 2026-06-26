@@ -512,9 +512,6 @@ export function DVEStudentPortal() {
       const alreadyCompletedAnyDay = attendances.some(
         (a) => a.unitId === currentUnitId && (a.status === "Present" || a.status === "Late")
       );
-      if (alreadyCompletedAnyDay) {
-        return; // Prevent duplicate check-in if already completed
-      }
 
       // Find if we have an existing check-in record for today
       const existingToday = attendances.find(
@@ -525,7 +522,7 @@ export function DVEStudentPortal() {
 
       // Determine correct status
       let currentStatus = "Studying";
-      if (isFinished) {
+      if (isFinished || alreadyCompletedAnyDay) {
         currentStatus = resolveUnitCheckinStatus(unitToCheck, todayStr);
       } else {
         const studyLimitSeconds = (Number(unitToCheck.studyMinutes) || 0) * 60;
@@ -582,7 +579,7 @@ export function DVEStudentPortal() {
       });
 
       if (res.ok) {
-        const attRes = await fetch(`/api/dve/attendances?subjectId=${activeSubject.id}`);
+        const attRes = await fetch(`/api/dve/attendances?subjectId=${activeSubject.id}`, { cache: "no-store" });
         if (attRes.ok) {
           const attData = await attRes.json();
           if (attData.success) setAttendances(attData.attendances || []);
@@ -734,9 +731,9 @@ export function DVEStudentPortal() {
         const nextVal = prev + 1;
 
         // Sync progress to backend every 60 seconds so teachers can see live updates
-        if (nextVal > 0 && nextVal % 60 === 0) {
-          handleSaveStudyProgress(nextVal);
-        }
+        // if (nextVal > 0 && nextVal % 60 === 0) {
+        //   handleSaveStudyProgress(nextVal);
+        // }
 
         // Check if minimum time is reached (use ref to avoid stale closure)
         if (!isMinimumTimeReachedRef.current && nextVal >= studyLimitSeconds) {
@@ -838,10 +835,10 @@ export function DVEStudentPortal() {
     try {
       setLoadingSubjectData(true);
       // Fetch details
-      const subRes = await fetch(`/api/dve/subjects?id=${subjectId}`);
-      const unitsRes = await fetch(`/api/dve/units?subjectId=${subjectId}`);
-      const quizzesRes = await fetch(`/api/dve/quizzes?subjectId=${subjectId}`);
-      const attRes = await fetch(`/api/dve/attendances?subjectId=${subjectId}`);
+      const subRes = await fetch(`/api/dve/subjects?id=${subjectId}`, { cache: "no-store" });
+      const unitsRes = await fetch(`/api/dve/units?subjectId=${subjectId}`, { cache: "no-store" });
+      const quizzesRes = await fetch(`/api/dve/quizzes?subjectId=${subjectId}`, { cache: "no-store" });
+      const attRes = await fetch(`/api/dve/attendances?subjectId=${subjectId}`, { cache: "no-store" });
 
       if (subRes.ok && unitsRes.ok && quizzesRes.ok && attRes.ok) {
         const subData = await subRes.json();
