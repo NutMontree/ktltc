@@ -53,12 +53,12 @@ const planningJobs = [
     actions: [
       {
         label: "Ktltc Plan",
-        href: "https://ktltcp.vercel.app/",
+        href: "/pdca",
         icon: <LinkOutlined />,
       },
       {
         label: "แบบฟอร์ม PDCA",
-        href: "/pdca",
+        href: "/pdca-docs",
         icon: <FileTextOutlined />,
       },
       {
