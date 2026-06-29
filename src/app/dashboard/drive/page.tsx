@@ -40,41 +40,28 @@ import {
 } from "lucide-react";
 import { uploadFile } from "@/lib/upload";
 import { motion, AnimatePresence } from "framer-motion";
-import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, DragStartEvent, DragEndEvent, closestCenter } from "@dnd-kit/core";
+
 import { SelectionArea, SelectionEvent } from "@viselect/react";
 
 function DnDFolderWrapper({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
-  const { setNodeRef: setDropRef, isOver } = useDroppable({ id });
-  const { setNodeRef: setDragRef, attributes, listeners, transform, isDragging } = useDraggable({ id, data: { type: 'folder' } });
-  
-  const setNodeRef = (node: HTMLElement | null) => {
-    setDropRef(node);
-    setDragRef(node);
-  };
-  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 50, position: 'relative' as any } : undefined;
-
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes} data-selectable="true" data-id={id} className={`selectable-item ${className || ''} ${isDragging ? 'opacity-40 z-50' : ''} ${isOver ? 'ring-4 ring-blue-500 rounded-[24px] bg-blue-50/20' : ''}`}>
+    <div data-selectable="true" data-id={id} className={`selectable-item ${className || ''}`}>
       {children}
     </div>
   );
 }
 
 function DnDFileWrapper({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
-  const { setNodeRef, attributes, listeners, transform, isDragging } = useDraggable({ id, data: { type: 'file' } });
-  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 50, position: 'relative' as any } : undefined;
-
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes} data-selectable="true" data-id={id} className={`selectable-item ${className || ''} ${isDragging ? 'opacity-40 z-50' : ''}`}>
+    <div data-selectable="true" data-id={id} className={`selectable-item ${className || ''}`}>
       {children}
     </div>
   );
 }
 
 function DroppableBreadcrumb({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
-  const { isOver, setNodeRef } = useDroppable({ id });
   return (
-    <div ref={setNodeRef} className={`${className || ''} ${isOver ? 'ring-2 ring-blue-500 bg-blue-50/50 rounded-lg' : ''}`}>
+    <div className={`${className || ''}`}>
       {children}
     </div>
   );
@@ -438,32 +425,7 @@ function DriveContent() {
     }
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-    
-    if (active.id === over.id) return;
-
-    const targetId = over.id === "root" ? "null" : String(over.id);
-    
-    if (selectedIds.has(String(active.id))) {
-      moveItem(targetId);
-    } else {
-      const activeItem = [...folders, ...files].find(i => i._id === active.id);
-      if (activeItem) {
-        const type = (activeItem as any).url ? "file" : "folder";
-        moveItem(targetId, String(active.id), type);
-      }
-    }
-  };
 
   const handleSelectionChange = (e: SelectionEvent) => {
     const {
@@ -799,7 +761,6 @@ function DriveContent() {
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
     <SelectionArea
       className="mx-auto max-w-[1600px] px-2 pt-28 pb-10 lg:pt-32 animate-in fade-in duration-700 min-h-screen"
       onStart={handleSelectionChange}
@@ -1707,6 +1668,5 @@ function DriveContent() {
         )}
       </AnimatePresence>
     </SelectionArea>
-    </DndContext>
   );
 }
