@@ -62,6 +62,11 @@ async function createIndexes(promise: Promise<MongoClient>) {
     await db.collection("leave_requests").createIndex({ userId: 1 });
     await db.collection("leave_requests").createIndex({ startDate: -1 });
 
+    // 6. Index สำหรับ Election System
+    await db.collection("elections").createIndex({ status: 1 });
+    await db.collection("candidates").createIndex({ electionId: 1 });
+    await db.collection("votes").createIndex({ electionId: 1, userId: 1 }, { unique: true });
+
     console.log("✅ [MongoDB] Indexes created/verified successfully");
   } catch (error) {
     console.error("❌ [MongoDB] Index creation error:", error);
