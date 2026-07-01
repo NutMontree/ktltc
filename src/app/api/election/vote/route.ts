@@ -3,22 +3,18 @@ import clientPromise from "@/lib/db";
 import { auth } from "@/auth";
 import { ObjectId } from "mongodb";
 
-// verify student role
-async function verifyStudent() {
+// verify any logged in user
+async function verifyUser() {
   const session = await auth();
   if (!session?.user) return null;
-  const role = String((session.user as any).role || '').toLowerCase().trim();
-  if (role === 'student') {
-    return session.user;
-  }
-  return null;
+  return session.user;
 }
 
 export async function POST(req: Request) {
   try {
-    const student = await verifyStudent();
-    if (!student) {
-      return NextResponse.json({ error: "Unauthorized, student only" }, { status: 401 });
+    const user = await verifyUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized, please login" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -50,9 +46,14 @@ export async function POST(req: Request) {
     }
 
     // Prepare vote
+    const existingVote = await db.collection("votes").findOne({ 
+      electionId: new ObjectId(electionId),
+      userId: new ObjectId(user.id as string)
+    });
+
     const newVote = {
       electionId: new ObjectId(electionId),
-      userId: new ObjectId(student.id as any), // token payload must have userId
+      userId: new ObjectId(user.id as string), 
       candidateId: candidateId ? new ObjectId(candidateId) : null, // null for abstain
       ipAddress: req.headers.get("x-forwarded-for") || "unknown",
       userAgent: req.headers.get("user-agent") || "unknown",

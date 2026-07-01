@@ -3,22 +3,18 @@ import clientPromise from "@/lib/db";
 import { auth } from "@/auth";
 import { ObjectId } from "mongodb";
 
-// verify student role
-async function verifyStudent() {
+// verify any logged in user
+async function verifyUser() {
   const session = await auth();
   if (!session?.user) return null;
-  const role = String((session.user as any).role || '').toLowerCase().trim();
-  if (role === 'student') {
-    return session.user;
-  }
-  return null;
+  return session.user;
 }
 
 export async function GET() {
   try {
-    const student = await verifyStudent();
-    if (!student) {
-      return NextResponse.json({ error: "Unauthorized, student only" }, { status: 401 });
+    const user = await verifyUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized, please login" }, { status: 401 });
     }
 
     const client = await clientPromise;
@@ -45,7 +41,7 @@ export async function GET() {
       activeElections.map(async (election) => {
         const existingVote = await db.collection("votes").findOne({
           electionId: new ObjectId(election._id as any),
-          userId: new ObjectId(student.id as any),
+          userId: new ObjectId(user.id as any),
         });
 
         const candidates = await db
