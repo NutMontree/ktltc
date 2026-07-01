@@ -60,3 +60,4 @@ git reset --hard origin/main
 
 
 https://expo.dev/accounts/allmaster/projects/mobile-app
+https://login.tailscale.com/admin/machines
