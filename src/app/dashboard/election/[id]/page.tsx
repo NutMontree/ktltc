@@ -95,6 +95,8 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
   const router = useRouter();
   const { id } = use(params);
   const [election, setElection] = useState<any>(null);
+  const [editForm, setEditForm] = useState({ title: "", description: "", startDate: "", endDate: "", status: "draft" });
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [candidates, setCandidates] = useState<any[]>([]);
   const [results, setResults] = useState<any[]>([]);
   const [totalEligibleVoters, setTotalEligibleVoters] = useState(0);
@@ -128,7 +130,17 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
         fetch(`/api/election/users`)
       ]);
       
-      if (elecRes.ok) setElection(await elecRes.json());
+      if (elecRes.ok) {
+        const elec = await elecRes.json();
+        setElection(elec);
+        setEditForm({
+          title: elec.title || "",
+          description: elec.description || "",
+          startDate: elec.startDate ? new Date(new Date(elec.startDate).getTime() - new Date(elec.startDate).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "",
+          endDate: elec.endDate ? new Date(new Date(elec.endDate).getTime() - new Date(elec.endDate).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "",
+          status: elec.status || "draft",
+        });
+      }
       if (candRes.ok) setCandidates(await candRes.json());
       if (resultRes.ok) {
         const data = await resultRes.json();
@@ -161,6 +173,28 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
     const interval = setInterval(fetchResultsOnly, 3000); // Real-time poll every 3s
     return () => clearInterval(interval);
   }, [id]);
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingSettings(true);
+    try {
+      const res = await fetch(`/api/election/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm)
+      });
+      if (res.ok) {
+        toast.success("บันทึกการแก้ไขสำเร็จ");
+        fetchData();
+      } else {
+        toast.error("บันทึกไม่สำเร็จ");
+      }
+    } catch(e) {
+      toast.error("เกิดข้อผิดพลาด");
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
 
   const handleUpdateStatus = async (status: string) => {
     try {
@@ -308,7 +342,7 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
         </div>
       </div>
 
-      <div className="flex gap-2 mb-8 bg-gray-100/50 dark:bg-gray-800/50 p-1.5 rounded-2xl w-fit border border-gray-200/50 dark:border-gray-700/50">
+      <div className="flex flex-wrap gap-2 mb-8 bg-gray-100/50 dark:bg-gray-800/50 p-1.5 rounded-2xl w-fit border border-gray-200/50 dark:border-gray-700/50">
         <button 
           className={`px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all ${activeTab === 'candidates' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
           onClick={() => setActiveTab('candidates')}
@@ -320,6 +354,12 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
           onClick={() => setActiveTab('results')}
         >
           <BarChart3 size={18} /> ผลคะแนนโหวต
+        </button>
+        <button 
+          className={`px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all ${activeTab === 'settings' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          <Settings size={18} /> ตั้งค่าการเลือกตั้ง
         </button>
       </div>
 
@@ -640,6 +680,98 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                 );
               })()}
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'settings' && (
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Settings size={20} /> ตั้งค่าการเลือกตั้ง
+            </h2>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl shadow-gray-200/20 mb-6 max-w-3xl">
+            <form onSubmit={handleSaveSettings} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  หัวข้อการเลือกตั้ง <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
+                  placeholder="เช่น เลือกตั้งประธานนักเรียน ปีการศึกษา 2568"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  รายละเอียด (ถ้ามี)
+                </label>
+                <textarea
+                  rows={3}
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    วันและเวลาที่เริ่ม <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={editForm.startDate}
+                    onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    วันและเวลาที่สิ้นสุด <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={editForm.endDate}
+                    onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
+                    className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  สถานะ
+                </label>
+                <select
+                  value={editForm.status}
+                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
+                >
+                  <option value="draft">ฉบับร่าง (ยังไม่เผยแพร่)</option>
+                  <option value="active">เปิดให้โหวต (Active)</option>
+                  <option value="closed">ปิดโหวต (Closed)</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex justify-end border-t dark:border-gray-700 mt-6">
+                <button
+                  type="submit"
+                  disabled={isSavingSettings}
+                  className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 disabled:bg-blue-400 disabled:shadow-none"
+                >
+                  {isSavingSettings ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
