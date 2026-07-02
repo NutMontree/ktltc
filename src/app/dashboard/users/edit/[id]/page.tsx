@@ -342,18 +342,20 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                   </div>
 
                   {/* Active Toggle Button */}
-                  <button
-                    type="button"
-                    onClick={handleToggleActive}
-                    className={`w-full py-3 px-4 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${formData.isActive
-                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
-                      : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20"
-                      }`}
-                  >
-                    {formData.isActive
-                      ? "ระงับสิทธิ์เข้าใช้ระบบ 🔒"
-                      : "เปิดอนุมัติสิทธิ์เข้าใช้งาน 🔓"}
-                  </button>
+                  {(session?.user as any)?.role?.toLowerCase() !== "teacher" && (
+                    <button
+                      type="button"
+                      onClick={handleToggleActive}
+                      className={`w-full py-3 px-4 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border ${formData.isActive
+                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
+                        : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20"
+                        }`}
+                    >
+                      {formData.isActive
+                        ? "ระงับสิทธิ์เข้าใช้ระบบ 🔒"
+                        : "เปิดอนุมัติสิทธิ์เข้าใช้งาน 🔓"}
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-6 pt-5 border-t border-slate-100 dark:border-zinc-800/80 space-y-3.5 text-xs text-slate-500 dark:text-zinc-400">
@@ -402,7 +404,13 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                     icon: Key,
                     color: "text-rose-500",
                   },
-                ].map((tab) => {
+                ].filter(tab => {
+                  const role = (session?.user as any)?.role?.toLowerCase();
+                  if (role === "teacher") {
+                    return tab.id !== "admin" && tab.id !== "security";
+                  }
+                  return true;
+                }).map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
                   return (

@@ -21,9 +21,13 @@ import {
   FileText,
   GraduationCap,
   Building2,
+  Edit,
 } from "lucide-react";
+import Link from "next/link";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import toast from "react-hot-toast";
+
+import PageHelpModal from "@/components/PageHelpModal";
 
 const ALLOWED_ROLES = ["super_admin", "admin", "hr"];
 
@@ -37,6 +41,9 @@ interface ValidationResult {
   academicLevel: string;
   studentStatus: string;
   email: string;
+  phone?: string | null;
+  learnerType?: string | null;
+  image?: string | null;
   hasErrors: boolean;
   errors: string[];
 }
@@ -194,7 +201,7 @@ export default function StudentDataValidationPage() {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/80 dark:bg-zinc-900/90 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-[1600px] mx-auto w-full px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm">
               <ShieldCheck className="w-4 h-4 text-white" />
@@ -208,10 +215,23 @@ export default function StudentDataValidationPage() {
               </p>
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            <PageHelpModal 
+              title="วิธีใช้งานระบบตรวจสอบข้อมูลนักเรียน"
+              description="คู่มือการตรวจสอบและแจ้งเตือนนักเรียน"
+              overview="หน้านี้คือเครื่องมือสำหรับฝ่ายบุคคล (HR) หรือผู้ดูแลระบบ เพื่อใช้ในการตรวจสอบหา 'นักเรียนที่กรอกข้อมูลในระบบไม่ครบถ้วน หรือไม่ถูกต้อง' (Data Validation) โดยสามารถคัดกรองนักเรียนที่มีปัญหา และสั่งส่งการแจ้งเตือน (Notifications) ไปยังนักเรียนเหล่านั้นให้เข้ามาอัปเดตข้อมูลของตนเองได้"
+              steps={[
+                { title: "1. เลือกแผนกวิชา", content: "เลือกแผนกวิชาที่คุณต้องการตรวจสอบจากตัวกรองด้านบน หรือเลือกทั้งหมด" },
+                { title: "2. เริ่มตรวจสอบ", content: "คลิกปุ่ม 'เริ่มตรวจสอบ' เพื่อให้ระบบค้นหานักเรียนที่มีข้อมูลไม่ครบถ้วน (เช่น ขาดรหัสบัตรประชาชน หรือกลุ่มเรียน)" },
+                { title: "3. เลือกนักเรียนที่มีข้อผิดพลาด", content: "เลือกนักเรียนที่ต้องการแจ้งเตือนโดยการติ๊กถูก หรือกด 'เลือกทั้งหมดที่ผิด'" },
+                { title: "4. ส่งแจ้งเตือน", content: "กดปุ่ม 'ส่งแจ้งเตือน' เพื่อให้ระบบส่งการแจ้งเตือนไปยังบัญชีของนักเรียนให้เข้ามาแก้ไขข้อมูลให้ถูกต้อง" }
+              ]}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-[1600px] mx-auto w-full px-4 py-8 space-y-6">
         {/* Filter Panel */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -431,14 +451,35 @@ export default function StudentDataValidationPage() {
                               onChange={() => toggleStudentSelection(student.id)}
                               className="mt-1 w-4 h-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
                             />
+                            {/* Avatar */}
+                            <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 dark:border-zinc-700 shrink-0 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
+                              {student.image ? (
+                                <img
+                                  src={student.image}
+                                  alt={student.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <GraduationCap className="w-5 h-5 text-slate-400 dark:text-zinc-500" />
+                              )}
+                            </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2 mb-2">
                                 <h4 className="text-sm font-black text-slate-800 dark:text-zinc-100">
                                   {student.name}
                                 </h4>
-                                <span className="text-[10px] font-bold bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded-md">
-                                  {student.errors.length} ข้อผิดพลาด
-                                </span>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <Link
+                                    href={`/dashboard/users/edit/${student.id}`}
+                                    className="px-2.5 py-1 text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 rounded-lg flex items-center gap-1 transition-colors"
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                    แก้ไข
+                                  </Link>
+                                  <span className="text-[10px] font-bold bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded-md">
+                                    {student.errors.length} ข้อผิดพลาด
+                                  </span>
+                                </div>
                               </div>
                               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
                                 <div className="text-[10px]">
@@ -456,6 +497,24 @@ export default function StudentDataValidationPage() {
                                 <div className="text-[10px]">
                                   <span className="font-bold text-slate-500 dark:text-zinc-400">แผนก:</span>
                                   <span className="ml-1 text-slate-700 dark:text-zinc-200">{student.department}</span>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                                <div className="text-[10px]">
+                                  <span className="font-bold text-slate-500 dark:text-zinc-400">ระดับชั้น:</span>
+                                  <span className="ml-1 text-slate-700 dark:text-zinc-200">{student.academicLevel}</span>
+                                </div>
+                                <div className="text-[10px]">
+                                  <span className="font-bold text-slate-500 dark:text-zinc-400">ประเภท:</span>
+                                  <span className="ml-1 text-slate-700 dark:text-zinc-200">{student.learnerType}</span>
+                                </div>
+                                <div className="text-[10px]">
+                                  <span className="font-bold text-slate-500 dark:text-zinc-400">อีเมล:</span>
+                                  <span className="ml-1 text-slate-700 dark:text-zinc-200 truncate">{student.email}</span>
+                                </div>
+                                <div className="text-[10px]">
+                                  <span className="font-bold text-slate-500 dark:text-zinc-400">เบอร์โทร:</span>
+                                  <span className="ml-1 text-slate-700 dark:text-zinc-200">{student.phone}</span>
                                 </div>
                               </div>
                               <div className="space-y-1">

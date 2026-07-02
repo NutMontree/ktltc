@@ -93,10 +93,21 @@ export async function PATCH(
     
     // Check dynamic permissions
     const canManageRoles = await hasPermission(currentUserRole, "manage_roles_advanced");
+    const isTargetStudent = ["student", "นักเรียน", "นักเรียน/นักศึกษา"].includes(String(targetUser.role).toLowerCase());
+    const canEditStudents = ["super_admin", "admin", "hr", "director", "teacher"].includes(currentUserRole);
  
     // 🔒 Ensure the current user has administrative permissions
     if (!canManageRoles && !isSuperAdmin) {
-      return NextResponse.json({ error: "Access Denied: No permission for Role Management." }, { status: 403 });
+      // If no advanced role management, they can ONLY edit if target is student AND they have student editing rights
+      if (!(canEditStudents && isTargetStudent)) {
+        return NextResponse.json({ error: "Access Denied: No permission to edit this user." }, { status: 403 });
+      }
+
+      // Security: Strip out sensitive fields that they shouldn't edit
+      delete body.role;
+      delete body.password;
+      delete body.passwordText;
+      delete body.isActive;
     }
  
     // 🚫 Check if target user has a protected role and current user is NOT super_admin

@@ -25,23 +25,28 @@ import {
   Clock,
   LayoutGrid,
   List,
+  Edit,
 } from "lucide-react";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
 import Link from "next/link";
+
+import PageHelpModal from "@/components/PageHelpModal";
 
 const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 
 interface Student {
   id: string;
   name: string;
+  studentId: string;
+  citizenId: string;
   academicLevel: string;
   department: string;
   classGroupId: string;
   studentStatus: string;
   learnerType: string;
-  image?: string | null;
-  phone?: string | null;
-  email?: string | null;
+  image: string | null;
+  phone: string | null;
+  email: string | null;
 }
 
 const item = {
@@ -180,7 +185,7 @@ export default function TeacherStudentsPage() {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/80 dark:bg-zinc-900/90 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-[1600px] mx-auto w-full px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard"
@@ -202,17 +207,30 @@ export default function TeacherStudentsPage() {
               </div>
             </div>
           </div>
-          <Link
-            href="/dashboard"
-            className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            แดชบอร์ด
-          </Link>
+          <div className="flex items-center gap-3">
+            <PageHelpModal 
+              title="วิธีใช้งานหน้ารายชื่อนักเรียน"
+              description="คู่มือการค้นหาและตรวจสอบรายชื่อ"
+              overview="หน้านี้คือสมุดรายชื่อ (Directory) สำหรับให้คุณครูและบุคลากรเข้ามาตรวจสอบรายชื่อนักเรียนในแผนกวิชาหรือกลุ่มเรียนต่างๆ โดยจะแสดงข้อมูลพื้นฐาน เช่น ชื่อ สถานะการศึกษา และข้อมูลการติดต่อ เพื่อใช้ในการบริหารจัดการชั้นเรียน"
+              steps={[
+                { title: "1. เลือกแผนกวิชา", content: "เลือกแผนกวิชาที่คุณต้องการดูรายชื่อนักเรียนจากตัวกรองด้านบน" },
+                { title: "2. เลือกกลุ่มเรียน (ถ้ามี)", content: "สามารถระบุกลุ่มเรียนเพื่อดูเฉพาะนักเรียนในกลุ่มนั้นได้" },
+                { title: "3. ค้นหาชื่อ", content: "พิมพ์ชื่อนักเรียนในช่องค้นหา เพื่อค้นหานักเรียนแบบเฉพาะเจาะจง" },
+                { title: "4. กดดูรายชื่อ", content: "คลิกปุ่ม 'ดูรายชื่อ' เพื่อแสดงผลข้อมูลตามเงื่อนไขที่คุณเลือก" }
+              ]}
+            />
+            <Link
+              href="/dashboard"
+              className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              แดชบอร์ด
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-[1600px] mx-auto w-full px-4 py-8 space-y-6">
         {/* Filter Panel */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -487,13 +505,19 @@ export default function TeacherStudentsPage() {
                               </div>
 
                               {/* Info */}
-                              {/* Info */}
                               <div className={`flex-1 min-w-0 flex ${viewMode === "list" ? "flex-col sm:flex-row sm:items-center sm:justify-between gap-3" : "flex-col gap-1"}`}>
                                 <div>
                                   <div className="flex items-start gap-2">
                                     <h3 className="text-sm font-black text-slate-800 dark:text-zinc-100 leading-tight truncate">
                                       {student.name}
                                     </h3>
+                                    <Link
+                                      href={`/dashboard/users/edit/${student.id}`}
+                                      className="shrink-0 px-2.5 py-1 text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 rounded-lg flex items-center gap-1 transition-colors"
+                                    >
+                                      <Edit className="w-3 h-3" />
+                                      แก้ไข
+                                    </Link>
                                     {viewMode === "list" && (
                                       <span
                                         className={`shrink-0 inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full border ${
@@ -535,11 +559,20 @@ export default function TeacherStudentsPage() {
                                     <span className="text-[9px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-md border border-blue-100 dark:border-blue-900/50">
                                       {student.learnerType}
                                     </span>
+                                    <span className="text-[9px] font-bold bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/50">
+                                      รหัสนักศึกษา: {student.studentId}
+                                    </span>
+                                    <span className="text-[9px] font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded-md border border-rose-100 dark:border-rose-900/50">
+                                      รหัสปชช: {student.citizenId}
+                                    </span>
+                                    <span className="text-[9px] font-bold bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-md">
+                                      แผนก: {student.department}
+                                    </span>
                                   </div>
                                 </div>
 
                                 {/* Contact */}
-                                <div className={`flex items-center gap-4 ${viewMode === "grid" ? "mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" : "shrink-0 ml-auto"}`}>
+                                <div className={`flex items-center gap-4 ${viewMode === "grid" ? "mt-2" : "shrink-0 ml-auto"}`}>
                                   {student.phone && (
                                     <p className="text-[10px] text-slate-500 dark:text-zinc-400 flex items-center gap-1.5">
                                       <Phone className="w-3.5 h-3.5" /> {student.phone}

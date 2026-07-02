@@ -51,6 +51,8 @@ export async function GET(req: Request) {
       .project({
         _id: 1,
         name: 1,
+        studentId: 1,
+        citizenId: 1,
         academicLevel: 1,
         department: 1,
         classGroupId: 1,
@@ -74,6 +76,8 @@ export async function GET(req: Request) {
     const result = students.map((s: any) => ({
       id: s._id.toString(),
       name: s.name || "ไม่ระบุ",
+      studentId: s.studentId || "ไม่ระบุ",
+      citizenId: s.citizenId || "ไม่ระบุ",
       academicLevel: s.academicLevel || "ไม่ระบุ",
       department: s.department || "ไม่ระบุ",
       classGroupId: s.classGroupId || "ไม่ระบุ",

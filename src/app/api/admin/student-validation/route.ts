@@ -51,6 +51,9 @@ export async function GET(req: Request) {
         academicLevel: 1,
         studentStatus: 1,
         email: 1,
+        image: 1,
+        phone: 1,
+        learnerType: 1,
       })
       .toArray();
 
@@ -86,6 +89,9 @@ export async function GET(req: Request) {
         academicLevel: student.academicLevel || "ไม่ระบุ",
         studentStatus: student.studentStatus || "ไม่ระบุ",
         email: student.email || "ไม่ระบุ",
+        phone: student.phone || "ไม่ระบุ",
+        learnerType: student.learnerType || "ไม่ระบุ",
+        image: student.image || null,
         hasErrors: errors.length > 0,
         errors: errors,
       };
