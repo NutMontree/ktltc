@@ -61,6 +61,7 @@ export default function StudentFlagpolePortal() {
 
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
   const [locationStatus, setLocationStatus] = useState<"idle" | "searching" | "found" | "error">(
@@ -348,11 +349,11 @@ export default function StudentFlagpolePortal() {
               setLocationStatus("error");
               if (fallbackErr.code === 1) {
                 setLocationError(
-                  "กรุณาเปิดสิทธิ์ระบุตำแหน่ง (Location Access) ในเมนูของอุปกรณ์เบราว์เซอร์",
+                  "พิกัด GPS ถูกบล็อก! กรุณากดรูปแม่กุญแจ 🔒 บนแถบ URL เพื่อเปิดอนุญาตตำแหน่ง (Location) แล้วรีเฟรชหน้าเว็บ",
                 );
               } else {
                 setLocationError(
-                  "ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกที่ร่ม/อาคารเรียน หรือเปิด GPS ทิ้งไว้สักครู่",
+                  "ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกอาคารเรียน หรือเปิด GPS ทิ้งไว้สักครู่",
                 );
               }
             }
@@ -373,14 +374,20 @@ export default function StudentFlagpolePortal() {
           stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: "user", width: 640, height: 480 },
           });
+          setCameraError("");
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch((e) => console.error(e));
           loadFaceApiAndProfile();
           getLocation(true);
         } catch (err: any) {
           console.error("Camera Error:", err);
-          alert("ไม่สามารถเข้าถึงกล้องหน้าได้ กรุณาปลดบล็อกในตั้งค่าเบราว์เซอร์");
-          setIsCameraOpen(false);
+          let errMsg = "ไม่สามารถเข้าถึงกล้องหน้าได้ กรุณาตรวจสอบการตั้งค่าเบราว์เซอร์";
+          if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+            errMsg = "กล้องถูกบล็อก! กรุณากดรูปแม่กุญแจ 🔒 บนแถบ URL เพื่อเปิดอนุญาตกล้อง (Camera) แล้วรีเฟรชหน้าเว็บ";
+          } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
+            errMsg = "ไม่พบอุปกรณ์กล้องในเครื่องของคุณ";
+          }
+          setCameraError(errMsg);
         }
       }
     };
@@ -736,13 +743,30 @@ export default function StudentFlagpolePortal() {
                 ) : (
                   /* Camera active check-in flow */
                   <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-4 shadow-xl border border-slate-100 dark:border-zinc-800 flex flex-col">
-                    <div className="w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden relative mb-4 shadow-inner border-2 border-slate-100 dark:border-zinc-800">
-                      <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        className="w-full h-full object-cover scale-x-[-1]"
-                      />
+                    <div className="w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden relative mb-4 shadow-inner border-2 border-slate-100 dark:border-zinc-800 flex items-center justify-center">
+                      {!cameraError ? (
+                        <video
+                          ref={videoRef}
+                          autoPlay
+                          playsInline
+                          className="w-full h-full object-cover scale-x-[-1]"
+                        />
+                      ) : (
+                        <div className="p-6 text-center relative z-20">
+                          <div className="w-16 h-16 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                            <Camera className="w-8 h-8" />
+                            <div className="absolute w-16 h-16 border-2 border-rose-500 rounded-full opacity-50 scale-125 animate-ping" />
+                          </div>
+                          <h4 className="text-white font-bold mb-2">กล้องไม่สามารถใช้งานได้</h4>
+                          <p className="text-slate-400 text-[11px] max-w-[200px] mx-auto leading-relaxed">{cameraError}</p>
+                          <button 
+                            onClick={() => window.location.reload()} 
+                            className="mt-6 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-full transition-colors shadow-lg"
+                          >
+                            รีเฟรชหน้าเว็บ
+                          </button>
+                        </div>
+                      )}
 
                       {/* Video Tags overlay */}
                       <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5 pointer-events-none">

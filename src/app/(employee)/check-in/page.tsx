@@ -69,6 +69,7 @@ function CheckInContent() {
     null,
   );
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
   const [locationStatus, setLocationStatus] = useState<
@@ -357,7 +358,7 @@ function CheckInContent() {
         setLocationStatus("error");
         if (err.code === 1)
           setLocationError(
-            "กรุณาอนุญาตการเข้าถึงตำแหน่ง (Location Permission) ในเมนูตั้งค่าของเบราว์เซอร์",
+            "พิกัด GPS ถูกบล็อก! กรุณากดรูปแม่กุญแจ 🔒 บนแถบ URL เพื่อเปิดอนุญาตตำแหน่ง (Location) แล้วรีเฟรชหน้าเว็บ",
           );
         else if (err.code === 2)
           setLocationError("ไม่สามารถระบุพิกัดได้ (ลองออกมาในที่โล่งแจ้ง)");
@@ -386,6 +387,7 @@ function CheckInContent() {
           
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
+            setCameraError("");
             // Explicitly call play to handle some browser restrictions
             await videoRef.current.play().catch(e => console.error("Play error:", e));
           }
@@ -399,11 +401,10 @@ function CheckInContent() {
           if (err.name === "NotReadableError" || err.name === "TrackStartError") {
             errorMsg = "กล้องถูกใช้งานโดยแอปอื่นอยู่ กรุณาปิดแอปอื่นแล้วลองใหม่ หรือรีเฟรชหน้าจอ";
           } else if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-            errorMsg = "คุณบล็อกการเข้าถึงกล้อง กรุณาปลดล็อกในตั้งค่าเบราว์เซอร์";
+            errorMsg = "กล้องถูกบล็อก! กรุณากดรูปแม่กุญแจ 🔒 บนแถบ URL เพื่อเปิดอนุญาตกล้อง (Camera) แล้วรีเฟรชหน้าเว็บ";
           }
           
-          alert(errorMsg);
-          setIsCameraOpen(false);
+          setCameraError(errorMsg);
         }
       }
     };
@@ -791,13 +792,30 @@ function CheckInContent() {
               className="mt-2 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl rounded-[2.5rem] md:rounded-[3.5rem] p-4 md:p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] border border-white dark:border-zinc-800 flex-1 overflow-hidden flex flex-col"
             >
               {/* Video Feed Glass Container */}
-              <div className="w-full aspect-square bg-slate-900 rounded-4xl md:rounded-[3rem] overflow-hidden relative mb-4 md:mb-8 shadow-2xl border-4 border-white dark:border-zinc-800 group shrink-0">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full h-full object-cover scale-x-[-1]"
-                />
+              <div className="w-full aspect-square bg-slate-900 rounded-4xl md:rounded-[3rem] overflow-hidden relative mb-4 md:mb-8 shadow-2xl border-4 border-white dark:border-zinc-800 group shrink-0 flex items-center justify-center">
+                {!cameraError ? (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    className="w-full h-full object-cover scale-x-[-1]"
+                  />
+                ) : (
+                  <div className="p-6 text-center relative z-20">
+                    <div className="w-16 h-16 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                      <Camera className="w-8 h-8" />
+                      <div className="absolute w-16 h-16 border-2 border-rose-500 rounded-full opacity-50 scale-125 animate-ping" />
+                    </div>
+                    <h4 className="text-white font-bold mb-2">กล้องไม่สามารถใช้งานได้</h4>
+                    <p className="text-slate-400 text-xs max-w-[200px] mx-auto leading-relaxed">{cameraError}</p>
+                    <button 
+                      onClick={() => window.location.reload()} 
+                      className="mt-6 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-full transition-colors shadow-lg"
+                    >
+                      รีเฟรชหน้าเว็บ
+                    </button>
+                  </div>
+                )}
 
                 {/* Scan Overlay UI */}
                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
