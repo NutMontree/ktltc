@@ -470,7 +470,7 @@ export default function StudentDataValidationPage() {
                                 </h4>
                                 <div className="flex items-center gap-2 shrink-0">
                                   <Link
-                                    href={`/dashboard/users/edit/${student.id}`}
+                                    href={`/dashboard/users/edit/${student.id}?redirect=/student-data-validation`}
                                     className="px-2.5 py-1 text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 rounded-lg flex items-center gap-1 transition-colors"
                                   >
                                     <Edit className="w-3 h-3" />

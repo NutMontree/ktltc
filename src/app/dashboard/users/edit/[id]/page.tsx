@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,6 +38,8 @@ interface EditUserPageProps {
 export default function EditUserPage({ params }: EditUserPageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/dashboard/super-admin";
   const { data: session } = useSession();
 
   const [loading, setLoading] = useState(true);
@@ -132,7 +134,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
         });
       } else {
         toast.error("ไม่พบข้อมูลผู้ใช้ที่ระบุ");
-        router.push("/dashboard/super-admin");
+        router.push(redirectUrl);
       }
     } catch (e) {
       console.error(e);
@@ -197,7 +199,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
       if (res.ok) {
         toast.success(`อัปเดตข้อมูลคุณ ${formData.name} สำเร็จ ✨`);
-        router.push("/dashboard/super-admin");
+        router.push(redirectUrl);
       } else {
         const errorData = await res.json();
         toast.error(errorData.error || "บันทึกข้อมูลไม่สำเร็จ");
@@ -235,7 +237,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-zinc-800 p-4 rounded-3xl shadow-xl">
           <div className="flex items-center gap-3">
             <Link
-              href="/dashboard/super-admin"
+              href={redirectUrl}
               className="p-3 bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-blue-500 rounded-2xl transition-all shadow-inner active:scale-95 border border-transparent dark:border-zinc-700/50"
             >
               <ArrowLeft size={18} />
@@ -255,7 +257,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
-              onClick={() => router.push("/dashboard/super-admin")}
+              onClick={() => router.push(redirectUrl)}
               className="flex-1 sm:flex-none px-6 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-600 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all border border-transparent dark:border-zinc-700"
             >
               ยกเลิก
