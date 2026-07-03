@@ -134,21 +134,18 @@ const SnakeGame = () => {
       </div>
 
       {/* Game Board */}
-      <div
-        className="relative overflow-hidden rounded-lg border-4 border-slate-700 bg-slate-800 shadow-inner"
-        style={{ width: BOARD_SIZE * 20, height: BOARD_SIZE * 20 }}
-      >
+      <div className="relative overflow-hidden rounded-lg border-4 border-slate-700 bg-slate-800 shadow-inner w-[90vw] max-w-[400px] aspect-square">
         {/* Snake Render */}
         {snake.map((segment, i) => (
           <div
             key={i}
             className={`absolute rounded-sm transition-all duration-100 ${i === 0 ? "z-10 bg-green-400" : "bg-green-600"}`}
             style={{
-              top: segment.y * 20,
-              left: segment.x * 20,
-              width: 18,
-              height: 18,
-              margin: 1,
+              top: `${segment.y * 5}%`,
+              left: `${segment.x * 5}%`,
+              width: "5%",
+              height: "5%",
+              transform: "scale(0.9)", // For margin effect
             }}
           />
         ))}
@@ -157,11 +154,11 @@ const SnakeGame = () => {
         <div
           className="absolute animate-pulse rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"
           style={{
-            top: food.y * 20,
-            left: food.x * 20,
-            width: 18,
-            height: 18,
-            margin: 1,
+            top: `${food.y * 5}%`,
+            left: `${food.x * 5}%`,
+            width: "5%",
+            height: "5%",
+            transform: "scale(0.9)",
           }}
         />
 

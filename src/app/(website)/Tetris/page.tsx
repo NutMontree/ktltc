@@ -203,9 +203,9 @@ export default function Tetris() {
       </div>
 
       {/* Game Board */}
-      <div className="relative border-4 border-slate-700 bg-slate-900 p-0.5 shadow-2xl">
+      <div className="relative border-4 border-slate-700 bg-slate-900 p-0.5 shadow-2xl w-[90vw] max-w-[320px] aspect-1/2 flex flex-col">
         {grid.map((row, y) => (
-          <div key={y} className="flex">
+          <div key={y} className="flex flex-1">
             {row.map((cell: string | null, x: number) => {
               let color = cell;
               const pieceY = y - activePiece.pos.y;
@@ -216,7 +216,7 @@ export default function Tetris() {
               return (
                 <div
                   key={x}
-                  className={`h-6 w-6 border-[0.5px] border-slate-800/50 sm:h-7 sm:w-7 ${color || "bg-slate-950/40"}`}
+                  className={`flex-1 border-[0.5px] border-slate-800/50 ${color || "bg-slate-950/40"}`}
                 />
               );
             })}
