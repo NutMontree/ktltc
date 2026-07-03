@@ -103,8 +103,7 @@ export default function MapComponent({ students, config }: { students: any[], co
                       </p>
                     </div>
                   </div>
-                  {!isFallback && (
-                    <a
+                  <a
                       href={`https://www.google.com/maps?q=${lat},${lng}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -126,7 +125,6 @@ export default function MapComponent({ students, config }: { students: any[], co
                     >
                       📍 เปิดใน Google Maps
                     </a>
-                  )}
                 </div>
               </Popup>
             </Marker>

@@ -265,9 +265,8 @@ export default function TrackingDashboard() {
                             ออกเมื่อ: {formatTime(student.scannedOutAt)}
                           </span>
                         </div>
-                        {student.currentLocation?.latitude && (
-                          <a
-                            href={`https://www.google.com/maps?q=${student.currentLocation.latitude},${student.currentLocation.longitude}`}
+                        <a
+                            href={`https://www.google.com/maps?q=${student.currentLocation?.latitude || trackingConfig.campusCenterLat},${student.currentLocation?.longitude || trackingConfig.campusCenterLng}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-lg border border-blue-100 dark:border-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
@@ -275,7 +274,6 @@ export default function TrackingDashboard() {
                             <ExternalLink size={10} />
                             <span className="text-[10px] font-black uppercase tracking-wider">Maps</span>
                           </a>
-                        )}
                       </div>
                     </div>
                   </motion.div>
