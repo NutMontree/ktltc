@@ -2,18 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import type { QRCodeProps } from "antd";
-import {
-  Input,
-  QRCode,
-  Button,
-  Segmented,
-  ConfigProvider,
-  theme,
-  notification,
-  Spin,
-} from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { QRCode } from "antd"; // Keep antd QRCode for the matrix generator
+import { Input, Button, Tabs, Tab, Spinner } from "@heroui/react";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
+import { PictureOutlined, BgColorsOutlined, CheckCircleFilled } from "@ant-design/icons";
 
 // --- Icons ---
 const LinkIcon = () => (
@@ -50,26 +43,10 @@ const DownloadIcon = () => (
   </svg>
 );
 
-const HomeIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    <polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-
 // --- Custom Download Logic ---
 const downloadStylizedQRCode = (
   text: string,
-  displayTitle: string, // รับชื่อ Title มาแสดง
+  displayTitle: string
 ) => {
   const canvas = document
     .getElementById("myqrcode")
@@ -78,7 +55,7 @@ const downloadStylizedQRCode = (
   if (!canvas) return;
 
   const padding = 60;
-  const bottomSpace = 80;
+  const bottomSpace = 60;
   const qrSize = canvas.width;
   const width = qrSize + padding * 2;
   const height = qrSize + padding * 2 + bottomSpace;
@@ -141,11 +118,6 @@ const downloadStylizedQRCode = (
 
   // 4. Text
   ctx.textAlign = "center";
-  ctx.fillStyle = "#9CA3AF";
-  ctx.font = "bold 20px sans-serif";
-  ctx.fillText("SCAN ME", width / 2, height - 50);
-
-  // ใช้ displayTitle ที่ดึงมาได้
   ctx.fillStyle = "#6B7280";
   ctx.font = "16px sans-serif";
   let finalDisplay =
@@ -156,7 +128,6 @@ const downloadStylizedQRCode = (
   ctx.fillText(finalDisplay, width / 2, height - 25);
 
   // 5. Download
-  // ลบตัวอักษรพิเศษออกจากการตั้งชื่อไฟล์ ป้องกัน Error ตอนเซฟ
   const safeFileName = displayTitle
     .replace(/[^a-zA-Z0-9ก-๙\s-]/g, "")
     .trim()
@@ -176,37 +147,34 @@ const downloadStylizedQRCode = (
 
 export default function CreateQRCode() {
   const [text, setText] = useState("");
-  const [linkTitle, setLinkTitle] = useState(""); // เก็บชื่อเว็บที่ดึงมาได้
-  const [isFetchingTitle, setIsFetchingTitle] = useState(false); // สถานะกำลังดึงข้อมูล
-  const [renderType, setRenderType] = useState<QRCodeProps["type"]>("canvas");
+  const [logo, setLogo] = useState<string | null>(null);
+  const [description, setDescription] = useState("");
+  const [isFetchingTitle, setIsFetchingTitle] = useState(false);
+  const [renderType, setRenderType] = useState<"canvas" | "svg">("canvas");
 
-  const { defaultAlgorithm, darkAlgorithm } = theme;
-
-  // Effect สำหรับดึงชื่อ Title เมื่อผู้ใช้พิมพ์ URL
+  // Fetch title when user types URL
   useEffect(() => {
-    // ถ้าข้อความว่าง หรือ ไม่ใช่ URL ให้เคลียร์ข้อมูล
     if (!text || !text.startsWith("http")) {
-      setLinkTitle(text);
+      setDescription(text);
       setIsFetchingTitle(false);
       return;
     }
 
-    // หน่วงเวลา 800ms เผื่อผู้ใช้ยังพิมพ์ไม่เสร็จ จะได้ไม่ยิง API รัวๆ
     const delayDebounceFn = setTimeout(async () => {
       setIsFetchingTitle(true);
       try {
         const response = await fetch(
-          `/api/get-title?url=${encodeURIComponent(text)}`,
+          `/api/get-title?url=${encodeURIComponent(text)}`
         );
         const data = await response.json();
         if (data.title) {
-          setLinkTitle(data.title);
+          setDescription(data.title);
         } else {
-          setLinkTitle(text); // ถ้าไม่เจอ title ให้ใช้ url ปกติ
+          setDescription(text);
         }
       } catch (error) {
         console.error("Failed to fetch title", error);
-        setLinkTitle(text);
+        setDescription(text);
       } finally {
         setIsFetchingTitle(false);
       }
@@ -215,18 +183,27 @@ export default function CreateQRCode() {
     return () => clearTimeout(delayDebounceFn);
   }, [text]);
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setLogo(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setLogo(null);
+    }
+  };
+
   const handleDownload = () => {
     if (!text) {
-      notification.warning({
-        message: "ไม่สามารถดาวน์โหลดได้",
-        description: "กรุณากรอกข้อความหรือ URL ก่อนดาวน์โหลด",
-        placement: "top",
-      });
+      toast.error("กรุณากรอกข้อความหรือ URL ก่อนดาวน์โหลด");
       return;
     }
 
     if (renderType === "canvas") {
-      downloadStylizedQRCode(text, linkTitle || text); // ส่ง Link Title ไปให้วาดรูปลง Canvas
+      downloadStylizedQRCode(text, description || text);
     } else {
       const svg = document
         .getElementById("myqrcode")
@@ -238,7 +215,7 @@ export default function CreateQRCode() {
         });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        const safeFileName = (linkTitle || text)
+        const safeFileName = (description || text)
           .replace(/[^a-zA-Z0-9ก-๙\s-]/g, "")
           .trim()
           .substring(0, 30);
@@ -252,163 +229,226 @@ export default function CreateQRCode() {
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: [defaultAlgorithm, darkAlgorithm],
-        token: {
-          colorPrimary: "#DAA520",
-          borderRadius: 12,
-          fontFamily: "var(--font-sarabun), sans-serif",
-        },
-        components: {
-          Input: {
-            controlHeightLG: 50,
-            activeBorderColor: "#DAA520",
-          },
-          Button: {
-            controlHeightLG: 50,
-            defaultShadow: "0 4px 14px 0 rgba(218, 165, 32, 0.39)",
-          },
-          Segmented: {
-            itemSelectedBg: "#DAA520",
-            itemSelectedColor: "#FFF",
-            trackBg: "rgba(0,0,0,0.05)",
-          },
-        },
-      }}
-    >
-      <div className="py-24 max-w-[1600px] mx-auto relative flex items-center justify-center bg-gray-50 dark:bg-slate-950 overflow-hidden font-sans selection:bg-[#DAA520] selection:text-white">
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#DAA520]/20 dark:bg-[#DAA520]/10 rounded-full blur-[120px]" />
-        </div>
+    <div className="min-h-screen relative flex items-center justify-center bg-slate-50 dark:bg-neutral-950 overflow-hidden font-sans selection:bg-[#DAA520] selection:text-white">
+      {/* Background Decorative Blur */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#DAA520]/20 dark:bg-[#DAA520]/10 rounded-full blur-[120px]" />
+      </div>
 
-        <div className="relative z-10 w-full max-w-[1600px] px-4 py-12">
-          <nav className="flex justify-center mb-8">{/* Breadcrumb ... */}</nav>
+      <div className="relative z-10 w-full max-w-[1400px] px-4 py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Column: Controls (Glassmorphism Card) */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="order-2 lg:order-1 flex flex-col gap-8"
+          >
+            <div className="text-center lg:text-left space-y-4">
+              <h1 className="text-4xl lg:text-5xl font-black text-slate-800 dark:text-white tracking-tight leading-tight">
+                สร้าง{" "}
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-[#DAA520] to-yellow-400">
+                  QR Code
+                </span>{" "}
+                <br className="hidden lg:block" />
+                ของคุณได้อย่างรวดเร็ว
+              </h1>
+              <p className="text-slate-500 dark:text-slate-400 text-lg">
+                รองรับการดาวน์โหลดพร้อมกรอบ KTLTC สุดพรีเมียม
+              </p>
+            </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Left Column: Controls */}
-            <div className="order-2 lg:order-1 flex flex-col gap-6">
-              <div className="text-center lg:text-left space-y-2">
-                <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-                  สร้าง{" "}
-                  <span className="text-transparent bg-clip-text bg-linear-to-r from-[#DAA520] to-yellow-300">
-                    QR Code
-                  </span>{" "}
-                  <br /> ของคุณได้ง่ายๆ
-                </h1>
-              </div>
+            <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl p-8 rounded-4xl border border-white/50 dark:border-white/10 shadow-xl shadow-blue-900/5 space-y-8">
+              {/* URL Input */}
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
+                  ข้อมูล / ลิงก์สำหรับสร้าง QR Code
+                </label>
+                <Input
+                  size="lg"
+                  isClearable
+                  placeholder="https://example.com"
+                  startContent={<LinkIcon />}
+                  maxLength={250}
+                  value={text}
+                  onValueChange={setText}
+                  radius="lg"
+                  classNames={{
+                    input: "text-slate-900 dark:text-white",
+                    inputWrapper: "bg-slate-100 dark:bg-neutral-800 border-transparent hover:border-[#DAA520] focus-within:!border-[#DAA520] transition-colors",
+                  }}
+                />
 
-              <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl p-6 rounded-3xl border border-white/50 dark:border-white/10 shadow-xl space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
-                    ข้อความหรือลิงก์
+                <div className="mt-4">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
+                    โลโก้ตรงกลาง (Logo)
                   </label>
-                  <Input
-                    size="large"
-                    allowClear
-                    placeholder="https://example.com"
-                    prefix={<LinkIcon />}
-                    maxLength={250}
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    className="text-gray-900 placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="block w-full text-sm text-slate-500 mt-2
+                      file:mr-4 file:py-2.5 file:px-4
+                      file:rounded-xl file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-blue-50 file:text-blue-700
+                      hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400 dark:hover:file:bg-blue-900/50 transition-colors cursor-pointer"
                   />
                 </div>
 
-                {/* แสดงผลการดึง Title ใต้ Input */}
-                <div className="text-sm px-2 flex items-center gap-2">
+                <div className="mt-4">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
+                    ข้อความอธิบายด้านล่าง (Description)
+                  </label>
+                  <Input
+                    size="lg"
+                    isClearable
+                    placeholder="ใส่ข้อความอธิบายด้านล่าง QR Code"
+                    maxLength={50}
+                    value={description}
+                    onValueChange={setDescription}
+                    radius="lg"
+                    classNames={{
+                      input: "text-slate-900 dark:text-white",
+                      inputWrapper: "bg-slate-100 dark:bg-neutral-800 border-transparent hover:border-[#DAA520] focus-within:!border-[#DAA520] transition-colors mt-2",
+                    }}
+                  />
+                </div>
+
+                {/* Fetching Status Indicator */}
+                <div className="text-sm px-2 h-6 flex items-center">
                   {isFetchingTitle ? (
                     <span className="text-blue-500 flex items-center gap-2">
-                      <Spin
-                        indicator={
-                          <LoadingOutlined style={{ fontSize: 14 }} spin />
-                        }
-                      />{" "}
-                      กำลังดึงชื่อลิงก์...
-                    </span>
-                  ) : linkTitle &&
-                    text.startsWith("http") &&
-                    linkTitle !== text ? (
-                    <span className="text-green-600 dark:text-green-400">
-                      ✅ ชื่อเว็บ: {linkTitle}
+                      <Spinner size="sm" color="primary" /> กำลังตรวจสอบลิงก์...
                     </span>
                   ) : null}
                 </div>
+              </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-gray-50 dark:bg-black/20 p-4 rounded-2xl">
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    รูปแบบไฟล์
-                  </span>
-                  <Segmented
-                    options={[
-                      { label: "PNG", value: "canvas" },
-                      { label: "SVG", value: "svg" },
-                    ]}
-                    value={renderType}
-                    onChange={setRenderType}
-                    className="bg-white dark:bg-zinc-800"
+              {/* Format Selection & Download */}
+              <div className="space-y-4">
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
+                  รูปแบบไฟล์ที่ต้องการ
+                </span>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* PNG Option */}
+                  <div
+                    onClick={() => setRenderType("canvas")}
+                    className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                      renderType === "canvas"
+                        ? "border-[#DAA520] bg-yellow-50 dark:bg-[#DAA520]/10 shadow-lg shadow-[#DAA520]/10"
+                        : "border-slate-200 dark:border-neutral-800 hover:border-[#DAA520]/50 bg-white dark:bg-neutral-900/50"
+                    }`}
+                  >
+                    {renderType === "canvas" && (
+                      <CheckCircleFilled className="absolute top-3 right-3 text-xl text-[#DAA520]" />
+                    )}
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3">
+                      <div className="p-3 bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-slate-100 dark:border-neutral-700">
+                        <PictureOutlined className="text-2xl text-[#DAA520]" />
+                      </div>
+                      <div className="mt-1">
+                        <p className={`font-bold ${renderType === "canvas" ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"}`}>
+                          PNG (ลงกรอบ)
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                          พร้อมขอบทองพรีเมียม
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SVG Option */}
+                  <div
+                    onClick={() => setRenderType("svg")}
+                    className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                      renderType === "svg"
+                        ? "border-[#DAA520] bg-yellow-50 dark:bg-[#DAA520]/10 shadow-lg shadow-[#DAA520]/10"
+                        : "border-slate-200 dark:border-neutral-800 hover:border-[#DAA520]/50 bg-white dark:bg-neutral-900/50"
+                    }`}
+                  >
+                    {renderType === "svg" && (
+                      <CheckCircleFilled className="absolute top-3 right-3 text-xl text-[#DAA520]" />
+                    )}
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3">
+                      <div className="p-3 bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-slate-100 dark:border-neutral-700">
+                        <BgColorsOutlined className="text-2xl text-[#DAA520]" />
+                      </div>
+                      <div className="mt-1">
+                        <p className={`font-bold ${renderType === "svg" ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"}`}>
+                          SVG (โปร่งใส)
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                          พื้นหลังโปร่งใส คมชัดสูง
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                color="primary"
+                size="lg"
+                fullWidth
+                startContent={<DownloadIcon />}
+                onPress={handleDownload}
+                isDisabled={isFetchingTitle}
+                className="bg-linear-to-r from-[#DAA520] to-yellow-500 hover:from-[#c2931a] hover:to-yellow-400 text-white font-bold text-lg h-16 rounded-2xl shadow-lg shadow-[#DAA520]/30 transition-all hover:-translate-y-1"
+              >
+                ดาวน์โหลด QR Code
+              </Button>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Preview Area */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="order-1 lg:order-2 flex justify-center"
+          >
+            <div className="relative group">
+              {/* Glow Effect */}
+              <div className="absolute -inset-6 bg-linear-to-r from-blue-500/20 to-[#DAA520]/30 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div
+                id="myqrcode"
+                className="relative bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-100 dark:border-neutral-800 transform transition-transform duration-500 hover:scale-[1.03] hover:-rotate-1"
+              >
+                <div className="relative">
+                  {/* Decorative Corner Accents */}
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-[#DAA520] rounded-tl-xl -mt-4 -ml-4" />
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-[#DAA520] rounded-tr-xl -mt-4 -mr-4" />
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-[#DAA520] rounded-bl-xl -mb-4 -ml-4" />
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-[#DAA520] rounded-br-xl -mb-4 -mr-4" />
+
+                  {/* Ant Design QRCode is purely for the matrix generation here */}
+                  <QRCode
+                    type={renderType}
+                    value={text || "https://ktltc.ac.th"}
+                    size={280}
+                    icon={logo || undefined}
+                    iconSize={50}
+                    color="#000"
+                    bgColor="#FFF"
+                    style={{ margin: "auto" }}
+                    errorLevel="H"
                   />
                 </div>
 
-                <Button
-                  type="primary"
-                  size="large"
-                  block
-                  icon={<DownloadIcon />}
-                  onClick={handleDownload}
-                  disabled={isFetchingTitle} // ปิดปุ่มตอนกำลังโหลด
-                  className="bg-[#DAA520] hover:bg-[#B8860B] border-none text-lg h-14 rounded-2xl font-bold disabled:opacity-50"
-                >
-                  ดาวน์โหลด QR Code
-                </Button>
-              </div>
-            </div>
-
-            {/* Right Column: Preview */}
-            <div className="order-1 lg:order-2 flex justify-center">
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-linear-to-r from-blue-500 to-[#DAA520] rounded-4xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
-                <div
-                  id="myqrcode"
-                  className="relative bg-white p-8 rounded-4xl shadow-2xl border border-gray-100 dark:border-gray-800 transform transition-transform duration-500 hover:scale-[1.02] hover:-rotate-1"
-                >
-                  <div className="relative">
-                    {/* Visual Corner Accents */}
-                    <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-[#DAA520] rounded-tl-xl -mt-2 -ml-2" />
-                    <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-[#DAA520] rounded-tr-xl -mt-2 -mr-2" />
-                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-[#DAA520] rounded-bl-xl -mb-2 -ml-2" />
-                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-[#DAA520] rounded-br-xl -mb-2 -mr-2" />
-
-                    <QRCode
-                      type={renderType}
-                      value={text || "https://ktltc.ac.th"}
-                      size={240}
-                      iconSize={60}
-                      color="#000"
-                      bgColor="#FFF"
-                      style={{ margin: "auto" }}
-                      errorLevel="H"
-                    />
-                  </div>
-
-                  <div className="mt-6 text-center">
-                    <p className="text-xs font-medium text-gray-400 uppercase tracking-widest">
-                      {isFetchingTitle ? "LOADING..." : "SCAN ME"}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-1 truncate max-w-[200px] mx-auto transition-all">
-                      {/* แสดง Title แทน Text ถ้ายาวไปก็จุดๆๆ */}
-                      {isFetchingTitle
-                        ? "ดึงข้อมูล..."
-                        : linkTitle || text || "https://ktltc.ac.th"}
-                    </p>
-                  </div>
+                <div className="mt-8 text-center space-y-1">
+                  <p className="text-sm font-medium text-slate-500 mt-2 truncate max-w-[240px] mx-auto">
+                    {isFetchingTitle
+                      ? "ดึงข้อมูลลิงก์..."
+                      : description || text || "https://ktltc.ac.th"}
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </ConfigProvider>
+    </div>
   );
 }

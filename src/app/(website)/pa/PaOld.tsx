@@ -15,11 +15,6 @@ import {
 // --- Data Configuration ---
 const paData = [
   {
-    year: "2569",
-    active: false,
-    personnel: [],
-  },
-  {
     year: "2568",
     active: true,
     personnel: [
