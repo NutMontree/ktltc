@@ -1,30 +1,24 @@
 import { NextResponse } from "next/server";
-import TypingScore, { connectDB } from "@/models/TypingScore";
+import { connectDB } from "@/models/TypingScore";
+import { SnakeScore } from "@/models/SnakeScore";
 import { auth } from "@/lib/auth";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(req.url);
-    const lang = searchParams.get("lang") || "th";
-
     await connectDB();
-    
-    // สำหรับภาษาไทย ให้นับรวมสถิติเก่าที่ยังไม่มีฟิลด์ language ด้วย
-    const query = lang === "th" 
-      ? { $or: [{ language: "th" }, { language: { $exists: false } }] }
-      : { language: lang };
-
-    // Get Top 10 High Scores
-    const topScores = await TypingScore.find(query)
-      .sort({ wpm: -1, accuracy: -1, createdAt: 1 })
+    const topScores = await SnakeScore.find()
+      .sort({ score: -1, createdAt: 1 })
       .limit(10)
       .lean();
     return NextResponse.json({ success: true, topScores }, { status: 200 });
   } catch (error) {
-    console.error("GET TypingScore Error:", error);
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+    console.error("GET SnakeScore Error:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -34,18 +28,17 @@ export async function POST(req: Request) {
 
     if (!session || !session.user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized. Please login to save score." },
+        { success: false, message: "Unauthorized" },
         { status: 401 },
       );
     }
 
     const body = await req.json();
-    const { wpm, accuracy, lang } = body;
-    const language = lang || "th";
+    const { score } = body;
 
-    if (wpm === undefined || accuracy === undefined) {
+    if (score === undefined) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields: wpm, accuracy" },
+        { success: false, message: "Missing data" },
         { status: 400 },
       );
     }
@@ -69,21 +62,13 @@ export async function POST(req: Request) {
       }
     }
 
-    // ค้นหาประวัติเดิมของผู้ใช้ (แยกตามภาษา) และพิจารณาให้คะแนนที่ไม่มีฟิลด์ language ถือว่าเป็นภาษาไทย
-    const query = language === "th"
-      ? { userId, $or: [{ language: "th" }, { language: { $exists: false } }] }
-      : { userId, language };
-      
-    const existingScore = await TypingScore.findOne(query);
+    // ค้นหาประวัติเดิมของผู้ใช้
+    const existingScore = await SnakeScore.findOne({ userId });
 
     if (existingScore) {
-      // ถ้ามีประวัติเดิม ให้เทียบ WPM ว่าเยอะกว่าเดิมไหม
-      if (
-        wpm > existingScore.wpm ||
-        (wpm === existingScore.wpm && accuracy > existingScore.accuracy)
-      ) {
-        existingScore.wpm = wpm;
-        existingScore.accuracy = accuracy;
+      // ถ้ามีประวัติเดิม ให้เทียบ score ว่าเยอะกว่าเดิมไหม
+      if (score > existingScore.score) {
+        existingScore.score = score;
         existingScore.name = session.user.name || "Unknown User"; // Update name just in case
         existingScore.userImage = userImage;
         existingScore.createdAt = new Date();
@@ -108,22 +93,24 @@ export async function POST(req: Request) {
       }
     } else {
       // ถ้ายังไม่มีประวัติให้สร้างใหม่
-      const newScore = new TypingScore({
+      const newScore = new SnakeScore({
         userId,
         name: session.user.name || "Unknown User",
         userImage,
-        language,
-        wpm,
-        accuracy,
+        score,
       });
+
       await newScore.save();
       return NextResponse.json(
-        { success: true, message: "Score saved successfully", score: newScore },
+        { success: true, message: "Score saved!", score: newScore },
         { status: 201 },
       );
     }
   } catch (error) {
-    console.error("POST TypingScore Error:", error);
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+    console.error("POST SnakeScore Error:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
