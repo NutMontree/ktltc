@@ -3,19 +3,23 @@
 import { useState, useEffect, useRef, JSX } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Card, CardBody, Button, Spinner, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input } from "@heroui/react";
+import { Card, CardBody, Button, Spinner, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input, User, Tabs, Tab } from "@heroui/react";
 import { TrophyOutlined, SyncOutlined, HistoryOutlined, QuestionCircleOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 
 interface TopScore {
   _id: string;
+  userId?: string;
   name: string;
+  userImage?: string;
   wpm: number;
   accuracy: number;
   createdAt: string;
 }
 
 import { paragraphs } from "./texts";
+import { paragraphsEn } from "./texts_en";
+import Link from "next/link";
 
 const calculateWPM = (typedCharacters: number, seconds: number): number => {
   if (seconds <= 0) return 0;
@@ -28,10 +32,11 @@ export default function TypingTestApp(): JSX.Element {
   const { data: session } = useSession();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isEditOpen, onOpen: onEditOpen, onOpenChange: onEditOpenChange } = useDisclosure();
-  
+
   const [editingScore, setEditingScore] = useState<TopScore | null>(null);
   const [editWpm, setEditWpm] = useState<string>("");
   const [editAccuracy, setEditAccuracy] = useState<string>("");
+  const [testLang, setTestLang] = useState<"th" | "en">("th");
   const [textToType, setTextToType] = useState<string>("");
   const [typedText, setTypedText] = useState<string>("");
   const [status, setStatus] = useState<"ready" | "countdown" | "typing" | "finished">("ready");
@@ -39,17 +44,17 @@ export default function TypingTestApp(): JSX.Element {
   const [countdown, setCountdown] = useState<number>(3);
   const [wpm, setWpm] = useState<number>(0);
   const [accuracy, setAccuracy] = useState<number>(0);
-  
+
   const [leaderboard, setLeaderboard] = useState<TopScore[]>([]);
   const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const timerId = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = async (lang = testLang) => {
     setIsLoadingLeaderboard(true);
     try {
-      const res = await fetch("/api/typing-test");
+      const res = await fetch(`/api/typing-test?lang=${lang}`);
       const data = await res.json();
       if (data.success) {
         setLeaderboard(data.topScores);
@@ -61,12 +66,12 @@ export default function TypingTestApp(): JSX.Element {
   };
 
   useEffect(() => {
-    startTest(false);
-    fetchLeaderboard();
+    startTest(false, testLang);
+    fetchLeaderboard(testLang);
     return () => {
       if (timerId.current) clearInterval(timerId.current);
     };
-  }, []);
+  }, []); // Initial load only, language switch handled explicitly
 
   const saveScoreToDB = async (finalWpm: number, finalAcc: number) => {
     if (!session) return;
@@ -74,7 +79,7 @@ export default function TypingTestApp(): JSX.Element {
       const res = await fetch("/api/typing-test", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wpm: finalWpm, accuracy: finalAcc }),
+        body: JSON.stringify({ wpm: finalWpm, accuracy: finalAcc, lang: testLang }),
       });
       const data = await res.json();
       if (data.success) {
@@ -86,8 +91,9 @@ export default function TypingTestApp(): JSX.Element {
     }
   };
 
-  const startTest = (startNow = true): void => {
-    const newText = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+  const startTest = (startNow = true, lang = testLang): void => {
+    const source = lang === "th" ? paragraphs : paragraphsEn;
+    const newText = source[Math.floor(Math.random() * source.length)];
     setTextToType(newText);
     setTypedText("");
     setTimer(60);
@@ -96,6 +102,13 @@ export default function TypingTestApp(): JSX.Element {
     setCountdown(3);
     setStatus("ready");
     if (startNow) handleStartCountdown();
+  };
+
+  const handleLanguageChange = (key: React.Key) => {
+    const newLang = key as "th" | "en";
+    setTestLang(newLang);
+    startTest(false, newLang);
+    fetchLeaderboard(newLang);
   };
 
   const handleStartCountdown = (): void => {
@@ -171,7 +184,7 @@ export default function TypingTestApp(): JSX.Element {
     for (let i = 0; i < value.length; i++) {
       if (value[i] === textToType[i]) correctCharacters++;
     }
-    
+
     const elapsedTime = 60 - timer;
     const currentWPM = calculateWPM(correctCharacters, elapsedTime || 1); // Avoid div by zero
     setWpm(currentWPM);
@@ -186,14 +199,14 @@ export default function TypingTestApp(): JSX.Element {
 
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 py-12 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 py-12 px-4 sm:px-6">
+      <div className="max-w-[1600px] w-full mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl sm:text-5xl font-black bg-linear-to-r from-teal-400 to-emerald-500 bg-clip-text text-transparent">
             Typing Speed Test
           </h1>
-          <p className="text-slate-400 text-lg flex items-center justify-center gap-4">
+          <p className="text-slate-600 dark:text-slate-400 text-lg flex items-center justify-center gap-4">
             ทดสอบความเร็วและความแม่นยำในการพิมพ์ของคุณ
             <Button size="sm" variant="flat" color="primary" onPress={onOpen} startContent={<QuestionCircleOutlined />}>
               วิธีการเล่น
@@ -205,34 +218,53 @@ export default function TypingTestApp(): JSX.Element {
             </p>
           )}
         </div>
+        
+        {/* Language Tabs */}
+        <div className="flex justify-center">
+          <Tabs 
+            selectedKey={testLang} 
+            onSelectionChange={handleLanguageChange}
+            color="primary"
+            variant="solid"
+            radius="full"
+            classNames={{
+              tabList: "bg-white dark:bg-slate-900 shadow-md border border-slate-200 dark:border-slate-800",
+              cursor: "bg-teal-500",
+              tab: "px-6"
+            }}
+          >
+            <Tab key="th" title={<div className="flex items-center gap-2"><span className="text-lg">🇹🇭</span> ภาษาไทย</div>} />
+            <Tab key="en" title={<div className="flex items-center gap-2"><span className="text-lg">🇬🇧</span> English</div>} />
+          </Tabs>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Typing Area */}
           <div className="lg:col-span-2 space-y-6">
             {/* Stats Cards */}
             <div className="grid grid-cols-3 gap-4">
-              <Card className="bg-slate-900 border-none shadow-xl shadow-slate-900/50">
+              <Card className="bg-white dark:bg-slate-900 border-none shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
                 <CardBody className="text-center py-6">
-                  <p className="text-slate-400 text-sm font-medium mb-1">เวลาที่เหลือ (วิ)</p>
-                  <p className={`text-4xl font-black ${timer <= 10 ? 'text-red-500' : 'text-white'}`}>{timer}s</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">เวลาที่เหลือ (วิ)</p>
+                  <p className={`text-4xl font-black ${timer <= 10 ? 'text-red-500' : 'text-slate-800 dark:text-white'}`}>{timer}s</p>
                 </CardBody>
               </Card>
-              <Card className="bg-slate-900 border-none shadow-xl shadow-slate-900/50">
+              <Card className="bg-white dark:bg-slate-900 border-none shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
                 <CardBody className="text-center py-6">
-                  <p className="text-slate-400 text-sm font-medium mb-1">ความเร็ว (WPM)</p>
-                  <p className="text-4xl font-black text-teal-400">{wpm}</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">ความเร็ว (WPM)</p>
+                  <p className="text-4xl font-black text-teal-500 dark:text-teal-400">{wpm}</p>
                 </CardBody>
               </Card>
-              <Card className="bg-slate-900 border-none shadow-xl shadow-slate-900/50">
+              <Card className="bg-white dark:bg-slate-900 border-none shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
                 <CardBody className="text-center py-6">
-                  <p className="text-slate-400 text-sm font-medium mb-1">ความแม่นยำ</p>
-                  <p className="text-4xl font-black text-emerald-400">{accuracy}%</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">ความแม่นยำ</p>
+                  <p className="text-4xl font-black text-emerald-500 dark:text-emerald-400">{accuracy}%</p>
                 </CardBody>
               </Card>
             </div>
 
             {/* Typing Canvas */}
-            <Card className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 shadow-2xl relative overflow-hidden">
+            <Card className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden">
               <CardBody className="p-8 sm:p-10">
                 <div className="relative text-2xl sm:text-3xl leading-relaxed tracking-wide min-h-[200px] font-medium selection:bg-teal-500/30">
                   <AnimatePresence>
@@ -241,9 +273,9 @@ export default function TypingTestApp(): JSX.Element {
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 1.5, opacity: 0 }}
-                        className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm rounded-2xl"
+                        className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm rounded-2xl"
                       >
-                        <span className="text-8xl font-black text-teal-400 drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]">
+                        <span className="text-8xl font-black text-teal-500 dark:text-teal-400 drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]">
                           {countdown}
                         </span>
                       </motion.div>
@@ -252,13 +284,13 @@ export default function TypingTestApp(): JSX.Element {
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md rounded-2xl"
+                        className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/90 dark:bg-slate-950/90 backdrop-blur-md rounded-2xl"
                       >
                         <TrophyOutlined className="text-6xl text-amber-400 mb-4" />
-                        <h2 className="text-3xl font-bold text-white mb-2">หมดเวลา!</h2>
-                        <p className="text-xl text-slate-300 mb-6">
-                          ความเร็ว: <span className="text-teal-400 font-bold">{wpm} WPM</span> | 
-                          ความแม่นยำ: <span className="text-emerald-400 font-bold">{accuracy}%</span>
+                        <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">หมดเวลา!</h2>
+                        <p className="text-xl text-slate-600 dark:text-slate-300 mb-6">
+                          ความเร็ว: <span className="text-teal-500 dark:text-teal-400 font-bold">{wpm} WPM</span> |
+                          ความแม่นยำ: <span className="text-emerald-500 dark:text-emerald-400 font-bold">{accuracy}%</span>
                         </p>
                         <Button
                           color="primary"
@@ -272,7 +304,7 @@ export default function TypingTestApp(): JSX.Element {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  
+
                   <div className="text-slate-600 flex flex-wrap leading-14">
                     {textToType.split("").map((char, index) => {
                       const isTyped = index < typedText.length;
@@ -280,19 +312,19 @@ export default function TypingTestApp(): JSX.Element {
                       const isCorrect = typedChar === char;
 
                       if (!isTyped) {
-                        return <span key={index} className={`text-slate-500/50 ${char === " " ? "opacity-30" : ""}`}>{char === " " ? "␣" : char}</span>;
+                        return <span key={index} className={`text-slate-400 dark:text-slate-500/50 ${char === " " ? "opacity-30" : ""}`}>{char === " " ? "␣" : char}</span>;
                       }
 
                       if (isCorrect) {
-                        return <span key={index} className="text-green-400 font-bold">{char === " " ? "␣" : char}</span>;
+                        return <span key={index} className="text-green-500 dark:text-green-400 font-bold">{char === " " ? "␣" : char}</span>;
                       }
 
                       return (
                         <span key={index} className="relative inline-flex flex-col items-center justify-center">
-                          <span className="absolute -top-7 text-[12px] text-red-400 font-black bg-red-950/90 px-1.5 py-0.5 rounded-md border border-red-500/40 shadow-sm whitespace-pre z-20">
+                          <span className="absolute -top-7 text-[12px] text-white font-black bg-red-500 dark:bg-red-950/90 px-1.5 py-0.5 rounded-md border border-red-500/40 shadow-sm whitespace-pre z-20">
                             {typedChar === " " ? "␣" : typedChar}
                           </span>
-                          <span className="text-red-400 font-bold line-through opacity-60">{char === " " ? "␣" : char}</span>
+                          <span className="text-red-500 dark:text-red-400 font-bold line-through opacity-60">{char === " " ? "␣" : char}</span>
                         </span>
                       );
                     })}
@@ -315,10 +347,10 @@ export default function TypingTestApp(): JSX.Element {
 
                 {/* Start Button Overlay */}
                 {status === "ready" && (
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950/50 backdrop-blur-sm">
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm">
                     <Button
                       size="lg"
-                      className="bg-white text-slate-900 font-black px-12 py-8 text-2xl rounded-full shadow-2xl hover:scale-105 transition-transform"
+                      className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black px-12 py-8 text-2xl rounded-full shadow-2xl hover:scale-105 transition-transform"
                       onClick={handleStartCountdown}
                     >
                       เริ่มพิมพ์
@@ -331,38 +363,58 @@ export default function TypingTestApp(): JSX.Element {
 
           {/* Leaderboard Area */}
           <div className="lg:col-span-1">
-            <Card className="bg-slate-900 border border-slate-800 shadow-xl h-full">
+            <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl h-full">
               <CardBody className="p-0">
-                <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/80 sticky top-0 z-10">
-                  <h3 className="text-lg font-bold flex items-center gap-2 text-white">
-                    <TrophyOutlined className="text-amber-400" />
-                    Top 10 Leaderboard
+                <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white/80 dark:bg-slate-900/80 sticky top-0 z-10">
+                  <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                    <TrophyOutlined className="text-amber-500 dark:text-amber-400" />
+                    Top 10 Leaderboard ({testLang === "th" ? "TH" : "EN"})
                   </h3>
-                  <Button isIconOnly size="sm" variant="flat" onClick={fetchLeaderboard}>
+                  <Button isIconOnly size="sm" variant="flat" onClick={() => fetchLeaderboard()}>
                     <SyncOutlined className={isLoadingLeaderboard ? "animate-spin" : ""} />
                   </Button>
                 </div>
-                
+
                 <div className="p-2">
                   {isLoadingLeaderboard ? (
                     <div className="flex justify-center p-8"><Spinner color="primary" /></div>
                   ) : leaderboard.length > 0 ? (
                     <div className="space-y-2">
                       {leaderboard.map((score, index) => (
-                        <div key={score._id} className="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 hover:bg-slate-800 transition-colors">
+                        <div key={score._id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                              index === 0 ? "bg-amber-400 text-amber-950" : 
-                              index === 1 ? "bg-slate-300 text-slate-800" : 
-                              index === 2 ? "bg-amber-700 text-white" : 
-                              "bg-slate-700 text-slate-300"
-                            }`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? "bg-amber-400 text-amber-950" :
+                                index === 1 ? "bg-slate-300 text-slate-800" :
+                                  index === 2 ? "bg-amber-700 text-white" :
+                                    "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                              }`}>
                               {index + 1}
                             </div>
-                            <div>
-                              <p className="font-semibold text-white text-sm line-clamp-1">{score.name}</p>
-                              <p className="text-xs text-slate-400">{new Date(score.createdAt).toLocaleDateString('th-TH')}</p>
-                            </div>
+                            {score.userId ? (
+                              <Link href={`/profile/${score.userId}`} className="hover:opacity-80 transition-opacity">
+                                <User
+                                  name={<span className="font-semibold text-slate-800 dark:text-white text-sm line-clamp-1">{score.name}</span>}
+                                  description={<span className="text-xs text-slate-500 dark:text-slate-400">{new Date(score.createdAt).toLocaleDateString('th-TH')}</span>}
+                                  avatarProps={{
+                                    src: score.userImage || "",
+                                    name: score.name.charAt(0).toUpperCase(),
+                                    size: "sm",
+                                    className: "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                                  }}
+                                />
+                              </Link>
+                            ) : (
+                              <User
+                                name={<span className="font-semibold text-slate-800 dark:text-white text-sm line-clamp-1">{score.name}</span>}
+                                description={<span className="text-xs text-slate-500 dark:text-slate-400">{new Date(score.createdAt).toLocaleDateString('th-TH')}</span>}
+                                avatarProps={{
+                                  src: score.userImage || "",
+                                  name: score.name.charAt(0).toUpperCase(),
+                                  size: "sm",
+                                  className: "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                                }}
+                              />
+                            )}
                           </div>
                           <div className="text-right flex items-center gap-3">
                             <div>
@@ -427,12 +479,12 @@ export default function TypingTestApp(): JSX.Element {
       </div>
 
       {/* How to Play Modal */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="dark text-foreground bg-slate-900 border border-slate-800">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="text-foreground bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-teal-400">วิธีการเล่นเกมพิมพ์ดีด</ModalHeader>
-              <ModalBody className="text-slate-300">
+              <ModalHeader className="flex flex-col gap-1 text-teal-600 dark:text-teal-400">วิธีการเล่นเกมพิมพ์ดีด</ModalHeader>
+              <ModalBody className="text-slate-600 dark:text-slate-300">
                 <p>
                   <strong>WPM ย่อมาจาก Words Per Minute (คำต่อนาที):</strong>
                   <br />
@@ -463,19 +515,19 @@ export default function TypingTestApp(): JSX.Element {
       </Modal>
 
       {/* Edit Score Modal for Super Admin */}
-      <Modal isOpen={isEditOpen} onOpenChange={onEditOpenChange} className="dark text-foreground bg-slate-900 border border-slate-800">
+      <Modal isOpen={isEditOpen} onOpenChange={onEditOpenChange} className="text-foreground bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-teal-400">แก้ไขคะแนน ({editingScore?.name})</ModalHeader>
-              <ModalBody className="text-slate-300">
+              <ModalHeader className="flex flex-col gap-1 text-teal-600 dark:text-teal-400">แก้ไขคะแนน ({editingScore?.name})</ModalHeader>
+              <ModalBody className="text-slate-600 dark:text-slate-300">
                 <Input
                   label="WPM (ความเร็ว)"
                   type="number"
                   value={editWpm}
                   onChange={(e) => setEditWpm(e.target.value)}
                   variant="bordered"
-                  classNames={{ input: "text-white" }}
+                  classNames={{ input: "text-slate-800 dark:text-white" }}
                 />
                 <Input
                   label="Accuracy (ความแม่นยำ %)"
@@ -483,7 +535,7 @@ export default function TypingTestApp(): JSX.Element {
                   value={editAccuracy}
                   onChange={(e) => setEditAccuracy(e.target.value)}
                   variant="bordered"
-                  classNames={{ input: "text-white" }}
+                  classNames={{ input: "text-slate-800 dark:text-white" }}
                 />
               </ModalBody>
               <ModalFooter>
