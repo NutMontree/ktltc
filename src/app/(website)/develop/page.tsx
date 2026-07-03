@@ -122,7 +122,7 @@ export default function StudentActivitiesPage() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6"
+        className="relative z-10 max-w-[1600px] mx-auto w-full"
       >
         {/* --- Header --- */}
         <motion.div variants={itemVar} className="mb-16 text-center">
@@ -145,6 +145,7 @@ export default function StudentActivitiesPage() {
         {/* --- Content (Modern Accordion) --- */}
         <motion.div variants={itemVar}>
           <Accordion
+            selectionMode="multiple"
             variant="splitted"
             itemClasses={itemClasses}
             className="px-0 gap-4"

@@ -42,8 +42,8 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
       try {
         setLoading(true);
 
-        const cacheKey = `ktltc_dept_${departmentName}`;
-        const timeKey = `ktltc_dept_time_${departmentName}`;
+        const cacheKey = `ktltc_dept_v4_${departmentName}`;
+        const timeKey = `ktltc_dept_v4_${departmentName}_time`;
         const cached = sessionStorage.getItem(cacheKey);
         const cacheTime = sessionStorage.getItem(timeKey);
 

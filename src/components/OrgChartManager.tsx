@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { User, Phone, Mail, MessageSquare, Briefcase, Building2, ShieldCheck, Star } from "lucide-react";
 import Link from "next/link";
 import { LoadingOutlined, UserOutlined } from "@ant-design/icons";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 
 interface OrgChartManagerProps {
   department: string;
@@ -44,17 +45,37 @@ export default function OrgChartManager({ departmentNameTh, title }: OrgChartMan
         };
         const targetRole = roleMap[departmentNameTh];
 
+        // ค้นหารายชื่องานย่อย (sub-factions) ที่อยู่ในฝ่ายนี้
+        const findMatchedGroup = (deptName: string) => {
+          if (deptName.includes("กิจการนักเรียน")) {
+            return DEPARTMENT_GROUPS.find(g => g.label.includes("กิจการนักเรียน"));
+          }
+          return DEPARTMENT_GROUPS.find(g => g.label.includes(deptName));
+        };
+        const matchedGroup = findMatchedGroup(departmentNameTh);
+        const subFactions = matchedGroup ? matchedGroup.options.map(o => o.value) : [];
+
         const processUsers = (allUsers: any[]) => {
-          const deptUsers = allUsers.filter((u: any) => 
-            (u.department || "").includes(departmentNameTh) ||
-            (u.faction || "").includes(departmentNameTh) ||
-            (targetRole && u.role === targetRole)
-          );
+          const deptUsers = allUsers.filter((u: any) => {
+            const userDept = u.department || "";
+            const userFaction = u.faction || "";
+            const userRole = String(u.role || "").toLowerCase();
+            
+            // ยกเว้นนักเรียนและสมาชิกทั่วไป ไม่ให้แสดงในแผนภูมิบุคลากร
+            if (["student", "user", "member", "members"].includes(userRole)) {
+              return false;
+            }
+            
+            const isDirectMatch = userDept.includes(departmentNameTh) || userFaction.includes(departmentNameTh);
+            const isSubFactionMatch = subFactions.some(sub => userDept.includes(sub) || userFaction.includes(sub));
+            
+            return isDirectMatch || isSubFactionMatch || (targetRole && u.role === targetRole);
+          });
           setUsers(deptUsers);
         };
 
-        const cacheKey = "ktltc_users_all";
-        const timeKey = "ktltc_users_all_time";
+        const cacheKey = "ktltc_users_all_v2";
+        const timeKey = "ktltc_users_all_time_v2";
         const cached = sessionStorage.getItem(cacheKey);
         const cacheTime = sessionStorage.getItem(timeKey);
         
@@ -96,7 +117,7 @@ export default function OrgChartManager({ departmentNameTh, title }: OrgChartMan
   const heads = users.filter(u => 
     String(u.role).startsWith("deputy") || 
     String(u.role) === "director" ||
-    (u.position && (u.position.includes("ผู้อำนวยการ") || u.position.includes("หัวหน้าฝ่าย") || u.position === "หัวหน้าแผนกวิชา"))
+    (u.position && (u.position.includes("ผู้อำนวยการ") || u.position.includes("หัวหน้าฝ่าย")))
   );
   
   const members = users.filter(u => !heads.includes(u));

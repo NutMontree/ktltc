@@ -34,16 +34,39 @@ export async function GET(req: Request) {
       .project({ password: 0 })
       .toArray();
 
-    // Filter by department using normalized comparison
-    const normalizedFilter = normalizeDept(departmentStr);
+    // Smart Matching to separate Staff ("งาน...") from Teachers ("แผนกวิชา...") while tolerating sloppy data entry
     const users = allUsers.filter((user: any) => {
-      const normalizedDept = normalizeDept(user.department || "");
-      const normalizedFaction = normalizeDept(user.faction || "");
+      const userDept = (user.department || "").trim();
+      const userFaction = (user.faction || "").trim();
       
-      const matchDept = normalizedDept && (normalizedDept.includes(normalizedFilter) || normalizedFilter.includes(normalizedDept));
-      const matchFaction = normalizedFaction && (normalizedFaction.includes(normalizedFilter) || normalizedFilter.includes(normalizedFaction));
+      // 1. ถ้าค้นหา Staff (เช่น "งานการบัญชี")
+      if (departmentStr.startsWith("งาน")) {
+         // ต้องมีคำว่า "งาน..." ชัดเจน เพื่อไม่ให้ไปดึง "การบัญชี" เฉยๆ ของฝั่งครูมา
+         const matchDept = userDept.includes(departmentStr);
+         const matchFaction = userFaction.includes(departmentStr);
+         return matchDept || matchFaction;
+      }
       
-      return matchDept || matchFaction;
+      // 2. ถ้าค้นหา Teacher (เช่น "แผนกวิชาการบัญชี" หรือ "การบัญชี" ที่ส่งมาจากหน้าเว็บ)
+      const academicKeywords = ["การบัญชี", "การตลาด", "ช่างยนต์", "ช่างกลโรงงาน", "ช่างเชื่อมโลหะ", "ช่างไฟฟ้ากำลัง", "ช่างอิเล็กทรอนิกส์", "เทคนิคพื้นฐาน", "ช่างก่อสร้าง", "เทคโนโลยีธุรกิจดิจิทัล", "การโรงแรม", "สามัญสัมพันธ์", "ยานยนต์ไฟฟ้า", "การจัดการสำนักงานดิจิทัล", "การจัดการโลจิสติกส์และซัพพลายเชน", "โลจิสติก์"];
+      const isAcademicQuery = departmentStr.startsWith("แผนกวิชา") || academicKeywords.some(kw => departmentStr.includes(kw));
+      
+      if (isAcademicQuery && !departmentStr.startsWith("งาน")) {
+         const coreSubject = departmentStr.replace("แผนกวิชา", "").trim(); // เช่น "การบัญชี"
+         
+         const checkMatch = (val: string) => {
+            if (!val) return false;
+            // ถ้าข้อมูลของ user มีคำว่า "งาน" (เช่น "งานการบัญชี") แปลว่าเป็นฝั่งบริหาร (Staff) ไม่ใช่ครู!
+            if (val.includes("งาน")) return false;
+            // ถ้าไม่มีคำว่า "งาน" และมีคำหลัก (coreSubject) ถือว่าแมตช์
+            return val.includes(coreSubject);
+         };
+         
+         return checkMatch(userDept) || checkMatch(userFaction);
+      }
+
+      // 3. Fallback สำหรับฝ่ายอื่นๆ
+      return userDept.includes(departmentStr) || userFaction.includes(departmentStr);
     });
 
     // ลำดับสิทธิ์การเข้าถึง (เรียงจากระดับบริหารลงมา)

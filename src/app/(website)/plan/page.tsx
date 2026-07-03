@@ -150,7 +150,7 @@ export default function PlanningPage() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="relative z-10 max-w-5xl mx-auto"
+        className="relative z-10 max-w-[1600px] mx-auto w-full"
       >
         {/* --- Header --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">
@@ -170,6 +170,7 @@ export default function PlanningPage() {
         {/* --- Content (Modern Accordion) --- */}
         <motion.div variants={itemVar}>
           <Accordion
+            selectionMode="multiple"
             variant="splitted"
             itemClasses={itemClasses}
             className=" gap-4"
