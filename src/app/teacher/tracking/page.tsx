@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { Loader2, Map as MapIcon, Users, RefreshCw } from "lucide-react";
+import { Loader2, Map as MapIcon, Users, RefreshCw, Settings } from "lucide-react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 // Dynamically import map to avoid SSR issues with window/document
@@ -21,6 +22,28 @@ export default function TrackingDashboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [error, setError] = useState<string | null>(null);
+  const [trackingConfig, setTrackingConfig] = useState({
+    campusCenterLat: 14.754043,
+    campusCenterLng: 104.65807,
+    geofenceRadius: 500,
+    refreshIntervalSeconds: 15
+  });
+
+  const fetchConfig = async () => {
+    try {
+      const res = await fetch("/api/tracking/config");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          setTrackingConfig(data.data);
+          return data.data.refreshIntervalSeconds;
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch tracking config");
+    }
+    return 15;
+  };
 
   const fetchLiveLocations = async () => {
     try {
@@ -44,11 +67,16 @@ export default function TrackingDashboard() {
   };
 
   useEffect(() => {
-    // Initial fetch
-    fetchLiveLocations();
-
-    // Auto-refresh every 15 seconds
-    const interval = setInterval(fetchLiveLocations, 15000);
+    let interval: NodeJS.Timeout;
+    
+    const init = async () => {
+      const intervalSec = await fetchConfig();
+      await fetchLiveLocations();
+      
+      interval = setInterval(fetchLiveLocations, intervalSec * 1000);
+    };
+    
+    init();
     return () => clearInterval(interval);
   }, []);
 
@@ -67,9 +95,14 @@ export default function TrackingDashboard() {
               ระบบติดตามตำแหน่งนักเรียน <span className="text-blue-500">(Live GPS Tracking)</span>
             </h1>
           </div>
-          <p className="text-sm font-medium text-zinc-500 max-w-2xl">
-            ตรวจสอบตำแหน่งของนักเรียนที่เชื่อมต่อผ่านแอปพลิเคชันมือถือในรัศมีวิทยาลัย (อัปเดตอัตโนมัติทุก 15 วินาที)
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-sm font-medium text-zinc-500 max-w-2xl">
+              ตรวจสอบตำแหน่งของนักเรียนที่เชื่อมต่อผ่านแอปพลิเคชันมือถือในรัศมีวิทยาลัย (อัปเดตอัตโนมัติตามการตั้งค่า)
+            </p>
+            <Link href="/teacher/tracking/settings" className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 rounded-xl text-xs font-bold text-zinc-600 dark:text-zinc-400 transition-all flex items-center gap-2">
+              <Settings size={14} /> ตั้งค่าแผนที่
+            </Link>
+          </div>
         </motion.div>
 
         <motion.div 
@@ -111,7 +144,7 @@ export default function TrackingDashboard() {
             <p className="text-zinc-500">{error}</p>
           </div>
         ) : (
-          <MapComponent students={students} />
+          <MapComponent students={students} config={trackingConfig} />
         )}
       </motion.div>
     </div>

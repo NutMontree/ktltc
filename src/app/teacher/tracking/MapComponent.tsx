@@ -40,11 +40,12 @@ const createStudentIcon = (imageUrl?: string) => {
   });
 };
 
-export default function MapComponent({ students }: { students: any[] }) {
-  // Default center: coordinates for Kantaralak (example)
-  // You might want to update this to the exact campus coordinates
-  const CAMPUS_CENTER: [number, number] = [14.6385, 104.6477];
-  const GEOFENCE_RADIUS = 500; // 500 meters
+export default function MapComponent({ students, config }: { students: any[], config?: any }) {
+  // Use dynamic config if available, otherwise default to Kantharalak Technical College
+  const centerLat = config?.campusCenterLat || 14.754043;
+  const centerLng = config?.campusCenterLng || 104.65807;
+  const CAMPUS_CENTER: [number, number] = [centerLat, centerLng];
+  const GEOFENCE_RADIUS = config?.geofenceRadius || 500;
 
   return (
     <div className="h-full w-full rounded-2xl overflow-hidden shadow-inner border border-zinc-200 dark:border-zinc-800 relative z-10">
