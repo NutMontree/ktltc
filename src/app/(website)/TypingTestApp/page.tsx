@@ -241,7 +241,7 @@ export default function TypingTestApp(): JSX.Element {
             >
               🇬🇧 EN
             </Button>
-            <div className="w-[1px] h-4 bg-slate-300 dark:bg-slate-700 mx-1"></div>
+            <div className="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-1"></div>
             <Button isIconOnly size="sm" variant="light" className="rounded-full text-slate-500" onPress={onOpen}>
               <QuestionCircleOutlined />
             </Button>
@@ -306,7 +306,7 @@ export default function TypingTestApp(): JSX.Element {
                         <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">ความเร็ว</p>
                         <p className="text-3xl font-black text-teal-500 dark:text-teal-400">{wpm} <span className="text-lg">คำ/นาที</span></p>
                       </div>
-                      <div className="w-[1px] bg-slate-200 dark:bg-slate-800"></div>
+                      <div className="w-px bg-slate-200 dark:bg-slate-800"></div>
                       <div className="text-center">
                         <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">ความแม่นยำ</p>
                         <p className="text-3xl font-black text-emerald-500 dark:text-emerald-400">{accuracy}%</p>
@@ -333,7 +333,7 @@ export default function TypingTestApp(): JSX.Element {
                 }}
               >
                 {/* Text Loop */}
-                <div className="break-words select-none">
+                <div className="wrap-break-word select-none">
                   {(() => {
                     const groups: { text: string; colorClass: string; bgClass: string; isCursor: boolean }[] = [];
                     let currentGroup = { text: "", colorClass: "", bgClass: "" };
@@ -391,7 +391,7 @@ export default function TypingTestApp(): JSX.Element {
                           <span key={index} className="relative">
                             <motion.span 
                               layoutId="cursor"
-                              className="absolute -left-[1px] top-[15%] bottom-[15%] w-[3px] bg-teal-500 rounded-full z-10"
+                              className="absolute -left-px top-[15%] bottom-[15%] w-[3px] bg-teal-500 rounded-full z-10"
                               initial={{ opacity: 1 }}
                               animate={{ opacity: [1, 0, 1] }}
                               transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
