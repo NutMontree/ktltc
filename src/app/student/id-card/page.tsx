@@ -13,6 +13,52 @@ export default function StudentIdCardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [gpsStatus, setGpsStatus] = useState<"pending" | "active" | "error" | "denied">("pending");
+
+  // GPS Tracking Logic
+  useEffect(() => {
+    if (status !== "authenticated" || !navigator.geolocation) return;
+
+    let watchId: number;
+
+    const startTracking = () => {
+      watchId = navigator.geolocation.watchPosition(
+        async (position) => {
+          setGpsStatus("active");
+          const { latitude, longitude } = position.coords;
+          
+          try {
+            await fetch("/api/tracking/update", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ latitude, longitude }),
+            });
+          } catch (error) {
+            console.error("Failed to send GPS data", error);
+          }
+        },
+        (error) => {
+          console.error("GPS Error:", error);
+          if (error.code === error.PERMISSION_DENIED) {
+            setGpsStatus("denied");
+          } else {
+            setGpsStatus("error");
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 10000,
+        }
+      );
+    };
+
+    startTracking();
+
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [status]);
 
   useEffect(() => {
     setMounted(true);
@@ -107,8 +153,32 @@ export default function StudentIdCardPage() {
           </div>
 
           {/* QR Code Section */}
-          <div className="flex-1 flex flex-col items-center justify-center w-full bg-slate-50/50 dark:bg-zinc-800/30 border-t border-slate-100 dark:border-zinc-800/50 p-6">
-            <div className="bg-white p-3 rounded-3xl shadow-sm border border-slate-200">
+          <div className="flex-1 flex flex-col items-center justify-center w-full bg-slate-50/50 dark:bg-zinc-800/30 border-t border-slate-100 dark:border-zinc-800/50 p-6 relative">
+            
+            {/* GPS Tracking Indicator */}
+            <div className="absolute top-3 right-4 flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900/80 px-2 py-1 rounded-full shadow-sm border border-zinc-100 dark:border-zinc-800">
+              {gpsStatus === "active" ? (
+                <>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">GPS ทำงาน</span>
+                </>
+              ) : gpsStatus === "denied" ? (
+                <>
+                  <div className="w-2 h-2 rounded-full bg-rose-500" />
+                  <span className="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest">ปิด GPS</span>
+                </>
+              ) : (
+                <>
+                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">กำลังหาพิกัด</span>
+                </>
+              )}
+            </div>
+
+            <div className="bg-white p-3 rounded-3xl shadow-sm border border-slate-200 mt-2">
               <QRCode 
                 value={studentId} 
                 size={160} 

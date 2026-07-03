@@ -23,7 +23,14 @@ export default function GateScanner() {
   useEffect(() => {
     return () => {
       if (scannerInstance && isScanning) {
-        scannerInstance.stop().catch(console.error);
+        try {
+          if (scannerInstance.getState() === 2) {
+            scannerInstance.resume();
+          }
+          scannerInstance.stop().then(() => {
+            scannerInstance.clear();
+          }).catch(() => {});
+        } catch (e) {}
       }
     };
   }, [scannerInstance, isScanning]);
@@ -65,11 +72,17 @@ export default function GateScanner() {
     if (scannerInstance && isScanning) {
       setIsProcessing(true);
       try {
+        // Resume first if paused to avoid state errors during stop
+        if (scannerInstance.getState() === 2) {
+          scannerInstance.resume();
+        }
         await scannerInstance.stop();
-        setIsScanning(false);
+        scannerInstance.clear();
       } catch (err) {
-        console.error(err);
+        console.error("Stop scanner error:", err);
       } finally {
+        setIsScanning(false);
+        setScannerInstance(null);
         setIsProcessing(false);
       }
     }

@@ -35,7 +35,16 @@ export async function GET() {
       projection: { password: 0 }
     }).toArray();
 
-    return NextResponse.json({ success: true, data: activeStudents });
+    // Merge session data (like scannedOutAt) into the student objects
+    const enrichedStudents = activeStudents.map(student => {
+      const session = activeSessions.find(s => s.studentId.toString() === student._id.toString());
+      return {
+        ...student,
+        scannedOutAt: session?.scannedOutAt || null
+      };
+    });
+
+    return NextResponse.json({ success: true, data: enrichedStudents });
   } catch (error) {
     console.error("Fetch Live Tracking Error:", error);
     return NextResponse.json({ success: false }, { status: 500 });

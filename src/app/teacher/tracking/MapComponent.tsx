@@ -69,32 +69,64 @@ export default function MapComponent({ students, config }: { students: any[], co
 
         {/* Student Markers */}
         {students.map((student) => {
-          if (!student.currentLocation?.latitude || !student.currentLocation?.longitude) return null;
+          // If no location yet, fallback to campus center (assumes they are at the gate)
+          const lat = student.currentLocation?.latitude || centerLat;
+          const lng = student.currentLocation?.longitude || centerLng;
+          const isFallback = !student.currentLocation?.latitude;
 
           return (
             <Marker
               key={student._id}
-              position={[student.currentLocation.latitude, student.currentLocation.longitude]}
+              position={[lat, lng]}
               icon={createStudentIcon(student.image)}
             >
               <Popup className="student-popup">
-                <div className="flex items-center gap-3 w-48">
-                  <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-100 shrink-0">
-                    {student.image ? (
-                      <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-500 font-bold">
-                        {(student.name || student.username || "?")[0]}
-                      </div>
-                    )}
+                <div className="w-52">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-100 shrink-0">
+                      {student.image ? (
+                        <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-500 font-bold">
+                          {(student.name || student.username || "?")[0]}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm leading-tight text-zinc-900">{student.name || student.username}</h3>
+                      <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{student.username}</p>
+                      <p className={`text-[9px] mt-1 font-bold ${isFallback ? "text-amber-500" : "text-emerald-500"}`}>
+                        {isFallback 
+                          ? "รอการอัปเดต GPS..." 
+                          : `อัปเดตเมื่อ: ${new Date(student.currentLocation.updatedAt).toLocaleTimeString("th-TH")}`
+                        }
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-sm leading-tight text-zinc-900">{student.name || student.username}</h3>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{student.username}</p>
-                    <p className="text-[9px] text-zinc-400 mt-1">
-                      อัปเดตเมื่อ: {new Date(student.currentLocation.updatedAt).toLocaleTimeString("th-TH")}
-                    </p>
-                  </div>
+                  {!isFallback && (
+                    <a
+                      href={`https://www.google.com/maps?q=${lat},${lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        marginTop: "8px",
+                        padding: "6px 0",
+                        borderRadius: "8px",
+                        backgroundColor: "#3b82f6",
+                        color: "white",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        textDecoration: "none",
+                        width: "100%",
+                      }}
+                    >
+                      📍 เปิดใน Google Maps
+                    </a>
+                  )}
                 </div>
               </Popup>
             </Marker>

@@ -2,26 +2,33 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { jwtVerify } from "jose";
 import { ObjectId } from "mongodb";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
+    let userId: string | null = null;
     const authHeader = request.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+
+    // 1. Check for Web Session (NextAuth) first
+    const session = await auth();
+    if (session?.user?.id) {
+      userId = (session.user as any).id;
+    } 
+    // 2. Fallback to JWT Token (for Mobile App)
+    else if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      const secret = new TextEncoder().encode(process.env.AUTH_SECRET || "fallback_secret_ktltc_mobile_app");
+      try {
+        const verified = await jwtVerify(token, secret);
+        userId = verified.payload.id as string;
+      } catch (err) {
+        return NextResponse.json({ success: false, message: "Invalid or expired token" }, { status: 401 });
+      }
+    }
+
+    if (!userId) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
-
-    const token = authHeader.split(" ")[1];
-    const secret = new TextEncoder().encode(process.env.AUTH_SECRET || "fallback_secret_ktltc_mobile_app");
-    
-    let payload;
-    try {
-      const verified = await jwtVerify(token, secret);
-      payload = verified.payload;
-    } catch (err) {
-      return NextResponse.json({ success: false, message: "Invalid or expired token" }, { status: 401 });
-    }
-
-    const userId = payload.id as string;
     const { latitude, longitude } = await request.json();
 
     if (latitude === undefined || longitude === undefined) {
