@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Image } from "@heroui/image";
+import Link from "next/link";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -40,6 +41,18 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
     const fetchPersonnel = async () => {
       try {
         setLoading(true);
+
+        const cacheKey = `ktltc_dept_${departmentName}`;
+        const timeKey = `ktltc_dept_time_${departmentName}`;
+        const cached = sessionStorage.getItem(cacheKey);
+        const cacheTime = sessionStorage.getItem(timeKey);
+
+        if (cached && cacheTime && Date.now() - Number(cacheTime) < 300000) {
+          setUsers(JSON.parse(cached));
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch(`/api/users/department?name=${encodeURIComponent(departmentName)}`);
         if (res.ok) {
           const data = await res.json();
@@ -47,6 +60,10 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
           const sortedUsers = (data.users || []).sort(
             (a: any, b: any) => (a.orderIndex || 0) - (b.orderIndex || 0),
           );
+          
+          sessionStorage.setItem(cacheKey, JSON.stringify(sortedUsers));
+          sessionStorage.setItem(timeKey, String(Date.now()));
+          
           setUsers(sortedUsers);
         }
       } catch (error) {
@@ -204,6 +221,16 @@ export default function PersonnelList({ departmentCode, departmentName }: Person
                       </p>
                     )}
                   </div>
+                </div>
+
+                {/* Profile Button */}
+                <div className="mt-5 pt-4 border-t border-slate-100 dark:border-zinc-800">
+                  <Link href={`/dashboard/profile/${String(user._id)}`} className="block w-full">
+                    <button className="w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 dark:text-blue-400 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 border border-blue-200/50 dark:border-blue-900/30">
+                      <UserOutlined />
+                      ดูโปรไฟล์
+                    </button>
+                  </Link>
                 </div>
 
                 {/* Footer Badge */}

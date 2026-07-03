@@ -38,7 +38,12 @@ export async function GET(req: Request) {
     const normalizedFilter = normalizeDept(departmentStr);
     const users = allUsers.filter((user: any) => {
       const normalizedDept = normalizeDept(user.department || "");
-      return normalizedDept.includes(normalizedFilter) || normalizedFilter.includes(normalizedDept);
+      const normalizedFaction = normalizeDept(user.faction || "");
+      
+      const matchDept = normalizedDept && (normalizedDept.includes(normalizedFilter) || normalizedFilter.includes(normalizedDept));
+      const matchFaction = normalizedFaction && (normalizedFaction.includes(normalizedFilter) || normalizedFilter.includes(normalizedFaction));
+      
+      return matchDept || matchFaction;
     });
 
     // ลำดับสิทธิ์การเข้าถึง (เรียงจากระดับบริหารลงมา)

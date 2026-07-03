@@ -48,10 +48,10 @@ export default function PAB() {
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-4 py-1.5 text-sm font-semibold text-teal-600 dark:text-teal-400">
             <FundProjectionScreenOutlined /> Planning & Budgeting
           </div>
-          <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
-            งานวางแผน <br className="md:hidden" />
+          <h1 className="text-3xl font-extrabold md:text-4xl lg:text-5xl leading-tight">
+            งานพัฒนายุทธศาสตร์ <br className="md:hidden" />
             <span className="bg-linear-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-              และงบประมาณ
+              แผนงานโครงการและงบประมาณ
             </span>
           </h1>
         </motion.div>

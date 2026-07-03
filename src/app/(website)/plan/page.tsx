@@ -29,6 +29,7 @@ import PAB from "../plan/PAB";
 import QAES from "../plan/QAES";
 import RDIAI from "../plan/RDIAI";
 import TABPW from "../plan/TABPW";
+import MAE from "../plan/MAE";
 import Link from "next/link";
 
 // 1. Data Configuration (เพิ่มสี Theme ให้แต่ละหัวข้อ)
@@ -109,7 +110,7 @@ const planningJobs = [
     title: "งานติดตามและประเมินผลการอาชีวศึกษา",
     subtitle: "Monitoring & Evaluation",
     icon: <FileTextOutlined />,
-    component: <PAB />, // Placeholder
+    component: <MAE />,
     color: "bg-rose-500",
     lightColor: "bg-rose-50 text-rose-600",
   },

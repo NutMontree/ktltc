@@ -48,12 +48,12 @@ export default function DataCenter() {
           className="mb-12 text-center"
         >
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-sm font-semibold text-cyan-600 dark:text-cyan-400">
-            <DatabaseOutlined /> Data & Information Center
+            <DatabaseOutlined /> Digital Center & Communication
           </div>
           <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
-            งานศูนย์ข้อมูล <br className="md:hidden" />
+            งานศูนย์ดิจิทัล <br className="md:hidden" />
             <span className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-              และสารสนเทศ
+              และสื่อสารองค์กร
             </span>
           </h1>
         </motion.div>
