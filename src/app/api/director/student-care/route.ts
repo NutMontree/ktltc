@@ -22,8 +22,17 @@ export async function POST(req: Request) {
     const db = client.db("ktltc_db");
     const body = await req.json();
     
+    let teacherDepartment = "ไม่ระบุ";
+    if (user.id && user.id !== "system" && ObjectId.isValid(user.id)) {
+      const dbUser = await db.collection("users").findOne({ _id: new ObjectId(user.id) });
+      if (dbUser && dbUser.department) {
+        teacherDepartment = dbUser.department;
+      }
+    }
+    
     const newRecord = {
       ...body,
+      teacherDepartment,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -37,7 +46,7 @@ export async function POST(req: Request) {
 
     if (targetUsers.length > 0) {
       const notifications = targetUsers.map(u => ({
-        userId: new ObjectId(u._id),
+        userId: u._id,
         title: "ระบบดูแลผู้เรียนใหม่",
         message: `ครู ${newRecord.teacherName || user.name || 'ไม่ระบุชื่อ'} ได้เพิ่มข้อมูลการดูแลนักเรียนใหม่`,
         type: "info",
@@ -52,8 +61,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ...newRecord, _id: result.insertedId }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to create student care record" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Save record error:", error);
+    return NextResponse.json({ error: "Failed to create student care record: " + error.message }, { status: 500 });
   }
 }
 
@@ -61,13 +71,12 @@ export async function PATCH(req: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const { _id, notes, sdqType } = await req.json();
+    const body = await req.json();
+    const { _id, ...updateFields } = body;
     
     if (!_id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
     
-    const updateData: any = { updatedAt: new Date() };
-    if (notes !== undefined) updateData.notes = notes;
-    if (sdqType) updateData.sdqType = sdqType;
+    const updateData: any = { updatedAt: new Date(), ...updateFields };
 
     await db.collection("student_care_records").updateOne(
       { _id: new ObjectId(_id) },
@@ -77,5 +86,23 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Failed to update student care record" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    
+    if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+    
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    await db.collection("student_care_records").deleteOne({ _id: new ObjectId(id) });
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete student care record" }, { status: 500 });
   }
 }
