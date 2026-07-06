@@ -14,49 +14,107 @@ export default function StudentIdCardPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [gpsStatus, setGpsStatus] = useState<"pending" | "active" | "error" | "denied">("pending");
+  const [wakeLockActive, setWakeLockActive] = useState(false);
 
-  // GPS Tracking Logic
+  // === Screen Wake Lock: Keep screen ON ===
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    let wakeLock: any = null;
+
+    const requestWakeLock = async () => {
+      try {
+        if ("wakeLock" in navigator) {
+          wakeLock = await (navigator as any).wakeLock.request("screen");
+          setWakeLockActive(true);
+          wakeLock.addEventListener("release", () => setWakeLockActive(false));
+        }
+      } catch (err) {
+        console.log("Wake Lock not supported or failed:", err);
+      }
+    };
+
+    requestWakeLock();
+
+    // Re-acquire wake lock when page becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        requestWakeLock();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      if (wakeLock) wakeLock.release().catch(() => { });
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [status]);
+
+  // === Warn before closing tab ===
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "ระบบติดตาม GPS กำลังทำงานอยู่ คุณแน่ใจหรือว่าต้องการปิดหน้านี้?";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [status]);
+
+  // === GPS Tracking Logic (watchPosition + interval fallback) ===
   useEffect(() => {
     if (status !== "authenticated" || !navigator.geolocation) return;
 
     let watchId: number;
+    let intervalId: ReturnType<typeof setInterval>;
 
-    const startTracking = () => {
-      watchId = navigator.geolocation.watchPosition(
-        async (position) => {
-          setGpsStatus("active");
-          const { latitude, longitude } = position.coords;
-          
-          try {
-            await fetch("/api/tracking/update", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ latitude, longitude }),
-            });
-          } catch (error) {
-            console.error("Failed to send GPS data", error);
-          }
-        },
-        (error) => {
-          console.error("GPS Error:", error);
-          if (error.code === error.PERMISSION_DENIED) {
-            setGpsStatus("denied");
-          } else {
-            setGpsStatus("error");
-          }
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 0,
-          timeout: 10000,
-        }
-      );
+    const sendLocation = async (latitude: number, longitude: number) => {
+      try {
+        await fetch("/api/tracking/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude, longitude }),
+        });
+      } catch (error) {
+        console.error("Failed to send GPS data", error);
+      }
     };
 
-    startTracking();
+    // Primary: watchPosition (fires on every movement)
+    watchId = navigator.geolocation.watchPosition(
+      async (position) => {
+        setGpsStatus("active");
+        await sendLocation(position.coords.latitude, position.coords.longitude);
+      },
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          setGpsStatus("denied");
+        } else {
+          setGpsStatus("error");
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
+      }
+    );
+
+    // Fallback: interval-based GPS push every 15 seconds
+    // This ensures data keeps flowing even if watchPosition stalls (common on mobile)
+    intervalId = setInterval(() => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          setGpsStatus("active");
+          await sendLocation(position.coords.latitude, position.coords.longitude);
+        },
+        () => { },
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 8000 }
+      );
+    }, 15000);
 
     return () => {
       if (watchId) navigator.geolocation.clearWatch(watchId);
+      if (intervalId) clearInterval(intervalId);
     };
   }, [status]);
 
@@ -85,7 +143,7 @@ export default function StudentIdCardPage() {
   const studentId = user?.id || "";
 
   return (
-    <div className="max-w-md mx-auto w-full px-4 py-8 md:py-12 relative min-h-screen flex flex-col pt-24 items-center">
+    <div className="max-w-[500px] mx-auto w-full px-4 py-8 md:py-12 relative min-h-screen flex flex-col pt-24 items-center">
       <div className="w-full flex justify-start mb-6">
         <Link href="/dashboard" className="flex items-center gap-2 text-zinc-500 hover:text-blue-600 font-bold transition-colors w-fit">
           <ArrowLeft size={16} /> กลับหน้าหลัก
@@ -102,7 +160,7 @@ export default function StudentIdCardPage() {
       </div>
 
       {/* ID Card Wrapper */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -110,10 +168,10 @@ export default function StudentIdCardPage() {
       >
         {/* Holographic effect */}
         <div className="absolute inset-0 bg-linear-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-10" />
-        
+
         {/* Card Inner */}
         <div className="w-full h-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-[2.3rem] flex flex-col items-center relative z-20 overflow-hidden">
-          
+
           {/* Top Banner */}
           <div className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white p-6 flex flex-col items-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
@@ -154,7 +212,7 @@ export default function StudentIdCardPage() {
 
           {/* QR Code Section */}
           <div className="flex-1 flex flex-col items-center justify-center w-full bg-slate-50/50 dark:bg-zinc-800/30 border-t border-slate-100 dark:border-zinc-800/50 p-6 relative">
-            
+
             {/* GPS Tracking Indicator */}
             <div className="absolute top-3 right-4 flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900/80 px-2 py-1 rounded-full shadow-sm border border-zinc-100 dark:border-zinc-800">
               {gpsStatus === "active" ? (
@@ -179,9 +237,9 @@ export default function StudentIdCardPage() {
             </div>
 
             <div className="bg-white p-3 rounded-3xl shadow-sm border border-slate-200 mt-2">
-              <QRCode 
-                value={studentId} 
-                size={160} 
+              <QRCode
+                value={studentId}
+                size={160}
                 color="#09090b"
                 bgColor="#ffffff"
                 bordered={false}
@@ -196,9 +254,17 @@ export default function StudentIdCardPage() {
       </motion.div>
 
       {/* Helper text below card */}
-      <div className="mt-8 text-center text-xs font-medium text-zinc-400 bg-white/50 dark:bg-zinc-900/50 px-4 py-3 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 shadow-inner">
-        QR Code นี้จะถูกใช้เพื่อสแกนอนุญาตให้ออกนอกวิทยาลัย<br/>
-        กรุณาเปิดแสงสว่างหน้าจอให้สุดเมื่อให้รปภ.สแกน
+      <div className="mt-8 text-center text-xs font-medium text-zinc-400 bg-white/50 dark:bg-zinc-900/50 px-4 py-3 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 shadow-inner space-y-2">
+        <p>QR Code นี้จะถูกใช้เพื่อสแกนอนุญาตให้ออกนอกวิทยาลัย<br />
+          กรุณาเปิดแสงสว่างหน้าจอให้สุดเมื่อให้รปภ.สแกน</p>
+        {gpsStatus === "active" && (
+          <p className="text-rose-500 font-black animate-pulse">
+            ⚠️ ห้ามปิดหน้านี้! ระบบกำลังส่งพิกัดติดตามตำแหน่ง
+          </p>
+        )}
+        {wakeLockActive && (
+          <p className="text-emerald-500 font-bold">🔒 หน้าจอถูกล็อกไม่ให้ดับ</p>
+        )}
       </div>
     </div>
   );
