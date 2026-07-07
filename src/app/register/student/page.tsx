@@ -40,7 +40,19 @@ export default function StudentRegisterPage() {
   const [success, setSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+
+    // บังคับกรอกเฉพาะตัวเลข
+    if (name === "citizenId" || name === "studentIdNum" || name === "phone") {
+      value = value.replace(/\D/g, ""); // ลบตัวอักษรที่ไม่ใช่ตัวเลขทิ้ง
+    }
+
+    // บังคับอีเมลเป็นภาษาอังกฤษและสัญลักษณ์พื้นฐาน
+    if (name === "email") {
+      value = value.replace(/[^a-zA-Z0-9@._-]/g, "");
+    }
+
+    setFormData({ ...formData, [name]: value });
     setErrorMsg("");
   };
 
@@ -59,12 +71,25 @@ export default function StudentRegisterPage() {
     if (!formData.department) return setErrorMsg("กรุณาเลือกแผนกวิชาที่สังกัด");
     if (!formData.academicLevel) return setErrorMsg("กรุณาเลือกระดับชั้นปีการศึกษา");
 
-    // Strict regex validation for citizenId and phone
-    if (!/^\d{13}$/.test(formData.citizenId.trim())) {
-      return setErrorMsg("รหัสประจำตัวประชาชนต้องประกอบด้วยตัวเลข 13 หลักเท่านั้น");
+    // Strict Length & Format validations
+    if (formData.citizenId.trim().length !== 13) {
+      return setErrorMsg("รหัสประจำตัวประชาชนต้องมี 13 หลักเท่านั้น");
     }
-    if (!/^\d+$/.test(formData.phone.trim())) {
-      return setErrorMsg("เบอร์โทรศัพท์มือถือต้องประกอบด้วยตัวเลขเท่านั้น");
+    
+    if (formData.studentIdNum.trim().length !== 11) {
+      return setErrorMsg("รหัสนักศึกษาต้องมี 11 หลักเท่านั้น");
+    }
+
+    if (formData.phone.trim().length !== 10) {
+      return setErrorMsg("เบอร์โทรศัพท์มือถือต้องมี 10 หลักเท่านั้น");
+    }
+    
+    if (/[ก-๙]/.test(formData.email)) {
+      return setErrorMsg("อีเมลต้องเป็นภาษาอังกฤษเท่านั้น");
+    }
+
+    if (!formData.classGroupId.includes(".")) {
+      return setErrorMsg("ชื่อห้องเรียนต้องมีจุด . (เช่น พค.11, สคบ.11)");
     }
 
     setLoading(true);
@@ -305,6 +330,7 @@ export default function StudentRegisterPage() {
                       <input
                         type="text"
                         name="studentIdNum"
+                        maxLength={11}
                         value={formData.studentIdNum}
                         onChange={handleChange}
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
@@ -313,10 +339,7 @@ export default function StudentRegisterPage() {
                       />
                     </div>
                   </div>
-                </div>
 
-                {/* ฝั่งขวา: ข้อมูลติดต่อนักเรียนและข้อมูลการเรียน */}
-                <div className="space-y-6 col-span-1 md:pl-2">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
                       อีเมลผู้ติดต่อ
@@ -348,6 +371,7 @@ export default function StudentRegisterPage() {
                       <input
                         type="tel"
                         name="phone"
+                        maxLength={10}
                         value={formData.phone}
                         onChange={handleChange}
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
@@ -356,6 +380,11 @@ export default function StudentRegisterPage() {
                       />
                     </div>
                   </div>
+                </div>
+
+                {/* ฝั่งขวา: ข้อมูลติดต่อนักเรียนและข้อมูลการเรียน */}
+                <div className="space-y-6 col-span-1 md:pl-2">
+                  {/* Removed Email and Phone, they are moved to the left column */}
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
