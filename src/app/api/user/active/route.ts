@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session || !session.user || !(session.user as any).id) {
@@ -16,13 +16,26 @@ export async function POST() {
     if (!ObjectId.isValid(userId)) {
       return NextResponse.json({ success: false, message: "Invalid User ID" }, { status: 400 });
     }
+    
+    let path = "";
+    try {
+      const body = await req.json();
+      path = body?.path || "";
+    } catch (e) {
+      // Ignore if body is empty or invalid
+    }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    const updateData: any = { lastActiveAt: new Date() };
+    if (path) {
+      updateData.lastActivePath = path;
+    }
+
     await db.collection("users").updateOne(
       { _id: new ObjectId(userId) },
-      { $set: { lastActiveAt: new Date() } }
+      { $set: updateData }
     );
 
     return NextResponse.json({ success: true });

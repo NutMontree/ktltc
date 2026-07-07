@@ -314,6 +314,47 @@ export default function TelemetryPage() {
           {/* Registration Toggle Card */}
 
         </div>
+
+        {/* Storage Breakdown */}
+        {stats?.storageDetails && stats.storageDetails.length > 0 && (
+          <motion.div variants={item} className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-4xl p-8 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 overflow-hidden relative mt-8">
+            <div className="absolute top-0 right-0 p-8 pointer-events-none">
+              <Folder className="w-32 h-32 text-zinc-50 dark:text-zinc-800/30 -rotate-12 translate-x-4 -translate-y-4" />
+            </div>
+            <div className="relative z-10 mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+              <h3 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
+                <Database className="w-5 h-5 text-blue-500" />
+                รายละเอียดการใช้พื้นที่ (Storage Breakdown)
+              </h3>
+              <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">
+                ขนาดไฟล์แยกตามหมวดหมู่และโฟลเดอร์ในระบบ
+              </p>
+            </div>
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {stats.storageDetails
+                .sort((a: any, b: any) => b.size - a.size)
+                .filter((d: any) => d.size > 0)
+                .map((detail: any, index: number) => {
+                  const sizeMB = detail.size / (1024 * 1024);
+                  return (
+                    <div key={index} className="flex items-center justify-between p-4 rounded-3xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-100 dark:border-zinc-800 hover:border-blue-200 dark:hover:border-blue-900/50 transition-colors">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-10 h-10 shrink-0 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                          <Folder className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300 truncate">{detail.folder}</p>
+                          <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-0.5">
+                            {sizeMB < 0.01 ? "< 0.01 MB" : `${sizeMB.toFixed(2)} MB`}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </motion.div>
+        )}
       </motion.div>
 
 
@@ -357,16 +398,21 @@ export default function TelemetryPage() {
                 ) : (
                   activeUsersList.map((u) => (
                     <div key={u._id} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden shrink-0">
                         {u.image ? (
                           <img src={u.image} alt={u.name} className="w-full h-full object-cover" />
                         ) : (
                           (u.name || u.username || "?")[0]
                         )}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-zinc-900 dark:text-white">{u.name || u.username}</p>
-                        <p className="text-[10px] text-zinc-500 font-medium tracking-widest uppercase">{u.role} • {u.username}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-zinc-900 dark:text-white truncate">{u.name || u.username}</p>
+                        <p className="text-[10px] text-zinc-500 font-medium tracking-widest uppercase truncate">{u.role} • {u.username}</p>
+                        {u.lastActivePath && (
+                          <p className="text-[10px] text-blue-500 dark:text-blue-400 font-bold mt-0.5 truncate">
+                            กำลังใช้งาน: {u.lastActivePath}
+                          </p>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
@@ -412,6 +458,22 @@ export default function TelemetryPage() {
                     autoFocus
                   />
                   <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-bold text-zinc-400">GB</span>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1 pb-2">
+                  <button 
+                    onClick={() => setTempQuota("0")}
+                    className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
+                  >
+                    🚀 ไม่จำกัดความจุ (0)
+                  </button>
+                  {editingQuotaKey === "storage_limit_mb" && stats?.serverTotalMB > 0 && (
+                    <button 
+                      onClick={() => setTempQuota((stats.serverTotalMB / 1024).toFixed(1))}
+                      className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors"
+                    >
+                      💻 เต็มความจุเซิร์ฟเวอร์ ({(stats.serverTotalMB / 1024).toFixed(1)} GB)
+                    </button>
+                  )}
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => setIsEditingQuota(false)} className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">ยกเลิก</button>

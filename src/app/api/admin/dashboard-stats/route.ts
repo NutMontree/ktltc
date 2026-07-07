@@ -98,6 +98,7 @@ export async function GET() {
     let serverAvailableMB = 0;
     let cpuUsage = "0";
     let ramUsage = { total: 0, used: 0, percent: 0 };
+    let storageDetails: { folder: string, size: number }[] = [];
 
     try {
       // Fetch custom limits from database
@@ -127,6 +128,10 @@ export async function GET() {
           totalBytes = cacheDoc.totalBytes;
         }
 
+        if (cacheDoc && cacheDoc.details) {
+          storageDetails = cacheDoc.details;
+        }
+
         // If cache is expired or missing, trigger a background calculation
         if (!cacheDoc || now - (cacheDoc.updatedAt || 0) > cacheTTL) {
           // Fire and forget (do not await)
@@ -135,7 +140,10 @@ export async function GET() {
               const fs = require("fs");
               const path = require("path");
               const publicDir = getPublicDir();
-              const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
+              const foldersToMeasure = [
+                "uploads", "images", "pdf", "ktltc_drive", "attendance_photos",
+                "dve_media", "dve_evidence", "user_profiles", "user_covers", "ita_uploads", "posts"
+              ];
               let calcBytes = 0;
 
               const getFolderSize = async (dirPath: string): Promise<number> => {
@@ -158,23 +166,24 @@ export async function GET() {
                 }
               };
 
-              const folderSizes = await Promise.all(
+              const folderDetails = await Promise.all(
                 foldersToMeasure.map(async (folder) => {
                   const folderPath = path.join(publicDir, folder);
                   try {
                     if (fs.existsSync(folderPath)) {
-                      return await getFolderSize(folderPath);
+                      const size = await getFolderSize(folderPath);
+                      return { folder, size };
                     }
                   } catch (e) { }
-                  return 0;
+                  return { folder, size: 0 };
                 })
               );
-              calcBytes = folderSizes.reduce((acc, curr) => acc + curr, 0);
+              calcBytes = folderDetails.reduce((acc, curr) => acc + curr.size, 0);
 
               // Update cache
               await db.collection("sys_cache").updateOne(
                 { key: "storage_size" },
-                { $set: { totalBytes: calcBytes, updatedAt: Date.now() } },
+                { $set: { totalBytes: calcBytes, details: folderDetails, updatedAt: Date.now() } },
                 { upsert: true }
               );
             } catch (err) {
@@ -292,6 +301,7 @@ export async function GET() {
       dbLimitMB: dbLimitMB,
       cloudUsageMB: storageUsageMB, // Keeping same key for frontend compatibility
       cloudLimitMB: storageLimitMB,
+      storageDetails: storageDetails,
       serverTotalMB: serverTotalMB,
       serverUsedMB: serverUsedMB,
       serverAvailableMB: serverAvailableMB,
