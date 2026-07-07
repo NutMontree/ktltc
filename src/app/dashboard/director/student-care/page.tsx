@@ -701,14 +701,14 @@ export default function StudentCarePage() {
         <div className="px-2 mt-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
+              <div className="w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shadow-lg shadow-teal-500/20">
                 <ClipboardList size={24} />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+                <h1 className="text-2xl md:text-3xl font-black bg-linear-to-r from-teal-600 to-emerald-500 dark:from-teal-400 dark:to-emerald-300 bg-clip-text text-transparent uppercase tracking-tight">
                   ระบบดูแลช่วยเหลือนักเรียน
                 </h1>
-                <p className="text-sm font-bold text-zinc-500">คัดกรองนักเรียน และรายงานเยี่ยมบ้าน (คป.02 / คป.11)</p>
+                <p className="text-sm font-bold text-slate-500 dark:text-zinc-400">คัดกรองนักเรียน และรายงานเยี่ยมบ้าน (คป.02 / คป.11)</p>
               </div>
             </div>
             <button
@@ -736,19 +736,19 @@ export default function StudentCarePage() {
 
             {/* Tabs and View Mode Controls */}
             {!showAdd && (
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-200 dark:border-zinc-800 pb-px">
-                <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div className="flex flex-wrap bg-slate-100 dark:bg-zinc-900/50 p-1 rounded-2xl gap-1 border border-slate-200 dark:border-zinc-800/50">
                   <button
                     onClick={() => setViewTab("screening")}
-                    className={`px-6 py-3 text-sm font-black transition-all border-b-2 ${viewTab === 'screening' ? 'border-teal-500 text-teal-600 dark:text-teal-400 bg-teal-50/50 dark:bg-teal-900/10 rounded-t-xl' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800/50 rounded-t-xl'}`}
+                    className={`px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center ${viewTab === 'screening' ? 'bg-white dark:bg-zinc-800 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
                   >
-                    <ShieldCheck size={18} className="inline mr-2" /> 1. แบบคัดกรอง (คป.02)
+                    <ShieldCheck size={18} className="mr-2" /> 1. แบบคัดกรอง (คป.02)
                   </button>
                   <button
                     onClick={() => setViewTab("home_visit")}
-                    className={`px-6 py-3 text-sm font-black transition-all border-b-2 ${viewTab === 'home_visit' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-t-xl' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800/50 rounded-t-xl'}`}
+                    className={`px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center ${viewTab === 'home_visit' ? 'bg-white dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
                   >
-                    <HeartHandshake size={18} className="inline mr-2" /> 2. บันทึกเยี่ยมบ้าน (คป.11)
+                    <HeartHandshake size={18} className="mr-2" /> 2. บันทึกเยี่ยมบ้าน (คป.11)
                   </button>
                 </div>
 
@@ -781,7 +781,7 @@ export default function StudentCarePage() {
 
                   <button
                     onClick={exportToExcel}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl text-sm font-bold hover:bg-emerald-200 transition-colors shrink-0"
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl text-sm font-bold hover:bg-emerald-100 hover:shadow-md hover:shadow-emerald-500/10 active:scale-95 transition-all shrink-0 border border-emerald-200 dark:border-emerald-800/50"
                     title="ดาวน์โหลดข้อมูลเป็น Excel"
                   >
                     <Download size={16} /> Excel
@@ -799,21 +799,21 @@ export default function StudentCarePage() {
                         setTimeout(() => setIsPrintingSummary(false), 500);
                       }, 500);
                     }}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-200 transition-colors shrink-0"
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-500/10 active:scale-95 transition-all shrink-0 border border-indigo-200 dark:border-indigo-800/50"
                     title="พิมพ์สรุปเป็น PDF"
                   >
                     <Printer size={16} /> PDF
                   </button>
 
                   {/* Search Input */}
-                  <div className="relative w-full sm:w-64">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Search size={16} className="text-slate-400" />
+                  <div className="relative w-full sm:w-64 group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-teal-500 text-slate-400">
+                      <Search size={16} />
                     </div>
                     <input
                       type="text"
                       placeholder="ค้นหาชื่อ, รหัส..."
-                      className="pl-10 w-full py-2.5 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-2 focus:ring-teal-500 transition-all font-medium"
+                      className="pl-10 w-full py-2.5 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-medium"
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
                     />
@@ -858,21 +858,21 @@ export default function StudentCarePage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
-                    <p className="text-xs font-bold text-emerald-600 mb-1">กลุ่มปกติ</p>
-                    <p className="text-2xl font-black text-slate-800 dark:text-white">{sdqCounts.normal} <span className="text-sm font-medium text-slate-400">คน</span></p>
+                  <div className="bg-emerald-50/50 hover:bg-emerald-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
+                    <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>กลุ่มปกติ</p>
+                    <p className="text-3xl font-black text-emerald-900 dark:text-emerald-100">{sdqCounts.normal} <span className="text-sm font-bold text-emerald-600/50">คน</span></p>
                   </div>
-                  <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30">
-                    <p className="text-xs font-bold text-blue-600 mb-1">กลุ่มพิเศษ</p>
-                    <p className="text-2xl font-black text-slate-800 dark:text-white">{sdqCounts.special} <span className="text-sm font-medium text-slate-400">คน</span></p>
+                  <div className="bg-blue-50/50 hover:bg-blue-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-blue-100 dark:border-blue-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300">
+                    <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span>กลุ่มพิเศษ</p>
+                    <p className="text-3xl font-black text-blue-900 dark:text-blue-100">{sdqCounts.special} <span className="text-sm font-bold text-blue-600/50">คน</span></p>
                   </div>
-                  <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-amber-100 dark:border-amber-900/30">
-                    <p className="text-xs font-bold text-amber-600 mb-1">กลุ่มเสี่ยง</p>
-                    <p className="text-2xl font-black text-slate-800 dark:text-white">{sdqCounts.risk} <span className="text-sm font-medium text-slate-400">คน</span></p>
+                  <div className="bg-amber-50/50 hover:bg-amber-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-amber-100 dark:border-amber-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300">
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span>กลุ่มเสี่ยง</p>
+                    <p className="text-3xl font-black text-amber-900 dark:text-amber-100">{sdqCounts.risk} <span className="text-sm font-bold text-amber-600/50">คน</span></p>
                   </div>
-                  <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-rose-100 dark:border-rose-900/30">
-                    <p className="text-xs font-bold text-rose-600 mb-1">กลุ่มมีปัญหา</p>
-                    <p className="text-2xl font-black text-slate-800 dark:text-white">{sdqCounts.problem} <span className="text-sm font-medium text-slate-400">คน</span></p>
+                  <div className="bg-rose-50/50 hover:bg-rose-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-rose-100 dark:border-rose-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300">
+                    <p className="text-xs font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span>กลุ่มมีปัญหา</p>
+                    <p className="text-3xl font-black text-rose-900 dark:text-rose-100">{sdqCounts.problem} <span className="text-sm font-bold text-rose-600/50">คน</span></p>
                   </div>
                 </div>
               </div>
