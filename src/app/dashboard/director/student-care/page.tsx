@@ -58,6 +58,7 @@ export default function StudentCarePage() {
   const [filterDepartment, setFilterDepartment] = useState("");
   const [filterClassroom, setFilterClassroom] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deputyName, setDeputyName] = useState("(.........................................................)");
   const [viewRecord, setViewRecord] = useState<any>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
@@ -105,6 +106,29 @@ export default function StudentCarePage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
+  const formatStudentName = (name: string, gender: string) => {
+    if (!name) return "";
+    const trimmed = name.trim();
+    if (gender === 'male') {
+      if (trimmed.startsWith('นาย') || trimmed.startsWith('ด.ช.')) return trimmed;
+      return `นาย${trimmed}`;
+    } else if (gender === 'female') {
+      if (trimmed.startsWith('นางสาว') || trimmed.startsWith('นาง') || trimmed.startsWith('ด.ญ.')) return trimmed;
+      return `นางสาว${trimmed}`;
+    }
+    return trimmed;
+  };
+
+  const getTranslate = (res: string) => {
+    if (!res) return "";
+    if (res === 'normal') return 'ปกติ';
+    if (res === 'risk') return 'เสี่ยง';
+    if (res === 'problem') return 'มีปัญหา';
+    if (res === 'strength') return 'เป็นจุดแข็ง';
+    if (res === 'none') return 'ไม่มีจุดแข็ง';
+    return res;
+  };
+
   const user = {
     username: session?.user?.name || (session?.user as any)?.username,
     role: (session?.user as any)?.role,
@@ -115,7 +139,23 @@ export default function StudentCarePage() {
 
   useEffect(() => {
     fetchRecords();
+    fetchDeputy();
   }, []);
+
+  const fetchDeputy = async () => {
+    try {
+      const res = await fetch("/api/users/all");
+      if (res.ok) {
+        const data = await res.json();
+        const deputy = (data.users || []).find((u: any) => u.role === "deputy_student_affairs");
+        if (deputy && deputy.name) {
+          setDeputyName(`(${deputy.name})`);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch deputy", error);
+    }
+  };
 
   const fetchRecords = async () => {
     setLoading(true);
@@ -456,21 +496,11 @@ export default function StudentCarePage() {
     const data = displayedRecords.map((r, index) => {
       const isSdq = r.recordType === 'screening' && r.sdqData;
 
-      const getTranslate = (res: string) => {
-        if (!res) return "";
-        if (res === 'normal') return 'ปกติ';
-        if (res === 'risk') return 'เสี่ยง';
-        if (res === 'problem') return 'มีปัญหา';
-        if (res === 'strength') return 'เป็นจุดแข็ง';
-        if (res === 'none') return 'ไม่มีจุดแข็ง';
-        return res;
-      };
-
       return {
         'ลำดับ': index + 1,
         'วันที่ประเมิน': new Date(r.visitDate || r.createdAt).toLocaleDateString('th-TH'),
         'รหัสประจำตัว': r.studentIdNum || '',
-        'ชื่อ-สกุล': r.studentName,
+        'ชื่อ-สกุล': formatStudentName(r.studentName, r.gender),
         'เพศ': r.gender || '',
         'วันเกิด': r.dob ? new Date(r.dob).toLocaleDateString('th-TH') : '',
         'แผนกวิชา': r.department || '',
@@ -521,9 +551,47 @@ export default function StudentCarePage() {
 
       {/* Hidden Print Summary Section */}
       {isPrintingSummary && (
-        <div id="print-summary-section" className="print:relative fixed inset-0 z-999999 bg-white text-black p-8 overflow-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold mb-2">สรุปผลการประเมิน SDQ {viewTab === 'home_visit' ? '(บันทึกเยี่ยมบ้าน)' : '(แบบคัดกรอง)'}</h1>
+        <>
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              #print-summary-section, #print-summary-section * {
+                visibility: visible;
+              }
+              #print-summary-section {
+                position: absolute !important;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                background: white !important;
+                padding-top: 50px !important;
+              }
+              #print-summary-section table {
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+                border-top: 1px solid black !important;
+                border-left: 1px solid black !important;
+                border-right: none !important;
+                border-bottom: none !important;
+              }
+              #print-summary-section th, 
+              #print-summary-section td {
+                border-top: none !important;
+                border-left: none !important;
+                border-right: 1px solid black !important;
+                border-bottom: 1px solid black !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+            }
+          `}</style>
+          <div id="print-summary-section" className="print:relative fixed inset-0 z-999999 bg-white text-black p-4 overflow-auto">
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold mb-1 print-title">สรุปผลการประเมิน SDQ {viewTab === 'home_visit' ? '(บันทึกเยี่ยมบ้าน)' : '(แบบคัดกรอง)'}</h1>
+            <h2 className="text-xl font-bold mb-1">วิทยาลัยเทคนิคกันทรลักษ์</h2>
             <p className="text-lg">
               {filterDepartment ? `แผนก: ${filterDepartment}` : 'ทุกแผนก'}
               {' | '}
@@ -531,35 +599,79 @@ export default function StudentCarePage() {
             </p>
           </div>
 
-          <table className="w-full border-collapse border border-black text-sm">
+          <table className="w-max mx-auto border border-black text-sm print:border-none">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-black p-2">ลำดับ</th>
-                <th className="border border-black p-2">รหัสประจำตัว</th>
-                <th className="border border-black p-2">ชื่อ-สกุล</th>
-                <th className="border border-black p-2">แผนก/ชั้นเรียน</th>
-                <th className="border border-black p-2">ประเภท</th>
-                <th className="border border-black p-2">ผลประเมิน</th>
-                <th className="border border-black p-2">ครูที่ปรึกษา</th>
+                <th className="border border-black p-2 w-12 text-center whitespace-nowrap">ที่</th>
+                <th className="border border-black p-2 text-center whitespace-nowrap">ชื่อ-นามสกุล</th>
+                {viewTab === 'screening' ? (
+                  <>
+                    <th className="border border-black p-1 text-center text-[10px] whitespace-nowrap">ด้านอารมณ์</th>
+                    <th className="border border-black p-1 text-center text-[10px] whitespace-nowrap">ด้านความประพฤติ</th>
+                    <th className="border border-black p-1 text-center text-[10px] whitespace-nowrap">ด้านพฤติกรรม</th>
+                    <th className="border border-black p-1 text-center text-[10px] whitespace-nowrap">ด้านสัมพันธ์กับเพื่อน</th>
+                    <th className="border border-black p-1 text-center text-[10px] whitespace-nowrap">ด้านทางสังคม</th>
+                    <th className="border border-black p-1 text-center text-[10px] whitespace-nowrap">สรุปผลประเมิน</th>
+                  </>
+                ) : (
+                  <th className="border border-black p-2 text-center">ผลการประเมิน (โดยครูที่ปรึกษา)</th>
+                )}
               </tr>
             </thead>
             <tbody>
               {displayedRecords.map((r, i) => (
                 <tr key={r._id}>
-                  <td className="border border-black p-2 text-center">{i + 1}</td>
-                  <td className="border border-black p-2 text-center">{r.studentIdNum || '-'}</td>
-                  <td className="border border-black p-2">{r.studentName}</td>
-                  <td className="border border-black p-2 text-center">{r.department} {r.classroom}</td>
-                  <td className="border border-black p-2 text-center">{r.recordType === 'home_visit' ? 'เยี่ยมบ้าน' : 'คัดกรอง'}</td>
-                  <td className="border border-black p-2 text-center font-bold">
-                    {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
-                  </td>
-                  <td className="border border-black p-2 text-center">{r.teacherName}</td>
+                  <td className="border border-black p-2 text-center text-[10px] whitespace-nowrap">{i + 1}</td>
+                  <td className="border border-black p-2 text-[10px] whitespace-nowrap">{formatStudentName(r.studentName, r.gender)}</td>
+                  {viewTab === 'screening' ? (
+                    <>
+                      <td className="border border-black p-1 text-center text-[10px] whitespace-nowrap">{getTranslate(r.sdqData?.E_res)}</td>
+                      <td className="border border-black p-1 text-center text-[10px] whitespace-nowrap">{getTranslate(r.sdqData?.C_res)}</td>
+                      <td className="border border-black p-1 text-center text-[10px] whitespace-nowrap">{getTranslate(r.sdqData?.H_res)}</td>
+                      <td className="border border-black p-1 text-center text-[10px] whitespace-nowrap">{getTranslate(r.sdqData?.Pe_res)}</td>
+                      <td className="border border-black p-1 text-center text-[10px] whitespace-nowrap">{getTranslate(r.sdqData?.P_res)}</td>
+                      <td className="border border-black p-1 text-center text-[10px] whitespace-nowrap font-bold">
+                        {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
+                      </td>
+                    </>
+                  ) : (
+                    <td className="border border-black p-2 text-center text-[10px] whitespace-nowrap">
+                      {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
+
+          {/* Signature Section */}
+          <div className="mt-20 pt-8 print:break-inside-avoid">
+            <div className="flex justify-between px-8 md:px-16">
+              {/* Left: Advisor */}
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex items-baseline">
+                  <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
+                  <span contentEditable suppressContentEditableWarning className="inline-block text-center outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text border-b border-transparent hover:border-slate-300 print:border-none">(.........................................................)</span>
+                  <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                </div>
+                <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>ครูที่ปรึกษา</div>
+                <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+              </div>
+
+              {/* Right: Deputy Director */}
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex items-baseline">
+                  <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
+                  <span contentEditable suppressContentEditableWarning className="inline-block text-center outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text border-b border-transparent hover:border-slate-300 print:border-none">{deputyName}</span>
+                  <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                </div>
+                <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ</div>
+                <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+              </div>
+            </div>
+          </div>
         </div>
+        </>
       )}
 
       <div className="max-w-[1600px] mx-auto w-full px-2 py-8 md:py-12 relative print:hidden">
@@ -1452,7 +1564,7 @@ export default function StudentCarePage() {
                     {viewRecord.studentProfileImage && (viewRecord.imageUrls?.length > 0 || viewRecord.imageUrl) && (
                       <img src={viewRecord.studentProfileImage} className="w-14 h-14 rounded-full border-2 border-white object-cover shadow-lg print:hidden" alt="Student Profile" />
                     )}
-                    <h2 className="text-3xl print:text-2xl font-black text-white print:text-black leading-tight">{viewRecord.studentName}</h2>
+                    <h2 className="text-3xl print:text-2xl font-black text-white print:text-black leading-tight">{formatStudentName(viewRecord.studentName, viewRecord.gender)}</h2>
                   </div>
                   <div className={`flex flex-col gap-1 print:gap-0 text-white/80 print:text-black text-sm font-bold ${viewRecord.studentProfileImage && (viewRecord.imageUrls?.length > 0 || viewRecord.imageUrl) ? 'ml-[72px] print:ml-0' : ''}`}>
                     <div className="flex items-center gap-2">
