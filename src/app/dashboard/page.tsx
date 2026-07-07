@@ -69,42 +69,17 @@ export default function DashboardLoader() {
   );
   const [tempQuota, setTempQuota] = useState("");
   const [isSavingQuota, setIsSavingQuota] = useState(false);
-  const [regEnabled, setRegEnabled] = useState(true);
-  const [updatingReg, setUpdatingReg] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [isActiveUsersModalOpen, setIsActiveUsersModalOpen] = useState(false);
-  const [activeUsersList, setActiveUsersList] = useState<any[]>([]);
-  const [loadingActiveUsers, setLoadingActiveUsers] = useState(false);
-  const [isTelemetryExpanded, setIsTelemetryExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const handleViewActiveUsers = async () => {
-    setIsActiveUsersModalOpen(true);
-    setLoadingActiveUsers(true);
-    try {
-      const res = await fetch("/api/admin/active-users?_t=" + Date.now());
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) {
-          setActiveUsersList(data.data || []);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingActiveUsers(false);
-    }
-  };
 
   useEffect(() => {
     async function fetchData() {
       if (status !== "authenticated") return;
       try {
         setLoading(true);
-        const [statsRes, permRes, regRes, menusRes] = await Promise.all([
+        const [statsRes, permRes, menusRes] = await Promise.all([
           fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
           fetch("/api/auth/permissions?_t=" + Date.now()),
-          fetch("/api/auth/register/status?_t=" + Date.now()),
           fetch("/api/admin/menus?_t=" + Date.now()),
         ]);
 
@@ -127,12 +102,7 @@ export default function DashboardLoader() {
           setPermissions(finalPerms);
         }
 
-        if (regRes.ok) {
-          const regData = await regRes.json();
-          if (regData && typeof regData.enabled === "boolean") {
-            setRegEnabled(regData.enabled);
-          }
-        }
+
 
         if (menusRes.ok) {
           const menusData = await menusRes.json();
@@ -186,32 +156,6 @@ export default function DashboardLoader() {
       alert("เกิดข้อผิดพลาด");
     } finally {
       setIsSavingQuota(false);
-    }
-  };
-
-  const handleToggleRegistration = async () => {
-    try {
-      setUpdatingReg(true);
-      const newValue = !regEnabled;
-      const res = await fetch("/api/admin/site-settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          key: "registration_enabled",
-          value: newValue ? "true" : "false",
-        }),
-      });
-
-      if (res.ok) {
-        setRegEnabled(newValue);
-      } else {
-        alert("บันทึกไม่สำเร็จ");
-      }
-    } catch (err) {
-      console.error("Toggle Registration Error:", err);
-      alert("เกิดข้อผิดพลาด");
-    } finally {
-      setUpdatingReg(false);
     }
   };
 
@@ -332,7 +276,7 @@ export default function DashboardLoader() {
   const hasSuperAdminAccess = permissions?.access_superadmin_workspace ?? userRole === "super_admin";
 
   return (
-    <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
+    <div className="relative min-h-screen bg-transparent transition-colors duration-500">
       {/* Background Mesh Gradients */}
       <div className="fixed inset-0 z-[-1] pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-600/10 animate-pulse" />
@@ -345,245 +289,10 @@ export default function DashboardLoader() {
         <DashboardHeader user={user} />
 
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
-          {/* --- Statistics Section --- */}
-          {(["super_admin", "admin", "editor"].includes(
-            ((session?.user as any)?.role || "").toLowerCase(),
-          ) ||
-            permissions?.access_dashboard) && (
-              <div>
-                <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                  <button
-                    onClick={() => setIsTelemetryExpanded(!isTelemetryExpanded)}
-                    className="flex flex-col text-left group w-full cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-2 -mx-2 rounded-xl transition-colors"
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4 w-full">
-                        ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)
-                        <span className="h-px bg-blue-500/10 flex-1" />
-                      </h2>
-                      <div className="ml-4 p-1.5 rounded-full bg-blue-100/50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:bg-blue-200/50 dark:group-hover:bg-blue-500/20 transition-colors">
-                        {isTelemetryExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-1">
-                      ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์
-                    </span>
-                  </button>
-                </motion.div>
-
-                <AnimatePresence>
-                  {isTelemetryExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pb-6">
-                        {/* Status Dashboard */}
-                        <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
-                          <TelemetryCard
-                            label="ภาระการประมวลผล (CPU)"
-                            value={stats.cpuUsage}
-                            unit="%"
-                            icon={Database}
-                            color="blue"
-                          />
-                          <TelemetryCard
-                            label="หน่วยความจำ (RAM)"
-                            value={stats.ramUsage.percent}
-                            unit="%"
-                            subValue={`ใช้งาน ${(stats.ramUsage.used / 1024).toFixed(1)} จาก ${(stats.ramUsage.total / 1024).toFixed(1)} GB`}
-                            icon={HardDrive}
-                            color="purple"
-                          />
-                          <StatCard
-                            label="User ในระบบ"
-                            value={stats.totalUsers}
-                            icon={Users}
-                            color="emerald"
-                            unit=" Users"
-                            variants={item}
-                          />
-                          {((session?.user as any)?.role || "").toLowerCase() === "super_admin" && (
-                            <StatCard
-                              label="User กำลังใช้งาน"
-                              value={stats.activeUsers || 0}
-                              icon={Users}
-                              color="blue"
-                              unit=" Users"
-                              variants={item}
-                              onClick={handleViewActiveUsers}
-                            />
-                          )}
-                          <StatCard
-                            label="จำนวนรูปภาพ"
-                            value={stats.totalImagesCount}
-                            icon={ImageIcon}
-                            color="indigo"
-                            unit=" ไฟล์"
-                            variants={item}
-                          />
-
-                          <StatCard
-                            label="ข่าวสารทั้งหมด"
-                            value={stats.totalNews}
-                            icon={Newspaper}
-                            color="blue"
-                            unit=" ข่าว"
-                            variants={item}
-                          />
-                          <StatCard
-                            label="แบนเนอร์"
-                            value={stats.totalBanners}
-                            icon={ImageIcon}
-                            color="pink"
-                            unit=" รูป"
-                            variants={item}
-                          />
-                          <StatCard
-                            label="ไฟล์ในคลัง"
-                            value={stats.totalDriveFiles}
-                            icon={HardDrive}
-                            color="orange"
-                            unit=" ไฟล์"
-                            variants={item}
-                          />
-                          <StatCard
-                            label="โฟลเดอร์"
-                            value={stats.totalDriveFolders}
-                            icon={Folder}
-                            color="amber"
-                            unit=" โฟลเดอร์"
-                            variants={item}
-                          />
-                          <StatCard
-                            label="เมนูหลัก"
-                            value={stats.totalNav}
-                            icon={Navigation}
-                            color="purple"
-                            unit=" เมนู"
-                            variants={item}
-                          />
-                          <StatCard
-                            label="หน้าเนื้อหา"
-                            value={stats.totalPages}
-                            icon={FileText}
-                            color="amber"
-                            unit=" หน้า"
-                            variants={item}
-                          />
-                        </div>
-
-                        {/* Usage Cards */}
-                        <div className="md:col-span-4 flex flex-col gap-4">
-                          <UsageCard
-                            title="MongoDB"
-                            value={stats.dbSizeMB}
-                            max={stats.dbLimitMB}
-                            unit="MB"
-                            icon={Database}
-                            color="emerald"
-                            variants={item}
-                            isSuperAdmin={session?.user?.role === "super_admin"}
-                            serverTotalMB={stats.serverTotalMB}
-                            serverUsedMB={stats.serverUsedMB}
-                            serverAvailableMB={stats.serverAvailableMB}
-                            onEdit={() => {
-                              const currentGB =
-                                stats.dbLimitMB === 0 ? "0" : (stats.dbLimitMB / 1024).toFixed(1);
-                              setEditingQuotaKey("db_limit_mb");
-                              setTempQuota(currentGB);
-                              setIsEditingQuota(true);
-                            }}
-                          />
-                          <UsageCard
-                            title="Storage & Drive"
-                            value={stats.cloudUsageMB}
-                            max={stats.cloudLimitMB}
-                            unit="MB"
-                            icon={Database}
-                            color="blue"
-                            variants={item}
-                            isSuperAdmin={session?.user?.role === "super_admin"}
-                            serverTotalMB={stats.serverTotalMB}
-                            serverUsedMB={stats.serverUsedMB}
-                            serverAvailableMB={stats.serverAvailableMB}
-                            onEdit={() => {
-                              // Convert MB to GB for display in modal
-                              const currentGB =
-                                stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
-                              setEditingQuotaKey("storage_limit_mb");
-                              setTempQuota(currentGB);
-                              setIsEditingQuota(true);
-                            }}
-                          />
-
-                          {/* Registration Toggle Card */}
-                          {((session?.user as any)?.role || "").toLowerCase() === "super_admin" && (
-                            <motion.div
-                              variants={item}
-                              className="group relative flex flex-col p-px rounded-3xl bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-md hover:shadow-xl"
-                            >
-                              <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-5 rounded-[1.7rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div
-                                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-inner ${regEnabled ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
-                                    >
-                                      <Users size={18} />
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
-                                        รับสมัครสมาชิกทั่วไป
-                                      </h4>
-                                      <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
-                                        URL: /register
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  <button
-                                    onClick={handleToggleRegistration}
-                                    disabled={updatingReg}
-                                    className={`w-12 h-6 rounded-full transition-all relative ${regEnabled ? "bg-emerald-500" : "bg-rose-500"} disabled:opacity-50`}
-                                  >
-                                    <motion.div
-                                      layout
-                                      className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-md left-1"
-                                      animate={{ x: regEnabled ? 24 : 0 }}
-                                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                    />
-                                  </button>
-                                </div>
-
-                                <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold">
-                                  <span className="text-zinc-500">สถานะ:</span>
-                                  <span
-                                    className={
-                                      regEnabled
-                                        ? "text-emerald-500 font-extrabold"
-                                        : "text-rose-500 font-extrabold"
-                                    }
-                                  >
-                                    {regEnabled ? "🟢 เปิดรับสมัครทั่วไป" : "🔴 ปิดรับสมัครชั่วคราว"}
-                                  </span>
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
-
           {/* --- Quick Actions Section --- */}
           {/* --- Quick Actions Tabs --- */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
-            <motion.div variants={item} className="flex flex-wrap gap-2 bg-white dark:bg-zinc-900 p-2 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-fit">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full sticky top-16 md:top-20 z-40 pt-4 pb-2 -mx-4 px-4 md:-mx-8 md:px-8 ">
+            <motion.div variants={item} className="flex flex-nowrap overflow-x-auto hide-scrollbar scrollbar-hide gap-2 bg-white dark:bg-zinc-900 p-2 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-full md:w-fit [&>button]:shrink-0">
               <button
                 onClick={() => setActiveTab("all")}
                 className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
@@ -1192,80 +901,7 @@ export default function DashboardLoader() {
         </motion.div>
       </div>
 
-      {/* --- Active Users Modal --- */}
-      <AnimatePresence>
-        {isActiveUsersModalOpen && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsActiveUsersModalOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl overflow-hidden max-h-[80vh] flex flex-col"
-            >
-              <div className="absolute top-0 right-0 p-8 pointer-events-none">
-                <Users className="w-12 h-12 text-blue-500/10" />
-              </div>
 
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
-                ผู้ใช้งานระบบขณะนี้
-              </h3>
-              <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-4">
-                รายชื่อผู้ใช้งานที่มีการเคลื่อนไหวในช่วง 15 นาทีที่ผ่านมา
-              </p>
-
-              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
-                {loadingActiveUsers ? (
-                  <div className="flex justify-center items-center py-12">
-                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                  </div>
-                ) : activeUsersList.length === 0 ? (
-                  <div className="text-center py-12 text-zinc-500 font-bold">
-                    ไม่พบผู้ใช้งานในระบบขณะนี้
-                  </div>
-                ) : (
-                  activeUsersList.map((u) => (
-                    <div key={u._id} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden">
-                        {u.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={u.image} alt={u.name} className="w-full h-full object-cover" />
-                        ) : (
-                          (u.name || u.username || "?")[0]
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-zinc-900 dark:text-white">{u.name || u.username}</p>
-                        <p className="text-[10px] text-zinc-500 font-medium tracking-widest uppercase">{u.role} • {u.username}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
-                          Online
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                <button
-                  onClick={() => setIsActiveUsersModalOpen(false)}
-                  className="w-full py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
-                >
-                  ปิดหน้าต่าง
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* --- Quota Edit Modal --- */}
       <AnimatePresence>

@@ -116,23 +116,75 @@ export async function GET() {
         if (isNaN(dbLimitMB)) dbLimitMB = 0;
       }
 
-      // Calculate size of all relevant folders
-      const fs = require("fs");
-      const publicDir = getPublicDir();
-      const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
+      // 3. Storage Calculation (Stale-While-Revalidate caching)
       let totalBytes = 0;
+      try {
+        const cacheDoc = await db.collection("sys_cache").findOne({ key: "storage_size" });
+        const now = Date.now();
+        const cacheTTL = 5 * 60 * 1000; // 5 minutes
+        
+        if (cacheDoc && cacheDoc.totalBytes !== undefined) {
+          totalBytes = cacheDoc.totalBytes;
+        }
 
-      const getFolderSize = async (dirPath: string): Promise<number> => {
-        // Disabled for performance reasons. Reading thousands of files synchronously kills the dashboard load time.
-        return 0;
-      };
+        // If cache is expired or missing, trigger a background calculation
+        if (!cacheDoc || now - (cacheDoc.updatedAt || 0) > cacheTTL) {
+          // Fire and forget (do not await)
+          (async () => {
+            try {
+              const fs = require("fs");
+              const path = require("path");
+              const publicDir = getPublicDir();
+              const foldersToMeasure = ["uploads", "images", "pdf", "ktltc_drive", "attendance_photos"];
+              let calcBytes = 0;
 
-      // Disabled deep folder scanning for performance
-      // await Promise.all(
-      //   foldersToMeasure.map(async (folder) => {
-      //     ...
-      //   })
-      // );
+              const getFolderSize = async (dirPath: string): Promise<number> => {
+                try {
+                  const files = await fs.promises.readdir(dirPath, { withFileTypes: true });
+                  const sizes = await Promise.all(
+                    files.map(async (file: any) => {
+                      const fullPath = path.join(dirPath, file.name);
+                      if (file.isDirectory()) {
+                        return await getFolderSize(fullPath);
+                      } else {
+                        const stats = await fs.promises.stat(fullPath);
+                        return stats.size;
+                      }
+                    })
+                  );
+                  return sizes.reduce((acc: number, curr: number) => acc + curr, 0);
+                } catch (e) {
+                  return 0;
+                }
+              };
+
+              const folderSizes = await Promise.all(
+                foldersToMeasure.map(async (folder) => {
+                  const folderPath = path.join(publicDir, folder);
+                  try {
+                    if (fs.existsSync(folderPath)) {
+                      return await getFolderSize(folderPath);
+                    }
+                  } catch (e) { }
+                  return 0;
+                })
+              );
+              calcBytes = folderSizes.reduce((acc, curr) => acc + curr, 0);
+
+              // Update cache
+              await db.collection("sys_cache").updateOne(
+                { key: "storage_size" },
+                { $set: { totalBytes: calcBytes, updatedAt: Date.now() } },
+                { upsert: true }
+              );
+            } catch (err) {
+              console.error("Background storage calculation failed:", err);
+            }
+          })();
+        }
+      } catch (err) {
+        console.error("Cache read error:", err);
+      }
 
       storageUsageMB = (totalBytes / (1024 * 1024)).toFixed(2);
 
@@ -140,6 +192,7 @@ export async function GET() {
       try {
         const os = require("os");
         const fs = require("fs");
+        const publicDir = getPublicDir();
 
         // 4.1 Get Disk Stats
         if (fs.statfsSync) {
@@ -166,19 +219,19 @@ export async function GET() {
             percent: Math.round(((totalMem - freeMem) / totalMem) * 100),
           };
 
-          // คำนวณ CPU แบบ Real-time (Delta ช่วง 100ms) แทนที่จะดึงค่าเฉลี่ยสะสมตั้งแต่เปิดเครื่อง
-          const getCpuData = () => {
-            let idle = 0,
+          // คำนวณ CPU แบบง่ายๆ จากค่าตั้งต้นของระบบ (ไม่หน่วงเวลา)
+          const cpus = os.cpus();
+          if (cpus && cpus.length > 0) {
+            let active = 0,
               total = 0;
-            os.cpus().forEach((cpu: any) => {
-              for (let type in cpu.times) total += cpu.times[type];
-              idle += cpu.times.idle;
+            cpus.forEach((cpu: any) => {
+              active += cpu.times.user + cpu.times.sys;
+              total += cpu.times.user + cpu.times.sys + cpu.times.idle;
             });
-            return { idle, total };
-          };
-          // Optimized CPU calc (removed the artificial 100ms wait)
-          const startCpu = getCpuData();
-          cpuUsage = "1"; // Mock CPU or use OS load average in production
+            cpuUsage = ((active / total) * 100).toFixed(1);
+          } else {
+            cpuUsage = "1";
+          }
         } else {
           // --- รันบน PC (ดึงข้อมูลพื้นฐานจาก MongoDB) ---
           try {
@@ -205,18 +258,19 @@ export async function GET() {
               percent: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
             };
 
-            // Fallback CPU แบบ Real-time เช่นกัน
-            const getCpuData = () => {
-              let idle = 0,
+            // Fallback CPU แบบง่ายๆ
+            const cpus = os.cpus();
+            if (cpus && cpus.length > 0) {
+              let active = 0,
                 total = 0;
-              os.cpus().forEach((cpu: any) => {
-                for (let type in cpu.times) total += cpu.times[type];
-                idle += cpu.times.idle;
+              cpus.forEach((cpu: any) => {
+                active += cpu.times.user + cpu.times.sys;
+                total += cpu.times.user + cpu.times.sys + cpu.times.idle;
               });
-              return { idle, total };
-            };
-            // Optimized CPU calc (removed the artificial 100ms wait)
-            cpuUsage = "1";
+              cpuUsage = ((active / total) * 100).toFixed(1);
+            } else {
+              cpuUsage = "1";
+            }
           }
         }
       } catch (infraErr) {
