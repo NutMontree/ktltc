@@ -67,6 +67,12 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* พื้นหลังตกแต่ง (Background Decor) */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-30">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-400/5 dark:bg-cyan-500/5 blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-400/5 dark:bg-indigo-500/5 blur-[120px]"></div>
+        <div className="absolute top-[40%] left-[50%] w-[40%] h-[40%] rounded-full bg-pink-400/5 dark:bg-pink-500/5 blur-[120px] -translate-x-1/2"></div>
+      </div>
       <main className="grow">
         {isShow.banner !== false && (
           <section className="w-full mb-8">
