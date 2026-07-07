@@ -73,7 +73,7 @@ export default function QAPage() {
 
   if (!mounted || loading)
     return (
-      <div className="flex flex-col items-center justify-center max-w-[1600px] mx-auto bg-slate-50 font-sans">
+      <div className="flex flex-col items-center justify-center max-w-[1600px] mx-auto bg-slate-50 dark:bg-zinc-950 font-sans">
         <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-slate-400 font-bold tracking-[0.2em] animate-pulse">
           กำลังโหลดฐานข้อมูล...
@@ -82,39 +82,44 @@ export default function QAPage() {
     );
 
   return (
-    <div className=" bg-[#fcfcfd] text-slate-900 font-sans selection:bg-cyan-100 px-2">
+    <div className=" font-sans selection:bg-cyan-100">
       <Toaster position="top-right" />
 
       {/* พื้นหลังตกแต่ง (Background Decor) */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-5%] left-[-5%] w-[30%] h-[30%] rounded-full bg-cyan-100/40 blur-[100px]"></div>
-        <div className="absolute bottom-[-5%] right-[-5%] w-[30%] h-[30%] rounded-full bg-indigo-100/40 blur-[100px]"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-400/5 dark:bg-cyan-500/5 blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-400/5 dark:bg-indigo-500/5 blur-[120px]"></div>
+        <div className="absolute top-[40%] left-[50%] w-[40%] h-[40%] rounded-full bg-pink-400/5 dark:bg-pink-500/5 blur-[120px] -translate-x-1/2"></div>
       </div>
 
       <div className="relative z-10   mx-auto max-w-[1600px] py-10 md:py-16">
         {/* ส่วนหัว (Header) */}
         <header className="mb-12">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-2xl border border-white/40 dark:border-zinc-800/60 rounded-[2.5rem] shadow-xl shadow-slate-200/40 dark:shadow-none transition-all hover:shadow-2xl hover:shadow-cyan-500/10">
             <div className="flex items-center gap-5">
-              <div className="bg-slate-900 p-4 rounded-2xl shadow-lg shadow-slate-200">
-                <FiMessageSquare className="text-white text-3xl" />
+              <div className="bg-linear-to-br from-slate-900 to-slate-800 dark:from-zinc-800 dark:to-zinc-900 p-4 rounded-2xl shadow-lg shadow-slate-300 dark:shadow-none border border-slate-700/50">
+                <FiMessageSquare className="text-cyan-400 text-3xl" />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 uppercase">
-                  ระบบ<span className="text-cyan-500"> Q&A</span>
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase mb-1">
+                  ระบบ
+                  <span className="bg-linear-to-r from-cyan-500 to-indigo-500 bg-clip-text text-transparent">
+                    {" "}
+                    Q&A
+                  </span>
                 </h1>
-                <p className="text-slate-500 font-bold text-xs mt-1 flex items-center gap-2 tracking-wide uppercase">
+                <p className="text-slate-500 dark:text-zinc-400 font-bold text-xs mt-1 flex items-center gap-2 tracking-wide uppercase">
                   <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
                   ระบบรับฝากคำถามออนไลน์ - วท.กันทรลักษ์
                 </p>
               </div>
             </div>
-            <div className="hidden md:flex items-center gap-3 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
+            <div className="hidden md:flex items-center gap-3 bg-slate-50 dark:bg-zinc-950/50 px-5 py-3 rounded-2xl border border-slate-100 dark:border-zinc-800">
               <div className="text-right">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                   สถานะเซิร์ฟเวอร์
                 </p>
-                <p className="text-xs font-black text-slate-700">
+                <p className="text-xs font-black text-slate-700 dark:text-slate-300">
                   เชื่อมต่อเสถียร
                 </p>
               </div>
@@ -127,12 +132,12 @@ export default function QAPage() {
           {/* ส่วนแบบฟอร์ม (Form Side) */}
           <aside className="lg:col-span-5">
             <div className="sticky top-10">
-              <div className="">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-white">
-                    <FiEdit3 size={18} />
+              <div className="bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl p-2 rounded-2xl border border-white/50 dark:border-zinc-800/50 shadow-2xl shadow-slate-200/50 dark:shadow-none">
+                <div className="flex items-center gap-4 mb-8 pb-6 border-b border-slate-200/50 dark:border-zinc-800/50">
+                  <div className="w-12 h-12 bg-linear-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-cyan-500/30">
+                    <FiEdit3 size={22} />
                   </div>
-                  <h2 className="text-xl font-black text-slate-800 dark:text-white italic uppercase">
+                  <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
                     สร้างคำร้องใหม่
                   </h2>
                 </div>
@@ -146,12 +151,10 @@ export default function QAPage() {
                     <input
                       type="text"
                       placeholder="เช่น ศิษย์เก่า KTLTC / ผู้ปกครอง"
-                      className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 transition-all placeholder:text-slate-300"
+                      className="w-full bg-slate-50/50 dark:bg-zinc-950/50 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 font-bold outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 transition-all placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                       required
                       value={form.guestName}
-                      onChange={(e) =>
-                        setForm({ ...form, guestName: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, guestName: e.target.value })}
                     />
                   </div>
 
@@ -162,12 +165,10 @@ export default function QAPage() {
                     <input
                       type="text"
                       placeholder="ระบุเรื่องที่ต้องการสอบถาม..."
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 md:p-5 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 focus:bg-white transition-all"
+                      className="w-full bg-slate-50 dark:bg-zinc-900/50 text-slate-900 dark:text-slate-200 border border-slate-100 dark:border-zinc-800 rounded-2xl p-4 md:p-5 font-bold outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 focus:bg-white dark:focus:bg-zinc-800 transition-all placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                       required
                       value={form.subject}
-                      onChange={(e) =>
-                        setForm({ ...form, subject: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
                     />
                   </div>
 
@@ -177,19 +178,17 @@ export default function QAPage() {
                     </label>
                     <textarea
                       placeholder="กรอกรายละเอียดที่นี่..."
-                      className="h-44 w-full bg-slate-900 text-white rounded-3xl p-5 md:p-6 font-medium outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 transition-all resize-none shadow-inner leading-relaxed"
+                      className="h-44 w-full bg-slate-900 dark:bg-zinc-950 text-white dark:text-slate-200 rounded-3xl p-5 md:p-6 font-medium outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 transition-all resize-none shadow-inner leading-relaxed placeholder:text-slate-500 dark:placeholder:text-zinc-700"
                       required
                       value={form.content}
-                      onChange={(e) =>
-                        setForm({ ...form, content: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, content: e.target.value })}
                     ></textarea>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="group w-full bg-slate-950 text-white h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-300 dark:shadow-none hover:bg-cyan-600 transition-all disabled:bg-slate-200 disabled:text-slate-400 flex items-center justify-center gap-4 active:scale-[0.98] relative overflow-hidden"
+                    className="group w-full bg-linear-to-r from-cyan-600 to-blue-600 text-white h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-4 hover:-translate-y-1 relative overflow-hidden"
                   >
                     <div className="relative z-10 flex items-center gap-3">
                       {isSubmitting ? (
@@ -204,15 +203,12 @@ export default function QAPage() {
                   </button>
                 </form>
 
-                <div className="mt-10 p-6 bg-slate-50/50 rounded-2xl border border-slate-100/50 italic">
+                <div className="mt-10 p-6 bg-slate-50/50 dark:bg-zinc-950/50 rounded-2xl border border-slate-100/50 dark:border-zinc-800/50 italic">
                   <div className="flex gap-3 items-start">
-                    <FiHelpCircle
-                      className="text-cyan-500 mt-1 shrink-0"
-                      size={18}
-                    />
-                    <p className="text-[10px] text-slate-500 leading-relaxed font-bold">
-                      คำถามของคุณจะถูกส่งไปยังเจ้าหน้าที่ที่เกี่ยวข้องโดยตรง
-                      เราจะพยายามตอบภายใน 24-48 ชั่วโมง
+                    <FiHelpCircle className="text-cyan-500 mt-1 shrink-0" size={18} />
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-bold">
+                      คำถามของคุณจะถูกส่งไปยังเจ้าหน้าที่ที่เกี่ยวข้องโดยตรง เราจะพยายามตอบภายใน
+                      24-48 ชั่วโมง
                     </p>
                   </div>
                 </div>
@@ -221,17 +217,19 @@ export default function QAPage() {
           </aside>
 
           {/* ส่วนรายการ (List Side) */}
-          <main className="lg:col-span-7 space-y-6">
-            <div className="flex items-center gap-4 mb-2 px-2">
-              <FiClock className="text-cyan-500 text-xl" />
-              <h2 className="text-xl font-black text-slate-800 dark:text-white uppercase italic">
+          <main className="lg:col-span-7 space-y-8">
+            <div className="flex items-center gap-4 mb-6 px-2 bg-white/50 dark:bg-zinc-900/30 backdrop-blur-md p-4 rounded-3xl border border-white/40 dark:border-zinc-800/40 w-max">
+              <div className="bg-cyan-100 dark:bg-cyan-900/30 p-2 rounded-xl">
+                <FiClock className="text-cyan-600 dark:text-cyan-400 text-xl" />
+              </div>
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight pr-4">
                 รายการล่าสุด
               </h2>
             </div>
 
             {questions.length === 0 ? (
-              <div className="py-24 text-center bg-white border-2 border-dashed border-slate-100 rounded-[3rem]">
-                <p className="text-slate-300 font-bold uppercase tracking-widest text-sm">
+              <div className="py-24 text-center bg-white dark:bg-zinc-900 border-2 border-dashed border-slate-100 dark:border-zinc-800 rounded-[3rem]">
+                <p className="text-slate-300 dark:text-zinc-600 font-bold uppercase tracking-widest text-sm">
                   ยังไม่มีข้อมูลในระบบ
                 </p>
               </div>
@@ -240,16 +238,17 @@ export default function QAPage() {
                 {questions.map((q) => (
                   <div
                     key={q._id}
-                    className="group bg-white rounded-4xl p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300"
+                    className="group relative bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl p-2 border border-white/60 dark:border-zinc-800/80 shadow-lg shadow-slate-200/40 dark:shadow-none hover:shadow-2xl hover:shadow-cyan-500/10 dark:hover:shadow-cyan-900/20 hover:-translate-y-1 transition-all duration-500 overflow-hidden"
                   >
-                    <div className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-slate-50 pb-6">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-linear-to-b from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-slate-100 dark:border-zinc-800/50 pb-6">
                       <span
                         className={`text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest 
-                        ${q.answer ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}
+                        ${q.answer ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400" : "bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400"}`}
                       >
                         {q.answer ? "ดำเนินการแล้ว" : "กำลังรอตรวจสอบ"}
                       </span>
-                      <span className="text-[11px] font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-lg">
+                      <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-zinc-800/50 px-3 py-1 rounded-lg">
                         📅{" "}
                         {new Date(q.createdAt).toLocaleDateString("th-TH", {
                           day: "numeric",
@@ -259,28 +258,30 @@ export default function QAPage() {
                       </span>
                     </div>
 
-                    <div className="space-y-4">
-                      <h3 className="text-2xl font-black text-slate-900 italic tracking-tight uppercase group-hover:text-cyan-600 transition-colors">
+                    <div className="space-y-5">
+                      <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-cyan-600 group-hover:to-blue-600 dark:group-hover:from-cyan-400 dark:group-hover:to-blue-400 transition-all duration-300">
                         {q.subject}
                       </h3>
-                      <p className="text-xs font-bold text-slate-400 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
+                      <p className="text-xs md:text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-2 bg-slate-50 dark:bg-zinc-800/50 w-max px-3 py-1.5 rounded-xl border border-slate-100 dark:border-zinc-700/50">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
                         ผู้ส่ง: {q.guestName || "ผู้ใช้งานทั่วไป"}
                       </p>
-                      <div className="bg-slate-900 text-slate-100 p-4 rounded-2xl font-medium leading-relaxed shadow-inner shadow-black/10">
+                      <div className="bg-slate-900 dark:bg-zinc-950 text-slate-100 dark:text-slate-200 p-4 rounded-2xl font-medium leading-relaxed shadow-inner shadow-black/10">
                         {q.content}
                       </div>
                     </div>
 
                     {q.answer && (
-                      <div className="mt-8 pt-8 border-t-2 border-slate-50">
-                        <div className="flex items-center gap-2 mb-4">
-                          <FiCheckCircle className="text-cyan-500" />
-                          <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest">
-                            คำตอบจากเจ้าหน้าที่ ({q.repliedBy})
+                      <div className="mt-8 pt-8 border-t-2 border-dashed border-slate-200 dark:border-zinc-800">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="bg-cyan-100 dark:bg-cyan-900/40 p-2 rounded-xl">
+                            <FiCheckCircle className="text-cyan-600 dark:text-cyan-400 text-lg" />
+                          </div>
+                          <span className="text-xs font-black text-cyan-600 dark:text-cyan-400 uppercase tracking-widest bg-cyan-50 dark:bg-cyan-950/30 px-3 py-1 rounded-lg">
+                            ตอบโดย ({q.repliedBy})
                           </span>
                         </div>
-                        <p className="text-slate-700 font-bold bg-cyan-50/50 p-6 rounded-2xl border-l-4 border-cyan-400 whitespace-pre-wrap">
+                        <p className="text-slate-700 dark:text-slate-300 font-medium bg-linear-to-br from-cyan-50/80 to-blue-50/50 dark:from-cyan-950/20 dark:to-blue-950/10 p-6 rounded-3xl border-l-4 border-cyan-400 dark:border-cyan-600 whitespace-pre-wrap leading-relaxed shadow-sm">
                           {q.answer}
                         </p>
                       </div>

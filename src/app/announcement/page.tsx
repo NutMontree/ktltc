@@ -80,7 +80,7 @@ export default async function AnnouncementPage() {
   const announcements = await getAnnouncements();
 
   return (
-    <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 mx-auto max-w-[1600px]">
+    <main className="mx-auto max-w-[1600px]">
       <div className="py-10">
         {/* --- Header Section --- */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800 w-full">
@@ -122,9 +122,8 @@ export default async function AnnouncementPage() {
                 <Link
                   key={news._id}
                   href={`/news/${news._id}`}
-                  className={`group flex flex-col rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full bg-white dark:bg-slate-900 dark:border-slate-800 ${
-                    index === 3 ? "lg:hidden" : ""
-                  }`}
+                  className={`group flex flex-col rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full bg-white dark:bg-slate-900 dark:border-slate-800 ${index === 3 ? "lg:hidden" : ""
+                    }`}
                 >
                   {/* Image Area */}
                   <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
