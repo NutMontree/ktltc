@@ -239,8 +239,7 @@ export default function LoginPage() {
                   <strong className="text-[#003fff] text-sm"> เบอร์โทรศัพท์มือถือ</strong>
                 </label>
                 <Link
-                  // href="https://www.allmaster.store/contactus"
-                  href="https://line.me/ti/p/p-xwfjMXJM"
+                  href="https://line.me/R/ti/p/@068xqmlf"
                   className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors pr-1"
                 >
                   ลืมรหัสผ่าน?
@@ -323,7 +322,7 @@ export default function LoginPage() {
                   ต้องการความช่วยเหลือ?
                 </p>
                 <Link
-                  href="https://line.me/ti/p/p-xwfjMXJM"
+                  href="https://line.me/R/ti/p/@068xqmlf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-[#06C755]/10 hover:bg-[#06C755]/20 text-[#06C755] rounded-full text-xs font-bold transition-all border border-[#06C755]/20"
