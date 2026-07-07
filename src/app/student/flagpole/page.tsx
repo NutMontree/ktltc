@@ -307,12 +307,11 @@ export default function StudentFlagpolePortal() {
     return R * c; // in meters
   };
 
-  const getLocation = (silent = false) => {
+  const getLocation = () => {
     if (!navigator.geolocation) {
-      if (!silent) {
-        setLocationStatus("error");
-        setLocationError("อุปกรณ์ของคุณไม่รองรับพิกัดระบบนำทาง GPS");
-      }
+      setLocationStatus("error");
+      setLocationError("อุปกรณ์ของคุณไม่รองรับพิกัดระบบนำทาง GPS");
+      alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
       return;
     }
     setLocationStatus("searching");
@@ -345,17 +344,23 @@ export default function StudentFlagpolePortal() {
           },
           (fallbackErr) => {
             console.error("GPS Fallback Error:", fallbackErr);
-            if (!silent) {
-              setLocationStatus("error");
-              if (fallbackErr.code === 1) {
-                setLocationError(
-                  "พิกัด GPS ถูกบล็อก! กรุณากดรูปแม่กุญแจ 🔒 บนแถบ URL เพื่อเปิดอนุญาตตำแหน่ง (Location) แล้วรีเฟรชหน้าเว็บ",
-                );
-              } else {
-                setLocationError(
-                  "ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกอาคารเรียน หรือเปิด GPS ทิ้งไว้สักครู่",
-                );
-              }
+            setLocationStatus("error");
+            
+            if (fallbackErr.code === 1) { // PERMISSION_DENIED
+              alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
+              setLocationError(
+                "พิกัด GPS ถูกบล็อก! กรุณาอนุญาตให้เบราว์เซอร์เข้าถึงตำแหน่ง (Location) หรือเปิด ตำแหน่งที่ตั้ง GPS บนอุปกรณ์ของคุณ",
+              );
+            } else if (fallbackErr.code === 2) { // POSITION_UNAVAILABLE
+              alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
+              setLocationError(
+                "ไม่พบสัญญาณ GPS: กรุณาเปิด ตำแหน่งที่ตั้ง GPS บนอุปกรณ์ของคุณ",
+              );
+            } else {
+              alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
+              setLocationError(
+                "ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกอาคารเรียน หรือเปิด ตำแหน่งที่ตั้ง GPS ทิ้งไว้สักครู่",
+              );
             }
           },
           { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 },
@@ -378,7 +383,7 @@ export default function StudentFlagpolePortal() {
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch((e) => console.error(e));
           loadFaceApiAndProfile();
-          getLocation(true);
+          getLocation();
         } catch (err: any) {
           console.error("Camera Error:", err);
           let errMsg = "ไม่สามารถเข้าถึงกล้องหน้าได้ กรุณาตรวจสอบการตั้งค่าเบราว์เซอร์";
