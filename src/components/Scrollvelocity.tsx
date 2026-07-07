@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import {
   motion,
   useScroll,
@@ -31,8 +31,22 @@ function ParallaxText({ children, baseVelocity = 50 }: ParallaxProps) {
 
   const x = useTransform(baseX, (v) => `${wrap(-20, -45, v)}%`);
   const directionFactor = useRef<number>(1);
+  const isMobile = useRef(false);
+
+  // ตรวจสอบขนาดหน้าจอว่าเป็นมือถือหรือไม่
+  useEffect(() => {
+    const checkMobile = () => {
+      isMobile.current = window.innerWidth <= 768;
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useAnimationFrame((t, delta) => {
+    // ปิดการคำนวณอนิเมชันที่กินสเปกหนักบนมือถือ เพื่อลดค่า INP
+    if (isMobile.current) return;
+
     let moveBy = directionFactor.current * baseVelocity * (delta / 3000);
 
     if (velocityFactor.get() < 0) {
