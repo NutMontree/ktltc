@@ -203,43 +203,84 @@ export async function GET() {
         const fs = require("fs");
         const publicDir = getPublicDir();
 
-        // 4.1 Get Disk Stats
-        if (fs.statfsSync) {
-          try {
-            const stats = fs.statfsSync(publicDir);
-            serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
-            serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
-            serverUsedMB = serverTotalMB - serverAvailableMB;
-          } catch (e) {
-            console.warn("Disk stats failed for local public directory");
-          }
-        }
-
-        // 4.2 Get CPU & RAM stats
+        // 4.2 Get CPU, RAM, & Real Disk Stats
         const isLocal = publicDir === getPublicDir();
 
         if (isLocal) {
           // --- รันบนเครื่อง Lenovo โดยตรง (ใช้ค่า Real-time จาก OS) ---
-          const totalMem = os.totalmem();
-          const freeMem = os.freemem();
-          ramUsage = {
-            total: Math.round(totalMem / (1024 * 1024)),
-            used: Math.round((totalMem - freeMem) / (1024 * 1024)),
-            percent: Math.round(((totalMem - freeMem) / totalMem) * 100),
-          };
+          try {
+            // RAM (ใช้ free -m เพื่อให้ตรงกับ htop/system monitor 100%)
+            const freeOutput = execSync('free -m').toString();
+            const memLine = freeOutput.split('\n').find((line: string) => line.startsWith('Mem:'));
+            if (memLine) {
+              const parts = memLine.trim().split(/\s+/);
+              const total = parseInt(parts[1], 10);
+              const used = parseInt(parts[2], 10); 
+              ramUsage = {
+                total,
+                used,
+                percent: Math.round((used / total) * 100),
+              };
+            } else {
+              throw new Error("free output parse failed");
+            }
+          } catch(e) {
+            // fallback
+            const totalMem = os.totalmem();
+            const freeMem = os.freemem();
+            ramUsage = {
+              total: Math.round(totalMem / (1024 * 1024)),
+              used: Math.round((totalMem - freeMem) / (1024 * 1024)),
+              percent: Math.round(((totalMem - freeMem) / totalMem) * 100),
+            };
+          }
 
-          // คำนวณ CPU แบบง่ายๆ จากค่าตั้งต้นของระบบ (ไม่หน่วงเวลา)
-          const cpus = os.cpus();
-          if (cpus && cpus.length > 0) {
-            let active = 0,
-              total = 0;
-            cpus.forEach((cpu: any) => {
-              active += cpu.times.user + cpu.times.sys;
-              total += cpu.times.user + cpu.times.sys + cpu.times.idle;
-            });
-            cpuUsage = ((active / total) * 100).toFixed(1);
-          } else {
-            cpuUsage = "1";
+          try {
+            // CPU (ใช้ top เพื่อดึงค่า current load จริงๆ)
+            const topOutput = execSync('top -bn1 | grep "Cpu(s)"').toString();
+            const match = topOutput.match(/([\d.]+)\s+id/);
+            if (match && match[1]) {
+              const idle = parseFloat(match[1]);
+              cpuUsage = (100 - idle).toFixed(1);
+            } else {
+              throw new Error("top output parse failed");
+            }
+          } catch(e) {
+            // fallback
+            const cpus = os.cpus();
+            if (cpus && cpus.length > 0) {
+              let active = 0, total = 0;
+              cpus.forEach((cpu: any) => {
+                active += cpu.times.user + cpu.times.sys;
+                total += cpu.times.user + cpu.times.sys + cpu.times.idle;
+              });
+              cpuUsage = ((active / total) * 100).toFixed(1);
+            } else {
+              cpuUsage = "1";
+            }
+          }
+
+          try {
+            // Disk (ใช้ df เพื่อให้ตรงกับหน้าจอ Linux 100%)
+            const dfOutput = execSync('df -m /').toString();
+            const lines = dfOutput.trim().split('\n');
+            if (lines.length > 1) {
+              const parts = lines[1].trim().split(/\s+/);
+              serverTotalMB = parseInt(parts[1], 10);
+              serverUsedMB = parseInt(parts[2], 10);
+              serverAvailableMB = parseInt(parts[3], 10);
+            } else {
+              throw new Error("df parse failed");
+            }
+          } catch(e) {
+            if (fs.statfsSync) {
+              try {
+                const stats = fs.statfsSync(publicDir);
+                serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
+                serverAvailableMB = Math.round((stats.bavail * stats.bsize) / (1024 * 1024));
+                serverUsedMB = serverTotalMB - serverAvailableMB;
+              } catch (e2) {}
+            }
           }
         } else {
           // --- รันบน PC (ดึงข้อมูลพื้นฐานจาก MongoDB) ---
