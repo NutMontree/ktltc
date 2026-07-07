@@ -44,9 +44,6 @@ function ParallaxText({ children, baseVelocity = 50 }: ParallaxProps) {
   }, []);
 
   useAnimationFrame((t, delta) => {
-    // ปิดการคำนวณอนิเมชันที่กินสเปกหนักบนมือถือ เพื่อลดค่า INP
-    if (isMobile.current) return;
-
     let moveBy = directionFactor.current * baseVelocity * (delta / 3000);
 
     if (velocityFactor.get() < 0) {
