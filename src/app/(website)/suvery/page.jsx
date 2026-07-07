@@ -79,6 +79,7 @@ const initialFormData = {
   furtherStudyLevel: "",
   furtherStudyMajor: "",
   furtherStudyMajorDetail: "",
+  furtherStudyInstitution: "",
   furtherStudyReason: "",
   furtherStudyReasonOther: "",
   // 8. ปัญหาในการหางาน
@@ -204,6 +205,7 @@ export default function GraduatesuveryForm() {
           newData.furtherStudyLevel = "";
           newData.furtherStudyMajor = "";
           newData.furtherStudyMajorDetail = "";
+          newData.furtherStudyInstitution = "";
           newData.furtherStudyReason = "";
           newData.furtherStudyReasonOther = "";
         } else if (value === "ทำงานแล้ว") {
@@ -217,6 +219,7 @@ export default function GraduatesuveryForm() {
           newData.furtherStudyLevel = "";
           newData.furtherStudyMajor = "";
           newData.furtherStudyMajorDetail = "";
+          newData.furtherStudyInstitution = "";
           newData.furtherStudyReason = "";
           newData.furtherStudyReasonOther = "";
         } else if (value === "ศึกษาต่อ") {
@@ -1024,7 +1027,18 @@ export default function GraduatesuveryForm() {
                       />
                     )}
                   </div>
-                  <div className="md:col-span-2">
+                  <div>
+                    <label className={labelClass}>ชื่อสถาบัน *</label>
+                    <input
+                      name="furtherStudyInstitution"
+                      onChange={handleChange}
+                      value={formData.furtherStudyInstitution}
+                      className={inputClass}
+                      placeholder="ระบุชื่อสถาบันการศึกษา"
+                      required
+                    />
+                  </div>
+                  <div className="md:col-span-1 lg:col-span-2">
                     <label className={labelClass}>เหตุผล *</label>
                     <select
                       name="furtherStudyReason"
