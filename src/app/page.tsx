@@ -31,12 +31,13 @@ async function getHomeData() {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const [visibilityData, siteData, postersData, feeds, banners] = await Promise.all([
+    const [visibilityData, siteData, postersData, feeds, banners, collegeStats] = await Promise.all([
       db.collection("home_settings").find().toArray(),
       db.collection("site_settings").find().toArray(),
       db.collection("posters").find({ isActive: true }).sort({ orderIndex: 1, createdAt: -1 }).toArray(),
       db.collection("social_feeds").find({}).sort({ createdAt: -1 }).toArray(),
       db.collection("banners").find({ isActive: true }).toArray(),
+      db.collection("college_stats").find({}).sort({ id: 1 }).toArray(),
     ]);
 
     const isShow = visibilityData.reduce((acc: any, item: any) => {
@@ -55,15 +56,16 @@ async function getHomeData() {
       activePosters: JSON.parse(JSON.stringify(postersData)),
       feeds: JSON.parse(JSON.stringify(feeds)),
       banners: JSON.parse(JSON.stringify(banners)),
+      collegeStats: JSON.parse(JSON.stringify(collegeStats)),
     };
   } catch (error) {
     console.error("Fetch Data Error:", error);
-    return { isShow: {}, settings: {}, activePosters: [], feeds: [], banners: [] };
+    return { isShow: {}, settings: {}, activePosters: [], feeds: [], banners: [], collegeStats: [] };
   }
 }
 
 export default async function Home() {
-  const { isShow, settings, activePosters, feeds, banners } = await getHomeData();
+  const { isShow, settings, activePosters, feeds, banners, collegeStats } = await getHomeData();
 
   return (
     <div className="flex flex-col min-h-screen">
