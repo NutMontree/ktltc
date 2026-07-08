@@ -44,7 +44,7 @@ export const uploadFile = async (
 
   // 2. เตรียมข้อมูลสำหรับส่งไป API
   const formData = new FormData();
-  formData.append("file", fileToUpload);
+  formData.append("file", fileToUpload, file.name);
   formData.append("folder", folder);
 
   // ใช้ XMLHttpRequest แทน fetch เพื่อให้สามารถติดตาม Progress ได้

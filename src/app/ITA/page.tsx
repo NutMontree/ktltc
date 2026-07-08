@@ -497,11 +497,19 @@ const CategorySection = ({
                                               </svg>
                                             )}
                                           </div>
-                                          <LinkPreview url={link.url}>
-                                            <p className="inline-block text-sm text-slate-700 dark:text-slate-200 hover:text-orange-500 dark:hover:text-orange-400 font-bold transition-colors cursor-pointer">
-                                              {link.name}
-                                            </p>
-                                          </LinkPreview>
+                                          {link.url?.startsWith("/") ? (
+                                            <Link href={link.url} target="_blank">
+                                              <p className="inline-block text-sm text-slate-700 dark:text-slate-200 hover:text-orange-500 dark:hover:text-orange-400 font-bold transition-colors cursor-pointer">
+                                                {link.name}
+                                              </p>
+                                            </Link>
+                                          ) : (
+                                            <LinkPreview url={link.url}>
+                                              <p className="inline-block text-sm text-slate-700 dark:text-slate-200 hover:text-orange-500 dark:hover:text-orange-400 font-bold transition-colors cursor-pointer">
+                                                {link.name}
+                                              </p>
+                                            </LinkPreview>
+                                          )}
                                         </div>
                                       );
                                     })}
