@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 const FILTER_CATEGORIES = [
   { value: "All", label: "ทุกหมวดหมู่" },
@@ -54,17 +55,27 @@ interface NewsItem {
 }
 
 
-export default function NewsListClient({
+function NewsListClientInner({
   initialNews = [],
   hideFourthOnLg = false,
 }: {
   initialNews: NewsItem[];
   hideFourthOnLg?: boolean;
 }) {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category") || "All";
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedMonth, setSelectedMonth] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All");
   const [visibleCount, setVisibleCount] = useState(12);
+
+  // Allow URL parameter changes to update the state if it changes
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (REDIRECT_URLS[selectedYear]) {
@@ -337,5 +348,16 @@ export default function NewsListClient({
         </div>
       )}
     </div>
+  );
+}
+
+export default function NewsListClient(props: {
+  initialNews: NewsItem[];
+  hideFourthOnLg?: boolean;
+}) {
+  return (
+    <Suspense fallback={<div className="w-full h-96 animate-pulse bg-slate-100 dark:bg-slate-800 rounded-[2.5rem]"></div>}>
+      <NewsListClientInner {...props} />
+    </Suspense>
   );
 }

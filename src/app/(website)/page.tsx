@@ -100,7 +100,7 @@ export default async function HomePage() {
             </p>
           </div>
           <Link
-            href="/news"
+            href="/news?category=PR"
             className="group flex items-center gap-2 text-blue-600 font-bold hover:underline"
           >
             ดูข่าวทั้งหมด
