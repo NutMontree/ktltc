@@ -662,11 +662,10 @@ export default function ItaDashboard() {
                 <button
                   key={year}
                   onClick={() => setSelectedYear(year)}
-                  className={`relative px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
-                    selectedYear === year
-                      ? "text-white bg-linear-to-r from-blue-600 to-teal-500 shadow-md"
-                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                  }`}
+                  className={`relative px-6 py-2.5 rounded-xl text-sm font-black transition-all ${selectedYear === year
+                    ? "text-white bg-linear-to-r from-blue-600 to-teal-500 shadow-md"
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    }`}
                 >
                   ปีงบประมาณ {year}
                 </button>
@@ -699,11 +698,10 @@ export default function ItaDashboard() {
                   <button
                     key={ind.code}
                     onClick={() => handleOitChange(ind.code)}
-                    className={`w-full text-left flex items-center justify-between p-3.5 rounded-xl transition-all duration-300 ${
-                      isSelected
-                        ? "bg-linear-to-r from-blue-500/10 to-teal-500/10 border-l-4 border-blue-500 text-blue-700 dark:text-blue-400 font-bold"
-                        : "text-slate-600 dark:text-zinc-400 hover:bg-slate-100/50 dark:hover:bg-zinc-800/50 hover:text-slate-800"
-                    }`}
+                    className={`w-full text-left flex items-center justify-between p-3.5 rounded-xl transition-all duration-300 ${isSelected
+                      ? "bg-linear-to-r from-blue-500/10 to-teal-500/10 border-l-4 border-blue-500 text-blue-700 dark:text-blue-400 font-bold"
+                      : "text-slate-600 dark:text-zinc-400 hover:bg-slate-100/50 dark:hover:bg-zinc-800/50 hover:text-slate-800"
+                      }`}
                   >
                     <div className="flex flex-col grow min-w-0 pr-2">
                       <span className="text-[13px] font-black tracking-wide truncate">
@@ -776,11 +774,10 @@ export default function ItaDashboard() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={`p-4 rounded-2xl mb-8 flex items-start gap-3 border ${
-                      message.type === "success"
-                        ? "bg-emerald-50/50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/10 dark:border-emerald-800/30 dark:text-emerald-400"
-                        : "bg-rose-50/50 border-rose-200 text-rose-800 dark:bg-rose-950/10 dark:border-rose-800/30 dark:text-rose-400"
-                    }`}
+                    className={`p-4 rounded-2xl mb-8 flex items-start gap-3 border ${message.type === "success"
+                      ? "bg-emerald-50/50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/10 dark:border-emerald-800/30 dark:text-emerald-400"
+                      : "bg-rose-50/50 border-rose-200 text-rose-800 dark:bg-rose-950/10 dark:border-rose-800/30 dark:text-rose-400"
+                      }`}
                   >
                     {message.type === "success" ? (
                       <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -824,7 +821,7 @@ export default function ItaDashboard() {
                   <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
                     <div className="flex items-center justify-between mb-4">
                       <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] block">
-                        ลิงก์เอกสาร หรือลิงก์เว็บไซต์อ้างอิง (Attachment Links)
+                        เอกสารแนบแหล่งข้อมูลและลิงค์ (References & PDFs & Links)
                       </label>
                       <div className="flex items-center gap-2">
                         <input

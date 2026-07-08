@@ -43,8 +43,13 @@ export const uploadFile = async (
   }
 
   // 2. เตรียมข้อมูลสำหรับส่งไป API
+  // Ensure the compressed file is a File object with the original name to prevent "blob" filename
+  const finalFile = fileToUpload instanceof File && fileToUpload.name !== "blob" 
+    ? fileToUpload 
+    : new File([fileToUpload], file.name, { type: file.type });
+  
   const formData = new FormData();
-  formData.append("file", fileToUpload, file.name);
+  formData.append("file", finalFile);
   formData.append("folder", folder);
 
   // ใช้ XMLHttpRequest แทน fetch เพื่อให้สามารถติดตาม Progress ได้

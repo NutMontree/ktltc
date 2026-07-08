@@ -479,7 +479,7 @@ const CategorySection = ({
                             {dbEntry.links && dbEntry.links.filter((l: any) => !/\.(jpe?g|png|gif|webp|svg|bmp)(?:\?.*)?$/i.test(l.url)).length > 0 && (
                               <div>
                                 <p className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider mb-3">
-                                  เอกสารแนบและแหล่งข้อมูล (References & PDFs)
+                                  เอกสารแนบแหล่งข้อมูลและลิงค์ (References & PDFs & Links)
                                 </p>
                                 <div className="space-y-3.5">
                                   {dbEntry.links
