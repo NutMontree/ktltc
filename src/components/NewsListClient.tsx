@@ -67,6 +67,7 @@ function NewsListClientInner({
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedMonth, setSelectedMonth] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(12);
 
   // Allow URL parameter changes to update the state if it changes
@@ -119,8 +120,12 @@ function NewsListClientInner({
         return month.toString() === selectedMonth;
       });
     }
+    if (searchQuery.trim() !== "") {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter((news) => news.title.toLowerCase().includes(lowerQuery));
+    }
     return result;
-  }, [initialNews, selectedCategory, selectedMonth, selectedYear]);
+  }, [initialNews, selectedCategory, selectedMonth, selectedYear, searchQuery]);
 
   const paginatedNews = filteredNews.slice(0, visibleCount);
   const handleLoadMore = () => setVisibleCount((prev) => prev + 12);
@@ -129,7 +134,17 @@ function NewsListClientInner({
     <div className="w-full">
       {/* --- Filter Section (คงเดิม) --- */}
       <div className="mb-16 bg-white/70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60 shadow-xl dark:bg-slate-900/80 dark:border-slate-700">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input
+            type="text"
+            placeholder="ค้นหาประกาศ (เช่น No Gift Policy)"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setVisibleCount(12);
+            }}
+            className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500/50 outline-none placeholder:text-slate-400"
+          />
           <select
             value={selectedCategory}
             onChange={(e) => {
