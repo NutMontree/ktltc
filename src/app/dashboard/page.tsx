@@ -783,7 +783,7 @@ export default function DashboardLoader() {
                 {permissions?.manage_home && (
                   <ActionCard
                     href="/dashboard/manage-home"
-                    title="ปรับแต่งหน้าหลัก"
+                    title="จัดการ เนื้อหาหน้าหลัก"
                     icon={Globe}
                     desc="จัดการแบนเนอร์และประกาศหน้าแรก"
                     variants={item}
@@ -792,16 +792,25 @@ export default function DashboardLoader() {
                 {permissions?.manage_navbar && (
                   <ActionCard
                     href="/dashboard/navbar"
-                    title="เมนูเว็บไซต์"
+                    title="จัดการเมนู (Navbar)"
                     icon={Navigation}
                     desc="ตั้งค่าโครงสร้างเมนูและลิงก์เชื่อมโยง"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_system && (
+                  <ActionCard
+                    href="/dashboard/books"
+                    title="ระบบจัดการหนังสือ (Books)"
+                    icon={BookOpen}
+                    desc="สร้างและจัดการหน้าหนังสือ E-Book ทุกเรื่อง"
                     variants={item}
                   />
                 )}
                 {permissions?.manage_pages && (
                   <ActionCard
                     href="/dashboard/pages"
-                    title="เนื้อหาหน้าเว็บ"
+                    title="จัดการเนื้อหาหน้าเว็บ (Pages)"
                     icon={FileText}
                     desc="จัดการข้อมูลและเนื้อหาในแต่ละหน้า"
                     variants={item}

@@ -126,7 +126,7 @@ export async function DELETE(req: Request) {
     // Cleanup permissions in roles first
     const menu = await db.collection("custom_menus").findOne({ _id: new ObjectId(id) });
     if (menu && menu.permissionKey) {
-      await db.collection("roles").updateMany(
+      await db.collection("role_permissions").updateMany(
         {},
         { $unset: { [`permissions.${menu.permissionKey}`]: "" } as any }
       );

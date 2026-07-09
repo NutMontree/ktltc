@@ -142,7 +142,7 @@ export default function ManagePages() {
         <div className="flex items-center justify-between mb-8 pb-6 border-b border-zinc-200 dark:border-zinc-800">
           <div>
             <h1 className="text-3xl font-black text-zinc-900 tracking-tight dark:text-white">
-              จัดการเนื้อหาหน้าเว็บ (Pages)
+              จัดการจัดการเนื้อหาหน้าเว็บ (Pages) (Pages)
             </h1>
             <p className="text-zinc-500 mt-1 dark:text-zinc-400">
               สร้างหน้าเว็บใหม่ด้วย Rich Text Editor
@@ -258,11 +258,10 @@ export default function ManagePages() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-95 ${
-                  editId
+                className={`w-full py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-95 ${editId
                     ? "bg-yellow-500 hover:bg-yellow-400 text-white shadow-yellow-200 dark:shadow-none dark:bg-yellow-600 dark:hover:bg-yellow-500"
                     : "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-200 dark:shadow-none dark:bg-blue-600 dark:hover:bg-blue-500"
-                }`}
+                  }`}
               >
                 {isLoading
                   ? "กำลังบันทึก..."
@@ -284,11 +283,10 @@ export default function ManagePages() {
                 {pages.map((p) => (
                   <div
                     key={p._id}
-                    className={`p-5 border rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 ${
-                      editId === p._id
+                    className={`p-5 border rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 ${editId === p._id
                         ? "bg-yellow-50 border-yellow-300 ring-2 ring-yellow-200 shadow-md dark:bg-yellow-900/20 dark:border-yellow-700 dark:ring-yellow-900"
                         : "border-zinc-200 hover:shadow-lg hover:-translate-y-1 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-zinc-700"
-                    }`}
+                      }`}
                   >
                     <div>
                       <div className="font-bold text-blue-600 text-lg flex items-center gap-1 dark:text-blue-400">

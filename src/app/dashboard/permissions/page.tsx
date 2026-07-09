@@ -45,19 +45,19 @@ const FEATURE_LABELS: {
     href: "/dashboard/news",
   },
   manage_home: {
-    label: "ปรับแต่งหน้าหลัก",
+    label: "จัดการ เนื้อหาหน้าหลัก",
     icon: FiLayout,
     color: "text-blue-400",
     href: "/dashboard/manage-home",
   },
   manage_navbar: {
-    label: "จัดการเมนูเว็บไซต์",
+    label: "จัดการจัดการเมนู (Navbar)",
     icon: FiLayers,
     color: "text-indigo-400",
     href: "/dashboard/navbar",
   },
   manage_pages: {
-    label: "จัดการเนื้อหาหน้าเว็บ",
+    label: "จัดการจัดการเนื้อหาหน้าเว็บ (Pages)",
     icon: FiLayers,
     color: "text-sky-500",
     href: "/dashboard/pages",
@@ -774,8 +774,8 @@ export default function PermissionsPage() {
                               <button
                                 onClick={() => handleToggleDepartment(dept.value, feature)}
                                 className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${departmentPermissions[dept.value]?.[feature]
-                                    ? "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-500/20"
-                                    : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-amber-300"
+                                  ? "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-500/20"
+                                  : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-amber-300"
                                   }`}
                               >
                                 {departmentPermissions[dept.value]?.[feature] ? (
@@ -895,10 +895,10 @@ export default function PermissionsPage() {
                                   handleToggle(role, feature)
                                 }
                                 className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${MERGED_FEATURE_LABELS[feature].isSuperAdminOnly
-                                    ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
-                                    : permissions[role][feature]
-                                      ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                                      : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-emerald-300"
+                                  ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
+                                  : permissions[role][feature]
+                                    ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                                    : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-emerald-300"
                                   }`}
                               >
                                 {permissions[role][feature] &&
@@ -1010,8 +1010,8 @@ export default function PermissionsPage() {
                               <button
                                 onClick={() => handleToggle(role, feature)}
                                 className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${permissions[role] && permissions[role][feature]
-                                    ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20"
-                                    : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-blue-300"
+                                  ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20"
+                                  : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-blue-300"
                                   }`}
                               >
                                 {permissions[role] && permissions[role][feature] ? (
@@ -1076,8 +1076,8 @@ export default function PermissionsPage() {
                           <div className="flex items-center gap-2">
                             <span
                               className={`font-bold uppercase tracking-tight text-xs px-3 py-1 rounded-lg ${role === "super_admin"
-                                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
                                 }`}
                             >
                               {role}

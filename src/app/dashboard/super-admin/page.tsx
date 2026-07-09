@@ -111,6 +111,9 @@ export default function SuperAdminPage() {
         const settings = await res.json();
         const autoApprove = settings.find((s: any) => s.key === "auto_approve_signup");
         setAutoApproveSignup(autoApprove ? autoApprove.value === "true" : false);
+        
+        const regEnableSetting = settings.find((s: any) => s.key === "registration_enabled");
+        setRegEnabled(regEnableSetting ? regEnableSetting.value === "true" : true);
       }
     } catch (e) {
       console.error("Failed to fetch signup setting:", e);
@@ -736,7 +739,7 @@ export default function SuperAdminPage() {
         {/* Registration Toggle Card */}
         <div className="mb-8 flex justify-end">
           <motion.div
-            className="group relative flex flex-col p-px rounded-3xl bg-zinc-200 dark:bg-zinc-800 hover:bg-gradient-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-md hover:shadow-xl w-full max-w-sm"
+            className="group relative flex flex-col p-px rounded-3xl bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-md hover:shadow-xl w-full max-w-sm"
           >
             <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-5 rounded-[1.7rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
               <div className="flex items-center justify-between">

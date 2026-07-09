@@ -108,11 +108,10 @@ export default function MobileMenu({
         {hasChildren ? (
           <button
             onClick={() => toggleMenu(item._id)}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-              isExpanded
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm transition-all ${isExpanded
                 ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
                 : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-            }`}
+              }`}
           >
             <span className="flex items-center gap-3">
               <div
@@ -128,11 +127,10 @@ export default function MobileMenu({
           <Link
             href={ensureAbsolute(item.path)}
             onClick={closeMenu}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-              isActive
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${isActive
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                 : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-            }`}
+              }`}
           >
             <div
               className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-white" : "bg-zinc-300 dark:bg-zinc-700"}`}
@@ -196,10 +194,10 @@ export default function MobileMenu({
               <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 flex items-center justify-center">
-                    <img 
-                      src="/images/favicon.ico" 
-                      alt="KTLTC Logo" 
-                      className="w-full h-full object-contain drop-shadow-lg" 
+                    <img
+                      src="/images/favicon.ico"
+                      alt="KTLTC Logo"
+                      className="w-full h-full object-contain drop-shadow-lg"
                     />
                   </div>
                   <div>
@@ -252,7 +250,7 @@ export default function MobileMenu({
                         onClick={async () => {
                           try {
                             // 1. ลบคุกกี้ความปลอดภัย "token"
-                            await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+                            await fetch("/api/auth/logout", { method: "POST" }).catch(() => { });
                             // 2. เรียกใช้ signOut แบบปิด redirect
                             await signOut({ redirect: false });
                           } catch (err) {
@@ -308,7 +306,7 @@ export default function MobileMenu({
                     <div>
                       {!["user", "student"].includes(roleLower) && (
                         <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-4 pl-2 flex items-center gap-2">
-                          <Globe className="w-3 h-3" /> เมนูเว็บไซต์
+                          <Globe className="w-3 h-3" /> จัดการเมนู (Navbar)
                         </h4>
                       )}
                       <div className="space-y-0.5">
