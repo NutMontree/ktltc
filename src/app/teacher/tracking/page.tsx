@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { Loader2, Map as MapIcon, Users, RefreshCw, Settings, Search, UserCircle, Clock, ExternalLink, ChevronDown, ChevronUp, List, Wifi, WifiOff, Phone, History } from "lucide-react";
+import { Loader2, Map as MapIcon, Users, RefreshCw, Settings, Search, UserCircle, Clock, ExternalLink, ChevronDown, ChevronUp, List, Wifi, WifiOff, Phone, History, ArrowLeft, X, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -26,6 +26,8 @@ export default function TrackingDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [listOpen, setListOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [manualOpen, setManualOpen] = useState(false);
   const [trackingConfig, setTrackingConfig] = useState({
     campusCenterLat: 14.754043,
     campusCenterLng: 104.65807,
@@ -124,12 +126,31 @@ export default function TrackingDashboard() {
     return (now - lastUpdate) < 30000; // 30 seconds threshold
   };
 
+  const getGpsDisconnectedTime = (student: any) => {
+    if (isGpsOnline(student) || !student.currentLocation?.updatedAt) return null;
+    const lastUpdate = new Date(student.currentLocation.updatedAt).getTime();
+    const now = lastUpdated.getTime();
+    const diffMs = Math.max(0, now - lastUpdate);
+    const diffMinutes = Math.floor(diffMs / 60000);
+
+    if (diffMinutes < 1) return "เพิ่งขาดการเชื่อมต่อ";
+    if (diffMinutes >= 60) {
+      const hours = Math.floor(diffMinutes / 60);
+      const mins = diffMinutes % 60;
+      return mins > 0 ? `${hours} ชม. ${mins} นาที` : `${hours} ชม.`;
+    }
+    return `${diffMinutes} นาที`;
+  };
+
   return (
     <div className="max-w-full mx-auto w-full px-2 md:px-6 py-4 md:py-6 relative h-screen flex flex-col  overflow-hidden">
       {/* Header */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 mb-8 shrink-0 relative z-10">
         {/* Left side: Title & Description */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex-1">
+          <Link href="/dashboard" className="flex items-center gap-2 text-zinc-500 hover:text-blue-600 font-bold mb-4 transition-colors w-fit">
+            <ArrowLeft size={16} /> กลับหน้าหลัก
+          </Link>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest mb-4 border border-blue-100 dark:border-blue-800/50">
             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
             Live GPS Tracking
@@ -142,6 +163,9 @@ export default function TrackingDashboard() {
           </p>
 
           <div className="flex flex-wrap gap-3 mt-6">
+            <button onClick={() => setManualOpen(true)} className="px-5 py-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-100 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-2 hover:-translate-y-0.5">
+              <BookOpen size={16} /> คู่มือ
+            </button>
             <Link href="/teacher/tracking/history" className="px-5 py-2.5 bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-green-500/30 transition-all flex items-center gap-2 hover:-translate-y-0.5">
               <History size={16} /> ประวัติการเข้า-ออก
             </Link>
@@ -200,7 +224,7 @@ export default function TrackingDashboard() {
           </div>
         ) : (
           <div className="absolute inset-0">
-            <MapComponent students={students} config={trackingConfig} />
+            <MapComponent students={students} config={trackingConfig} onStudentClick={setSelectedStudent} />
           </div>
         )}
 
@@ -326,9 +350,11 @@ export default function TrackingDashboard() {
                                 <span className="text-[10px] font-black uppercase tracking-wider">GPS</span>
                               </div>
                             ) : (
-                              <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 px-2 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                              <div className="flex items-center gap-1 bg-rose-50 dark:bg-rose-950/30 text-rose-500 dark:text-rose-400 px-2 py-1 rounded-lg border border-rose-100 dark:border-rose-900/50">
                                 <WifiOff size={10} />
-                                <span className="text-[10px] font-black uppercase tracking-wider">GPS ปิด</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider">
+                                  GPS ปิด {getGpsDisconnectedTime(student) ? `(${getGpsDisconnectedTime(student)})` : ''}
+                                </span>
                               </div>
                             )}
                             <a
@@ -367,6 +393,134 @@ export default function TrackingDashboard() {
           background-color: #334155;
         }
       `}</style>
+
+      {/* Student Details Modal */}
+      <AnimatePresence>
+        {selectedStudent && (
+          <div className="fixed inset-0 z-1000 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedStudent(null)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-6 rounded-3xl w-full max-w-sm shadow-2xl relative"
+            >
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors p-1"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden relative shrink-0 border-2 border-zinc-200 dark:border-zinc-700">
+                    {selectedStudent.image ? (
+                      <Image src={selectedStudent.image} alt={selectedStudent.name || "Student"} fill className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                        <UserCircle size={32} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 pr-6">
+                    <h4 className="font-black text-lg text-zinc-900 dark:text-white truncate">
+                      {selectedStudent.name || "ไม่ทราบชื่อ"}
+                    </h4>
+                    <p className="text-sm font-bold text-zinc-500 uppercase tracking-widest mt-0.5 truncate">
+                      {selectedStudent.username || "N/A"}
+                    </p>
+                    {selectedStudent.phone && (
+                      <a href={`tel:${selectedStudent.phone}`} className="flex items-center gap-1.5 text-xs font-bold text-blue-500 hover:text-blue-600 mt-1 transition-colors">
+                        <Phone size={12} />
+                        {selectedStudent.phone}
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Department and Level Info */}
+                {(selectedStudent.department || selectedStudent.academicLevel || selectedStudent.classroomName) && (
+                  <div className="flex flex-col gap-2 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-xl">
+                    {selectedStudent.department && (
+                      <span className="text-xs bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-1 rounded-md w-fit font-bold">
+                        {selectedStudent.department}
+                      </span>
+                    )}
+                    {(selectedStudent.academicLevel || selectedStudent.classroomName) && (
+                      <span className="text-xs bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300 px-2 py-1 rounded-md w-fit font-bold">
+                        {selectedStudent.academicLevel} {selectedStudent.classroomName || selectedStudent.groupCode}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-2 mt-2">
+                  <div className="flex items-center gap-2 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 px-3 py-2 rounded-xl border border-rose-100 dark:border-rose-900/50">
+                    <Clock size={16} />
+                    <span className="text-xs font-black uppercase tracking-wider">
+                      ออกเมื่อ: {formatDateTime(selectedStudent.scannedOutAt)}
+                    </span>
+                  </div>
+
+                  {isGpsOnline(selectedStudent) ? (
+                    <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-3 py-2 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+                      <Wifi size={16} />
+                      <span className="text-xs font-black uppercase tracking-wider">GPS กำลังทำงาน (Online)</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 bg-rose-50 dark:bg-rose-950/30 text-rose-500 dark:text-rose-400 px-3 py-2 rounded-xl border border-rose-100 dark:border-rose-900/50">
+                      <WifiOff size={16} />
+                      <span className="text-xs font-black uppercase tracking-wider">
+                        GPS ปิด {getGpsDisconnectedTime(selectedStudent) ? `(${getGpsDisconnectedTime(selectedStudent)})` : ''}
+                      </span>
+                    </div>
+                  )}
+
+                  <a
+                    href={`https://www.google.com/maps?q=${selectedStudent.currentLocation?.latitude || trackingConfig.campusCenterLat},${selectedStudent.currentLocation?.longitude || trackingConfig.campusCenterLng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-2.5 rounded-xl border border-blue-100 dark:border-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors mt-2"
+                  >
+                    <ExternalLink size={16} />
+                    <span className="text-xs font-black uppercase tracking-wider">เปิดพิกัดล่าสุดใน Maps</span>
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Manual Modal */}
+      <AnimatePresence>
+        {manualOpen && (
+          <div className="fixed inset-0 z-1000 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setManualOpen(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-zinc-900 p-6 rounded-3xl w-full max-w-md shadow-2xl border border-zinc-200 dark:border-zinc-800 relative max-h-[80vh] overflow-y-auto"
+            >
+               <button onClick={() => setManualOpen(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 p-1">
+                 <X size={20} />
+               </button>
+               <h3 className="text-xl font-black mb-4 flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+                 <BookOpen className="text-amber-500" /> คู่มือ: ระบบติดตาม (GPS)
+               </h3>
+               <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-2xl">
+                 <p className="font-bold text-zinc-800 dark:text-zinc-200">ตรวจสอบตำแหน่งนักเรียนแบบเรียลไทม์</p>
+                 <ul className="list-disc list-inside space-y-3 font-medium">
+                   <li><strong>ดูตำแหน่ง:</strong> แผนที่จะแสดงพิกัดนักเรียนที่เพิ่งสแกนออกนอกวิทยาลัย และอัปเดตตำแหน่งอัตโนมัติ</li>
+                   <li><strong>ดูรายชื่อ:</strong> แผงรายชื่อด้านขวาใช้เพื่อค้นหานักเรียน และดูสถานะว่า GPS ของนักเรียนกำลังเปิดใช้งานหรือขาดการเชื่อมต่อไป</li>
+                 </ul>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

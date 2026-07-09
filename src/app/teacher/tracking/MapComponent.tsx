@@ -40,7 +40,7 @@ const createStudentIcon = (imageUrl?: string) => {
   });
 };
 
-export default function MapComponent({ students, config }: { students: any[], config?: any }) {
+export default function MapComponent({ students, config, onStudentClick }: { students: any[], config?: any, onStudentClick?: (student: any) => void }) {
   // Use dynamic config if available, otherwise default to Kantharalak Technical College
   const centerLat = config?.campusCenterLat || 14.754043;
   const centerLng = config?.campusCenterLng || 104.65807;
@@ -103,7 +103,30 @@ export default function MapComponent({ students, config }: { students: any[], co
                       </p>
                     </div>
                   </div>
-                  <a
+                  <div className="flex flex-col gap-1 mt-3">
+                    {onStudentClick && (
+                      <button
+                        onClick={() => onStudentClick(student)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
+                          padding: "6px 0",
+                          borderRadius: "8px",
+                          backgroundColor: "#f3f4f6", // zinc-100
+                          color: "#374151", // zinc-700
+                          border: "1px solid #e5e7eb",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          width: "100%",
+                          cursor: "pointer",
+                        }}
+                      >
+                        📄 ดูข้อมูลนักเรียน
+                      </button>
+                    )}
+                    <a
                       href={`https://www.google.com/maps?q=${lat},${lng}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -112,7 +135,6 @@ export default function MapComponent({ students, config }: { students: any[], co
                         alignItems: "center",
                         justifyContent: "center",
                         gap: "6px",
-                        marginTop: "8px",
                         padding: "6px 0",
                         borderRadius: "8px",
                         backgroundColor: "#3b82f6",
@@ -125,6 +147,7 @@ export default function MapComponent({ students, config }: { students: any[], co
                     >
                       📍 เปิดใน Google Maps
                     </a>
+                  </div>
                 </div>
               </Popup>
             </Marker>

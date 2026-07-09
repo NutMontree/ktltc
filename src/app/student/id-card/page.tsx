@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loader2, ArrowLeft, ShieldCheck, Download, GraduationCap } from "lucide-react";
+import { Loader2, ArrowLeft, ShieldCheck, Download, GraduationCap, BookOpen, X } from "lucide-react";
 import { QRCode } from "antd";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -15,6 +15,21 @@ export default function StudentIdCardPage() {
   const [mounted, setMounted] = useState(false);
   const [gpsStatus, setGpsStatus] = useState<"pending" | "active" | "error" | "denied">("pending");
   const [wakeLockActive, setWakeLockActive] = useState(false);
+  const [webrtcEnabled, setWebrtcEnabled] = useState(false);
+  const [pipEnabled, setPipEnabled] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/settings/tracking")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          setWebrtcEnabled(data.data.webrtc_hack_enabled);
+          setPipEnabled(data.data.pip_hack_enabled);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   // === Screen Wake Lock: Keep screen ON ===
   useEffect(() => {
@@ -59,6 +74,148 @@ export default function StudentIdCardPage() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [status]);
+
+  // === Silent Audio Hack (Keep browser active) ===
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    
+    // Tiny 1-sample silent WAV
+    const silentWav = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+    const audio = new Audio(silentWav);
+    audio.loop = true;
+
+    const startAudio = () => {
+      audio.play().catch(e => console.log("Silent audio blocked:", e));
+      document.removeEventListener("click", startAudio);
+      document.removeEventListener("touchstart", startAudio);
+    };
+
+    // Needs user interaction to start
+    document.addEventListener("click", startAudio);
+    document.addEventListener("touchstart", startAudio);
+
+    return () => {
+      audio.pause();
+      document.removeEventListener("click", startAudio);
+      document.removeEventListener("touchstart", startAudio);
+    };
+  }, [status]);
+
+  // === Service Worker & Background Sync Registration ===
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(async (registration) => {
+        console.log('SW registered:', registration.scope);
+        // Request sync if supported
+        if ('sync' in registration) {
+          try {
+            await (registration as any).sync.register('gps-sync');
+          } catch (err) {
+            console.log('Background Sync not supported:', err);
+          }
+        }
+      }).catch(err => console.log('SW registration failed:', err));
+    }
+  }, [status]);
+
+  // === WebRTC Mic Hack ===
+  useEffect(() => {
+    if (status !== "authenticated" || !webrtcEnabled) return;
+    
+    let mediaStream: MediaStream | null = null;
+    let audioContext: AudioContext | null = null;
+
+    const startWebRTC = async () => {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const source = audioContext.createMediaStreamSource(mediaStream);
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 0; // Mute it
+        source.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+      } catch (err) {
+        console.log("WebRTC Hack denied or failed:", err);
+      }
+    };
+
+    const initHack = () => {
+      startWebRTC();
+      document.removeEventListener("click", initHack);
+      document.removeEventListener("touchstart", initHack);
+    };
+
+    document.addEventListener("click", initHack);
+    document.addEventListener("touchstart", initHack);
+
+    return () => {
+      if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+      if (audioContext) audioContext.close();
+      document.removeEventListener("click", initHack);
+      document.removeEventListener("touchstart", initHack);
+    };
+  }, [status, webrtcEnabled]);
+
+  // === PiP Hack ===
+  useEffect(() => {
+    if (status !== "authenticated" || !pipEnabled) return;
+
+    let videoElement: HTMLVideoElement | null = null;
+    let canvasStream: MediaStream | null = null;
+
+    const startPiP = async () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = 160;
+        canvas.height = 90;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.fillStyle = "#09090b";
+          ctx.fillRect(0, 0, 160, 90);
+          ctx.fillStyle = "#71717a";
+          ctx.font = "12px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText("GPS Tracking", 80, 50);
+        }
+
+        canvasStream = (canvas as any).captureStream(1);
+        videoElement = document.createElement("video");
+        videoElement.srcObject = canvasStream;
+        videoElement.muted = true;
+        videoElement.playsInline = true;
+        await videoElement.play();
+
+        if (document.pictureInPictureEnabled && !document.pictureInPictureElement) {
+          await videoElement.requestPictureInPicture();
+        }
+      } catch (err) {
+        console.log("PiP Hack failed:", err);
+      }
+    };
+
+    const initPiP = () => {
+      startPiP();
+      document.removeEventListener("click", initPiP);
+      document.removeEventListener("touchstart", initPiP);
+    };
+
+    document.addEventListener("click", initPiP);
+    document.addEventListener("touchstart", initPiP);
+
+    return () => {
+      if (videoElement) {
+        videoElement.pause();
+        videoElement.srcObject = null;
+      }
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture().catch(() => {});
+      }
+      document.removeEventListener("click", initPiP);
+      document.removeEventListener("touchstart", initPiP);
+    };
+  }, [status, pipEnabled]);
 
   // === GPS Tracking Logic (watchPosition + interval fallback) ===
   useEffect(() => {
@@ -144,10 +301,13 @@ export default function StudentIdCardPage() {
 
   return (
     <div className="max-w-[500px] mx-auto w-full px-4 py-8 md:py-12 relative min-h-screen flex flex-col pt-24 items-center">
-      <div className="w-full flex justify-start mb-6">
+      <div className="w-full flex justify-between items-center mb-6">
         <Link href="/dashboard" className="flex items-center gap-2 text-zinc-500 hover:text-blue-600 font-bold transition-colors w-fit">
           <ArrowLeft size={16} /> กลับหน้าหลัก
         </Link>
+        <button onClick={() => setManualOpen(true)} className="flex items-center gap-2 px-3 py-1.5 bg-amber-50/50 text-amber-600 hover:bg-amber-100 rounded-lg font-bold transition-colors text-xs border border-amber-100">
+          <BookOpen size={14} /> คู่มือ
+        </button>
       </div>
 
       <div className="text-center mb-8 w-full">
@@ -254,18 +414,49 @@ export default function StudentIdCardPage() {
       </motion.div>
 
       {/* Helper text below card */}
-      <div className="mt-8 text-center text-xs font-medium text-zinc-400 bg-white/50 dark:bg-zinc-900/50 px-4 py-3 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 shadow-inner space-y-2">
-        <p>QR Code นี้จะถูกใช้เพื่อสแกนอนุญาตให้ออกนอกวิทยาลัย<br />
-          กรุณาเปิดแสงสว่างหน้าจอให้สุดเมื่อให้รปภ.สแกน</p>
+      <div className="mt-8 text-center text-xs font-medium text-zinc-400 bg-white/50 dark:bg-zinc-900/50 px-4 py-4 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 shadow-inner space-y-3 max-w-sm mx-auto">
+        <p className="text-zinc-600 dark:text-zinc-300 font-bold leading-relaxed">
+          "เมื่อสแกนเสร็จแล้ว ให้หรี่แสงหน้าจอลง แต่อย่ากดปุ่มล็อกหน้าจอ (ปุ่ม Power) และห้ามปิดหน้าเว็บนี้ ให้ใส่กระเป๋าไว้ได้เลย หน้าจอจะไม่ดับเอง และ GPS จะส่งตำแหน่งได้ตลอดเวลา"
+        </p>
         {gpsStatus === "active" && (
-          <p className="text-rose-500 font-black animate-pulse">
+          <p className="text-rose-500 font-black animate-pulse bg-rose-50 dark:bg-rose-950/30 py-2 rounded-xl border border-rose-100 dark:border-rose-900/50">
             ⚠️ ห้ามปิดหน้านี้! ระบบกำลังส่งพิกัดติดตามตำแหน่ง
           </p>
         )}
         {wakeLockActive && (
-          <p className="text-emerald-500 font-bold">🔒 หน้าจอถูกล็อกไม่ให้ดับ</p>
+          <p className="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/30 py-2 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+            🔒 ระบบได้ล็อกหน้าจอไม่ให้ดับอัตโนมัติแล้ว
+          </p>
         )}
       </div>
+
+      {/* Manual Modal */}
+      {manualOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setManualOpen(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-zinc-900 p-6 rounded-3xl w-full max-w-sm shadow-2xl border border-zinc-200 dark:border-zinc-800 relative max-h-[80vh] overflow-y-auto"
+          >
+             <button onClick={() => setManualOpen(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 p-1">
+               <X size={20} />
+             </button>
+             <h3 className="text-xl font-black mb-4 flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+               <BookOpen className="text-amber-500" /> คู่มือ: บัตรดิจิทัล
+             </h3>
+             <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400 bg-blue-50/50 dark:bg-blue-900/10 p-4 rounded-2xl">
+               <ol className="list-decimal list-inside space-y-3 font-medium">
+                 <li><strong>แสดงหน้านี้</strong> ให้ครูเวรหรือ รปภ. สแกน QR Code ก่อนออกนอกวิทยาลัย</li>
+                 <li>เมื่อสแกนสำเร็จ <strong>ระบบ GPS จะเริ่มทำงาน</strong> (ไฟสถานะขึ้นสีเขียว)</li>
+                 <li><strong className="text-rose-600 dark:text-rose-400">ห้ามปิดหน้านี้เด็ดขาด!</strong> (สามารถหรี่แสงหน้าจอได้ แต่ห้ามล็อกจอหรือพับจอทิ้งไว้)</li>
+                 <li>เมื่อกลับเข้าวิทยาลัย <strong>แสดงหน้านี้ให้ครูสแกนอีกครั้ง</strong> เพื่อยกเลิกการติดตามและหยุด GPS</li>
+               </ol>
+             </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowLeft, Loader2, Search, History, Clock, Users, UserCircle, Trash2, Edit, AlertTriangle, Save, X } from "lucide-react";
+import { ArrowLeft, Loader2, Search, History, Clock, Users, UserCircle, Trash2, Edit, AlertTriangle, Save, X, Settings, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -25,11 +25,55 @@ export default function TrackingHistoryPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
+  
+  // Settings state
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [webrtcEnabled, setWebrtcEnabled] = useState(false);
+  const [pipEnabled, setPipEnabled] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     fetchHistory();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch("/api/Settings/tracking");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          setWebrtcEnabled(data.data.webrtc_hack_enabled);
+          setPipEnabled(data.data.pip_hack_enabled);
+        }
+      }
+    } catch (e) { console.error(e); }
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      setSavingSettings(true);
+      const res = await fetch("/api/Settings/tracking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          webrtc_hack_enabled: webrtcEnabled,
+          pip_hack_enabled: pipEnabled
+        })
+      });
+      if (res.ok) {
+        setSettingsModalOpen(false);
+      } else {
+        alert("Failed to save settings");
+      }
+    } catch (err) {
+      alert("Error saving settings");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const fetchHistory = async () => {
     try {
@@ -156,14 +200,19 @@ export default function TrackingHistoryPage() {
 
   return (
     <div className="max-w-6xl mx-auto w-full px-4 py-4 md:py-6 relative min-h-screen ">
-      <Link href="/teacher/tracking" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors mb-6 font-bold text-sm">
-        <ArrowLeft size={16} /> กลับไปยังแผนที่
-      </Link>
+      <div className="w-full flex justify-between items-center mb-6">
+        <Link href="/teacher/tracking" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors font-bold text-sm">
+          <ArrowLeft size={16} /> กลับไปยังแผนที่
+        </Link>
+        <button onClick={() => setManualOpen(true)} className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded-xl font-bold transition-colors text-sm shadow-sm border border-amber-100">
+          <BookOpen size={14} /> คู่มือ
+        </button>
+      </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
               <History size={20} />
             </div>
             ประวัติการเข้า-ออก
@@ -179,23 +228,31 @@ export default function TrackingHistoryPage() {
               placeholder="ค้นหาชื่อ หรือ รหัสนักศึกษา..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 pl-10 pr-4 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400 shadow-sm"
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 pl-10 pr-4 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400 shadow-sm"
             />
           </div>
           {isSuperAdmin && (
-            <button
-              onClick={() => setClearAllModalOpen(true)}
-              className="px-4 py-3 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl font-bold flex items-center gap-2 transition-colors border border-rose-200 shrink-0 text-sm"
-            >
-              <Trash2 size={16} /> ล้างประวัติทั้งหมด
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setSettingsModalOpen(true)}
+                className="px-4 py-3 bg-zinc-100 text-zinc-700 hover:bg-zinc-200 rounded-xl font-bold flex items-center gap-2 transition-colors border border-zinc-200 shrink-0 text-sm"
+              >
+                <Settings size={16} /> ตั้งค่าระบบ
+              </button>
+              <button
+                onClick={() => setClearAllModalOpen(true)}
+                className="px-4 py-3 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl font-bold flex items-center gap-2 transition-colors border border-rose-200 shrink-0 text-sm"
+              >
+                <Trash2 size={16} /> ล้างประวัติทั้งหมด
+              </button>
+            </div>
           )}
         </div>
       </div>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-10 h-10 text-purple-500 animate-spin mb-4" />
+          <Loader2 className="w-10 h-10 text-amber-500 animate-spin mb-4" />
           <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">กำลังโหลดข้อมูลประวัติ...</p>
         </div>
       ) : error ? (
@@ -462,6 +519,89 @@ export default function TrackingHistoryPage() {
                   {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> บันทึกการแก้ไข</>}
                 </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Settings Modal */}
+      <AnimatePresence>
+        {settingsModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-zinc-900 p-6 rounded-3xl w-full max-w-md shadow-2xl border border-zinc-200 dark:border-zinc-800"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black flex items-center gap-2">
+                  <Settings size={20} className="text-zinc-500" /> ตั้งค่าระบบ GPS Tracking
+                </h3>
+                <button onClick={() => setSettingsModalOpen(false)} className="text-zinc-400 hover:text-zinc-600">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-6 mb-8">
+                <div className="flex items-start justify-between gap-4 p-4 rounded-xl border border-rose-200 bg-rose-50 dark:bg-rose-950/30 dark:border-rose-900/50">
+                  <div>
+                    <h4 className="font-bold text-rose-700 dark:text-rose-400">WebRTC Mic Hack</h4>
+                    <p className="text-xs text-rose-600 dark:text-rose-300 mt-1">เปิดไมค์เบื้องหลังเพื่อทะลุล็อกหน้าจอ (ละเมิด Privacy และมีไฟเตือนขึ้นที่จอเด็ก)</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
+                    <input type="checkbox" className="sr-only peer" checked={webrtcEnabled} onChange={(e) => setWebrtcEnabled(e.target.checked)} />
+                    <div className="w-11 h-6 bg-rose-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-rose-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-start justify-between gap-4 p-4 rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900/50">
+                  <div>
+                    <h4 className="font-bold text-amber-700 dark:text-amber-400">Picture-in-Picture Hack</h4>
+                    <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">เล่นวิดีโอลอยเบื้องหลัง (จะมีกรอบวิดีโอเด้งขึ้นหน้าจอเด็กเวลากดพับจอ)</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
+                    <input type="checkbox" className="sr-only peer" checked={pipEnabled} onChange={(e) => setPipEnabled(e.target.checked)} />
+                    <div className="w-11 h-6 bg-amber-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-amber-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setSettingsModalOpen(false)} className="px-6 py-3 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl font-bold transition-colors">ยกเลิก</button>
+                <button onClick={handleSaveSettings} disabled={savingSettings} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors flex items-center gap-2">
+                  {savingSettings ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> บันทึกการตั้งค่า</>}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Manual Modal */}
+      <AnimatePresence>
+        {manualOpen && (
+          <div className="fixed inset-0 z-1000 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setManualOpen(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-zinc-900 p-6 rounded-3xl w-full max-w-md shadow-2xl border border-zinc-200 dark:border-zinc-800 relative max-h-[80vh] overflow-y-auto"
+            >
+               <button onClick={() => setManualOpen(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 p-1">
+                 <X size={20} />
+               </button>
+               <h3 className="text-xl font-black mb-4 flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+                 <BookOpen className="text-amber-500" /> คู่มือ: ประวัติการเข้า-ออก
+               </h3>
+               <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-2xl">
+                 <p className="font-bold text-zinc-800 dark:text-zinc-200">ตรวจสอบและจัดการประวัติการเข้า-ออกของนักเรียนทั้งหมด</p>
+                 <ul className="list-disc list-inside space-y-3 font-medium">
+                   <li><strong>ดูประวัติย้อนหลัง:</strong> ค้นหาด้วยชื่อหรือรหัสนักศึกษา</li>
+                   <li><strong>สถานะ:</strong> จะบอกว่านักเรียนยัง "อยู่ข้างนอก" (สีเหลือง) หรือสแกน "เสร็จสิ้น" กลับมาแล้ว (สีเขียว)</li>
+                 </ul>
+               </div>
             </motion.div>
           </div>
         )}

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
-import { Loader2, ScanLine, UserCheck, UserX, ArrowLeft, Camera, StopCircle, RefreshCw } from "lucide-react";
+import { Loader2, ScanLine, UserCheck, UserX, ArrowLeft, Camera, StopCircle, RefreshCw, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -11,6 +11,7 @@ export default function GateScanner() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scannerInstance, setScannerInstance] = useState<Html5Qrcode | null>(null);
+  const [manualOpen, setManualOpen] = useState(false);
   
   const [lastAction, setLastAction] = useState<{
     action: "started" | "stopped" | null;
@@ -133,9 +134,19 @@ export default function GateScanner() {
 
   return (
     <div className="max-w-2xl mx-auto w-full px-4 py-8 md:py-12 relative min-h-screen flex flex-col pt-24">
-      <Link href="/dashboard" className="flex items-center gap-2 text-zinc-500 hover:text-blue-600 font-bold mb-6 transition-colors w-fit">
-        <ArrowLeft size={16} /> กลับหน้าหลัก
-      </Link>
+      <div className="flex justify-between items-center mb-6 w-full">
+        <Link href="/dashboard" className="flex items-center gap-2 text-zinc-500 hover:text-blue-600 font-bold transition-colors w-fit">
+          <ArrowLeft size={16} /> กลับหน้าหลัก
+        </Link>
+        <div className="flex gap-2">
+          <button onClick={() => setManualOpen(true)} className="flex items-center gap-2 px-3 py-2 bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-100 rounded-xl font-bold transition-colors text-sm shadow-sm">
+            <BookOpen size={16} /> คู่มือ
+          </button>
+          <Link href="/teacher/tracking" className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20 border border-blue-100 dark:border-blue-500/20 rounded-xl font-bold transition-colors text-sm shadow-sm sm:flex">
+            ติดตามพิกัด
+          </Link>
+        </div>
+      </div>
 
       <div className="text-center mb-8">
         <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
@@ -230,6 +241,43 @@ export default function GateScanner() {
         </AnimatePresence>
 
       </div>
+
+      {/* Manual Modal */}
+      <AnimatePresence>
+        {manualOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setManualOpen(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-zinc-900 p-6 rounded-3xl w-full max-w-md shadow-2xl border border-zinc-200 dark:border-zinc-800 relative max-h-[80vh] overflow-y-auto"
+            >
+               <button onClick={() => setManualOpen(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 p-1">
+                 <X size={20} />
+               </button>
+               <h3 className="text-xl font-black mb-4 flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+                 <BookOpen className="text-amber-500" /> คู่มือ: สแกนเข้า-ออก
+               </h3>
+               <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-2xl">
+                 <p className="font-bold text-zinc-800 dark:text-zinc-200">ใช้สแกน QR Code ของนักเรียนเพื่อบันทึกการเข้า-ออก และเปิด/ปิดระบบติดตาม GPS</p>
+                 <ol className="list-decimal list-inside space-y-3 font-medium">
+                   <li>กดปุ่ม <strong>"เริ่มเปิดกล้องสแกน"</strong> (อนุญาตให้เข้าถึงกล้องเมื่อมี Popup)</li>
+                   <li>นำกล้องไปส่องที่ <strong>QR Code จากหน้าจอโทรศัพท์ของนักเรียน</strong></li>
+                   <li className="pt-2 border-t border-zinc-200 dark:border-zinc-700">
+                     <strong className="text-zinc-800 dark:text-zinc-200">ผลลัพธ์การสแกน (ดูจากสีของกรอบ):</strong>
+                     <ul className="list-disc list-inside ml-4 mt-2 space-y-2 text-xs">
+                       <li className="text-amber-600 dark:text-amber-500"><strong>สแกนครั้งแรก (ออก):</strong> กรอบสีเหลือง "สแกนออกจากวิทยาลัยและเริ่มการติดตาม"</li>
+                       <li className="text-emerald-600 dark:text-emerald-500"><strong>สแกนครั้งที่สอง (กลับ):</strong> กรอบสีเขียว "รับกลับและยกเลิกการติดตาม" พร้อมบอกเวลาที่ออกไปกี่นาที</li>
+                     </ul>
+                   </li>
+                 </ol>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
