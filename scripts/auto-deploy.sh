@@ -28,8 +28,9 @@ if [ "$REMOTE_HEAD" != "$LAST_BUILT_COMMIT" ]; then
     
     echo "[$(date)] Starting build for commit: $LOCAL_HEAD"
     
-    # 3. Build the project
-    if npm run build; then
+    # 3. Install dependencies and Build the project
+    echo "[$(date)] Installing dependencies..."
+    if npm install && npm run build; then
         # 4. Restart PM2 service
         echo "[$(date)] Restarting PM2 service..."
         # Make sure pm2 is in path or use absolute path

@@ -41,7 +41,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const client = await clientPromise;
           const db = client.db("ktltc_db");
 
-          // 1. ค้นหาผู้ใช้ในฐานข้อมูล (ค้นหาแบบไม่สนตัวพิมพ์เล็ก-ใหญ่)
+          // --- 1. Rate Limiting Check ---
+          const attemptsCollection = db.collection("login_attempts");
+          const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
+          
+          // ล้างประวัติที่เก่ากว่า 15 นาที
+          await attemptsCollection.deleteMany({ timestamp: { $lt: fifteenMinsAgo } });
+
+          // ตรวจสอบการเข้าระบบผิดพลาดล่าสุด
+          const recentAttempts = await attemptsCollection.countDocuments({ 
+            username: cleanUsername,
+            timestamp: { $gte: fifteenMinsAgo }
+          });
+
+          if (recentAttempts >= 5) {
+            console.warn(`[AUTH] Rate limit exceeded for: "${cleanUsername}"`);
+            throw new Error("บัญชีถูกระงับการเข้าสู่ระบบชั่วคราว (15 นาที) เนื่องจากพยายามเข้าระบบผิดพลาดหลายครั้ง");
+          }
+
+          // 2. ค้นหาผู้ใช้ในฐานข้อมูล (ค้นหาแบบไม่สนตัวพิมพ์เล็ก-ใหญ่)
           console.log(`[AUTH] Querying database for: "${cleanUsername}"...`);
           const user = await db
             .collection("users")
@@ -49,6 +67,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           if (!user) {
             console.warn(`[AUTH] User not found: "${cleanUsername}"`);
+            await attemptsCollection.insertOne({ username: cleanUsername, timestamp: new Date() });
             throw new Error("ไม่พบชื่อผู้ใช้งานนี้ในระบบ");
           }
 
@@ -75,6 +94,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           if (!isPasswordCorrect) {
             console.warn(`[AUTH] Incorrect password for: "${cleanUsername}"`);
+            await attemptsCollection.insertOne({ username: cleanUsername, timestamp: new Date() });
             throw new Error("รหัสผ่านไม่ถูกต้อง");
           }
 
@@ -89,6 +109,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           // 5. ถ้าผ่านทุกขั้นตอน ส่งข้อมูล User กลับไปเก็บใน Session
+          await attemptsCollection.deleteMany({ username: cleanUsername }); // ล้างประวัติที่ผิดเมื่อเข้าได้
+          
           return {
             id: user._id.toString(),
             name: user.name || user.username,

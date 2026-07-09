@@ -100,7 +100,7 @@ export default function TelemetryPage() {
     try {
       const [statsRes, permRes] = await Promise.all([
         fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
-        fetch("/api/admin/permissions/check"),
+        fetch("/api/auth/permissions?_t=" + Date.now()),
 
       ]);
 

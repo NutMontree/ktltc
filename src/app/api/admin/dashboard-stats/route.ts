@@ -204,10 +204,10 @@ export async function GET() {
         const publicDir = getPublicDir();
 
         // 4.2 Get CPU, RAM, & Real Disk Stats
-        const isLocal = publicDir === getPublicDir();
+        const isLinux = os.platform() === 'linux';
 
-        if (isLocal) {
-          // --- รันบนเครื่อง Lenovo โดยตรง (ใช้ค่า Real-time จาก OS) ---
+        if (isLinux) {
+          // --- รันบนเซิร์ฟเวอร์ Linux โดยตรง (ใช้ค่า Real-time จาก OS) ---
           try {
             // RAM (ใช้ free -m เพื่อให้ตรงกับ htop/system monitor 100%)
             const freeOutput = execSync('free -m').toString();
