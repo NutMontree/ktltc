@@ -6,6 +6,8 @@ import { FootTitle } from "@/components/FootTitle";
 import NewsShareBar from "@/components/news/NewsShareBar";
 import NewsGallery from "@/components/news/NewsGallery";
 
+import BackButton from "@/components/news/BackButton";
+
 // --- Icons (เพิ่ม Icon User สำหรับผู้โพสต์) ---
 const IconUser = () => (
   <svg
@@ -287,15 +289,12 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
         {/* --- Hero / Header Section --- */}
         <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-8 px-4">
           <div className="max-w-7xl mx-auto space-y-8">
-            <Link
-              href="/news"
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group"
-            >
+            <BackButton fallbackUrl="/news">
               <div className="p-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                 <IconArrowLeft />
               </div>
               ย้อนกลับหน้าข่าวสาร
-            </Link>
+            </BackButton>
 
             <div className="space-y-4">
               {/* --- Modern Categories --- */}

@@ -63,12 +63,59 @@ function NewsListClientInner({
   hideFourthOnLg?: boolean;
 }) {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category") || "All";
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
-  const [selectedMonth, setSelectedMonth] = useState("All");
-  const [selectedYear, setSelectedYear] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(12);
+  
+  // Use sessionStorage to persist state across navigations
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("news_category");
+      if (saved) return saved;
+    }
+    return searchParams.get("category") || "All";
+  });
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("news_month");
+      if (saved) return saved;
+    }
+    return "All";
+  });
+  const [selectedYear, setSelectedYear] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("news_year");
+      if (saved) return saved;
+    }
+    return "All";
+  });
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("news_search");
+      if (saved) return saved;
+    }
+    return "";
+  });
+  const [visibleCount, setVisibleCount] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("news_count");
+      if (saved) return parseInt(saved, 10);
+    }
+    return 12;
+  });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Save to sessionStorage whenever state changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("news_category", selectedCategory);
+      sessionStorage.setItem("news_month", selectedMonth);
+      sessionStorage.setItem("news_year", selectedYear);
+      sessionStorage.setItem("news_search", searchQuery);
+      sessionStorage.setItem("news_count", visibleCount.toString());
+    }
+  }, [selectedCategory, selectedMonth, selectedYear, searchQuery, visibleCount]);
 
   // Allow URL parameter changes to update the state if it changes
   useEffect(() => {
@@ -102,32 +149,40 @@ function NewsListClientInner({
 
   const filteredNews = useMemo(() => {
     let result = Array.isArray(initialNews) ? initialNews : [];
-    if (selectedCategory !== "All") {
+    
+    // During SSR/Hydration, use default values to avoid mismatch
+    const currentCategory = isMounted ? selectedCategory : (searchParams.get("category") || "All");
+    const currentYear = isMounted ? selectedYear : "All";
+    const currentMonth = isMounted ? selectedMonth : "All";
+    const currentSearch = isMounted ? searchQuery : "";
+
+    if (currentCategory !== "All") {
       result = result.filter((news) => {
         const cats = news.categories || (news.category ? [news.category] : []);
-        return cats.includes(selectedCategory);
+        return cats.includes(currentCategory);
       });
     }
-    if (selectedYear !== "All" && !REDIRECT_URLS[selectedYear]) {
+    if (currentYear !== "All" && !REDIRECT_URLS[currentYear]) {
       result = result.filter((news) => {
         const year = new Date(news.createdAt).getFullYear() + 543;
-        return year.toString() === selectedYear;
+        return year.toString() === currentYear;
       });
     }
-    if (selectedMonth !== "All") {
+    if (currentMonth !== "All") {
       result = result.filter((news) => {
         const month = new Date(news.createdAt).getMonth();
-        return month.toString() === selectedMonth;
+        return month.toString() === currentMonth;
       });
     }
-    if (searchQuery.trim() !== "") {
-      const lowerQuery = searchQuery.toLowerCase();
+    if (currentSearch.trim() !== "") {
+      const lowerQuery = currentSearch.toLowerCase();
       result = result.filter((news) => news.title.toLowerCase().includes(lowerQuery));
     }
     return result;
-  }, [initialNews, selectedCategory, selectedMonth, selectedYear, searchQuery]);
+  }, [initialNews, selectedCategory, selectedMonth, selectedYear, searchQuery, isMounted, searchParams]);
 
-  const paginatedNews = filteredNews.slice(0, visibleCount);
+  const currentVisibleCount = isMounted ? visibleCount : 12;
+  const paginatedNews = filteredNews.slice(0, currentVisibleCount);
   const handleLoadMore = () => setVisibleCount((prev) => prev + 12);
 
   return (
@@ -316,7 +371,7 @@ function NewsListClientInner({
           <p className="text-sm text-slate-400 dark:text-slate-500">
             แสดง{" "}
             <span className="font-bold text-slate-700 dark:text-slate-200">
-              {Math.min(visibleCount, filteredNews.length)}
+              {Math.min(currentVisibleCount, filteredNews.length)}
             </span>{" "}
             จาก{" "}
             <span className="font-bold text-slate-700 dark:text-slate-200">
@@ -330,13 +385,13 @@ function NewsListClientInner({
             <div
               className="h-full bg-blue-500 rounded-full transition-all duration-500"
               style={{
-                width: `${Math.min((Math.min(visibleCount, filteredNews.length) / filteredNews.length) * 100, 100)}%`,
+                width: `${Math.min((Math.min(currentVisibleCount, filteredNews.length) / filteredNews.length) * 100, 100)}%`,
               }}
             />
           </div>
 
           {/* Load More Button */}
-          {visibleCount < filteredNews.length && (
+          {currentVisibleCount < filteredNews.length && (
             <button
               onClick={handleLoadMore}
               className="mt-2 inline-flex items-center gap-2 px-8 py-3 rounded-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-200 font-bold text-sm shadow-sm hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 active:scale-95"
@@ -356,7 +411,7 @@ function NewsListClientInner({
               </svg>
               โหลดเพิ่มเติม
               <span className="ml-1 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-black">
-                {filteredNews.length - visibleCount} รายการ
+                {filteredNews.length - currentVisibleCount} รายการ
               </span>
             </button>
           )}

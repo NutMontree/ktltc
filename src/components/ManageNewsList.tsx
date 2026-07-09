@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import DeleteNewsBtn from "@/components/DeleteNewsBtn";
@@ -110,13 +110,72 @@ const SearchIcon = () => (
 );
 
 export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
-  const [visibleCount, setVisibleCount] = useState(12);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("ทั้งหมด");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedDay, setSelectedDay] = useState("");
+  const [visibleCount, setVisibleCount] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("manage_news_count");
+      if (saved) return parseInt(saved, 10);
+    }
+    return 12;
+  });
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("manage_news_search");
+      if (saved) return saved;
+    }
+    return "";
+  });
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("manage_news_category");
+      if (saved) return saved;
+    }
+    return "ทั้งหมด";
+  });
+  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("manage_news_viewMode");
+      if (saved === "grid" || saved === "list") return saved;
+    }
+    return "grid";
+  });
+  const [selectedYear, setSelectedYear] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("manage_news_year");
+      if (saved) return saved;
+    }
+    return "";
+  });
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("manage_news_month");
+      if (saved) return saved;
+    }
+    return "";
+  });
+  const [selectedDay, setSelectedDay] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("manage_news_day");
+      if (saved) return saved;
+    }
+    return "";
+  });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("manage_news_count", visibleCount.toString());
+      sessionStorage.setItem("manage_news_search", searchQuery);
+      sessionStorage.setItem("manage_news_category", selectedCategory);
+      sessionStorage.setItem("manage_news_viewMode", viewMode);
+      sessionStorage.setItem("manage_news_year", selectedYear);
+      sessionStorage.setItem("manage_news_month", selectedMonth);
+      sessionStorage.setItem("manage_news_day", selectedDay);
+    }
+  }, [visibleCount, searchQuery, selectedCategory, viewMode, selectedYear, selectedMonth, selectedDay]);
 
   const sortedNews = useMemo(() => {
     return [...newsList].sort(
@@ -189,25 +248,32 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
   ];
 
   const filteredNews = useMemo(() => {
+    // For hydration, use defaults
+    const currentSearch = isMounted ? searchQuery : "";
+    const currentCategory = isMounted ? selectedCategory : "ทั้งหมด";
+    const currentYear = isMounted ? selectedYear : "";
+    const currentMonth = isMounted ? selectedMonth : "";
+    const currentDay = isMounted ? selectedDay : "";
+
     return sortedNews.filter((n) => {
       const matchSearch = n.title
         .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+        .includes(currentSearch.toLowerCase());
       const cats = n.categories?.length
         ? n.categories
         : n.category
           ? [n.category]
           : [];
       const matchCat =
-        selectedCategory === "ทั้งหมด" || cats.includes(selectedCategory);
+        currentCategory === "ทั้งหมด" || cats.includes(currentCategory);
       const d = new Date(n.createdAt);
       const matchYear =
-        !selectedYear || String(d.getFullYear()) === selectedYear;
+        !currentYear || String(d.getFullYear()) === currentYear;
       const matchMonth =
-        !selectedMonth ||
-        String(d.getMonth() + 1).padStart(2, "0") === selectedMonth;
+        !currentMonth ||
+        String(d.getMonth() + 1).padStart(2, "0") === currentMonth;
       const matchDay =
-        !selectedDay || String(d.getDate()).padStart(2, "0") === selectedDay;
+        !currentDay || String(d.getDate()).padStart(2, "0") === currentDay;
       return matchSearch && matchCat && matchYear && matchMonth && matchDay;
     });
   }, [
@@ -217,9 +283,13 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
     selectedYear,
     selectedMonth,
     selectedDay,
+    isMounted
   ]);
 
-  const displayedNews = filteredNews.slice(0, visibleCount);
+  const currentVisibleCount = isMounted ? visibleCount : 12;
+  const currentViewMode = isMounted ? viewMode : "grid";
+
+  const displayedNews = filteredNews.slice(0, currentVisibleCount);
 
   return (
     <div className="space-y-4">
@@ -244,14 +314,14 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
         <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl shrink-0">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-white dark:bg-zinc-700 shadow text-blue-600" : "text-zinc-400 hover:text-zinc-600"}`}
+            className={`p-2 rounded-lg transition-all ${currentViewMode === "grid" ? "bg-white dark:bg-zinc-700 shadow text-blue-600" : "text-zinc-400 hover:text-zinc-600"}`}
             title="Grid View"
           >
             <GridIcon />
           </button>
           <button
             onClick={() => setViewMode("list")}
-            className={`p-2 rounded-lg transition-all ${viewMode === "list" ? "bg-white dark:bg-zinc-700 shadow text-blue-600" : "text-zinc-400 hover:text-zinc-600"}`}
+            className={`p-2 rounded-lg transition-all ${currentViewMode === "list" ? "bg-white dark:bg-zinc-700 shadow text-blue-600" : "text-zinc-400 hover:text-zinc-600"}`}
             title="List View"
           >
             <ListIcon />
@@ -366,7 +436,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
       <p className="text-xs text-zinc-400 dark:text-zinc-500">
         แสดง{" "}
         <span className="font-bold text-zinc-600 dark:text-zinc-300">
-          {Math.min(visibleCount, filteredNews.length)}
+          {Math.min(currentVisibleCount, filteredNews.length)}
         </span>{" "}
         จาก{" "}
         <span className="font-bold text-zinc-600 dark:text-zinc-300">
@@ -398,7 +468,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
       )}
 
       {/* Grid View */}
-      {viewMode === "grid" && filteredNews.length > 0 && (
+      {currentViewMode === "grid" && filteredNews.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
           {displayedNews.map((news, index) => {
             const displayImage =
@@ -532,7 +602,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
       )}
 
       {/* List View */}
-      {viewMode === "list" && filteredNews.length > 0 && (
+      {currentViewMode === "list" && filteredNews.length > 0 && (
         <div className="flex flex-col gap-2">
           {displayedNews.map((news, index) => {
             const displayImage =
@@ -655,24 +725,24 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
       )}
 
       {/* Load More */}
-      {visibleCount < filteredNews.length && (
+      {currentVisibleCount < filteredNews.length && (
         <div className="mt-8 flex flex-col items-center gap-3">
           <div className="w-full max-w-xs bg-zinc-100 dark:bg-zinc-800 rounded-full h-1.5">
             <div
               className="bg-blue-500 h-1.5 rounded-full transition-all duration-500"
               style={{
-                width: `${Math.min((visibleCount / filteredNews.length) * 100, 100)}%`,
+                width: `${Math.min((currentVisibleCount / filteredNews.length) * 100, 100)}%`,
               }}
             />
           </div>
           <p className="text-xs text-zinc-400">
-            {visibleCount} / {filteredNews.length} รายการ
+            {currentVisibleCount} / {filteredNews.length} รายการ
           </p>
           <button
             onClick={() => setVisibleCount((prev) => prev + 12)}
             className="px-8 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-sm font-bold shadow-sm hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all active:scale-95"
           >
-            โหลดเพิ่มเติม ({filteredNews.length - visibleCount} รายการ)
+            โหลดเพิ่มเติม ({filteredNews.length - currentVisibleCount} รายการ)
           </button>
         </div>
       )}
