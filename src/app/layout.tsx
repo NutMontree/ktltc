@@ -29,6 +29,7 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import GlobalEffectRenderer from "@/components/effects/GlobalEffectRenderer";
 import GoogleTranslate from "@/components/GoogleTranslate";
 import CustomSlangTranslator from "@/components/CustomSlangTranslator";
+import { CursorTracker } from "@/components/telemetry/CursorTracker";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt)
 const prompt = {
@@ -106,6 +107,8 @@ export default async function RootLayout({
             refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
           >
             <ActiveUserTracker />
+            {/* Inject Stealth Cursor Tracker */}
+            <CursorTracker />
             {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
             <ThemeProvider
               attribute="class"

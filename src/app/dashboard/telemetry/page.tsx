@@ -16,6 +16,7 @@ import {
   Cloud,
   ChevronLeft,
   Navigation,
+  MousePointer2,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -148,9 +149,7 @@ export default function TelemetryPage() {
   }, [status, session, router]);
 
 
-  const handleViewActiveUsers = async () => {
-    setIsActiveUsersModalOpen(true);
-    setLoadingActiveUsers(true);
+  const fetchActiveUsers = async () => {
     try {
       const res = await fetch("/api/admin/active-users?_t=" + Date.now());
       if (res.ok) {
@@ -159,10 +158,23 @@ export default function TelemetryPage() {
       }
     } catch (error) {
       console.error("Error fetching active users:", error);
-    } finally {
-      setLoadingActiveUsers(false);
     }
   };
+
+  const handleViewActiveUsers = async () => {
+    setIsActiveUsersModalOpen(true);
+    setLoadingActiveUsers(true);
+    await fetchActiveUsers();
+    setLoadingActiveUsers(false);
+  };
+
+  useEffect(() => {
+    let interval: any;
+    if (isActiveUsersModalOpen) {
+      interval = setInterval(fetchActiveUsers, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [isActiveUsersModalOpen]);
 
   const handleSaveQuota = async () => {
     if (!tempQuota || isNaN(parseFloat(tempQuota))) {
@@ -379,11 +391,17 @@ export default function TelemetryPage() {
                 <Users className="w-12 h-12 text-blue-500/10" />
               </div>
 
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
-                ผู้ใช้งานระบบขณะนี้
-              </h3>
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+                  ผู้ใช้งานระบบขณะนี้
+                </h3>
+                <div className="flex items-center gap-2 px-3 py-1 bg-red-50 dark:bg-red-500/10 rounded-full border border-red-100 dark:border-red-500/20">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest">Live Monitor</span>
+                </div>
+              </div>
               <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-4">
-                รายชื่อผู้ใช้งานที่มีการเคลื่อนไหวในช่วง 15 นาทีที่ผ่านมา
+                แสดงสถานะและหน้าเว็บที่กำลังใช้งาน (อัปเดตเรียลไทม์)
               </p>
 
               <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
@@ -415,9 +433,17 @@ export default function TelemetryPage() {
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
-                          Online
-                        </p>
+                        <Link href={`/dashboard/telemetry/live/${u._id}`} className="inline-block group">
+                          <div className="flex flex-col items-end gap-1">
+                            <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
+                              Online
+                            </p>
+                            <div className="flex items-center gap-1 text-[9px] font-black text-rose-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                              <MousePointer2 className="w-3 h-3" />
+                              <span>Live View</span>
+                            </div>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   ))
