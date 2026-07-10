@@ -47,10 +47,11 @@ async function deleteOldImage(imageUrl: string) {
     const getPath = (b: string, s: string, f: string) => `${b}/${s}/${f}`;
     const filepath = getPath(basePath, subPath, filename);
     
-    const fsUtil = require("fs");
-    if (fsUtil.existsSync(filepath)) {
-      await fsUtil.promises.unlink(filepath);
+    try {
+      await fs.promises.unlink(filepath);
       console.log(`Deleted old image: ${filepath}`);
+    } catch (err) {
+      // File does not exist, ignore
     }
   } catch (error) {
     console.error("Failed to delete old image:", error);

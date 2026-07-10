@@ -172,8 +172,9 @@ export async function GET() {
                   const getPath = (d: string, f: string) => `${d}/${f}`;
                   const folderPath = getPath(publicDir, folder);
                   try {
-                    const fsUtil = require("fs");
-                    if (fsUtil.existsSync(folderPath)) {
+                    let exists = true;
+                    await fs.promises.access(folderPath).catch(() => { exists = false; });
+                    if (exists) {
                       const size = await getFolderSize(folderPath);
                       return { folder, size };
                     }
