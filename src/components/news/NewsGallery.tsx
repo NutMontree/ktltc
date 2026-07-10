@@ -33,6 +33,14 @@ export default function NewsGallery({ media }: NewsGalleryProps) {
 
   if (!media || media.length === 0) return null;
 
+  const getGridLayout = () => {
+    const len = media.length;
+    if (len === 1) return "columns-1 max-w-3xl mx-auto gap-4 space-y-4";
+    if (len === 2) return "columns-1 sm:columns-2 max-w-5xl mx-auto gap-4 space-y-4";
+    if (len === 3) return "columns-1 sm:columns-2 md:columns-3 max-w-6xl mx-auto gap-4 space-y-4";
+    return "columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4";
+  };
+
   return (
     <section className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -72,7 +80,7 @@ export default function NewsGallery({ media }: NewsGalleryProps) {
       <div
         className={
           layout === "grid"
-            ? "columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4"
+            ? getGridLayout()
             : "flex flex-col gap-8 max-w-4xl mx-auto"
         }
       >
