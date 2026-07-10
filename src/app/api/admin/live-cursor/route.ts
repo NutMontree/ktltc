@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { x, y, path, screenWidth, screenHeight } = body;
+    const { x, y, path, screenWidth, screenHeight, scrollX, scrollY } = body;
     const userId = session.user.id;
 
     // Save to memory (Very Fast, 0 DB queries)
@@ -55,14 +55,18 @@ export async function POST(req: Request) {
       path,
       screenWidth,
       screenHeight,
+      scrollX: scrollX || 0,
+      scrollY: scrollY || 0,
       timestamp: Date.now(),
     });
 
+    let isWatched = false;
     // Broadcast to any admin currently watching this user
     for (const [adminId, client] of sseClients.entries()) {
       if (client.targetUserId === userId) {
+        isWatched = true;
         try {
-          const payload = JSON.stringify({ x, y, path, screenWidth, screenHeight });
+          const payload = JSON.stringify({ x, y, path, screenWidth, screenHeight, scrollX: scrollX || 0, scrollY: scrollY || 0 });
           client.controller.enqueue(new TextEncoder().encode(`data: ${payload}\n\n`));
         } catch (e) {
           // If error sending to client, remove the client
@@ -71,7 +75,7 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, watched: isWatched });
   } catch (error) {
     return NextResponse.json({ success: false }, { status: 500 });
   }
@@ -80,6 +84,24 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const session = await auth();
+    const { searchParams } = new URL(req.url);
+
+    // 1. Status Check for Students (Polling)
+    if (searchParams.get("checkStatus") === "true") {
+      if (!session?.user?.id) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+      const userId = session.user.id;
+      let isWatched = false;
+      for (const client of sseClients.values()) {
+        if (client.targetUserId === userId) {
+          isWatched = true;
+          break;
+        }
+      }
+      return NextResponse.json({ watched: isWatched });
+    }
+
     const userRole = ((session?.user as any)?.role || "").toLowerCase();
     
     // Only allow admins
@@ -87,7 +109,6 @@ export async function GET(req: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
     const targetUserId = searchParams.get("targetUserId");
 
     if (!targetUserId) {
@@ -107,7 +128,9 @@ export async function GET(req: Request) {
             y: initialData.y, 
             path: initialData.path,
             screenWidth: initialData.screenWidth,
-            screenHeight: initialData.screenHeight
+            screenHeight: initialData.screenHeight,
+            scrollX: initialData.scrollX || 0,
+            scrollY: initialData.scrollY || 0
           });
           controller.enqueue(new TextEncoder().encode(`data: ${payload}\n\n`));
         }

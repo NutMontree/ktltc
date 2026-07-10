@@ -15,7 +15,7 @@ export default function GatePassManualPage() {
           </Link>
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-zinc-900 rounded-3xl shadow-xl border border-zinc-100 dark:border-zinc-800 overflow-hidden"
@@ -29,17 +29,17 @@ export default function GatePassManualPage() {
           </div>
 
           <div className="p-8 sm:p-12 space-y-16">
-            
+
             {/* Section 1: Student */}
             <section>
               <div className="flex items-center gap-3 mb-6 border-b border-zinc-200 dark:border-zinc-800 pb-4">
                 <Smartphone className="text-blue-500" size={32} />
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">1. สำหรับนักเรียน (Student)</h2>
               </div>
-              
+
               <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-6 sm:p-8 space-y-6">
                 <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
-                  <QrCode size={20} className="text-indigo-500" /> 
+                  <QrCode size={20} className="text-indigo-500" />
                   หน้าบัตรประจำตัวดิจิทัล (/student/id-card)
                 </h3>
                 <p className="text-zinc-600 dark:text-zinc-400">
@@ -51,7 +51,7 @@ export default function GatePassManualPage() {
                   <li><strong>การสแกนออก:</strong> ยื่นหน้าจอนี้ให้คุณครูสแกนเพื่อบันทึกเวลาออก</li>
                   <li><strong>การสแกนกลับ:</strong> เมื่อกลับถึงวิทยาลัย ให้ยื่นหน้า QR Code เดิมให้คุณครูสแกนอีกครั้งเพื่อจบขั้นตอน</li>
                 </ol>
-                
+
                 <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl p-5 mt-6">
                   <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2 flex items-center gap-2">
                     <ShieldAlert size={18} /> ข้อควรปฏิบัติระหว่างอยู่ข้างนอก (สำคัญมาก)
@@ -69,7 +69,7 @@ export default function GatePassManualPage() {
                 <QrCode className="text-emerald-500" size={32} />
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">2. สำหรับคุณครู (Gate Scanner)</h2>
               </div>
-              
+
               <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-6 sm:p-8 space-y-6">
                 <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-100">
                   หน้าสแกนเข้า-ออก (/teacher/gate-scanner)
@@ -98,7 +98,7 @@ export default function GatePassManualPage() {
                 <Map className="text-rose-500" size={32} />
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">3. การติดตาม GPS (Tracking)</h2>
               </div>
-              
+
               <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-6 sm:p-8 space-y-6">
                 <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-100">
                   หน้าติดตามสถานะนักเรียน (/teacher/tracking)
@@ -109,7 +109,7 @@ export default function GatePassManualPage() {
                 <ul className="list-disc list-inside space-y-4 text-zinc-700 dark:text-zinc-300 ml-2">
                   <li><strong>ดูแผนที่รวม:</strong> แสดงจุด (หมุด) ของนักเรียนทุกคนที่กำลังอยู่ข้างนอก</li>
                   <li>
-                    <strong>การดูข้อมูลโดยละเอียด:</strong> กดหมุดของนักเรียนบนแผนที่ แล้วกดปุ่ม "📄 ดูข้อมูลนักเรียน" 
+                    <strong>การดูข้อมูลโดยละเอียด:</strong> กดหมุดของนักเรียนบนแผนที่ แล้วกดปุ่ม "📄 ดูข้อมูลนักเรียน"
                     ระบบจะแสดงหน้าต่างข้อมูลรูปภาพ ชื่อ เวลาที่ออกไป และสถานะ GPS
                   </li>
                   <li>
@@ -125,7 +125,7 @@ export default function GatePassManualPage() {
                 <History className="text-purple-500" size={32} />
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">4. ประวัติการเข้า-ออก (History)</h2>
               </div>
-              
+
               <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-6 sm:p-8 space-y-6">
                 <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-100">
                   หน้าประวัติการเข้า-ออก (/teacher/tracking/history)
@@ -136,9 +136,6 @@ export default function GatePassManualPage() {
                 <ul className="list-disc list-inside space-y-4 text-zinc-700 dark:text-zinc-300 ml-2">
                   <li><strong>🟡 อยู่ข้างนอก:</strong> นักเรียนถูกสแกนออกไปแล้ว แต่ยังไม่ได้ถูกสแกนกลับเข้าวิทยาลัย</li>
                   <li><strong>🟢 เสร็จสิ้น:</strong> นักเรียนสแกน QR Code กลับเข้าวิทยาลัยเรียบร้อยแล้ว</li>
-                  <li className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                    <strong>สิทธิ์การใช้งานเพิ่มเติม (เฉพาะ Super Admin):</strong> สามารถ ล้างประวัติทั้งหมด, แก้ไขเวลาเข้า-ออก หรือลบรายการทิ้งได้
-                  </li>
                 </ul>
               </div>
             </section>

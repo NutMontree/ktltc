@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ChevronLeft, MousePointer2, Loader2, MonitorSmartphone } from "lucide-react";
@@ -12,7 +12,22 @@ export default function LiveViewPage() {
   const { userId } = useParams();
   const router = useRouter();
 
-  const [cursorData, setCursorData] = useState<{ x: number; y: number; path: string; screenWidth: number; screenHeight: number } | null>(null);
+  const [cursorData, setCursorData] = useState<{ x: number; y: number; path: string; screenWidth: number; screenHeight: number; scrollX?: number; scrollY?: number } | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (iframeRef.current && cursorData?.scrollX !== undefined && cursorData?.scrollY !== undefined) {
+      try {
+        iframeRef.current.contentWindow?.scrollTo({
+          left: cursorData.scrollX,
+          top: cursorData.scrollY,
+          behavior: 'instant'
+        });
+      } catch (e) {
+        // Ignore cross-origin errors if any
+      }
+    }
+  }, [cursorData?.scrollX, cursorData?.scrollY]);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -23,31 +38,46 @@ export default function LiveViewPage() {
       return;
     }
 
-    // Connect to Server-Sent Events endpoint
-    const eventSource = new EventSource(`/api/admin/live-cursor?targetUserId=${userId}`);
+    let eventSource: EventSource | null = null;
+    let reconnectTimer: NodeJS.Timeout;
 
-    eventSource.onopen = () => {
-      setIsConnected(true);
-    };
-
-    eventSource.onmessage = (event) => {
-      if (event.data === "ping") return;
-      try {
-        const data = JSON.parse(event.data);
-        setCursorData(data);
-      } catch (error) {
-        console.error("Failed to parse SSE data", error);
+    const connectSSE = () => {
+      if (eventSource) {
+        eventSource.close();
       }
+      
+      eventSource = new EventSource(`/api/admin/live-cursor?targetUserId=${userId}`);
+
+      eventSource.onopen = () => {
+        setIsConnected(true);
+      };
+
+      eventSource.onmessage = (event) => {
+        if (event.data === "ping") return;
+        try {
+          const data = JSON.parse(event.data);
+          setCursorData(data);
+        } catch (error) {
+          console.error("Failed to parse SSE data", error);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("SSE Error (Attempting manual reconnect in 3s...):", error);
+        setIsConnected(false);
+        eventSource?.close();
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connectSSE, 3000); // Robust manual reconnect
+      };
     };
 
-    eventSource.onerror = (error) => {
-      console.error("SSE Error:", error);
-      setIsConnected(false);
-      eventSource.close();
-    };
+    connectSSE();
 
     return () => {
-      eventSource.close();
+      clearTimeout(reconnectTimer);
+      if (eventSource) {
+        eventSource.close();
+      }
     };
   }, [userId, session, status, router]);
 
@@ -157,9 +187,17 @@ export default function LiveViewPage() {
                     aspectRatio: `${cursorData.screenWidth} / ${cursorData.screenHeight}`
                   }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                    <p className="text-4xl font-black -rotate-45 whitespace-nowrap">Iframe Mockup: {cursorData.path}</p>
-                  </div>
+                  {/* The Actual Page Background in Iframe */}
+                  <iframe 
+                    ref={iframeRef}
+                    src={cursorData.path} 
+                    className="absolute inset-0 w-full h-full border-none opacity-60 dark:opacity-40 grayscale-30 select-none overflow-hidden"
+                    style={{ pointerEvents: "none" }}
+                    title="User Mockup Background"
+                  />
+                  
+                  {/* Overlay to ensure nothing intercepts the pointer events and adds a slight tint */}
+                  <div className="absolute inset-0 bg-blue-500/5 dark:bg-blue-500/10 pointer-events-none mix-blend-multiply" />
                   
                   {/* The Live Cursor */}
                   <motion.div

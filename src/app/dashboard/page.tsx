@@ -370,7 +370,7 @@ export default function DashboardLoader() {
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {userRole === "student" && (
+                {(userRole === "student" || userRole === "super_admin") && (
                   <ActionCard
                     href="/student/flagpole"
                     title="เช็คชื่อเข้าแถวหน้าเสาธง"
