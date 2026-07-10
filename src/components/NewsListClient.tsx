@@ -31,11 +31,6 @@ const MONTHS = [
   { value: "11", label: "ธันวาคม" },
 ];
 
-const REDIRECT_URLS: Record<string, string> = {
-  "2566": "https://ktltcv1.vercel.app/pressrelease/2566",
-  "2567": "https://ktltcv1.vercel.app/pressrelease/2567",
-  "2568": "https://ktltcv3.vercel.app/pressrelease/2568",
-};
 
 interface NewsItem {
   _id: string;
@@ -84,7 +79,7 @@ function NewsListClientInner({
       const saved = sessionStorage.getItem("news_year");
       if (saved) return saved;
     }
-    return "All";
+    return (new Date().getFullYear() + 543).toString();
   });
   const [searchQuery, setSearchQuery] = useState(() => {
     if (typeof window !== "undefined") {
@@ -125,15 +120,6 @@ function NewsListClientInner({
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    if (REDIRECT_URLS[selectedYear]) {
-      const confirmMsg = `คุณเลือกดูข้อมูลปี ${selectedYear}\nระบบจะพาคุณไปยังเว็บไซต์เวอร์ชันเก่า ต้องการดำเนินการต่อหรือไม่?`;
-      if (window.confirm(confirmMsg)) {
-        window.open(REDIRECT_URLS[selectedYear], "_blank");
-      }
-      setSelectedYear("All");
-    }
-  }, [selectedYear]);
 
   const availableYears = useMemo(() => {
     const years = new Set<string>();
@@ -141,11 +127,20 @@ function NewsListClientInner({
       const year = new Date(news.createdAt).getFullYear() + 543;
       years.add(year.toString());
     });
-    years.add("2566");
-    years.add("2567");
-    years.add("2568");
+    years.add((new Date().getFullYear() + 543).toString());
     return Array.from(years).sort((a, b) => b.localeCompare(a));
   }, [initialNews]);
+
+  const availableMonths = useMemo(() => {
+    const months = new Set<string>();
+    initialNews.forEach((news) => {
+      const date = new Date(news.createdAt);
+      const year = (date.getFullYear() + 543).toString();
+      if (selectedYear !== "All" && year !== selectedYear) return;
+      months.add(date.getMonth().toString());
+    });
+    return Array.from(months).sort((a, b) => parseInt(a) - parseInt(b));
+  }, [initialNews, selectedYear]);
 
   const filteredNews = useMemo(() => {
     let result = Array.isArray(initialNews) ? initialNews : [];
@@ -162,7 +157,7 @@ function NewsListClientInner({
         return cats.includes(currentCategory);
       });
     }
-    if (currentYear !== "All" && !REDIRECT_URLS[currentYear]) {
+    if (currentYear !== "All") {
       result = result.filter((news) => {
         const year = new Date(news.createdAt).getFullYear() + 543;
         return year.toString() === currentYear;
@@ -225,7 +220,7 @@ function NewsListClientInner({
             <option value="All">ทุกปี พ.ศ.</option>
             {availableYears.map((year) => (
               <option key={year} value={year}>
-                พ.ศ. {year} {REDIRECT_URLS[year] ? "🔗" : ""}
+                พ.ศ. {year}
               </option>
             ))}
           </select>
@@ -237,11 +232,16 @@ function NewsListClientInner({
             }}
             className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200"
           >
-            {MONTHS.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
+            <option value="All">ทุกเดือน</option>
+            {availableMonths.map((m) => {
+              const monthObj = MONTHS.find((month) => month.value === m);
+              if (!monthObj) return null;
+              return (
+                <option key={m} value={m}>
+                  {monthObj.label}
+                </option>
+              );
+            })}
           </select>
         </div>
       </div>
