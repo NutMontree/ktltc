@@ -235,7 +235,7 @@ export default function LanguageSwitcher() {
             overflow: 'hidden',
             boxShadow: isDark ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
           }
-        }}
+        } as any}
         arrow={false}
       >
         <button

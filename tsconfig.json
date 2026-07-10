@@ -21,6 +21,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "typeRoots": ["./node_modules/@types"],
     "types": ["node"]
   },
   "include": [
@@ -34,5 +35,5 @@
     "src/lib/auth.ts",
     "src/app/api/auth/[...nextauth]/rout"
 , "src/middleware.ts"  ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "mobile-app"]
 }

@@ -10,7 +10,7 @@ export async function GET() {
     const db = client.db("ktltc_db");
     
     // Attempt to fetch the settings
-    const settings = await db.collection("system_settings").findOne({ _id: "tracking_config" });
+    const settings = await db.collection("system_settings").findOne({ _id: "tracking_config" as any });
     
     // Return default settings if none found
     if (!settings) {
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     const db = client.db("ktltc_db");
 
     await db.collection("system_settings").updateOne(
-      { _id: "tracking_config" },
+      { _id: "tracking_config" as any },
       {
         $set: {
           webrtc_hack_enabled: Boolean(webrtc_hack_enabled),
