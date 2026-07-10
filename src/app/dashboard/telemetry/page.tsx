@@ -433,17 +433,15 @@ export default function TelemetryPage() {
                         )}
                       </div>
                       <div className="text-right">
-                        <Link href={`/dashboard/telemetry/live/${u._id}`} className="inline-block group">
-                          <div className="flex flex-col items-end gap-1">
-                            <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
-                              Online
-                            </p>
-                            <div className="flex items-center gap-1 text-[9px] font-black text-rose-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                              <MousePointer2 className="w-3 h-3" />
-                              <span>Live View</span>
-                            </div>
-                          </div>
-                        </Link>
+                        <div className="flex flex-col items-end gap-2">
+                          <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
+                            Online
+                          </p>
+                          <Link href={`/dashboard/telemetry/live/${u._id}`} className="flex items-center gap-1 text-[10px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg shadow-sm transition-colors">
+                            <MousePointer2 className="w-3 h-3" />
+                            <span>ดูหน้าจอสด</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   ))
