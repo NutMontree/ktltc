@@ -38,7 +38,7 @@ async function getNews(): Promise<NewsItem[]> {
         announcementImages: { $slice: 1 },
         author: 1, // ✅ ดึงข้อมูลผู้โพสต์
       })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .toArray();
 
     return JSON.parse(JSON.stringify(news));

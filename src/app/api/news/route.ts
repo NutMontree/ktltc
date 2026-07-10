@@ -111,7 +111,7 @@ export async function GET(request: Request) {
     const news = await db
       .collection("news")
       .find({})
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .project({

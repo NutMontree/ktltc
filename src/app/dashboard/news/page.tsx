@@ -26,7 +26,7 @@ async function getNews(): Promise<NewsItem[]> {
     const news = await db
       .collection("news")
       .find({})
-      .sort({ createdAt: -1 }) // เรียงใหม่ไปเก่า
+      .sort({ createdAt: -1, _id: -1 }) // เรียงใหม่ไปเก่า
       .project({
         title: 1,
         category: 1,

@@ -178,10 +178,11 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
   }, [visibleCount, searchQuery, selectedCategory, viewMode, selectedYear, selectedMonth, selectedDay]);
 
   const sortedNews = useMemo(() => {
-    return [...newsList].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+    return [...newsList].sort((a, b) => {
+      const timeDiff = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (timeDiff !== 0) return timeDiff;
+      return b._id.localeCompare(a._id);
+    });
   }, [newsList]);
 
   // รวบรวม categories ทั้งหมด
