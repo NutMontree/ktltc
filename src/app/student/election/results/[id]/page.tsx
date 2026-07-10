@@ -10,11 +10,11 @@ function AnimatedNumber({ value, isFloat = false }: { value: number, isFloat?: b
   const spring = useSpring(value, { mass: 1, stiffness: 75, damping: 15 });
   const displayString = useTransform(spring, (current) => current.toFixed(1));
   const displayNumber = useTransform(spring, (current) => Math.round(current));
-  
+
   useEffect(() => {
     spring.set(value);
   }, [spring, value]);
-  
+
   return <motion.span>{isFloat ? displayString as any : displayNumber}</motion.span>;
 }
 
@@ -233,9 +233,9 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
         )}
 
         {/* Other Candidates & Abstain */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-10 shadow-lg border border-gray-100 dark:border-gray-700 mb-10 max-w-4xl mx-auto">
-          <h3 className="text-xl font-bold mb-8 pt-24 text-gray-800 dark:text-white flex items-center gap-2">
-            <Users size={24} className="text-gray-400 " />
+        <div className="bg-white  dark:bg-gray-800 rounded-3xl p-6 sm:p-10 shadow-lg border border-gray-100 dark:border-gray-700 mb-10 max-w-4xl mx-auto">
+          <h3 className="text-xl font-bold mb-8 pt-28 text-gray-800 dark:text-white flex items-center gap-2">
+            <Users size={24} className="text-gray-400 pt-20" />
             คะแนนผู้สมัครท่านอื่นๆ
           </h3>
 
