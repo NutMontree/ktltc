@@ -168,9 +168,11 @@ export async function GET() {
 
               const folderDetails = await Promise.all(
                 foldersToMeasure.map(async (folder) => {
-                  const folderPath = path.join(publicDir, folder);
+                  const pathUtil = path;
+                  const fsUtil = fs;
+                  const folderPath = pathUtil.join(publicDir, folder);
                   try {
-                    if (fs.existsSync(folderPath)) {
+                    if (fsUtil.existsSync(folderPath)) {
                       const size = await getFolderSize(folderPath);
                       return { folder, size };
                     }

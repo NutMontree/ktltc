@@ -49,12 +49,15 @@ export async function saveFileLocally(
     const uploadDir = join(baseDir, folder);
 
     // 4. ตรวจสอบและสร้างโฟลเดอร์หากยังไม่มี
-    await mkdir(uploadDir, { recursive: true });
+    const fsUtil = require("fs/promises");
+    const pathUtil = require("path");
+    
+    await fsUtil.mkdir(uploadDir, { recursive: true });
 
-    const filepath = join(uploadDir, filename);
+    const filepath = pathUtil.join(uploadDir, filename);
     
     // 5. เขียนไฟล์ลงบน Disk
-    await writeFile(filepath, buffer);
+    await fsUtil.writeFile(filepath, buffer);
     console.log(`✅ Server-side file saved to: ${filepath}`);
 
     // คืนค่า URL ที่ชี้ไปที่ API Media ของเรา (เพื่อให้เข้าถึงไฟล์ได้ผ่าน HTTP)

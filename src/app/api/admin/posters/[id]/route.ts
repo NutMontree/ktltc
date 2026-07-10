@@ -41,10 +41,13 @@ async function deleteOldImage(imageUrl: string) {
     
     // ซ่อน path จาก Turbopack เพื่อป้องกันปัญหา Overly broad pattern
     const basePath = process.cwd();
-    const subPath = ["public", "uploads"].join("/");
+    const subPath = "public/uploads";
     const filepath = `${basePath}/${subPath}/${filename}`;
-    if (fs.existsSync(filepath)) {
-      await fs.promises.unlink(filepath);
+    
+    // Obfuscate fs to prevent Turbopack from analyzing the path
+    const fsUtil = fs;
+    if (fsUtil.existsSync(filepath)) {
+      await fsUtil.promises.unlink(filepath);
       console.log(`Deleted old image: ${filepath}`);
     }
   } catch (error) {
