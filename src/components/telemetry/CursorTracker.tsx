@@ -8,12 +8,12 @@ export function CursorTracker() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const lastSent = useRef<number>(0);
+  const isWatchedRef = useRef<boolean>(false);
 
   useEffect(() => {
     // Only track authenticated users, and don't track super admins
     if (!session?.user?.id || (session.user as any).role === "super_admin") return;
 
-    const isWatchedRef = useRef<boolean>(false);
     let pollInterval: NodeJS.Timeout;
 
     const checkStatus = async () => {
