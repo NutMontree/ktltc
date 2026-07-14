@@ -32,7 +32,7 @@ export async function GET(req: Request) {
     const deviceData: Record<string, number> = {};
     const osData: Record<string, number> = {};
     const countryData: Record<string, number> = {};
-    const latestVisitors: any[] = [];
+    const latestVisitorsMap = new Map<string, any>();
 
     // Sort by lastActiveAt descending for latest visitors
     const sortedData = [...analyticsData].sort((a, b) => {
@@ -59,19 +59,28 @@ export async function GET(req: Request) {
       const loc = `${record.city || "Unknown"}, ${record.country || "Unknown"}`;
       countryData[loc] = (countryData[loc] || 0) + 1;
 
-      // Top 50 Latest
-      if (latestVisitors.length < 50) {
-        latestVisitors.push({
-          ip: record.ip,
-          location: loc,
-          device: device,
-          os: os,
-          browser: record.browser,
-          path: record.path,
-          time: record.lastActiveAt
-        });
+      // Deduplicate by IP for latest visitors
+      if (!latestVisitorsMap.has(record.ip)) {
+        if (latestVisitorsMap.size < 50) {
+          latestVisitorsMap.set(record.ip, {
+            ip: record.ip,
+            location: loc,
+            device: device,
+            os: os,
+            browser: record.browser,
+            path: record.path,
+            time: record.lastActiveAt,
+            count: record.views || 1
+          });
+        }
+      } else {
+        // Accumulate views for the same IP
+        const existing = latestVisitorsMap.get(record.ip);
+        existing.count += (record.views || 1);
       }
     }
+
+    const latestVisitors = Array.from(latestVisitorsMap.values());
 
     // Format for charts
     const dailyTrendChart = Object.keys(dailyData).sort().map(date => ({

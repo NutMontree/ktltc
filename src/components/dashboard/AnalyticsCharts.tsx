@@ -104,18 +104,23 @@ export default function AnalyticsCharts() {
           </h3>
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
             {data.latestVisitors.map((v: any, i: number) => (
-              <div key={i} className="p-4 rounded-3xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                    {v.device === 'mobile' ? <Smartphone className="w-4 h-4 text-zinc-500" /> : <Monitor className="w-4 h-4 text-zinc-500" />}
-                    {v.location}
+              <div key={i} className="p-4 rounded-3xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-100 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2 flex-wrap">
+                    {v.device === 'mobile' ? <Smartphone className="w-4 h-4 text-zinc-500 shrink-0" /> : <Monitor className="w-4 h-4 text-zinc-500 shrink-0" />}
+                    <span>{v.location}</span>
+                    {v.count > 1 && (
+                      <span className="text-[10px] font-bold text-blue-500 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-md">
+                        {v.count} ครั้ง
+                      </span>
+                    )}
                   </p>
-                  <p className="text-[10px] text-zinc-500 font-medium tracking-widest mt-1 truncate max-w-[200px]">
+                  <p className="text-[10px] text-zinc-500 font-medium tracking-widest mt-1 break-words">
                     IP: {v.ip} • {v.browser} ({v.os})
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md mb-1 inline-block truncate max-w-[100px]">
+                <div className="text-left md:text-right shrink-0 max-w-full">
+                  <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md inline-block break-all">
                     {v.path || '/'}
                   </p>
                 </div>
