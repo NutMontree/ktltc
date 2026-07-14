@@ -224,7 +224,7 @@ async function getAdjacentNews(currentNews: NewsItem) {
       })
       .sort({ createdAt: -1, _id: -1 })
       .limit(1)
-      .project({ _id: 1, title: 1 })
+      .project({ _id: 1, title: 1, thumbnails: 1, images: 1, announcementImages: 1 })
       .toArray();
 
     const nextNews = await db
@@ -237,7 +237,7 @@ async function getAdjacentNews(currentNews: NewsItem) {
       })
       .sort({ createdAt: 1, _id: 1 })
       .limit(1)
-      .project({ _id: 1, title: 1 })
+      .project({ _id: 1, title: 1, thumbnails: 1, images: 1, announcementImages: 1 })
       .toArray();
 
     return {
@@ -516,14 +516,29 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
               {prev ? (
                 <Link
                   href={`/news/${prev._id}`}
-                  className="group p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all"
+                  className="group flex items-center gap-4 p-4 md:p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all"
                 >
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 group-hover:text-blue-600">
-                    <IconChevronLeft /> ข่าวก่อนหน้า
+                  <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800">
+                    <Image
+                      src={
+                        (prev.thumbnails && prev.thumbnails[0]) ||
+                        (prev.images && prev.images[0]) ||
+                        (prev.announcementImages && prev.announcementImages[0]) ||
+                        "/no-image.png"
+                      }
+                      alt={prev.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
                   </div>
-                  <h4 className="font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 leading-relaxed">
-                    {prev.title}
-                  </h4>
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2 group-hover:text-blue-600">
+                      <IconChevronLeft /> ข่าวก่อนหน้า
+                    </div>
+                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 leading-relaxed text-sm md:text-base">
+                      {prev.title}
+                    </h4>
+                  </div>
                 </Link>
               ) : (
                 <div className="hidden md:block" />
@@ -531,14 +546,29 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
               {next ? (
                 <Link
                   href={`/news/${next._id}`}
-                  className="group p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all text-right"
+                  className="group flex items-center gap-4 p-4 md:p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all"
                 >
-                  <div className="flex items-center justify-end gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 group-hover:text-blue-600">
-                    ข่าวถัดไป <IconChevronRight />
+                  <div className="flex-1 min-w-0 text-right order-2 md:order-1">
+                    <div className="flex items-center justify-end gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2 group-hover:text-blue-600">
+                      ข่าวถัดไป <IconChevronRight />
+                    </div>
+                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 leading-relaxed text-sm md:text-base">
+                      {next.title}
+                    </h4>
                   </div>
-                  <h4 className="font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 leading-relaxed">
-                    {next.title}
-                  </h4>
+                  <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800 order-1 md:order-2">
+                    <Image
+                      src={
+                        (next.thumbnails && next.thumbnails[0]) ||
+                        (next.images && next.images[0]) ||
+                        (next.announcementImages && next.announcementImages[0]) ||
+                        "/no-image.png"
+                      }
+                      alt={next.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
                 </Link>
               ) : (
                 <div className="hidden md:block" />
