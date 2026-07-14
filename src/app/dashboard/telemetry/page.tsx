@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   Navigation,
   MousePointer2,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -238,7 +239,7 @@ export default function TelemetryPage() {
       </div>
 
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <TelemetryCard
             label="ภาระการประมวลผล (CPU)"
             value={stats?.cpuUsage || "0"}
@@ -272,6 +273,14 @@ export default function TelemetryPage() {
               variants={item}
             />
           </div>
+          <StatCard
+            label="ผู้เยี่ยมชม (Real-time)"
+            value={stats?.activeVisitors || 0}
+            icon={Activity}
+            color="rose"
+            unit=" คน"
+            variants={item}
+          />
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
