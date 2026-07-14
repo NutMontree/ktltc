@@ -249,15 +249,17 @@ export default function MobileMenu({
                       <button
                         onClick={async () => {
                           try {
-                            // 1. ลบคุกกี้ความปลอดภัย "token"
-                            await fetch("/api/auth/logout", { method: "POST" }).catch(() => { });
-                            // 2. เรียกใช้ signOut แบบปิด redirect
+                            // 1. ลบคุกกี้ทั้งหมด (รวม NextAuth session cookies) ผ่าน API ฝั่ง Server
+                            await fetch("/api/auth/logout", { method: "POST" });
+                            // 2. เรียกใช้ signOut เพื่อล้าง session ฝั่ง client
                             await signOut({ redirect: false });
+                            // 3. Hard Redirect หลัง signOut เสร็จสมบูรณ์
+                            window.location.href = "/login";
                           } catch (err) {
                             console.error("Logout error:", err);
+                            // แม้เกิด error ก็บังคับ redirect ไปหน้า login
+                            window.location.href = "/login";
                           }
-                          // 3. ใช้ window.location.href ทำ Hard Redirect
-                          window.location.href = "/login";
                         }}
                         className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm"
                       >
