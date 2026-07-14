@@ -89,8 +89,8 @@ export async function PUT(
     }
 
     // --- ตรวจสอบสิทธิ์แก้ไข ---
-    const userRole = (session.user as any).role;
-    const userId = (session.user as any).id;
+    const userRole = session.user.role;
+    const userId = session.user.id;
 
     // สิทธิ์การแก้ไข: เจ้าของโพสต์ หรือ super_admin
     const ownerId = getAuthorId(existingNews);
@@ -180,8 +180,8 @@ export async function DELETE(
     }
 
     // --- 3. ส่วนตรวจสอบสิทธิ์ (Logic ปรับปรุงใหม่) ---
-    const userRole = (session.user as any).role;
-    const userId = (session.user as any).id;
+    const userRole = session.user.role;
+    const userId = session.user.id;
     const ownerId = getAuthorId(existingNews);
     const isOwner =
       (Boolean(ownerId) && Boolean(userId) && ownerId === userId) ||

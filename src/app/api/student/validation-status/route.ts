@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const userRole = (session.user as any)?.role;
 
     if (userRole !== "student") {

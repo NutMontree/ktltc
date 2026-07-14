@@ -175,7 +175,7 @@ export async function PATCH(req: Request) {
 
     // บันทึกระบบ Audit Log
     await db.collection("logs").insertOne({
-      userName: (session?.user as any)?.name || "Admin",
+      userName: session?.user?.name || "Admin",
       action: "UPDATE_FLAGPOLE_DATA",
       details: `แก้ไขข้อมูลการเข้าแถวเสาธงนักศึกษา ID: ${id}`,
       timestamp: new Date(),
@@ -215,7 +215,7 @@ export async function DELETE(req: Request) {
       result = await db.collection("flagpole_attendances").deleteMany({});
 
       await db.collection("logs").insertOne({
-        userName: (session?.user as any)?.name || "Admin",
+        userName: session?.user?.name || "Admin",
         action: "BULK_DELETE_FLAGPOLE_DATA",
         details: `ล้างข้อมูลประวัติเข้าแถวของนักศึกษาทั้งหมดในวิทยาลัย (${result.deletedCount} รายการ)`,
         timestamp: new Date(),
@@ -228,7 +228,7 @@ export async function DELETE(req: Request) {
       result = await db.collection("flagpole_attendances").deleteOne({ _id: new ObjectId(id) });
 
       await db.collection("logs").insertOne({
-        userName: (session?.user as any)?.name || "Admin",
+        userName: session?.user?.name || "Admin",
         action: "DELETE_FLAGPOLE_DATA",
         details: `ลบข้อมูลเช็คชื่อเข้าแถวนักศึกษา ID: ${id}`,
         timestamp: new Date(),

@@ -345,7 +345,7 @@ const SnakeGame = () => {
                             <div>
                               <p className="text-green-500 dark:text-green-400 font-bold">{sc.score} <span className="text-[10px] text-slate-500 font-normal">pts</span></p>
                             </div>
-                            {(session?.user as any)?.role === "super_admin" && (
+                            {session?.user?.role === "super_admin" && (
                               <div className="flex gap-1">
                                 <Button
                                   isIconOnly

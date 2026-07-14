@@ -177,7 +177,7 @@ export default function AttendanceSettingsPage() {
             <p className="text-[10px] font-black text-slate-400 mt-2 uppercase tracking-[0.2em] flex items-center gap-2">
               <ShieldCheck size={14} className="text-indigo-500" />
               {session?.user
-                ? (session.user as any).role.replace("_", " ")
+                ? session.user.role.replace("_", " ")
                 : "HR / Administrator"}
             </p>
           </div>

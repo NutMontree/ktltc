@@ -113,7 +113,7 @@ export default function TelemetryPage() {
       if (permRes.ok) {
         const permData = await permRes.json();
         let finalPerms = permData;
-        const userRole = ((session?.user as any)?.role || "").toLowerCase();
+        const userRole = (session?.user?.role || "").toLowerCase();
         if (userRole === "super_admin") {
           finalPerms = new Proxy(permData || {}, {
             get: function (target, prop) {
@@ -218,7 +218,7 @@ export default function TelemetryPage() {
     );
   }
 
-  if (status === "unauthenticated" || (!permissions?.access_telemetry && ((session?.user as any)?.role || "").toLowerCase() !== "super_admin")) {
+  if (status === "unauthenticated" || (!permissions?.access_telemetry && (session?.user?.role || "").toLowerCase() !== "super_admin")) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
         <ShieldAlert className="w-16 h-16 text-rose-500" />
@@ -303,7 +303,7 @@ export default function TelemetryPage() {
             icon={Database}
             color="emerald"
             variants={item}
-            isSuperAdmin={((session?.user as any)?.role || "").toLowerCase() === "super_admin"}
+            isSuperAdmin={(session?.user?.role || "").toLowerCase() === "super_admin"}
             serverTotalMB={stats?.serverTotalMB || 0}
             serverUsedMB={stats?.serverUsedMB || 0}
             serverAvailableMB={stats?.serverAvailableMB || 0}
@@ -322,7 +322,7 @@ export default function TelemetryPage() {
             icon={Cloud}
             color="blue"
             variants={item}
-            isSuperAdmin={((session?.user as any)?.role || "").toLowerCase() === "super_admin"}
+            isSuperAdmin={(session?.user?.role || "").toLowerCase() === "super_admin"}
             serverTotalMB={stats?.serverTotalMB || 0}
             serverUsedMB={stats?.serverUsedMB || 0}
             serverAvailableMB={stats?.serverAvailableMB || 0}

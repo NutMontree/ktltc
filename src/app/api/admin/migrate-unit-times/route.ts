@@ -8,7 +8,7 @@ const dbName = process.env.MONGODB_DB || "ktltc";
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !["super_admin", "admin"].includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

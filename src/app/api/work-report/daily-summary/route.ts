@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userRole = (session?.user as any)?.role;
+    const userRole = session?.user?.role;
     const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
     if (!canAccess) {
       return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });

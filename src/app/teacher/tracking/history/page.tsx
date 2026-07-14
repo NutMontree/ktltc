@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 
 export default function TrackingHistoryPage() {
   const { data: session } = useSession();
-  const userRole = ((session?.user as any)?.role || "").toLowerCase();
+  const userRole = (session?.user?.role || "").toLowerCase();
   const isSuperAdmin = userRole === "super_admin";
 
   const [history, setHistory] = useState<any[]>([]);

@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     // Check dynamic permissions
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
@@ -68,13 +68,13 @@ export async function POST(request: Request) {
       // ✅ บันทึกชื่อคนโพสต์ที่ส่งมาจากหน้า Add News
       author: {
         // ใช้ข้อมูลจาก session เป็นหลัก เพื่อป้องกันปลอมตัวจากฝั่ง client
-        id: (session.user as any).id || null,
-        username: (session.user as any).username || null,
+        id: session.user.id || null,
+        username: session.user.username || null,
         name: session.user.name || userName || "งานศูนย์ข้อมูล",
         email: session.user.email || null,
         image: session.user.image || userImage || null,
       },
-      authorId: (session.user as any).id || null,
+      authorId: session.user.id || null,
       authorEmail: session.user.email || null,
 
       createdAt: createdAt ? new Date(createdAt) : new Date(),

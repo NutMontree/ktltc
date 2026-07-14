@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -51,7 +51,7 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -122,8 +122,8 @@ export async function PATCH(
     }
 
     // Automatic Unified Logging
-    const adminName = (session?.user as any)?.name || "Super_Admin";
-    const adminId = (session?.user as any)?.id;
+    const adminName = session?.user?.name || "Super_Admin";
+    const adminId = session?.user?.id;
 
     // หาชื่อผู้ใช้เป้าหมาย
     const targetUser = await db
@@ -163,7 +163,7 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -190,8 +190,8 @@ export async function DELETE(
     }
 
     // บันทึก Log การลบสมาชิก
-    const adminName = (session?.user as any)?.name || "Super_Admin";
-    const adminId = (session?.user as any)?.id;
+    const adminName = session?.user?.name || "Super_Admin";
+    const adminId = session?.user?.id;
     const targetName = targetUser?.name || targetUser?.username || `ID: ${id}`;
 
     await db.collection("logs").insertOne({

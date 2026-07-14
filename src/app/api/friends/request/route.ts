@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
   }
 
-  const userId = (session.user as any).id;
+  const userId = session.user.id;
   if (userId === targetUserId) {
     return NextResponse.json({ error: "Cannot add yourself" }, { status: 400 });
   }
@@ -49,8 +49,8 @@ export async function POST(req: NextRequest) {
     userId: new ObjectId(targetUserId),
     type: "friend_request",
     from: new ObjectId(userId),
-    fromName: (session.user as any).name,
-    fromImage: (session.user as any).image,
+    fromName: session.user.name,
+    fromImage: session.user.image,
     requestId: result.insertedId,
     read: false,
     createdAt: new Date(),

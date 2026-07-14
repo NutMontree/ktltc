@@ -35,7 +35,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");

@@ -17,7 +17,7 @@ function toObjectId(id: string): any {
 // 1. POST: Create a new Group Chat
 export async function POST(req: Request) {
   const session = await auth();
-  const userId = (session?.user as any)?.id;
+  const userId = session?.user?.id;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
 // 2. PUT: Add or Remove members in a Group Chat
 export async function PUT(req: Request) {
   const session = await auth();
-  const userId = (session?.user as any)?.id;
+  const userId = session?.user?.id;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -220,7 +220,7 @@ export async function PUT(req: Request) {
 // 3. DELETE: Delete a group or direct chat conversation (Creator for group, participant for direct)
 export async function DELETE(req: Request) {
   const session = await auth();
-  const userId = (session?.user as any)?.id;
+  const userId = session?.user?.id;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

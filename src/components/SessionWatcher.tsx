@@ -10,10 +10,10 @@ export default function SessionWatcher() {
 
   useEffect(() => {
     // If an error is registered in the session and we haven't alerted yet
-    if ((session as any)?.error && !alertShown.current) {
+    if (session?.error && !alertShown.current) {
       alertShown.current = true;
       
-      const sessionError = (session as any).error;
+      const sessionError = session.error;
       
       if (sessionError === "SessionExpired") {
         toast.error("คุณไม่ได้ใช้งานเกิน 1 ชั่วโมง ระบบจึงทำการลงชื่อออก", {

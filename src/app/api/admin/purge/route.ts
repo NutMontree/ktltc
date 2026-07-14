@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 export async function GET() {
   try {
     const session = await auth();
-    const role = (session?.user as any)?.role;
+    const role = session?.user?.role;
     
     if (role !== "super_admin") {
       return NextResponse.json({ error: "Unauthorized. Super Admin Only." }, { status: 403 });

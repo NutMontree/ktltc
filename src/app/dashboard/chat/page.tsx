@@ -61,7 +61,7 @@ interface Message {
 
 function ChatPageContent() {
   const { data: session, status } = useSession();
-  const currentUserId = (session?.user as any)?.id || "";
+  const currentUserId = session?.user?.id || "";
   const router = useRouter();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get("u");

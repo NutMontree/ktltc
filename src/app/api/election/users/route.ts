@@ -8,7 +8,7 @@ export async function GET() {
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const role = String((session.user as any).role || "").toLowerCase().trim();
+    const role = String(session.user.role || "").toLowerCase().trim();
     if (!["super_admin", "admin", "director", "teacher"].includes(role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }

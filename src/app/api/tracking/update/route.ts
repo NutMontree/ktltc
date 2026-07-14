@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     // 1. Check for Web Session (NextAuth) first
     const session = await auth();
     if (session?.user?.id) {
-      userId = (session.user as any).id;
+      userId = session.user.id;
     } 
     // 2. Fallback to JWT Token (for Mobile App)
     else if (authHeader && authHeader.startsWith("Bearer ")) {

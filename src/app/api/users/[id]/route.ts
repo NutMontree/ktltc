@@ -207,7 +207,7 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    const currentUserRole = (session?.user as any)?.role;
+    const currentUserRole = session?.user?.role;
     const isSuperAdmin = currentUserRole === "super_admin";
 
     // Check dynamic permissions

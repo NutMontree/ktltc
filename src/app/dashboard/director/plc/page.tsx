@@ -31,8 +31,8 @@ export default function PlcPage() {
   });
 
   const user = {
-    username: session?.user?.name || (session?.user as any)?.username,
-    role: (session?.user as any)?.role,
+    username: session?.user?.name || session?.user?.username,
+    role: session?.user?.role,
     image: session?.user?.image,
   };
 

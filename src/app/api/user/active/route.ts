@@ -8,11 +8,11 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !session.user || !(session.user as any).id) {
+    if (!session || !session.user || !session.user.id) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     if (!ObjectId.isValid(userId)) {
       return NextResponse.json({ success: false, message: "Invalid User ID" }, { status: 400 });
     }

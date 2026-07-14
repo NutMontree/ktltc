@@ -58,7 +58,7 @@ export default function StudentDataValidationPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const userRole = ((session?.user as any)?.role || "").toLowerCase();
+  const userRole = (session?.user?.role || "").toLowerCase();
 
   const [selectedDept, setSelectedDept] = useState<string>("");
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);

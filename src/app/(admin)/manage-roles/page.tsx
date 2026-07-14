@@ -62,7 +62,7 @@ export default function ManageRolesPage() {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const latestQueryRef = useRef("");
 
-  const currentUserRole = (session?.user as any)?.role;
+  const currentUserRole = session?.user?.role;
   const isSuperAdmin = currentUserRole === "super_admin";
 
   const fetchRoles = async () => {

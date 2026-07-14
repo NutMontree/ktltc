@@ -6,7 +6,7 @@ import { saveFileLocally } from "@/lib/upload-server";
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
     
     const client = await (await import("@/lib/db")).default;
     const db = client.db("ktltc_db");

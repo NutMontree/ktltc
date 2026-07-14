@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 export async function DELETE(request: Request) {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     if (userRole !== "super_admin") {
       return NextResponse.json({ success: false, message: "Unauthorized. Super Admin only." }, { status: 403 });

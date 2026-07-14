@@ -18,7 +18,7 @@ const DEFAULT_WFH_MAX_DISTANCE = 200000; // 200 Kilometers (WFH/Remote Limit)
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userId = (session?.user as any)?.id;
+    const userId = session?.user?.id;
     
     if (!userId) {
       return NextResponse.json({ success: false, message: 'Unauthorized. Please login again.' }, { status: 401 });

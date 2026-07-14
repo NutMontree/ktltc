@@ -230,7 +230,7 @@ export async function PATCH(req: Request) {
 
     // บันทึกระบบ Audit Log
     await db.collection("logs").insertOne({
-      userName: (session?.user as any)?.name || "Admin",
+      userName: session?.user?.name || "Admin",
       action: "UPDATE_FLAGPOLE_ATTENDANCE",
       details: `ปรับปรุงสถานะการเข้าแถวเสาธง ID: ${id} เป็น: ${status === "Present" ? "ตรงเวลา" : "สาย"}`,
       timestamp: new Date(),
@@ -270,7 +270,7 @@ export async function DELETE(req: Request) {
       const result = await db.collection("flagpole_attendances").deleteMany({});
       
       await db.collection("logs").insertOne({
-        userName: (session?.user as any)?.name || "Admin",
+        userName: session?.user?.name || "Admin",
         action: "DELETE_ALL_FLAGPOLE_ATTENDANCES",
         details: "ล้างฐานข้อมูลประวัติการเข้าเสาธงนักศึกษาทั้งหมดในวิทยาลัย",
         timestamp: new Date(),
@@ -288,7 +288,7 @@ export async function DELETE(req: Request) {
     const result = await db.collection("flagpole_attendances").deleteOne({ _id: new ObjectId(id) });
 
     await db.collection("logs").insertOne({
-      userName: (session?.user as any)?.name || "Admin",
+      userName: session?.user?.name || "Admin",
       action: "DELETE_FLAGPOLE_ATTENDANCE",
       details: `ลบบันทึกการเข้าเสาธงนักศึกษา ID: ${id}`,
       timestamp: new Date(),

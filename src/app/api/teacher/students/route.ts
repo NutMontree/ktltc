@@ -13,7 +13,7 @@ function escapeRegex(text: string): string {
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json(

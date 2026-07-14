@@ -169,7 +169,7 @@ export default function StudentFlagpoleDashboard() {
       if (status === "unauthenticated") {
         router.replace("/login");
       } else if (status === "authenticated") {
-        const role = (session?.user as any)?.role?.toLowerCase();
+        const role = session?.user?.role?.toLowerCase();
         
         // อนุญาตให้บทบาทระบบพื้นฐานเข้าถึงได้เลย
         if (["super_admin", "admin", "deputy_student_affairs"].includes(role)) {

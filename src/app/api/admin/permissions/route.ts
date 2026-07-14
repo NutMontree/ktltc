@@ -345,7 +345,7 @@ export async function GET() {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userRole = (session?.user as any)?.role;
+    const userRole = session?.user?.role;
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
@@ -453,7 +453,7 @@ export async function PATCH(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const userRole = (session?.user as any)?.role;
+    const userRole = session?.user?.role;
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
 
@@ -517,7 +517,7 @@ export async function PATCH(req: Request) {
       console.log("✅ [API] Role updated/renamed successfully:", oldRole, "->", newRole);
 
       await db.collection("logs").insertOne({
-        userName: (session.user as any).name || "Super Admin",
+        userName: session.user.name || "Super Admin",
         action: "RENAME_ROLE",
         details: `Renamed role from ${oldRole} to ${newRole}`,
         timestamp: new Date(),
@@ -547,7 +547,7 @@ export async function PATCH(req: Request) {
       if (deptBulkOps.length > 0) {
         await db.collection("department_permissions").bulkWrite(deptBulkOps);
         await db.collection("logs").insertOne({
-          userName: (session.user as any).name || "Super Admin",
+          userName: session.user.name || "Super Admin",
           action: "UPDATE_BULK_DEPT_PERMISSIONS",
           details: `Updated permissions for ${deptBulkOps.length} departments`,
           timestamp: new Date(),
@@ -583,7 +583,7 @@ export async function PATCH(req: Request) {
       await db.collection("role_permissions").bulkWrite(bulkOps);
 
       await db.collection("logs").insertOne({
-        userName: (session.user as any).name || "Super Admin",
+        userName: session.user.name || "Super Admin",
         action: "UPDATE_BULK_PERMISSIONS",
         details: `Updated permissions for ${bulkOps.length} roles`,
         timestamp: new Date(),
@@ -602,7 +602,7 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const userRole = (session?.user as any)?.role;
+    const userRole = session?.user?.role;
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
 
@@ -660,7 +660,7 @@ export async function DELETE(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const userRole = (session?.user as any)?.role;
+    const userRole = session?.user?.role;
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageSystem = rolePerms?.permissions?.manage_system || userRole === "super_admin";
 
@@ -684,7 +684,7 @@ export async function DELETE(req: Request) {
 
     if (result.deletedCount > 0) {
       await db.collection("logs").insertOne({
-        userName: (session.user as any).name || "Super Admin",
+        userName: session.user.name || "Super Admin",
         action: "DELETE_ROLE",
         details: `Deleted role: ${role}`,
         timestamp: new Date(),

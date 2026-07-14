@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only authorized staff can manage gate sessions
     if (!["super_admin", "admin", "director", "teacher", "deputy_student_affairs"].includes(userRole)) {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         studentId: new ObjectId(studentId),
         scannedOutAt: new Date(),
         status: "ACTIVE",
-        teacherId: new ObjectId((session?.user as any)?.id), // Record who scanned them out
+        teacherId: new ObjectId(session?.user?.id), // Record who scanned them out
       };
 
       await db.collection("off_campus_sessions").insertOne(newSession);

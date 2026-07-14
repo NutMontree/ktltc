@@ -13,8 +13,8 @@ export async function GET(req: Request) {
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userId = (session?.user as any)?.id;
-    const userRole = (session?.user as any)?.role;
+    const userId = session?.user?.id;
+    const userRole = session?.user?.role;
 
     const { searchParams } = new URL(req.url);
     const dateParam = searchParams.get("date"); // YYYY-MM-DD
@@ -174,7 +174,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userId = (session?.user as any)?.id;
+    const userId = session?.user?.id;
     if (!userId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -246,8 +246,8 @@ export async function POST(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role;
-    const userId = (session?.user as any)?.id;
+    const userRole = session?.user?.role;
+    const userId = session?.user?.id;
 
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -310,7 +310,7 @@ export async function PATCH(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role;
+    const userRole = session?.user?.role;
     const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
     if (!canAccess) {
       return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });

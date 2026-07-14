@@ -38,7 +38,7 @@ export default function MembersPage() {
       setLoading(true);
       const [usersRes, profileRes] = await Promise.all([
         fetch("/api/users/all"),
-        session?.user ? fetch(`/api/users/${(session.user as any).id}`) : Promise.resolve(null)
+        session?.user ? fetch(`/api/users/${session.user.id}`) : Promise.resolve(null)
       ]);
 
       if (usersRes.ok) {
@@ -146,7 +146,7 @@ export default function MembersPage() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {filteredUsers.map((u) => {
-              const isMe = String((session?.user as any)?.id) === String(u._id);
+              const isMe = String(session?.user?.id) === String(u._id);
               const isFriend = myFriends.some(fId => String(fId) === String(u._id));
 
               return (

@@ -207,7 +207,7 @@ export default function FlagpoleDataManagementPage() {
     if (status === "unauthenticated") {
       router.replace("/login");
     } else if (status === "authenticated") {
-      const role = (session?.user as any)?.role?.toLowerCase();
+      const role = session?.user?.role?.toLowerCase();
       if (!["super_admin", "admin"].includes(role)) {
         router.replace("/");
       }

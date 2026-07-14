@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     // Check dynamic permissions
     const canManageRoles = await hasPermission(userRole, "manage_roles_advanced");

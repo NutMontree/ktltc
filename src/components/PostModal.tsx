@@ -33,7 +33,7 @@ export default function PostModal({ postId, open, onClose }: PostModalProps) {
   const [likeUsers, setLikeUsers] = useState<any[]>([]);
   const [isLoadingLikes, setIsLoadingLikes] = useState(false);
   const { data: session } = useSession();
-  const userId = (session?.user as any)?.id;
+  const userId = session?.user?.id;
 
   useEffect(() => {
     if (open && postId) {

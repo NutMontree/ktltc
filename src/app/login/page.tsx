@@ -99,7 +99,7 @@ export default function LoginPage() {
         let retries = 5;
         while (retries > 0) {
           session = await getSession();
-          role = (session?.user as any)?.role?.toLowerCase() || "";
+          role = session?.user?.role?.toLowerCase() || "";
           if (role) break;
           await new Promise((resolve) => setTimeout(resolve, 500));
           retries--;

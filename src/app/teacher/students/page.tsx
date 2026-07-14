@@ -63,8 +63,8 @@ export default function TeacherStudentsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const userRole = ((session?.user as any)?.role || "").toLowerCase();
-  const userDept = (session?.user as any)?.department || "";
+  const userRole = (session?.user?.role || "").toLowerCase();
+  const userDept = session?.user?.department || "";
   const isTeacher = userRole === "teacher";
 
   const [selectedDept, setSelectedDept] = useState<string>("");

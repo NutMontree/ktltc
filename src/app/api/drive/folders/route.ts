@@ -18,8 +18,8 @@ async function isCollaborativeOrDescendant(db: any, folderId: ObjectId | null): 
 export async function GET(request: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
-    const userId = (session?.user as any)?.id;
+    const userRole = session?.user?.role?.toLowerCase();
+    const userId = session?.user?.id;
     const { searchParams } = new URL(request.url);
     const parentIdStr = searchParams.get("parentId");
     const parentId = parentIdStr && parentIdStr !== "null" ? new ObjectId(parentIdStr) : null;
@@ -141,7 +141,7 @@ export async function POST(request: Request) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
     const isStaff = !["user", "student"].includes(userRole || "");
     if (!isStaff) return NextResponse.json({ error: "No permission to create folders" }, { status: 403 });
 
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
       if (!parentFolder) return NextResponse.json({ error: "Parent folder not found" }, { status: 404 });
       
       const isAdmin = ["super_admin", "admin"].includes(userRole);
-      const userId = (session.user as any).id;
+      const userId = session.user.id;
 
       // Check if parent or any ancestor is collaborative
       const isParentShared = await isCollaborativeOrDescendant(db, parentId);
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
       name,
       parentId,
       isCollaborative: !!isCollaborative,
-      ownerId: (session.user as any).id,
+      ownerId: session.user.id,
       ownerName: session.user.name,
       createdAt: new Date(),
       updatedAt: new Date(),

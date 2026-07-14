@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     // Automatic Unified Logging
     const session = await auth();
-    const adminName = (session?.user as any)?.name || "Super_Admin";
+    const adminName = session?.user?.name || "Super_Admin";
     await db.collection("logs").insertOne({
       userName: adminName,
       action: "REORDER_USERS",

@@ -19,6 +19,8 @@ declare module "next-auth" {
       role: string; // เพิ่มบทบาท (Role) เข้าไปใน User Session
       department?: string;
       faction?: string;
+      username?: string;
+      image?: string;
     } & DefaultSession["user"];
   }
 
@@ -28,6 +30,8 @@ declare module "next-auth" {
     role: string;
     department?: string;
     faction?: string;
+    username?: string;
+    image?: string;
   }
 }
 
@@ -38,6 +42,8 @@ declare module "next-auth/jwt" {
     role: string;
     department?: string;
     faction?: string;
+    username?: string;
+    image?: string;
   }
 }
 

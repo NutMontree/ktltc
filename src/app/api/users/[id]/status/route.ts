@@ -10,14 +10,14 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    const adminName = (session?.user as any)?.name || "Super_Admin";
-    const adminId = (session?.user as any)?.id;
+    const adminName = session?.user?.name || "Super_Admin";
+    const adminId = session?.user?.id;
 
     const { id } = await params;
     const body = await req.json();
     const { isActive, role } = body;
  
-    const currentUserRole = String((session?.user as any)?.role || "").toLowerCase().trim();
+    const currentUserRole = String(session?.user?.role || "").toLowerCase().trim();
     const allowedAdminRoles = [
       "super_admin",
       "admin",
@@ -78,7 +78,7 @@ export async function PATCH(
       targetId: new ObjectId(id),
       timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
-      role: (session?.user as any)?.role || "super_admin",
+      role: session?.user?.role || "super_admin",
     });
 
     return NextResponse.json({ message: "Success" });
@@ -95,8 +95,8 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    const adminName = (session?.user as any)?.name || "Super_Admin";
-    const adminId = (session?.user as any)?.id;
+    const adminName = session?.user?.name || "Super_Admin";
+    const adminId = session?.user?.id;
 
     const { id } = await params;
     const client = await clientPromise;
@@ -117,7 +117,7 @@ export async function DELETE(
       targetId: new ObjectId(id),
       timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
-      role: (session?.user as any)?.role || "super_admin",
+      role: session?.user?.role || "super_admin",
     });
 
     return NextResponse.json({ message: "Deleted" });

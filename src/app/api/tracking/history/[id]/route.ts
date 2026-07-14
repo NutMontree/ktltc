@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     if (userRole !== "super_admin") {
       return NextResponse.json({ success: false, message: "Unauthorized. Super Admin only." }, { status: 403 });
@@ -61,7 +61,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     if (userRole !== "super_admin") {
       return NextResponse.json({ success: false, message: "Unauthorized. Super Admin only." }, { status: 403 });

@@ -600,7 +600,7 @@ export default function ItaDashboard() {
     );
   }
 
-  const userRole = (session?.user as any)?.role?.toLowerCase();
+  const userRole = session?.user?.role?.toLowerCase();
   const hasAccess = ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);
 
   if (status === "unauthenticated" || !hasAccess) {
@@ -628,8 +628,8 @@ export default function ItaDashboard() {
   }
 
   const user = {
-    username: session?.user?.name || (session?.user as any)?.username,
-    role: (session?.user as any)?.role,
+    username: session?.user?.name || session?.user?.username,
+    role: session?.user?.role,
     image: session?.user?.image,
   };
 

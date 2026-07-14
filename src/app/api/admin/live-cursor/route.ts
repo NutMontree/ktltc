@@ -102,7 +102,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ watched: isWatched });
     }
 
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
     
     // Only allow admins
     if (!["super_admin", "admin", "director"].includes(userRole)) {

@@ -308,7 +308,7 @@ export default function CreateSupervisionPage() {
                       try {
                         const payload = supervisionId 
                           ? { id: supervisionId, ...formData } 
-                          : { ...formData, createdBy: (session?.user as any)?.id || null };
+                          : { ...formData, createdBy: session?.user?.id || null };
                         const res = await fetch("/api/supervision", {
                           method: supervisionId ? "PUT" : "POST",
                           headers: { "Content-Type": "application/json" },

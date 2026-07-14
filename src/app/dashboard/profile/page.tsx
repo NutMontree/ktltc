@@ -9,8 +9,8 @@ export default function ProfileRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated" && (session?.user as any)?.id) {
-      router.replace(`/dashboard/profile/${(session.user as any).id}`);
+    if (status === "authenticated" && session?.user?.id) {
+      router.replace(`/dashboard/profile/${session.user.id}`);
     } else if (status === "unauthenticated") {
       router.replace("/login");
     }

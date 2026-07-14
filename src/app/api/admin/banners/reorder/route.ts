@@ -15,8 +15,8 @@ export async function PATCH(req: NextRequest) {
     // ตรวจสอบว่า Login หรือไม่ และมีสิทธิ์ที่เหมาะสมหรือไม่
     if (
       !session ||
-      !(session.user as any).role ||
-      !["super_admin", "admin", "editor"].includes((session.user as any).role)
+      !session.user.role ||
+      !["super_admin", "admin", "editor"].includes(session.user.role)
     ) {
       return NextResponse.json(
         { error: "สิทธิ์การเข้าถึงไม่ถูกต้อง" },

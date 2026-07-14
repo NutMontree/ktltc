@@ -32,8 +32,8 @@ export async function PATCH(
   try {
     const { id } = await params;
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
-    const userId = (session?.user as any)?.id;
+    const userRole = session?.user?.role?.toLowerCase();
+    const userId = session?.user?.id;
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -112,8 +112,8 @@ export async function DELETE(
   try {
     const { id } = await params;
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
-    const userId = (session?.user as any)?.id;
+    const userRole = session?.user?.role?.toLowerCase();
+    const userId = session?.user?.id;
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     // Check if user has permission to view active users
     if (!["super_admin", "admin", "director"].includes(userRole)) {

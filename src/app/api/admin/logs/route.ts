@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    if (!session || (session.user as any).role !== "super_admin") {
+    if (!session || session.user.role !== "super_admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -62,14 +62,14 @@ export async function POST(req: Request) {
     const db = client.db("ktltc_db");
 
     const newLog = {
-      userName: (session as any)?.user?.name || manualName || "SYSTEM_KERN",
-      userEmail: (session as any)?.user?.email || null,
+      userName: session?.user?.name || manualName || "SYSTEM_KERN",
+      userEmail: session?.user?.email || null,
       action: action || "SYSTEM_ACTIVITY",
       details: details || "No specific details provided",
       link: link || null,
       timestamp: new Date(),
       ip,
-      role: (session as any)?.user?.role || "guest",
+      role: session?.user?.role || "guest",
     };
 
     await db.collection("logs").insertOne(newLog);
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
 export async function DELETE() {
   try {
     const session = await auth();
-    if (!session || (session.user as any).role !== "super_admin") {
+    if (!session || session.user.role !== "super_admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
     // --- Add Log ---
     await db.collection("pa_logs").insertOne({
-      userName: session?.user?.name || (session?.user as any)?.username || "Unknown",
+      userName: session?.user?.name || session?.user?.username || "Unknown",
       action: "CREATE",
       details: `เพิ่มเอกสารปีการศึกษา ${year}: ${title}`,
       timestamp: new Date(),

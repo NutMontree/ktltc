@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 async function verifyUser() {
   const session = await auth();
   if (!session?.user) return null;
-  const role = String((session.user as any).role || '').toLowerCase().trim();
+  const role = String(session.user.role || '').toLowerCase().trim();
   // Allow all valid roles to view results
   if (['super_admin', 'admin', 'director', 'teacher', 'student'].includes(role)) {
     return session.user;
@@ -17,7 +17,7 @@ async function verifyUser() {
 async function verifyAdmin() {
   const session = await auth();
   if (!session?.user) return null;
-  const role = String((session.user as any).role || '').toLowerCase().trim();
+  const role = String(session.user.role || '').toLowerCase().trim();
   if (['super_admin', 'admin', 'director', 'teacher'].includes(role)) {
     return session.user;
   }

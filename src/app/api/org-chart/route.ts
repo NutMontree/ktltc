@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         department,
         imageUrl,
         updatedAt: new Date(),
-        updatedBy: session?.user?.name || (session?.user as any)?.username || "Unknown",
+        updatedBy: session?.user?.name || session?.user?.username || "Unknown",
       },
     };
 

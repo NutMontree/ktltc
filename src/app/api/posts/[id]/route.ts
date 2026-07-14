@@ -111,7 +111,7 @@ export async function POST(
       return NextResponse.json({ error: "ไม่มีสิทธิ์" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const userName = session.user.name;
     const { id } = await params;
     const body = await req.json();

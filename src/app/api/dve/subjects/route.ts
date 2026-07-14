@@ -296,7 +296,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -319,7 +319,7 @@ export async function POST(req: Request) {
       curriculum,
       semester,
       academicYear,
-      teacherId: (session.user as any).id,
+      teacherId: session.user.id,
       teacherName: session.user.name || "คุณครู",
       totalWeeks: totalWeeks || "",
       daysPerWeek: daysPerWeek || "",
@@ -345,7 +345,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -364,7 +364,7 @@ export async function PUT(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, id, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -403,7 +403,7 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -418,7 +418,7 @@ export async function DELETE(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     if (role !== "super_admin" && role !== "admin" && !(await isOwnedSubject(db, id, userId))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

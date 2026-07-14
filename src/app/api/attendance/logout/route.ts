@@ -6,8 +6,8 @@ import { ObjectId } from "mongodb";
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userId = (session?.user as any)?.id;
-    const userName = (session?.user as any)?.name || "Unknown";
+    const userId = session?.user?.id;
+    const userName = session?.user?.name || "Unknown";
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

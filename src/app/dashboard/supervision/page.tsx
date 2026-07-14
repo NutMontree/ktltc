@@ -284,7 +284,7 @@ export default function SupervisionPage() {
                             <CheckCircleOutlined />
                           </button>
                         )}
-                        {(session?.user as any)?.id === rec.createdBy && (
+                        {session?.user?.id === rec.createdBy && (
                           <button
                             onClick={() => alert("ระบบแก้ไขข้อมูลแบบด่วนกำลังอยู่ในระหว่างการพัฒนา")}
                             title="แก้ไข"

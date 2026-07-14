@@ -10,7 +10,7 @@ const ALLOWED_ROLES = ["super_admin", "admin", "editor", "teacher"];
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     const templates = await db
       .collection("dve_quiz_templates")
@@ -44,7 +44,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     const result = await db.collection("dve_quiz_templates").insertOne({
       teacherId: userId,
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -97,7 +97,7 @@ export async function DELETE(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     const existingTemplate = await db.collection("dve_quiz_templates").findOne({ _id: new ObjectId(id) });
     if (!existingTemplate) {

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
   }
 
-  const userId = (session.user as any).id;
+  const userId = session.user.id;
   if (userId === targetUserId) {
     return NextResponse.json({ status: "me" });
   }

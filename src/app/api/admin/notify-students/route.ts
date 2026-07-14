@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const senderId = (session.user as any).id;
+    const senderId = session.user.id;
     const sender = await db.collection("users").findOne({ _id: new ObjectId(senderId) });
 
     const defaultTitle = "แจ้งเตือน: กรุณาตรวจสอบและแก้ไขข้อมูลส่วนตัว";

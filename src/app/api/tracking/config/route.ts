@@ -14,7 +14,7 @@ const DEFAULT_CONFIG = {
 export async function GET() {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only authorized staff can get config
     if (!["super_admin", "admin", "director", "teacher", "deputy_student_affairs"].includes(userRole)) {
@@ -41,7 +41,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only admins can modify
     if (!["super_admin", "admin"].includes(userRole)) {

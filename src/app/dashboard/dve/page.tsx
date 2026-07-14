@@ -1739,7 +1739,7 @@ function DVETeacherWorkspace() {
                       id: "",
                       code: "",
                       name: "",
-                      department: session?.user?.name ? (session.user as any).department || "" : "",
+                      department: session?.user?.name ? session.user.department || "" : "",
                       curriculum: "ปวส.",
                       semester: "1/2569",
                       academicYear: "2569",
@@ -1814,7 +1814,7 @@ function DVETeacherWorkspace() {
                         </div>
                       )}
 
-                      {(((session?.user as any)?.role || "").toLowerCase() === "super_admin" || ((session?.user as any)?.role || "").toLowerCase() === "admin") && sub.teacherName && (
+                      {((session?.user?.role || "").toLowerCase() === "super_admin" || (session?.user?.role || "").toLowerCase() === "admin") && sub.teacherName && (
                         <div className="mt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] bg-indigo-50 dark:bg-indigo-950/30 w-fit px-2 py-1 rounded-lg border border-indigo-100 dark:border-indigo-900/50">
                           <User size={12} className="text-indigo-600 dark:text-indigo-400" />
                           <p className="text-indigo-700 dark:text-indigo-300 font-bold truncate">
@@ -6120,7 +6120,7 @@ function DVETeacherWorkspace() {
 function DVEPortalContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const role = ((session?.user as any)?.role || "").toLowerCase();
+  const role = (session?.user?.role || "").toLowerCase();
   const canAccessDvePortal = ["teacher", "super_admin", "admin", "editor", "director", "deputy_academic"].includes(role);
 
   useEffect(() => {

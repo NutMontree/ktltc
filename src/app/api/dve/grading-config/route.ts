@@ -157,7 +157,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -181,7 +181,7 @@ export async function POST(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     // Check if user owns the subject
     const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
@@ -247,7 +247,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -275,7 +275,7 @@ export async function PUT(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     // Check if config exists and user owns it
     const existing = await db.collection("dve_grading_configs").findOne({ _id: new ObjectId(id) });

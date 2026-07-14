@@ -90,7 +90,7 @@ export default function DashboardLoader() {
         if (permRes.ok) {
           const permData = await permRes.json();
           let finalPerms = permData;
-          const userRole = ((session?.user as any)?.role || "").toLowerCase();
+          const userRole = (session?.user?.role || "").toLowerCase();
           if (userRole === "super_admin") {
             finalPerms = new Proxy(permData || {}, {
               get: function (target, prop) {
@@ -263,12 +263,12 @@ export default function DashboardLoader() {
   }
 
   const user = {
-    username: session?.user?.name || (session?.user as any)?.username,
-    role: (session?.user as any)?.role,
+    username: session?.user?.name || session?.user?.username,
+    role: session?.user?.role,
     image: session?.user?.image,
   };
 
-  const userRole = ((session?.user as any)?.role || "").toLowerCase();
+  const userRole = (session?.user?.role || "").toLowerCase();
   const hasStudentAccess = permissions?.access_student_workspace ?? (permissions?.student_dashboard || userRole === "student" || ["super_admin", "admin"].includes(userRole));
   const hasTeacherAccess = permissions?.access_teacher_workspace ?? ["super_admin", "admin", "editor", "teacher"].includes(userRole);
   const hasStaffAccess = permissions?.access_staff_workspace ?? ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);

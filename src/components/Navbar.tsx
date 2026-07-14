@@ -76,8 +76,8 @@ export default async function Navbar() {
   ]);
 
   let userImage = "";
-  let username = session?.user?.name || (session?.user as any)?.username || "";
-  let role = (session?.user as any)?.role || "";
+  let username = session?.user?.name || session?.user?.username || "";
+  let role = session?.user?.role || "";
 
   let permissions = null;
   let userId = "";
@@ -85,7 +85,7 @@ export default async function Navbar() {
   // ถ้าผู้ใช้ Login อยู่ ให้ไปดึงข้อมูลล่าสุดจากฐานข้อมูล (เพื่อความแม่นยำกว่าข้อมูลใน Cookie)
   if (session?.user) {
     try {
-      userId = (session.user as any).id || (session as any).userId || "";
+      userId = session.user.id || session.userId || "";
 
       if (userId && ObjectId.isValid(userId)) {
         const client = await clientPromise;

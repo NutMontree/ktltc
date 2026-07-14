@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Request not found" }, { status: 404 });
   }
 
-  const userId = (session.user as any).id;
+  const userId = session.user.id;
   // Ensure the current user is the one who received the request
   if (request.to.toString() !== userId) {
     return NextResponse.json({ error: "Unauthorized to accept this request" }, { status: 401 });
@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
     userId: request.from,
     type: "friend_accepted",
     from: request.to,
-    fromName: (session.user as any).name,
-    fromImage: (session.user as any).image,
+    fromName: session.user.name,
+    fromImage: session.user.image,
     read: false,
     createdAt: new Date(),
   });

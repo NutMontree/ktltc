@@ -16,7 +16,7 @@ const DEFAULT_IN_SITE_DISTANCE = 200; // 200 เมตร
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userId = (session?.user as any)?.id;
+    const userId = session?.user?.id;
 
     if (!userId) {
       return NextResponse.json(

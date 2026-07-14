@@ -139,8 +139,8 @@ function DriveContent() {
   const [previewFile, setPreviewFile] = useState<DriveItem | null>(null);
   const [currentFolderData, setCurrentFolderData] = useState<any>(null);
 
-  const userRole = (session?.user as any)?.role?.toLowerCase();
-  const userId = (session?.user as any)?.id;
+  const userRole = session?.user?.role?.toLowerCase();
+  const userId = session?.user?.id;
   const isSuperAdmin = userRole === "super_admin";
   const isStaff = !!(session && !["user", "student"].includes(userRole || ""));
   const canUploadInCurrentFolder =

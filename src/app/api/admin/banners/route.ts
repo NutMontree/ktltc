@@ -24,7 +24,7 @@ export async function GET(req: Request) {
 
     // กรณีดึงไปใช้หลังบ้าน (Admin) ต้องเช็คสิทธิ์
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     // Check dynamic permissions
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     // Check dynamic permissions
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });

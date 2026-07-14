@@ -399,7 +399,7 @@ export default function DataManagementPage() {
     );
   }
 
-  const rawRole = (session?.user as any)?.role || "";
+  const rawRole = session?.user?.role || "";
   const role = rawRole.toLowerCase().replace(/[\s_]/g, "");
 
   if (role !== "superadmin") {

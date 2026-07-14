@@ -304,7 +304,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -325,7 +325,7 @@ export async function POST(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     // Check if user owns the subject
     const subject = await db.collection("dve_subjects").findOne({ _id: new ObjectId(subjectId) });
@@ -419,7 +419,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -440,7 +440,7 @@ export async function PUT(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     // 1. Try to find existing grade by _id
     let existing: any = null;
@@ -559,7 +559,7 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -574,7 +574,7 @@ export async function DELETE(req: Request) {
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
 
     // Check if grade exists and user has access
     const existing = await db.collection("dve_student_grades").findOne({ _id: new ObjectId(id) });

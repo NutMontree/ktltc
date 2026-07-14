@@ -91,7 +91,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id || "";
+    const userId = session.user.id || "";
     const userName = session.user.name || "Student";
     const body = await req.json();
     const { quizId, answers, fileUrl, fileName } = body;
@@ -262,7 +262,7 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -358,7 +358,7 @@ export async function GET(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -437,7 +437,7 @@ export async function PATCH(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    const role = ((session?.user as any)?.role || "").toLowerCase();
+    const role = (session?.user?.role || "").toLowerCase();
 
     if (!session || !ALLOWED_ROLES.includes(role)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

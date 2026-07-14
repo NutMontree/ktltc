@@ -9,7 +9,7 @@ import { checkAndPromoteStudent } from "@/lib/student";
 
 export async function GET() {
   const session = await auth();
-  const userId = (session?.user as any)?.id;
+  const userId = session?.user?.id;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -36,7 +36,7 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const session = await auth();
-  const userId = (session?.user as any)?.id;
+  const userId = session?.user?.id;
   // ดึงชื่อจาก session หรือ fallback ไปที่ name ใน body
   const sessionUserName = session?.user?.name;
 

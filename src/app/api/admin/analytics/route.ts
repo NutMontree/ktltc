@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only authorized staff can track
     if (!["super_admin", "admin", "director", "teacher", "deputy_student_affairs"].includes(userRole)) {
@@ -124,7 +124,7 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only authorized staff can clear data
     if (!["super_admin", "admin", "director"].includes(userRole)) {

@@ -502,7 +502,7 @@ export default function TypingTestApp(): JSX.Element {
                             <p className="text-teal-500 dark:text-teal-400 font-bold leading-none">{score.wpm} <span className="text-[9px] text-slate-400 font-normal">WPM</span></p>
                             <p className="text-[10px] text-emerald-500/80 mt-1">{score.accuracy}%</p>
                           </div>
-                          {(session?.user as any)?.role === "super_admin" && (
+                          {session?.user?.role === "super_admin" && (
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <Button
                                 isIconOnly

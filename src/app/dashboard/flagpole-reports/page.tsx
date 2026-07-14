@@ -49,7 +49,7 @@ function FlagpoleReportsManagementContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams ? (searchParams.get("search") || "") : "";
 
-  const role = (session?.user as any)?.role?.toLowerCase();
+  const role = session?.user?.role?.toLowerCase();
   const isSuperAdmin = role === "super_admin";
 
   const [reports, setReports] = useState<any[]>([]);
@@ -95,7 +95,7 @@ function FlagpoleReportsManagementContent() {
         .then((res) => res.json())
         .then((data) => {
           const perms = data || {};
-          const role = (session?.user as any)?.role?.toLowerCase();
+          const role = session?.user?.role?.toLowerCase();
           
           if (
             role === "super_admin" || 

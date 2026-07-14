@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   try {
     // Only super_admin can update settings
     const session = await auth();
-    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const userRole = (session?.user?.role || "").toLowerCase();
     
     if (userRole !== "super_admin") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });

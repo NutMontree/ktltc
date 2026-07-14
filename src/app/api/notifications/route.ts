@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
@@ -39,7 +39,7 @@ export async function PATCH(req: Request) {
 
     const body = await req.json();
     const { notificationId, readAll } = body;
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -73,7 +73,7 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const notificationId = searchParams.get("id");
     const deleteAll = searchParams.get("all") === "true";
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");

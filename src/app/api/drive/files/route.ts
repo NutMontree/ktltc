@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
     const isStaff = !["user", "student"].includes(userRole || "");
     if (!isStaff) {
       return NextResponse.json({ error: "No permission to upload files" }, { status: 403 });
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       if (!parentFolder) return NextResponse.json({ error: "Target folder not found" }, { status: 404 });
       
       const isAdmin = ["super_admin", "admin"].includes(userRole);
-      const userId = (session.user as any).id;
+      const userId = session.user.id;
 
       // Check if target folder or any ancestor is collaborative
       const isFolderShared = await isCollaborativeOrDescendant(db, folderId);
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       folderId,
       size,
       type,
-      ownerId: (session.user as any).id,
+      ownerId: session.user.id,
       ownerName: session.user.name,
       createdAt: new Date(),
       updatedAt: new Date(),

@@ -14,7 +14,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const role = (session?.user as any)?.role?.toLowerCase();
+    const role = session?.user?.role?.toLowerCase();
     
     // We allow all authenticated users to GET the settings so they can see their check-in rules.
     // The allowedRoles restriction will only apply to the PATCH method.
@@ -75,7 +75,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -106,7 +106,7 @@ export async function PATCH(req: Request) {
 
     // บันทึก Log
     await db.collection("logs").insertOne({
-      userName: (session?.user as any)?.name || "Admin",
+      userName: session?.user?.name || "Admin",
       action: "UPDATE_ROLE_SETTINGS",
       details: `อัปเดตเวลาเข้างานของ ${roleName || role}: ${body.checkInLimit || "N/A"}`,
       timestamp: new Date(),

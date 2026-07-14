@@ -11,7 +11,7 @@ export async function DELETE(
     const session = await auth();
 
     // เช็คสิทธิ์ว่าเป็น Super Admin หรือไม่
-    if (!session || !session.user || (session.user as any).role !== "super_admin") {
+    if (!session || !session.user || session.user.role !== "super_admin") {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 },

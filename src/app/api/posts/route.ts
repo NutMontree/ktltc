@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    const currentUserId = (session?.user as any)?.id;
+    const currentUserId = session?.user?.id;
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     const authorId = searchParams.get("authorId");
@@ -67,7 +67,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const userId = (session?.user as any)?.id;
+    const userId = session?.user?.id;
     const userName = session?.user?.name;
 
     if (!userId) {

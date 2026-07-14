@@ -344,7 +344,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                   </div>
 
                   {/* Active Toggle Button */}
-                  {(session?.user as any)?.role?.toLowerCase() !== "teacher" && (
+                  {session?.user?.role?.toLowerCase() !== "teacher" && (
                     <button
                       type="button"
                       onClick={handleToggleActive}
@@ -407,7 +407,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                     color: "text-rose-500",
                   },
                 ].filter(tab => {
-                  const role = (session?.user as any)?.role?.toLowerCase();
+                  const role = session?.user?.role?.toLowerCase();
                   if (role === "teacher") {
                     return tab.id !== "admin" && tab.id !== "security";
                   }
@@ -1001,7 +1001,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                       </div>
 
                       {/* แสดงรหัสผ่านเดิมในฐานข้อมูล (สำหรับ super_admin เท่านั้น) */}
-                      {session?.user && (session.user as any).role === "super_admin" && (
+                      {session?.user && session.user.role === "super_admin" && (
                         <div className="p-5 bg-slate-50 dark:bg-zinc-950 border border-slate-200/60 dark:border-zinc-800 rounded-3xl mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                           <div>
                             <h4 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2">

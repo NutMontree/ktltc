@@ -12,7 +12,7 @@ export function CursorTracker() {
 
   useEffect(() => {
     // Only track authenticated users, and don't track super admins
-    if (!session?.user?.id || (session.user as any).role === "super_admin") return;
+    if (!session?.user?.id || session.user.role === "super_admin") return;
 
     let pollInterval: NodeJS.Timeout;
 

@@ -45,7 +45,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const userRole = session?.user?.role?.toLowerCase();
 
     if (!session || !["super_admin", "admin"].includes(userRole)) {
       return NextResponse.json({ error: "Unauthorized: Access Denied" }, { status: 403 });
@@ -81,7 +81,7 @@ export async function PATCH(req: Request) {
 
     // บันทึกระบบ Audit Log
     await db.collection("logs").insertOne({
-      userName: (session?.user as any)?.name || (session?.user as any)?.username || "Admin",
+      userName: session?.user?.name || session?.user?.username || "Admin",
       action: "UPDATE_FLAGPOLE_SETTINGS",
       details: `อัปเดตเวลาเข้าแถวเสาธงนักศึกษา: เริ่ม ${body.checkInStart || "N/A"} | สายหลัง ${body.lateThreshold || "N/A"} | ปิด ${body.checkInEnd || "N/A"}`,
       timestamp: new Date(),

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    const role = (session?.user as any)?.role;
+    const role = session?.user?.role;
 
     // เงื่อนไข: super_admin เท่านั้นที่เข้าถึงได้
     if (role !== "super_admin") {
@@ -235,7 +235,7 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    if ((session?.user as any)?.role !== "super_admin")
+    if (session?.user?.role !== "super_admin")
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
     const { searchParams } = new URL(req.url);
@@ -256,7 +256,7 @@ export async function DELETE(req: Request) {
       
       // Logging Bulk Action
       await db.collection("logs").insertOne({
-        userName: (session?.user as any)?.name || "Super_Admin",
+        userName: session?.user?.name || "Super_Admin",
         action: `BULK_DELETE_${type.toUpperCase()}`,
         details: `ลบข้อมูล ${type} ทั้งหมดในระบบ (${result.deletedCount} รายการ)`,
         timestamp: new Date(),
@@ -276,7 +276,7 @@ export async function DELETE(req: Request) {
 
       // Logging Single Action
       await db.collection("logs").insertOne({
-        userName: (session?.user as any)?.name || "Super_Admin",
+        userName: session?.user?.name || "Super_Admin",
         action: `DELETE_${type.toUpperCase()}`,
         details: `ลบข้อมูล ${type} ID: ${id}`,
         timestamp: new Date(),
@@ -297,7 +297,7 @@ export async function DELETE(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    if ((session?.user as any)?.role !== "super_admin")
+    if (session?.user?.role !== "super_admin")
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
     const body = await req.json();
@@ -327,7 +327,7 @@ export async function PATCH(req: Request) {
 
     // Logging Unified
     await db.collection("logs").insertOne({
-      userName: (session?.user as any)?.name || "Super_Admin",
+      userName: session?.user?.name || "Super_Admin",
       action: `UPDATE_${type.toUpperCase()}`,
       details: `แก้ไขข้อมูล ${type} ID: ${id}`,
       timestamp: new Date(),

@@ -28,7 +28,7 @@ export default function BroadcastNotificationPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const userRole = ((session?.user as any)?.role || "").toLowerCase();
+  const userRole = (session?.user?.role || "").toLowerCase();
 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");

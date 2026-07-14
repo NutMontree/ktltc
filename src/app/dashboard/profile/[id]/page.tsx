@@ -233,7 +233,7 @@ const ProfileNotFoundPage = ({ router }: { router: any }) => {
 function FriendProfilePageContent({ id }: { id: string }) {
   const router = useRouter();
   const { data: session } = useSession();
-  const userId = (session?.user as any)?.id || (session?.user as any)?.sub || null;
+  const userId = session?.user?.id || session?.user?.sub || null;
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -643,7 +643,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
         setAllUsers(data.users || []);
         // Generate suggested users only when allUsers is first loaded
         if (suggestedUsers.length === 0) {
-          const myId = (session?.user as any)?.id;
+          const myId = session?.user?.id;
           const filtered = (data.users || []).filter((u: any) => {
             const isMe = String(u._id) === String(myId);
             const isAlreadyFriend = (formData?.friends || []).some(
@@ -1015,8 +1015,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
     return <ProfileNotFoundPage router={router} />;
   }
 
-  const isMyProfile = session?.user && (session.user as any).id === id;
-  const isSuperAdmin = (session?.user as any)?.role === "super_admin";
+  const isMyProfile = session?.user && session.user.id === id;
+  const isSuperAdmin = session?.user?.role === "super_admin";
   const isStudent =
     formData.role === "นักเรียน/นักศึกษา" ||
     formData.role === "นักเรียน" ||
@@ -1454,9 +1454,9 @@ function FriendProfilePageContent({ id }: { id: string }) {
                       </div>
 
                       {(String(post.authorId?.$oid || post.authorId || "") ===
-                        String((session?.user as any)?.id) ||
+                        String(session?.user?.id) ||
                         String(post.userId?.$oid || post.userId || "") ===
-                        String((session?.user as any)?.id) ||
+                        String(session?.user?.id) ||
                         isMyProfile) && (
                           <div className="relative">
                             <button
@@ -1477,7 +1477,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                   className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl shadow-2xl z-40 py-2 overflow-hidden"
                                 >
                                   {String(post.authorId?.$oid || post.authorId || "") ===
-                                    String((session?.user as any)?.id) && (
+                                    String(session?.user?.id) && (
                                       <div
                                         onClick={() => {
                                           setEditingPostId(post._id);
@@ -1669,9 +1669,9 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     <div className="flex items-center justify-around gap-1">
                       <button
                         onClick={() => handleLikePost(post._id)}
-                        className={`flex-1 py-1.5 rounded-md flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800 ${post.likes?.includes((session?.user as any)?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-400 hover:text-red-500"}`}
+                        className={`flex-1 py-1.5 rounded-md flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800 ${post.likes?.includes(session?.user?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-400 hover:text-red-500"}`}
                       >
-                        {post.likes?.includes((session?.user as any)?.id) ? (
+                        {post.likes?.includes(session?.user?.id) ? (
                           <HeartFilled className="text-xl" />
                         ) : (
                           <HeartOutlined className="text-xl" />
@@ -1706,10 +1706,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             ?.map((comment: any, idx: number) => {
                               const commentId = comment.id || comment._id;
                               const isCommentOwner =
-                                String(comment.userId) === String((session?.user as any)?.id) ||
+                                String(comment.userId) === String(session?.user?.id) ||
                                 (comment.userId?.$oid &&
                                   String(comment.userId.$oid) ===
-                                  String((session?.user as any)?.id));
+                                  String(session?.user?.id));
                               const isEditing = editingCommentId === commentId;
                               const replies =
                                 post.comments?.filter((c: any) => c.parentId === commentId) || [];
@@ -1847,7 +1847,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                           </span>
                                            <span
                                             onClick={() => handleLikeComment(post._id, commentId)}
-                                            className={`hover:underline cursor-pointer ${comment.likes?.includes((session?.user as any)?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-300 hover:text-red-500"}`}
+                                            className={`hover:underline cursor-pointer ${comment.likes?.includes(session?.user?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-300 hover:text-red-500"}`}
                                           >
                                             ถูกใจ
                                           </span>
@@ -1963,10 +1963,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                                 )}
                                               </div>
                                               {(String(reply.userId) ===
-                                                String((session?.user as any)?.id) ||
+                                                String(session?.user?.id) ||
                                                 (reply.userId?.$oid &&
                                                   String(reply.userId.$oid) ===
-                                                  String((session?.user as any)?.id))) && (
+                                                  String(session?.user?.id))) && (
                                                   <Dropdown
                                                     menu={{
                                                       items: [
@@ -2016,7 +2016,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                                 onClick={() =>
                                                   handleLikeComment(post._id, reply.id || reply._id)
                                                 }
-                                                className={`hover:underline cursor-pointer ${reply.likes?.includes((session?.user as any)?.id) ? "text-red-500" : "hover:text-red-500"}`}
+                                                className={`hover:underline cursor-pointer ${reply.likes?.includes(session?.user?.id) ? "text-red-500" : "hover:text-red-500"}`}
                                               >
                                                 ถูกใจ
                                               </span>
@@ -2269,7 +2269,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
 
       case "เกี่ยวกับ": {
         const renderAboutContent = () => {
-          const userRole = (session?.user as any)?.role;
+          const userRole = session?.user?.role;
 
           const maskSensitiveData = (val: string) => {
             if (!val) return "-";
@@ -3368,8 +3368,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
           <div className="space-y-4 py-2">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                {(session?.user as any)?.image ? (
-                  <img src={(session?.user as any).image} className="w-full h-full object-cover" />
+                {session?.user?.image ? (
+                  <img src={session?.user?.image} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <UserOutlined className="text-zinc-300" />
@@ -3378,7 +3378,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
               </div>
               <div className="flex-1">
                 <p className="font-black text-sm text-zinc-900 dark:text-white">
-                  {(session?.user as any)?.name}
+                  {session?.user?.name}
                 </p>
                 <div className="relative mt-1">
                   <button

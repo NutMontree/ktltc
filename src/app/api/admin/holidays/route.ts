@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const session = await auth();
-    if (!session || !["super_admin", "admin", "hr", "staff"].includes((session.user as any).role)) {
+    if (!session || !["super_admin", "admin", "hr", "staff"].includes(session.user.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -31,7 +31,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !["super_admin", "admin", "hr"].includes((session.user as any).role)) {
+    if (!session || !["super_admin", "admin", "hr"].includes(session.user.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
           name, 
           type: type || 'public',
           updatedAt: new Date(),
-          createdBy: (session.user as any).name
+          createdBy: session.user.name
         } 
       },
       { upsert: true }
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    if (!session || !["super_admin", "admin", "hr"].includes((session.user as any).role)) {
+    if (!session || !["super_admin", "admin", "hr"].includes(session.user.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

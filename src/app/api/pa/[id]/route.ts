@@ -40,7 +40,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     // --- Add Log ---
     await db.collection("pa_logs").insertOne({
-      userName: session?.user?.name || (session?.user as any)?.username || "Unknown",
+      userName: session?.user?.name || session?.user?.username || "Unknown",
       action: "UPDATE",
       details: `แก้ไขเอกสารปีการศึกษา ${year}: ${title}`,
       timestamp: new Date(),
@@ -75,7 +75,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
     // --- Add Log ---
     await db.collection("pa_logs").insertOne({
-      userName: session?.user?.name || (session?.user as any)?.username || "Unknown",
+      userName: session?.user?.name || session?.user?.username || "Unknown",
       action: "DELETE",
       details: `ลบเอกสาร (ID: ${(await params).id})`,
       timestamp: new Date(),
