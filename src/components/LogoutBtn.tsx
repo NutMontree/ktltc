@@ -22,17 +22,14 @@ export default function LogoutBtn() {
 
     setIsLoading(true);
     try {
-      // 1.1 ลบคุกกี้ทั้งหมด (รวม NextAuth session cookies) ผ่าน API ฝั่ง Server
+      // 1.1 ลบคุกกี้ทั้งหมดผ่าน API ฝั่ง Server (เช่น custom token)
       await fetch("/api/auth/logout", { method: "POST" });
 
-      // 2. เรียกใช้ signOut ของ NextAuth เพื่อล้าง session ฝั่ง client ด้วย
-      await signOut({ redirect: false });
-
-      // 3. รอสักครู่ให้ cookie ถูกลบเรียบร้อย แล้วค่อย Hard Redirect
-      window.location.href = "/login";
+      // 2. เรียกใช้ signOut ของ NextAuth และให้ NextAuth จัดการ redirect แบบสมบูรณ์
+      await signOut({ callbackUrl: "/login", redirect: true });
     } catch (error) {
       console.error("Logout error:", error);
-      // แม้เกิด error ก็บังคับ redirect ไปหน้า login เพื่อเคลียร์ state
+      setIsLoading(false);
       window.location.href = "/login";
     }
   };
