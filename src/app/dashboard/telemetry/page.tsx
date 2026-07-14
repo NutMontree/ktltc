@@ -228,13 +228,13 @@ export default function TelemetryPage() {
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full px-4 py-8 md:py-12 relative min-h-screen">
+    <div className="max-w-[1600px] mx-auto w-full px-2 py-4 md:py-12 relative min-h-screen">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/dashboard" className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
           <ChevronLeft className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
         </Link>
         <div>
-          <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry) KLJHSDKJFHSD</h1>
+          <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)</h1>
           <p className="text-zinc-500 font-medium">ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์</p>
         </div>
       </div>
