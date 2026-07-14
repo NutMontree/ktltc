@@ -91,14 +91,20 @@ export default function HomeBannerSwiper({
         ))}
 
         {(() => {
-          const prevBtn =
-            "swiper-button-prev !after:content-['prev'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
-          const nextBtn =
-            "swiper-button-next !after:content-['next'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
+          const btnBase =
+            "!w-12 !h-12 !bg-white/10 hover:!bg-white/30 backdrop-blur-md border border-white/20 !rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 !flex items-center justify-center !after:content-['']";
           return (
             <>
-              <div className={`${prevBtn} ml-6`}></div>
-              <div className={`${nextBtn} mr-6`}></div>
+              <div className={`swiper-button-prev ${btnBase} !left-6 group-hover:!translate-x-0 !-translate-x-2`}>
+                <svg className="w-6 h-6 text-white drop-shadow-md" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </div>
+              <div className={`swiper-button-next ${btnBase} !right-6 group-hover:!translate-x-0 !translate-x-2`}>
+                <svg className="w-6 h-6 text-white drop-shadow-md" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
             </>
           );
         })()}
