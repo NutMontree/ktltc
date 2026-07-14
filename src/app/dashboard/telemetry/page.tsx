@@ -44,7 +44,7 @@ function TelemetryCard({ label, value, unit, subValue, icon: Icon, color }: any)
   return (
     <motion.div
       variants={item}
-      className="relative group p-4 rounded-4xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+      className="relative group p-6 rounded-4xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:-translate-y-1 overflow-hidden"
     >
       <div
         className={`absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity ${color === "blue" ? "text-blue-500" : "text-purple-500"
@@ -228,13 +228,13 @@ export default function TelemetryPage() {
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full px-2 py-2 md:py-12 relative min-h-screen">
+    <div className="max-w-[1600px] mx-auto w-full px-4 py-8 md:py-12 relative min-h-screen">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/dashboard" className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
           <ChevronLeft className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
         </Link>
         <div>
-          <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)</h1>
+          <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry) KLJHSDKJFHSD</h1>
           <p className="text-zinc-500 font-medium">ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์</p>
         </div>
       </div>
