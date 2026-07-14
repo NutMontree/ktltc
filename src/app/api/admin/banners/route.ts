@@ -30,7 +30,7 @@ export async function GET(req: Request) {
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
 
-    if (!session || (!canManageNews && !["admin", "editor"].includes(userRole))) {
+    if (!session || (!canManageNews && !["admin", "editor"].includes(userRole || ""))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
 
-    if (!canManageNews && !["admin", "editor"].includes(userRole)) {
+    if (!canManageNews && !["admin", "editor"].includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userRole = (session.user as any)?.role;
-    if (!["super_admin", "admin", "hr"].includes(userRole)) {
+    if (!["super_admin", "admin", "hr"].includes(userRole || "")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

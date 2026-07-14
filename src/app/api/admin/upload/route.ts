@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     if (!session || !hasUploadPermission) {
       // Legacy fallback
-      if (!["admin", "editor"].includes(userRole)) {
+      if (!["admin", "editor"].includes(userRole || "")) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
     }

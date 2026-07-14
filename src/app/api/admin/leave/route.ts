@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userRole = session?.user?.role;
-    const canAccess = await hasPermission(userRole, "manage_attendance_leave_approvals");
+    const canAccess = await hasPermission(userRole || "", "manage_attendance_leave_approvals");
     if (!canAccess) {
       return NextResponse.json({ error: "Forbidden: No permission for Leave Approvals" }, { status: 403 });
     }
@@ -71,7 +71,7 @@ export async function PATCH(req: Request) {
     const userRole = session?.user?.role;
     const adminId = session?.user?.id;
     
-    const canAccess = await hasPermission(userRole, "manage_attendance_leave_approvals");
+    const canAccess = await hasPermission(userRole || "", "manage_attendance_leave_approvals");
     if (!canAccess) {
       return NextResponse.json({ error: "Forbidden: No permission for Leave Approvals" }, { status: 403 });
     }

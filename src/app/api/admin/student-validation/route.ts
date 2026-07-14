@@ -21,7 +21,7 @@ export async function GET(req: Request) {
       "super_admin", "admin", "editor", "teacher", "hr", "director", "staff",
       "deputy_student_affairs", "deputy_academic", "deputy_strategy", "deputy_resource"
     ];
-    if (!allowedRoles.includes(userRole)) {
+    if (!allowedRoles.includes(userRole || "")) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 

@@ -11,7 +11,7 @@ export async function DELETE(
 
     // Check if user is super_admin
     // NextAuth session typically has user.role or user.role in session
-    const role = session?.user?.role || session?.role;
+    const role = session?.user?.role || (session as any)?.role;
     
     if (!session || role !== "super_admin") {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function PUT(
 ) {
   try {
     const session = await auth();
-    const role = session?.user?.role || session?.role;
+    const role = session?.user?.role || (session as any)?.role;
 
     if (!session || role !== "super_admin") {
       return NextResponse.json(

@@ -31,7 +31,7 @@ export async function GET(req: Request) {
 
     // Case 1: Fetch all reports for a date range (Admin only)
     if (startDateParam && endDateParam) {
-      const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
+      const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports");
       if (!canAccess) {
         return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
       }
@@ -152,7 +152,7 @@ export async function GET(req: Request) {
       "editor",
       "staff",
     ];
-    if (queryUserId !== userId && !allowedRoles.includes(userRole)) {
+    if (queryUserId !== userId && !allowedRoles.includes(userRole || "")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -263,7 +263,7 @@ export async function PATCH(req: Request) {
     if (!existingReport) return NextResponse.json({ error: "Report not found" }, { status: 404 });
 
     const isOwner = (existingReport.userId as ObjectId).toString() === userId;
-    const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
+    const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports");
 
     if (!isOwner && !canAccess) {
       return NextResponse.json({ error: "Forbidden: Not authorized to edit this report" }, { status: 403 });
@@ -311,7 +311,7 @@ export async function DELETE(req: Request) {
   try {
     const session = await auth();
     const userRole = session?.user?.role;
-    const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
+    const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports");
     if (!canAccess) {
       return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
     }

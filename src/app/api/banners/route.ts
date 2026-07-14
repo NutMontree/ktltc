@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     const userRole = session?.user?.role;
     const allowedRoles = ["super_admin", "admin", "editor"];
 
-    if (!session || !allowedRoles.includes(userRole)) {
+    if (!session || !allowedRoles.includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

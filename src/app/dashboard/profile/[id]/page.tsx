@@ -233,7 +233,7 @@ const ProfileNotFoundPage = ({ router }: { router: any }) => {
 function FriendProfilePageContent({ id }: { id: string }) {
   const router = useRouter();
   const { data: session } = useSession();
-  const userId = session?.user?.id || session?.user?.sub || null;
+  const userId = session?.user?.id || (session?.user as any)?.sub || null;
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {

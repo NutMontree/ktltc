@@ -87,7 +87,7 @@ export default function StudentDataValidationPage() {
         const perms = data || {};
         if (
           userRole === "super_admin" || 
-          ALLOWED_ROLES.includes(userRole) || 
+          ALLOWED_ROLES.includes(userRole || "") || 
           perms.manage_student_data_validation || 
           perms.manage_pages
         ) {

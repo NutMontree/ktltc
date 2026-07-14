@@ -8,7 +8,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const session = await auth();
     const userRole = session?.user?.role?.toLowerCase() || "";
 
-    if (!["teacher", "admin", "super_admin"].includes(userRole)) {
+    if (!["teacher", "admin", "super_admin"].includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -58,7 +58,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     const session = await auth();
     const userRole = session?.user?.role?.toLowerCase() || "";
 
-    if (!["teacher", "admin", "super_admin"].includes(userRole)) {
+    if (!["teacher", "admin", "super_admin"].includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

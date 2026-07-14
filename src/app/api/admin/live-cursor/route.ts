@@ -105,7 +105,7 @@ export async function GET(req: Request) {
     const userRole = (session?.user?.role || "").toLowerCase();
     
     // Only allow admins
-    if (!["super_admin", "admin", "director"].includes(userRole)) {
+    if (!["super_admin", "admin", "director"].includes(userRole || "")) {
       return new Response("Unauthorized", { status: 401 });
     }
 

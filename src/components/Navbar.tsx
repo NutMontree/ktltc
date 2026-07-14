@@ -85,7 +85,7 @@ export default async function Navbar() {
   // ถ้าผู้ใช้ Login อยู่ ให้ไปดึงข้อมูลล่าสุดจากฐานข้อมูล (เพื่อความแม่นยำกว่าข้อมูลใน Cookie)
   if (session?.user) {
     try {
-      userId = session.user.id || session.userId || "";
+      userId = session.user.id || (session as any).userId || "";
 
       if (userId && ObjectId.isValid(userId)) {
         const client = await clientPromise;

@@ -59,7 +59,7 @@ export async function PATCH(
       }
     }
     // Permission check: only Owner or Super Admin / Admin -> Allowed
-    const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
+    const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole || "");
 
     if (!isOwnerOrAdmin) {
       return NextResponse.json({ error: "No permission to modify this item" }, { status: 403 });
@@ -140,7 +140,7 @@ export async function DELETE(
       }
     }
     // Permission check: only Owner or Super Admin / Admin -> Allowed
-    const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole);
+    const isOwnerOrAdmin = item.ownerId === userId || ["super_admin", "admin"].includes(userRole || "");
 
     if (!isOwnerOrAdmin) {
       return NextResponse.json({ error: "No permission to delete this item" }, { status: 403 });

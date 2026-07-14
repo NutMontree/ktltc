@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only authorized staff can manage gate sessions
-    if (!["super_admin", "admin", "director", "teacher", "deputy_student_affairs"].includes(userRole)) {
+    if (!["super_admin", "admin", "director", "teacher", "deputy_student_affairs"].includes(userRole || "")) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 

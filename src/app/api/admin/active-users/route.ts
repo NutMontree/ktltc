@@ -10,7 +10,7 @@ export async function GET() {
     const userRole = (session?.user?.role || "").toLowerCase();
 
     // Check if user has permission to view active users
-    if (!["super_admin", "admin", "director"].includes(userRole)) {
+    if (!["super_admin", "admin", "director"].includes(userRole || "")) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 

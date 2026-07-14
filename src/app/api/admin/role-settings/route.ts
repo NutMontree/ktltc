@@ -81,7 +81,7 @@ export async function PATCH(req: Request) {
     const db = client.db("ktltc_db");
 
     // Check dynamic permissions
-    const canManageSettings = await hasPermission(userRole, "manage_attendance_settings");
+    const canManageSettings = await hasPermission(userRole || "", "manage_attendance_settings");
 
     if (!session || !canManageSettings) {
       return NextResponse.json({ error: "Unauthorized: No permission for Attendance Settings" }, { status: 403 });

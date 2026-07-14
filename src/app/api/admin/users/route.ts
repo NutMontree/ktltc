@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const userRole = session?.user?.role?.toLowerCase();
 
     // Check dynamic permissions
-    const canManageRoles = await hasPermission(userRole, "manage_roles_advanced");
+    const canManageRoles = await hasPermission(userRole || "", "manage_roles_advanced");
 
     if (!canManageRoles) {
       return NextResponse.json({ error: "สิทธิ์ไม่เพียงพอ: No permission for Role Management" }, { status: 403 });

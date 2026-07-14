@@ -56,7 +56,7 @@ export default function BroadcastNotificationPage() {
         const perms = data || {};
         if (
           userRole === "super_admin" || 
-          ALLOWED_ROLES.includes(userRole) || 
+          ALLOWED_ROLES.includes(userRole || "") || 
           perms.manage_broadcast_notification
         ) {
           setPermissions(perms);

@@ -209,7 +209,7 @@ export async function PATCH(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userRole = (session.user as any)?.role?.toLowerCase();
-    if (!["super_admin", "admin"].includes(userRole)) {
+    if (!["super_admin", "admin"].includes(userRole || "")) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 
@@ -254,7 +254,7 @@ export async function DELETE(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userRole = (session.user as any)?.role?.toLowerCase();
-    if (!["super_admin", "admin"].includes(userRole)) {
+    if (!["super_admin", "admin"].includes(userRole || "")) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 

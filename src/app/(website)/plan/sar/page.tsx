@@ -40,7 +40,7 @@ interface ISarLog {
 export default function SarPage() {
   const { data: session } = useSession();
   const userRole = session?.user?.role?.toLowerCase() || "";
-  const isTeacher = ["teacher", "admin", "super_admin"].includes(userRole);
+  const isTeacher = ["teacher", "admin", "super_admin"].includes(userRole || "");
   const isSuperAdmin = userRole === "super_admin";
 
   const [documents, setDocuments] = useState<ISarDocument[]>([]);

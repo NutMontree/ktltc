@@ -25,7 +25,7 @@ export async function GET() {
     if (!hasAccess) {
       // Fallback for legacy roles if role_permissions not set up
       const legacyRoles = ["admin", "editor"];
-      if (!legacyRoles.includes(userRole)) {
+      if (!legacyRoles.includes(userRole || "")) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
       }
     }

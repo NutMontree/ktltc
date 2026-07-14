@@ -95,7 +95,7 @@ export default function TeacherStudentsPage() {
         const perms = data || {};
         if (
           userRole === "super_admin" || 
-          ALLOWED_ROLES.includes(userRole) || 
+          ALLOWED_ROLES.includes(userRole || "") || 
           perms.access_teacher_students ||
           perms.access_teacher_workspace
         ) {

@@ -47,7 +47,7 @@ export async function PATCH(req: Request) {
     const session = await auth();
     const userRole = session?.user?.role?.toLowerCase();
 
-    if (!session || !["super_admin", "admin"].includes(userRole)) {
+    if (!session || !["super_admin", "admin"].includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized: Access Denied" }, { status: 403 });
     }
 

@@ -66,7 +66,7 @@ export async function PATCH(
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
 
-    if (!canManageNews && !["admin", "editor"].includes(userRole)) {
+    if (!canManageNews && !["admin", "editor"].includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -125,7 +125,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    if (!canManageNews && !["admin", "editor"].includes(userRole)) {
+    if (!canManageNews && !["admin", "editor"].includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     

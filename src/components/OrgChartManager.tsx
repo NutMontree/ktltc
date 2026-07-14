@@ -62,7 +62,7 @@ export default function OrgChartManager({ departmentNameTh, title }: OrgChartMan
             const userRole = String(u.role || "").toLowerCase();
             
             // ยกเว้นนักเรียนและสมาชิกทั่วไป ไม่ให้แสดงในแผนภูมิบุคลากร
-            if (["student", "user", "member", "members"].includes(userRole)) {
+            if (["student", "user", "member", "members"].includes(userRole || "")) {
               return false;
             }
             

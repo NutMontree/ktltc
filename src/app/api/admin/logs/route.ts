@@ -39,8 +39,8 @@ export async function POST(req: Request) {
   console.log("LOG_POST: Request received");
   try {
     // Temporarily bypass auth() to avoid 500 errors during login flow
-    // const session = await auth();
-    const session = null;
+    const session = await auth();
+    // const session = null;
     console.log("LOG_POST: auth() bypassed");
     
     let body: any = {};

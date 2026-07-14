@@ -33,7 +33,7 @@ export default function LiveViewPage() {
   useEffect(() => {
     if (status !== "authenticated") return;
     const userRole = (session?.user?.role || "").toLowerCase();
-    if (!["super_admin", "admin", "director"].includes(userRole)) {
+    if (!["super_admin", "admin", "director"].includes(userRole || "")) {
       router.push("/dashboard");
       return;
     }

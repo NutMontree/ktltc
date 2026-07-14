@@ -269,10 +269,10 @@ export default function DashboardLoader() {
   };
 
   const userRole = (session?.user?.role || "").toLowerCase();
-  const hasStudentAccess = permissions?.access_student_workspace ?? (permissions?.student_dashboard || userRole === "student" || ["super_admin", "admin"].includes(userRole));
-  const hasTeacherAccess = permissions?.access_teacher_workspace ?? ["super_admin", "admin", "editor", "teacher"].includes(userRole);
-  const hasStaffAccess = permissions?.access_staff_workspace ?? ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);
-  const hasExecAccess = permissions?.access_exec_workspace ?? (permissions?.access_teacher_verification || permissions?.access_teacher_dashboard || permissions?.access_lesson_plans || permissions?.access_dpa_evaluation || permissions?.access_plc || permissions?.access_student_care || ["super_admin", "admin", "director", "hr"].includes(userRole));
+  const hasStudentAccess = permissions?.access_student_workspace ?? (permissions?.student_dashboard || userRole === "student" || ["super_admin", "admin"].includes(userRole || ""));
+  const hasTeacherAccess = permissions?.access_teacher_workspace ?? ["super_admin", "admin", "editor", "teacher"].includes(userRole || "");
+  const hasStaffAccess = permissions?.access_staff_workspace ?? ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole || "");
+  const hasExecAccess = permissions?.access_exec_workspace ?? (permissions?.access_teacher_verification || permissions?.access_teacher_dashboard || permissions?.access_lesson_plans || permissions?.access_dpa_evaluation || permissions?.access_plc || permissions?.access_student_care || ["super_admin", "admin", "director", "hr"].includes(userRole || ""));
   const hasSuperAdminAccess = permissions?.access_superadmin_workspace ?? userRole === "super_admin";
 
   return (

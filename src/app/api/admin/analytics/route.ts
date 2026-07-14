@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only authorized staff can track
-    if (!["super_admin", "admin", "director", "teacher", "deputy_student_affairs"].includes(userRole)) {
+    if (!["super_admin", "admin", "director", "teacher", "deputy_student_affairs"].includes(userRole || "")) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
@@ -127,7 +127,7 @@ export async function DELETE(req: Request) {
     const userRole = (session?.user?.role || "").toLowerCase();
 
     // Ensure only authorized staff can clear data
-    if (!["super_admin", "admin", "director"].includes(userRole)) {
+    if (!["super_admin", "admin", "director"].includes(userRole || "")) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 

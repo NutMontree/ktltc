@@ -92,9 +92,9 @@ export async function PATCH(
     const isSuperAdmin = currentUserRole === "super_admin";
     
     // Check dynamic permissions
-    const canManageRoles = await hasPermission(currentUserRole, "manage_roles_advanced");
+    const canManageRoles = await hasPermission(currentUserRole || "", "manage_roles_advanced");
     const isTargetStudent = ["student", "นักเรียน", "นักเรียน/นักศึกษา"].includes(String(targetUser.role).toLowerCase());
-    const canEditStudents = ["super_admin", "admin", "hr", "director", "teacher"].includes(currentUserRole);
+    const canEditStudents = ["super_admin", "admin", "hr", "director", "teacher"].includes(currentUserRole || "");
  
     // 🔒 Ensure the current user has administrative permissions
     if (!canManageRoles && !isSuperAdmin) {
@@ -211,7 +211,7 @@ export async function DELETE(
     const isSuperAdmin = currentUserRole === "super_admin";
 
     // Check dynamic permissions
-    const canManageRoles = await hasPermission(currentUserRole, "manage_roles_advanced");
+    const canManageRoles = await hasPermission(currentUserRole || "", "manage_roles_advanced");
 
     if (!session || (!isSuperAdmin && !canManageRoles)) {
       return NextResponse.json({ error: "Access Denied: Permission for Role Management required." }, { status: 403 });

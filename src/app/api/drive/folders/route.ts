@@ -157,7 +157,7 @@ export async function POST(request: Request) {
       const parentFolder = await db.collection("drive_folders").findOne({ _id: parentId });
       if (!parentFolder) return NextResponse.json({ error: "Parent folder not found" }, { status: 404 });
       
-      const isAdmin = ["super_admin", "admin"].includes(userRole);
+      const isAdmin = ["super_admin", "admin"].includes(userRole || "");
       const userId = session.user.id;
 
       // Check if parent or any ancestor is collaborative

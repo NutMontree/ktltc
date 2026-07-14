@@ -31,7 +31,7 @@ export async function PATCH(
       "staff"
     ];
  
-    if (!allowedAdminRoles.includes(currentUserRole)) {
+    if (!allowedAdminRoles.includes(currentUserRole || "")) {
       return NextResponse.json({ error: "Access Denied: Administrative role required." }, { status: 403 });
     }
 

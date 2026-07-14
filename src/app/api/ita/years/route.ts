@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const canManageSystem =
       rolePerms?.permissions?.manage_system ||
-      ALLOWED_OIT_ROLES.includes(userRole);
+      ALLOWED_OIT_ROLES.includes(userRole || "");
 
     if (!canManageSystem) {
       return NextResponse.json(

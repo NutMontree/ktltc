@@ -21,6 +21,7 @@ declare module "next-auth" {
       faction?: string;
       username?: string;
       image?: string;
+      error?: string;
     } & DefaultSession["user"];
   }
 
@@ -32,6 +33,7 @@ declare module "next-auth" {
     faction?: string;
     username?: string;
     image?: string;
+      error?: string;
   }
 }
 
@@ -44,6 +46,7 @@ declare module "next-auth/jwt" {
     faction?: string;
     username?: string;
     image?: string;
+      error?: string;
   }
 }
 

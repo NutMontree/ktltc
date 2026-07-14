@@ -51,12 +51,12 @@ const callbacks: NextAuthConfig["callbacks"] = {
     }
 
     if (session.user) {
-      session.user.id = token.id;
-      session.user.role = token.role;
-      session.user.username = token.username;
-      session.user.image = token.image;
-      session.user.department = token.department;
-      session.user.faction = token.faction;
+      session.user.id = token.id as string;
+      session.user.role = token.role as string;
+      session.user.username = token.username as string | undefined;
+      session.user.image = token.image as string | undefined;
+      session.user.department = token.department as string | undefined;
+      session.user.faction = token.faction as string | undefined;
     }
     return session;
   },

@@ -33,7 +33,7 @@ export async function POST(
       if (hasLiked) {
         await db.collection("posts").updateOne(
           { _id: new ObjectId(id) },
-          { $pull: { likes: userId } }
+          { $pull: { likes: userId } as any }
         );
       } else {
         await db.collection("posts").updateOne(
