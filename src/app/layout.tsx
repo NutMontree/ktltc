@@ -30,11 +30,35 @@ import GoogleTranslate from "@/components/GoogleTranslate";
 import CustomSlangTranslator from "@/components/CustomSlangTranslator";
 import { CursorTracker } from "@/components/telemetry/CursorTracker";
 
+import { Prompt, Inter, Sarabun, Charm } from 'next/font/google';
+
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt)
-const prompt = {
-  className: "font-prompt",
-  variable: "font-prompt",
-};
+const prompt = Prompt({
+  subsets: ['thai', 'latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-prompt',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const sarabun = Sarabun({
+  subsets: ['thai', 'latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sarabun',
+  display: 'swap',
+});
+
+const charm = Charm({
+  subsets: ['thai', 'latin'],
+  weight: ['400', '700'],
+  variable: '--font-charm',
+  display: 'swap',
+});
 
 // 2. กำหนด Metadata สำหรับ SEO และการแชร์ลง Social Media (Open Graph)
 export const metadata: Metadata = {
@@ -93,13 +117,13 @@ export default async function RootLayout({
   return (
     // suppressHydrationWarning ใส่ไว้เพื่อแก้ Error ที่เกิดจาก ThemeProvider (Dark Mode)
     // เพราะ Server กับ Client อาจเรนเดอร์ class ต่างกันเล็กน้อยในตอนแรก
-    <html lang="th" suppressHydrationWarning className={`${prompt.variable}`}>
+    <html lang="th" suppressHydrationWarning className={`${prompt.variable} ${inter.variable} ${sarabun.variable} ${charm.variable}`}>
       <head>
         {/* ลิงก์ฟอนต์เพิ่มเติมจาก Google Fonts แบบ Manual (นอกเหนือจาก next/font) */}
       </head>
 
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
-      <body className={`${prompt.className} ${prompt.variable} antialiased`} suppressHydrationWarning={true}>
+      <body className={`${prompt.className} antialiased`} suppressHydrationWarning={true}>
         <AntdRegistry>
           <NextAuthProvider
             refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ

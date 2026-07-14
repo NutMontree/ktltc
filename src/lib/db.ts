@@ -22,9 +22,9 @@ const sanitizedUri = uri.replace(/\/\/.*@/, "//****:****@");
 console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
 
 const options = {
-  connectTimeoutMS: 10000,        // เพิ่มจาก 5s -> 10s: เผื่อเวลาคิวช่วงพีค
-  serverSelectionTimeoutMS: 10000, // เพิ่มจาก 5s -> 10s: ไม่รอนาน ให้ fallback เร็วขึ้น
-  socketTimeoutMS: 15000,         // ถ้า query ค้างเกิน 15 วิ = หยุดรอ
+  connectTimeoutMS: 30000,        // เพิ่มจาก 10s -> 30s: เผื่อเน็ต VPN สวิงหรือปิงขึ้นสูง
+  serverSelectionTimeoutMS: 30000, // เพิ่มจาก 10s -> 30s: ให้โค้ดรอการเชื่อมต่อฐานข้อมูลนานขึ้น
+  socketTimeoutMS: 45000,         // เพิ่มจาก 15s -> 45s: ถ้า query ค้างเกิน 45 วิ ถึงจะตัดจบ
   maxPoolSize: 200,               // ขยายให้รับ 200 connection ต่อ 1 PM2 Instance (รวม 3000 connections)
   minPoolSize: 5,                 // เลี้ยง connection ขั้นต่ำไว้ 5 เส้น (warm connection)
   heartbeatFrequencyMS: 10000,   // ตรวจสอบสุขภาพ connection ทุก 10 วิ
