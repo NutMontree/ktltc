@@ -249,12 +249,10 @@ export default function MobileMenu({
                       <button
                         onClick={async () => {
                           try {
-                            // 1. ลบคุกกี้ทั้งหมด (รวม NextAuth session cookies) ผ่าน API ฝั่ง Server
+                            // 1. ลบคุกกี้ทั้งหมดผ่าน API ฝั่ง Server
                             await fetch("/api/auth/logout", { method: "POST" });
-                            // 2. เรียกใช้ signOut เพื่อล้าง session ฝั่ง client
-                            await signOut({ redirect: false });
-                            // 3. Hard Redirect หลัง signOut เสร็จสมบูรณ์
-                            window.location.href = "/login";
+                            // 2. เรียกใช้ signOut เพื่อล้าง session และจัดการ redirect
+                            await signOut({ callbackUrl: "/login", redirect: true });
                           } catch (err) {
                             console.error("Logout error:", err);
                             // แม้เกิด error ก็บังคับ redirect ไปหน้า login

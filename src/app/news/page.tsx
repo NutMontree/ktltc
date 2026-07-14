@@ -2,6 +2,9 @@ import clientPromise from "@/lib/db";
 import NewsListClient from "@/components/NewsListClient";
 import RefreshButton from "@/components/RefreshButton";
 
+// ✅ 1. เพิ่มการ Revalidate เพื่อให้ข่าวสารอัปเดตแบบ Caching (ลดภาระ Database)
+export const revalidate = 300; // Revalidate every 5 minutes
+
 interface NewsItem {
   _id: string;
   title: string;

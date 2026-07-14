@@ -2390,7 +2390,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         <div className="flex items-center gap-4 text-zinc-700 dark:text-zinc-300">
                           <TeamOutlined className="text-xl text-zinc-400" />
                           <span>
-                            รหัสกลุ่ม{" "}
+                            ชื่อห้องเรียน{" "}
                             <b className="text-zinc-900 dark:text-white">
                               {formData.groupCode || "-"}
                             </b>
@@ -3680,7 +3680,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     />
                   </div>
 
-                  {/* รหัสนักศึกษา + รหัสกลุ่ม */}
+                  {/* รหัสนักศึกษา + ชื่อห้องเรียน */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-black text-zinc-500 uppercase">

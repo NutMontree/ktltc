@@ -8,11 +8,13 @@ import PressRelease from "./pressrelease/page";
 import Announcement from "./announcement/page";
 import InternshipPage from "./internship/page";
 import WelcomePage from "@/components/WelcomePage";
-import ScrollVelocity from "@/components/Scrollvelocity";
 import HomeBannerSwiper from "@/components/HomeBannerSwiper";
 import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const ScrollVelocity = dynamic(() => import("@/components/Scrollvelocity"), { ssr: true });
 
 export const revalidate = 300; // Revalidate every 5 minutes (300 seconds) for better performance
 
