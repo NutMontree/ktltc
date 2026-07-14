@@ -67,6 +67,9 @@ async function createIndexes(promise: Promise<MongoClient>) {
     await db.collection("candidates").createIndex({ electionId: 1 });
     await db.collection("votes").createIndex({ electionId: 1, userId: 1 }, { unique: true });
 
+    // 7. Index สำหรับ Real-time Visitors (TTL 60 seconds)
+    await db.collection("visitors_live").createIndex({ lastActiveAt: 1 }, { expireAfterSeconds: 60 });
+
     console.log("✅ [MongoDB] Indexes created/verified successfully");
   } catch (error) {
     console.error("❌ [MongoDB] Index creation error:", error);
