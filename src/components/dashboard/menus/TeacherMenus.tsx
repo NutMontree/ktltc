@@ -1,5 +1,4 @@
-import { 
-  CalendarCheck, Shield, Bell, Globe, ArrowUpRight,ActionCard } from "@/components/dashboard/DashboardCards";
+import { ActionCard } from "@/components/dashboard/DashboardCards";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
@@ -7,7 +6,8 @@ import {
   BarChart3, MonitorPlay, Building2, UserCog, Settings, Flag, Briefcase, Key,
   Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
   Database, ServerCrash, Smartphone, Download, UserPlus, Image as ImageIcon,
-  BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper
+  BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight
 } from "lucide-react";
 
 export interface MenuProps {
