@@ -29,16 +29,54 @@ export async function POST(req: NextRequest) {
       { upsert: true }
     );
 
-    // Parse Device and Location natively without npm dependencies
     // 1. Get IP
-    const ip = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for") || "127.0.0.1";
+    const rawIp = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for") || "127.0.0.1";
+    const ip = rawIp.split(',')[0].trim();
     
     // 2. Get User-Agent natively via NextJS
     const { device, os, browser } = userAgent(req);
     
-    // 3. Get Location from Cloudflare Headers
-    const country = req.headers.get("cf-ipcountry") || "Unknown";
-    const city = req.headers.get("cf-ipcity") || "Unknown";
+    // 3. Get Location from Cloudflare Headers or Cache
+    let country = req.headers.get("cf-ipcountry") || "Unknown";
+    let city = req.headers.get("cf-ipcity") || "Unknown";
+
+    if (ip === "127.0.0.1" || ip === "::1" || ip.includes("127.0.0.1") || ip.startsWith("::ffff:127.0.0.1")) {
+      country = "TH";
+      city = "Localhost";
+    } else if (city === "Unknown") {
+      // Try to fetch from ip_locations cache
+      const cachedIp = await db.collection("ip_locations").findOne({ ip });
+      if (cachedIp) {
+        city = cachedIp.city;
+        if (country === "Unknown") country = cachedIp.country;
+      } else {
+        // Fetch from external API if not cached
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
+          const ipRes = await fetch(`http://ip-api.com/json/${ip}`, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          
+          if (ipRes.ok) {
+            const ipData = await ipRes.json();
+            if (ipData.status === "success") {
+              city = ipData.city || city;
+              country = ipData.countryCode || ipData.country || country;
+              
+              // Save to cache
+              await db.collection("ip_locations").insertOne({
+                ip,
+                city,
+                country,
+                createdAt: new Date()
+              });
+            }
+          }
+        } catch (e) {
+          console.error("IP Geolocation Fetch Error:", e);
+        }
+      }
+    }
 
     // Create a date string (YYYY-MM-DD) in Thai timezone
     const now = new Date();
@@ -53,9 +91,7 @@ export async function POST(req: NextRequest) {
         $setOnInsert: {
           visitorId,
           date: dateStr,
-          ip: ip.split(',')[0].trim(),
-          country,
-          city,
+          ip: ip,
           deviceType: device.type || "desktop",
           os: os.name || "Unknown",
           browser: browser.name || "Unknown",
@@ -63,6 +99,8 @@ export async function POST(req: NextRequest) {
         $set: {
           lastActiveAt: new Date(),
           path: path,
+          country: country, // Update country in case it was resolved
+          city: city        // Update city in case it was resolved
         },
         $inc: {
           views: 1
