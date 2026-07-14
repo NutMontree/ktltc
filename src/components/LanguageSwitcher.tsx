@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { AVAILABLE_SLANG_MODES } from "./CustomSlangTranslator";
 
 const FOREIGN_LANGUAGES = [
-  { id: "en", label: "🇬🇧 English" },
+  { id: "en", label: "EN English" },
   { id: "zh-CN", label: "🇨🇳 中文" },
   { id: "ja", label: "🇯🇵 日本語" },
   { id: "ko", label: "🇰🇷 한국어" },
