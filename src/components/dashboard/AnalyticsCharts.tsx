@@ -88,7 +88,7 @@ export default function AnalyticsCharts() {
           แนวโน้มผู้เข้าชมเว็บไซต์ (7 วันล่าสุด)
         </h3>
         <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minHeight={300} minWidth={0}>
             <LineChart data={data.dailyTrendChart} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="date" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
@@ -110,7 +110,7 @@ export default function AnalyticsCharts() {
             สัดส่วนอุปกรณ์ (Devices)
           </h3>
           <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minHeight={300} minWidth={0}>
               <PieChart>
                 <Pie
                   data={data.deviceChart}
