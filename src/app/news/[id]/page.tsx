@@ -371,7 +371,6 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                           alt={authorName}
                           fill
                           sizes="44px"
-                          unoptimized
                           className="object-cover"
                         />
                       </div>
@@ -493,7 +492,6 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                         alt="Announcement"
                         width={1200}
                         height={1600}
-                        unoptimized
                         className="w-full h-auto"
                         priority={idx === 0}
                       />

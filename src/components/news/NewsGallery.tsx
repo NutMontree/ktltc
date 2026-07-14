@@ -104,7 +104,7 @@ export default function NewsGallery({ media }: NewsGalleryProps) {
                 alt={`Gallery Media ${idx + 1}`}
                 width={layout === "list" ? 1200 : 800}
                 height={layout === "list" ? 900 : 600}
-                unoptimized
+                priority={idx < 2} // โหลดรูป 2 รูปแรกทันที
                 className={`w-full h-auto rounded-xl transition-transform duration-500 ${
                   layout === "grid" ? "object-contain group-hover:scale-105" : "object-cover"
                 }`}
