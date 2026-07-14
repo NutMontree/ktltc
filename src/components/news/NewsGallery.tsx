@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -160,96 +161,135 @@ export default function NewsGallery({ media }: NewsGalleryProps) {
       </section>
 
       {/* --- Lightbox Modal --- */}
-      <AnimatePresence>
-        {selectedIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            // z-[9999] makes it appear above the navbar and everything else
-            className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex items-center justify-center"
-            onClick={() => setSelectedIndex(null)} // Click background to close
-          >
-            {/* Close Button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedIndex(null);
-              }}
-              className="absolute top-4 right-4 md:top-8 md:right-8 p-3 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all shadow-lg z-50"
-              title="ปิด (Esc)"
-            >
-              <CloseIcon />
-            </button>
-
-            {/* Previous Button */}
-            {selectedIndex > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedIndex(selectedIndex - 1);
-                }}
-                className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all shadow-lg z-50"
-                title="รูปก่อนหน้า (ลูกศรซ้าย)"
-              >
-                <PrevIcon />
-              </button>
-            )}
-
-            {/* Next Button */}
-            {selectedIndex < media.length - 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedIndex(selectedIndex + 1);
-                }}
-                className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all shadow-lg z-50"
-                title="รูปถัดไป (ลูกศรขวา)"
-              >
-                <NextIcon />
-              </button>
-            )}
-
-            {/* Media Container */}
-            <div
-              className="relative w-full h-full max-w-6xl max-h-[90vh] flex items-center justify-center p-4 md:p-12 select-none"
-              onClick={(e) => e.stopPropagation()} // Prevent close when clicking the media itself
-            >
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {selectedIndex !== null && (
               <motion.div
-                key={selectedIndex}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.2 }}
-                className="relative w-full h-full flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                // z-[9999] makes it appear above the navbar and everything else
+                className="fixed inset-0 z-99999 bg-black/95 backdrop-blur-md flex items-center justify-center touch-none overscroll-none"
+                onClick={() => setSelectedIndex(null)} // Click background to close
               >
-                {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(media[selectedIndex]) ? (
-                  <video
-                    src={media[selectedIndex]}
-                    className="max-w-full max-h-full rounded-2xl shadow-2xl"
-                    controls
-                    autoPlay
-                    playsInline
-                  />
-                ) : (
-                  <Image
-                    src={media[selectedIndex]}
-                    alt={`Gallery Full ${selectedIndex + 1}`}
-                    fill
-                    className="object-contain"
-                    priority
-                    sizes="(max-width: 1280px) 100vw, 1200px"
-                  />
-                )}
-              </motion.div>
-            </div>
+                {/* Close Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedIndex(null);
+                  }}
+                  className="absolute top-4 right-4 md:top-8 md:right-8 p-3 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all shadow-lg z-50"
+                  title="ปิด (Esc)"
+                >
+                  <CloseIcon />
+                </button>
 
-            {/* Image Counter */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-black/60 backdrop-blur-md rounded-full text-white text-sm font-bold tracking-widest shadow-lg">
-              {selectedIndex + 1} / {media.length}
-            </div>
-          </motion.div>
+                {/* Previous Button */}
+                {selectedIndex > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedIndex(selectedIndex - 1);
+                    }}
+                    className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all shadow-lg z-50"
+                    title="รูปก่อนหน้า (ลูกศรซ้าย)"
+                  >
+                    <PrevIcon />
+                  </button>
+                )}
+
+                {/* Next Button */}
+                {selectedIndex < media.length - 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedIndex(selectedIndex + 1);
+                    }}
+                    className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all shadow-lg z-50"
+                    title="รูปถัดไป (ลูกศรขวา)"
+                  >
+                    <NextIcon />
+                  </button>
+                )}
+
+                {/* Media Container */}
+                <div
+                  className="relative w-full h-full max-w-6xl max-h-[90vh] flex items-center justify-center p-4 md:p-12 select-none"
+                  onClick={(e) => {
+                    // Prevent close when clicking the media container
+                    e.stopPropagation();
+
+                    // Click to navigate (tap left/right half)
+                    const isVideo = /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(media[selectedIndex]);
+                    if (isVideo) return; // Let video handle its own clicks
+
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    if (clickX > rect.width / 2) {
+                      if (selectedIndex < media.length - 1) setSelectedIndex(selectedIndex + 1);
+                    } else {
+                      if (selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
+                    }
+                  }}
+                >
+                  <motion.div
+                    key={selectedIndex}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative w-full h-full flex items-center justify-center cursor-pointer"
+                    drag={
+                      /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(media[selectedIndex]) ? false : "x"
+                    }
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(e, { offset }) => {
+                      const swipeThreshold = 50;
+                      if (offset.x < -swipeThreshold && selectedIndex < media.length - 1) {
+                        setSelectedIndex(selectedIndex + 1);
+                      } else if (offset.x > swipeThreshold && selectedIndex > 0) {
+                        setSelectedIndex(selectedIndex - 1);
+                      }
+                    }}
+                  >
+                    {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(media[selectedIndex]) ? (
+                      <div
+                        className="w-full h-full flex items-center justify-center cursor-default"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <video
+                          src={media[selectedIndex]}
+                          className="max-w-full max-h-full rounded-2xl shadow-2xl"
+                          controls
+                          autoPlay
+                          playsInline
+                        />
+                      </div>
+                    ) : (
+                      <Image
+                        src={media[selectedIndex]}
+                        alt={`Gallery Full ${selectedIndex + 1}`}
+                        fill
+                        className="object-contain"
+                        priority
+                        draggable={false}
+                        sizes="(max-width: 1280px) 100vw, 1200px"
+                      />
+                    )}
+                  </motion.div>
+                </div>
+
+                {/* Image Counter */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-black/60 backdrop-blur-md rounded-full text-white text-sm font-bold tracking-widest shadow-lg pointer-events-none">
+                  {selectedIndex + 1} / {media.length}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }
