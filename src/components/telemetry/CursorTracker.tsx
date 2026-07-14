@@ -11,8 +11,8 @@ export function CursorTracker() {
   const isWatchedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Only track authenticated users
-    if (!session?.user?.id) return;
+    // Only track authenticated users, and don't track super admins
+    if (!session?.user?.id || (session.user as any).role === "super_admin") return;
 
     let pollInterval: NodeJS.Timeout;
 
