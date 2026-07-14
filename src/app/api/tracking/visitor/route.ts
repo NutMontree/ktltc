@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest, userAgent } from "next/server";
 import clientPromise from "@/lib/db";
-import geoip from "geoip-lite";
-import UAParser from "ua-parser-js";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { visitorId, path } = await req.json();
+    const body = await req.json();
+    const visitorId = body.visitorId;
+    const path = body.path;
 
     if (!visitorId) {
       return NextResponse.json({ success: false, message: "Missing visitorId" }, { status: 400 });
@@ -29,18 +29,16 @@ export async function POST(req: Request) {
       { upsert: true }
     );
 
-    // Parse Device and Location (Advanced Analytics)
+    // Parse Device and Location natively without npm dependencies
     // 1. Get IP
     const ip = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for") || "127.0.0.1";
-    // 2. Get User-Agent
-    const userAgent = req.headers.get("user-agent") || "";
-    const parser = new UAParser(userAgent);
-    const result = parser.getResult();
     
-    // 3. Get Location from geoip-lite
-    const geo = geoip.lookup(ip);
-    let country = req.headers.get("cf-ipcountry") || (geo ? geo.country : "Unknown");
-    let city = geo ? geo.city : "Unknown";
+    // 2. Get User-Agent natively via NextJS
+    const { device, os, browser } = userAgent(req);
+    
+    // 3. Get Location from Cloudflare Headers
+    const country = req.headers.get("cf-ipcountry") || "Unknown";
+    const city = req.headers.get("cf-ipcity") || "Unknown";
 
     // Create a date string (YYYY-MM-DD) in Thai timezone
     const now = new Date();
@@ -58,9 +56,9 @@ export async function POST(req: Request) {
           ip: ip.split(',')[0].trim(),
           country,
           city,
-          deviceType: result.device.type || "desktop",
-          os: result.os.name || "Unknown",
-          browser: result.browser.name || "Unknown",
+          deviceType: device.type || "desktop",
+          os: os.name || "Unknown",
+          browser: browser.name || "Unknown",
         },
         $set: {
           lastActiveAt: new Date(),
