@@ -671,17 +671,17 @@ export default function PermissionsPage() {
                 <span>จัดการรายบุคคล</span>
               </Link>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+            <div className="flex flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
               <button
                 onClick={() => setShowAddMenuModal(true)}
-                className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-xl shadow-emerald-500/20"
+                className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-xl shadow-emerald-500/20"
               >
                 <FiLayout size={16} />
                 <span>เพิ่มเมนูใหม่</span>
               </button>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-500/20"
+                className="flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-500/20"
               >
                 <FiUsers size={16} />
                 <span>เพิ่มบทบาทใหม่</span>
@@ -691,7 +691,7 @@ export default function PermissionsPage() {
         </div>
 
         <div className="space-y-8 mt-12">
-          <div className="flex gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+          <div className="flex flex-wrap gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-2">
             <button
               onClick={() => setActiveTab("roles")}
               className={`px-6 py-3 rounded-t-xl font-bold uppercase tracking-widest text-xs transition-all ${activeTab === "roles" ? "bg-blue-600 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"}`}
@@ -707,7 +707,7 @@ export default function PermissionsPage() {
           </div>
 
           {activeTab === "departments" && (
-            <div className="xl:col-span-12">
+            <div className="xl:col-span-12 w-full max-w-full overflow-hidden">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white shadow-xl">
                   <FiLayers size={20} />
@@ -721,12 +721,12 @@ export default function PermissionsPage() {
                   </p>
                 </div>
               </div>
-              <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
-                <div className="overflow-auto max-h-[70vh]">
+              <div className="w-full min-w-0 bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
+                <div className="w-full max-w-full overflow-x-auto overflow-y-auto max-h-[70vh]">
                   <table className="w-full text-left border-separate border-spacing-0 min-w-[1200px]">
                     <thead>
                       <tr className="bg-slate-50/95 dark:bg-zinc-800/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
-                        <th className="p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[220px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
+                        <th className="p-4 md:p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[120px] max-w-[140px] md:min-w-[220px] md:max-w-none sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
                           แผนก / งาน (Department)
                         </th>
 
@@ -756,7 +756,7 @@ export default function PermissionsPage() {
                           key={dept.value}
                           className="group hover:bg-slate-50/50 dark:hover:bg-zinc-800/50 transition-colors"
                         >
-                          <td className="p-4 sticky left-0 z-30 bg-white dark:bg-zinc-900 group-hover:bg-slate-50 dark:group-hover:bg-zinc-800 border-r border-zinc-100 dark:border-zinc-800/50">
+                          <td className="p-3 md:p-4 sticky left-0 z-30 bg-white dark:bg-zinc-900 group-hover:bg-slate-50 dark:group-hover:bg-zinc-800 border-r border-zinc-100 dark:border-zinc-800/50">
                             <div className="flex items-center gap-3">
                               <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
                                 {dept.label}
@@ -798,7 +798,7 @@ export default function PermissionsPage() {
 
         <div className={activeTab === "roles" ? "block space-y-20" : "hidden"}>
           {/* --- Section 1: Permissions Matrix --- */}
-          <div className="xl:col-span-12">
+          <div className="xl:col-span-12 w-full max-w-full overflow-hidden">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 rounded-2xl bg-zinc-900 dark:bg-white flex items-center justify-center text-white dark:text-zinc-900 shadow-xl">
                 <FiShield size={20} />
@@ -812,12 +812,12 @@ export default function PermissionsPage() {
                 </p>
               </div>
             </div>
-            <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
-              <div className="overflow-auto max-h-[70vh]">
+            <div className="w-full min-w-0 bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
+              <div className="w-full max-w-full overflow-x-auto overflow-y-auto max-h-[70vh]">
                 <table className="w-full text-left border-separate border-spacing-0 min-w-[1200px]">
                   <thead>
                     <tr className="bg-slate-50/95 dark:bg-zinc-800/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
-                      <th className="p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[220px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
+                      <th className="p-4 md:p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[120px] max-w-[140px] md:min-w-[220px] md:max-w-none sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
                         บทบาท / Role Name
                       </th>
                       {Object.keys(MERGED_FEATURE_LABELS).map((key) => (
@@ -853,7 +853,7 @@ export default function PermissionsPage() {
                         animate={{ opacity: 1 }}
                         className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors group ${role === "super_admin" ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}
                       >
-                        <td className="p-6 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
+                        <td className="p-3 md:p-6 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
                           <div className="flex items-center gap-4">
                             <div
                               className={`w-1.5 h-10 rounded-full ${role === "super_admin" ? "bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.4)]" : isSystemRole(role) ? "bg-indigo-400" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.2)]"}`}
@@ -920,7 +920,7 @@ export default function PermissionsPage() {
           </div>
 
           {/* --- Section 1.5: Advanced Permissions Matrix --- */}
-          <div className="xl:col-span-12">
+          <div className="xl:col-span-12 w-full max-w-full overflow-hidden">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl">
                 <FiCalendar size={20} />
@@ -934,12 +934,12 @@ export default function PermissionsPage() {
                 </p>
               </div>
             </div>
-            <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
-              <div className="overflow-auto max-h-[70vh]">
+            <div className="w-full min-w-0 bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
+              <div className="w-full max-w-full overflow-x-auto overflow-y-auto max-h-[70vh]">
                 <table className="w-full text-left border-separate border-spacing-0 min-w-[1200px]">
                   <thead>
                     <tr className="bg-slate-50/95 dark:bg-zinc-800/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
-                      <th className="p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[220px] sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
+                      <th className="p-4 md:p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[120px] max-w-[140px] md:min-w-[220px] md:max-w-none sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
                         บทบาท / Role Name
                       </th>
                       {Object.keys(ADVANCED_FEATURE_LABELS).map((key) => (
@@ -975,7 +975,7 @@ export default function PermissionsPage() {
                         animate={{ opacity: 1 }}
                         className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors group ${role === "super_admin" ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}
                       >
-                        <td className="p-6 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
+                        <td className="p-3 md:p-6 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
                           <div className="flex items-center gap-4">
                             <div
                               className={`w-1.5 h-10 rounded-full ${role === "super_admin" ? "bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.4)]" : isSystemRole(role) ? "bg-indigo-400" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.2)]"}`}
@@ -1032,7 +1032,7 @@ export default function PermissionsPage() {
           </div>
 
           {/* --- Section 2: Custom Role Manager --- */}
-          <div className="xl:col-span-12">
+          <div className="xl:col-span-12 w-full max-w-full overflow-hidden">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
@@ -1048,15 +1048,15 @@ export default function PermissionsPage() {
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl overflow-hidden max-w-4xl">
-              <div className="overflow-x-auto">
+            <div className="w-full min-w-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl overflow-hidden max-w-4xl">
+              <div className="w-full max-w-full overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800">
-                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                      <th className="px-3 md:px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
                         Role ID
                       </th>
-                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                      <th className="px-3 md:px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
                         Display Name (Thai)
                       </th>
                       <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest text-center">
@@ -1072,7 +1072,7 @@ export default function PermissionsPage() {
                         animate={{ opacity: 1 }}
                         className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-colors ${role === "super_admin" ? "bg-blue-50/20 dark:bg-blue-900/5" : ""}`}
                       >
-                        <td className="px-6 py-4">
+                        <td className="px-3 md:px-6 py-4">
                           <div className="flex items-center gap-2">
                             <span
                               className={`font-bold uppercase tracking-tight text-xs px-3 py-1 rounded-lg ${role === "super_admin"
@@ -1084,7 +1084,7 @@ export default function PermissionsPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 md:px-6 py-4">
                           <div className="flex items-center gap-2">
                             <span
                               className={`text-sm font-black ${role === "super_admin" ? "text-blue-600" : "text-zinc-900 dark:text-white"}`}
@@ -1098,7 +1098,7 @@ export default function PermissionsPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 md:px-6 py-4">
                           <div className="flex justify-center gap-2">
                             {isSystemRole(role) ? (
                               <div className="w-9 h-9 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-300 flex items-center justify-center border border-zinc-100 dark:border-zinc-700">
@@ -1131,7 +1131,7 @@ export default function PermissionsPage() {
           </div>
 
           {/* --- Section 3: Custom Menus Manager --- */}
-          <div className="xl:col-span-12">
+          <div className="xl:col-span-12 w-full max-w-full overflow-hidden">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
@@ -1147,18 +1147,18 @@ export default function PermissionsPage() {
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl overflow-hidden max-w-4xl">
-              <div className="overflow-x-auto">
+            <div className="w-full min-w-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-xl overflow-hidden max-w-4xl">
+              <div className="w-full max-w-full overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800">
-                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                      <th className="px-3 md:px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
                         ชื่อเมนู (Title)
                       </th>
-                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                      <th className="px-3 md:px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
                         URL (href)
                       </th>
-                      <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                      <th className="px-3 md:px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
                         หมวดหมู่
                       </th>
                       <th className="px-6 py-4 text-[9px] font-black text-zinc-400 uppercase tracking-widest text-center">
@@ -1176,16 +1176,16 @@ export default function PermissionsPage() {
                     ) : (
                       customMenusList.map((menu) => (
                         <tr key={menu._id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-colors">
-                          <td className="px-6 py-4 font-bold text-zinc-900 dark:text-white text-sm">
+                          <td className="px-3 md:px-6 py-4 font-bold text-zinc-900 dark:text-white text-sm">
                             {menu.title}
                           </td>
-                          <td className="px-6 py-4 text-zinc-500 text-sm">
+                          <td className="px-3 md:px-6 py-4 text-zinc-500 text-sm">
                             {menu.href}
                           </td>
-                          <td className="px-6 py-4 text-zinc-500 text-sm capitalize">
+                          <td className="px-3 md:px-6 py-4 text-zinc-500 text-sm capitalize">
                             {menu.workspace}
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-3 md:px-6 py-4">
                             <div className="flex justify-center gap-2">
                               <button
                                 onClick={() => {
@@ -1216,7 +1216,7 @@ export default function PermissionsPage() {
 
         <div className="mt-16 bg-blue-600 rounded-[3.5rem] p-8 md:p-16 text-white relative overflow-hidden shadow-2xl shadow-blue-500/20">
           <div className="relative z-10 max-w-3xl">
-            <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter mb-6 italic leading-none">
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter mb-6 italic leading-none break-all sm:break-normal">
               Dynamic_Permission_System
             </h2>
             <p className="text-blue-100 font-medium text-lg leading-relaxed mb-8">

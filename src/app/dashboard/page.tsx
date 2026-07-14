@@ -282,73 +282,23 @@ export default function DashboardLoader() {
 
   return (
     <DashboardContext.Provider value={{ searchQuery, setSearchQuery }}>
-    <div className="relative min-h-screen bg-transparent transition-colors duration-500">
-      {/* Background Mesh Gradients */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-600/10 animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px] dark:bg-indigo-600/10 animate-pulse delay-700" />
-        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-purple-500/5 blur-[100px] dark:bg-purple-600/5" />
-      </div>
+      <div className="relative min-h-screen bg-transparent transition-colors duration-500">
+        {/* Background Mesh Gradients */}
+        <div className="fixed inset-0 z-[-1] pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-600/10 animate-pulse" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px] dark:bg-indigo-600/10 animate-pulse delay-700" />
+          <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-purple-500/5 blur-[100px] dark:bg-purple-600/5" />
+        </div>
 
-      <div className="max-w-[1600px] mx-auto w-full px-4 py-8 md:py-12 relative">
-        {/* --- Header Section --- */}
-        <DashboardHeader user={user} />
+        <div className="max-w-[1600px] mx-auto w-full px-4 py-8 md:py-12 relative">
+          {/* --- Header Section --- */}
+          <DashboardHeader user={user} />
 
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
-          {/* --- Quick Actions Section --- */}
-          {/* --- Quick Actions Tabs --- */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full sticky top-16 md:top-20 z-40 pt-4 pb-2 -mx-4 px-4 md:-mx-8 md:px-8 ">
-            <motion.div variants={item} className="flex flex-nowrap overflow-x-auto hide-scrollbar scrollbar-hide gap-2 bg-white dark:bg-zinc-900 p-2 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-full md:w-fit [&>button]:shrink-0">
-              <button
-                onClick={() => setActiveTab("all")}
-                className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-              >
-                ทั้งหมด (All)
-              </button>
-              {hasStudentAccess && (
-                <button
-                  onClick={() => setActiveTab("student")}
-                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "student" ? "bg-indigo-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-                >
-                  นักเรียน
-                </button>
-              )}
-              {hasTeacherAccess && (
-                <button
-                  onClick={() => setActiveTab("teacher")}
-                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "teacher" ? "bg-violet-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-                >
-                  ครูผู้สอน
-                </button>
-              )}
-              {hasStaffAccess && (
-                <button
-                  onClick={() => setActiveTab("staff")}
-                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "staff" ? "bg-teal-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-                >
-                  บุคลากร / HR
-                </button>
-              )}
-              {hasExecAccess && (
-                <button
-                  onClick={() => setActiveTab("executive")}
-                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "executive" ? "bg-rose-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-                >
-                  ผู้บริหาร
-                </button>
-              )}
-              {hasSuperAdminAccess && (
-                <button
-                  onClick={() => setActiveTab("superadmin")}
-                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "superadmin" ? "bg-sky-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
-                >
-                  ผู้ดูแลระบบสูงสุด
-                </button>
-              )}
-            </motion.div>
-
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-              <motion.div variants={item} className="relative w-full md:w-64 shrink-0">
+          <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
+            {/* --- Quick Actions Section --- */}
+            {/* --- Search & Actions Bar (Not Sticky) --- */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 w-full mb-2 -mt-2">
+              <motion.div variants={item} className="relative w-full sm:w-64 shrink-0">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Search className="h-4 w-4 text-zinc-400" />
                 </div>
@@ -357,15 +307,15 @@ export default function DashboardLoader() {
                   placeholder="ค้นหาเมนู..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
                 />
               </motion.div>
 
               {hasSuperAdminAccess && (
-                <motion.div variants={item} className="shrink-0">
+                <motion.div variants={item} className="shrink-0 h-[42px]">
                   <Link
                     href="/dashboard/permissions"
-                    className="flex items-center justify-center gap-2 px-6 py-3 h-full rounded-3xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                    className="flex items-center justify-center gap-2 px-6 h-full rounded-full bg-emerald-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
                   >
                     <Layout className="w-4 h-4" />
                     เพิ่มเมนูใหม่
@@ -373,164 +323,215 @@ export default function DashboardLoader() {
                 </motion.div>
               )}
             </div>
-          </div>
 
-          {/* StudentMenus */}
-          <StudentMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStudentAccess} activeTab={activeTab} stats={stats} />
-
-          {/* TeacherMenus */}
-          <TeacherMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasTeacherAccess} activeTab={activeTab} stats={stats} />
-
-          {/* StaffMenus */}
-          <StaffMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStaffAccess} activeTab={activeTab} stats={stats} />
-
-          {/* ExecutiveMenus */}
-          <ExecutiveMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasExecAccess} activeTab={activeTab} stats={stats} />
-
-          {/* SuperAdminMenus */}
-          <SuperAdminMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasSuperAdminAccess} activeTab={activeTab} stats={stats} />
-
-          {/* ============================== */}
-          {/* 6. MANUALS & GUIDES */}
-          {/* ============================== */}
-          {(activeTab === "all") && (
-            <div>
-              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 flex items-center gap-4">
-                  <BookOpen className="w-4 h-4" /> คู่มือการใช้งาน (Manuals & Guides)
-                  <span className="h-px bg-amber-500/10 flex-1" />
-                </h2>
-                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  เอกสารและคู่มือแนะนำการใช้งานระบบต่างๆ
-                </span>
+            {/* --- Quick Actions Tabs (Sticky) --- */}
+            <div className="flex flex-col md:flex-row md:items-center justify-start w-full sticky top-16 md:top-20 z-40 pt-2 pb-4 -mx-4 px-4 md:-mx-8 md:px-8 bg-slate-50/50 dark:bg-zinc-950/50 backdrop-blur-md">
+              <motion.div variants={item} className="flex flex-nowrap overflow-x-auto hide-scrollbar scrollbar-hide gap-2 bg-white dark:bg-zinc-900 p-2 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-full md:w-fit [&>button]:shrink-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <button
+                  onClick={() => setActiveTab("all")}
+                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                >
+                  ทั้งหมด (All)
+                </button>
+                {hasStudentAccess && (
+                  <button
+                    onClick={() => setActiveTab("student")}
+                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "student" ? "bg-indigo-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                  >
+                    นักเรียน
+                  </button>
+                )}
+                {hasTeacherAccess && (
+                  <button
+                    onClick={() => setActiveTab("teacher")}
+                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "teacher" ? "bg-violet-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                  >
+                    ครูผู้สอน
+                  </button>
+                )}
+                {hasStaffAccess && (
+                  <button
+                    onClick={() => setActiveTab("staff")}
+                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "staff" ? "bg-teal-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                  >
+                    บุคลากร / HR
+                  </button>
+                )}
+                {hasExecAccess && (
+                  <button
+                    onClick={() => setActiveTab("executive")}
+                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "executive" ? "bg-rose-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                  >
+                    ผู้บริหาร
+                  </button>
+                )}
+                {hasSuperAdminAccess && (
+                  <button
+                    onClick={() => setActiveTab("superadmin")}
+                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "superadmin" ? "bg-sky-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                  >
+                    ผู้ดูแลระบบสูงสุด
+                  </button>
+                )}
               </motion.div>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                <ActionCard
-                  href="/manual/gate-pass"
-                  title="คู่มือระบบ Gate Pass"
-                  icon={BookOpen}
-                  desc="เอกสารคู่มือการใช้งานระบบสแกนเข้า-ออกและติดตาม GPS"
-                  variants={item}
-                />
+            {/* StudentMenus */}
+            <StudentMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStudentAccess} activeTab={activeTab} stats={stats} />
+
+            {/* TeacherMenus */}
+            <TeacherMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasTeacherAccess} activeTab={activeTab} stats={stats} />
+
+            {/* StaffMenus */}
+            <StaffMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStaffAccess} activeTab={activeTab} stats={stats} />
+
+            {/* ExecutiveMenus */}
+            <ExecutiveMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasExecAccess} activeTab={activeTab} stats={stats} />
+
+            {/* SuperAdminMenus */}
+            <SuperAdminMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasSuperAdminAccess} activeTab={activeTab} stats={stats} />
+
+            {/* ============================== */}
+            {/* 6. MANUALS & GUIDES */}
+            {/* ============================== */}
+            {(activeTab === "all") && (
+              <div>
+                <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                  <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 flex items-center gap-4">
+                    <BookOpen className="w-4 h-4" /> คู่มือการใช้งาน (Manuals & Guides)
+                    <span className="h-px bg-amber-500/10 flex-1" />
+                  </h2>
+                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                    เอกสารและคู่มือแนะนำการใช้งานระบบต่างๆ
+                  </span>
+                </motion.div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                  <ActionCard
+                    href="/manual/gate-pass"
+                    title="คู่มือระบบ Gate Pass"
+                    icon={BookOpen}
+                    desc="เอกสารคู่มือการใช้งานระบบสแกนเข้า-ออกและติดตาม GPS"
+                    variants={item}
+                  />
+                </div>
               </div>
+            )}
+          </motion.div>
+
+          <motion.div
+            variants={item}
+            initial="hidden"
+            animate="show"
+            className="mt-20 pt-10 border-t border-zinc-200 dark:border-zinc-800 text-center"
+          >
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300 dark:text-zinc-700">
+              KTL by AllMaster • Core v3.2026
+            </p>
+          </motion.div>
+        </div>
+
+
+
+        {/* --- Quota Edit Modal --- */}
+        <AnimatePresence>
+          {isEditingQuota && (
+            <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsEditingQuota(false)}
+                className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-8">
+                  <Database className="w-12 h-12 text-blue-500/10" />
+                </div>
+
+                <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
+                  {editingQuotaKey === "db_limit_mb" ? "Database Quota" : "Storage Quota"}
+                </h3>
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">
+                  {editingQuotaKey === "db_limit_mb"
+                    ? "กำหนดขีดจำกัดฐานข้อมูล (GB)"
+                    : "กำหนดขีดจำกัดพื้นที่จัดเก็บข้อมูล (GB)"}
+                </p>
+
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700">
+                    <div>
+                      <p className="text-sm font-bold text-zinc-900 dark:text-white">
+                        ไม่จำกัด{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}{" "}
+                        (Unlimited)
+                      </p>
+                      <p className="text-[10px] text-zinc-500">
+                        เปิดการใช้งาน{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}
+                        ทั้งหมดของเซิร์ฟเวอร์
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setTempQuota(tempQuota === "0" ? "20" : "0")}
+                      className={`w-12 h-6 rounded-full transition-all relative ${tempQuota === "0" ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"}`}
+                    >
+                      <div
+                        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${tempQuota === "0" ? "left-7" : "left-1"}`}
+                      />
+                    </button>
+                  </div>
+
+                  {tempQuota !== "0" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                    >
+                      <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 block">
+                        ความจุสูงสุด (GigaBytes - GB)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={tempQuota}
+                        onChange={(e) => setTempQuota(e.target.value)}
+                        placeholder="ระบุจำนวน GB เช่น 20"
+                        className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                      />
+                      <p className="mt-2 text-[10px] text-zinc-400 font-medium">
+                        * ระบุเป็นหน่วย GB (เช่น 20 หมายถึง 20GB)
+                      </p>
+                    </motion.div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setIsEditingQuota(false)}
+                      className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                    >
+                      ยกเลิก
+                    </button>
+                    <button
+                      onClick={handleSaveQuota}
+                      disabled={isSavingQuota}
+                      className="flex-2 py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    >
+                      {isSavingQuota ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "บันทึกการตั้งค่า"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           )}
-        </motion.div>
-
-        <motion.div
-          variants={item}
-          initial="hidden"
-          animate="show"
-          className="mt-20 pt-10 border-t border-zinc-200 dark:border-zinc-800 text-center"
-        >
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300 dark:text-zinc-700">
-            KTL by AllMaster • Core v3.2026
-          </p>
-        </motion.div>
+        </AnimatePresence>
       </div>
-
-
-
-      {/* --- Quota Edit Modal --- */}
-      <AnimatePresence>
-        {isEditingQuota && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsEditingQuota(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 p-8">
-                <Database className="w-12 h-12 text-blue-500/10" />
-              </div>
-
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">
-                {editingQuotaKey === "db_limit_mb" ? "Database Quota" : "Storage Quota"}
-              </h3>
-              <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">
-                {editingQuotaKey === "db_limit_mb"
-                  ? "กำหนดขีดจำกัดฐานข้อมูล (GB)"
-                  : "กำหนดขีดจำกัดพื้นที่จัดเก็บข้อมูล (GB)"}
-              </p>
-
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700">
-                  <div>
-                    <p className="text-sm font-bold text-zinc-900 dark:text-white">
-                      ไม่จำกัด{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}{" "}
-                      (Unlimited)
-                    </p>
-                    <p className="text-[10px] text-zinc-500">
-                      เปิดการใช้งาน{editingQuotaKey === "db_limit_mb" ? "ฐานข้อมูล" : "พื้นที่"}
-                      ทั้งหมดของเซิร์ฟเวอร์
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setTempQuota(tempQuota === "0" ? "20" : "0")}
-                    className={`w-12 h-6 rounded-full transition-all relative ${tempQuota === "0" ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"}`}
-                  >
-                    <div
-                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${tempQuota === "0" ? "left-7" : "left-1"}`}
-                    />
-                  </button>
-                </div>
-
-                {tempQuota !== "0" && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                  >
-                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 block">
-                      ความจุสูงสุด (GigaBytes - GB)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={tempQuota}
-                      onChange={(e) => setTempQuota(e.target.value)}
-                      placeholder="ระบุจำนวน GB เช่น 20"
-                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
-                    />
-                    <p className="mt-2 text-[10px] text-zinc-400 font-medium">
-                      * ระบุเป็นหน่วย GB (เช่น 20 หมายถึง 20GB)
-                    </p>
-                  </motion.div>
-                )}
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setIsEditingQuota(false)}
-                    className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
-                  >
-                    ยกเลิก
-                  </button>
-                  <button
-                    onClick={handleSaveQuota}
-                    disabled={isSavingQuota}
-                    className="flex-2 py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
-                  >
-                    {isSavingQuota ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      "บันทึกการตั้งค่า"
-                    )}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
     </DashboardContext.Provider>
   );
 }

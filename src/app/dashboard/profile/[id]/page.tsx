@@ -2338,10 +2338,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         {isMyProfile && (
                           <button
                             onClick={() => setActiveModal("profile")}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                            className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            <span>แก้ไข</span>
+                            
                           </button>
                         )}
                       </div>
@@ -2379,10 +2379,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         {isMyProfile && (
                           <button
                             onClick={() => setActiveModal("profile")}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                            className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            <span>แก้ไข</span>
+                            
                           </button>
                         )}
                       </div>
@@ -2399,10 +2399,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         {isMyProfile && (
                           <button
                             onClick={() => setActiveModal("profile")}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                            className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            <span>แก้ไข</span>
+                            
                           </button>
                         )}
                       </div>
@@ -2486,10 +2486,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                       {isMyProfile && (
                         <button
                           onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          <span>แก้ไข</span>
+                          
                         </button>
                       )}
                     </div>
@@ -2507,10 +2507,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     {isMyProfile && (
                       <button
                         onClick={() => setActiveModal("profile")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        <span>แก้ไข</span>
+                        
                       </button>
                     )}
                   </div>
@@ -2526,10 +2526,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                       {isMyProfile && (
                         <button
                           onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          <span>แก้ไข</span>
+                          
                         </button>
                       )}
                     </div>
@@ -2546,10 +2546,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                       {isMyProfile && (
                         <button
                           onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          <span>แก้ไข</span>
+                          
                         </button>
                       )}
                     </div>
@@ -2574,10 +2574,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     {isMyProfile && (
                       <button
                         onClick={() => setActiveModal("profile")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        <span>แก้ไข</span>
+                        
                       </button>
                     )}
                   </div>
@@ -2596,10 +2596,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     {isMyProfile && (
                       <button
                         onClick={() => setActiveModal("profile")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        <span>แก้ไข</span>
+                        
                       </button>
                     )}
                   </div>
@@ -2617,10 +2617,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                       {isMyProfile && (
                         <button
                           onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          <span>แก้ไข</span>
+                          
                         </button>
                       )}
                     </div>
@@ -2645,10 +2645,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     {isMyProfile && (
                       <button
                         onClick={() => setActiveModal("profile")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        <span>แก้ไข</span>
+                        
                       </button>
                     )}
                   </div>
@@ -2667,10 +2667,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     {isMyProfile && (
                       <button
                         onClick={() => setActiveModal("profile")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        <span>แก้ไข</span>
+                        
                       </button>
                     )}
                   </div>
@@ -2681,22 +2681,22 @@ function FriendProfilePageContent({ id }: { id: string }) {
                 <div className="space-y-8">
                   <div className="grid gap-6">
                     <h3 className="text-zinc-500 text-xs font-bold uppercase">ข้อมูลการติดต่อ</h3>
-                    <div className="flex items-center justify-between group/item">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                    <div className="flex items-center justify-between gap-4 group/item">
+                      <div className="flex items-center gap-4 min-w-0 flex-1">
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
                           <PhoneOutlined />
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="min-w-0">
                             {isMyProfile && showFullPhone ? (
                               <a
                                 href={`tel:${formData.phone}`}
-                                className="text-sm font-bold text-blue-600 hover:underline"
+                                className="text-sm font-bold text-blue-600 hover:underline truncate block"
                               >
                                 {displayPhone()}
                               </a>
                             ) : (
-                              <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                              <span className="text-sm font-bold text-zinc-900 dark:text-white truncate block">
                                 {displayPhone()}
                               </span>
                             )}
@@ -2706,7 +2706,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             <button
                               type="button"
                               onClick={() => setShowFullPhone(!showFullPhone)}
-                              className="w-6 h-6 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-blue-600 transition-all active:scale-90 shadow-sm border border-zinc-200 dark:border-zinc-700"
+                              className="w-6 h-6 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-blue-600 transition-all active:scale-90 shadow-sm border border-zinc-200 dark:border-zinc-700 shrink-0"
                               title={showFullPhone ? "ซ่อนเบอร์โทรศัพท์" : "แสดงเบอร์โทรศัพท์"}
                             >
                               {showFullPhone ? (
@@ -2721,30 +2721,30 @@ function FriendProfilePageContent({ id }: { id: string }) {
                       {isMyProfile && (
                         <button
                           onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40 shrink-0" title="แก้ไข"
                         >
                           <EditOutlined />
-                          <span>แก้ไข</span>
+                          
                         </button>
                       )}
                     </div>
-                    <div className="flex items-center justify-between group/item">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                    <div className="flex items-center justify-between gap-4 group/item">
+                      <div className="flex items-center gap-4 min-w-0 flex-1">
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
                           <MailOutlined />
                         </div>
-                        <div>
-                          <p className="text-sm font-bold truncate">{formData.email || "-"}</p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold truncate block">{formData.email || "-"}</p>
                           <p className="text-xs text-zinc-400">อีเมล</p>
                         </div>
                       </div>
                       {isMyProfile && (
                         <button
                           onClick={() => setActiveModal("profile")}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                          className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40 shrink-0" title="แก้ไข"
                         >
                           <EditOutlined />
-                          <span>แก้ไข</span>
+                          
                         </button>
                       )}
                     </div>
@@ -2768,10 +2768,10 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         {isMyProfile && (
                           <button
                             onClick={() => setActiveModal("profile")}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 text-xs font-black transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                            className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            <span>แก้ไข</span>
+                            
                           </button>
                         )}
                       </div>
@@ -3134,13 +3134,26 @@ function FriendProfilePageContent({ id }: { id: string }) {
           <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border dark:border-zinc-800 p-6">
             <h2 className="text-2xl font-black mb-6">รูปภาพ</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-              {userPosts
-                .flatMap((p) => p.images || (p.image ? [p.image] : []))
-                .filter((img) => img)
-                .map((imgSrc, idx) => (
+              {(() => {
+                const allPhotos = userPosts
+                  .flatMap((p) => p.images || (p.image ? [p.image] : []))
+                  .filter((img) => img);
+
+                if (allPhotos.length === 0) {
+                  return (
+                    <div className="col-span-full py-20 text-center">
+                      <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FileImageOutlined className="text-zinc-300 text-2xl" />
+                      </div>
+                      <p className="text-zinc-500 font-bold">ยังไม่มีรูปภาพที่โพสต์</p>
+                    </div>
+                  );
+                }
+
+                return allPhotos.map((imgSrc, idx) => (
                   <div
                     key={`gallery-photo-${idx}`}
-                    onClick={() => setSelectedImage({ images: [imgSrc], index: 0 })}
+                    onClick={() => setSelectedImage({ images: allPhotos, index: idx })}
                     className="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 cursor-pointer transition-all overflow-hidden rounded-xl group relative"
                   >
                     <img
@@ -3150,15 +3163,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     />
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                ))}
-              {userPosts.flatMap((p) => p.images || (p.image ? [p.image] : [])).length === 0 && (
-                <div className="col-span-full py-20 text-center">
-                  <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileImageOutlined className="text-zinc-300 text-2xl" />
-                  </div>
-                  <p className="text-zinc-500 font-bold">ยังไม่มีรูปภาพที่โพสต์</p>
-                </div>
-              )}
+                ));
+              })()}
             </div>
           </div>
         );
@@ -4433,8 +4439,19 @@ function FriendProfilePageContent({ id }: { id: string }) {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, x: -20 }}
-              className="relative max-w-6xl w-full flex flex-col items-center gap-4 mt-12"
+              className="relative max-w-6xl w-full flex flex-col items-center gap-4 mt-12 touch-none"
               onClick={(e) => e.stopPropagation()}
+              drag={selectedImage.images.length > 1 ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.8}
+              onDragEnd={(e, { offset, velocity }) => {
+                if (selectedImage.images.length <= 1) return;
+                if (offset.x < -50 || velocity.x < -500) {
+                  setSelectedImage((prev) => prev ? { ...prev, index: (prev.index + 1) % prev.images.length } : null);
+                } else if (offset.x > 50 || velocity.x > 500) {
+                  setSelectedImage((prev) => prev ? { ...prev, index: (prev.index - 1 + prev.images.length) % prev.images.length } : null);
+                }
+              }}
             >
               <div className="relative group">
                 <img
