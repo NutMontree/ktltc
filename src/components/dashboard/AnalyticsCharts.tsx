@@ -82,7 +82,7 @@ export default function AnalyticsCharts() {
       </div>
 
       {/* 1. Daily Trend Chart */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-zinc-900 rounded-4xl p-8 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-zinc-900 rounded-4xl p-6 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none">
         <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-2">
           <ActivityIcon className="w-5 h-5 text-blue-500" />
           แนวโน้มผู้เข้าชมเว็บไซต์ (7 วันล่าสุด)
@@ -104,7 +104,7 @@ export default function AnalyticsCharts() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 2. Device Chart */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-zinc-900 rounded-4xl p-8 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-zinc-900 rounded-4xl p-6 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none">
           <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-2 uppercase tracking-tight flex items-center gap-2">
             <Monitor className="w-5 h-5 text-purple-500" />
             สัดส่วนอุปกรณ์ (Devices)
@@ -133,7 +133,7 @@ export default function AnalyticsCharts() {
         </motion.div>
 
         {/* 3. Latest Visitors / Location */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-zinc-900 rounded-4xl p-8 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none flex flex-col h-[400px]">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-zinc-900 rounded-4xl p-6 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
               <Globe className="w-5 h-5 text-emerald-500" />

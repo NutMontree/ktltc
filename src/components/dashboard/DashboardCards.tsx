@@ -83,7 +83,7 @@ export function UsageCard({
   return (
     <motion.div
       variants={variants}
-      className="group relative p-7 rounded-[3rem] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:shadow-2xl hover:border-blue-500/30 overflow-hidden"
+      className="group relative p-6 rounded-[3rem] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:shadow-2xl hover:border-blue-500/30 overflow-hidden"
     >
       <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
         <Icon size={120} strokeWidth={1} />

@@ -276,6 +276,7 @@ export default function DashboardLoader() {
   const hasSuperAdminAccess = permissions?.access_superadmin_workspace ?? userRole === "super_admin";
 
   return (
+    <DashboardContext.Provider value={{ searchQuery, setSearchQuery }}>
     <div className="relative min-h-screen bg-transparent transition-colors duration-500">
       {/* Background Mesh Gradients */}
       <div className="fixed inset-0 z-[-1] pointer-events-none">
@@ -341,17 +342,32 @@ export default function DashboardLoader() {
               )}
             </motion.div>
 
-            {hasSuperAdminAccess && (
-              <motion.div variants={item}>
-                <Link
-                  href="/dashboard/permissions"
-                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-3xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
-                >
-                  <Layout className="w-4 h-4" />
-                  เพิ่มเมนูใหม่
-                </Link>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+              <motion.div variants={item} className="relative w-full md:w-64 shrink-0">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Search className="h-4 w-4 text-zinc-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="ค้นหาเมนู..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
+                />
               </motion.div>
-            )}
+
+              {hasSuperAdminAccess && (
+                <motion.div variants={item} className="shrink-0">
+                  <Link
+                    href="/dashboard/permissions"
+                    className="flex items-center justify-center gap-2 px-6 py-3 h-full rounded-3xl bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                  >
+                    <Layout className="w-4 h-4" />
+                    เพิ่มเมนูใหม่
+                  </Link>
+                </motion.div>
+              )}
+            </div>
           </div>
 
           {/* ============================== */}
@@ -1038,6 +1054,7 @@ export default function DashboardLoader() {
         )}
       </AnimatePresence>
     </div>
+    </DashboardContext.Provider>
   );
 }
 
