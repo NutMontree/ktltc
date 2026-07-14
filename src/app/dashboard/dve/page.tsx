@@ -5323,9 +5323,17 @@ function DVETeacherWorkspace() {
                                       </td>
                                       <td className="p-3">
                                         <div className="flex items-center gap-2">
-                                          <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] font-black shrink-0">
-                                            {(sub.studentName || "?").charAt(0)}
-                                          </div>
+                                          {sub.image ? (
+                                            <img
+                                              src={sub.image}
+                                              alt={sub.studentName}
+                                              className="w-6 h-6 rounded-full object-cover shrink-0 border dark:border-zinc-700"
+                                            />
+                                          ) : (
+                                            <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] font-black shrink-0">
+                                              {(sub.studentName || "?").charAt(0)}
+                                            </div>
+                                          )}
                                           <div className="flex flex-col">
                                             <span className="font-black text-zinc-800 dark:text-zinc-200">
                                               {sub.studentName}
