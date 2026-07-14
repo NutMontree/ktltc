@@ -61,7 +61,7 @@ export async function GET(req: Request) {
 
       // Deduplicate by IP for latest visitors
       if (!latestVisitorsMap.has(record.ip)) {
-        if (latestVisitorsMap.size < 50) {
+        if (latestVisitorsMap.size < 500) { // Keep up to 500 for the modal
           latestVisitorsMap.set(record.ip, {
             ip: record.ip,
             location: loc,
@@ -117,6 +117,29 @@ export async function GET(req: Request) {
 
   } catch (error) {
     console.error("Fetch Analytics Error:", error);
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth();
+    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+
+    // Ensure only authorized staff can clear data
+    if (!["super_admin", "admin", "director"].includes(userRole)) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // Clear the analytics collections
+    await db.collection("website_analytics").deleteMany({});
+
+    return NextResponse.json({ success: true, message: "Cleared analytics data" });
+  } catch (error) {
+    console.error("Clear Analytics Error:", error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
