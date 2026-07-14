@@ -491,7 +491,7 @@ export default function StudentDataValidationPage() {
                                   <span className="ml-1 text-slate-700 dark:text-zinc-200">{student.studentId}</span>
                                 </div>
                                 <div className="text-[10px]">
-                                  <span className="font-bold text-slate-500 dark:text-zinc-400">รหัสกลุ่ม:</span>
+                                  <span className="font-bold text-slate-500 dark:text-zinc-400">ชื่อห้องเรียน:</span>
                                   <span className="ml-1 text-slate-700 dark:text-zinc-200">{student.classGroupId}</span>
                                 </div>
                                 <div className="text-[10px]">
