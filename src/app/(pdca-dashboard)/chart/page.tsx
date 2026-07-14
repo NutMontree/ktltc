@@ -24,11 +24,11 @@ const PdcaChartPage = () => {
           fetch("/api/InternalPdcas", { cache: "no-store" }),
           fetch("/api/GeneralMemos", { cache: "no-store" })
         ]);
-        
+
         const dataPdcas = await resPdcas.json();
         const dataInternal = await resInternal.json();
         const dataGeneral = await resGeneral.json();
-        
+
         setPdcas(dataPdcas.pdcas || []);
         setInternalPdcas(dataInternal.pdcas || []); // InternalPdcas API returns { pdcas }
         setGeneralMemos(dataGeneral.memos || []); // GeneralMemos API returns { memos }
@@ -61,46 +61,46 @@ const PdcaChartPage = () => {
 
     // Filter data by selected year
     const filterByYear = (data: any[]) => selectedYear === "ทั้งหมด" ? data : data.filter(d => extractYear(d) === selectedYear);
-    
+
     const fPdcas = filterByYear(pdcas);
     const fInternal = filterByYear(internalPdcas);
     const fGeneral = filterByYear(generalMemos);
 
     // 1. Project/Memo Count by Department
     const pdcaCounts = depts.map(d => {
-      const p = fPdcas.filter(x => x.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && x.department === "ฝ่ายยุธศาสตร์และแผนงาน")).length;
-      const i = fInternal.filter(x => x.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && x.department === "ฝ่ายยุธศาสตร์และแผนงาน")).length;
+      const p = fPdcas.filter(x => x.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && x.department === "ฝ่ายยุทธศาสตร์และแผนงาน")).length;
+      const i = fInternal.filter(x => x.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && x.department === "ฝ่ายยุทธศาสตร์และแผนงาน")).length;
       return p + i;
     });
-    const generalCounts = depts.map(d => fGeneral.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุธศาสตร์และแผนงาน")).length);
+    const generalCounts = depts.map(d => fGeneral.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุทธศาสตร์และแผนงาน")).length);
 
     // 2. Average Completion % by Department (For ALL docs)
     const deptCompletion = depts.map(d => {
-      const deptPdcas = fPdcas.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุธศาสตร์และแผนงาน"));
-      const deptInternal = fInternal.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุธศาสตร์และแผนงาน"));
-      const deptGeneral = fGeneral.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุธศาสตร์และแผนงาน"));
-      
+      const deptPdcas = fPdcas.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุทธศาสตร์และแผนงาน"));
+      const deptInternal = fInternal.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุทธศาสตร์และแผนงาน"));
+      const deptGeneral = fGeneral.filter(p => p.department === d || (d === "ฝ่ายยุทธศาสตร์และแผนงาน" && p.department === "ฝ่ายยุทธศาสตร์และแผนงาน"));
+
       const totalDocs = deptPdcas.length + deptInternal.length + deptGeneral.length;
       if (totalDocs === 0) return 0;
-      
+
       const pdcaProgress = deptPdcas.reduce((acc, p) => {
         const done = Array.from({ length: 20 }, (_, i) => p[`id${i + 1}`]).filter(Boolean).length;
         return acc + (done / 20) * 100;
       }, 0);
-      
+
       const internalProgress = deptInternal.length * 100;
       const generalProgress = deptGeneral.length * 100;
-      
+
       return Math.round((pdcaProgress + internalProgress + generalProgress) / totalDocs);
     });
 
-    return { 
-      depts, 
-      pdcaCounts, 
-      generalCounts, 
-      deptCompletion, 
-      trendYears, 
-      yearCounts, 
+    return {
+      depts,
+      pdcaCounts,
+      generalCounts,
+      deptCompletion,
+      trendYears,
+      yearCounts,
       availableYears,
       totalPdca: fPdcas.length + fInternal.length,
       totalGeneral: fGeneral.length
@@ -198,7 +198,7 @@ const PdcaChartPage = () => {
                 </select>
                 <span className="absolute right-0 top-1/2 -translate-y-1/2 opacity-70 pointer-events-none">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
               </div>
@@ -218,15 +218,15 @@ const PdcaChartPage = () => {
               </div>
               <span className="rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary">Live Data</span>
             </div>
-            <ReactApexChart 
+            <ReactApexChart
               key={`bar-${selectedYear}`}
-              options={barOptions} 
+              options={barOptions}
               series={[
                 { name: 'โครงการ (PDCA)', data: chartData.pdcaCounts },
                 { name: 'บันทึกข้อความทั่วไป', data: chartData.generalCounts }
-              ]} 
-              type="bar" 
-              height={350} 
+              ]}
+              type="bar"
+              height={350}
             />
           </div>
 
