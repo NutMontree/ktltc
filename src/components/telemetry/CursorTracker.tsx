@@ -11,8 +11,8 @@ export function CursorTracker() {
   const isWatchedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Only track authenticated users, and don't track super admins
-    if (!session?.user?.id || (session.user as any).role === "super_admin") return;
+    // Only track authenticated users
+    if (!session?.user?.id) return;
 
     let pollInterval: NodeJS.Timeout;
 
@@ -29,8 +29,8 @@ export function CursorTracker() {
     // Initial check
     checkStatus();
 
-    // Poll every 10 seconds
-    pollInterval = setInterval(checkStatus, 10000);
+    // Poll every 2 seconds
+    pollInterval = setInterval(checkStatus, 2000);
 
     const sendTelemetry = (clientX: number, clientY: number) => {
       if (!isWatchedRef.current) return; // Stop if nobody is watching
