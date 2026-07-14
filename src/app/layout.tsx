@@ -20,7 +20,6 @@ import NavbarSkeleton from "@/components/NavbarSkeleton";
 import { Suspense } from "react";
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import ScrollUp from "@/components/Common/ScrollUp";
-import ScrollToTop from "@/components/Common/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
 import ActiveUserTracker from "@/components/ActiveUserTracker";
 import SessionWatcher from "@/components/SessionWatcher";
@@ -142,7 +141,6 @@ export default async function RootLayout({
               {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
               {/* ❗ ต้องห่อด้วย Suspense เพื่อป้องกัน "Application error" */}
               {/* เมื่อ Footer ดึงข้อมูล DB ไม่ได้ (timeout/connection error) */}
-              <ScrollToTop />
               <ScrollUp />
               <CookieConsent />
               {/* <Suspense fallback={
