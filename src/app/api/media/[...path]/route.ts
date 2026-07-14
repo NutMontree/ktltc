@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { existsSync, readFileSync, statSync, readdirSync, mkdirSync, copyFileSync } from 'fs';
+import { existsSync, readFileSync, statSync, readdirSync, mkdirSync, copyFileSync, promises as fsPromises } from 'fs';
 import { join, dirname } from 'path';
 import { getPublicDir } from '@/lib/cwd';
 
@@ -115,7 +115,7 @@ export async function GET(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const fileBuffer = readFileSync(filePath);
+    const fileBuffer = await fsPromises.readFile(filePath);
     
     // Determine content type based on extension
     const ext = filePath.split('.').pop()?.toLowerCase();
