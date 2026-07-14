@@ -120,9 +120,14 @@ export default function AnalyticsCharts() {
                   </p>
                 </div>
                 <div className="text-left md:text-right shrink-0 max-w-full">
-                  <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md inline-block break-all">
+                  <a 
+                    href={v.path || '/'} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[10px] font-bold text-emerald-500 hover:text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 px-2 py-1 rounded-md inline-block break-all transition-colors"
+                  >
                     {v.path || '/'}
-                  </p>
+                  </a>
                 </div>
               </div>
             ))}
