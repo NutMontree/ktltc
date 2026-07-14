@@ -65,7 +65,7 @@ export default function HomeBannerSwiper({
       >
         {banners.map((banner: any, index: number) => (
           <SwiperSlide key={banner._id}>
-            <div className="relative w-full aspect-[21/9] md:aspect-[1920/820]">
+            <div className="relative w-full">
               {banner.linkUrl ? (
                 <a
                   href={banner.linkUrl}
@@ -125,14 +125,15 @@ function BannerImage({
   isFirst: boolean;
 }) {
   return (
-    <div className="relative w-full h-full flex items-center justify-center bg-slate-50 overflow-hidden">
+    <div className="relative w-full flex items-center justify-center bg-slate-50 overflow-hidden">
       <Image
         src={src}
         alt={alt}
-        fill
+        width={1920}
+        height={1080}
         priority={isFirst}
         sizes="(max-width: 768px) 100vw, 1600px"
-        className="object-cover"
+        className="w-full h-auto object-contain"
       />
       <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-black/30 to-transparent pointer-events-none" />
     </div>
