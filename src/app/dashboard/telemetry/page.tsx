@@ -339,7 +339,7 @@ export default function TelemetryPage() {
 
         {/* Storage Breakdown */}
         {stats?.storageDetails && stats.storageDetails.length > 0 && (
-          <motion.div variants={item} className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-4xl p-2 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 overflow-hidden relative mt-8">
+          <motion.div variants={item} className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-4xl p-6 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 overflow-hidden relative mt-8">
             <div className="absolute top-0 right-0 p-8 pointer-events-none">
               <Folder className="w-32 h-32 text-zinc-50 dark:text-zinc-800/30 -rotate-12 translate-x-4 -translate-y-4" />
             </div>
