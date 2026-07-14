@@ -284,11 +284,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
   const pageUrl = `${baseUrl}/news/${id}`;
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
+    <div className="w-full bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       <main className="pb-16 md:pb-24">
         {/* --- Hero / Header Section --- */}
         <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-8 px-4">
-          <div className="max-w-[1600px] mx-auto w-full space-y-8">
+          <div className="max-w-5xl mx-auto w-full space-y-8">
             <BackButton fallbackUrl="/news">
               <div className="p-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                 <IconArrowLeft />
@@ -394,7 +394,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
           </div>
         </div>
 
-        <div className="max-w-[1600px] mx-auto w-full px-2 mt-10 space-y-12">
+        <div className="max-w-5xl mx-auto w-full px-4 md:px-8 mt-10 space-y-12">
           <NewsShareBar title={news.title} url={pageUrl} />
           {/* --- Content Body --- */}
           <article
@@ -478,11 +478,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                   จดหมายข่าวประชาสัมพันธ์
                 </h3>
               </div>
-              <div className="flex flex-col gap-10">
+              <div className="flex flex-col items-center gap-10">
                 {news.announcementImages.map((img, idx) => (
                   <div
                     key={idx}
-                    className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800"
+                    className="relative w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800"
                   >
                     {/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(img) ? (
                       <video src={img} className="w-full h-auto" controls playsInline />

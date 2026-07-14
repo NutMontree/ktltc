@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FiYoutube, FiChevronDown, FiPlus, FiMinus } from "react-icons/fi";
+import LiteYouTubeEmbed from "@/components/LiteYouTubeEmbed";
 
 /**
  * SocialFeedDisplay.tsx (Client Component): คอมโพเนนต์แสดงรายการวิดีโอ YouTube
@@ -69,14 +70,7 @@ export default function SocialFeedDisplay({
                 {/* Iframe Area */}
                 <div className="relative aspect-video w-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                   {feed.embedId ? (
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${feed.embedId}`}
-                      title={feed.title}
-                      className="w-full h-full object-cover"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      loading="lazy"
-                    />
+                    <LiteYouTubeEmbed videoId={feed.embedId} title={feed.title} />
                   ) : (
                     <div className="flex items-center justify-center w-full h-full text-zinc-400 italic text-sm">
                       ไม่พบรหัสวิดีโอ
