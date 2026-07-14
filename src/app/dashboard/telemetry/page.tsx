@@ -23,6 +23,7 @@ import Link from "next/link";
 import { Variants } from "framer-motion";
 import { StatCard, UsageCard } from "@/components/dashboard/DashboardCards";
 import { useRouter } from "next/navigation";
+import AnalyticsCharts from "@/components/dashboard/AnalyticsCharts";
 
 const container: Variants = {
   hidden: { opacity: 1 },
@@ -376,6 +377,11 @@ export default function TelemetryPage() {
             </div>
           </motion.div>
         )}
+
+        {/* --- Advanced Analytics Charts --- */}
+        <div className="mt-12 mb-4 border-t border-zinc-100 dark:border-zinc-800 pt-12">
+          <AnalyticsCharts />
+        </div>
       </motion.div>
 
 
