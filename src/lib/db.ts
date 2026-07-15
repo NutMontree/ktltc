@@ -52,6 +52,9 @@ async function createIndexes(promise: Promise<MongoClient>) {
 
     // 3. Index สำหรับการจัดลำดับ User: ใช้ในหน้าบุคลากร
     await db.collection("users").createIndex({ orderIndex: 1 });
+    
+    // 3.1 Index สำหรับ role: ช่วยให้การนับจำนวนนักเรียน (countDocuments({ role: "student" })) ทำได้เร็วขึ้น
+    await db.collection("users").createIndex({ role: 1 });
 
     // 4. Index สำหรับ Attendance: ค้นหาข้อมูลการลงเวลาได้เร็วขึ้น
     await db.collection("attendances").createIndex({ date: -1 });
