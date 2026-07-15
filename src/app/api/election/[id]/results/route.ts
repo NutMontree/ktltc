@@ -33,8 +33,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     
+    // Fetch candidates to get manualVotes
+    const candidates = await db.collection("candidates").find({ electionId: new ObjectId(id) }).toArray();
+    
+    // Fetch election config to get abstainManualVotes
+    const election = await db.collection("elections").findOne({ _id: new ObjectId(id) });
+    
     // Aggregation pipeline to get vote counts per candidate
-    const results = await db.collection("votes").aggregate([
+    const voteCounts = await db.collection("votes").aggregate([
       { $match: { electionId: new ObjectId(id) } },
       { 
         $group: { 
@@ -43,6 +49,38 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         } 
       }
     ]).toArray();
+    
+    const results = voteCounts.map(vc => {
+      if (vc._id === null) {
+          return {
+              _id: vc._id,
+              count: vc.count + (election?.abstainManualVotes || 0)
+          };
+      }
+      const candidate = candidates.find(c => c._id.toString() === vc._id?.toString());
+      return {
+          _id: vc._id,
+          count: vc.count + (candidate?.manualVotes || 0)
+      };
+    });
+    
+    // Add candidates that have manual votes but no real votes yet
+    candidates.forEach(c => {
+        if (c.manualVotes && !results.some(r => r._id?.toString() === c._id.toString())) {
+            results.push({
+                _id: c._id.toString(),
+                count: c.manualVotes
+            });
+        }
+    });
+    
+    // Add abstain manual votes if no abstain real votes yet
+    if (election?.abstainManualVotes && !results.some(r => r._id === null)) {
+        results.push({
+            _id: null,
+            count: election.abstainManualVotes
+        });
+    }
 
     const totalEligibleVoters = await db.collection("users").countDocuments({ role: "student" });
 
