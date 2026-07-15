@@ -77,6 +77,19 @@ export default function DashboardClient({ initialStats, initialPermissions, init
   const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Restore active tab from sessionStorage on mount
+  useEffect(() => {
+    const savedTab = sessionStorage.getItem("dashboardActiveTab");
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
+  // Save active tab to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem("dashboardActiveTab", activeTab);
+  }, [activeTab]);
+
   useEffect(() => {
     // If permissions needs super_admin proxy, apply it here
     if (status === "authenticated" && initialPermissions) {
