@@ -19,32 +19,35 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     
     const { id } = await params;
-    const { candidateId, manualVotes } = await req.json();
+    const { candidateId, finalScore } = await req.json();
 
-    if (typeof manualVotes !== 'number') {
-      return NextResponse.json({ error: "manualVotes must be a number" }, { status: 400 });
+    if (typeof finalScore !== 'number') {
+      return NextResponse.json({ error: "finalScore must be a number" }, { status: 400 });
     }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     
-    const updateData = {
-      manualVotes: manualVotes,
-      updatedAt: new Date()
-    };
-    
+    let onlineVotes = 0;
     let result;
+
     if (candidateId === null || candidateId === "null" || candidateId === "abstain") {
         // Handle abstain votes
+        onlineVotes = await db.collection("votes").countDocuments({ electionId: new ObjectId(id), candidateId: null });
+        const manualVotesToSave = finalScore - onlineVotes;
+        
         result = await db.collection("elections").updateOne(
             { _id: new ObjectId(id) },
-            { $set: { abstainManualVotes: manualVotes, updatedAt: new Date() } }
+            { $set: { abstainManualVotes: manualVotesToSave, updatedAt: new Date() } }
         );
     } else {
         // Handle candidate votes
+        onlineVotes = await db.collection("votes").countDocuments({ electionId: new ObjectId(id), candidateId: new ObjectId(candidateId) });
+        const manualVotesToSave = finalScore - onlineVotes;
+        
         result = await db.collection("candidates").updateOne(
             { _id: new ObjectId(candidateId), electionId: new ObjectId(id) },
-            { $set: updateData }
+            { $set: { manualVotes: manualVotesToSave, updatedAt: new Date() } }
         );
     }
 
