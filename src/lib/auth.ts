@@ -45,10 +45,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const attemptsCollection = db.collection("login_attempts");
           const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
           
-          // ล้างประวัติที่เก่ากว่า 15 นาที
-          await attemptsCollection.deleteMany({ timestamp: { $lt: fifteenMinsAgo } });
-
-          // ตรวจสอบการเข้าระบบผิดพลาดล่าสุด
+          // ตรวจสอบการเข้าระบบผิดพลาดล่าสุด (ประวัติเก่าจะถูกลบอัตโนมัติโดย TTL Index ของ MongoDB)
           const recentAttempts = await attemptsCollection.countDocuments({ 
             username: cleanUsername,
             timestamp: { $gte: fifteenMinsAgo }

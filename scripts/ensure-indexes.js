@@ -30,6 +30,12 @@ async function run() {
     await db.collection("users").createIndex({ role: 1 });
     await db.collection("users").createIndex({ username: 1 });
 
+    // Login Attempts
+    console.log("- Checking login_attempts...");
+    // สร้าง TTL Index เพื่อให้ MongoDB ลบข้อมูลอัตโนมัติหลังจากผ่านไป 15 นาที (900 วินาที)
+    await db.collection("login_attempts").createIndex({ timestamp: 1 }, { expireAfterSeconds: 900 });
+    await db.collection("login_attempts").createIndex({ username: 1 });
+
     console.log("Success: All essential indexes ensured.");
   } catch (e) {
     console.error("Error creating indexes:", e);
