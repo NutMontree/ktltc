@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { execSync } from "child_process";
+import { exec } from "child_process";
+import { promisify } from "util";
 import path from "path";
 import { getPublicDir } from "@/lib/cwd";
+
+const execAsync = promisify(exec);
 
 export const dynamic = "force-dynamic";
 
@@ -216,7 +219,7 @@ export async function GET() {
           // --- รันบนเซิร์ฟเวอร์ Linux โดยตรง (ใช้ค่า Real-time จาก OS) ---
           try {
             // RAM (ใช้ free -m เพื่อให้ตรงกับ htop/system monitor 100%)
-            const freeOutput = execSync('free -m').toString();
+            const { stdout: freeOutput } = await execAsync('free -m');
             const memLine = freeOutput.split('\n').find((line: string) => line.startsWith('Mem:'));
             if (memLine) {
               const parts = memLine.trim().split(/\s+/);
@@ -243,7 +246,7 @@ export async function GET() {
 
           try {
             // CPU (ใช้ top เพื่อดึงค่า current load จริงๆ)
-            const topOutput = execSync('top -bn1 | grep "Cpu(s)"').toString();
+            const { stdout: topOutput } = await execAsync('top -bn1 | grep "Cpu(s)"');
             const match = topOutput.match(/([\d.]+)\s+id/);
             if (match && match[1]) {
               const idle = parseFloat(match[1]);
@@ -268,7 +271,7 @@ export async function GET() {
 
           try {
             // Disk (ใช้ df เพื่อให้ตรงกับหน้าจอ Linux 100%)
-            const dfOutput = execSync('df -m /').toString();
+            const { stdout: dfOutput } = await execAsync('df -m /');
             const lines = dfOutput.trim().split('\n');
             if (lines.length > 1) {
               const parts = lines[1].trim().split(/\s+/);

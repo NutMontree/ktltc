@@ -1,11 +1,14 @@
-import { execSync } from "child_process";
+import { exec } from "child_process";
+import { promisify } from "util";
 import { NextResponse } from "next/server";
+
+const execAsync = promisify(exec);
 
 export async function GET() {
   try {
-    const output = execSync("python d:\\ktltc\\scratch\\read_docx.py", { encoding: "utf8" });
-    return NextResponse.json({ success: true, text: output });
-  } catch (error) {
+    const { stdout } = await execAsync("python d:\\ktltc\\scratch\\read_docx.py", { encoding: "utf8" });
+    return NextResponse.json({ success: true, text: stdout });
+  } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
