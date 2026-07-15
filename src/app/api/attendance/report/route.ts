@@ -101,7 +101,7 @@ export async function GET(req: Request) {
     } else {
       userQuery.role = { $in: allowedRoles };
     }
-    const allUsers = await db.collection("users").find(userQuery).toArray();
+    const allUsers = await db.collection("users").find(userQuery).project({ name: 1, username: 1, email: 1, role: 1, department: 1, image: 1 }).toArray();
     
     // ✅ Get Holidays in range
     const holidays = await db.collection("holidays").find({

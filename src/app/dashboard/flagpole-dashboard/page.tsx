@@ -245,8 +245,10 @@ export default function StudentFlagpoleDashboard() {
       }
     }
     fetchStats();
-    // Poll every 5 seconds for real-time updates
-    const interval = setInterval(fetchStats, 5000);
+    // Poll every 30 seconds for real-time updates if visible
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchStats();
+    }, 30000);
     return () => clearInterval(interval);
   }, [selectedDate, trendRange, status, previousData]);
 

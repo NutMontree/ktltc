@@ -234,7 +234,7 @@ export async function GET(req: Request) {
       return finalClean.includes(targetClean) || targetClean.includes(finalClean);
     });
 
-    const allStudents = await db.collection("users").find({ role: "student" }).toArray();
+    const allStudents = await db.collection("users").find({ role: "student" }).project({ department: 1, classGroup: 1, "studentData.department": 1, "studentData.classGroup": 1 }).toArray();
     const distinctClassGroups = Array.from(
       new Set(
         allStudents

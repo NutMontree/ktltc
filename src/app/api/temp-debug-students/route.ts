@@ -9,7 +9,7 @@ export async function GET() {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     
-    const students = await db.collection("users").find({ role: "student" }).toArray();
+    const students = await db.collection("users").find({ role: "student" }).project({ classGroupId: 1, name: 1, department: 1 }).toArray();
     
     const classGroupsMap: Record<string, { count: number; samples: string[] }> = {};
     students.forEach(s => {
