@@ -117,7 +117,7 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
           <Link href="/student/election" className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500">
             <ArrowLeft size={24} />
           </Link>
-          <div className="text-center flex-1 px-4">
+          <div className="text-center flex-1 px-4 min-w-0">
             <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">ผลคะแนน: {election.title}</h1>
             <p className="text-xs md:text-sm text-green-600 dark:text-green-400 font-medium flex items-center justify-center gap-1">
               <span className="relative flex h-2 w-2">
