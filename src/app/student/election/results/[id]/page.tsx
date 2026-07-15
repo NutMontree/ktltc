@@ -27,17 +27,23 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchData = async (isManual = false) => {
-    if (isManual) setIsRefreshing(true);
+  const fetchInitialData = async () => {
     try {
-      const [elecRes, candRes, resultRes] = await Promise.all([
+      const [elecRes, candRes] = await Promise.all([
         fetch(`/api/election/${id}`),
-        fetch(`/api/election/${id}/candidates`),
-        fetch(`/api/election/${id}/results`)
+        fetch(`/api/election/${id}/candidates`)
       ]);
-
       if (elecRes.ok) setElection(await elecRes.json());
       if (candRes.ok) setCandidates(await candRes.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchResultsData = async (isManual = false) => {
+    if (isManual) setIsRefreshing(true);
+    try {
+      const resultRes = await fetch(`/api/election/${id}/results`);
       if (resultRes.ok) {
         const data = await resultRes.json();
         setResults(data.results || []);
@@ -51,9 +57,15 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
     }
   };
 
+  const handleRefresh = async () => {
+    fetchInitialData();
+    fetchResultsData(true);
+  };
+
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(() => fetchData(), 3000); // Polling every 3 seconds for real-time updates
+    fetchInitialData();
+    fetchResultsData();
+    const interval = setInterval(() => fetchResultsData(), 3000); // Polling every 3 seconds for real-time updates
     return () => clearInterval(interval);
   }, [id]);
 
@@ -116,7 +128,7 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
             </p>
           </div>
           <button
-            onClick={() => fetchData(true)}
+            onClick={handleRefresh}
             className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-indigo-600 ${isRefreshing ? 'animate-spin' : ''}`}
             title="รีเฟรชตอนนี้"
           >
