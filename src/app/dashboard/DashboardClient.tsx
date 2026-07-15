@@ -307,7 +307,7 @@ export default function DashboardClient({ initialStats, initialPermissions, init
 
             {/* --- Quick Actions Tabs (Sticky) --- */}
             <div className="flex flex-col md:flex-row md:items-center justify-start w-full sticky top-16 md:top-20 z-40 pt-2 pb-4 -mx-4 px-4 md:-mx-8 md:px-8 bg-slate-50/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50">
-              <motion.div variants={item} className="flex flex-nowrap overflow-x-auto hide-scrollbar scrollbar-hide gap-3 p-1.5 w-full md:w-fit [&>button]:shrink-0 [-ms-overflow-style:none] [scrollbar-width:none]">
+              <motion.div variants={item} className="flex flex-nowrap md:flex-wrap overflow-x-auto hide-scrollbar scrollbar-hide gap-3 p-1.5 w-full [&>button]:shrink-0 [-ms-overflow-style:none] [scrollbar-width:none]">
                 <button
                   onClick={() => setActiveTab("all")}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 ring-2 ring-zinc-900/20 dark:ring-white/20" : "bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white border border-zinc-200 dark:border-zinc-800"}`}
