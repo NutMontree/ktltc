@@ -638,6 +638,23 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                       <div className="text-right">
                         <span className="font-black text-2xl text-gray-900 dark:text-white">{votes}</span>
                         <span className="text-sm font-medium text-gray-500 ml-2">({percentage}%)</span>
+                        <button onClick={() => {
+                          const newVotes = prompt(`เพิ่มคะแนนดิบ (Manual Votes) ให้กับ ${candidate.name}\nใส่ตัวเลขคะแนนที่ต้องการเพิ่ม (ใส่ 0 เพื่อล้างค่า):`);
+                          if (newVotes !== null && !isNaN(Number(newVotes))) {
+                            fetch(`/api/election/${id}/votes/manual`, {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ candidateId: candidate._id, manualVotes: Number(newVotes) })
+                            }).then(res => {
+                              if (res.ok) {
+                                toast.success("บันทึกคะแนนสำเร็จ");
+                                fetchData();
+                              } else toast.error("บันทึกไม่สำเร็จ");
+                            });
+                          }
+                        }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="แก้ไขคะแนนดิบ">
+                          <Edit2 size={16} />
+                        </button>
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
@@ -669,6 +686,23 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                         <div className="text-right">
                           <span className="font-black text-2xl text-gray-600 dark:text-gray-400">{abstainVotes}</span>
                           <span className="text-sm font-medium text-gray-500 ml-2">({abstainPercentage}%)</span>
+                          <button onClick={() => {
+                            const newVotes = prompt(`เพิ่มคะแนนดิบให้ช่อง "งดออกเสียง"\nใส่ตัวเลขคะแนนที่ต้องการเพิ่ม (ใส่ 0 เพื่อล้างค่า):`);
+                            if (newVotes !== null && !isNaN(Number(newVotes))) {
+                              fetch(`/api/election/${id}/votes/manual`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ candidateId: "abstain", manualVotes: Number(newVotes) })
+                              }).then(res => {
+                                if (res.ok) {
+                                  toast.success("บันทึกคะแนนสำเร็จ");
+                                  fetchData();
+                                } else toast.error("บันทึกไม่สำเร็จ");
+                              });
+                            }
+                          }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="แก้ไขคะแนนดิบงดออกเสียง">
+                            <Edit2 size={16} />
+                          </button>
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
