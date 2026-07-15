@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       ];
     }
     
-    const allMatchingUsers = await db.collection("users").find(userQuery).toArray();
+    const allMatchingUsers = await db.collection("users").find(userQuery).project({ name: 1, academicLevel: 1, studentId: 1, image: 1, department: 1, classGroupId: 1, learnerType: 1 }).toArray();
     const matchingUserIdsStr = allMatchingUsers.map(u => u._id.toString());
     const matchingUserIdsObj = allMatchingUsers.map(u => u._id);
 
