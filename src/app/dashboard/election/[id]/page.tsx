@@ -694,8 +694,8 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                               inputValue: "",
                               isSaving: false
                             });
-                          }} className="ml-3 p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200" title="เพิ่มคะแนนจากบัตรกระดาษ">
-                            <Plus size={16} />
+                          }} className="ml-3 px-2 py-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200 flex items-center gap-1 text-xs font-semibold" title="เพิ่มคะแนนจากบัตรกระดาษ">
+                            <Plus size={14} /> เพิ่ม
                           </button>
                           <button onClick={() => {
                             setManualVoteModal({
@@ -707,8 +707,8 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                               inputValue: "",
                               isSaving: false
                             });
-                          }} className="ml-1 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200" title="หักลบคะแนน (เช่น บัตรเสีย)">
-                            <Minus size={16} />
+                          }} className="ml-1 px-2 py-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 flex items-center gap-1 text-xs font-semibold" title="หักลบคะแนน (เช่น บัตรเสีย)">
+                            <Minus size={14} /> ลด
                           </button>
                         </div>
                         <div className="text-xs text-gray-400 mt-1 font-medium bg-gray-100 dark:bg-gray-800 inline-block px-2 py-1 rounded-md">
@@ -743,34 +743,39 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                           <span className="font-bold text-lg text-gray-600 dark:text-gray-400">งดออกเสียง (Abstain)</span>
                         </div>
                         <div className="text-right">
-                          <span className="font-black text-2xl text-gray-600 dark:text-gray-400">{abstainVotes}</span>
-                          <span className="text-sm font-medium text-gray-500 ml-2">({abstainPercentage}%)</span>
-                          <button onClick={() => {
-                            setManualVoteModal({
-                              isOpen: true,
-                              candidateId: "abstain",
-                              candidateName: "งดออกเสียง (Abstain)",
-                              candidateNumber: "-",
-                              action: "add",
-                              inputValue: "",
-                              isSaving: false
-                            });
-                          }} className="ml-3 p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200" title="เพิ่มคะแนนงดออกเสียงจากบัตรกระดาษ">
-                            <Plus size={16} />
-                          </button>
-                          <button onClick={() => {
-                            setManualVoteModal({
-                              isOpen: true,
-                              candidateId: "abstain",
-                              candidateName: "งดออกเสียง (Abstain)",
-                              candidateNumber: "-",
-                              action: "subtract",
-                              inputValue: "",
-                              isSaving: false
-                            });
-                          }} className="ml-1 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200" title="หักลบคะแนนงดออกเสียง">
-                            <Minus size={16} />
-                          </button>
+                          <div className="flex items-center justify-end">
+                            <span className="font-black text-2xl text-gray-600 dark:text-gray-400">{abstainVotes}</span>
+                            <span className="text-sm font-medium text-gray-500 ml-2">({abstainPercentage}%)</span>
+                            <button onClick={() => {
+                              setManualVoteModal({
+                                isOpen: true,
+                                candidateId: "abstain",
+                                candidateName: "งดออกเสียง (Abstain)",
+                                candidateNumber: "-",
+                                action: "add",
+                                inputValue: "",
+                                isSaving: false
+                              });
+                            }} className="ml-3 px-2 py-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200 flex items-center gap-1 text-xs font-semibold" title="เพิ่มคะแนนงดออกเสียงจากบัตรกระดาษ">
+                              <Plus size={14} /> เพิ่ม
+                            </button>
+                            <button onClick={() => {
+                              setManualVoteModal({
+                                isOpen: true,
+                                candidateId: "abstain",
+                                candidateName: "งดออกเสียง (Abstain)",
+                                candidateNumber: "-",
+                                action: "subtract",
+                                inputValue: "",
+                                isSaving: false
+                              });
+                            }} className="ml-1 px-2 py-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 flex items-center gap-1 text-xs font-semibold" title="หักลบคะแนนงดออกเสียง">
+                              <Minus size={14} /> ลด
+                            </button>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1 font-medium bg-gray-100 dark:bg-gray-800 inline-block px-2 py-1 rounded-md">
+                            ออนไลน์: <span className="text-blue-500">{abstainVotes - (election?.abstainManualVotes || 0)}</span> | กระดาษ: <span className={election?.abstainManualVotes > 0 ? "text-green-500" : (election?.abstainManualVotes < 0 ? "text-red-500" : "text-gray-500")}>{election?.abstainManualVotes || 0}</span>
+                          </div>
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
