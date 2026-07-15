@@ -1517,7 +1517,7 @@ export default function StudentCarePage() {
             <div className="bg-slate-100 dark:bg-zinc-950 print:bg-white relative rounded-t-3xl print:rounded-none overflow-hidden print:overflow-visible group/img">
               <div className="h-64 hidden-in-print w-full relative">
                 <div className="w-full h-full relative cursor-pointer" onClick={() => setFullscreenImage(viewRecord.imageUrls[currentImageIndex])}>
-                  <img src={viewRecord.imageUrls[currentImageIndex]} alt={`Record Image ${currentImageIndex + 1}`} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
+                  <img src={viewRecord.imageUrls[currentImageIndex] || undefined} alt={`Record Image ${currentImageIndex + 1}`} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
 
                   <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
@@ -1556,7 +1556,7 @@ export default function StudentCarePage() {
                 </div>
                 ) : viewRecord.imageUrl ? (
                 <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.imageUrl)}>
-                  <img src={viewRecord.imageUrl} alt="Record Image" className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
+                  <img src={viewRecord.imageUrl || undefined} alt="Record Image" className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
                   <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
                     ขยายเต็มจอ
@@ -1564,7 +1564,7 @@ export default function StudentCarePage() {
                 </div>
                 ) : viewRecord.studentProfileImage ? (
                 <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.studentProfileImage)}>
-                  <img src={viewRecord.studentProfileImage} alt="Profile Image" className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
+                  <img src={viewRecord.studentProfileImage || undefined} alt="Profile Image" className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
                   <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
                     ขยายเต็มจอ
