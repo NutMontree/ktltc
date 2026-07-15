@@ -348,7 +348,7 @@ export default function StudentIdCardPage() {
             <div className="w-24 h-24 rounded-full bg-white dark:bg-zinc-900 p-1.5 shadow-xl">
               <div className="w-full h-full rounded-full bg-slate-100 dark:bg-zinc-800 overflow-hidden relative border border-slate-200 dark:border-zinc-700">
                 {user?.image ? (
-                  <Image src={user.image} alt={user?.name || "Profile"} fill className="object-cover" />
+                  <Image src={user.image} alt={user?.name || "Profile"} fill sizes="96px" className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl font-black text-slate-300 dark:text-zinc-600 uppercase">
                     {(user?.name || "U")[0]}
