@@ -164,7 +164,7 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
             <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden shadow-inner">
               <div
                 className="h-full bg-linear-to-r from-indigo-500 to-blue-500 rounded-full transition-all duration-1000 ease-out relative"
-                style={{ width: `${turnoutPercentage}%` }}
+                style={{ width: `${Math.min(parseFloat(turnoutPercentage), 100)}%` }}
               >
                 <div className="absolute top-0 right-0 bottom-0 left-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-size-[1rem_1rem] animate-[progress_1s_linear_infinite]"></div>
               </div>
