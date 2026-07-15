@@ -29,8 +29,12 @@ export function CursorTracker() {
     // Initial check
     checkStatus();
 
-    // Poll every 2 seconds
-    pollInterval = setInterval(checkStatus, 2000);
+    // Poll every 30 seconds (if active)
+    pollInterval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        checkStatus();
+      }
+    }, 30000);
 
     const sendTelemetry = (clientX: number, clientY: number) => {
       if (!isWatchedRef.current) return; // Stop if nobody is watching

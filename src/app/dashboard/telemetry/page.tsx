@@ -143,7 +143,9 @@ export default function TelemetryPage() {
   useEffect(() => {
     if (status === "authenticated") {
       fetchData();
-      const interval = setInterval(fetchData, 5000);
+      const interval = setInterval(() => {
+        if (document.visibilityState === "visible") fetchData();
+      }, 15000);
       return () => clearInterval(interval);
     } else if (status === "unauthenticated") {
       setLoading(false);
@@ -173,7 +175,9 @@ export default function TelemetryPage() {
   useEffect(() => {
     let interval: any;
     if (isActiveUsersModalOpen) {
-      interval = setInterval(fetchActiveUsers, 3000);
+      interval = setInterval(() => {
+        if (document.visibilityState === "visible") fetchActiveUsers();
+      }, 15000);
     }
     return () => clearInterval(interval);
   }, [isActiveUsersModalOpen]);

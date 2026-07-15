@@ -78,8 +78,8 @@ export default function TrackingDashboard() {
       fetchLiveLocations();
 
       const interval = setInterval(() => {
-        fetchLiveLocations();
-      }, intervalSeconds * 1000);
+        if (document.visibilityState === "visible") fetchLiveLocations();
+      }, Math.max(intervalSeconds * 1000, 15000)); // Minimum 15 seconds
 
       return () => clearInterval(interval);
     });

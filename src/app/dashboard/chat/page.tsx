@@ -191,7 +191,9 @@ function ChatPageContent() {
     };
 
     fetchMessages();
-    const interval = setInterval(fetchMessages, 3000); // Poll every 3 seconds
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchMessages();
+    }, 15000); // Poll every 15 seconds if active
 
     return () => clearInterval(interval);
   }, [activeChat]);
@@ -218,7 +220,9 @@ function ChatPageContent() {
     };
 
     fetchChats(true);
-    const interval = setInterval(() => fetchChats(false), 3000); // Poll list every 3 seconds
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchChats(false);
+    }, 15000); // Poll list every 15 seconds if active
 
     return () => clearInterval(interval);
   }, [status]);
