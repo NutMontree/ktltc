@@ -65,7 +65,9 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
   useEffect(() => {
     fetchInitialData();
     fetchResultsData();
-    const interval = setInterval(() => fetchResultsData(), 3000); // Polling every 3 seconds for real-time updates
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchResultsData();
+    }, 15000); // Polling every 15 seconds for real-time updates
     return () => clearInterval(interval);
   }, [id]);
 

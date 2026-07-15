@@ -170,7 +170,9 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchResultsOnly, 3000); // Real-time poll every 3s
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchResultsOnly();
+    }, 15000); // Real-time poll every 15s if visible
     return () => clearInterval(interval);
   }, [id]);
 
