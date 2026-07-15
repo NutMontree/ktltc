@@ -341,6 +341,12 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
               ปิดรับคะแนนโหวต
             </button>
           )}
+          
+          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+
+          <button onClick={() => window.open(`/student/election/results/${id}`, '_blank')} className="px-6 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 active:scale-95 transition-all rounded-xl text-sm font-bold shadow-sm flex items-center gap-2">
+            <BarChart3 size={16} /> ดูหน้าจอผลโหวต (นักเรียน)
+          </button>
         </div>
       </div>
 
@@ -355,7 +361,7 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
           className={`px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all ${activeTab === 'results' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
           onClick={() => setActiveTab('results')}
         >
-          <BarChart3 size={18} /> ผลคะแนนโหวต
+          <BarChart3 size={18} /> ตั้งผลคะแนนโหวต
         </button>
         <button 
           className={`px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all ${activeTab === 'settings' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'}`}
