@@ -36,6 +36,20 @@ async function run() {
     await db.collection("login_attempts").createIndex({ timestamp: 1 }, { expireAfterSeconds: 900 });
     await db.collection("login_attempts").createIndex({ username: 1 });
 
+    // Student Care Records
+    console.log("- Checking student_care_records...");
+    await db.collection("student_care_records").createIndex({ createdAt: -1 });
+    await db.collection("student_care_records").createIndex({ studentId: 1 });
+
+    // Flagpole Attendances
+    console.log("- Checking flagpole_attendances...");
+    await db.collection("flagpole_attendances").createIndex({ date: -1 });
+    await db.collection("flagpole_attendances").createIndex({ studentId: 1 });
+    
+    // Off Campus Sessions
+    console.log("- Checking off_campus_sessions...");
+    await db.collection("off_campus_sessions").createIndex({ studentId: 1, status: 1 });
+
     console.log("Success: All essential indexes ensured.");
   } catch (e) {
     console.error("Error creating indexes:", e);
