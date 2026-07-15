@@ -21,14 +21,17 @@ export default function StudentIdCardPage() {
 
   useEffect(() => {
     fetch("/api/settings/tracking")
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("API tracking not found");
+        return res.json();
+      })
       .then(data => {
-        if (data.success && data.data) {
+        if (data && data.success && data.data) {
           setWebrtcEnabled(data.data.webrtc_hack_enabled);
           setPipEnabled(data.data.pip_hack_enabled);
         }
       })
-      .catch(console.error);
+      .catch((err) => console.log("Tracking settings ignored:", err.message));
   }, []);
 
   // === Screen Wake Lock: Keep screen ON ===
