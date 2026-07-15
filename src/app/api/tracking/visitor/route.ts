@@ -50,31 +50,8 @@ export async function POST(req: NextRequest) {
         city = cachedIp.city;
         if (country === "Unknown") country = cachedIp.country;
       } else {
-        // Fetch from external API if not cached
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
-          const ipRes = await fetch(`http://ip-api.com/json/${ip}`, { signal: controller.signal });
-          clearTimeout(timeoutId);
-          
-          if (ipRes.ok) {
-            const ipData = await ipRes.json();
-            if (ipData.status === "success") {
-              city = ipData.city || city;
-              country = ipData.countryCode || ipData.country || country;
-              
-              // Save to cache
-              await db.collection("ip_locations").insertOne({
-                ip,
-                city,
-                country,
-                createdAt: new Date()
-              });
-            }
-          }
-        } catch (e) {
-          console.error("IP Geolocation Fetch Error:", e);
-        }
+        // Disabled external API fetch to prevent rate limiting issues and thread exhaustion under high load.
+        // It will fallback to Cloudflare headers or "Unknown".
       }
     }
 

@@ -28,9 +28,9 @@ export default function ActiveUserTracker() {
       } catch (err) {}
     };
 
-    // Ping visitor immediately on mount and path change, then every 30 seconds
-    pingVisitor();
-    const visitorInterval = setInterval(pingVisitor, 30 * 1000);
+    // Ping visitor with a small delay to avoid spamming on fast navigation
+    const timeoutId = setTimeout(pingVisitor, 2000);
+    const visitorInterval = setInterval(pingVisitor, 120 * 1000);
 
     // 3. Ping for Logged-in Users (Legacy tracking)
     let userInterval: any;
@@ -54,6 +54,7 @@ export default function ActiveUserTracker() {
     }
 
     return () => {
+      clearTimeout(timeoutId);
       clearInterval(visitorInterval);
       if (userInterval) clearInterval(userInterval);
     };

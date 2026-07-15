@@ -70,8 +70,12 @@ async function createIndexes(promise: Promise<MongoClient>) {
     await db.collection("candidates").createIndex({ electionId: 1 });
     await db.collection("votes").createIndex({ electionId: 1, userId: 1 }, { unique: true });
 
-    // 7. Index สำหรับ Real-time Visitors (TTL 60 seconds)
+    // 7. Index สำหรับ Real-time Visitors (TTL 60 seconds) และการค้นหา
     await db.collection("visitors_live").createIndex({ lastActiveAt: 1 }, { expireAfterSeconds: 60 });
+    await db.collection("visitors_live").createIndex({ visitorId: 1 });
+    
+    // 7.1 Index สำหรับ Website Analytics (Upsert Query)
+    await db.collection("website_analytics").createIndex({ visitorId: 1, date: 1 }, { unique: true });
 
     // 8. Index สำหรับ Rate Limiting (TTL 15 minutes) - แก้ปัญหาเว็บค้างตอนคนล็อกอินพร้อมกันเยอะๆ
     await db.collection("login_attempts").createIndex({ timestamp: 1 }, { expireAfterSeconds: 900 });
