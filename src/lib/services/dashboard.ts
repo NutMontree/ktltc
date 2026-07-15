@@ -359,3 +359,82 @@ export const getCachedDashboardStats = unstable_cache(async (userRole: string) =
     return { error: "Internal Server Error" };
   }
 }, ["admin-dashboard-stats"], { revalidate: 60 });
+
+export const getCachedMenus = unstable_cache(async () => {
+  try {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const menus = await db.collection("custom_menus").find({}).toArray();
+    return JSON.parse(JSON.stringify(menus));
+  } catch (err) {
+    return [];
+  }
+}, ["admin-menus-cache"], { revalidate: 60 });
+
+export const getCachedPermissions = unstable_cache(async (role: string) => {
+  try {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const dbPermission = await db.collection("role_permissions").findOne({ role });
+    
+    // Default fallback
+    const permissions = {
+      access_dashboard: ["super_admin", "admin", "hr", "director", "editor", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role),
+      manage_users: ["super_admin"].includes(role),
+      manage_news: ["super_admin", "admin", "editor"].includes(role),
+      manage_home: ["super_admin", "admin"].includes(role),
+      manage_navbar: ["super_admin", "admin"].includes(role),
+      manage_pages: ["super_admin", "editor"].includes(role),
+      manage_attendance: ["super_admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role),
+      manage_qa: ["super_admin", "admin"].includes(role),
+      manage_system: ["super_admin"].includes(role),
+      student_dashboard: ["super_admin", "admin", "deputy_student_affairs", "student"].includes(role),
+      manage_flagpole_data: ["super_admin", "admin", "deputy_student_affairs"].includes(role),
+      manage_flagpole_settings: ["super_admin", "admin", "deputy_student_affairs"].includes(role),
+      access_dve_teacher: ["super_admin", "admin", "teacher"].includes(role),
+      access_dve_student: ["super_admin", "admin", "student"].includes(role),
+      manage_supervision_requests: ["super_admin"].includes(role),
+      access_teacher_verification: ["super_admin"].includes(role),
+      access_teacher_dashboard: ["super_admin"].includes(role),
+      access_lesson_plans: ["super_admin"].includes(role),
+      access_dpa_evaluation: ["super_admin"].includes(role),
+      access_plc: ["super_admin"].includes(role),
+      access_student_care: ["super_admin"].includes(role),
+      manage_attendance_dashboard: ["super_admin"].includes(role),
+      manage_attendance_work_reports: ["super_admin"].includes(role),
+      manage_attendance_leave_approvals: ["super_admin"].includes(role),
+      ...(dbPermission?.permissions || {})
+    };
+
+    if (role === "super_admin") {
+      permissions.manage_home = true;
+      permissions.manage_users = true;
+      permissions.manage_news = true;
+      permissions.manage_navbar = true;
+      permissions.manage_pages = true;
+      permissions.manage_qa = true;
+      permissions.manage_system = true;
+      permissions.access_dashboard = true;
+      permissions.student_dashboard = true;
+      permissions.manage_attendance = true;
+      permissions.manage_flagpole_data = true;
+      permissions.manage_flagpole_settings = true;
+      permissions.access_dve_teacher = true;
+      permissions.access_dve_student = true;
+      permissions.manage_supervision_requests = true;
+      permissions.access_teacher_verification = true;
+      permissions.access_teacher_dashboard = true;
+      permissions.access_lesson_plans = true;
+      permissions.access_dpa_evaluation = true;
+      permissions.access_plc = true;
+      permissions.access_student_care = true;
+      permissions.manage_attendance_dashboard = true;
+      permissions.manage_attendance_work_reports = true;
+      permissions.manage_attendance_leave_approvals = true;
+    }
+
+    return JSON.parse(JSON.stringify(permissions));
+  } catch (err) {
+    return {};
+  }
+}, ["role-permissions-cache"], { revalidate: 60 });
