@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const { stdout } = await execAsync("python d:\\ktltc\\scratch\\read_docx.py", { encoding: "utf8" });
     return NextResponse.json({ success: true, text: stdout });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
