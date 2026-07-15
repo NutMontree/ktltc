@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Plus, Trash2, Edit2, Users, BarChart3, Settings, Upload } from "lucide-react";
+import { Plus, Trash2, Edit2, Users, BarChart3, Settings, Upload, Minus, AlertCircle, X } from "lucide-react";
 import { format } from "date-fns";
 import { uploadFile } from "@/lib/upload";
 
@@ -115,11 +115,50 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
     members: { name: string; role: string; imageUrl?: string }[];
   }>({ number: "", name: "", partyName: "", policy: "", imageUrl: "", members: [] });
   const [uploadingImage, setUploadingImage] = useState(false);
-  
   // Search Users
   const [searchName, setSearchName] = useState("");
   const [searchDepartment, setSearchDepartment] = useState("");
   const [searchRoom, setSearchRoom] = useState("");
+
+  // Manual Vote Modal
+  const [manualVoteModal, setManualVoteModal] = useState<{
+    isOpen: boolean;
+    candidateId: string;
+    candidateName: string;
+    candidateNumber: string;
+    action: "add" | "subtract";
+    inputValue: string;
+    isSaving: boolean;
+  }>({ isOpen: false, candidateId: "", candidateName: "", candidateNumber: "", action: "add", inputValue: "", isSaving: false });
+
+  const handleSaveManualVote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualVoteModal.inputValue || isNaN(Number(manualVoteModal.inputValue)) || Number(manualVoteModal.inputValue) <= 0) return;
+    
+    setManualVoteModal(prev => ({ ...prev, isSaving: true }));
+    try {
+      const res = await fetch(`/api/election/${id}/votes/manual`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          candidateId: manualVoteModal.candidateId, 
+          amount: Number(manualVoteModal.inputValue),
+          action: manualVoteModal.action
+        })
+      });
+      if (res.ok) {
+        toast.success(manualVoteModal.action === "add" ? "บวกคะแนนสำเร็จ" : "หักลบคะแนนสำเร็จ");
+        fetchData();
+        setManualVoteModal(prev => ({ ...prev, isOpen: false }));
+      } else {
+        toast.error("อัปเดตไม่สำเร็จ");
+      }
+    } catch (err) {
+      toast.error("เกิดข้อผิดพลาด");
+    } finally {
+      setManualVoteModal(prev => ({ ...prev, isSaving: false }));
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -645,21 +684,30 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                         <span className="font-black text-2xl text-gray-900 dark:text-white">{votes}</span>
                         <span className="text-sm font-medium text-gray-500 ml-2">({percentage}%)</span>
                         <button onClick={() => {
-                          const newVotes = prompt(`กรอก "คะแนนจากบัตรกระดาษ" สำหรับเบอร์ ${candidate.number}\n(ระบบจะนำคะแนนนี้ไปบวกเพิ่มกับคะแนนโหวตออนไลน์ที่มีอยู่แล้วให้อัตโนมัติ):`, (candidate.manualVotes || 0).toString());
-                          if (newVotes !== null && !isNaN(Number(newVotes))) {
-                            fetch(`/api/election/${id}/votes/manual`, {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ candidateId: candidate._id, additionalVotes: Number(newVotes) })
-                            }).then(res => {
-                              if (res.ok) {
-                                toast.success("เพิ่มคะแนนบัตรกระดาษสำเร็จ");
-                                fetchData();
-                              } else toast.error("อัปเดตไม่สำเร็จ");
-                            });
-                          }
-                        }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="เพิ่มคะแนนจากบัตรกระดาษ">
-                          <Edit2 size={16} />
+                          setManualVoteModal({
+                            isOpen: true,
+                            candidateId: candidate._id,
+                            candidateName: candidate.name,
+                            candidateNumber: candidate.number,
+                            action: "add",
+                            inputValue: "",
+                            isSaving: false
+                          });
+                        }} className="ml-3 p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200" title="เพิ่มคะแนนจากบัตรกระดาษ">
+                          <Plus size={16} />
+                        </button>
+                        <button onClick={() => {
+                          setManualVoteModal({
+                            isOpen: true,
+                            candidateId: candidate._id,
+                            candidateName: candidate.name,
+                            candidateNumber: candidate.number,
+                            action: "subtract",
+                            inputValue: "",
+                            isSaving: false
+                          });
+                        }} className="ml-1 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200" title="หักลบคะแนน (เช่น บัตรเสีย)">
+                          <Minus size={16} />
                         </button>
                       </div>
                     </div>
@@ -693,21 +741,30 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                           <span className="font-black text-2xl text-gray-600 dark:text-gray-400">{abstainVotes}</span>
                           <span className="text-sm font-medium text-gray-500 ml-2">({abstainPercentage}%)</span>
                           <button onClick={() => {
-                            const newVotes = prompt(`กรอก "คะแนนจากบัตรกระดาษ" สำหรับช่องงดออกเสียง\n(ระบบจะนำคะแนนนี้ไปบวกเพิ่มกับคะแนนโหวตออนไลน์ที่มีอยู่แล้วให้อัตโนมัติ):`, (electionData?.abstainManualVotes || 0).toString());
-                            if (newVotes !== null && !isNaN(Number(newVotes))) {
-                              fetch(`/api/election/${id}/votes/manual`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ candidateId: "abstain", additionalVotes: Number(newVotes) })
-                              }).then(res => {
-                                if (res.ok) {
-                                  toast.success("เพิ่มคะแนนบัตรกระดาษสำเร็จ");
-                                  fetchData();
-                                } else toast.error("อัปเดตไม่สำเร็จ");
-                              });
-                            }
-                          }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="เพิ่มคะแนนจากบัตรกระดาษ">
-                            <Edit2 size={16} />
+                            setManualVoteModal({
+                              isOpen: true,
+                              candidateId: "abstain",
+                              candidateName: "งดออกเสียง (Abstain)",
+                              candidateNumber: "-",
+                              action: "add",
+                              inputValue: "",
+                              isSaving: false
+                            });
+                          }} className="ml-3 p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200" title="เพิ่มคะแนนงดออกเสียงจากบัตรกระดาษ">
+                            <Plus size={16} />
+                          </button>
+                          <button onClick={() => {
+                            setManualVoteModal({
+                              isOpen: true,
+                              candidateId: "abstain",
+                              candidateName: "งดออกเสียง (Abstain)",
+                              candidateNumber: "-",
+                              action: "subtract",
+                              inputValue: "",
+                              isSaving: false
+                            });
+                          }} className="ml-1 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200" title="หักลบคะแนนงดออกเสียง">
+                            <Minus size={16} />
                           </button>
                         </div>
                       </div>
@@ -811,6 +868,87 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                   className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 disabled:bg-blue-400 disabled:shadow-none"
                 >
                   {isSavingSettings ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Vote Modal */}
+      {manualVoteModal.isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => !manualVoteModal.isSaving && setManualVoteModal(prev => ({ ...prev, isOpen: false }))}></div>
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative z-10 overflow-hidden">
+            {/* Header */}
+            <div className={`absolute top-0 left-0 w-full h-2 ${manualVoteModal.action === "add" ? "bg-green-500" : "bg-red-500"}`}></div>
+            <div className="flex justify-between items-start mb-6 pt-2">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${manualVoteModal.action === "add" ? "bg-green-100 text-green-600 dark:bg-green-900/30" : "bg-red-100 text-red-600 dark:bg-red-900/30"}`}>
+                  {manualVoteModal.action === "add" ? <Plus size={20} /> : <Minus size={20} />}
+                </div>
+                <div>
+                  <h3 className={`text-xl font-bold ${manualVoteModal.action === "add" ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
+                    {manualVoteModal.action === "add" ? "บวกคะแนนเพิ่ม" : "หักลบคะแนน"}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">ระบุจำนวนที่ต้องการ{manualVoteModal.action === "add" ? "เพิ่ม" : "ลบ"}</p>
+                </div>
+              </div>
+              <button onClick={() => setManualVoteModal(prev => ({ ...prev, isOpen: false }))} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Candidate Info */}
+            <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700 mb-6 flex items-center gap-4">
+              <div className="w-12 h-12 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-full flex justify-center items-center font-black text-xl shrink-0 shadow-sm border border-gray-200 dark:border-gray-600">
+                {manualVoteModal.candidateNumber}
+              </div>
+              <div className="font-bold text-gray-900 dark:text-white text-lg">{manualVoteModal.candidateName}</div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSaveManualVote}>
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  ระบุจำนวนคะแนน <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  autoFocus
+                  placeholder={manualVoteModal.action === "add" ? "+ จำนวนคะแนน" : "- จำนวนคะแนน"}
+                  value={manualVoteModal.inputValue}
+                  onChange={(e) => setManualVoteModal(prev => ({ ...prev, inputValue: e.target.value }))}
+                  className={`w-full px-4 py-4 text-2xl font-black border-2 rounded-2xl focus:outline-none transition-all text-center ${
+                    manualVoteModal.action === "add" 
+                      ? "focus:border-green-500 focus:ring-4 focus:ring-green-500/20 text-green-700 dark:text-green-400 border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+                      : "focus:border-red-500 focus:ring-4 focus:ring-red-500/20 text-red-700 dark:text-red-400 border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+                  }`}
+                />
+              </div>
+              
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  disabled={manualVoteModal.isSaving}
+                  onClick={() => setManualVoteModal(prev => ({ ...prev, isOpen: false }))}
+                  className="px-6 py-3 rounded-xl font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-all disabled:opacity-50"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  disabled={manualVoteModal.isSaving}
+                  className={`px-6 py-3 rounded-xl text-white font-bold transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:shadow-none ${
+                    manualVoteModal.action === "add" 
+                      ? "bg-green-600 hover:bg-green-700 shadow-green-600/30" 
+                      : "bg-red-600 hover:bg-red-700 shadow-red-600/30"
+                  }`}
+                >
+                  {manualVoteModal.isSaving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>}
+                  {manualVoteModal.isSaving ? 'กำลังบันทึก...' : 'บันทึกคะแนน'}
                 </button>
               </div>
             </form>

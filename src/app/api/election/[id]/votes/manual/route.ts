@@ -19,28 +19,29 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     
     const { id } = await params;
-    const { candidateId, additionalVotes } = await req.json();
+    const { candidateId, amount, action } = await req.json();
 
-    if (typeof additionalVotes !== 'number') {
-      return NextResponse.json({ error: "additionalVotes must be a number" }, { status: 400 });
+    if (typeof amount !== 'number' || !['add', 'subtract'].includes(action)) {
+      return NextResponse.json({ error: "Invalid amount or action" }, { status: 400 });
     }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     
     let result;
+    const incAmount = action === "add" ? amount : -amount;
 
     if (candidateId === null || candidateId === "null" || candidateId === "abstain") {
         // Handle abstain votes
         result = await db.collection("elections").updateOne(
             { _id: new ObjectId(id) },
-            { $set: { abstainManualVotes: additionalVotes, updatedAt: new Date() } }
+            { $inc: { abstainManualVotes: incAmount }, $set: { updatedAt: new Date() } }
         );
     } else {
         // Handle candidate votes
         result = await db.collection("candidates").updateOne(
             { _id: new ObjectId(candidateId), electionId: new ObjectId(id) },
-            { $set: { manualVotes: additionalVotes, updatedAt: new Date() } }
+            { $inc: { manualVotes: incAmount }, $set: { updatedAt: new Date() } }
         );
     }
 
