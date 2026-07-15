@@ -44,6 +44,7 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  preload: false,
 });
 
 const sarabun = Sarabun({
@@ -51,6 +52,7 @@ const sarabun = Sarabun({
   weight: ['400', '500', '600', '700'],
   variable: '--font-sarabun',
   display: 'swap',
+  preload: false,
 });
 
 const charm = Charm({
@@ -58,6 +60,7 @@ const charm = Charm({
   weight: ['400', '700'],
   variable: '--font-charm',
   display: 'swap',
+  preload: false,
 });
 
 // 2. กำหนด Metadata สำหรับ SEO และการแชร์ลง Social Media (Open Graph)

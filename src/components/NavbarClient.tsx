@@ -578,6 +578,7 @@ export default function NavbarClient({
                               alt={username || "User"}
                               width={48}
                               height={48}
+                              priority
                               className="w-full h-full object-cover"
                             />
                           ) : (
