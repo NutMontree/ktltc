@@ -681,34 +681,39 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                         <span className="font-bold text-lg text-gray-900 dark:text-white">{candidate.name}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-black text-2xl text-gray-900 dark:text-white">{votes}</span>
-                        <span className="text-sm font-medium text-gray-500 ml-2">({percentage}%)</span>
-                        <button onClick={() => {
-                          setManualVoteModal({
-                            isOpen: true,
-                            candidateId: candidate._id,
-                            candidateName: candidate.name,
-                            candidateNumber: candidate.number,
-                            action: "add",
-                            inputValue: "",
-                            isSaving: false
-                          });
-                        }} className="ml-3 p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200" title="เพิ่มคะแนนจากบัตรกระดาษ">
-                          <Plus size={16} />
-                        </button>
-                        <button onClick={() => {
-                          setManualVoteModal({
-                            isOpen: true,
-                            candidateId: candidate._id,
-                            candidateName: candidate.name,
-                            candidateNumber: candidate.number,
-                            action: "subtract",
-                            inputValue: "",
-                            isSaving: false
-                          });
-                        }} className="ml-1 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200" title="หักลบคะแนน (เช่น บัตรเสีย)">
-                          <Minus size={16} />
-                        </button>
+                        <div className="flex items-center justify-end">
+                          <span className="font-black text-2xl text-gray-900 dark:text-white">{votes}</span>
+                          <span className="text-sm font-medium text-gray-500 ml-2">({percentage}%)</span>
+                          <button onClick={() => {
+                            setManualVoteModal({
+                              isOpen: true,
+                              candidateId: candidate._id,
+                              candidateName: candidate.name,
+                              candidateNumber: candidate.number,
+                              action: "add",
+                              inputValue: "",
+                              isSaving: false
+                            });
+                          }} className="ml-3 p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200" title="เพิ่มคะแนนจากบัตรกระดาษ">
+                            <Plus size={16} />
+                          </button>
+                          <button onClick={() => {
+                            setManualVoteModal({
+                              isOpen: true,
+                              candidateId: candidate._id,
+                              candidateName: candidate.name,
+                              candidateNumber: candidate.number,
+                              action: "subtract",
+                              inputValue: "",
+                              isSaving: false
+                            });
+                          }} className="ml-1 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200" title="หักลบคะแนน (เช่น บัตรเสีย)">
+                            <Minus size={16} />
+                          </button>
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1 font-medium bg-gray-100 dark:bg-gray-800 inline-block px-2 py-1 rounded-md">
+                          ออนไลน์: <span className="text-blue-500">{votes - (candidate.manualVotes || 0)}</span> | กระดาษ: <span className={candidate.manualVotes > 0 ? "text-green-500" : (candidate.manualVotes < 0 ? "text-red-500" : "text-gray-500")}>{candidate.manualVotes || 0}</span>
+                        </div>
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
