@@ -687,20 +687,20 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                           <span className="font-black text-2xl text-gray-600 dark:text-gray-400">{abstainVotes}</span>
                           <span className="text-sm font-medium text-gray-500 ml-2">({abstainPercentage}%)</span>
                           <button onClick={() => {
-                            const newVotes = prompt(`เพิ่มคะแนนดิบให้ช่อง "งดออกเสียง"\nใส่ตัวเลขคะแนนที่ต้องการเพิ่ม (ใส่ 0 เพื่อล้างค่า):`);
+                            const newVotes = prompt(`กรอก "คะแนนรวมทั้งหมดสุทธิ" สำหรับช่องงดออกเสียง\n(ระบบจะคำนวณหักลบกับคะแนนโหวตในเว็บให้เอง):`, abstainVotes.toString());
                             if (newVotes !== null && !isNaN(Number(newVotes))) {
                               fetch(`/api/election/${id}/votes/manual`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ candidateId: "abstain", manualVotes: Number(newVotes) })
+                                body: JSON.stringify({ candidateId: "abstain", finalScore: Number(newVotes) })
                               }).then(res => {
                                 if (res.ok) {
-                                  toast.success("บันทึกคะแนนสำเร็จ");
+                                  toast.success("อัปเดตคะแนนรวมสำเร็จ");
                                   fetchData();
-                                } else toast.error("บันทึกไม่สำเร็จ");
+                                } else toast.error("อัปเดตไม่สำเร็จ");
                               });
                             }
-                          }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="แก้ไขคะแนนดิบงดออกเสียง">
+                          }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="แก้ไขคะแนนรวมสุทธิ">
                             <Edit2 size={16} />
                           </button>
                         </div>
