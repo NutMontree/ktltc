@@ -50,6 +50,10 @@ async function run() {
     console.log("- Checking off_campus_sessions...");
     await db.collection("off_campus_sessions").createIndex({ studentId: 1, status: 1 });
 
+    // Logs
+    console.log("- Checking logs...");
+    await db.collection("logs").createIndex({ timestamp: -1 });
+
     console.log("Success: All essential indexes ensured.");
   } catch (e) {
     console.error("Error creating indexes:", e);

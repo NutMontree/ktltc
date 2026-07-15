@@ -9,22 +9,12 @@ export async function POST() {
     const db = client.db("ktltc_db");
     const usersCollection = db.collection("users");
 
-    // Fetch all users
-    const allUsers = await usersCollection.find({}).toArray();
+    // Filter fake users directly in DB
+    const deleteResult = await usersCollection.deleteMany({ email: { $regex: "^fake_" } });
     
-    // Filter fake users locally
-    const fakeUsers = allUsers.filter(u => u.email && u.email.startsWith("fake_"));
-    const toDeleteIds = fakeUsers.map(u => u._id);
-
-    let deletedCount = 0;
-    if (toDeleteIds.length > 0) {
-      const deleteResult = await usersCollection.deleteMany({ _id: { $in: toDeleteIds } });
-      deletedCount = deleteResult.deletedCount;
-    }
-
     return NextResponse.json({ 
       success: true, 
-      message: `Found ${fakeUsers.length} fakes in array, successfully deleted ${deletedCount} fake records from data.ts migration.`, 
+      message: `Successfully deleted ${deleteResult.deletedCount} fake records.`, 
     });
   } catch (error) {
     console.error("Deletion error:", error);
