@@ -82,15 +82,44 @@ export default function DashboardLoader() {
       if (status !== "authenticated") return;
       try {
         setLoading(true);
-        const [statsRes, permRes, menusRes] = await Promise.all([
-          fetch("/api/admin/dashboard-stats?_t=" + Date.now()),
+        
+        const userRole = (session?.user?.role || "").toLowerCase();
+        const isStudent = ["student", "user"].includes(userRole);
+        
+        // Define base requests
+        const requests = [
           fetch("/api/auth/permissions?_t=" + Date.now()),
           fetch("/api/admin/menus?_t=" + Date.now()),
-        ]);
+        ];
+        
+        // Add stats request only if they might need it (non-students)
+        if (!isStudent) {
+          requests.unshift(fetch("/api/admin/dashboard-stats?_t=" + Date.now()));
+        }
 
-        if (!statsRes.ok) throw new Error("Failed to fetch dashboard statistics");
-        const statsData = await statsRes.json();
-        setStats(statsData);
+        const responses = await Promise.all(requests);
+        
+        let statsRes: Response | undefined;
+        let permRes: Response;
+        let menusRes: Response;
+        
+        if (!isStudent) {
+          [statsRes, permRes, menusRes] = responses;
+        } else {
+          [permRes, menusRes] = responses;
+        }
+
+        if (!isStudent && statsRes && !statsRes.ok) {
+           throw new Error("Failed to fetch dashboard statistics");
+        }
+        
+        if (statsRes && statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData);
+        } else {
+          // For students, set dummy stats so the UI can proceed without erroring out
+          setStats({ isStudentEmptyStats: true });
+        }
 
         if (permRes.ok) {
           const permData = await permRes.json();

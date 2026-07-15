@@ -45,7 +45,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const attemptsCollection = db.collection("login_attempts");
           const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
           
-          // ตรวจสอบการเข้าระบบผิดพลาดล่าสุด (ประวัติเก่าจะถูกลบอัตโนมัติโดย TTL Index ของ MongoDB)
+          // (TTL Index ใน MongoDB จะคอยจัดการลบข้อมูลที่เก่ากว่า 15 นาทีให้อัตโนมัติ แทนการใช้ deleteMany ตรงนี้)
+
+          // ตรวจสอบการเข้าระบบผิดพลาดล่าสุด
           const recentAttempts = await attemptsCollection.countDocuments({ 
             username: cleanUsername,
             timestamp: { $gte: fifteenMinsAgo }
@@ -56,11 +58,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             throw new Error("บัญชีถูกระงับการเข้าสู่ระบบชั่วคราว (15 นาที) เนื่องจากพยายามเข้าระบบผิดพลาดหลายครั้ง");
           }
 
-          // 2. ค้นหาผู้ใช้ในฐานข้อมูล (ค้นหาแบบไม่สนตัวพิมพ์เล็ก-ใหญ่)
+          // 2. ค้นหาผู้ใช้ในฐานข้อมูล (ใช้ exact match ก่อนเพื่อเรียกใช้ Index)
           console.log(`[AUTH] Querying database for: "${cleanUsername}"...`);
-          const user = await db
+          let user = await db
             .collection("users")
-            .findOne({ username: { $regex: new RegExp(`^${cleanUsername}$`, "i") } });
+            .findOne({ username: cleanUsername });
+
+          // หากไม่พบ และไม่ใช่ตัวเลขล้วน (ไม่ใช่รหัสนักศึกษา) ให้ค้นหาแบบ case-insensitive (Fallback)
+          if (!user && isNaN(Number(cleanUsername))) {
+            user = await db
+              .collection("users")
+              .findOne({ username: { $regex: new RegExp(`^${cleanUsername}$`, "i") } });
+          }
 
           if (!user) {
             console.warn(`[AUTH] User not found: "${cleanUsername}"`);

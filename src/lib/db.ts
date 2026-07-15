@@ -70,6 +70,27 @@ async function createIndexes(promise: Promise<MongoClient>) {
     // 7. Index สำหรับ Real-time Visitors (TTL 60 seconds)
     await db.collection("visitors_live").createIndex({ lastActiveAt: 1 }, { expireAfterSeconds: 60 });
 
+    // 8. Index สำหรับ Rate Limiting (TTL 15 minutes) - แก้ปัญหาเว็บค้างตอนคนล็อกอินพร้อมกันเยอะๆ
+    await db.collection("login_attempts").createIndex({ timestamp: 1 }, { expireAfterSeconds: 900 });
+    // เพิ่ม Index ค้นหา username + timestamp เพื่อความเร็วตอนนับจำนวนที่ผิด
+    await db.collection("login_attempts").createIndex({ username: 1, timestamp: -1 });
+
+    // 9. Index สำหรับระบบติดตามพิกัด GPS (Off Campus Sessions)
+    // รองรับ Request 333+ ต่อวินาที เวลาเด็กเปิดหน้านี้ทิ้งไว้
+    await db.collection("off_campus_sessions").createIndex({ studentId: 1, status: 1 });
+
+    // 10. Index สำหรับระบบจัดการสิทธิ์ (Role Permissions)
+    // รองรับการโหลดหน้า Dashboard ของเด็ก 5000 คน ไม่ให้ DB ทำ Full Scan
+    await db.collection("role_permissions").createIndex({ role: 1 }, { unique: true });
+
+    // 11. Index สำหรับระบบ Custom Menus
+    await db.collection("custom_menus").createIndex({ workspace: 1 });
+
+    // 12. Index สำหรับระบบเข้าแถวหน้าเสาธง (Flagpole)
+    // รองรับเด็กนักเรียน 5,000 คน สแกนหน้าเช็คชื่อพร้อมกันตอน 07:50
+    await db.collection("flagpole_attendances").createIndex({ userId: 1, date: -1 });
+    await db.collection("flagpole_settings").createIndex({ key: 1 }, { unique: true });
+
     console.log("✅ [MongoDB] Indexes created/verified successfully");
   } catch (error) {
     console.error("❌ [MongoDB] Index creation error:", error);

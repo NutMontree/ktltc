@@ -64,12 +64,17 @@ export async function GET() {
                 };
               })
             );
-            return { ...candidate, members: membersWithImages };
+            return {
+              ...candidate,
+              _id: candidate._id.toString(),
+              members: membersWithImages
+            };
           })
         );
 
         return {
           ...election,
+          _id: election._id.toString(),
           candidates: enrichedCandidates,
           hasVoted: !!existingVote,
         };

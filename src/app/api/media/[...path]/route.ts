@@ -1,67 +1,28 @@
 import { NextResponse } from 'next/server';
-import { existsSync, readFileSync, statSync, readdirSync, mkdirSync, copyFileSync, promises as fsPromises } from 'fs';
-import { join, dirname } from 'path';
+import { createReadStream, promises as fsPromises } from 'fs';
+import { join } from 'path';
 import { getPublicDir } from '@/lib/cwd';
 
 export const dynamic = 'force-dynamic';
-
-let migrated = false;
-
-function copyRecursiveSync(src: string, dest: string) {
-  if (!existsSync(src)) return;
-  const stats = statSync(src);
-  if (stats.isDirectory()) {
-    if (!existsSync(dest)) {
-      mkdirSync(dest, { recursive: true });
-    }
-    readdirSync(src).forEach((childItemName) => {
-      copyRecursiveSync(join(src, childItemName), join(dest, childItemName));
-    });
-  } else {
-    // Only copy if file doesn't exist or is different size
-    if (!existsSync(dest) || statSync(src).size !== statSync(dest).size) {
-      const destDir = dirname(dest);
-      if (!existsSync(destDir)) {
-        mkdirSync(destDir, { recursive: true });
-      }
-      copyFileSync(src, dest);
-      console.log(`[Migration] Copied file: ${src} -> ${dest}`);
-    }
-  }
-}
-
-function ensureMigration() {
-  if (migrated) return;
-  migrated = true;
-  try {
-    const cwd = process.cwd();
-    // Path to the literal \\192.168.6.179\public folder
-    const sourceDir = "\\\\192.168.6.179\\public";
-    const targetDir = getPublicDir();
-    if (existsSync(sourceDir)) {
-      console.log(`🚀 [Migration] Found legacy network base: ${sourceDir}. Merging into local public...`);
-      copyRecursiveSync(sourceDir, targetDir);
-      console.log("✅ [Migration] Merging finished successfully.");
-    }
-  } catch (err: any) {
-    console.error("❌ [Migration] Error during self-migration:", err.message);
-  }
-}
 
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    // Run migration check once when a media request comes in
-    ensureMigration();
-
     const { path: pathSegments } = await params;
     
     // We only use the local public directory now
     const localBase = getPublicDir();
     const filePath = join(localBase, ...pathSegments);
-    let found = existsSync(filePath);
+    
+    let found = false;
+    try {
+      await fsPromises.access(filePath);
+      found = true;
+    } catch {
+      found = false;
+    }
 
     if (!found) {
       // Fallback for Local Dev environment: try to fetch from production
@@ -115,7 +76,7 @@ export async function GET(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const fileBuffer = await fsPromises.readFile(filePath);
+    const stream = createReadStream(filePath);
     
     // Determine content type based on extension
     const ext = filePath.split('.').pop()?.toLowerCase();
@@ -153,7 +114,7 @@ export async function GET(
       headers["Content-Disposition"] = `attachment; filename*=UTF-8''${fileName}`;
     }
 
-    return new NextResponse(fileBuffer, { headers });
+    return new NextResponse(stream as any, { headers });
   } catch (error) {
     console.error('Media serve error:', error);
     return new NextResponse('File not found', { status: 404 });

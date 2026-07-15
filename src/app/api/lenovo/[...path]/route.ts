@@ -19,12 +19,14 @@ export async function GET(
     const fullPath = path.join("\\\\192.168.6.179\\public", filePath);
 
     // 3. ตรวจสอบว่าไฟล์มีอยู่จริงหรือไม่
-    if (!fs.existsSync(fullPath)) {
+    try {
+      await fs.promises.access(fullPath);
+    } catch {
       return new NextResponse("File not found", { status: 404 });
     }
 
     // 4. อ่านไฟล์
-    const fileBuffer = fs.readFileSync(fullPath);
+    const fileBuffer = await fs.promises.readFile(fullPath);
     
     // 5. ตรวจสอบประเภทไฟล์ (Manual Mime Type Detection)
     const ext = path.extname(fullPath).toLowerCase();
