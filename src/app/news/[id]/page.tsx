@@ -519,17 +519,16 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                   className="group flex items-center gap-4 p-4 md:p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all"
                 >
                   <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800">
-                    <Image
-                      src={
-                        (prev.thumbnails && prev.thumbnails[0]) ||
+                    {(() => {
+                      const src = (prev.thumbnails && prev.thumbnails[0]) ||
                         (prev.images && prev.images[0]) ||
                         (prev.announcementImages && prev.announcementImages[0]) ||
-                        "/no-image.png"
+                        "/no-image.png";
+                      if (/\\.(mp4|webm|mov|m4v)(\\?.*)?$/i.test(src)) {
+                        return <video src={src} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" muted playsInline loop autoPlay />;
                       }
-                      alt={prev.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                      return <Image src={src} alt={prev.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />;
+                    })()}
                   </div>
                   <div className="flex-1 min-w-0 text-left">
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2 group-hover:text-blue-600">
@@ -557,17 +556,16 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                     </h4>
                   </div>
                   <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800 order-1 md:order-2">
-                    <Image
-                      src={
-                        (next.thumbnails && next.thumbnails[0]) ||
+                    {(() => {
+                      const src = (next.thumbnails && next.thumbnails[0]) ||
                         (next.images && next.images[0]) ||
                         (next.announcementImages && next.announcementImages[0]) ||
-                        "/no-image.png"
+                        "/no-image.png";
+                      if (/\\.(mp4|webm|mov|m4v)(\\?.*)?$/i.test(src)) {
+                        return <video src={src} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" muted playsInline loop autoPlay />;
                       }
-                      alt={next.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                      return <Image src={src} alt={next.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />;
+                    })()}
                   </div>
                 </Link>
               ) : (
