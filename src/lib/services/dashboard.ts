@@ -330,7 +330,7 @@ export const getCachedDashboardStats = unstable_cache(async (userRole: string) =
       console.error("General Stats Calculation Error:", err);
     }
 
-    return NextResponse.json({
+    return {
       totalNews,
       totalNav,
       totalPages,
@@ -351,7 +351,6 @@ export const getCachedDashboardStats = unstable_cache(async (userRole: string) =
       totalPendingQA,
       totalUsers,
       activeUsers,
-      activeVisitors,
       activeVisitors,
     };
   } catch (error) {
