@@ -28,7 +28,7 @@ async function run() {
     // Users (already has _id index, but role is useful for other admin queries)
     console.log("- Checking users...");
     await db.collection("users").createIndex({ role: 1 });
-    await db.collection("users").createIndex({ username: 1 });
+    await db.collection("users").createIndex({ username: 1 }, { unique: true });
 
     // Login Attempts
     console.log("- Checking login_attempts...");
