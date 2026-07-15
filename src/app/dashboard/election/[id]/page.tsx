@@ -645,20 +645,20 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                         <span className="font-black text-2xl text-gray-900 dark:text-white">{votes}</span>
                         <span className="text-sm font-medium text-gray-500 ml-2">({percentage}%)</span>
                         <button onClick={() => {
-                          const newVotes = prompt(`กรอก "คะแนนรวมทั้งหมดสุทธิ" ของ ${candidate.name}\n(ระบบจะคำนวณหักลบกับคะแนนโหวตในเว็บให้เอง):`, votes.toString());
+                          const newVotes = prompt(`กรอก "คะแนนจากบัตรกระดาษ" สำหรับเบอร์ ${candidate.number}\n(ระบบจะนำคะแนนนี้ไปบวกเพิ่มกับคะแนนโหวตออนไลน์ที่มีอยู่แล้วให้อัตโนมัติ):`, (candidate.manualVotes || 0).toString());
                           if (newVotes !== null && !isNaN(Number(newVotes))) {
                             fetch(`/api/election/${id}/votes/manual`, {
                               method: "POST",
                               headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ candidateId: candidate._id, finalScore: Number(newVotes) })
+                              body: JSON.stringify({ candidateId: candidate._id, additionalVotes: Number(newVotes) })
                             }).then(res => {
                               if (res.ok) {
-                                toast.success("อัปเดตคะแนนรวมสำเร็จ");
+                                toast.success("เพิ่มคะแนนบัตรกระดาษสำเร็จ");
                                 fetchData();
                               } else toast.error("อัปเดตไม่สำเร็จ");
                             });
                           }
-                        }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="แก้ไขคะแนนรวมสุทธิ">
+                        }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="เพิ่มคะแนนจากบัตรกระดาษ">
                           <Edit2 size={16} />
                         </button>
                       </div>
@@ -693,20 +693,20 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                           <span className="font-black text-2xl text-gray-600 dark:text-gray-400">{abstainVotes}</span>
                           <span className="text-sm font-medium text-gray-500 ml-2">({abstainPercentage}%)</span>
                           <button onClick={() => {
-                            const newVotes = prompt(`กรอก "คะแนนรวมทั้งหมดสุทธิ" สำหรับช่องงดออกเสียง\n(ระบบจะคำนวณหักลบกับคะแนนโหวตในเว็บให้เอง):`, abstainVotes.toString());
+                            const newVotes = prompt(`กรอก "คะแนนจากบัตรกระดาษ" สำหรับช่องงดออกเสียง\n(ระบบจะนำคะแนนนี้ไปบวกเพิ่มกับคะแนนโหวตออนไลน์ที่มีอยู่แล้วให้อัตโนมัติ):`, (electionData?.abstainManualVotes || 0).toString());
                             if (newVotes !== null && !isNaN(Number(newVotes))) {
                               fetch(`/api/election/${id}/votes/manual`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ candidateId: "abstain", finalScore: Number(newVotes) })
+                                body: JSON.stringify({ candidateId: "abstain", additionalVotes: Number(newVotes) })
                               }).then(res => {
                                 if (res.ok) {
-                                  toast.success("อัปเดตคะแนนรวมสำเร็จ");
+                                  toast.success("เพิ่มคะแนนบัตรกระดาษสำเร็จ");
                                   fetchData();
                                 } else toast.error("อัปเดตไม่สำเร็จ");
                               });
                             }
-                          }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="แก้ไขคะแนนรวมสุทธิ">
+                          }} className="ml-3 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="เพิ่มคะแนนจากบัตรกระดาษ">
                             <Edit2 size={16} />
                           </button>
                         </div>
