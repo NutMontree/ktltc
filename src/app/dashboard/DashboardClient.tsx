@@ -293,52 +293,58 @@ export default function DashboardClient({ initialStats, initialPermissions, init
             </div>
 
             {/* --- Quick Actions Tabs (Sticky) --- */}
-            <div className="flex flex-col md:flex-row md:items-center justify-start w-full sticky top-16 md:top-20 z-40 pt-2 pb-4 -mx-4 px-4 md:-mx-8 md:px-8 bg-slate-50/50 dark:bg-zinc-950/50 backdrop-blur-md">
-              <motion.div variants={item} className="flex flex-nowrap overflow-x-auto hide-scrollbar scrollbar-hide gap-2 bg-white dark:bg-zinc-900 p-2 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none w-full md:w-fit [&>button]:shrink-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex flex-col md:flex-row md:items-center justify-start w-full sticky top-16 md:top-20 z-40 pt-2 pb-4 -mx-4 px-4 md:-mx-8 md:px-8 bg-slate-50/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50">
+              <motion.div variants={item} className="flex flex-nowrap overflow-x-auto hide-scrollbar scrollbar-hide gap-3 p-1.5 w-full md:w-fit [&>button]:shrink-0 [-ms-overflow-style:none] [scrollbar-width:none]">
                 <button
                   onClick={() => setActiveTab("all")}
-                  className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 ring-2 ring-zinc-900/20 dark:ring-white/20" : "bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white border border-zinc-200 dark:border-zinc-800"}`}
                 >
-                  ทั้งหมด (All)
+                  <Layers size={18} />
+                  <span>ทั้งหมด</span>
                 </button>
                 {hasStudentAccess && (
                   <button
                     onClick={() => setActiveTab("student")}
-                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "student" ? "bg-indigo-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "student" ? "bg-indigo-600 text-white ring-2 ring-indigo-600/20" : "bg-white text-zinc-600 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 border border-zinc-200 dark:border-zinc-800"}`}
                   >
-                    นักเรียน
+                    <Users size={18} />
+                    <span>นักเรียน</span>
                   </button>
                 )}
                 {hasTeacherAccess && (
                   <button
                     onClick={() => setActiveTab("teacher")}
-                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "teacher" ? "bg-violet-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "teacher" ? "bg-violet-600 text-white ring-2 ring-violet-600/20" : "bg-white text-zinc-600 hover:bg-violet-50 hover:text-violet-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-violet-900/30 dark:hover:text-violet-400 border border-zinc-200 dark:border-zinc-800"}`}
                   >
-                    ครูผู้สอน
+                    <BookOpen size={18} />
+                    <span>ครูผู้สอน</span>
                   </button>
                 )}
                 {hasStaffAccess && (
                   <button
                     onClick={() => setActiveTab("staff")}
-                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "staff" ? "bg-teal-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "staff" ? "bg-teal-600 text-white ring-2 ring-teal-600/20" : "bg-white text-zinc-600 hover:bg-teal-50 hover:text-teal-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-teal-900/30 dark:hover:text-teal-400 border border-zinc-200 dark:border-zinc-800"}`}
                   >
-                    บุคลากร / HR
+                    <UserCog size={18} />
+                    <span>บุคลากร / HR</span>
                   </button>
                 )}
                 {hasExecAccess && (
                   <button
                     onClick={() => setActiveTab("executive")}
-                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "executive" ? "bg-rose-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "executive" ? "bg-rose-600 text-white ring-2 ring-rose-600/20" : "bg-white text-zinc-600 hover:bg-rose-50 hover:text-rose-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 border border-zinc-200 dark:border-zinc-800"}`}
                   >
-                    ผู้บริหาร
+                    <ShieldCheck size={18} />
+                    <span>ผู้บริหาร</span>
                   </button>
                 )}
                 {hasSuperAdminAccess && (
                   <button
                     onClick={() => setActiveTab("superadmin")}
-                    className={`px-6 py-3 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === "superadmin" ? "bg-sky-600 text-white" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"}`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "superadmin" ? "bg-sky-600 text-white ring-2 ring-sky-600/20" : "bg-white text-zinc-600 hover:bg-sky-50 hover:text-sky-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-sky-900/30 dark:hover:text-sky-400 border border-zinc-200 dark:border-zinc-800"}`}
                   >
-                    ผู้ดูแลระบบสูงสุด
+                    <Shield size={18} />
+                    <span>ผู้ดูแลระบบ</span>
                   </button>
                 )}
               </motion.div>
