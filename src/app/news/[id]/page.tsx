@@ -287,7 +287,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
     <div className="w-full bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       <main className="pb-16 md:pb-24">
         {/* --- Hero / Header Section --- */}
-        <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-8 px-4">
+        <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-4 pb-4 px-4">
           <div className="max-w-5xl mx-auto w-full space-y-8">
             <BackButton fallbackUrl="/news">
               <div className="p-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
@@ -505,10 +505,10 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
           {/* --- Gallery Section --- */}
           {((news.images && news.images.length > 0) ||
             (news.thumbnails && news.thumbnails.length > 0)) && (
-            <NewsGallery
-              media={Array.from(new Set([...(news.thumbnails || []), ...(news.images || [])]))}
-            />
-          )}
+              <NewsGallery
+                media={Array.from(new Set([...(news.thumbnails || []), ...(news.images || [])]))}
+              />
+            )}
 
           {/* --- Navigation --- */}
           <nav className="border-t border-slate-200 dark:border-zinc-800 pt-12">
