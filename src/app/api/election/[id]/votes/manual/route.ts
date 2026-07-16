@@ -21,7 +21,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params;
     const { candidateId, amount, action } = await req.json();
 
-    if (typeof amount !== 'number' || !['add', 'subtract'].includes(action)) {
+    if (typeof amount !== 'number' || !['add', 'subtract', 'set'].includes(action)) {
       return NextResponse.json({ error: "Invalid amount or action" }, { status: 400 });
     }
 
@@ -29,19 +29,25 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const db = client.db("ktltc_db");
     
     let result;
-    const incAmount = action === "add" ? amount : -amount;
+    const updateOp = action === "set" 
+      ? { $set: { abstainManualVotes: amount, updatedAt: new Date() } }
+      : { $inc: { abstainManualVotes: action === "add" ? amount : -amount }, $set: { updatedAt: new Date() } };
+
+    const candidateUpdateOp = action === "set"
+      ? { $set: { manualVotes: amount, updatedAt: new Date() } }
+      : { $inc: { manualVotes: action === "add" ? amount : -amount }, $set: { updatedAt: new Date() } };
 
     if (candidateId === null || candidateId === "null" || candidateId === "abstain") {
         // Handle abstain votes
         result = await db.collection("elections").updateOne(
             { _id: new ObjectId(id) },
-            { $inc: { abstainManualVotes: incAmount }, $set: { updatedAt: new Date() } }
+            updateOp
         );
     } else {
         // Handle candidate votes
         result = await db.collection("candidates").updateOne(
             { _id: new ObjectId(candidateId), electionId: new ObjectId(id) },
-            { $inc: { manualVotes: incAmount }, $set: { updatedAt: new Date() } }
+            candidateUpdateOp
         );
     }
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { Plus, Trash2, Edit2, Users, BarChart3, Settings, Upload, Minus, AlertCircle, X } from "lucide-react";
 import { format } from "date-fns";
@@ -91,9 +91,26 @@ const UserSelector = ({
   );
 };
 
-export default function ManageElection({ params }: { params: Promise<{ id: string }> }) {
+const ThaiDateTime = ({ dateString }: { dateString: string | undefined }) => {
+  if (!dateString) return <span>-</span>;
+  const date = new Date(dateString);
+  const h = date.getHours().toString().padStart(2, '0');
+  const m = date.getMinutes().toString().padStart(2, '0');
+  const d = date.getDate();
+  const mo = date.getMonth() + 1;
+  const y = date.getFullYear() + 543;
+  return (
+    <div className="inline-flex flex-col items-end bg-gray-100/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-xl leading-tight text-sm font-bold text-gray-800 dark:text-gray-200 shadow-sm">
+      <span className="text-[15px]">{h}:{m}</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400">{d}/{mo}/{y}</span>
+    </div>
+  );
+};
+
+export default function ManageElection() {
   const router = useRouter();
-  const { id } = use(params);
+  const params = useParams();
+  const id = params?.id as string;
   const [election, setElection] = useState<any>(null);
   const [editForm, setEditForm] = useState({ title: "", description: "", startDate: "", endDate: "", status: "draft" });
   const [isSavingSettings, setIsSavingSettings] = useState(false);
@@ -126,14 +143,18 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
     candidateId: string;
     candidateName: string;
     candidateNumber: string;
-    action: "add" | "subtract";
+    action: "add" | "subtract" | "set";
     inputValue: string;
     isSaving: boolean;
-  }>({ isOpen: false, candidateId: "", candidateName: "", candidateNumber: "", action: "add", inputValue: "", isSaving: false });
+    onlineVotes: number;
+  }>({ isOpen: false, candidateId: "", candidateName: "", candidateNumber: "", action: "set", inputValue: "", isSaving: false, onlineVotes: 0 });
 
   const handleSaveManualVote = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!manualVoteModal.inputValue || isNaN(Number(manualVoteModal.inputValue)) || Number(manualVoteModal.inputValue) <= 0) return;
+    if (manualVoteModal.inputValue.trim() === "" || isNaN(Number(manualVoteModal.inputValue)) || Number(manualVoteModal.inputValue) < 0) return;
+    
+    const totalInput = Number(manualVoteModal.inputValue);
+    const paperVotes = totalInput - manualVoteModal.onlineVotes;
     
     setManualVoteModal(prev => ({ ...prev, isSaving: true }));
     try {
@@ -142,12 +163,12 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           candidateId: manualVoteModal.candidateId, 
-          amount: Number(manualVoteModal.inputValue),
+          amount: paperVotes,
           action: manualVoteModal.action
         })
       });
       if (res.ok) {
-        toast.success(manualVoteModal.action === "add" ? "บวกคะแนนสำเร็จ" : "หักลบคะแนนสำเร็จ");
+        toast.success(manualVoteModal.action === "add" ? "บวกคะแนนสำเร็จ" : manualVoteModal.action === "subtract" ? "หักลบคะแนนสำเร็จ" : "บันทึกคะแนนดิบสำเร็จ");
         fetchData();
         setManualVoteModal(prev => ({ ...prev, isOpen: false }));
       } else {
@@ -357,9 +378,14 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
           &larr; กลับไปหน้ารวมการเลือกตั้ง
         </button>
         <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">{election.title}</h1>
-        <p className="text-gray-500 dark:text-gray-400 text-lg flex items-center gap-2">
-          เปิดโหวต: <span className="font-medium text-gray-700 dark:text-gray-300">{format(new Date(election.startDate), "dd/MM/yyyy HH:mm")} - {format(new Date(election.endDate), "dd/MM/yyyy HH:mm")}</span>
-        </p>
+        <div className="text-gray-500 dark:text-gray-400 text-lg flex items-center gap-3">
+          <span className="font-semibold">เปิดโหวต:</span> 
+          <div className="flex items-center gap-2">
+            <ThaiDateTime dateString={election?.startDate} />
+            <span className="font-black text-gray-300 dark:text-gray-600">-</span>
+            <ThaiDateTime dateString={election?.endDate} />
+          </div>
+        </div>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${
             election.status === 'active' ? 'bg-green-100 text-green-700' : 
@@ -685,30 +711,19 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                           <span className="font-black text-2xl text-gray-900 dark:text-white">{votes}</span>
                           <span className="text-sm font-medium text-gray-500 ml-2">({percentage}%)</span>
                           <button onClick={() => {
+                            const onlineVotes = votes - (candidate.manualVotes || 0);
                             setManualVoteModal({
                               isOpen: true,
                               candidateId: candidate._id,
                               candidateName: candidate.name,
                               candidateNumber: candidate.number,
-                              action: "add",
-                              inputValue: "",
-                              isSaving: false
+                              action: "set",
+                              inputValue: votes.toString(),
+                              isSaving: false,
+                              onlineVotes: onlineVotes
                             });
-                          }} className="ml-3 px-2 py-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200 flex items-center gap-1 text-xs font-semibold" title="เพิ่มคะแนนจากบัตรกระดาษ">
-                            <Plus size={14} /> เพิ่ม
-                          </button>
-                          <button onClick={() => {
-                            setManualVoteModal({
-                              isOpen: true,
-                              candidateId: candidate._id,
-                              candidateName: candidate.name,
-                              candidateNumber: candidate.number,
-                              action: "subtract",
-                              inputValue: "",
-                              isSaving: false
-                            });
-                          }} className="ml-1 px-2 py-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 flex items-center gap-1 text-xs font-semibold" title="หักลบคะแนน (เช่น บัตรเสีย)">
-                            <Minus size={14} /> ลด
+                          }} className="ml-3 px-2 py-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-200 flex items-center gap-1 text-xs font-semibold" title="กรอกคะแนนดิบรวมทั้งหมด">
+                            <Edit2 size={14} /> แก้ไขคะแนนดิบ
                           </button>
                         </div>
                         <div className="text-xs text-gray-400 mt-1 font-medium bg-gray-100 dark:bg-gray-800 inline-block px-2 py-1 rounded-md">
@@ -747,30 +762,19 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                             <span className="font-black text-2xl text-gray-600 dark:text-gray-400">{abstainVotes}</span>
                             <span className="text-sm font-medium text-gray-500 ml-2">({abstainPercentage}%)</span>
                             <button onClick={() => {
+                              const onlineVotes = abstainVotes - (election?.abstainManualVotes || 0);
                               setManualVoteModal({
                                 isOpen: true,
                                 candidateId: "abstain",
                                 candidateName: "งดออกเสียง (Abstain)",
                                 candidateNumber: "-",
-                                action: "add",
-                                inputValue: "",
-                                isSaving: false
+                                action: "set",
+                                inputValue: abstainVotes.toString(),
+                                isSaving: false,
+                                onlineVotes: onlineVotes
                               });
-                            }} className="ml-3 px-2 py-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200 flex items-center gap-1 text-xs font-semibold" title="เพิ่มคะแนนงดออกเสียงจากบัตรกระดาษ">
-                              <Plus size={14} /> เพิ่ม
-                            </button>
-                            <button onClick={() => {
-                              setManualVoteModal({
-                                isOpen: true,
-                                candidateId: "abstain",
-                                candidateName: "งดออกเสียง (Abstain)",
-                                candidateNumber: "-",
-                                action: "subtract",
-                                inputValue: "",
-                                isSaving: false
-                              });
-                            }} className="ml-1 px-2 py-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 flex items-center gap-1 text-xs font-semibold" title="หักลบคะแนนงดออกเสียง">
-                              <Minus size={14} /> ลด
+                            }} className="ml-3 px-2 py-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-200 flex items-center gap-1 text-xs font-semibold" title="กรอกคะแนนดิบรวมทั้งหมด">
+                              <Edit2 size={14} /> แก้ไขคะแนนดิบ
                             </button>
                           </div>
                           <div className="text-xs text-gray-400 mt-1 font-medium bg-gray-100 dark:bg-gray-800 inline-block px-2 py-1 rounded-md">
@@ -831,8 +835,9 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    วันและเวลาที่เริ่ม <span className="text-red-500">*</span>
+                  <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <span>วันและเวลาที่เริ่ม <span className="text-red-500">*</span></span>
+                    {editForm.startDate && <ThaiDateTime dateString={editForm.startDate} />}
                   </label>
                   <input
                     type="datetime-local"
@@ -843,8 +848,9 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    วันและเวลาที่สิ้นสุด <span className="text-red-500">*</span>
+                  <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <span>วันและเวลาที่สิ้นสุด <span className="text-red-500">*</span></span>
+                    {editForm.endDate && <ThaiDateTime dateString={editForm.endDate} />}
                   </label>
                   <input
                     type="datetime-local"
@@ -887,21 +893,21 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
 
       {/* Manual Vote Modal */}
       {manualVoteModal.isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => !manualVoteModal.isSaving && setManualVoteModal(prev => ({ ...prev, isOpen: false }))}></div>
           <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative z-10 overflow-hidden">
             {/* Header */}
-            <div className={`absolute top-0 left-0 w-full h-2 ${manualVoteModal.action === "add" ? "bg-green-500" : "bg-red-500"}`}></div>
+            <div className={`absolute top-0 left-0 w-full h-2 ${manualVoteModal.action === "add" ? "bg-green-500" : manualVoteModal.action === "subtract" ? "bg-red-500" : "bg-indigo-500"}`}></div>
             <div className="flex justify-between items-start mb-6 pt-2">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${manualVoteModal.action === "add" ? "bg-green-100 text-green-600 dark:bg-green-900/30" : "bg-red-100 text-red-600 dark:bg-red-900/30"}`}>
-                  {manualVoteModal.action === "add" ? <Plus size={20} /> : <Minus size={20} />}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${manualVoteModal.action === "add" ? "bg-green-100 text-green-600 dark:bg-green-900/30" : manualVoteModal.action === "subtract" ? "bg-red-100 text-red-600 dark:bg-red-900/30" : "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30"}`}>
+                  {manualVoteModal.action === "add" ? <Plus size={20} /> : manualVoteModal.action === "subtract" ? <Minus size={20} /> : <Edit2 size={20} />}
                 </div>
                 <div>
-                  <h3 className={`text-xl font-bold ${manualVoteModal.action === "add" ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
-                    {manualVoteModal.action === "add" ? "บวกคะแนนเพิ่ม" : "หักลบคะแนน"}
+                  <h3 className={`text-xl font-bold ${manualVoteModal.action === "add" ? "text-green-700 dark:text-green-400" : manualVoteModal.action === "subtract" ? "text-red-700 dark:text-red-400" : "text-indigo-700 dark:text-indigo-400"}`}>
+                    {manualVoteModal.action === "add" ? "บวกคะแนนเพิ่ม" : manualVoteModal.action === "subtract" ? "หักลบคะแนน" : "ตั้งค่าคะแนนดิบ (คะแนนรวม)"}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">ระบุจำนวนที่ต้องการ{manualVoteModal.action === "add" ? "เพิ่ม" : "ลบ"}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{manualVoteModal.action === "add" ? "ระบุจำนวนที่ต้องการเพิ่ม" : manualVoteModal.action === "subtract" ? "ระบุจำนวนที่ต้องการลบ" : `กรอกคะแนนรวมทั้งหมด (ระบบมีคะแนนออนไลน์อยู่แล้ว ${manualVoteModal.onlineVotes} คะแนน)`}</p>
                 </div>
               </div>
               <button onClick={() => setManualVoteModal(prev => ({ ...prev, isOpen: false }))} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
@@ -926,15 +932,17 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                 <input
                   type="number"
                   required
-                  min="1"
+                  min="0"
                   autoFocus
-                  placeholder={manualVoteModal.action === "add" ? "+ จำนวนคะแนน" : "- จำนวนคะแนน"}
+                  placeholder={manualVoteModal.action === "add" ? "+ จำนวนคะแนน" : manualVoteModal.action === "subtract" ? "- จำนวนคะแนน" : "คะแนนดิบรวมทั้งหมด"}
                   value={manualVoteModal.inputValue}
                   onChange={(e) => setManualVoteModal(prev => ({ ...prev, inputValue: e.target.value }))}
                   className={`w-full px-4 py-4 text-2xl font-black border-2 rounded-2xl focus:outline-none transition-all text-center ${
                     manualVoteModal.action === "add" 
                       ? "focus:border-green-500 focus:ring-4 focus:ring-green-500/20 text-green-700 dark:text-green-400 border-gray-200 dark:border-gray-700 dark:bg-gray-800"
-                      : "focus:border-red-500 focus:ring-4 focus:ring-red-500/20 text-red-700 dark:text-red-400 border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+                      : manualVoteModal.action === "subtract"
+                      ? "focus:border-red-500 focus:ring-4 focus:ring-red-500/20 text-red-700 dark:text-red-400 border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+                      : "focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 text-indigo-700 dark:text-indigo-400 border-gray-200 dark:border-gray-700 dark:bg-gray-800"
                   }`}
                 />
               </div>
@@ -954,7 +962,9 @@ export default function ManageElection({ params }: { params: Promise<{ id: strin
                   className={`px-6 py-3 rounded-xl text-white font-bold transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:shadow-none ${
                     manualVoteModal.action === "add" 
                       ? "bg-green-600 hover:bg-green-700 shadow-green-600/30" 
-                      : "bg-red-600 hover:bg-red-700 shadow-red-600/30"
+                      : manualVoteModal.action === "subtract"
+                      ? "bg-red-600 hover:bg-red-700 shadow-red-600/30"
+                      : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30"
                   }`}
                 >
                   {manualVoteModal.isSaving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>}
