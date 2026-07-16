@@ -196,7 +196,7 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
                       <p className="font-bold text-sm sm:text-lg line-clamp-1 text-gray-800 dark:text-gray-200">{second.name}</p>
                     </div>
                     <div className="w-full bg-linear-to-t from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-700 h-40 sm:h-48 rounded-t-3xl flex justify-center pt-4 relative shadow-[inset_0_4px_10px_rgba(0,0,0,0.05)] border border-b-0 border-slate-300/50 dark:border-slate-600">
-                      <span className="text-7xl sm:text-8xl font-black text-slate-300 dark:text-slate-600/50 opacity-50">2</span>
+                      <span className="text-7xl sm:text-8xl font-black text-slate-400/80 dark:text-slate-400/80 drop-shadow-sm">2</span>
                     </div>
                   </div>
                 )}
@@ -218,7 +218,7 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
                       <p className="font-bold text-base sm:text-xl line-clamp-1 text-gray-900 dark:text-white">{first.name}</p>
                     </div>
                     <div className="w-full bg-linear-to-t from-yellow-300 to-yellow-100 dark:from-yellow-600 dark:to-yellow-500 h-56 sm:h-64 rounded-t-3xl shadow-[0_-10px_30px_rgba(250,204,21,0.2),inset_0_4px_10px_rgba(255,255,255,0.5)] flex justify-center pt-4 relative border border-b-0 border-yellow-300/50 dark:border-yellow-400">
-                      <span className="text-8xl sm:text-9xl font-black text-yellow-400 dark:text-yellow-300/50 opacity-60">1</span>
+                      <span className="text-8xl sm:text-9xl font-black text-yellow-600/70 dark:text-yellow-200/80 drop-shadow-sm">1</span>
                     </div>
                   </div>
                 )}
@@ -237,7 +237,7 @@ export default function StudentElectionResults({ params }: { params: Promise<{ i
                       <p className="font-bold text-sm sm:text-lg line-clamp-1 text-gray-800 dark:text-gray-200">{third.name}</p>
                     </div>
                     <div className="w-full bg-linear-to-t from-amber-200 to-amber-100 dark:from-amber-800 dark:to-amber-700 h-32 sm:h-40 rounded-t-3xl flex justify-center pt-4 relative shadow-[inset_0_4px_10px_rgba(0,0,0,0.05)] border border-b-0 border-amber-300/50 dark:border-amber-600">
-                      <span className="text-7xl sm:text-8xl font-black text-amber-300 dark:text-amber-600/50 opacity-50">3</span>
+                      <span className="text-7xl sm:text-8xl font-black text-amber-600/70 dark:text-amber-300/80 drop-shadow-sm">3</span>
                     </div>
                   </div>
                 )}

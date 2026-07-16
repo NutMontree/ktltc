@@ -34,14 +34,37 @@ export default function StudentElectionPage() {
 
   if (!data?.active || !data?.elections || data.elections.length === 0) {
     return (
-      <div className="p-6 max-w-[1600px] w-full mx-auto mt-20">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-12 rounded-3xl shadow-xl text-center border border-gray-100 dark:border-gray-700 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-gray-200 via-gray-400 to-gray-200 dark:from-gray-700 dark:via-gray-500 dark:to-gray-700"></div>
-          <div className="text-gray-300 dark:text-gray-600 mb-6 flex justify-center">
-            <AlertCircle size={80} strokeWidth={1.5} />
+      <div className="min-h-[80vh] flex items-center justify-center p-6">
+        <div className="max-w-2xl w-full">
+          <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-3xl p-12 sm:p-16 rounded-[2.5rem] shadow-2xl shadow-indigo-500/5 text-center border border-white/50 dark:border-gray-700/50 relative overflow-hidden group">
+            {/* Decorative background glow */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-lighten group-hover:scale-150 transition-transform duration-1000 ease-in-out pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-lighten group-hover:scale-150 transition-transform duration-1000 ease-in-out pointer-events-none"></div>
+            
+            {/* Icon */}
+            <div className="relative mb-8 flex justify-center">
+              <div className="absolute inset-0 bg-indigo-100 dark:bg-indigo-900/30 rounded-full scale-150 blur-xl animate-pulse"></div>
+              <div className="w-24 h-24 bg-linear-to-tr from-indigo-500 to-blue-500 rounded-full flex items-center justify-center text-white shadow-xl shadow-indigo-500/30 relative z-10 transform group-hover:-translate-y-2 transition-transform duration-500">
+                <AlertCircle size={48} strokeWidth={2} />
+              </div>
+            </div>
+            
+            {/* Text */}
+            <h2 className="text-3xl sm:text-4xl font-black mb-4 bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 relative z-10">
+              ขณะนี้ยังไม่มีการเลือกตั้ง
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl font-medium max-w-lg mx-auto relative z-10 leading-relaxed">
+              ระบบจะแสดงข้อมูลอัตโนมัติทันที เมื่อมีการเปิดให้ลงคะแนนเสียงโดยคณะกรรมการการเลือกตั้ง
+            </p>
+            
+            {/* Action */}
+            <div className="mt-10 flex justify-center relative z-10">
+              <Link href="/manual/election-student" className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white rounded-full font-bold shadow-lg shadow-gray-900/20 dark:shadow-white/20 transition-all hover:-translate-y-1 active:scale-95">
+                <HelpCircle size={20} />
+                <span>อ่านคู่มือเตรียมความพร้อม</span>
+              </Link>
+            </div>
           </div>
-          <h2 className="text-3xl font-bold mb-3 text-gray-800 dark:text-white">ขณะนี้ยังไม่มีการเลือกตั้ง</h2>
-          <p className="text-gray-500 text-lg">ระบบจะแสดงข้อมูลอัตโนมัติเมื่อมีการเปิดการเลือกตั้งโดยผู้ดูแลระบบ</p>
         </div>
       </div>
     );
