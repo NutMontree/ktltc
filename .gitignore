@@ -70,3 +70,6 @@ next-env.d.ts
 # Temporary, scratch, and local runtime directories
 /scratch/
 /tmp/
+
+# Custom AI Agents
+.agents/
