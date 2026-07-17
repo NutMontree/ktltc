@@ -33,7 +33,7 @@ export async function PUT(req, { params }) {
     const isAdmin = session?.user?.role && adminRoles.includes(session.user.role.toLowerCase());
     const isOwner = session?.user?.id && existingMemo.userId === session.user.id;
     
-    if (!isOwner && !isAdmin && existingMemo.userId) {
+    if (!isOwner && !isAdmin) {
       return NextResponse.json({ message: "Unauthorized: You don't have permission to edit this document" }, { status: 403 });
     }
 
@@ -63,7 +63,7 @@ export async function DELETE(req, { params }) {
     const isAdmin = session?.user?.role && adminRoles.includes(session.user.role.toLowerCase());
     const isOwner = session?.user?.id && existingMemo.userId === session.user.id;
     
-    if (!isOwner && !isAdmin && existingMemo.userId) {
+    if (!isOwner && !isAdmin) {
       return NextResponse.json({ message: "Unauthorized: You don't have permission to delete this document" }, { status: 403 });
     }
 

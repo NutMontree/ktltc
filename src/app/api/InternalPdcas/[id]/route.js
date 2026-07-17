@@ -101,8 +101,8 @@ export async function PUT(req, { params }) {
     const isAdmin = session?.user?.role && adminRoles.includes(session.user.role.toLowerCase());
     const isOwner = session?.user?.id && existingPdca.userId === session.user.id;
     
-    // Allow edit if it's an old doc with no owner, OR if the user is owner/admin
-    if (existingPdca.userId && !isAdmin && !isOwner) {
+    // Allow edit only if user is owner or admin
+    if (!isAdmin && !isOwner) {
       return NextResponse.json({ message: "Unauthorized to edit this document" }, { status: 403 });
     }
 
@@ -129,8 +129,8 @@ export async function DELETE(req, { params }) {
     const isAdmin = session?.user?.role && adminRoles.includes(session.user.role.toLowerCase());
     const isOwner = session?.user?.id && pdcaToDelete.userId === session.user.id;
     
-    // Allow delete if it's an old doc with no owner, OR if the user is owner/admin
-    if (pdcaToDelete.userId && !isAdmin && !isOwner) {
+    // Allow delete only if user is owner or admin
+    if (!isAdmin && !isOwner) {
       return NextResponse.json({ message: "Unauthorized to delete this document" }, { status: 403 });
     }
 

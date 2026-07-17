@@ -100,6 +100,16 @@ export async function DELETE(req: Request) {
  */
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const adminRoles = ["super_admin", "admin", "director", "deputy_director"];
+    if (!adminRoles.includes(session.user.role?.toLowerCase() || "")) {
+      return NextResponse.json({ error: "Forbidden: Not authorized to send system notifications" }, { status: 403 });
+    }
+
     const body = await req.json();
     const { title, message, type, targetRoles } = body;
 

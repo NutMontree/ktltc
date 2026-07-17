@@ -86,16 +86,18 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectDB();
     const data = await parseFormData(req);
 
-    const session = await auth();
-    if (session?.user) {
-      data.userId = session.user.id;
-      data.authorName = session.user.name;
-      data.authorImage = session.user.image;
-      data.authorRole = session.user.role;
-    }
+    data.userId = session.user.id;
+    data.authorName = session.user.name;
+    data.authorImage = session.user.image;
+    data.authorRole = session.user.role;
 
     const newPdca = await InternalPdca.create(data);
     return NextResponse.json({ message: "Success", pdca: newPdca }, { status: 201 });
