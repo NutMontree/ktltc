@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
     const body = await req.json();
     
     // validate basic requirements
@@ -79,6 +85,11 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { id, ...updateData } = body;
 
@@ -110,6 +121,11 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 

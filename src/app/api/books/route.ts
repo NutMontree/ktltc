@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { IBook } from "@/models/Book";
+import { auth } from "@/auth";
 
 export async function GET() {
   try {
@@ -17,6 +18,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { title, slug, description, coverImageUrl, themeColor } = body;
 

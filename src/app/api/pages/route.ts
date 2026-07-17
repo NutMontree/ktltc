@@ -1,6 +1,7 @@
 import clientPromise from "@/lib/db";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import { auth } from "@/auth";
 
 export async function GET() {
   try {
@@ -18,6 +19,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { slug, title, content } = await req.json();
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -49,6 +55,11 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { _id, slug, title, content } = await req.json();
 
     if (!_id) {
@@ -81,6 +92,11 @@ export async function PUT(req: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
