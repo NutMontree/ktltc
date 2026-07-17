@@ -36,6 +36,42 @@ const callbacks: NextAuthConfig["callbacks"] = {
       }
     }
 
+    // --- Session Revalidation (กันปัญหา Stale Session เมื่อสิทธิ์ถูกเปลี่ยน) ---
+    // เช็คสิทธิ์กับฐานข้อมูลทุกๆ 15 นาที (900,000 ms)
+    const now = Date.now();
+    const lastChecked = (token.lastChecked as number) || (token.loginTimestamp as number) || now;
+    
+    if (token.id && (now - lastChecked > 900000)) {
+      try {
+        const port = process.env.PORT || "3000";
+        const localUrl = `http://127.0.0.1:${port}`;
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        
+        const res = await fetch(`${localUrl}/api/auth/verify-token?id=${token.id}`, { 
+          signal: controller.signal,
+          headers: { "Cache-Control": "no-cache" }
+        });
+        clearTimeout(timeoutId);
+        
+        if (res.ok) {
+          const data = await res.json();
+          // ถ้าระบบระงับบัญชี (isActive = false) หรือลบบัญชีไปแล้ว ให้เตะออกจากระบบ
+          if (data.isActive === false || data.error) {
+            return {};
+          }
+          // อัปเดตสิทธิ์ใหม่ล่าสุดเข้า Token
+          token.role = data.role;
+          token.department = data.department;
+          token.faction = data.faction;
+          token.lastChecked = now;
+        }
+      } catch (err) {
+        console.warn("[JWT] Failed to verify token freshness:", err);
+      }
+    }
+
     return token;
   },
 
