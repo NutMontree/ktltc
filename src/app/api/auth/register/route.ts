@@ -155,7 +155,6 @@ export async function POST(req: Request) {
     const newUser: any = {
       username,
       password: hashedPassword,
-      passwordText: password,
       name,
       email,
       phone,
