@@ -56,6 +56,7 @@ import "dayjs/locale/th";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
+import * as XLSX from "xlsx";
 
 type DveExtractScoreResult = {
   score: string | null;
@@ -418,6 +419,90 @@ function DVETeacherWorkspace() {
     quizType: "general",
   });
   const [showQuizAnswers, setShowQuizAnswers] = useState(false);
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleDownloadTemplate = () => {
+    const ws_data = [
+      ["คำถาม (Question)", "ตัวเลือก 1", "ตัวเลือก 2", "ตัวเลือก 3", "ตัวเลือก 4", "คำตอบที่ถูก (1-4)", "คะแนน (Points)"],
+      ["ภาษาใดใช้สำหรับโครงสร้างหน้าเว็บ (ตัวอย่าง)", "HTML", "C++", "Python", "Java", "1", "1"],
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    const wscols = [
+      { wch: 40 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 15 }, { wch: 15 }
+    ];
+    ws['!cols'] = wscols;
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Template");
+    XLSX.writeFile(wb, "Test_Builder_Template.xlsx");
+  };
+
+  const handleImportExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const bstr = evt.target?.result;
+        const wb = XLSX.read(bstr, { type: "binary" });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
+        
+        const rows = data.slice(1).filter(row => row.length > 0 && row[0]);
+        
+        const importedQuestions = rows.map((row, index) => {
+          const text = String(row[0] || "");
+          const op1 = String(row[1] || "");
+          const op2 = String(row[2] || "");
+          const op3 = String(row[3] || "");
+          const op4 = String(row[4] || "");
+          
+          let correctAnsIndex = null;
+          let correctAnsStr = String(row[5] || "");
+          
+          if (["1", "2", "3", "4"].includes(correctAnsStr)) {
+            correctAnsIndex = parseInt(correctAnsStr) - 1;
+          } else {
+            const opts = [op1, op2, op3, op4];
+            const foundIdx = opts.findIndex(o => o && o.trim() === correctAnsStr.trim());
+            if (foundIdx !== -1) correctAnsIndex = foundIdx;
+          }
+
+          const points = parseFloat(String(row[6])) || 1;
+
+          return {
+            id: `excel_${Date.now()}_${index}`,
+            type: "multiple_choice",
+            text,
+            options: [op1, op2, op3, op4],
+            correctAnswer: correctAnsIndex !== null ? [op1, op2, op3, op4][correctAnsIndex] : "",
+            correctAnswerIndex: correctAnsIndex,
+            points
+          };
+        });
+
+        if (importedQuestions.length > 0) {
+          setQuizForm(prev => ({
+            ...prev,
+            questions: [...(prev.questions || []), ...importedQuestions]
+          }));
+          message.success(`นำเข้าข้อสอบสำเร็จจำนวน ${importedQuestions.length} ข้อ`);
+        } else {
+          message.warning("ไม่พบข้อมูลข้อสอบในไฟล์");
+        }
+      } catch (err) {
+        console.error(err);
+        message.error("เกิดข้อผิดพลาดในการอ่านไฟล์ Excel");
+      }
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
 
   const [templates, setTemplates] = useState<any[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
@@ -4865,27 +4950,55 @@ function DVETeacherWorkspace() {
                             {showQuizAnswers ? "ปิดเฉลย" : "แสดงเฉลย"}
                           </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newQ = {
-                              id: Date.now().toString(),
-                              type: "multiple_choice",
-                              text: "",
-                              options: ["", "", "", ""],
-                              correctAnswer: "",
-                              correctAnswerIndex: null as number | null,
-                              points: 1,
-                            };
-                            setQuizForm((prev) => ({
-                              ...prev,
-                              questions: [...(prev.questions || []), newQ],
-                            }));
-                          }}
-                          className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/30 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
-                        >
-                          <Plus size={14} /> เพิ่มโจทย์คำถาม
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={handleDownloadTemplate}
+                            className="px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-800/40 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
+                            title="ดาวน์โหลดไฟล์ต้นแบบ (Excel Template)"
+                          >
+                            <Download size={14} /> โหลด Template
+                          </button>
+                          
+                          <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleImportExcel} 
+                            accept=".xlsx, .xls" 
+                            className="hidden" 
+                          />
+                          
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-3 py-2 bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-800/40 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
+                            title="นำเข้าจากไฟล์ Excel"
+                          >
+                            <Upload size={14} /> Import Excel
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newQ = {
+                                id: Date.now().toString(),
+                                type: "multiple_choice",
+                                text: "",
+                                options: ["", "", "", ""],
+                                correctAnswer: "",
+                                correctAnswerIndex: null as number | null,
+                                points: 1,
+                              };
+                              setQuizForm((prev) => ({
+                                ...prev,
+                                questions: [...(prev.questions || []), newQ],
+                              }));
+                            }}
+                            className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/30 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
+                          >
+                            <Plus size={14} /> เพิ่มโจทย์คำถาม
+                          </button>
+                        </div>
                       </div>
 
                       {!quizForm.questions || quizForm.questions.length === 0 ? (
