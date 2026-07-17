@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { calculateDistance } from "@/lib/geoDistance";
 import { auth } from "@/lib/auth";
-import { sendLineNotify } from "@/lib/lineNotify";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import { ObjectId } from "mongodb";
@@ -154,25 +153,6 @@ export async function POST(req: Request) {
     };
 
     await db.collection("flagpole_attendances").insertOne(newRecord);
-
-    // 7. ยิงแจ้งเตือน Line Notify เข้ากลุ่ม (ปรับปรุงให้รองรับ 5000 คน)
-    if (userRole !== "student" && userRole !== "user") {
-      try {
-        const userName = user?.name || user?.username || "พนักงาน/อาจารย์";
-        const timeStr = format(serverTime, "HH:mm", { locale: th });
-        const statusEmoji = status === "Late" ? "⚠️" : "✅";
-        const statusText = status === "Late" ? "มาเข้าแถวสาย" : "ตรงเวลา";
-
-        const lineMessage = `\n🇹🇭 เช็คชื่อเข้าแถว\nชื่อ-สกุล: ${userName}\nเวลาเช็คชื่อ: ${timeStr} น.\nสถานะ: ${statusEmoji} ${statusText}\nพิกัด: ${statusTag} (${address || "ไม่ระบุพิกัดอย่างละเอียด"})`;
-
-        // ทำงานแบบ Background ไม่ใช้ await เพื่อไม่ให้ API ค้าง (ป้องกันคอขวดตอนเช้า)
-        sendLineNotify(lineMessage).catch((lineErr) => {
-          console.error("Line Notify flagpole background error:", lineErr);
-        });
-      } catch (lineErr) {
-        console.error("Line Notify flagpole notification setup failed:", lineErr);
-      }
-    }
 
     return NextResponse.json({
       success: true,

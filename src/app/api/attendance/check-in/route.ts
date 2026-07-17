@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 import { calculateDistance } from '@/lib/geoDistance';
 import { auth } from '@/lib/auth';
-import { sendLineNotify } from '@/lib/lineNotify';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
 import { ObjectId } from 'mongodb';
@@ -183,17 +182,6 @@ export async function POST(req: Request) {
     );
 
     const newCheckIn = result;
-
-    try {
-      const user = await db.collection("users").findOne({ _id: userObjId });
-      const userName = user?.name || user?.username || "พนักงาน";
-      const timeStr = format(serverTime, 'HH:mm', { locale: th });
-      const statusEmoji = status === "Late" ? "⚠️" : "✅";
-      const lineMessage = `\n${statusEmoji} แจ้งเข้างาน\nพนักงาน: ${userName}\nเวลาเข้า: ${timeStr} น.\nพิกัด: ${statusTag} (${address || 'ไม่ระบุ'})`;
-      await sendLineNotify(lineMessage);
-    } catch (lineErr) {
-      console.error("Line Notify fail:", lineErr);
-    }
 
     return NextResponse.json({ success: true, data: newCheckIn, distance, statusTag });
   } catch (error: any) {

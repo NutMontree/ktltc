@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
-import { sendLineNotify } from "@/lib/lineNotify";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
@@ -38,29 +37,6 @@ export async function POST(req: Request) {
     };
 
     const result = await db.collection("leave_requests").insertOne(leaveRequest);
-
-    try {
-      const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
-      const userName = user?.name || user?.username || "พนักงาน";
-      const startStr = format(new Date(startDate), 'dd MMM yy', { locale: th });
-      const endStr = format(new Date(endDate), 'dd MMM yy', { locale: th });
-      
-      const typeLabels: Record<string, string> = {
-        sick: "ลาป่วย",
-        personal: "ลากิจส่วนตัว",
-        paternity: "ลาช่วยเหลือภริยาที่คลอดบุตร",
-        maternity: "ลาคลอด",
-        ordination: "ลาอุปสมบท",
-        official: "ไปราชการ",
-        other: "อื่นๆ"
-      };
-      const typeLabel = typeLabels[leaveType] || leaveType;
-
-      const lineMessage = `\n📝 แจ้งฝากใบลา\nพนักงาน: ${userName}\nประเภท: ${typeLabel}\nตั้งแต่วันที่: ${startStr} ถึง ${endStr}\nเหตุผล: ${reason}`;
-      await sendLineNotify(lineMessage);
-    } catch (lineErr) {
-      console.error("Line Notify fail:", lineErr);
-    }
 
     return NextResponse.json({ success: true, id: result.insertedId }, { status: 201 });
   } catch (error: any) {
