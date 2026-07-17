@@ -10,6 +10,8 @@ import { uploadFile } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { ShieldAlert } from "lucide-react";
 // --- DND Kit Imports ---
 import {
   DndContext,
@@ -156,6 +158,8 @@ function SortableImage({ id, src, onRemove, onZoom, isVertical = false, isVideo 
 }
 
 export default function AddNewsPage() {
+  const { data: session, status } = useSession();
+  const [permissions, setPermissions] = useState<any>(null);
   const router = useRouter();
   const [categories, setCategories] = useState<string[]>(["PR"]);
   const [content, setContent] = useState("");
@@ -206,6 +210,15 @@ export default function AddNewsPage() {
   );
 
   useEffect(() => {
+    fetch("/api/auth/permissions")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) {
+          setPermissions(data);
+        }
+      })
+      .catch((err) => console.error("Failed to load permissions:", err));
+
     const fetchUser = async () => {
       try {
         const res = await fetch("/api/profile");
@@ -226,6 +239,35 @@ export default function AddNewsPage() {
     fetchUser();
     import("suneditor-react").then((mod) => setSunEditorComponent(() => mod.default));
   }, []);
+
+  if (status === "loading" || (status === "authenticated" && permissions === null)) {
+    return <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-zinc-950 text-slate-500 font-bold">กำลังตรวจสอบสิทธิ์...</div>;
+  }
+  
+  const isSuperAdmin = session?.user?.role === "super_admin";
+  const hasPermission = permissions?.manage_news || isSuperAdmin;
+  
+  if (!hasPermission && !["admin", "editor"].includes(session?.user?.role || "")) {
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow-xl text-center space-y-4 max-w-sm w-full">
+          <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center mx-auto">
+            <ShieldAlert size={40} className="text-rose-500" />
+          </div>
+          <h2 className="text-xl font-black text-zinc-900 dark:text-white">ปฏิเสธการเข้าถึง</h2>
+          <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400">
+            คุณไม่ได้รับสิทธิ์ในการเพิ่มข่าวสาร
+          </p>
+          <button
+            onClick={() => router.back()}
+            className="w-full py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-black text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
+          >
+            ย้อนกลับ
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const compressImage = async (file: File) => {
     const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 
 // ฟังก์ชันสร้าง Slug
 function generateSlug(title: string) {
@@ -24,8 +24,7 @@ export async function POST(request: Request) {
     const userRole = session?.user?.role?.toLowerCase();
 
     // Check dynamic permissions
-    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
-    const canManageNews = rolePerms?.permissions?.manage_news || userRole === "super_admin";
+    const canManageNews = await hasPermission(userRole || "", "manage_news");
 
     if (!canManageNews && !["admin", "editor"].includes(userRole || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
