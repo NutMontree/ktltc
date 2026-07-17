@@ -56,6 +56,12 @@ async function createIndexes(promise: Promise<MongoClient>) {
     // 3.1 Index สำหรับ role: ช่วยให้การนับจำนวนนักเรียน (countDocuments({ role: "student" })) ทำได้เร็วขึ้น
     await db.collection("users").createIndex({ role: 1 });
 
+    // 3.2 Index สำหรับ DVE Students & Filtering
+    await db.collection("users").createIndex({ department: 1 });
+    await db.collection("users").createIndex({ classGroup: 1 });
+    await db.collection("users").createIndex({ "studentData.classGroup": 1 });
+    await db.collection("users").createIndex({ name: 1 });
+
     // 4. Index สำหรับ Attendance: ค้นหาข้อมูลการลงเวลาได้เร็วขึ้น
     await db.collection("attendances").createIndex({ date: -1 });
     await db.collection("attendances").createIndex({ userId: 1 });
@@ -97,6 +103,15 @@ async function createIndexes(promise: Promise<MongoClient>) {
     // รองรับเด็กนักเรียน 5,000 คน สแกนหน้าเช็คชื่อพร้อมกันตอน 07:50
     await db.collection("flagpole_attendances").createIndex({ userId: 1, date: -1 });
     await db.collection("flagpole_settings").createIndex({ key: 1 }, { unique: true });
+
+    // 13. Index สำหรับ DVE Subjects & Quizzes
+    await db.collection("dve_subjects").createIndex({ teacherId: 1, department: 1 });
+    await db.collection("dve_quizzes").createIndex({ subjectId: 1, unitId: 1 });
+    await db.collection("dve_quiz_submissions").createIndex({ quizId: 1, studentId: 1 });
+
+    // 14. Index สำหรับเอกสารภายใน (Internal PDCA & Memos)
+    await db.collection("internal_pdca").createIndex({ creatorId: 1, createdAt: -1 });
+    await db.collection("general_memos").createIndex({ creatorId: 1, createdAt: -1 });
 
     console.log("✅ [MongoDB] Indexes created/verified successfully");
   } catch (error) {
