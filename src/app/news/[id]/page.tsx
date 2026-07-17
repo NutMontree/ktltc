@@ -1,6 +1,8 @@
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import Link from "next/link";
+import { th } from "date-fns/locale";
+import DOMPurify from "isomorphic-dompurify";
 import Image from "next/image";
 import { FootTitle } from "@/components/FootTitle";
 import NewsShareBar from "@/components/news/NewsShareBar";
@@ -397,37 +399,39 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
         <div className="max-w-5xl mx-auto w-full px-4 md:px-8 mt-10 space-y-12">
           <NewsShareBar title={news.title} url={pageUrl} />
           {/* --- Content Body --- */}
-          <article
-            className="prose prose-lg prose-slate dark:prose-invert max-w-none 
-            prose-headings:font-bold prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300
-            prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-10
-            prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-zinc-900 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-            [&_a]:text-blue-600! [&_a]:underline! [&_a]:break-all! hover:[&_a]:text-blue-800!"
-          >
-            <div dangerouslySetInnerHTML={{ __html: news.content || "" }} />
-          </article>
+            <article
+              className="prose prose-lg prose-slate dark:prose-invert max-w-none 
+              prose-headings:font-bold prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300
+              prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-10
+              prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-zinc-900 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+              [&_a]:text-blue-600! [&_a]:underline! [&_a]:break-all! hover:[&_a]:text-blue-800!"
+            >
+              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news.content || "") }} />
+            </article>
 
-          <div className="py-4">
-            <FootTitle />
-          </div>
-          <hr className="border-slate-200 dark:border-zinc-800" />
+            <div className="py-4">
+              <FootTitle />
+            </div>
+            <hr className="border-slate-200 dark:border-zinc-800" />
 
-          {/* --- 🎥 Video Section --- */}
-          {news.videoEmbeds && news.videoEmbeds.length > 0 && (
-            <section className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="h-6 w-1.5 bg-red-600 rounded-full"></div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">วิดีโอประกอบ</h3>
-              </div>
-              <div
-                className={`grid gap-6 ${news.videoEmbeds.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
-              >
-                {news.videoEmbeds.map((embedCode, index) => (
-                  <div
-                    key={index}
-                    className="aspect-video w-full rounded-2xl overflow-hidden shadow-lg bg-black border border-slate-200 dark:border-zinc-800 [&>iframe]:w-full [&>iframe]:h-full"
-                    dangerouslySetInnerHTML={{ __html: embedCode }}
-                  />
+            {/* --- 🎥 Video Section --- */}
+            {news.videoEmbeds && news.videoEmbeds.length > 0 && (
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-6 w-1.5 bg-red-600 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">วิดีโอประกอบ</h3>
+                </div>
+                <div
+                  className={`grid gap-6 ${news.videoEmbeds.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
+                >
+                  {news.videoEmbeds.map((embedCode, index) => (
+                    <div
+                      key={index}
+                      className="aspect-video w-full rounded-2xl overflow-hidden shadow-lg bg-black border border-slate-200 dark:border-zinc-800 [&>iframe]:w-full [&>iframe]:h-full"
+                      dangerouslySetInnerHTML={{ 
+                        __html: DOMPurify.sanitize(embedCode, { ADD_TAGS: ['iframe'], ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src'] }) 
+                      }}
+                    />
                 ))}
               </div>
             </section>
