@@ -23,11 +23,10 @@ const TypingScoreSchema: Schema = new Schema({
 // Avoid OverwriteModelError
 const TypingScore = mongoose.models.TypingScore || mongoose.model<ITypingScore>("TypingScore", TypingScoreSchema);
 
+import { connectMongoose } from "@/lib/mongoose";
+
 export const connectDB = async () => {
-  if (mongoose.connections[0].readyState) return;
-  const uri = process.env.MONGODB_URI;
-  if (!uri) throw new Error("Missing MONGODB_URI");
-  await mongoose.connect(uri, { maxPoolSize: 50 });
+  return connectMongoose();
 };
 
 export default TypingScore;

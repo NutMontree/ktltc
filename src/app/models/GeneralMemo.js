@@ -1,27 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 
-const { MONGODB_URI } = process.env;
-
-if (!MONGODB_URI) {
-  console.error("Please define the MONGODB_URI environment variable");
-}
-
-// Global cached connection for Serverless Environment (Vercel)
-let cached = global.mongoose;
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
+import { connectMongoose } from "@/lib/mongoose";
 
 export async function connectDB() {
-  if (cached.conn) return cached.conn;
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, { maxPoolSize: 50 }).then((mongoose) => {
-      console.log("MongoDB connected (GeneralMemo)");
-      return mongoose;
-    });
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
+  return connectMongoose();
 }
 
 const GeneralMemoSchema = new Schema(
