@@ -4314,7 +4314,8 @@ function DVETeacherWorkspace() {
                         </label>
                         <input
                           type="number"
-                          min={1}
+                          min={0}
+                          step="any"
                           required
                           placeholder="เช่น 60"
                           className="w-full h-9 border border-emerald-200 dark:border-emerald-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-emerald-600 dark:text-emerald-400 focus:outline-hidden"
@@ -4335,7 +4336,8 @@ function DVETeacherWorkspace() {
                         </label>
                         <input
                           type="number"
-                          min={1}
+                          min={0}
+                          step="any"
                           placeholder="เช่น 15"
                           className="w-full h-9 border border-amber-200 dark:border-amber-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-amber-600 dark:text-amber-400 focus:outline-hidden"
                           value={unitForm.studyMinutes}
