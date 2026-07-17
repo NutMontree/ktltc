@@ -1,5 +1,6 @@
 import Settings from "@/app/models/Settings";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 const DEFAULT_ITEMS = [
   "บันทึกข้อความขออนุมัติโครงการ",
@@ -52,6 +53,13 @@ export async function GET() {
 
 export async function PUT(req) {
   try {
+    const session = await auth();
+    const role = (session?.user?.role || "").toLowerCase();
+    
+    if (!session || !["super_admin", "admin"].includes(role)) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { pdcaItems, departments } = body;
 
