@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest, userAgent } from "next/server";
+import { NextResponse, NextRequest, userAgentFromString } from "next/server";
 import clientPromise from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
     const ip = rawIp.split(',')[0].trim();
     
     // 2. Get User-Agent natively via NextJS
-    const { device, os, browser } = userAgent(req);
+    const uaString = req.headers.get("user-agent") || "";
+    const { device, os, browser } = userAgentFromString(uaString);
     
     // 3. Get Location from Cloudflare Headers or Cache
     let country = req.headers.get("cf-ipcountry") || "Unknown";
