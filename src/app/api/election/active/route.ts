@@ -36,50 +36,81 @@ export async function GET() {
       return NextResponse.json({ active: false, elections: [] });
     }
 
-    // Map through all active elections and attach candidates and user vote status
-    const electionsWithDetails = await Promise.all(
-      activeElections.map(async (election) => {
-        const existingVote = await db.collection("votes").findOne({
-          electionId: new ObjectId(election._id as any),
-          userId: new ObjectId(user.id as any),
-        });
+    // 1. Get election IDs
+    const electionIds = activeElections.map((e) => new ObjectId(e._id as any));
 
-        const candidates = await db
-          .collection("candidates")
-          .find({ electionId: new ObjectId(election._id as any) })
-          .sort({ number: 1 })
-          .toArray();
-
-        const enrichedCandidates = await Promise.all(
-          candidates.map(async (candidate) => {
-            if (!candidate.members || candidate.members.length === 0) return candidate;
-            
-            const membersWithImages = await Promise.all(
-              candidate.members.map(async (member: any) => {
-                // Find user by name to dynamically get real profile image
-                const user = await db.collection("users").findOne({ name: member.name });
-                return {
-                  ...member,
-                  imageUrl: user?.image || member.imageUrl || ""
-                };
-              })
-            );
-            return {
-              ...candidate,
-              _id: candidate._id.toString(),
-              members: membersWithImages
-            };
-          })
-        );
-
-        return {
-          ...election,
-          _id: election._id.toString(),
-          candidates: enrichedCandidates,
-          hasVoted: !!existingVote,
-        };
+    // 2. Fetch all votes for this user in these elections (Bulk)
+    const existingVotes = await db
+      .collection("votes")
+      .find({
+        userId: new ObjectId(user.id as any),
+        electionId: { $in: electionIds },
       })
-    );
+      .toArray();
+    
+    const votedElectionIds = new Set(existingVotes.map((v) => v.electionId.toString()));
+
+    // 3. Fetch all candidates for these elections (Bulk)
+    const allCandidates = await db
+      .collection("candidates")
+      .find({ electionId: { $in: electionIds } })
+      .sort({ number: 1 })
+      .toArray();
+
+    // 4. Extract all member names to fetch images
+    const memberNames = new Set<string>();
+    allCandidates.forEach((candidate) => {
+      if (candidate.members) {
+        candidate.members.forEach((m: any) => {
+          if (m.name) memberNames.add(m.name);
+        });
+      }
+    });
+
+    // 5. Fetch user images in bulk
+    const userImages = await db
+      .collection("users")
+      .find({ name: { $in: Array.from(memberNames) } })
+      .project({ name: 1, image: 1 })
+      .toArray();
+      
+    const userImageMap = new Map<string, string>();
+    userImages.forEach((u) => {
+      if (u.image) userImageMap.set(u.name, u.image);
+    });
+
+    // 6. Map everything in memory
+    const electionsWithDetails = activeElections.map((election) => {
+      const electionIdStr = election._id.toString();
+      const hasVoted = votedElectionIds.has(electionIdStr);
+      
+      const electionCandidates = allCandidates.filter(
+        (c) => c.electionId.toString() === electionIdStr
+      );
+
+      const enrichedCandidates = electionCandidates.map((candidate) => {
+        let membersWithImages = candidate.members || [];
+        if (membersWithImages.length > 0) {
+          membersWithImages = membersWithImages.map((member: any) => ({
+            ...member,
+            imageUrl: userImageMap.get(member.name) || member.imageUrl || ""
+          }));
+        }
+        
+        return {
+          ...candidate,
+          _id: candidate._id.toString(),
+          members: membersWithImages
+        };
+      });
+
+      return {
+        ...election,
+        _id: electionIdStr,
+        candidates: enrichedCandidates,
+        hasVoted,
+      };
+    });
 
     // Keep backwards compatibility for single election but provide elections array for multiple
     return NextResponse.json({
