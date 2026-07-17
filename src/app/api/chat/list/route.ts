@@ -34,58 +34,65 @@ export async function GET() {
       .sort({ lastMessageAt: -1 })
       .toArray();
 
-    // Map through conversations and fetch participant details
-    const formattedChats = await Promise.all(
-      chats.map(async (chat) => {
-        const participantIds = chat.participants || [];
+    // Collect all unique participant IDs across all chats
+    const uniqueParticipantIds = new Set<any>();
+    chats.forEach((chat) => {
+      (chat.participants || []).forEach((pId: any) => {
+        try {
+          uniqueParticipantIds.add(ObjectId.isValid(pId) ? new ObjectId(pId) : pId);
+        } catch (_) {
+          uniqueParticipantIds.add(pId);
+        }
+      });
+    });
 
-        // Fetch all participants details from the users collection
-        const participants = await db
-          .collection("users")
-          .find({
-            _id: {
-              $in: participantIds.map((pId: any) => {
-                try {
-                  return ObjectId.isValid(pId) ? new ObjectId(pId) : pId;
-                } catch (_) {
-                  return pId;
-                }
-              }),
-            },
-          })
-          .project({
-            _id: 1,
-            name: 1,
-            username: 1,
-            image: 1,
-            role: 1,
-            department: 1,
-          })
-          .toArray();
+    // Bulk fetch all participants
+    const allParticipants = await db
+      .collection("users")
+      .find({ _id: { $in: Array.from(uniqueParticipantIds) } })
+      .project({ _id: 1, name: 1, username: 1, image: 1, role: 1, department: 1 })
+      .toArray();
 
-        const resolvedParticipants = participants.map((u) => ({
-          ...u,
-          _id: u._id.toString(),
-        }));
+    // Create a dictionary for O(1) lookup
+    const participantMap = new Map(
+      allParticipants.map((u) => [
+        u._id.toString(),
+        { ...u, _id: u._id.toString() }
+      ])
+    );
 
-        // Filter out the logged-in user for DMs convenience
-        const otherParticipants = resolvedParticipants.filter(
-          (u) => u._id.toString() !== userId.toString()
-        );
-        const recipient = otherParticipants[0] || null;
+    // Bulk fetch unread notifications for this user
+    // We only care about chat notifications for this user
+    const unreadNotifs = await db.collection("notifications")
+      .find({
+        userId: userObjectId,
+        type: "chat_message",
+        read: false
+      })
+      .toArray();
 
-        // Check if there are any unread chat notifications for the logged-in user for this chat
-        const unreadNotif = await db.collection("notifications").findOne({
-          userId: userObjectId,
-          type: "chat_message",
-          $or: [
-            { targetUrl: "/dashboard/chat" },
-            { targetUrl: `/dashboard/chat?c=${chat._id.toString()}` }
-          ],
-          read: false,
-        });
+    const notifTargetUrls = new Set(unreadNotifs.map(n => n.targetUrl));
 
-        return {
+    // Map through conversations in memory
+    const formattedChats = chats.map((chat) => {
+      const participantIds = chat.participants || [];
+
+      const resolvedParticipants = participantIds
+        .map((pId: any) => participantMap.get(pId.toString()))
+        .filter(Boolean);
+
+      // Filter out the logged-in user for DMs convenience
+      const otherParticipants = resolvedParticipants.filter(
+        (u: any) => u._id.toString() !== userId.toString()
+      );
+      const recipient = otherParticipants[0] || null;
+
+      // Check if there are any unread chat notifications for this chat
+      const hasUnread = 
+        notifTargetUrls.has("/dashboard/chat") || 
+        notifTargetUrls.has(`/dashboard/chat?c=${chat._id.toString()}`);
+
+      return {
           _id: chat._id.toString(),
           participants: chat.participants.map((p: any) => p.toString()),
           recipient, // Convenience object for Direct Messaging
@@ -99,10 +106,10 @@ export async function GET() {
           lastMessageSender: chat.lastMessageSender ? chat.lastMessageSender.toString() : null,
           createdAt: chat.createdAt,
           updatedAt: chat.updatedAt,
-          hasUnread: !!unreadNotif,
+          hasUnread: hasUnread,
+          unreadCount: hasUnread ? 1 : 0, // Simplify to binary state or fetch actual count if needed
         };
-      })
-    );
+    });
 
     return NextResponse.json({ success: true, chats: formattedChats });
   } catch (error: any) {

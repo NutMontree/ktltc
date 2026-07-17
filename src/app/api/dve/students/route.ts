@@ -196,6 +196,46 @@ export async function GET(req: Request) {
         ]),
       );
     }
+    const targetClean = normalizeDept(department);
+    let deptQuery: any = null;
+
+    if (department && role !== "student") {
+      // Step 1: Find all possible class groups efficiently
+      const [cg1, cg2, cg3] = await Promise.all([
+        db.collection("users").distinct("classGroup", { role: "student" }),
+        db.collection("users").distinct("studentData.classGroup", { role: "student" }),
+        db.collection("users").distinct("groupCode", { role: "student" })
+      ]);
+      const allCg = Array.from(new Set([...cg1, ...cg2, ...cg3])).filter(Boolean) as string[];
+
+      // Step 2: Filter class groups that match the target department
+      const validCgSet = allCg.filter(cg => {
+        const d = getDeptFromClassGroup(cg);
+        const finalClean = normalizeDept(d);
+        return finalClean && (finalClean.includes(targetClean) || targetClean.includes(finalClean));
+      });
+
+      // Step 3: Build department MongoDB query
+      deptQuery = {
+        $or: [
+          { department: { $regex: escapeRegex(targetClean), $options: "i" } },
+          { "studentData.department": { $regex: escapeRegex(targetClean), $options: "i" } }
+        ]
+      };
+      if (validCgSet.length > 0) {
+        deptQuery.$or.push({ classGroup: { $in: validCgSet } });
+        deptQuery.$or.push({ "studentData.classGroup": { $in: validCgSet } });
+        deptQuery.$or.push({ groupCode: { $in: validCgSet } });
+      }
+    }
+
+    if (deptQuery) {
+      if (query.$or) {
+        query = { $and: [{ $or: query.$or }, deptQuery] };
+      } else {
+        query = { ...query, ...deptQuery };
+      }
+    }
 
     const students = await db
       .collection("users")
@@ -206,61 +246,32 @@ export async function GET(req: Request) {
         studentId: 1,
         classGroupId: 1,
         groupCode: 1,
+        classGroup: 1,
+        "studentData.classGroup": 1,
         classroomName: 1,
         department: 1,
+        "studentData.department": 1,
         image: 1,
         isInternship: 1,
       })
       .sort({ studentId: 1, name: 1 })
       .toArray();
 
-    const targetClean = normalizeDept(department);
-    const filteredStudents = students.filter((s) => {
-      const currentDept = resolveStudentDept(s);
-      const classGroup = resolveStudentClassGroup(s);
-
-      const isPlaceholder =
-        !currentDept ||
-        currentDept === "ไม่มีกำหนด" ||
-        currentDept.includes("แผนกนักเรียน") ||
-        currentDept.includes("นักเรียน/นักศึกษา");
-
-      let finalDept = currentDept;
-      if (isPlaceholder && classGroup) {
-        finalDept = getDeptFromClassGroup(classGroup);
-      }
-
-      const finalClean = normalizeDept(finalDept);
-      return finalClean.includes(targetClean) || targetClean.includes(finalClean);
-    });
-
-    const allStudents = await db.collection("users").find({ role: "student" }).project({ department: 1, classGroup: 1, "studentData.department": 1, "studentData.classGroup": 1 }).toArray();
     const distinctClassGroups = Array.from(
       new Set(
-        allStudents
-          .filter((s) => {
-            const currentDept = resolveStudentDept(s);
-            const classGroup = resolveStudentClassGroup(s);
-            let finalDept = currentDept;
-            if ((!currentDept || currentDept === "ไม่มีกำหนด" || currentDept.includes("แผนกนักเรียน") || currentDept.includes("นักเรียน/นักศึกษา")) && classGroup) {
-              finalDept = getDeptFromClassGroup(classGroup);
-            }
-            const finalClean = normalizeDept(finalDept);
-            return finalClean.includes(targetClean) || targetClean.includes(finalClean);
-          })
+        students
           .map((s) => resolveStudentClassGroup(s))
-          .filter((c) => c && !/^[\d\s-]+$/.test(c)),
-      ),
+          .filter((c) => c && !/^[\d\s-]+$/.test(c))
+      )
     ).sort();
-
     return NextResponse.json({
       success: true,
-      students: filteredStudents.map((s) => ({
+      students: students.map((s) => ({
         id: s._id.toString(),
         name: s.name || "ไม่ระบุชื่อ",
         studentIdNum: s.studentId || s.studentIdNum || "ไม่ระบุรหัส",
         classGroupId: resolveStudentClassGroup(s) || "ไม่ระบุห้อง",
-        department: s.department || department,
+        department: s.department || s.studentData?.department || department,
         image: s.image || null,
         isInternship: s.isInternship ?? false,
       })),
