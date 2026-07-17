@@ -184,7 +184,7 @@ export async function GET(req: Request) {
       }
     }
 
-    const query: any = { role: "student" };
+    let query: any = { role: "student" };
     if (classGroupId) {
       const classGroupTargets = Array.from(
         new Set([classGroupId, standardizeClassGroupName(classGroupId)].filter(Boolean)),
