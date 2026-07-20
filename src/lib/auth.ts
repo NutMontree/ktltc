@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import clientPromise from "@/lib/db";
 import { authConfig } from "@/auth.config";
+import { ObjectId } from "mongodb";
 
 /**
  * auth.ts: ไฟล์หลักสำหรับระบบ Authentication (NextAuth v5)
@@ -134,6 +135,46 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt({ token, user, trigger, session, account }) {
+      // 1. เรียกใช้ jwt callback เดิมจาก auth.config.ts (เพื่อแมปข้อมูลเริ่มต้นตอน login)
+      let newToken = token;
+      if (authConfig.callbacks?.jwt) {
+        newToken = await (authConfig.callbacks.jwt as any)({ token, user, trigger, session, account });
+      }
+      
+      // 2. ตรวจสอบสถานะ User จาก Database โดยตรง (ย้ายมาจาก auth.config.ts เพื่อเลี่ยง fetch loopback timeout)
+      const now = Date.now();
+      const lastChecked = (newToken.lastChecked as number) || (newToken.loginTimestamp as number) || now;
+      
+      if (newToken.id && (now - lastChecked > 900000)) {
+        try {
+          const client = await clientPromise;
+          const db = client.db("ktltc_db");
+          
+          if (ObjectId.isValid(newToken.id as string)) {
+             const dbUser = await db.collection("users").findOne(
+               { _id: new ObjectId(newToken.id as string) },
+               { projection: { role: 1, department: 1, faction: 1, isActive: 1 } }
+             );
+             // ถ้าระบบระงับบัญชี (isActive = false) หรือลบบัญชีไปแล้ว ให้เตะออกจากระบบ
+             if (!dbUser || dbUser.isActive === false) {
+                return {}; 
+             }
+             // อัปเดตสิทธิ์ใหม่ล่าสุดเข้า Token
+             newToken.role = dbUser.role;
+             newToken.department = dbUser.department;
+             newToken.faction = dbUser.faction;
+             newToken.lastChecked = now;
+          }
+        } catch (err) {
+          console.warn("[JWT Node] Failed to verify token freshness:", err);
+        }
+      }
+      return newToken;
+    }
+  }
 });
 
 /**
