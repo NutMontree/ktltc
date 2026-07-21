@@ -37,6 +37,7 @@ import {
   FileText,
   Paperclip,
   Lock,
+  Youtube,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select } from "antd";
@@ -2163,20 +2164,56 @@ export function DVEStudentPortal() {
                               🔗 ลิงก์และแหล่งข้อมูลภายนอก:
                             </span>
                             <div className="space-y-2">
-                              {externalLinks.map((file: any, fIdx: number) => (
-                                <a
-                                  key={fIdx}
-                                  href={file.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 p-3 rounded-xl bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-black transition-colors border border-blue-500/10 cursor-pointer"
-                                >
-                                  <ExternalLink size={14} className="shrink-0" />
-                                  <span className="truncate">
-                                    {file.name || "เปิดแหล่งข้อมูลภายนอก"}
-                                  </span>
-                                </a>
-                              ))}
+                              {externalLinks.map((file: any, fIdx: number) => {
+                                const youtubeMatch = file.url?.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+                                const youtubeId = (youtubeMatch && youtubeMatch[2].length === 11) ? youtubeMatch[2] : null;
+
+                                if (youtubeId) {
+                                  return (
+                                    <a
+                                      key={fIdx}
+                                      href={file.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="group relative flex flex-col p-3 gap-3 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-black transition-colors border border-red-500/10 cursor-pointer overflow-hidden"
+                                    >
+                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-red-500/20 bg-black/5 dark:bg-white/5">
+                                        <img 
+                                          src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`} 
+                                          alt="YouTube Thumbnail" 
+                                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+                                          <div className="w-12 h-12 bg-red-600/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:bg-red-600 transition-colors">
+                                            <Youtube size={24} className="text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-start gap-2">
+                                        <Youtube size={16} className="shrink-0 mt-0.5" />
+                                        <span className="truncate whitespace-normal line-clamp-2">
+                                          {file.name || "ชมวิดีโอบน YouTube"}
+                                        </span>
+                                      </div>
+                                    </a>
+                                  );
+                                }
+
+                                return (
+                                  <a
+                                    key={fIdx}
+                                    href={file.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 p-3 rounded-xl bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-black transition-colors border border-blue-500/10 cursor-pointer"
+                                  >
+                                    <ExternalLink size={14} className="shrink-0" />
+                                    <span className="truncate">
+                                      {file.name || "เปิดแหล่งข้อมูลภายนอก"}
+                                    </span>
+                                  </a>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
