@@ -3,7 +3,7 @@
 import clientPromise from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { signOut } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auth";
 
 export async function incrementVisitor() {
   try {
