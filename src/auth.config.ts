@@ -59,6 +59,7 @@ const callbacks: NextAuthConfig["callbacks"] = {
       session.user.image = token.image as string | undefined;
       session.user.department = token.department as string | undefined;
       session.user.faction = token.faction as string | undefined;
+      (session.user as any).sessionId = token.sessionId;
     }
     return session;
   },

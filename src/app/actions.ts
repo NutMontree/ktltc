@@ -49,3 +49,28 @@ export async function logoutAction() {
   // รวมถึง Cookie ที่ถูกแบ่งย่อย (Chunked) ซึ่ง Client signOut มักจะมีปัญหา
   await signOut({ redirectTo: "/login" });
 }
+
+export async function logoutOtherDevicesAction() {
+  const session = await auth();
+  if (!session?.user?.id || !(session.user as any).sessionId) {
+    throw new Error("Unauthorized");
+  }
+
+  const { ObjectId } = await import("mongodb");
+  const client = await clientPromise;
+  const db = client.db("ktltc_db");
+  const userId = session.user.id;
+  const currentSessionId = (session.user as any).sessionId;
+
+  await db.collection("users").updateOne(
+    { _id: new ObjectId(userId) },
+    {
+      $set: {
+        logoutAllBefore: Date.now(),
+        exemptSessionId: currentSessionId,
+      },
+    }
+  );
+
+  return { success: true };
+}

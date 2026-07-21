@@ -126,6 +126,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: user.image || "",
             department: user.department || "",
             faction: user.faction || "",
+            sessionId: crypto.randomUUID(),
           };
         } catch (error: any) {
           const message = error?.message || String(error) || "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
@@ -148,7 +149,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const now = Date.now();
       const lastChecked = (newToken.lastChecked as number) || (newToken.loginTimestamp as number) || now;
       
-      if (newToken.id && (now - lastChecked > 900000)) {
+      // Changed interval to 60000ms (1 min) for quicker session invalidation
+      if (newToken.id && (now - lastChecked > 60000)) {
         try {
           const client = await clientPromise;
           const db = client.db("ktltc_db");
@@ -156,12 +158,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (ObjectId.isValid(newToken.id as string)) {
              const dbUser = await db.collection("users").findOne(
                { _id: new ObjectId(newToken.id as string) },
-               { projection: { role: 1, department: 1, faction: 1, isActive: 1 } }
+               { projection: { role: 1, department: 1, faction: 1, isActive: 1, logoutAllBefore: 1, exemptSessionId: 1 } }
              );
              // ถ้าระบบระงับบัญชี (isActive = false) หรือลบบัญชีไปแล้ว ให้เตะออกจากระบบ
              if (!dbUser || dbUser.isActive === false) {
                 return {}; 
              }
+
+             // ตรวจสอบการ Logout All Devices
+             if (dbUser.logoutAllBefore && newToken.loginTimestamp && (newToken.loginTimestamp as number) < dbUser.logoutAllBefore) {
+               // ถ้า Token นี้เก่ากว่าเวลาที่กด Logout All และไม่ใช่ Session ที่กดยกเว้นไว้
+               if (dbUser.exemptSessionId !== newToken.sessionId) {
+                 return {}; // ล้าง Token ทิ้งเพื่อเตะออกจากระบบ
+               }
+             }
+
              // อัปเดตสิทธิ์ใหม่ล่าสุดเข้า Token
              newToken.role = dbUser.role;
              newToken.department = dbUser.department;

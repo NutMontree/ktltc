@@ -44,6 +44,7 @@ import StaffMenus from "@/components/dashboard/menus/StaffMenus";
 import ExecutiveMenus from "@/components/dashboard/menus/ExecutiveMenus";
 import SuperAdminMenus from "@/components/dashboard/menus/SuperAdminMenus";
 import { DashboardContext } from "@/components/dashboard/DashboardContext";
+import LogoutOtherDevicesBtn from "@/components/dashboard/LogoutOtherDevicesBtn";
 
 // Framer Motion Variants
 const container: Variants = {
@@ -298,11 +299,16 @@ export default function DashboardClient({ initialStats, initialPermissions, init
                     href="/dashboard/permissions"
                     className="flex items-center justify-center gap-2 px-6 h-full rounded-full bg-emerald-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
                   >
-                    <Layout className="w-4 h-4" />
-                    เพิ่มเมนูใหม่
+                    <ShieldCheck className="w-4 h-4" />
+                    จัดการสิทธิ์
                   </Link>
                 </motion.div>
               )}
+              
+              {/* ปุ่ม Logout Other Devices */}
+              <motion.div variants={item} className="shrink-0 h-[42px]">
+                <LogoutOtherDevicesBtn />
+              </motion.div>
             </div>
 
             {/* --- Quick Actions Tabs (Sticky) --- */}
