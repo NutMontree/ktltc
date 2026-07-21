@@ -19,6 +19,7 @@ export async function GET(req: Request) {
     const startDateParam = searchParams.get("startDate");
     const endDateParam = searchParams.get("endDate");
     const roleParam = searchParams.get("role") || "all";
+    const departmentParam = searchParams.get("department") || "all";
 
     if (!startDateParam || !endDateParam) {
       return NextResponse.json({ error: "Missing date range" }, { status: 400 });
@@ -31,6 +32,9 @@ export async function GET(req: Request) {
     const userMatch: any = { role: { $nin: ["super_admin", "user"] } };
     if (roleParam !== "all") {
       userMatch.role = roleParam;
+    }
+    if (departmentParam !== "all") {
+      userMatch.department = departmentParam;
     }
 
     const users = await db.collection("users").find(userMatch).project({

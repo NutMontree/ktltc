@@ -22,6 +22,7 @@ export async function GET(req: Request) {
     const endDateParam = searchParams.get("endDate");
     const targetUserId = searchParams.get("userId");
     const roleParam = searchParams.get("role");
+    const departmentParam = searchParams.get("department");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const skip = (page - 1) * limit;
@@ -59,6 +60,11 @@ export async function GET(req: Request) {
       // Filter by Role
       if (roleParam && roleParam !== "all") {
         basePipeline.push({ $match: { "userDetails.role": roleParam } });
+      }
+      
+      // Filter by Department
+      if (departmentParam && departmentParam !== "all") {
+        basePipeline.push({ $match: { "userDetails.department": departmentParam } });
       }
 
       const facetPipeline: any[] = [

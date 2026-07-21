@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 
 export default function AdminWorkReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
@@ -79,6 +80,7 @@ export default function AdminWorkReportsPage() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
 
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -91,7 +93,7 @@ export default function AdminWorkReportsPage() {
 
     try {
       const res = await fetch(
-        `/api/work-report?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}&page=${p}&limit=20`,
+        `/api/work-report?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}&department=${departmentFilter}&page=${p}&limit=20`,
       );
       const json = await res.json();
       if (json.success) {
@@ -104,7 +106,7 @@ export default function AdminWorkReportsPage() {
       // Fetch daily summary only on first page load
       if (p === 1) {
         const summaryRes = await fetch(
-          `/api/work-report/daily-summary?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}`
+          `/api/work-report/daily-summary?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}&department=${departmentFilter}`
         );
         const summaryJson = await summaryRes.json();
         if (summaryJson.success) {
@@ -126,7 +128,7 @@ export default function AdminWorkReportsPage() {
 
   useEffect(() => {
     fetchReports(1);
-  }, [startDate, endDate, roleFilter]);
+  }, [startDate, endDate, roleFilter, departmentFilter]);
 
   const exportToExcel = () => {
     if (reports.length === 0) {
@@ -225,7 +227,7 @@ export default function AdminWorkReportsPage() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 p-4 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-5 gap-4 items-end w-full">
+        <div className="bg-white dark:bg-neutral-900 p-4 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-6 gap-4 items-end w-full">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
               ค้นหาจากชื่อพนักงาน / แผนก
@@ -259,6 +261,34 @@ export default function AdminWorkReportsPage() {
                   <option key={val} value={val}>
                     {label} ({val.toUpperCase()})
                   </option>
+                ))}
+              </select>
+              <Filter
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                size={16}
+              />
+            </div>
+          </div>
+
+          <div className="md:col-span-1">
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
+              แผนก
+            </label>
+            <div className="relative">
+              <select
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-sm appearance-none truncate pr-10"
+              >
+                <option value="all">ทั้งหมด</option>
+                {DEPARTMENT_GROUPS.map((group, idx) => (
+                  <optgroup key={idx} label={group.label}>
+                    {group.options.map((opt, i) => (
+                      <option key={i} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
               <Filter
