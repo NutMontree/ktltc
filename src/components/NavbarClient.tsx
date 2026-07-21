@@ -8,7 +8,7 @@ import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { signOut } from "next-auth/react";
+import { logoutAction } from "@/app/actions";
 import {
   FileText,
   UserCog,
@@ -349,15 +349,10 @@ export default function NavbarClient({
     setActiveMenuId(null);
   };
 
-  /**
-   * handleLogout: จัดการการออกจากระบบ
-   */
   const handleLogout = async () => {
     try {
-      // 1. ลบคุกกี้ทั้งหมดผ่าน API ฝั่ง Server
-      await fetch("/api/auth/logout", { method: "POST" });
-      // 2. เรียกใช้ signOut เพื่อล้าง session และจัดการ redirect ด้วย NextAuth
-      await signOut({ callbackUrl: "/login", redirect: true });
+      // เรียกใช้ Server Action
+      await logoutAction();
     } catch (error) {
       console.error("Logout error:", error);
       // แม้เกิด error ก็บังคับ redirect ไปหน้า login
