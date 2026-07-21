@@ -76,15 +76,7 @@ export default function ExecutiveMenus({ permissions, customMenus, item, userRol
                     />
                   </>
                 )}
-                {permissions?.manage_attendance_work_reports && (
-                  <ActionCard
-                    href="/work-reports"
-                    title="รายงานการปฏิบัติงาน"
-                    icon={FileText}
-                    desc="ตรวจสอบความถูกต้องของรายงานปฏิบัติงาน"
-                    variants={item}
-                  />
-                )}
+
                 {permissions?.manage_attendance_leave_approvals && (
                   <ActionCard
                     href="/leave-approvals"

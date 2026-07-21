@@ -543,6 +543,7 @@ export default function PermissionsPage() {
         setShowAddMenuModal(false);
         setNewMenu({ title: "", href: "", workspace: "staff", displayIn: "both" });
         fetchPermissions(); // Reload matrix
+        fetchMenus(); // Reload custom menus list
       } else {
         toast.error("ไม่สามารถเพิ่มเมนูได้");
       }
@@ -736,14 +737,19 @@ export default function PermissionsPage() {
                             key={key}
                             className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
                           >
-                            <div className="flex flex-col items-center gap-2 group">
-                              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white dark:bg-zinc-800 shadow-sm border border-zinc-200 dark:border-zinc-700 transition-transform group-hover:scale-110 text-amber-500">
-                                <FiLayout size={14} />
+                            <Link
+                              href={deptCustomFeatures[key].href || "#"}
+                              className="flex flex-col items-center gap-2 group/header cursor-pointer"
+                            >
+                              <div
+                                className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 text-amber-500`}
+                              >
+                                <FiLayout size={18} />
                               </div>
-                              <span className="truncate w-full block px-2" title={customFeatures[key].label}>
-                                {customFeatures[key].label}
+                              <span className="max-w-[100px] text-center leading-tight group-hover/header:text-amber-600 transition-colors" title={deptCustomFeatures[key].label}>
+                                {deptCustomFeatures[key].label}
                               </span>
-                            </div>
+                            </Link>
                           </th>
                         ))}
                       </tr>

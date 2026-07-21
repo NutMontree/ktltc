@@ -229,5 +229,5 @@ export const authConfig = {
   },
   trustHost: true,
   secret: process.env.AUTH_SECRET, // รหัสลับสำหรับเข้ารหัส Token (จาก .env)
-  debug: true, // เปิดโหมด Debug เพื่อดู Error ใน Console (ปิดได้เมื่อขึ้น Production)
+  debug: false, // ปิดโหมด Debug เพื่อไม่ให้แสดงแจ้งเตือนใน Console
 } satisfies NextAuthConfig;

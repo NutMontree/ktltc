@@ -129,15 +129,7 @@ export default function SuperAdminMenus({ permissions, customMenus, item, userRo
                     variants={item}
                   />
                 )}
-                {permissions?.manage_work_reports_admin && (
-                  <ActionCard
-                    href="/work-reports-management"
-                    title="แก้ไขรายงานการปฏิบัติงาน"
-                    icon={FileText}
-                    desc="บริหารจัดการข้อมูลรายงานการปฏิบัติงาน"
-                    variants={item}
-                  />
-                )}
+
 
                 {customMenus.filter(m => m.workspace === "superadmin" && permissions?.[m.permissionKey]).map(menu => (
                   <ActionCard

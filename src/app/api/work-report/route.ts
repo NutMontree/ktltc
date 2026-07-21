@@ -195,6 +195,30 @@ export async function POST(req: Request) {
       }
     }
 
+    // Handle Activity Images
+    let processedActivities: any[] = [];
+    if (activities && Array.isArray(activities)) {
+      for (const a of activities) {
+        let aImages: string[] = [];
+        if (a.images && Array.isArray(a.images) && a.images.length > 0) {
+          for (const img of a.images) {
+            if (img.startsWith("data:image")) {
+              const imageUrl = await saveFileLocally(img, "work_reports", "activity");
+              if (imageUrl) aImages.push(imageUrl);
+            } else if (img.startsWith("http") || img.startsWith("/")) {
+              aImages.push(img);
+            }
+          }
+        }
+        processedActivities.push({
+          ...a,
+          taskName: a.taskName?.trim() || "ไม่ได้ระบุ",
+          detail: a.detail?.trim() || "ไม่ได้ระบุ",
+          images: aImages,
+        });
+      }
+    }
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
@@ -203,12 +227,7 @@ export async function POST(req: Request) {
 
     const updateDoc = {
       $set: {
-        activities:
-          activities?.map((a: any) => ({
-            ...a,
-            taskName: a.taskName?.trim() || "ไม่ได้ระบุ",
-            detail: a.detail?.trim() || "ไม่ได้ระบุ",
-          })) || [],
+        activities: processedActivities,
         summary: summary?.trim() || "ไม่ได้ระบุ",
         problems: problems?.trim() || "ไม่ได้ระบุ",
         plansNextDay: plansNextDay?.trim() || "ไม่ได้ระบุ",

@@ -456,10 +456,6 @@ export default function TelemetryPage() {
                           <p className="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
                             Online
                           </p>
-                          <Link href={`/dashboard/telemetry/live/${u._id}`} className="flex items-center gap-1 text-[10px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg shadow-sm transition-colors">
-                            <MousePointer2 className="w-3 h-3" />
-                            <span>ดูหน้าจอสด</span>
-                          </Link>
                         </div>
                       </div>
                     </div>

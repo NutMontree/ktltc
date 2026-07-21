@@ -36,6 +36,7 @@ interface Activity {
   status: "Completed" | "In Progress" | "Pending";
   startTime?: string;
   endTime?: string;
+  images?: string[];
 }
 
 // Utility function for client-side image compression (with Safari/iOS fallback)
@@ -146,6 +147,7 @@ export default function WorkReportPage() {
         taskName: "",
         detail: "",
         status: "Completed",
+        images: [],
       },
       ...activities,
     ]);
@@ -185,6 +187,37 @@ export default function WorkReportPage() {
     setImages(newImages);
   };
 
+  const handleActivityImageUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        const compressed = await compressImage(base64);
+        setActivities((prev) => {
+          const newActivities = [...prev];
+          const act = newActivities[index];
+          newActivities[index] = { ...act, images: [...(act.images || []), compressed] };
+          return newActivities;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeActivityImage = (activityIndex: number, imageIndex: number) => {
+    setActivities((prev) => {
+      const newActivities = [...prev];
+      const act = newActivities[activityIndex];
+      const actImages = [...(act.images || [])];
+      actImages.splice(imageIndex, 1);
+      newActivities[activityIndex] = { ...act, images: actImages };
+      return newActivities;
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -210,12 +243,13 @@ export default function WorkReportPage() {
             ...a,
             taskName:
               a.taskName.trim() ||
-              (!isNoImages
+              (!isNoImages || (a.images && a.images.length > 0)
                 ? "รายงานผลด้วยรูปภาพ"
                 : isNoSummary
                   ? "ไม่ได้ระบุ"
                   : "รายงานการปฏิบัติงาน"),
             detail: a.detail.trim() || "",
+            images: a.images || [],
           })),
           summary: summary.trim() || "ไม่ได้ระบุ",
           problems: problems.trim() || "ไม่ได้ระบุ",
@@ -282,9 +316,10 @@ export default function WorkReportPage() {
               </p>
             </div>
           </div>
-          <div className="p-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl text-slate-300 dark:text-zinc-700 shadow-sm">
-            <HelpCircle size={22} />
-          </div>
+          <Link href="/manual/wfh" className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl text-slate-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-900/30 transition-all shadow-sm active:scale-95 group">
+            <HelpCircle size={18} className="group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-bold uppercase tracking-wide">คู่มือการใช้งาน</span>
+          </Link>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8 pb-20">
@@ -428,6 +463,56 @@ export default function WorkReportPage() {
                           rows={3}
                           className="w-full bg-slate-50/50 dark:bg-zinc-950/50 border border-slate-100 dark:border-zinc-800 rounded-3xl p-5 text-sm font-medium text-slate-600 dark:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none italic"
                         />
+                      </div>
+
+                      {/* รูปภาพประจำภารกิจ */}
+                      <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-zinc-800/50">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest pl-1">
+                            รูปภาพประกอบภารกิจ (ถ้ามี)
+                          </label>
+                          <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-[10px] font-black text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all">
+                            <Plus size={14} /> เพิ่มรูปภาพ
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              onChange={(e) => handleActivityImageUpload(index, e)}
+                            />
+                          </label>
+                        </div>
+                        
+                        {(activity.images?.length ?? 0) > 0 && (
+                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-3">
+                            <AnimatePresence>
+                              {activity.images?.map((img, imgIdx) => (
+                                <motion.div
+                                  key={imgIdx}
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.8 }}
+                                  className="relative aspect-square rounded-2xl overflow-hidden group border border-slate-100 dark:border-zinc-800 shadow-sm"
+                                >
+                                  <img
+                                    src={img}
+                                    className="w-full h-full object-cover"
+                                    alt={`Activity proof ${imgIdx}`}
+                                  />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <button
+                                      type="button"
+                                      onClick={() => removeActivityImage(index, imgIdx)}
+                                      className="p-1.5 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-rose-500 transition-colors"
+                                    >
+                                      <Trash2 size={16} />
+                                    </button>
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </AnimatePresence>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -59,13 +59,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             throw new Error("บัญชีถูกระงับการเข้าสู่ระบบชั่วคราว (15 นาที) เนื่องจากพยายามเข้าระบบผิดพลาดหลายครั้ง");
           }
 
-          // 2. ค้นหาผู้ใช้ในฐานข้อมูล (ใช้ exact match ก่อนเพื่อเรียกใช้ Index)
+          // 2. ค้นหาผู้ใช้ในฐานข้อมูล (ค้นหาจาก username หรือ citizenId)
           console.log(`[AUTH] Querying database for: "${cleanUsername}"...`);
           let user = await db
             .collection("users")
-            .findOne({ username: cleanUsername });
+            .findOne({
+              $or: [
+                { username: cleanUsername },
+                { citizenId: cleanUsername }
+              ]
+            });
 
-          // หากไม่พบ และไม่ใช่ตัวเลขล้วน (ไม่ใช่รหัสนักศึกษา) ให้ค้นหาแบบ case-insensitive (Fallback)
+          // หากไม่พบ และไม่ใช่ตัวเลขล้วน (ไม่ใช่รหัสนักศึกษา หรือรหัสบัตรประชาชน) ให้ค้นหาแบบ case-insensitive (Fallback)
           if (!user && isNaN(Number(cleanUsername))) {
             user = await db
               .collection("users")
@@ -80,23 +85,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           console.log(`[AUTH] User found: ${user.username} (ID: ${user._id})`);
 
-          // 2. ตรวจสอบว่า user มี password field หรือไม่
-          //    (บาง account อาจถูกสร้างโดย admin โดยไม่มี password ทำให้ bcrypt.compare throw Error)
-          if (!user.password) {
-            console.warn(`[AUTH] No password set for: "${cleanUsername}"`);
-            throw new Error("บัญชีนี้ยังไม่ได้ตั้งรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ");
-          }
-
           // 3. ตรวจสอบความถูกต้องของรหัสผ่าน
           let isPasswordCorrect = false;
-          try {
-            isPasswordCorrect = await bcrypt.compare(
-              credentials.password as string,
-              user.password,
-            );
-          } catch (bcryptError: any) {
-            console.error(`[AUTH] bcrypt.compare failed for "${cleanUsername}":`, bcryptError?.message);
-            throw new Error("เกิดข้อผิดพลาดในการตรวจสอบรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ");
+          
+          if (user.password) {
+            try {
+              isPasswordCorrect = await bcrypt.compare(
+                credentials.password as string,
+                user.password,
+              );
+            } catch (bcryptError: any) {
+              console.error(`[AUTH] bcrypt.compare failed for "${cleanUsername}":`, bcryptError?.message);
+              throw new Error("เกิดข้อผิดพลาดในการตรวจสอบรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ");
+            }
+          }
+
+          // เพิ่มการรองรับการเข้าสู่ระบบด้วยเบอร์โทร (phone) เป็นรหัสผ่าน
+          if (!isPasswordCorrect && user.phone && credentials.password === user.phone) {
+            isPasswordCorrect = true;
+          }
+
+          // ตรวจสอบว่า user ไม่มีรหัสผ่านและไม่ได้ใช้เบอร์โทรที่ถูกต้อง
+          if (!isPasswordCorrect && !user.password) {
+            console.warn(`[AUTH] No password set for: "${cleanUsername}"`);
+            throw new Error("บัญชีนี้ยังไม่ได้ตั้งรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ");
           }
 
           if (!isPasswordCorrect) {
