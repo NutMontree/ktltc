@@ -3,6 +3,7 @@
 import clientPromise from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { signOut } from "@/lib/auth";
 
 export async function incrementVisitor() {
   try {
@@ -41,4 +42,10 @@ export async function incrementVisitor() {
   } catch (error) {
     console.error("❌ Error incrementing visitor:", error);
   }
+}
+
+export async function logoutAction() {
+  // เรียกใช้ NextAuth signOut ฝั่งเซิร์ฟเวอร์เพื่อล้าง Cookie อย่างหมดจด
+  // รวมถึง Cookie ที่ถูกแบ่งย่อย (Chunked) ซึ่ง Client signOut มักจะมีปัญหา
+  await signOut({ redirectTo: "/login" });
 }

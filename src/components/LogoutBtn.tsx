@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signOut } from "next-auth/react";
+import { logoutAction } from "@/app/actions";
 
 /**
  * LogoutBtn.tsx (Client Component): ปุ่มสำหรับออกจากระบบ
@@ -9,7 +9,7 @@ import { signOut } from "next-auth/react";
  * หน้าที่: 
  * 1. แสดงปุ่มที่ปรับเปลี่ยนตามธีม (Light/Dark Mode)
  * 2. เมื่อคลิก จะแสดง Confirm Dialog เพื่อยืนยันการออกจากระบบ
- * 3. เรียกใช้ฟังก์ชัน signOut ของ NextAuth เพื่อล้าง Session และ Redirect ไปหน้า Login
+ * 3. เรียกใช้ฟังก์ชัน logoutAction (Server Action) เพื่อล้าง Session
  */
 
 export default function LogoutBtn() {
@@ -22,11 +22,8 @@ export default function LogoutBtn() {
 
     setIsLoading(true);
     try {
-      // 1.1 ลบคุกกี้ทั้งหมดผ่าน API ฝั่ง Server (เช่น custom token)
-      await fetch("/api/auth/logout", { method: "POST" });
-
-      // 2. เรียกใช้ signOut ของ NextAuth และให้ NextAuth จัดการ redirect แบบสมบูรณ์
-      await signOut({ callbackUrl: "/login", redirect: true });
+      // เรียกใช้ Server Action
+      await logoutAction();
     } catch (error) {
       console.error("Logout error:", error);
       setIsLoading(false);
