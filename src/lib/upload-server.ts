@@ -27,14 +27,25 @@ export async function saveFileLocally(
     let ext = "jpg"; // ค่าเริ่มต้นนามสกุลไฟล์
 
     // 1. จัดการข้อมูล Base64 (กรณีส่งมาจาก Canvas หรือ WebCam)
-    if (typeof data === "string" && data.startsWith("data:image")) {
-      const matches = data.match(/^data:image\/([A-Za-z-+/]+);base64,(.+)$/);
-      if (!matches || matches.length !== 3) {
-        throw new Error("รูปแบบ Base64 ไม่ถูกต้อง");
+    if (typeof data === "string") {
+      if (data.startsWith("data:image")) {
+        const matches = data.match(/^data:image\/([A-Za-z-+/]+);base64,(.+)$/);
+        if (!matches || matches.length !== 3) {
+          throw new Error("รูปแบบ Base64 ไม่ถูกต้อง");
+        }
+        ext = matches[1]; // ดึงนามสกุลไฟล์ เช่น png, jpeg
+        buffer = Buffer.from(matches[2], "base64");
+      } else if (data.startsWith("data:application/pdf")) {
+        const matches = data.match(/^data:application\/pdf;base64,(.+)$/);
+        if (!matches || matches.length !== 2) {
+          throw new Error("รูปแบบ Base64 PDF ไม่ถูกต้อง");
+        }
+        ext = "pdf";
+        buffer = Buffer.from(matches[1], "base64");
+      } else {
+        throw new Error("รูปแบบข้อมูลไม่รองรับ (รองรับเฉพาะรูปภาพและ PDF)");
       }
-      ext = matches[1]; // ดึงนามสกุลไฟล์ เช่น png, jpeg
-      buffer = Buffer.from(matches[2], "base64");
-    } 
+    }
     // 2. จัดการข้อมูลแบบ Buffer (กรณีอัปโหลดไฟล์ปกติ)
     else if (Buffer.isBuffer(data)) {
       buffer = data;

@@ -193,7 +193,7 @@ export async function POST(req: Request) {
     let imageUrls: string[] = [];
     if (images && Array.isArray(images) && images.length > 0) {
       for (const img of images) {
-        if (img.startsWith("data:image")) {
+        if (img.startsWith("data:image") || img.startsWith("data:application/pdf")) {
           const imageUrl = await saveFileLocally(img, "work_reports", "report");
           if (imageUrl) imageUrls.push(imageUrl);
         } else if (img.startsWith("http") || img.startsWith("/")) {
@@ -210,7 +210,7 @@ export async function POST(req: Request) {
         let aImages: string[] = [];
         if (a.images && Array.isArray(a.images) && a.images.length > 0) {
           for (const img of a.images) {
-            if (img.startsWith("data:image")) {
+            if (img.startsWith("data:image") || img.startsWith("data:application/pdf")) {
               const imageUrl = await saveFileLocally(img, "work_reports", "activity");
               if (imageUrl) aImages.push(imageUrl);
             } else if (img.startsWith("http") || img.startsWith("/")) {
