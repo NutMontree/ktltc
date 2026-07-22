@@ -108,7 +108,13 @@ export const PrintTemplate = forwardRef<HTMLDivElement, PrintTemplateProps>(
                         {act.images && act.images.length > 0 && (
                           <div className="flex gap-2 mt-2 flex-wrap">
                             {act.images.map((img: string, imgIdx: number) => (
-                              <img key={imgIdx} src={img} alt="proof" className="w-32 h-32 object-cover border border-gray-300 rounded" />
+                              img.startsWith("data:application/pdf") || img.endsWith(".pdf") ? (
+                                <div key={imgIdx} className="w-32 h-32 flex flex-col items-center justify-center border border-gray-300 rounded text-gray-500 bg-gray-50">
+                                  <span>[แนบไฟล์ PDF]</span>
+                                </div>
+                              ) : (
+                                <img key={imgIdx} src={img} alt="proof" className="w-32 h-32 object-cover border border-gray-300 rounded" />
+                              )
                             ))}
                           </div>
                         )}
@@ -140,7 +146,13 @@ export const PrintTemplate = forwardRef<HTMLDivElement, PrintTemplateProps>(
                   <h3 className="text-2xl font-bold border-b border-gray-300 mb-3 pb-1">รูปรวมผลงาน</h3>
                   <div className="flex gap-4 flex-wrap">
                     {report.images.map((img: string, i: number) => (
-                      <img key={i} src={img} alt="report proof" className="w-40 h-40 object-cover border border-gray-300 rounded" />
+                      img.startsWith("data:application/pdf") || img.endsWith(".pdf") ? (
+                        <div key={i} className="w-40 h-40 flex flex-col items-center justify-center border border-gray-300 rounded text-gray-500 bg-gray-50">
+                          <span>[แนบไฟล์ PDF]</span>
+                        </div>
+                      ) : (
+                        <img key={i} src={img} alt="report proof" className="w-40 h-40 object-cover border border-gray-300 rounded" />
+                      )
                     ))}
                   </div>
                 </div>

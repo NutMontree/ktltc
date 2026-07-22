@@ -98,7 +98,16 @@ export default function TeacherMenus({ permissions, customMenus, item, userRole,
                     href="/dashboard/director/plc"
                     title="ชุมชนการเรียนรู้ทางวิชาชีพ (PLC)"
                     icon={Users}
-                    desc="บันทึกการรวมกลุ่มและรายงานผลการจัดทำ PLC"
+                    desc="บันทึกและรวบรวมชั่วโมง PLC"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_attendance_work_reports && (
+                  <ActionCard
+                    href="/work-reports"
+                    title="ระบบรายงานการปฏิบัติงาน"
+                    icon={ClipboardList}
+                    desc="ตรวจสอบและพิมพ์รายงานผลการปฏิบัติงาน"
                     variants={item}
                   />
                 )}

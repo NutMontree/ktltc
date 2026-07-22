@@ -357,7 +357,7 @@ export const getCachedDashboardStats = unstable_cache(async (userRole: string) =
     console.error("Dashboard Stats API Error:", error);
     return { error: "Internal Server Error" };
   }
-}, ["admin-dashboard-stats"], { revalidate: 60 });
+}, ["admin-dashboard-stats"], { revalidate: 60, tags: ["admin-dashboard-stats"] });
 
 export const getCachedMenus = unstable_cache(async () => {
   try {
@@ -368,7 +368,7 @@ export const getCachedMenus = unstable_cache(async () => {
   } catch (err) {
     return [];
   }
-}, ["admin-menus-cache"], { revalidate: 60 });
+}, ["admin-menus-cache"], { revalidate: 60, tags: ["admin-menus-cache"] });
 
 export const getCachedPermissions = unstable_cache(async (role: string, department?: string) => {
   try {
@@ -449,4 +449,4 @@ export const getCachedPermissions = unstable_cache(async (role: string, departme
   } catch (err) {
     return {};
   }
-}, ["role-permissions-cache"], { revalidate: 60 });
+}, ["role-permissions-cache"], { revalidate: 60, tags: ["role-permissions-cache"] });

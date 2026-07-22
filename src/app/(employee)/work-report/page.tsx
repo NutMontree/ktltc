@@ -174,7 +174,7 @@ export default function WorkReportPage() {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64 = reader.result as string;
-        const compressed = await compressImage(base64);
+        const compressed = file.type === "application/pdf" ? base64 : await compressImage(base64);
         setImages((prev) => [...prev, compressed]);
       };
       reader.readAsDataURL(file);
@@ -195,7 +195,7 @@ export default function WorkReportPage() {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64 = reader.result as string;
-        const compressed = await compressImage(base64);
+        const compressed = file.type === "application/pdf" ? base64 : await compressImage(base64);
         setActivities((prev) => {
           const newActivities = [...prev];
           const act = newActivities[index];
@@ -475,7 +475,7 @@ export default function WorkReportPage() {
                             <Plus size={14} /> เพิ่มรูปภาพ
                             <input
                               type="file"
-                              accept="image/*"
+                              accept="image/*,application/pdf"
                               multiple
                               className="hidden"
                               onChange={(e) => handleActivityImageUpload(index, e)}
@@ -494,11 +494,18 @@ export default function WorkReportPage() {
                                   exit={{ opacity: 0, scale: 0.8 }}
                                   className="relative aspect-square rounded-2xl overflow-hidden group border border-slate-100 dark:border-zinc-800 shadow-sm"
                                 >
-                                  <img
-                                    src={img}
-                                    className="w-full h-full object-cover"
-                                    alt={`Activity proof ${imgIdx}`}
-                                  />
+                                  {img.startsWith("data:application/pdf") || img.endsWith(".pdf") ? (
+                                    <div className="w-full h-full flex flex-col items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500">
+                                      <FileText size={32} />
+                                      <span className="text-[10px] mt-2 font-black uppercase tracking-widest text-indigo-400">PDF</span>
+                                    </div>
+                                  ) : (
+                                    <img
+                                      src={img}
+                                      className="w-full h-full object-cover"
+                                      alt={`Activity proof ${imgIdx}`}
+                                    />
+                                  )}
                                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                     <button
                                       type="button"
@@ -648,7 +655,7 @@ export default function WorkReportPage() {
               ref={fileInputRef}
               onChange={handleImageUpload}
               multiple
-              accept="image/*"
+              accept="image/*,application/pdf"
               className="hidden"
             />
 
@@ -663,11 +670,18 @@ export default function WorkReportPage() {
                       exit={{ opacity: 0, scale: 0.8 }}
                       className="relative aspect-square rounded-2xl overflow-hidden group border border-slate-100 dark:border-zinc-800"
                     >
-                      <img
-                        src={img}
-                        className="w-full h-full object-cover"
-                        alt={`Work proof ${idx}`}
-                      />
+                      {img.startsWith("data:application/pdf") || img.endsWith(".pdf") ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-500">
+                          <FileText size={32} />
+                          <span className="text-[10px] mt-2 font-black uppercase tracking-widest text-blue-400">PDF File</span>
+                        </div>
+                      ) : (
+                        <img
+                          src={img}
+                          className="w-full h-full object-cover"
+                          alt={`Work proof ${idx}`}
+                        />
+                      )}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button
                           type="button"
@@ -702,7 +716,7 @@ export default function WorkReportPage() {
                     คลิกหรือลากรูปภาพมาวางที่นี่
                   </p>
                   <p className="text-[10px] text-slate-300 mt-1">
-                    รองรับไฟล์ JPG, PNG (สูงสุด 5MB ต่อไฟล์)
+                    รองรับไฟล์ JPG, PNG, PDF (สูงสุด 5MB ต่อไฟล์)
                   </p>
                 </div>
               </div>

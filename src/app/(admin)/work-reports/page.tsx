@@ -128,7 +128,8 @@ export default function AdminWorkReportsPage() {
         );
         const summaryJson = await summaryRes.json();
         if (summaryJson.success) {
-          setDailySummary(summaryJson.data);
+          const filteredSummary = summaryJson.data.filter((sum: any) => sum.submittedCount > 0);
+          setDailySummary(filteredSummary);
         }
       }
     } catch (err) {
@@ -687,12 +688,22 @@ export default function AdminWorkReportsPage() {
                                         key={imgIdx}
                                         className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-100 dark:border-neutral-800 shadow-sm hover:scale-105 transition-transform"
                                       >
-                                        <img
-                                          src={img}
-                                          alt={`Activity proof ${imgIdx}`}
-                                          className="w-full h-full object-cover cursor-pointer"
-                                          onClick={() => setFullScreenImage({ url: img, allImages: act.images, index: imgIdx })}
-                                        />
+                                          {img.startsWith("data:application/pdf") || img.endsWith(".pdf") ? (
+                                            <div
+                                              onClick={() => setFullScreenImage({ url: img, allImages: act.images, index: imgIdx })}
+                                              className="w-full h-full flex flex-col items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 cursor-pointer"
+                                            >
+                                              <FileText size={24} />
+                                              <span className="text-[8px] mt-1 font-black uppercase tracking-widest text-indigo-400">PDF</span>
+                                            </div>
+                                          ) : (
+                                            <img
+                                              src={img}
+                                              alt={`Activity proof ${imgIdx}`}
+                                              className="w-full h-full object-cover cursor-pointer"
+                                              onClick={() => setFullScreenImage({ url: img, allImages: act.images, index: imgIdx })}
+                                            />
+                                          )}
                                       </div>
                                     ))}
                                   </div>
@@ -752,12 +763,22 @@ export default function AdminWorkReportsPage() {
                           key={idx}
                           className="relative aspect-square rounded-3xl overflow-hidden border border-slate-100 dark:border-neutral-800 shadow-sm hover:scale-[1.02] transition-transform"
                         >
-                          <img
-                            src={img}
-                            alt={`Evidence ${idx}`}
-                            className="w-full h-full object-cover cursor-pointer"
-                            onClick={() => setFullScreenImage({ url: img, allImages: selectedReport.images, index: idx })}
-                          />
+                          {img.startsWith("data:application/pdf") || img.endsWith(".pdf") ? (
+                            <div
+                              onClick={() => setFullScreenImage({ url: img, allImages: selectedReport.images, index: idx })}
+                              className="w-full h-full flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-500 cursor-pointer"
+                            >
+                              <FileText size={40} />
+                              <span className="text-xs mt-2 font-black uppercase tracking-widest text-blue-400">PDF File</span>
+                            </div>
+                          ) : (
+                            <img
+                              src={img}
+                              alt={`Evidence ${idx}`}
+                              className="w-full h-full object-cover cursor-pointer"
+                              onClick={() => setFullScreenImage({ url: img, allImages: selectedReport.images, index: idx })}
+                            />
+                          )}
                         </div>
                       ))}
                     </div>
@@ -922,16 +943,28 @@ export default function AdminWorkReportsPage() {
               </>
             )}
 
-            <motion.img
-              key={fullScreenImage.index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.2 }}
-              src={fullScreenImage.url}
-              alt="Full screen"
-              className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl relative z-0"
-            />
+            {fullScreenImage.url.startsWith("data:application/pdf") || fullScreenImage.url.endsWith(".pdf") ? (
+              <motion.iframe
+                key={fullScreenImage.index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                src={fullScreenImage.url}
+                className="w-full max-w-5xl h-[85vh] bg-white rounded-2xl shadow-2xl relative z-0"
+              />
+            ) : (
+              <motion.img
+                key={fullScreenImage.index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                src={fullScreenImage.url}
+                alt="Full screen"
+                className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl relative z-0"
+              />
+            )}
             
             {fullScreenImage.allImages.length > 1 && (
               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white text-sm font-medium tracking-widest backdrop-blur-md">

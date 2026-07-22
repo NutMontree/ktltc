@@ -112,6 +112,15 @@ export default function StaffMenus({ permissions, customMenus, item, userRole, h
                 variants={item}
               />
             )}
+            {permissions?.manage_attendance_work_reports && (
+              <ActionCard
+                href="/work-reports"
+                title="ระบบรายงานการปฏิบัติงาน"
+                icon={ClipboardList}
+                desc="ตรวจสอบและพิมพ์รายงานผลการปฏิบัติงาน"
+                variants={item}
+              />
+            )}
             {permissions?.manage_ita && (
               <ActionCard
                 href="/dashboard/ita"
