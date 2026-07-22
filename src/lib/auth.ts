@@ -206,7 +206,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
  * หน้าที่: ตรวจสอบว่าบทบาท (Role) ของผู้ใช้มีสิทธิ์ใช้งาน Feature นั้นๆ หรือไม่
  * ใช้ใน: API Routes หรือ Server Components ที่ต้องการความปลอดภัยสูง
  */
-export async function hasPermission(role: string, feature: string, department?: string): Promise<boolean> {
+export async function hasPermission(role: string, feature: string, department?: string, faction?: string): Promise<boolean> {
   if (!role) return false;
   const roleLower = role.toLowerCase();
   
@@ -226,11 +226,19 @@ export async function hasPermission(role: string, feature: string, department?: 
 
     if (hasRolePermission) return true;
 
-    // ตรวจสอบสิทธิ์จากแผนก (department_permissions) ถ้ามีการส่ง department มา
+    // ตรวจสอบสิทธิ์จากแผนก (department)
     if (department) {
       const deptPermissions = await db.collection("department_permissions").findOne({ department });
-      if (deptPermissions && deptPermissions.permissions) {
-        return !!deptPermissions.permissions[feature];
+      if (deptPermissions && deptPermissions.permissions && deptPermissions.permissions[feature]) {
+        return true;
+      }
+    }
+
+    // ตรวจสอบสิทธิ์จากฝ่าย (faction) เผื่อผู้ใช้ใส่สลับกันหรือตั้งสิทธิ์ไว้ที่ฝ่าย
+    if (faction) {
+      const factionPermissions = await db.collection("department_permissions").findOne({ department: faction });
+      if (factionPermissions && factionPermissions.permissions && factionPermissions.permissions[feature]) {
+        return true;
       }
     }
 

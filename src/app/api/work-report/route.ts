@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     const userId = session?.user?.id;
     const userRole = session?.user?.role;
     const userDepartment = session?.user?.department;
+    const userFaction = session?.user?.faction;
 
     const { searchParams } = new URL(req.url);
     const dateParam = searchParams.get("date"); // YYYY-MM-DD
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
 
     // Case 1: Fetch all reports for a date range (Admin only)
     if (startDateParam && endDateParam) {
-      const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports", userDepartment);
+      const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports", userDepartment, userFaction);
       if (!canAccess) {
         return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
       }

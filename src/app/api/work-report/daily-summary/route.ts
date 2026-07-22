@@ -11,7 +11,8 @@ export async function GET(req: Request) {
 
     const userRole = session?.user?.role;
     const userDepartment = session?.user?.department;
-    const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports", userDepartment);
+    const userFaction = session?.user?.faction;
+    const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports", userDepartment, userFaction);
     if (!canAccess) {
       return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
     }

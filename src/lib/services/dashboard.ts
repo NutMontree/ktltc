@@ -370,7 +370,7 @@ export const getCachedMenus = unstable_cache(async () => {
   }
 }, ["admin-menus-cache"], { revalidate: 60, tags: ["admin-menus-cache"] });
 
-export const getCachedPermissions = unstable_cache(async (role: string, department?: string) => {
+export const getCachedPermissions = unstable_cache(async (role: string, department?: string, faction?: string) => {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -379,6 +379,11 @@ export const getCachedPermissions = unstable_cache(async (role: string, departme
     let deptPermission = null;
     if (department) {
       deptPermission = await db.collection("department_permissions").findOne({ department });
+    }
+    
+    let factionPermission = null;
+    if (faction) {
+      factionPermission = await db.collection("department_permissions").findOne({ department: faction });
     }
     
     // Default fallback
@@ -412,6 +417,14 @@ export const getCachedPermissions = unstable_cache(async (role: string, departme
 
     if (deptPermission?.permissions) {
       for (const [key, value] of Object.entries(deptPermission.permissions)) {
+        if (value) {
+          (permissions as any)[key] = true;
+        }
+      }
+    }
+
+    if (factionPermission?.permissions) {
+      for (const [key, value] of Object.entries(factionPermission.permissions)) {
         if (value) {
           (permissions as any)[key] = true;
         }

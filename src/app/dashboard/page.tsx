@@ -12,13 +12,14 @@ export default async function DashboardPage() {
 
   const userRole = (session?.user?.role || "").toLowerCase();
   const userDepartment = (session?.user as any)?.department || "";
+  const userFaction = (session?.user as any)?.faction || "";
   const isStudent = ["student", "user"].includes(userRole);
 
   // Fetch data in parallel on the server
   const [stats, customMenus, permissions] = await Promise.all([
     isStudent ? { isStudentEmptyStats: true } : getCachedDashboardStats(userRole),
     getCachedMenus(),
-    getCachedPermissions(userRole, userDepartment)
+    getCachedPermissions(userRole, userDepartment, userFaction)
   ]);
 
   return (
