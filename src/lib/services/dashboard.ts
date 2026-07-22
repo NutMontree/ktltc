@@ -370,11 +370,16 @@ export const getCachedMenus = unstable_cache(async () => {
   }
 }, ["admin-menus-cache"], { revalidate: 60 });
 
-export const getCachedPermissions = unstable_cache(async (role: string) => {
+export const getCachedPermissions = unstable_cache(async (role: string, department?: string) => {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const dbPermission = await db.collection("role_permissions").findOne({ role });
+    
+    let deptPermission = null;
+    if (department) {
+      deptPermission = await db.collection("department_permissions").findOne({ department });
+    }
     
     // Default fallback
     const permissions = {
@@ -404,6 +409,14 @@ export const getCachedPermissions = unstable_cache(async (role: string) => {
       manage_attendance_leave_approvals: ["super_admin"].includes(role),
       ...(dbPermission?.permissions || {})
     };
+
+    if (deptPermission?.permissions) {
+      for (const [key, value] of Object.entries(deptPermission.permissions)) {
+        if (value) {
+          (permissions as any)[key] = true;
+        }
+      }
+    }
 
     if (role === "super_admin") {
       permissions.manage_home = true;
