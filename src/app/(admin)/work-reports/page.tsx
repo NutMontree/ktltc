@@ -944,7 +944,7 @@ export default function AdminWorkReportsPage() {
 
       {/* Hidden Print Templates */}
       <div className="hidden">
-        <PrintTemplate ref={printAllRef} reports={filteredReports} roleMap={roleMap} />
+        <PrintTemplate ref={printAllRef} reports={filteredReports} roleMap={roleMap} dailySummary={dailySummary} />
         {selectedReport && (
           <PrintTemplate ref={printIndividualRef} reports={[selectedReport]} roleMap={roleMap} />
         )}
