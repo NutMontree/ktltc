@@ -913,7 +913,7 @@ export default function AdminWorkReportsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setFullScreenImage(null)}
-              className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+              className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
             >
               <X size={32} />
             </motion.button>
@@ -921,7 +921,7 @@ export default function AdminWorkReportsPage() {
             {fullScreenImage.allImages.length > 1 && (
               <>
                 <button 
-                  className="absolute left-4 sm:left-12 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+                  className="absolute left-4 sm:left-12 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
                   onClick={(e) => {
                     e.stopPropagation();
                     const newIndex = fullScreenImage.index === 0 ? fullScreenImage.allImages.length - 1 : fullScreenImage.index - 1;
@@ -931,7 +931,7 @@ export default function AdminWorkReportsPage() {
                   <ChevronLeft size={32} />
                 </button>
                 <button 
-                  className="absolute right-4 sm:right-12 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+                  className="absolute right-4 sm:right-12 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
                   onClick={(e) => {
                     e.stopPropagation();
                     const newIndex = fullScreenImage.index === fullScreenImage.allImages.length - 1 ? 0 : fullScreenImage.index + 1;

@@ -14,9 +14,9 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userId = session?.user?.id;
-    const userRole = session?.user?.role;
-    const userDepartment = session?.user?.department;
-    const userFaction = session?.user?.faction;
+    const userRole = (session?.user as any)?.role;
+    const userDepartment = (session?.user as any)?.department;
+    const userFaction = (session?.user as any)?.faction;
 
     const { searchParams } = new URL(req.url);
     const dateParam = searchParams.get("date"); // YYYY-MM-DD
@@ -64,9 +64,16 @@ export async function GET(req: Request) {
         basePipeline.push({ $match: { "userDetails.role": roleParam } });
       }
       
-      // Filter by Department
+      // Filter by Department (also checking faction in case users put it there)
       if (departmentParam && departmentParam !== "all") {
-        basePipeline.push({ $match: { "userDetails.department": departmentParam } });
+        basePipeline.push({ 
+          $match: { 
+            $or: [
+              { "userDetails.department": departmentParam },
+              { "userDetails.faction": departmentParam }
+            ] 
+          } 
+        });
       }
 
       const facetPipeline: any[] = [

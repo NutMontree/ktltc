@@ -9,9 +9,9 @@ export async function GET(req: Request) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const userRole = session?.user?.role;
-    const userDepartment = session?.user?.department;
-    const userFaction = session?.user?.faction;
+    const userRole = (session?.user as any)?.role;
+    const userDepartment = (session?.user as any)?.department;
+    const userFaction = (session?.user as any)?.faction;
     const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports", userDepartment, userFaction);
     if (!canAccess) {
       return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
@@ -36,7 +36,10 @@ export async function GET(req: Request) {
       userMatch.role = roleParam;
     }
     if (departmentParam !== "all") {
-      userMatch.department = departmentParam;
+      userMatch.$or = [
+        { department: departmentParam },
+        { faction: departmentParam }
+      ];
     }
 
     const users = await db.collection("users").find(userMatch).project({

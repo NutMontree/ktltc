@@ -69,8 +69,9 @@ export async function GET(
     console.log(`✅ Media Found: ${filePath}`);
 
     // Security check: ensure the file is within public directory
-    const normalizedPath = filePath.toLowerCase();
-    const isAllowed = normalizedPath.startsWith(localBase.toLowerCase());
+    const normalizedPath = filePath.replace(/\\/g, '/').toLowerCase();
+    const normalizedBase = localBase.replace(/\\/g, '/').toLowerCase();
+    const isAllowed = normalizedPath.startsWith(normalizedBase);
 
     if (!isAllowed) {
       return new NextResponse('Forbidden', { status: 403 });
