@@ -18,7 +18,9 @@ import {
   Download,
   RefreshCcw,
   Printer,
+  BarChart2,
 } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -34,6 +36,7 @@ export default function AdminWorkReportsPage() {
   const [selectedReport, setSelectedReport] = useState<any | null>(null);
   const [showDailyDetailModal, setShowDailyDetailModal] = useState<any | null>(null);
   const [fullScreenImage, setFullScreenImage] = useState<{ url: string, allImages: string[], index: number } | null>(null);
+  const [showChartModal, setShowChartModal] = useState(false);
   const [roleMap, setRoleMap] = useState<Record<string, string>>({ all: "ทั้งหมด" });
 
   const printAllRef = useRef<HTMLDivElement>(null);
@@ -586,7 +589,7 @@ export default function AdminWorkReportsPage() {
       {/* Detail Modal */}
       <AnimatePresence>
         {selectedReport && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -810,7 +813,7 @@ export default function AdminWorkReportsPage() {
       {/* Daily Detail Modal */}
       <AnimatePresence>
         {showDailyDetailModal && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -907,7 +910,7 @@ export default function AdminWorkReportsPage() {
       {/* Full Screen Image Modal */}
       <AnimatePresence>
         {fullScreenImage && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
+          <div className="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -985,3 +988,4 @@ export default function AdminWorkReportsPage() {
     </div>
   );
 }
+

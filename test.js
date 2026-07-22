@@ -6,8 +6,8 @@ async function run(){
   const c=await MongoClient.connect(uri);
   const db=c.db('ktltc_db');
   
-  const perms = await db.collection('role_permissions').findOne({role: 'teacher'});
-  console.log('Teacher Perms:', perms?.permissions);
+  const customMenus = await db.collection('custom_menus').find({}).toArray();
+  console.log('Custom Menus:', customMenus);
   
   await c.close();
 }
