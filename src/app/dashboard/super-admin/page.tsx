@@ -877,9 +877,9 @@ export default function SuperAdminPage() {
                         </td>
                         <td className="p-4 text-center">
                           <select
-                            value={user.role || "user"}
+                            value={roles.includes(user.role || "user") ? (user.role || "user") : "user"}
                             onChange={(e) => changeRole(user._id, e.target.value, user.name)}
-                            className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                            className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(roles.includes(user.role || "user") ? (user.role || "user") : "user")}`}
                           >
                             {roles.map((roleKey) => (
                               <option key={roleKey} value={roleKey}>
@@ -1103,9 +1103,9 @@ export default function SuperAdminPage() {
                             </td>
                             <td className="p-4 text-center">
                               <select
-                                value={user.role || "user"}
+                                value={roles.includes(user.role || "user") ? (user.role || "user") : "user"}
                                 onChange={(e) => changeRole(user._id, e.target.value, user.name)}
-                                className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                                className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(roles.includes(user.role || "user") ? (user.role || "user") : "user")}`}
                               >
                                 {roles.map((roleKey) => (
                                   <option key={roleKey} value={roleKey}>

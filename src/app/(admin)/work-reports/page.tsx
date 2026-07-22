@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Search,
   FileText,
@@ -8,6 +8,7 @@ import {
   X,
   Calendar,
   ChevronRight,
+  ChevronLeft,
   User as UserIcon,
   CheckCircle2,
   Clock,
@@ -16,11 +17,14 @@ import {
   Image as ImageIcon,
   Download,
   RefreshCcw,
+  Printer,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
+import { useReactToPrint } from "react-to-print";
+import { PrintTemplate } from "./PrintTemplate";
 
 export default function AdminWorkReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
@@ -29,7 +33,21 @@ export default function AdminWorkReportsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<any | null>(null);
   const [showDailyDetailModal, setShowDailyDetailModal] = useState<any | null>(null);
+  const [fullScreenImage, setFullScreenImage] = useState<{ url: string, allImages: string[], index: number } | null>(null);
   const [roleMap, setRoleMap] = useState<Record<string, string>>({ all: "ทั้งหมด" });
+
+  const printAllRef = useRef<HTMLDivElement>(null);
+  const printIndividualRef = useRef<HTMLDivElement>(null);
+
+  const handlePrintAll = useReactToPrint({
+    contentRef: printAllRef,
+    documentTitle: `รายงานการปฏิบัติงาน_ทั้งหมด`,
+  });
+
+  const handlePrintIndividual = useReactToPrint({
+    contentRef: printIndividualRef,
+    documentTitle: `รายงานการปฏิบัติงาน_${selectedReport?.user?.name || "รายบุคคล"}`,
+  });
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -210,20 +228,30 @@ export default function AdminWorkReportsPage() {
             </div>
           </div>
 
-          <button
-            onClick={exportToExcel}
-            className="group relative flex items-center gap-3 bg-linear-to-br from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-indigo-500/50 dark:border-slate-200"
-          >
-            <div className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
-            </div>
-            <Download
-              size={22}
-              className="group-hover:translate-y-0.5 transition-transform"
-            />
-            <span className="tracking-tight text-lg">ดาวน์โหลดรายงาน (Excel)</span>
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <button
+              onClick={() => handlePrintAll()}
+              className="group flex items-center gap-2 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 text-slate-800 dark:text-neutral-100 px-6 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all font-black border border-slate-200 dark:border-neutral-700 active:scale-95"
+            >
+              <Printer size={20} className="text-slate-500 group-hover:text-slate-800 dark:group-hover:text-white transition-colors" />
+              <span>พิมพ์ PDF (ทั้งหมด)</span>
+            </button>
+
+            <button
+              onClick={exportToExcel}
+              className="group relative flex items-center gap-3 bg-linear-to-br from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-indigo-500/50 dark:border-slate-200"
+            >
+              <div className="absolute -top-1 -right-1 flex h-4 w-4">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
+              </div>
+              <Download
+                size={22}
+                className="group-hover:translate-y-0.5 transition-transform"
+              />
+              <span className="tracking-tight text-lg">ดาวน์โหลด (Excel)</span>
+            </button>
+          </div>
         </div>
 
         {/* Filter Section */}
@@ -606,12 +634,21 @@ export default function AdminWorkReportsPage() {
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setSelectedReport(null)}
-                    className="p-3 bg-slate-100 dark:bg-neutral-800 rounded-full text-slate-400 hover:text-rose-500 transition-colors"
-                  >
-                    <X size={24} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handlePrintIndividual()}
+                      className="p-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full hover:bg-indigo-100 transition-colors shadow-sm"
+                      title="พิมพ์ PDF"
+                    >
+                      <Printer size={24} />
+                    </button>
+                    <button
+                      onClick={() => setSelectedReport(null)}
+                      className="p-3 bg-slate-100 dark:bg-neutral-800 rounded-full text-slate-400 hover:text-rose-500 transition-colors"
+                    >
+                      <X size={24} />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -642,6 +679,23 @@ export default function AdminWorkReportsPage() {
                                   <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1 leading-relaxed">
                                     {act.detail}
                                   </p>
+                                )}
+                                {act.images && act.images.length > 0 && (
+                                  <div className="flex gap-2 mt-3 flex-wrap">
+                                    {act.images.map((img: string, imgIdx: number) => (
+                                      <div
+                                        key={imgIdx}
+                                        className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-100 dark:border-neutral-800 shadow-sm hover:scale-105 transition-transform"
+                                      >
+                                        <img
+                                          src={img}
+                                          alt={`Activity proof ${imgIdx}`}
+                                          className="w-full h-full object-cover cursor-pointer"
+                                          onClick={() => setFullScreenImage({ url: img, allImages: act.images, index: imgIdx })}
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -702,7 +756,7 @@ export default function AdminWorkReportsPage() {
                             src={img}
                             alt={`Evidence ${idx}`}
                             className="w-full h-full object-cover cursor-pointer"
-                            onClick={() => window.open(img, "_blank")}
+                            onClick={() => setFullScreenImage({ url: img, allImages: selectedReport.images, index: idx })}
                           />
                         </div>
                       ))}
@@ -828,6 +882,73 @@ export default function AdminWorkReportsPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Full Screen Image Modal */}
+      <AnimatePresence>
+        {fullScreenImage && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setFullScreenImage(null)}
+              className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+            >
+              <X size={32} />
+            </motion.button>
+
+            {fullScreenImage.allImages.length > 1 && (
+              <>
+                <button 
+                  className="absolute left-4 sm:left-12 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const newIndex = fullScreenImage.index === 0 ? fullScreenImage.allImages.length - 1 : fullScreenImage.index - 1;
+                    setFullScreenImage({ ...fullScreenImage, index: newIndex, url: fullScreenImage.allImages[newIndex] });
+                  }}
+                >
+                  <ChevronLeft size={32} />
+                </button>
+                <button 
+                  className="absolute right-4 sm:right-12 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const newIndex = fullScreenImage.index === fullScreenImage.allImages.length - 1 ? 0 : fullScreenImage.index + 1;
+                    setFullScreenImage({ ...fullScreenImage, index: newIndex, url: fullScreenImage.allImages[newIndex] });
+                  }}
+                >
+                  <ChevronRight size={32} />
+                </button>
+              </>
+            )}
+
+            <motion.img
+              key={fullScreenImage.index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              src={fullScreenImage.url}
+              alt="Full screen"
+              className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl relative z-0"
+            />
+            
+            {fullScreenImage.allImages.length > 1 && (
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white text-sm font-medium tracking-widest backdrop-blur-md">
+                {fullScreenImage.index + 1} / {fullScreenImage.allImages.length}
+              </div>
+            )}
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Hidden Print Templates */}
+      <div className="hidden">
+        <PrintTemplate ref={printAllRef} reports={filteredReports} roleMap={roleMap} />
+        {selectedReport && (
+          <PrintTemplate ref={printIndividualRef} reports={[selectedReport]} roleMap={roleMap} />
+        )}
+      </div>
     </div>
   );
 }

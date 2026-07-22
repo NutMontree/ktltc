@@ -34,6 +34,7 @@ interface Activity {
   taskName: string;
   detail: string;
   status: "Completed" | "In Progress" | "Pending";
+  images?: string[];
 }
 
 const ROLE_TH: Record<string, string> = {
@@ -678,6 +679,23 @@ export default function WorkReportsManagementPage() {
                                 className="w-full bg-white dark:bg-neutral-900/50 border border-slate-200 dark:border-neutral-700 mt-3 p-3 rounded-2xl text-xs text-slate-600 dark:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500/10 resize-none"
                                 rows={2}
                               />
+                              {act.images && act.images.length > 0 && (
+                                <div className="flex gap-2 mt-3 flex-wrap">
+                                  {act.images.map((img: string, imgIdx: number) => (
+                                    <div
+                                      key={imgIdx}
+                                      className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-100 dark:border-neutral-800 shadow-sm hover:scale-105 transition-transform"
+                                    >
+                                      <img
+                                        src={img}
+                                        alt={`Activity proof ${imgIdx}`}
+                                        className="w-full h-full object-cover cursor-pointer"
+                                        onClick={() => window.open(img, "_blank")}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                             <div className="flex flex-col gap-2">
                               {(["Completed", "In Progress", "Pending"] as const).map((s) => (
