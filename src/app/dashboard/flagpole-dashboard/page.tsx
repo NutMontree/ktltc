@@ -3,6 +3,8 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
@@ -315,15 +317,13 @@ export default function StudentFlagpoleDashboard() {
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative group flex-1 md:flex-none">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-                <Calendar size={18} />
-              </div>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="pl-14 pr-8 py-4 w-full md:w-auto bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-sm text-slate-800 dark:text-white outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-xl shadow-black/2 hover:shadow-2xl hover:border-slate-200 dark:hover:border-zinc-700 appearance-none cursor-pointer scheme-light-dark"
+            <div className="relative flex-1 md:flex-none">
+              <DatePicker
+                format="DD/MM/YYYY"
+                allowClear={false}
+                value={selectedDate ? dayjs(selectedDate) : null}
+                onChange={(date) => setSelectedDate(date ? date.format("YYYY-MM-DD") : "")}
+                className="w-full md:w-48 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-sm text-slate-800 dark:text-white outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-xl shadow-black/2 hover:shadow-2xl hover:border-slate-200 dark:hover:border-zinc-700 appearance-none cursor-pointer scheme-light-dark [&_.ant-picker-input_input]:font-black [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
               />
             </div>
           </div>

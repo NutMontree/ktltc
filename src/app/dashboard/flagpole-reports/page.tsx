@@ -3,6 +3,14 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect, Suspense } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+import "dayjs/locale/th";
+
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
+
 import {
   Search,
   FileText,
@@ -642,23 +650,12 @@ function FlagpoleReportsManagementContent() {
                 ตั้งแต่วันที่
               </label>
               <div className="relative">
-                <Calendar
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                  size={16}
-                />
-                <input
-                  type="text"
-                  readOnly
-                  value={startDate ? `${startDate.split('-')[2]}/${startDate.split('-')[1]}/${parseInt(startDate.split('-')[0]) + 543}` : ''}
-                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs text-slate-800 dark:text-zinc-200 shadow-inner"
-                />
-                <input
-                  type="date"
-                  lang="th-TH"
-                  value={startDate}
-                  onClick={(e) => 'showPicker' in e.target && (e.target as any).showPicker()}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                <DatePicker
+                  format="DD/MM/BBBB"
+                  allowClear={false}
+                  value={startDate ? dayjs(startDate) : null}
+                  onChange={(date) => setStartDate(date ? date.format("YYYY-MM-DD") : "")}
+                  className="w-full px-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 rounded-2xl font-black text-xs scheme-light-dark [&_.ant-picker-input_input]:font-black [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-zinc-200 shadow-inner"
                 />
               </div>
             </div>
@@ -668,23 +665,12 @@ function FlagpoleReportsManagementContent() {
                 ถึงวันที่
               </label>
               <div className="relative">
-                <Calendar
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                  size={16}
-                />
-                <input
-                  type="text"
-                  readOnly
-                  value={endDate ? `${endDate.split('-')[2]}/${endDate.split('-')[1]}/${parseInt(endDate.split('-')[0]) + 543}` : ''}
-                  className="w-full pl-14 pr-6 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-xs text-slate-800 dark:text-zinc-200 shadow-inner"
-                />
-                <input
-                  type="date"
-                  lang="th-TH"
-                  value={endDate}
-                  onClick={(e) => 'showPicker' in e.target && (e.target as any).showPicker()}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                <DatePicker
+                  format="DD/MM/BBBB"
+                  allowClear={false}
+                  value={endDate ? dayjs(endDate) : null}
+                  onChange={(date) => setEndDate(date ? date.format("YYYY-MM-DD") : "")}
+                  className="w-full px-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 rounded-2xl font-black text-xs scheme-light-dark [&_.ant-picker-input_input]:font-black [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-zinc-200 shadow-inner"
                 />
               </div>
             </div>

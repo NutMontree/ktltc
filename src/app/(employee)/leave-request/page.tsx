@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import FullPageLoader from "@/components/FullPageLoader";
@@ -377,41 +379,35 @@ export default function LeaveRequestPage() {
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500">
-                            <Calendar size={22} />
-                          </div>
-                          <input
-                            type="date"
-                            value={formData.startDate}
-                            onChange={(e) =>
+                          <DatePicker
+                            format="DD/MM/YYYY"
+                            allowClear={false}
+                            value={formData.startDate ? dayjs(formData.startDate) : null}
+                            onChange={(date) =>
                               setFormData({
                                 ...formData,
-                                startDate: e.target.value,
+                                startDate: date ? date.format("YYYY-MM-DD") : "",
                               })
                             }
-                            className="w-full pl-16 pr-8 py-6 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner appearance-none scheme-light-dark"
-                            required
+                            className="w-full px-6 py-[1.2rem] bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner appearance-none scheme-light-dark [&_.ant-picker-input_input]:font-black [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                           />
                           <span className="absolute top-0 right-6 -translate-y-1/2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-blue-500 tracking-widest shadow-xl">
                             ตั้งแต่วันที่
                           </span>
                         </div>
                         <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500">
-                            <Calendar size={22} />
-                          </div>
-                          <input
-                            type="date"
-                            value={formData.endDate}
-                            min={formData.startDate}
-                            onChange={(e) =>
+                          <DatePicker
+                            format="DD/MM/YYYY"
+                            allowClear={false}
+                            value={formData.endDate ? dayjs(formData.endDate) : null}
+                            minDate={formData.startDate ? dayjs(formData.startDate) : undefined}
+                            onChange={(date) =>
                               setFormData({
                                 ...formData,
-                                endDate: e.target.value,
+                                endDate: date ? date.format("YYYY-MM-DD") : "",
                               })
                             }
-                            className="w-full pl-16 pr-8 py-6 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner appearance-none scheme-light-dark"
-                            required
+                            className="w-full px-6 py-[1.2rem] bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner appearance-none scheme-light-dark [&_.ant-picker-input_input]:font-black [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                           />
                           <span className="absolute top-0 right-6 -translate-y-1/2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-rose-500 tracking-widest shadow-xl">
                             ถึงวันที่
@@ -551,20 +547,7 @@ export default function LeaveRequestPage() {
         </AnimatePresence>
       </div>
 
-      <style jsx global>{`
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          background: transparent;
-          bottom: 0;
-          color: transparent;
-          cursor: pointer;
-          height: auto;
-          left: 0;
-          position: absolute;
-          right: 0;
-          top: 0;
-          width: auto;
-        }
-      `}</style>
+
     </div>
   );
 }

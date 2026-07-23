@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import { ClipboardList, Plus, AlertCircle, X, MapPin, HeartHandshake, ShieldCheck, Camera, Image as ImageIcon, Send, Check, Trash2, Edit, LayoutGrid, Table, List, User, Search, Download, Printer } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast";
@@ -968,11 +970,12 @@ export default function StudentCarePage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-bold text-slate-500 mb-1.5">วัน/เดือน/ปีเกิด</label>
-                        <input
-                          type="date"
-                          className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
-                          value={newCare.dob}
-                          onChange={e => setNewCare({ ...newCare, dob: e.target.value })}
+                        <DatePicker
+                          format="DD/MM/YYYY"
+                          allowClear={true}
+                          className="w-full px-3 py-[0.8rem] border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500 [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
+                          value={newCare.dob ? dayjs(newCare.dob) : null}
+                          onChange={(date) => setNewCare({ ...newCare, dob: date ? date.format("YYYY-MM-DD") : "" })}
                         />
                       </div>
                       <div>

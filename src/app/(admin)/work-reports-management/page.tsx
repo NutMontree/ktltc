@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import {
   Search,
   FileText,
@@ -391,36 +393,26 @@ export default function WorkReportsManagementPage() {
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">
               วันที่เริ่ม
             </label>
-            <div className="relative">
-              <Calendar
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                size={18}
+              <DatePicker
+                format="DD/MM/YYYY"
+                allowClear={false}
+                value={startDate ? dayjs(startDate) : null}
+                onChange={(date) => setStartDate(date ? date.format("YYYY-MM-DD") : "")}
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-sm appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner [&_.ant-picker-input_input]:font-black [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
               />
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-sm appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner"
-              />
-            </div>
           </div>
 
           <div>
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">
               วันที่สิ้นสุด
             </label>
-            <div className="relative">
-              <Calendar
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                size={18}
+              <DatePicker
+                format="DD/MM/YYYY"
+                allowClear={false}
+                value={endDate ? dayjs(endDate) : null}
+                onChange={(date) => setEndDate(date ? date.format("YYYY-MM-DD") : "")}
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-sm appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner [&_.ant-picker-input_input]:font-black [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
               />
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none font-black text-sm appearance-none scheme-light-dark text-slate-800 dark:text-zinc-200 shadow-inner"
-              />
-            </div>
           </div>
         </div>
 

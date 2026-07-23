@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import {
   Search,
   FileText,
@@ -234,11 +236,19 @@ export default function AdminWorkReportsPage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <button
+              onClick={() => setShowChartModal(true)}
+              className="group flex items-center gap-2 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 text-slate-800 dark:text-neutral-100 px-6 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all font-black border border-slate-200 dark:border-neutral-700 active:scale-95"
+            >
+              <BarChart2 size={20} className="text-indigo-500 group-hover:text-indigo-600 transition-colors" />
+              <span className="hidden xl:inline">กราฟสถิติ</span>
+            </button>
+
+            <button
               onClick={() => handlePrintAll()}
               className="group flex items-center gap-2 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 text-slate-800 dark:text-neutral-100 px-6 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all font-black border border-slate-200 dark:border-neutral-700 active:scale-95"
             >
               <Printer size={20} className="text-slate-500 group-hover:text-slate-800 dark:group-hover:text-white transition-colors" />
-              <span>พิมพ์ PDF (ทั้งหมด)</span>
+              <span className="hidden xl:inline">พิมพ์ PDF</span>
             </button>
 
             <button
@@ -253,7 +263,7 @@ export default function AdminWorkReportsPage() {
                 size={22}
                 className="group-hover:translate-y-0.5 transition-transform"
               />
-              <span className="tracking-tight text-lg">ดาวน์โหลด (Excel)</span>
+              <span className="tracking-tight text-lg hidden sm:inline">ดาวน์โหลด (Excel)</span>
             </button>
           </div>
         </div>
@@ -336,15 +346,12 @@ export default function AdminWorkReportsPage() {
                 วันที่เริ่ม
               </label>
               <div className="relative">
-                <Calendar
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                  size={18}
-                />
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
+                <DatePicker
+                  format="DD/MM/YYYY"
+                  value={startDate ? dayjs(startDate) : null}
+                  onChange={(date) => setStartDate(date ? date.format("YYYY-MM-DD") : "")}
+                  allowClear={false}
+                  className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm [&_.ant-picker-input_input]:font-bold [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                 />
               </div>
             </div>
@@ -355,15 +362,12 @@ export default function AdminWorkReportsPage() {
               วันที่สิ้นสุด
             </label>
             <div className="relative">
-              <Calendar
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                size={18}
-              />
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
+              <DatePicker
+                format="DD/MM/YYYY"
+                value={endDate ? dayjs(endDate) : null}
+                onChange={(date) => setEndDate(date ? date.format("YYYY-MM-DD") : "")}
+                allowClear={false}
+                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm [&_.ant-picker-input_input]:font-bold [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
               />
             </div>
           </div>
@@ -804,6 +808,94 @@ export default function AdminWorkReportsPage() {
                     )}
                   </span>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Chart Modal */}
+      <AnimatePresence>
+        {showChartModal && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChartModal(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-5xl bg-white dark:bg-neutral-900 rounded-[3rem] shadow-2xl overflow-hidden border border-white/20 dark:border-neutral-800 flex flex-col h-[80vh]"
+            >
+              <div className="p-6 md:p-8 border-b border-slate-100 dark:border-neutral-800 flex justify-between items-center bg-slate-50 dark:bg-neutral-800/50 shrink-0">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-neutral-100 flex items-center gap-3">
+                    <BarChart2 className="text-indigo-500" size={28} />
+                    สถิติการส่งรายงานรายวัน
+                  </h3>
+                  <p className="text-xs md:text-sm font-bold text-slate-500 mt-2 uppercase tracking-widest">
+                    ข้อมูลตั้งแต่วันที่ {new Date(startDate).toLocaleDateString("th-TH")} ถึง {new Date(endDate).toLocaleDateString("th-TH")}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowChartModal(false)}
+                  className="p-3 bg-white dark:bg-neutral-900 rounded-full text-slate-400 hover:text-rose-500 transition-colors shadow-sm"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 p-6 md:p-8 min-h-0 bg-white dark:bg-neutral-900">
+                {dailySummary.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={[...dailySummary].reverse()}
+                      margin={{ top: 20, right: 10, left: -20, bottom: 20 }}
+                    >
+                      <XAxis 
+                        dataKey="date" 
+                        tickFormatter={(val) => new Date(val).toLocaleDateString("th-TH", { day: 'numeric', month: 'short' })}
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        dy={10}
+                      />
+                      <YAxis
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(value) => `${value}`}
+                      />
+                      <RechartsTooltip
+                        cursor={{ fill: 'rgba(99, 102, 241, 0.05)' }}
+                        contentStyle={{ 
+                          borderRadius: '16px', 
+                          border: 'none', 
+                          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(8px)',
+                        }}
+                        labelFormatter={(label) => new Date(label).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
+                        itemStyle={{ fontWeight: 'bold' }}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                      <Bar dataKey="submittedCount" name="จำนวนที่ส่ง (คน)" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={60} />
+                      <Bar dataKey="missingCount" name="ไม่ได้ส่ง (คน)" fill="#f43f5e" radius={[4, 4, 0, 0]} maxBarSize={60} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50 dark:bg-neutral-800/30 rounded-3xl">
+                    <BarChart2 size={64} className="mb-4 opacity-20" />
+                    <p className="font-bold text-lg text-slate-500">ไม่มีข้อมูลสำหรับแสดงกราฟในช่วงเวลานี้</p>
+                    <p className="text-sm mt-2 opacity-60">ลองเปลี่ยนช่วงเวลาหรือแผนกที่ต้องการค้นหา</p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

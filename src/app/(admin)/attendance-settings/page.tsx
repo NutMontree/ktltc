@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { Save, Clock, ShieldCheck, Loader2, Calendar, Trash2, Plus, MapPin, Globe, AlertCircle, Settings as SettingsIcon, AlertTriangle } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 interface RoleSetting {
   role: string;
@@ -456,11 +458,12 @@ export default function AttendanceSettingsPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-[10px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest mb-2 ml-1">วันที่</label>
-                  <input 
-                    type="date"
-                    value={newHoliday.date}
-                    onChange={(e) => setNewHoliday({...newHoliday, date: e.target.value})}
-                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 outline-none font-bold focus:ring-2 focus:ring-rose-500/50 transition-all"
+                  <DatePicker
+                    format="DD/MM/YYYY"
+                    allowClear={false}
+                    value={newHoliday.date ? dayjs(newHoliday.date) : null}
+                    onChange={(date) => setNewHoliday({...newHoliday, date: date ? date.format("YYYY-MM-DD") : ""})}
+                    className="w-full px-5 py-[1.1rem] rounded-2xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 outline-none font-bold focus:ring-2 focus:ring-rose-500/50 transition-all [&_.ant-picker-input_input]:font-bold [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                   />
                 </div>
                 <div>

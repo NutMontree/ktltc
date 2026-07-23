@@ -47,8 +47,9 @@ import {
   ExclamationCircleOutlined,
   BellOutlined,
 } from "@ant-design/icons";
-import { Dropdown, Popover, message, Popconfirm, Modal } from "antd";
+import { Dropdown, Popover, message, Popconfirm, Modal, DatePicker } from "antd";
 import { useSession, signIn } from "next-auth/react";
+import dayjs from "dayjs";
 import imageCompression from "browser-image-compression";
 import { formatDistanceToNow } from "date-fns";
 import { th } from "date-fns/locale";
@@ -4094,11 +4095,12 @@ function FriendProfilePageContent({ id }: { id: string }) {
                       <label className="text-xs font-black text-zinc-500 uppercase">
                         วันเดือนปีที่เริ่มเข้ารับราชการ
                       </label>
-                      <input
-                        type="date"
-                        value={formData.govStartDate || ""}
-                        onChange={(e) => setFormData({ ...formData, govStartDate: e.target.value })}
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                      <DatePicker
+                        format="DD/MM/YYYY"
+                        allowClear={true}
+                        value={formData.govStartDate ? dayjs(formData.govStartDate) : null}
+                        onChange={(date) => setFormData({ ...formData, govStartDate: date ? date.format("YYYY-MM-DD") : "" })}
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -4106,13 +4108,12 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         <label className="text-xs font-black text-zinc-500 uppercase">
                           วันที่ครบเกษียณอายุ
                         </label>
-                        <input
-                          type="date"
-                          value={formData.retirementDate || ""}
-                          onChange={(e) =>
-                            setFormData({ ...formData, retirementDate: e.target.value })
-                          }
-                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                        <DatePicker
+                          format="DD/MM/YYYY"
+                          allowClear={true}
+                          value={formData.retirementDate ? dayjs(formData.retirementDate) : null}
+                          onChange={(date) => setFormData({ ...formData, retirementDate: date ? date.format("YYYY-MM-DD") : "" })}
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                         />
                       </div>
                       <div className="space-y-1">

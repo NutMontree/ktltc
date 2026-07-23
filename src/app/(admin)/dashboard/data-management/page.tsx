@@ -2,6 +2,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import { toast, Toaster } from "react-hot-toast";
 import {
   Trash2,
@@ -638,16 +640,17 @@ export default function DataManagementPage() {
                               <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
                                 วันที่
                               </label>
-                              <input
-                                type="date"
-                                value={editFormData.dateOnly || ""}
-                                onChange={(e) =>
+                              <DatePicker
+                                format="DD/MM/YYYY"
+                                allowClear={false}
+                                value={editFormData.dateOnly ? dayjs(editFormData.dateOnly) : null}
+                                onChange={(date) =>
                                   setEditFormData({
                                     ...editFormData,
-                                    dateOnly: e.target.value,
+                                    dateOnly: date ? date.format("YYYY-MM-DD") : "",
                                   })
                                 }
-                                className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
+                                className="w-full px-3 py-[0.8rem] bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold [&_.ant-picker-input_input]:font-bold [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                               />
                             </div>
 

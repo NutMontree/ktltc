@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -660,13 +662,15 @@ export default function AddNewsPage() {
               <FiCalendar className="text-indigo-500" /> วันที่และเวลาลงข่าว (24 ชม.)
             </label>
             <div className="flex flex-col sm:flex-row items-center gap-2">
-              <input
-                type="date"
-                value={publishDate ? publishDate.split("T")[0] : ""}
-                onChange={(e) =>
-                  setPublishDate(`${e.target.value}T${publishDate.split("T")[1] || "00:00"}`)
-                }
-                className="w-full sm:flex-1 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 font-bold text-sm outline-none"
+              <DatePicker
+                format="DD/MM/YYYY"
+                allowClear={false}
+                value={publishDate && publishDate.split("T")[0] ? dayjs(publishDate.split("T")[0]) : null}
+                onChange={(date) => {
+                  const timePart = publishDate ? (publishDate.split("T")[1] || "00:00") : "00:00";
+                  setPublishDate(date ? `${date.format("YYYY-MM-DD")}T${timePart}` : "");
+                }}
+                className="w-full sm:flex-1 bg-white dark:bg-zinc-900 px-4 py-[1.1rem] rounded-2xl border border-slate-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 font-bold text-sm outline-none [&_.ant-picker-input_input]:font-bold [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
               />
               <div className="w-full sm:w-auto flex items-center justify-center bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500 px-2">
                 <select
