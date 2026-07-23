@@ -57,7 +57,7 @@ const CATEGORIES = [
 const fontList = ["Sarabun", "Kanit", "Prompt", "Mitr", "Roboto", "Arial", "Tahoma"];
 
 // --- Sub-Component: Sortable Image Item ---
-function SortableImage({ id, src, onRemove, isVertical = false, isNew = false, onZoom }: any) {
+function SortableImage({ id, src, onRemove, isVertical = false, isNew = false, isVideo = false, onZoom }: any) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });
@@ -82,15 +82,19 @@ function SortableImage({ id, src, onRemove, isVertical = false, isNew = false, o
         {...listeners}
         className="w-full h-full cursor-grab active:cursor-grabbing relative flex items-center justify-center"
       >
-        <div className="relative w-full h-full">
-          <Image
-            src={src}
-            alt="preview"
-            fill
-            unoptimized
-            className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-          />
-        </div>
+        {isVideo ? (
+          <video src={src} className="object-contain w-full h-full" controls playsInline />
+        ) : (
+          <div className="relative w-full h-full">
+            <Image
+              src={src}
+              alt="preview"
+              fill
+              unoptimized
+              className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          </div>
+        )}
         {isNew && (
           <div className="absolute top-2 left-2 bg-blue-600 text-white text-[8px] px-2 py-0.5 rounded-full font-black uppercase z-20 shadow-lg border border-white/20">
             New
@@ -739,6 +743,11 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
                     id={item.id}
                     src={item.src}
                     isNew={item.isNew}
+                    isVideo={
+                      item.file 
+                        ? item.file.type?.startsWith("video/")
+                        : /\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(item.src) || item.src.includes('video')
+                    }
                     onZoom={setSelectedZoomImage}
                     onRemove={() => setAllImages(allImages.filter((i) => i.id !== item.id))}
                   />
@@ -748,7 +757,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
                 <input
                   type="file"
                   multiple
-                  accept="image/*,.gif"
+                  accept="image/*,video/*,.gif"
                   className="hidden"
                   onChange={(e) => handleFileChange(e, "general")}
                 />
@@ -781,6 +790,11 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
                     src={item.src}
                     isVertical
                     isNew={item.isNew}
+                    isVideo={
+                      item.file 
+                        ? item.file.type?.startsWith("video/")
+                        : /\.(mp4|webm|mov|m4v|avi|wmv|flv|mkv|blob)(\?.*)?$/i.test(item.src) || item.src.includes('video')
+                    }
                     onZoom={setSelectedZoomImage}
                     onRemove={() =>
                       setAllNewsletters(allNewsletters.filter((i) => i.id !== item.id))
@@ -792,7 +806,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
                 <input
                   type="file"
                   multiple
-                  accept="image/*,.gif"
+                  accept="image/*,video/*,.gif"
                   className="hidden"
                   onChange={(e) => handleFileChange(e, "newsletter")}
                 />

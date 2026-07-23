@@ -22,7 +22,6 @@ import NextAuthProvider from "@/providers/NextAuthProvider";
 import ScrollUp from "@/components/Common/ScrollUp";
 import CookieConsent from "@/components/CookieConsent";
 import ActiveUserTracker from "@/components/ActiveUserTracker";
-import SessionWatcher from "@/components/SessionWatcher";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import GlobalEffectRenderer from "@/components/effects/GlobalEffectRenderer";
