@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const client = await clientPromise;
     const db = client.db('ktltc_db');
 
-    const user = await db.collection('users').findOne({ name: /«—π‡©≈‘¡/ });
+    const user = await db.collection('users').findOne({ name: /‡∏ß‡∏±‡∏ô‡πÄ‡∏â‡∏•‡∏¥‡∏°/ });
     const factionPermissions = await db.collection('department_permissions').findOne({ department: user?.faction });
     
     return NextResponse.json({
