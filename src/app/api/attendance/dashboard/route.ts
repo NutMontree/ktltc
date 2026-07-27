@@ -35,8 +35,14 @@ export async function GET(req: Request) {
     
     console.log(`[API] Filtering by date: ${targetDate.toISOString()}`);
 
+    const targetRoles = [
+      "admin", "editor", "hr", "director", "deputy_resource", 
+      "deputy_strategy", "deputy_academic", "deputy_student_affairs", 
+      "teacher", "janitor", "staff"
+    ];
+
     // 1. Get Total Personnel Count from Users collection
-    const totalUsersCount = await db.collection("users").countDocuments();
+    const totalUsersCount = await db.collection("users").countDocuments({ role: { $in: targetRoles } });
 
     // 2. Aggregate Stats using Native Driver - Using Range Match for consistency
     const startOfDay = new Date(targetDate);
@@ -46,6 +52,27 @@ export async function GET(req: Request) {
 
     const stats = await db.collection("attendances").aggregate([
       { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
+      {
+        $addFields: {
+          uId: { 
+            $cond: {
+              if: { $ne: [{ $type: "$userId" }, "missing"] },
+              then: { $toObjectId: "$userId" },
+              else: null
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "uId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: false } },
+      { $match: { "userDetails.role": { $in: targetRoles } } },
       {
         $group: {
           _id: "$status",
@@ -102,7 +129,8 @@ export async function GET(req: Request) {
           as: "userDetails"
         }
       },
-      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: false } },
+      { $match: { "userDetails.role": { $in: targetRoles } } },
       {
         $project: {
           id: { $toString: "$_id" },
@@ -147,6 +175,27 @@ export async function GET(req: Request) {
 
     let trends = await db.collection("attendances").aggregate([
       { $match: { date: { $gte: trendStartDate, $lte: endOfDay } } },
+      {
+        $addFields: {
+          uId: { 
+            $cond: {
+              if: { $ne: [{ $type: "$userId" }, "missing"] },
+              then: { $toObjectId: "$userId" },
+              else: null
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "uId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: false } },
+      { $match: { "userDetails.role": { $in: targetRoles } } },
       { $group: trendGroup },
       { $sort: { "_id": 1 } }
     ]).toArray();
@@ -188,7 +237,8 @@ export async function GET(req: Request) {
           as: "userDetails"
         }
       },
-      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: false } },
+      { $match: { "userDetails.role": { $in: targetRoles } } },
       {
         $group: {
           _id: { $ifNull: ["$userDetails.department", "ทั่วไป"] },
@@ -220,7 +270,8 @@ export async function GET(req: Request) {
           as: "userDetails"
         }
       },
-      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: false } },
+      { $match: { "userDetails.role": { $in: targetRoles } } },
       {
         $project: {
           id: { $toString: "$_id" },
