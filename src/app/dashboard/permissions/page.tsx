@@ -172,13 +172,13 @@ const ADVANCED_FEATURE_LABELS: {
     label: "ภาพรวมลงเวลา",
     icon: FiLayout,
     color: "text-blue-600",
-    href: "/dashboard/attendance",
+    href: "/attendance-dashboard",
   },
   manage_attendance_report: {
     label: "รายงานการเข้างาน",
     icon: FiFileText,
     color: "text-indigo-600",
-    href: "/dashboard/attendance/reports",
+    href: "/attendance-report",
   },
   manage_attendance_work_reports: {
     label: "รายงานปฏิบัติงาน (WFH)",
@@ -190,13 +190,13 @@ const ADVANCED_FEATURE_LABELS: {
     label: "จัดการอนุมัติใบลา",
     icon: FiCheckCircle,
     color: "text-rose-600",
-    href: "/dashboard/attendance/leave-approvals",
+    href: "/leave-approvals",
   },
   manage_attendance_settings: {
     label: "ตั้งค่าเวลาเข้างาน",
     icon: FiCalendar,
     color: "text-amber-600",
-    href: "/dashboard/attendance/settings",
+    href: "/attendance-settings",
   },
   manage_roles_advanced: {
     label: "จัดการสิทธิ์บุคลากร",
