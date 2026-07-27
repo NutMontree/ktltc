@@ -205,6 +205,55 @@ export async function GET(req: Request) {
       }
     });
 
+    // 3. Get students who have submitted midterm/final quizzes
+    const examQuizzes = await db.collection("dve_quizzes").find({ 
+      subjectId, 
+      quizType: { $in: ["midterm", "final"] } 
+    }).toArray();
+    
+    if (examQuizzes.length > 0) {
+      const quizIds = examQuizzes.map((q: any) => q._id.toString());
+      const examSubmissions = await db.collection("dve_quiz_submissions").find({
+        quizId: { $in: quizIds },
+        score: { $exists: true, $nin: ["", null] }
+      }).toArray();
+      
+      const midtermCat = config.categories.find((c: any) => c.name.includes("สอบกลางภาค") || c.id === "midterm_exam");
+      const finalCat = config.categories.find((c: any) => c.name.includes("สอบปลายภาค") || c.id === "final_exam");
+      
+      examSubmissions.forEach((sub: any) => {
+        const quiz = examQuizzes.find((q: any) => q._id.toString() === sub.quizId);
+        if (!quiz || !sub.studentId) return;
+        
+        const cat = quiz.quizType === "midterm" ? midtermCat : finalCat;
+        if (!cat) return;
+        
+        const scoreVal = Number(sub.score) || 0;
+        const maxScoreVal = Number(sub.maxScore) || 1;
+        const actualCatScore = Math.round((scoreVal / maxScoreVal) * cat.points);
+        
+        let studentData = studentMap.get(sub.studentId);
+        if (!studentData) {
+          studentData = {
+            _id: new ObjectId(),
+            subjectId,
+            studentId: sub.studentId,
+            studentName: sub.studentName || "ไม่ทราบชื่อ",
+            scores: {},
+            hasGradeRecord: true,
+            updatedAt: new Date().toISOString()
+          };
+          studentMap.set(sub.studentId, studentData);
+        }
+        
+        // Always prefer the dynamically calculated quiz score, overriding manual entry
+        // If there are multiple quizzes of the same type, we accumulate them
+        const existingScore = studentData.scores[`_dynamic_${cat.id}`] || 0;
+        studentData.scores[`_dynamic_${cat.id}`] = existingScore + actualCatScore;
+        studentData.scores[cat.id] = studentData.scores[`_dynamic_${cat.id}`];
+      });
+    }
+
     // Post-process: Give default max score for "จิตพิสัย" (mental_health) if it's missing
     const mentalHealthCat = config.categories.find((c: any) => c.id === "mental_health" || c.name.includes("จิตพิสัย"));
     if (mentalHealthCat) {

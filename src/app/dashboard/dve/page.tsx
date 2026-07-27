@@ -393,8 +393,7 @@ function DVETeacherWorkspace() {
   const unitQuizResultsByStudent = useMemo(() => {
     if (!activeStudyUnitId || !allSubjectQuizSubmissions.length) return {};
     const filtered = allSubjectQuizSubmissions.filter((sub) =>
-      String(sub.unitId || "").trim() === activeStudyUnitId &&
-      ["pretest", "posttest"].includes(String(sub.quizType || ""))
+      String(sub.unitId || "").trim() === activeStudyUnitId
     );
     return filtered.reduce((acc: Record<string, any[]>, submission: any) => {
       if (!submission.studentId) return acc;
@@ -417,6 +416,7 @@ function DVETeacherWorkspace() {
     questions: [] as any[],
     isShuffle: false,
     quizType: "general",
+    maxScaleScore: null as number | null,
   });
   const [showQuizAnswers, setShowQuizAnswers] = useState(false);
 
@@ -1089,6 +1089,7 @@ function DVETeacherWorkspace() {
           questions: [],
           isShuffle: false,
           quizType: "general",
+          maxScaleScore: null,
         });
       }
     } catch (err) {
@@ -1312,6 +1313,43 @@ function DVETeacherWorkspace() {
       setLoadingRoster(false);
     }
   };
+
+  // Auto-check attendance based on quiz submissions, assignments, and study time
+  useEffect(() => {
+    if (activeTab !== "checkin" || !activeStudyUnitId || studentRoster.length === 0) return;
+
+    setAttendanceRecords((prevRecords) => {
+      let hasChanges = false;
+      const newRecords = { ...prevRecords };
+
+      studentRoster.forEach((student) => {
+        const rec = newRecords[student.id];
+        if (!rec) return;
+
+        const hasQuizSub = unitQuizResultsByStudent[student.id]?.length > 0;
+        const isTimeCompleted = activeStudyUnit?.studyMinutes && (rec.studySeconds || 0) >= activeStudyUnit.studyMinutes * 60;
+        const hasAssignment = studentSubmissionsById[student.id]?.length > 0;
+        
+        let changed = false;
+
+        // Auto-check Present
+        if ((hasQuizSub || isTimeCompleted || hasAssignment) && (rec.status === "Absent" || rec.status === "Studying")) {
+          rec.status = "Present";
+          changed = true;
+        }
+
+        // Auto-check Submitted
+        if ((hasQuizSub || hasAssignment) && (rec.assignmentStatus === "None" || rec.assignmentStatus === "Pending")) {
+          rec.assignmentStatus = "Submitted";
+          changed = true;
+        }
+
+        if (changed) hasChanges = true;
+      });
+
+      return hasChanges ? newRecords : prevRecords;
+    });
+  }, [studentRoster, unitQuizResultsByStudent, studentSubmissionsById, activeStudyUnitId, activeStudyUnit, activeTab]);
 
   const handleToggleInternship = async (student: any) => {
     if (checkReadOnly()) return;
@@ -2223,6 +2261,7 @@ function DVETeacherWorkspace() {
                           questions: [],
                           isShuffle: false,
                           quizType: "general",
+                          maxScaleScore: null,
                         });
                         setIsQuizModalOpen(true);
                       }}
@@ -2323,6 +2362,7 @@ function DVETeacherWorkspace() {
                                   questions: quiz.questions || [],
                                   isShuffle: !!quiz.isShuffle,
                                   quizType: quiz.quizType || "general",
+                                  maxScaleScore: quiz.maxScaleScore || null,
                                 });
                                 setIsQuizModalOpen(true);
                               }}
@@ -2501,7 +2541,7 @@ function DVETeacherWorkspace() {
               onCancel={() => setIsDateModalOpen(false)}
               footer={null}
               centered
-              maskClosable={false}
+              mask={{ closable: false }}
               keyboard={false}
               width="100vw"
               style={{ top: 0, padding: 0, margin: 0, maxWidth: '100vw', height: '100vh', paddingBottom: 0 }}
@@ -2993,8 +3033,17 @@ function DVETeacherWorkspace() {
                               <th className="py-4 px-2 text-center">ห้องเรียน</th>
                               <th className="py-4 px-2 text-center">สถานะเวลาเรียน</th>
                               <th className="py-4 px-2 text-center">การส่งการบ้าน / งาน</th>
-                              <th className="py-4 px-2 text-center">ก่อนเรียน (Pre-test)</th>
-                              <th className="py-4 px-2 text-center">หลังเรียน (Post-test)</th>
+                              {activeUnitQuizzes.length > 0 ? (
+                                activeUnitQuizzes.map((quiz) => (
+                                  <th key={quiz.id} className="py-4 px-2 text-center" title={quiz.title}>
+                                    <div className="truncate max-w-[150px] mx-auto">
+                                      {quiz.quizType === "pretest" ? "ก่อนเรียน" : quiz.quizType === "posttest" ? "หลังเรียน" : quiz.title}
+                                    </div>
+                                  </th>
+                                ))
+                              ) : (
+                                <th className="py-4 px-2 text-center text-zinc-400 font-normal">ไม่มีแบบทดสอบ</th>
+                              )}
                               <th className="py-4 px-2 text-right">คะแนน / หมายเหตุ</th>
                             </tr>
                           </thead>
@@ -3010,12 +3059,6 @@ function DVETeacherWorkspace() {
                               };
                               const hasPretest = activeUnitQuizzes.some(q => q.quizType === "pretest");
                               const hasPosttest = activeUnitQuizzes.some(q => q.quizType === "posttest");
-                              const pretestSub = unitQuizResultsByStudent[student.id]?.find(
-                                (s) => s.quizType === "pretest"
-                              );
-                              const posttestSub = unitQuizResultsByStudent[student.id]?.find(
-                                (s) => s.quizType === "posttest"
-                              );
                               return (
                                 <tr
                                   key={student.id}
@@ -3141,47 +3184,34 @@ function DVETeacherWorkspace() {
                                     </span>
                                   </td>
 
-                                  {/* Column: Pre-test */}
-                                  <td className="py-4 px-2 text-center">
-                                    {pretestSub ? (
-                                      <span className="inline-flex flex-col items-center">
-                                        <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-650 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50 font-black text-[10px]">
-                                          {pretestSub.score} / {pretestSub.maxScore}
-                                        </span>
-                                        <span className="text-[8px] text-zinc-400 mt-0.5">
-                                          {new Date(pretestSub.submittedAt).toLocaleDateString("th-TH", {
-                                            day: "2-digit",
-                                            month: "short",
-                                          })}
-                                        </span>
-                                      </span>
-                                    ) : hasPretest ? (
-                                      <span className="text-zinc-400 text-[10px] italic font-bold">ยังไม่ทำ</span>
-                                    ) : (
+                                  {activeUnitQuizzes.length > 0 ? (
+                                    activeUnitQuizzes.map((quiz) => {
+                                      const quizSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizId === quiz.id || s.quizType === quiz.quizType);
+                                      return (
+                                        <td key={quiz.id} className="py-4 px-2 text-center">
+                                          {quizSub ? (
+                                            <span className="inline-flex flex-col items-center">
+                                              <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-650 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50 font-black text-[10px]">
+                                                {quizSub.score} / {quizSub.maxScore}
+                                              </span>
+                                              <span className="text-[8px] text-zinc-400 mt-0.5">
+                                                {new Date(quizSub.submittedAt).toLocaleDateString("th-TH", {
+                                                  day: "2-digit",
+                                                  month: "short",
+                                                })}
+                                              </span>
+                                            </span>
+                                          ) : (
+                                            <span className="text-zinc-400 text-[10px] italic font-bold">ยังไม่ทำ</span>
+                                          )}
+                                        </td>
+                                      );
+                                    })
+                                  ) : (
+                                    <td className="py-4 px-2 text-center">
                                       <span className="text-zinc-300 dark:text-zinc-600 text-[10px] italic">ไม่มีแบบทดสอบ</span>
-                                    )}
-                                  </td>
-
-                                  {/* Column: Post-test */}
-                                  <td className="py-4 px-2 text-center">
-                                    {posttestSub ? (
-                                      <span className="inline-flex flex-col items-center">
-                                        <span className="px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-950/30 text-cyan-650 dark:text-cyan-400 border border-cyan-200/50 dark:border-cyan-800/50 font-black text-[10px]">
-                                          {posttestSub.score} / {posttestSub.maxScore}
-                                        </span>
-                                        <span className="text-[8px] text-zinc-400 mt-0.5">
-                                          {new Date(posttestSub.submittedAt).toLocaleDateString("th-TH", {
-                                            day: "2-digit",
-                                            month: "short",
-                                          })}
-                                        </span>
-                                      </span>
-                                    ) : hasPosttest ? (
-                                      <span className="text-zinc-400 text-[10px] italic font-bold">ยังไม่ทำ</span>
-                                    ) : (
-                                      <span className="text-zinc-300 dark:text-zinc-600 text-[10px] italic">ไม่มีแบบทดสอบ</span>
-                                    )}
-                                  </td>
+                                    </td>
+                                  )}
 
                                   {/* Column 6: Score / Edit Action */}
                                   <td className="py-4 px-2 text-right">
@@ -4631,7 +4661,7 @@ function DVETeacherWorkspace() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-4xl"
+              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-6xl"
             >
               <form onSubmit={handleSaveQuiz} className="flex flex-col flex-1 min-h-0 w-full">
                 <div className="shrink-0 px-8 py-6 border-b border-zinc-100 dark:border-zinc-800/50 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl relative overflow-hidden">
@@ -4724,6 +4754,8 @@ function DVETeacherWorkspace() {
                           <option value="general">แบบทดสอบทั่วไป / เก็บคะแนน</option>
                           <option value="pretest">แบบทดสอบก่อนเรียน (Pre-test)</option>
                           <option value="posttest">แบบทดสอบหลังเรียน (Post-test)</option>
+                          <option value="midterm">สอบกลางภาค (Midterm)</option>
+                          <option value="final">สอบปลายภาค (Final)</option>
                         </select>
                       </div>
                     </div>
@@ -4793,7 +4825,7 @@ function DVETeacherWorkspace() {
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t dark:border-zinc-800 pt-4 mt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t dark:border-zinc-800 pt-4 mt-2">
                       <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
                           วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
@@ -4817,6 +4849,23 @@ function DVETeacherWorkspace() {
                           value={quizForm.deadline}
                           onChange={(e) =>
                             setQuizForm((prev) => ({ ...prev, deadline: e.target.value }))
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          คะแนนที่ใช้จริง (หารคะแนน / Scale Score)
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="ปล่อยว่างหากใช้คะแนนดิบ"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                          value={quizForm.maxScaleScore === null ? "" : quizForm.maxScaleScore}
+                          onChange={(e) =>
+                            setQuizForm((prev) => ({
+                              ...prev,
+                              maxScaleScore: e.target.value ? Number(e.target.value) : null,
+                            }))
                           }
                         />
                       </div>
@@ -6036,7 +6085,7 @@ function DVETeacherWorkspace() {
         onCancel={() => setSelectedMobileStudent(null)}
         footer={null}
         centered
-        maskClosable={false}
+        mask={{ closable: false }}
         keyboard={false}
         width="100vw"
         style={{ top: 0, padding: 0, margin: 0, maxWidth: '100vw', height: '100vh', paddingBottom: 0 }}
@@ -6157,16 +6206,25 @@ function DVETeacherWorkspace() {
               </div>
 
               {/* Quiz Scores on Mobile */}
-              {(hasPretest || hasPosttest || pretestSub || posttestSub) && (
+              {activeUnitQuizzes.length > 0 && (
                 <div className="flex flex-col gap-2 text-[11px] font-bold text-zinc-500 mt-2 bg-zinc-150/45 dark:bg-zinc-900/40 p-3 rounded-xl border dark:border-zinc-800/80">
-                  <div className="flex items-center justify-between">
-                    <span>📝 ก่อนเรียน:</span>
-                    {pretestSub ? <span className="font-black text-blue-600 dark:text-blue-450 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded border border-blue-250 dark:border-blue-800/50">{pretestSub.score} / {pretestSub.maxScore}</span> : hasPretest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>📝 หลังเรียน:</span>
-                    {posttestSub ? <span className="font-black text-cyan-650 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-250 dark:border-cyan-800/50">{posttestSub.score} / {posttestSub.maxScore}</span> : hasPosttest ? <span className="text-zinc-400 italic">ยังไม่ทำ</span> : <span className="text-zinc-400 italic">ไม่มีแบบทดสอบ</span>}
-                  </div>
+                  {activeUnitQuizzes.map((quiz) => {
+                    const quizSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizId === quiz.id || s.quizType === quiz.quizType);
+                    return (
+                      <div key={quiz.id} className="flex items-center justify-between gap-2">
+                        <span className="truncate max-w-[150px]" title={quiz.title}>
+                          📝 {quiz.quizType === "pretest" ? "ก่อนเรียน" : quiz.quizType === "posttest" ? "หลังเรียน" : quiz.title}:
+                        </span>
+                        {quizSub ? (
+                          <span className="font-black text-blue-600 dark:text-blue-450 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded border border-blue-250 dark:border-blue-800/50">
+                            {quizSub.score} / {quizSub.maxScore}
+                          </span>
+                        ) : (
+                          <span className="text-zinc-400 italic">ยังไม่ทำ</span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 

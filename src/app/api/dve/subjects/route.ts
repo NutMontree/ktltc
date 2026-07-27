@@ -438,6 +438,9 @@ export async function DELETE(req: Request) {
     await db.collection("dve_units").deleteMany({ subjectId: id });
     await db.collection("dve_quizzes").deleteMany({ subjectId: id });
     await db.collection("dve_attendances").deleteMany({ subjectId: id });
+    await db.collection("dve_quiz_submissions").deleteMany({ subjectId: id });
+    await db.collection("dve_student_grades").deleteMany({ subjectId: id });
+    await db.collection("dve_grading_configs").deleteMany({ subjectId: id });
 
     return NextResponse.json({
       success: true,

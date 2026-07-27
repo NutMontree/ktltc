@@ -3854,23 +3854,32 @@ function FriendProfilePageContent({ id }: { id: string }) {
                   <label className="text-xs font-black text-zinc-500 uppercase">
                     แผนก / สังกัด
                   </label>
-                  <input
-                    list="departments-list"
-                    value={formData.department}
+                  <select
+                    value={formData.department || ""}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    placeholder="พิมพ์หรือเลือกแผนก..."
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                  <datalist id="departments-list">
-                    <option value="ไม่มีสังกัด" />
-                    <option value="ผู้บริหารสถานศึกษา" />
-                    {DEPARTMENT_GROUPS.flatMap((group) => group.options).map((opt) => (
-                      <option key={opt.value} value={opt.value} />
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 appearance-none"
+                  >
+                    <option value="" disabled>-- เลือกแผนก / สังกัด --</option>
+                    {DEPARTMENT_GROUPS.filter(g => g.label.includes("แผนกวิชา"))
+                      .flatMap(g => g.options)
+                      .map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label || opt.value}
+                        </option>
                     ))}
-                    {profileOptions.departments.map((opt) => (
-                      <option key={`db-${opt}`} value={opt} />
-                    ))}
-                  </datalist>
+                    {profileOptions.departments
+                      .filter(
+                        (opt) =>
+                          opt !== "ไม่มีสังกัด" &&
+                          opt !== "ผู้บริหารสถานศึกษา" &&
+                          !DEPARTMENT_GROUPS.flatMap((g) => g.options.map((o) => o.value)).includes(opt)
+                      )
+                      .map((opt) => (
+                        <option key={`db-${opt}`} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                  </select>
                 </div>
                 {!isStudent && (
                   <div className="space-y-1">

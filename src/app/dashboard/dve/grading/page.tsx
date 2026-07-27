@@ -229,6 +229,63 @@ export default function DVEGradingPage() {
     }
   };
 
+  const handleQuickScoreChange = (grade: StudentGrade, catId: string, value: string) => {
+    let val = Number(value);
+    if (isNaN(val)) return;
+
+    // Optional: clamp to max points
+    const cat = config?.categories.find((c) => c.id === catId);
+    if (cat && val > cat.points) val = cat.points;
+    if (val < 0) val = 0;
+
+    setStudentGrades((prev) =>
+      prev.map((g) => {
+        if (g.id === grade.id) {
+          const newScores = { ...g.scores, [catId]: val };
+          // Calculate new total
+          const totalScore = Object.values(newScores).reduce((a: number, b: any) => a + Number(b), 0);
+          const isPassed = totalScore >= (config?.passingScore || 50);
+          
+          let finalGrade = "0";
+          if (totalScore >= 80) finalGrade = "4";
+          else if (totalScore >= 75) finalGrade = "3.5";
+          else if (totalScore >= 70) finalGrade = "3";
+          else if (totalScore >= 65) finalGrade = "2.5";
+          else if (totalScore >= 60) finalGrade = "2";
+          else if (totalScore >= 55) finalGrade = "1.5";
+          else if (totalScore >= 50) finalGrade = "1";
+
+          return { ...g, scores: newScores, totalScore, isPassed, finalGrade };
+        }
+        return g;
+      })
+    );
+  };
+
+  const handleQuickScoreBlur = async (grade: StudentGrade) => {
+    // Only save if it's an existing grade record, not a new un-added one
+    if (!grade.id) return;
+    try {
+      const res = await fetch("/api/dve/student-grades", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: grade.id,
+          subjectId: selectedSubjectId,
+          studentId: grade.studentId,
+          studentName: grade.studentName,
+          scores: grade.scores,
+        }),
+      });
+      if (!res.ok) {
+        message.error("บันทึกคะแนนล้มเหลว");
+      }
+    } catch (error) {
+      console.error("Save score error:", error);
+      message.error("เกิดข้อผิดพลาดในการบันทึกคะแนน");
+    }
+  };
+
   const handleSaveGrade = async () => {
     if (!editingGrade && !newStudentName) {
       message.error("กรุณาระบุชื่อนักเรียน");
@@ -600,10 +657,21 @@ export default function DVEGradingPage() {
                       </td>
                       {config.categories.map((cat) => (
                         <td key={cat.id} className="px-6 py-4 whitespace-nowrap text-center">
-                          <p className="text-sm font-bold text-zinc-600 dark:text-zinc-400">
-                            <span className="text-blue-600 dark:text-blue-400">{grade.scores[cat.id] || 0}</span>
-                            <span className="opacity-50">/{cat.points}</span>
-                          </p>
+                          <div className="flex items-center justify-center gap-1 group/input">
+                            <input
+                              type="number"
+                              min="0"
+                              max={cat.points}
+                              className={`w-14 h-8 px-1 text-center text-sm font-bold bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:bg-blue-50 dark:focus:bg-blue-900/20 border border-transparent focus:border-blue-300 dark:focus:border-blue-700 rounded-lg focus:outline-none transition-colors custom-number-input ${
+                                grade.scores[cat.id] === 0 ? "text-rose-600 dark:text-rose-400" : "text-blue-600 dark:text-blue-400"
+                              }`}
+                              value={grade.scores[cat.id] === undefined ? "" : grade.scores[cat.id]}
+                              onChange={(e) => handleQuickScoreChange(grade, cat.id, e.target.value)}
+                              onBlur={() => handleQuickScoreBlur(grade)}
+                              placeholder="0"
+                            />
+                            <span className="text-sm font-bold text-zinc-400 opacity-50 group-hover/input:opacity-100 transition-opacity">/{cat.points}</span>
+                          </div>
                         </td>
                       ))}
                       <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -628,7 +696,7 @@ export default function DVEGradingPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="flex gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-2 justify-center transition-opacity">
                           <button
                             onClick={() => handleEditGrade(grade)}
                             className="p-2 hover:bg-sky-100 dark:hover:bg-zinc-600 rounded-lg transition-colors border-0 cursor-pointer"

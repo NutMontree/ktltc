@@ -37,7 +37,7 @@ function standardizeClassGroupName(name: string): string {
 }
 
 // Helpers to grade the quiz answers
-function gradeQuiz(questions: any[], answers: any[]): { score: number; maxScore: number } {
+function gradeQuiz(questions: any[], answers: any[], quizScaleScore?: number): { score: number; maxScore: number } {
   let totalScore = 0;
   let totalMaxScore = 0;
 
@@ -81,6 +81,11 @@ function gradeQuiz(questions: any[], answers: any[]): { score: number; maxScore:
     }
   }
 
+  if (quizScaleScore && quizScaleScore > 0 && totalMaxScore > 0) {
+    const scaleScore = (totalScore / totalMaxScore) * quizScaleScore;
+    return { score: Number(scaleScore.toFixed(2)), maxScore: quizScaleScore };
+  }
+
   return { score: totalScore, maxScore: totalMaxScore };
 }
 
@@ -113,7 +118,7 @@ export async function POST(req: Request) {
     let maxScore = 0;
     const hasAnswers = Array.isArray(answers) && answers.length > 0;
     if (hasAnswers) {
-      const graded = gradeQuiz(quiz.questions || [], answers);
+      const graded = gradeQuiz(quiz.questions || [], answers, quiz.maxScaleScore);
       score = graded.score;
       maxScore = graded.maxScore;
     }
@@ -243,6 +248,74 @@ export async function POST(req: Request) {
         createdAt: new Date(),
         updatedAt: new Date()
       });
+    }
+
+    // Sync with student grades if it's midterm or final
+    if (quiz.quizType === "midterm" || quiz.quizType === "final") {
+      const gradingConfig = await db.collection("dve_grading_configs").findOne({ subjectId: subjectId });
+      if (gradingConfig && gradingConfig.categories) {
+        const catNameMatch = quiz.quizType === "midterm" ? "สอบกลางภาค" : "สอบปลายภาค";
+        const category = gradingConfig.categories.find((c: any) => 
+          c.name.includes(catNameMatch) || 
+          (quiz.quizType === "midterm" && c.id === "midterm_exam") || 
+          (quiz.quizType === "final" && c.id === "final_exam")
+        );
+        
+        if (category && maxScoreVal > 0) {
+          const scaledScore = Math.round((scoreVal / maxScoreVal) * category.points);
+          
+          const existingGrade = await db.collection("dve_student_grades").findOne({
+            studentId: userId,
+            subjectId: subjectId
+          });
+
+          if (existingGrade) {
+            const newScores = { ...existingGrade.scores, [category.id]: scaledScore };
+            const totalScore = Object.values(newScores).reduce((sum: number, val: any) => sum + (Number(val) || 0), 0);
+            const isPassed = totalScore >= (gradingConfig.passingScore || 50);
+            
+            let finalGrade = "0";
+            if (totalScore >= 80) finalGrade = "4";
+            else if (totalScore >= 75) finalGrade = "3.5";
+            else if (totalScore >= 70) finalGrade = "3";
+            else if (totalScore >= 65) finalGrade = "2.5";
+            else if (totalScore >= 60) finalGrade = "2";
+            else if (totalScore >= 55) finalGrade = "1.5";
+            else if (totalScore >= 50) finalGrade = "1";
+
+            await db.collection("dve_student_grades").updateOne(
+              { _id: existingGrade._id },
+              { $set: { scores: newScores, totalScore, isPassed, finalGrade, updatedAt: new Date() } }
+            );
+          } else {
+            const newScores = { [category.id]: scaledScore };
+            const totalScore = scaledScore;
+            const isPassed = totalScore >= (gradingConfig.passingScore || 50);
+            
+            let finalGrade = "0";
+            if (totalScore >= 80) finalGrade = "4";
+            else if (totalScore >= 75) finalGrade = "3.5";
+            else if (totalScore >= 70) finalGrade = "3";
+            else if (totalScore >= 65) finalGrade = "2.5";
+            else if (totalScore >= 60) finalGrade = "2";
+            else if (totalScore >= 55) finalGrade = "1.5";
+            else if (totalScore >= 50) finalGrade = "1";
+
+            await db.collection("dve_student_grades").insertOne({
+              studentId: userId,
+              studentName: userName,
+              subjectId: subjectId,
+              classGroupId,
+              scores: newScores,
+              totalScore,
+              finalGrade,
+              isPassed,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+          }
+        }
+      }
     }
 
     return NextResponse.json({
@@ -402,7 +475,7 @@ export async function PATCH(req: Request) {
     });
 
     // Re-calculate the score using the updated answers
-    const { score, maxScore } = gradeQuiz(quiz.questions || [], updatedAnswers);
+    const { score, maxScore } = gradeQuiz(quiz.questions || [], updatedAnswers, quiz.maxScaleScore);
 
     // Update submission in database
     await db.collection("dve_quiz_submissions").updateOne(

@@ -729,18 +729,6 @@ export default function NavbarClient({
                               คลังไฟล์งาน (Drive)
                             </Link>
                           )}
-                          {(role?.toLowerCase() === "student" || isSuperAdmin) && (
-                            <Link
-                              href="/student/flagpole"
-                              onClick={() => setIsUserDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
-                                <Clock size={16} />
-                              </div>
-                              เช็คชื่อเข้าแถว
-                            </Link>
-                          )}
 
                           {(permissions?.access_dve_teacher ||
                             isSuperAdmin ||
@@ -756,33 +744,6 @@ export default function NavbarClient({
                                 ศูนย์ฝึกทวีภาคี (DVE Portal)
                               </Link>
                             )}
-
-                          {(permissions?.access_teacher_dashboard ?? isSuperAdmin) && (
-                            <Link
-                              href="/teacher-dashboard"
-                              onClick={() => setIsUserDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-violet-700 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-violet-100 dark:bg-violet-900/30 group-hover:bg-violet-200 dark:group-hover:bg-violet-900/50 transition-colors shadow-sm">
-                                <BarChart2 size={16} />
-                              </div>
-                              แดชบอร์ดผู้บริหาร (ติดตามงานครู)
-                            </Link>
-                          )}
-                          {(permissions?.access_teacher_verification ?? isSuperAdmin) && (
-                            <Link
-                              href="/teacher-verification"
-                              onClick={() => setIsUserDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-teal-100 dark:bg-teal-900/30 group-hover:bg-teal-200 dark:group-hover:bg-teal-900/50 transition-colors shadow-sm">
-                                <CalendarCheck size={16} />
-                              </div>
-                              ตรวจสอบการจัดการเรียนการสอนครู
-                            </Link>
-                          )}
-
-
                         </div>
                       </div>
                     </div>
