@@ -559,6 +559,27 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                             />
                           </div>
                         </div>
+
+                        {/* Citizen ID */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                            เลขประจำตัวประชาชน (Citizen ID)
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                              <UserIcon size={16} />
+                            </span>
+                            <input
+                              type="text"
+                              name="citizenId"
+                              value={formData.citizenId}
+                              onChange={handleInputChange}
+                              placeholder="กรอกเลขบัตรประชาชน 13 หลัก..."
+                              maxLength={13}
+                              className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -723,25 +744,6 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                               </div>
                             </div>
 
-                            {/* Citizen ID */}
-                            <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                                เลขประจำตัวประชาชน (Citizen ID)
-                              </label>
-                              <div className="relative">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                  <UserIcon size={16} />
-                                </span>
-                                <input
-                                  type="text"
-                                  name="citizenId"
-                                  value={formData.citizenId}
-                                  onChange={handleInputChange}
-                                  placeholder="กรอกเลขบัตรประชาชน 13 หลัก..."
-                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                                />
-                              </div>
-                            </div>
 
                             {/* Class Group ID */}
                             <div className="space-y-2">

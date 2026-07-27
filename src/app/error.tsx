@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import FuzzyText from "@/components/ui/FuzzyText";
 
 const AUTO_REFRESH_SECONDS = 5;
 
@@ -32,13 +33,13 @@ export default function Error({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
-      <div className="bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900/30 rounded-3xl p-10 max-w-md w-full shadow-2xl shadow-red-500/5">
+      <div className="dark:bg-slate-900 border border-red-100 rounded-3xl p-10 max-w-md w-full shadow-2xl shadow-red-500/5">
         {/* ไอคอน */}
         <div className="relative w-20 h-20 mx-auto mb-6">
-          <div className="absolute inset-0 rounded-full bg-red-50 dark:bg-red-950/40 animate-ping opacity-30" />
-          <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900/50">
+          <div className="absolute inset-0 rounded-full bg-red-50 animate-ping opacity-30" />
+          <div className="relative flex items-center justify-center w-20 h-20 rounded-full dark:bg-red-950/40 border border-red-100">
             <svg
-              className="w-9 h-9 text-red-500 dark:text-red-400"
+              className="w-9 h-9 text-red-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -53,10 +54,22 @@ export default function Error({
           </div>
         </div>
 
-        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+        <div className="mb-2 w-full flex justify-center">
+          <FuzzyText 
+            baseIntensity={0.2} 
+            hoverIntensity={0.5} 
+            enableHover={true}
+            fontSize="clamp(2rem, 5vw, 3rem)"
+            color="currentColor"
+            className="text-slate-800 font-bold"
+          >
+            500 Error
+          </FuzzyText>
+        </div>
+        <h2 className="text-lg font-bold text-slate-800 mb-2">
           เซิร์ฟเวอร์หรือฐานข้อมูลขัดข้อง
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed">
+        <p className="text-slate-500 text-sm mb-8 leading-relaxed">
           ระบบไม่สามารถเชื่อมต่อฐานข้อมูลได้ในขณะนี้
           <br />
           อาจเกิดจากเครือข่ายหรือเซิร์ฟเวอร์ไม่พร้อม
@@ -73,7 +86,7 @@ export default function Error({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="4"
-                className="text-slate-100 dark:text-slate-800"
+                className="text-slate-100"
               />
               <circle
                 cx="32"
@@ -88,7 +101,7 @@ export default function Error({
                 strokeDashoffset={`${2 * Math.PI * 28 * (1 - countdown / AUTO_REFRESH_SECONDS)}`}
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-teal-600 dark:text-teal-400">
+            <span className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-teal-600">
               {countdown}
             </span>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ShieldAlert, ArrowLeft, Home } from "lucide-react";
+import FuzzyText from "@/components/ui/FuzzyText";
 
 const AUTO_REDIRECT_SECONDS = 5;
 
@@ -30,7 +31,18 @@ export default function NotFound() {
       >
         <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full animate-pulse"></div>
         <div className="relative w-32 h-32 md:w-40 md:h-40 bg-white dark:bg-zinc-900 rounded-[3rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden">
-           <span className="text-8xl md:text-9xl font-black text-zinc-100 dark:text-zinc-800 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">404</span>
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none z-0 opacity-20 dark:opacity-40">
+             <FuzzyText 
+               baseIntensity={0.2} 
+               hoverIntensity={0.5} 
+               enableHover={true}
+               fontSize="clamp(4rem, 10vw, 8rem)"
+               color="currentColor"
+               className="text-zinc-400 dark:text-zinc-500 font-black"
+             >
+               404
+             </FuzzyText>
+           </div>
            <ShieldAlert size={64} className="text-blue-600 relative z-10" />
         </div>
       </motion.div>

@@ -3664,6 +3664,21 @@ function FriendProfilePageContent({ id }: { id: string }) {
                   />
                 </div>
               </div>
+
+              {/* รหัสบัตรประชาชน */}
+              <div className="space-y-1">
+                <label className="text-xs font-black text-zinc-500 uppercase">
+                  รหัสบัตรประจำตัวประชาชน (13 หลัก)
+                </label>
+                <input
+                  value={formData.citizenId || ""}
+                  onChange={(e) => setFormData({ ...formData, citizenId: e.target.value })}
+                  placeholder="เช่น 1234567890123"
+                  maxLength={13}
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
               {isStudent && (
                 <div className="space-y-4">
                   {/* หัวข้อ */}
@@ -3671,20 +3686,6 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
                       <SafetyCertificateOutlined /> ข้อมูลนักเรียน/นักศึกษา
                     </h4>
-                  </div>
-
-                  {/* รหัสบัตรประชาชน */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">
-                      รหัสบัตรประจำตัวประชาชน (13 หลัก)
-                    </label>
-                    <input
-                      value={formData.citizenId || ""}
-                      onChange={(e) => setFormData({ ...formData, citizenId: e.target.value })}
-                      placeholder="เช่น 1234567890123"
-                      maxLength={13}
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
                   </div>
 
                   {/* รหัสนักศึกษา + ชื่อห้องเรียน */}
