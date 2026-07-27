@@ -107,6 +107,8 @@ export default function StudentCarePage() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(30);
+  const [filterSdqType, setFilterSdqType] = useState<string | null>(null);
 
   const formatStudentName = (name: string, gender: string) => {
     if (!name) return "";
@@ -479,6 +481,7 @@ export default function StudentCarePage() {
     if ((r.recordType || 'screening') !== viewTab) return false;
     if (filterDepartment && r.department !== filterDepartment) return false;
     if (filterClassroom && r.classroom !== filterClassroom) return false;
+    if (filterSdqType && r.sdqType !== filterSdqType) return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -860,19 +863,19 @@ export default function StudentCarePage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-emerald-50/50 hover:bg-emerald-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
+                  <div onClick={() => setFilterSdqType(filterSdqType === 'normal' ? null : 'normal')} className={`cursor-pointer p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${filterSdqType === 'normal' ? 'bg-emerald-100 dark:bg-emerald-900/50 border-emerald-500 shadow-emerald-500/20' : 'bg-emerald-50/50 hover:bg-emerald-50 dark:bg-zinc-900/50 border-emerald-100 dark:border-emerald-900/30 hover:shadow-emerald-500/10'}`}>
                     <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>กลุ่มปกติ</p>
                     <p className="text-3xl font-black text-emerald-900 dark:text-emerald-100">{sdqCounts.normal} <span className="text-sm font-bold text-emerald-600/50">คน</span></p>
                   </div>
-                  <div className="bg-blue-50/50 hover:bg-blue-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-blue-100 dark:border-blue-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300">
+                  <div onClick={() => setFilterSdqType(filterSdqType === 'special' ? null : 'special')} className={`cursor-pointer p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${filterSdqType === 'special' ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-500 shadow-blue-500/20' : 'bg-blue-50/50 hover:bg-blue-50 dark:bg-zinc-900/50 border-blue-100 dark:border-blue-900/30 hover:shadow-blue-500/10'}`}>
                     <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span>กลุ่มพิเศษ</p>
                     <p className="text-3xl font-black text-blue-900 dark:text-blue-100">{sdqCounts.special} <span className="text-sm font-bold text-blue-600/50">คน</span></p>
                   </div>
-                  <div className="bg-amber-50/50 hover:bg-amber-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-amber-100 dark:border-amber-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300">
+                  <div onClick={() => setFilterSdqType(filterSdqType === 'risk' ? null : 'risk')} className={`cursor-pointer p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${filterSdqType === 'risk' ? 'bg-amber-100 dark:bg-amber-900/50 border-amber-500 shadow-amber-500/20' : 'bg-amber-50/50 hover:bg-amber-50 dark:bg-zinc-900/50 border-amber-100 dark:border-amber-900/30 hover:shadow-amber-500/10'}`}>
                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span>กลุ่มเสี่ยง</p>
                     <p className="text-3xl font-black text-amber-900 dark:text-amber-100">{sdqCounts.risk} <span className="text-sm font-bold text-amber-600/50">คน</span></p>
                   </div>
-                  <div className="bg-rose-50/50 hover:bg-rose-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-rose-100 dark:border-rose-900/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300">
+                  <div onClick={() => setFilterSdqType(filterSdqType === 'problem' ? null : 'problem')} className={`cursor-pointer p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${filterSdqType === 'problem' ? 'bg-rose-100 dark:bg-rose-900/50 border-rose-500 shadow-rose-500/20' : 'bg-rose-50/50 hover:bg-rose-50 dark:bg-zinc-900/50 border-rose-100 dark:border-rose-900/30 hover:shadow-rose-500/10'}`}>
                     <p className="text-xs font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span>กลุ่มมีปัญหา</p>
                     <p className="text-3xl font-black text-rose-900 dark:text-rose-100">{sdqCounts.problem} <span className="text-sm font-bold text-rose-600/50">คน</span></p>
                   </div>
@@ -1146,7 +1149,7 @@ export default function StudentCarePage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {displayedRecords.map((r: any) => (
+                      {displayedRecords.slice(0, displayLimit).map((r: any) => (
                         <tr key={r._id} onClick={() => { setViewRecord(r); setCurrentImageIndex(0); }} className="border-b border-slate-100 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors group">
                           <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">
                             {new Date(r.visitDate || r.createdAt).toLocaleDateString('th-TH')}
@@ -1189,7 +1192,7 @@ export default function StudentCarePage() {
                     </tbody>
                   </table>
                 ) : (
-                  displayedRecords.map((r: any) => (
+                  displayedRecords.slice(0, displayLimit).map((r: any) => (
                     <div key={r._id} onClick={() => { setViewRecord(r); setCurrentImageIndex(0); }} className={`cursor-pointer bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group hover:border-teal-300 dark:hover:border-teal-700/50 ${viewMode === 'list' ? 'flex flex-row h-48' : 'flex flex-col'}`}>
 
                       {/* Status Badge */}
@@ -1209,7 +1212,7 @@ export default function StudentCarePage() {
                       <div className={`${viewMode === 'list' ? 'w-48 shrink-0 h-full' : 'h-40'} bg-slate-100 dark:bg-zinc-900 relative`}>
                         {(r.imageUrls && r.imageUrls.length > 0) ? (
                           <>
-                            <img src={r.imageUrls[0]} alt="Record Image" className="w-full h-full object-cover" />
+                            <img src={r.imageUrls[0]} alt="Record Image" className="w-full h-full object-contain" />
                             {r.imageUrls.length > 1 && (
                               <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1">
                                 <ImageIcon size={10} /> +{r.imageUrls.length - 1} รูป
@@ -1217,9 +1220,9 @@ export default function StudentCarePage() {
                             )}
                           </>
                         ) : r.imageUrl ? (
-                          <img src={r.imageUrl} alt="Record Image" className="w-full h-full object-cover" />
+                          <img src={r.imageUrl} alt="Record Image" className="w-full h-full object-contain" />
                         ) : r.studentProfileImage ? (
-                          <img src={r.studentProfileImage} alt="Profile Image" className="w-full h-full object-cover" />
+                          <img src={r.studentProfileImage} alt="Profile Image" className="w-full h-full object-contain" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
                             {r.recordType === 'home_visit' ? <Camera size={32} /> : <ShieldCheck size={32} />}
@@ -1291,8 +1294,16 @@ export default function StudentCarePage() {
               </div>
             )}
 
-
-
+            {!showAdd && displayedRecords.length > displayLimit && (
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={() => setDisplayLimit(prev => prev + 30)}
+                  className="px-6 py-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                >
+                  แสดงเพิ่มอีก 30 รายการ ({displayLimit} / {displayedRecords.length})
+                </button>
+              </div>
+            )}
 
             {/* SDQ Assessment Modal */}
             {showSDQModal && (
@@ -1519,65 +1530,66 @@ export default function StudentCarePage() {
             {/* Modal Header/Images */}
             <div className="bg-slate-100 dark:bg-zinc-950 print:bg-white relative rounded-t-3xl print:rounded-none overflow-hidden print:overflow-visible group/img">
               <div className="h-64 hidden-in-print w-full relative">
-                <div className="w-full h-full relative cursor-pointer" onClick={() => setFullscreenImage(viewRecord.imageUrls[currentImageIndex])}>
-                  <img src={viewRecord.imageUrls[currentImageIndex] || undefined} alt={`Record Image ${currentImageIndex + 1}`} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
+                {(viewRecord.imageUrls && viewRecord.imageUrls.length > 0) ? (
+                  <div className="w-full h-full relative cursor-pointer" onClick={() => setFullscreenImage(viewRecord.imageUrls[currentImageIndex])}>
+                    <img src={viewRecord.imageUrls[currentImageIndex] || undefined} alt={`Record Image ${currentImageIndex + 1}`} className="w-full h-full object-contain transition-transform hover:scale-105 duration-500" />
 
-                  <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
-                    ขยายเต็มจอ
+                    <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
+                      ขยายเต็มจอ
+                    </div>
+
+                    {viewRecord.imageUrls.length > 1 && (
+                      <>
+                        <div className="no-print print:hidden absolute top-4 right-14 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
+                          <ImageIcon size={14} /> รูปที่ {currentImageIndex + 1} / {viewRecord.imageUrls.length}
+                        </div>
+
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCurrentImageIndex((prev: number) => prev === 0 ? viewRecord.imageUrls.length - 1 : prev - 1);
+                          }}
+                          className="no-print print:hidden absolute left-2 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm shadow-xl z-20"
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCurrentImageIndex((prev: number) => prev === viewRecord.imageUrls.length - 1 ? 0 : prev + 1);
+                          }}
+                          className="no-print print:hidden absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm shadow-xl z-20"
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                        </button>
+                      </>
+                    )}
                   </div>
-
-                  {viewRecord.imageUrls.length > 1 && (
-                    <>
-                      <div className="no-print print:hidden absolute top-4 right-14 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
-                        <ImageIcon size={14} /> รูปที่ {currentImageIndex + 1} / {viewRecord.imageUrls.length}
-                      </div>
-
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setCurrentImageIndex((prev: number) => prev === 0 ? viewRecord.imageUrls.length - 1 : prev - 1);
-                        }}
-                        className="no-print print:hidden absolute left-2 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm shadow-xl z-20"
-                      >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                      </button>
-
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setCurrentImageIndex((prev: number) => prev === viewRecord.imageUrls.length - 1 ? 0 : prev + 1);
-                        }}
-                        className="no-print print:hidden absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm shadow-xl z-20"
-                      >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                      </button>
-                    </>
-                  )}
-                </div>
                 ) : viewRecord.imageUrl ? (
-                <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.imageUrl)}>
-                  <img src={viewRecord.imageUrl || undefined} alt="Record Image" className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
-                  <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
-                    ขยายเต็มจอ
+                  <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.imageUrl)}>
+                    <img src={viewRecord.imageUrl || undefined} alt="Record Image" className="w-full h-full object-contain transition-transform hover:scale-105 duration-500" />
+                    <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
+                      ขยายเต็มจอ
+                    </div>
                   </div>
-                </div>
                 ) : viewRecord.studentProfileImage ? (
-                <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.studentProfileImage)}>
-                  <img src={viewRecord.studentProfileImage || undefined} alt="Profile Image" className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
-                  <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
-                    ขยายเต็มจอ
+                  <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.studentProfileImage)}>
+                    <img src={viewRecord.studentProfileImage || undefined} alt="Profile Image" className="w-full h-full object-contain transition-transform hover:scale-105 duration-500" />
+                    <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
+                      ขยายเต็มจอ
+                    </div>
                   </div>
-                </div>
                 ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
-                  {viewRecord.recordType === 'home_visit' ? <Camera size={64} /> : <ShieldCheck size={64} />}
-                </div>
-                )
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
+                    {viewRecord.recordType === 'home_visit' ? <Camera size={64} /> : <ShieldCheck size={64} />}
+                  </div>
+                )}
               </div>
 
               <div className="hidden print:block text-center font-bold mb-6 print:mt-12 print-title">
@@ -1611,7 +1623,7 @@ export default function StudentCarePage() {
                   {(viewRecord.imageUrls?.[0] || viewRecord.imageUrl || viewRecord.studentProfileImage) ? (
                     <img
                       src={viewRecord.imageUrls?.[0] || viewRecord.imageUrl || viewRecord.studentProfileImage}
-                      className="w-[3.5cm] h-[4.5cm] object-cover border border-slate-300 rounded-md bg-white p-1"
+                      className="w-[3.5cm] h-[4.5cm] object-contain border border-slate-300 rounded-md bg-white p-1"
                       alt="Student"
                     />
                   ) : (
