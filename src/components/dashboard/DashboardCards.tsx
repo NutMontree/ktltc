@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight, Settings } from "lucide-react";
 import { useDashboard } from "./DashboardContext";
+import GlassSurface from "@/components/ui/GlassSurface";
 
 export function StatCard({ label, value, icon: Icon, color, unit, variants, onClick }: any) {
   const colors: any = {
@@ -28,7 +29,7 @@ export function StatCard({ label, value, icon: Icon, color, unit, variants, onCl
     <motion.div
       variants={variants}
       onClick={onClick}
-      className={`group relative p-6 rounded-[2.5rem] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-2 border-zinc-100 dark:border-zinc-800 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-500/30 ${glows[color]} ${onClick ? "cursor-pointer" : ""}`}
+      className={`group relative p-6 rounded-[2.5rem] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border-2 border-white/50 dark:border-zinc-800/50 shadow-lg transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-500/30 ${glows[color]} ${onClick ? "cursor-pointer" : ""}`}
     >
       <div className="flex justify-between items-start mb-5">
         <div
@@ -83,7 +84,7 @@ export function UsageCard({
   return (
     <motion.div
       variants={variants}
-      className="group relative p-6 rounded-[3rem] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:shadow-2xl hover:border-blue-500/30 overflow-hidden"
+      className="group relative p-6 rounded-[3rem] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border-2 border-white/50 dark:border-zinc-800/50 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:shadow-2xl hover:border-blue-500/30 overflow-hidden"
     >
       <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
         <Icon size={120} strokeWidth={1} />

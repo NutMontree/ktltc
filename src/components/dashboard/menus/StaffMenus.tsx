@@ -1,4 +1,4 @@
-import { ActionCard } from "@/components/dashboard/DashboardCards";
+﻿import { ActionCard } from "@/components/dashboard/DashboardCards";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -38,7 +38,7 @@ export default function StaffMenus({ permissions, customMenus, item, userRole, h
             </span>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
             {permissions?.manage_drive && (
               <ActionCard
                 href="/dashboard/drive"

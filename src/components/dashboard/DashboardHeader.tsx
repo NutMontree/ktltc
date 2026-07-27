@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { User, Activity, LayoutDashboard, ExternalLink } from "lucide-react";
+import GlassSurface from "@/components/ui/GlassSurface";
 
 /**
  * DashboardHeader.tsx (Client Component): ส่วนหัวของหน้า Dashboard
@@ -82,9 +83,14 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
 
         {/* ส่วนขวา: การ์ดโปรไฟล์ผู้ใช้ */}
         <motion.div variants={itemVariants} className="w-full lg:w-auto flex items-center gap-4">
-          
-          <div className="group relative p-px rounded-4xl bg-linear-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700 hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-xl shadow-zinc-200/50 dark:shadow-none">
-            <div className="relative flex items-center gap-5 p-5 rounded-[1.95rem] bg-white dark:bg-zinc-950 group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95 transition-colors">
+          <GlassSurface
+            width="100%"
+            height="100%"
+            borderRadius={32}
+            className="group relative"
+            backgroundOpacity={0.05}
+          >
+            <div className="relative flex items-center gap-5 p-5 rounded-[1.95rem] bg-white/60 dark:bg-zinc-950/60 group-hover:bg-white/80 dark:group-hover:bg-zinc-950/80 transition-colors backdrop-blur-md">
               
               {/* รูปโปรไฟล์ */}
               <div className="relative shrink-0">
@@ -129,7 +135,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
                 <ExternalLink className="w-5 h-5" />
               </Link>
             </div>
-          </div>
+          </GlassSurface>
         </motion.div>
       </div>
     </motion.div>
