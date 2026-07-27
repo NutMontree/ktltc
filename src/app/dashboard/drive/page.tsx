@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { uploadFile } from "@/lib/upload";
 import { motion, AnimatePresence } from "framer-motion";
+import UiFolder from "@/components/ui/Folder";
 
 import { SelectionArea, SelectionEvent } from "@viselect/react";
 
@@ -1042,20 +1043,14 @@ function DriveContent() {
               onClick={() => !isSelectionMode && handleFolderClick(folder)}
             >
               <div
-                className={`relative rounded-[24px] flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 ${
-                  folder.isCollaborative
-                    ? "bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
-                    : "bg-linear-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20"
-                } ${viewMode === "grid" ? "h-24 w-24" : "h-12 w-12"}`}
+                className={`relative flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 ${viewMode === "grid" ? "h-24 w-24" : "h-12 w-12"}`}
               >
-                <Folder
-                  size={viewMode === "grid" ? 44 : 24}
-                  fill="currentColor"
-                  fillOpacity={0.3}
-                  strokeWidth={2}
+                <UiFolder 
+                  color={folder.isCollaborative ? "#f59e0b" : "#3b82f6"} 
+                  size={viewMode === "grid" ? 0.9 : 0.5} 
                 />
                 {folder.isCollaborative && (
-                  <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 p-1.5 rounded-full shadow-lg border border-slate-100 dark:border-zinc-700">
+                  <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 p-1.5 rounded-full shadow-lg border border-slate-100 dark:border-zinc-700 z-10">
                     <Share2 size={12} className="text-amber-500" strokeWidth={3} />
                   </div>
                 )}
