@@ -11,7 +11,7 @@ export async function GET() {
     const users = await db
       .collection("users")
       .find({ isActive: true })
-      .project({ _id: 1, name: 1, username: 1, role: 1, position: 1, department: 1, orderIndex: 1, image: 1 }) 
+      .project({ _id: 1, name: 1, username: 1, role: 1, position: 1, department: 1, orderIndex: 1, image: 1, phone: 1, email: 1, lineId: 1, description: 1, positionNumber: 1, affiliation: 1, faction: 1, respDeptHead: 1, respWorkHead: 1, respOther: 1 })
       .toArray();
 
     // ลำดับสิทธิ์การเข้าถึง (เรียงจากระดับบริหารลงมา)
