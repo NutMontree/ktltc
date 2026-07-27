@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
@@ -58,6 +59,7 @@ export async function POST(req: Request) {
 
     const result = await db.collection("custom_menus").insertOne(newMenu);
     
+    // @ts-ignore`n    revalidateTag("admin-menus-cache");
     return NextResponse.json({ success: true, menu: { ...newMenu, _id: result.insertedId } });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -98,6 +100,7 @@ export async function PATCH(req: Request) {
       }
     );
     
+    // @ts-ignore`n    revalidateTag("admin-menus-cache");
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -134,6 +137,7 @@ export async function DELETE(req: Request) {
     
     await db.collection("custom_menus").deleteOne({ _id: new ObjectId(id) });
     
+    // @ts-ignore`n    revalidateTag("admin-menus-cache");
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
