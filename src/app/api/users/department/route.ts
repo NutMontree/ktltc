@@ -56,8 +56,8 @@ export async function GET(req: Request) {
          
          const checkMatch = (val: string) => {
             if (!val) return false;
-            // ถ้าข้อมูลของ user มีคำว่า "งาน" (เช่น "งานการบัญชี") แปลว่าเป็นฝั่งบริหาร (Staff) ไม่ใช่ครู!
-            if (val.includes("งาน")) return false;
+            // ถ้าข้อมูลของ user มีคำว่า "งาน" นำหน้า (เช่น "งานการบัญชี") แปลว่าเป็นฝั่งบริหาร (Staff) ไม่ใช่ครู!
+            if (val.startsWith("งาน")) return false;
             // ถ้าไม่มีคำว่า "งาน" และมีคำหลัก (coreSubject) ถือว่าแมตช์
             return val.includes(coreSubject);
          };
