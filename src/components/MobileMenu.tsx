@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -170,7 +171,8 @@ export default function MobileMenu({
         <Menu className="w-5 h-5" />
       </button>
 
-      <AnimatePresence>
+      {mounted && typeof document !== "undefined" ? createPortal(
+        <AnimatePresence>
         {isOpen && (
           <>
             {/* ฉากหลังสีดำจางๆ (Overlay) */}
@@ -327,7 +329,9 @@ export default function MobileMenu({
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      ) : null}
     </div>
   );
 }

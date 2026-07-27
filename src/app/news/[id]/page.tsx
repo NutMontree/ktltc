@@ -2,7 +2,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import Link from "next/link";
 import { th } from "date-fns/locale";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "isomorphic-dompurify"; // REMOVED DUE TO BUILD ERROR
 import Image from "next/image";
 import { FootTitle } from "@/components/FootTitle";
 import NewsShareBar from "@/components/news/NewsShareBar";
@@ -406,7 +406,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
               prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-zinc-900 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
               [&_a]:text-blue-600! [&_a]:underline! [&_a]:break-all! hover:[&_a]:text-blue-800!"
             >
-              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news.content || "") }} />
+              <div dangerouslySetInnerHTML={{ __html: news.content || "" }} />
             </article>
 
             <div className="py-4">
@@ -429,7 +429,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                       key={index}
                       className="aspect-video w-full rounded-2xl overflow-hidden shadow-lg bg-black border border-slate-200 dark:border-zinc-800 [&>iframe]:w-full [&>iframe]:h-full"
                       dangerouslySetInnerHTML={{ 
-                        __html: DOMPurify.sanitize(embedCode, { ADD_TAGS: ['iframe'], ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src'] }) 
+                        __html: embedCode 
                       }}
                     />
                 ))}

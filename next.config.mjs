@@ -112,7 +112,7 @@ const nextConfig = {
     "*": ["public/images/**/*", "public/pdf/**/*", "public/uploads/**/*"],
   },
 
-  serverExternalPackages: ["sharp", "mongodb", "tesseract.js"],
+  serverExternalPackages: ["sharp", "mongodb", "tesseract.js", "isomorphic-dompurify", "jsdom"],
 
   images: {
     unoptimized: false,

@@ -66,6 +66,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
+import GlassSurface from "./ui/GlassSurface";
 
 /**
  * getMenuIcon: คืนค่า Lucide Icon component ที่สอดคล้องกับชื่อเมนู
@@ -387,12 +388,15 @@ export default function NavbarClient({
       className={`fixed top-0 left-0 right-0 z-9999 transition-[padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 min-[1381px]:px-2" : ""}`}
     >
       <nav
-        className={`w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
-          ? "bg-white dark:bg-zinc-950 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 min-[1381px]:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
-          : "py-3 px-4 min-[1381px]:px-6 bg-white dark:bg-zinc-950 border border-transparent"
+        className={`relative w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
+          ? "bg-white/60 dark:bg-zinc-950/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 min-[1381px]:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
+          : "py-3 px-4 min-[1381px]:px-6 bg-white/80 dark:bg-zinc-950/80 border border-transparent"
           }`}
       >
-        <div className="flex items-center justify-between gap-4">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-inherit">
+          <GlassSurface width="100%" height="100%" borderRadius={isScrolled ? 24 : 0} />
+        </div>
+        <div className="relative z-10 flex items-center justify-between gap-4">
           {/* --- 1. LOGO & BRANDING --- */}
           <Link href="/" className="flex items-center gap-3 shrink-0 group outline-none">
             <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">

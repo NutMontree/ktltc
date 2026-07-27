@@ -1,5 +1,6 @@
 {
   "tailwindCSS.lint.unknownClasses": "ignore",
+  "tailwindCSS.lint.cssConflict": "ignore",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
