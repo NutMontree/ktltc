@@ -390,6 +390,8 @@ function CheckInContent() {
             setCameraError("");
             // Explicitly call play to handle some browser restrictions
             await videoRef.current.play().catch(e => console.error("Play error:", e));
+            // Trigger face recognition
+            loadFaceApiAndProfile();
           }
           
           // Trigger GPS after camera is confirmed working
@@ -439,8 +441,7 @@ function CheckInContent() {
 
   // ตรวจสอบว่าสามารถลงเวลาได้หรือไม่
   const canSubmit = () => {
-    // ปิดการตรวจสอบใบหน้าชั่วคราว (Disabled Face Check)
-    return !!location && !isProcessing;
+    return !!location && locationStatus === "found" && !isProcessing && faceStatus === "matched";
   };
 
   const submitAttendance = async () => {
@@ -499,7 +500,7 @@ function CheckInContent() {
         photoUrl: cloudinaryUrl,
         deviceId: "device-12345",
         address: "Location Address",
-        faceVerified: true, // Face check disabled by user request
+        faceVerified: faceStatus === "matched", // Require face check
       };
 
       const endpoint = isCheckIn
@@ -598,9 +599,8 @@ function CheckInContent() {
   const submitDisabled =
     isProcessing ||
     !location ||
-    faceStatus === "not_matched" ||
-    faceStatus === "loading_models" ||
-    faceStatus === "loading_profile";
+    locationStatus !== "found" ||
+    faceStatus !== "matched";
 
   const theme = isCheckIn
     ? {
