@@ -370,62 +370,44 @@ function CheckInContent() {
     );
   };
 
-  // Improved Camera Initialization using useEffect to ensure video element is ready
-  useEffect(() => {
-    let stream: MediaStream | null = null;
-
-    const startCamera = async () => {
-      if (isCameraOpen && videoRef.current) {
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { 
-              facingMode: "user",
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            },
-          });
-          
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            setCameraError("");
-            // Explicitly call play to handle some browser restrictions
-            await videoRef.current.play().catch(e => console.error("Play error:", e));
-            // Trigger face recognition
-            loadFaceApiAndProfile();
-          }
-          
-          // Trigger GPS after camera is confirmed working
-          getLocation(true);
-        } catch (err: any) {
-          console.error("Camera Error:", err);
-          let errorMsg = "ไม่พบกล้องหรือไม่สามารถเข้าถึงได้";
-          
-          if (err.name === "NotReadableError" || err.name === "TrackStartError") {
-            errorMsg = "กล้องถูกใช้งานโดยแอปอื่นอยู่ กรุณาปิดแอปอื่นแล้วลองใหม่ หรือรีเฟรชหน้าจอ";
-          } else if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-            errorMsg = "กล้องถูกบล็อก! กรุณากดรูปแม่กุญแจ 🔒 บนแถบ URL เพื่อเปิดอนุญาตกล้อง (Camera) แล้วรีเฟรชหน้าเว็บ";
-          }
-          
-          setCameraError(errorMsg);
-        }
-      }
-    };
-
-    if (isCameraOpen) {
-      startCamera();
-    }
-
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [isCameraOpen]);
-
-  const openCameraForAction = () => {
+  const openCameraForAction = async () => {
     setIsCameraOpen(true);
     setStatusMsg("");
-    // Camera and GPS logic moved to useEffect for reliability
+    
+    // Call GPS immediately on click to preserve user gesture
+    getLocation(true);
+
+    // Call camera directly to preserve user gesture on iOS Safari
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          facingMode: "user",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+      });
+      
+      // Wait for video ref to be available
+      setTimeout(async () => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setCameraError("");
+          await videoRef.current.play().catch(e => console.error("Play error:", e));
+          loadFaceApiAndProfile();
+        }
+      }, 100);
+    } catch (err: any) {
+      console.error("Camera Error:", err);
+      let errorMsg = "ไม่พบกล้องหรือไม่สามารถเข้าถึงได้";
+      
+      if (err.name === "NotReadableError" || err.name === "TrackStartError") {
+        errorMsg = "กล้องถูกใช้งานโดยแอปอื่นอยู่ กรุณาปิดแอปอื่นแล้วลองใหม่ หรือรีเฟรชหน้าจอ";
+      } else if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+        errorMsg = "กล้องถูกบล็อก! กรุณากดรูปแม่กุญแจ 🔒 บนแถบ URL เพื่อเปิดอนุญาตกล้อง (Camera) แล้วรีเฟรชหน้าเว็บ";
+      }
+      
+      setCameraError(errorMsg);
+    }
   };
 
   const cancelAction = () => {
