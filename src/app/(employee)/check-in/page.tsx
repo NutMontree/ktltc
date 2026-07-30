@@ -230,7 +230,7 @@ function CheckInContent() {
       const faceApi = await import("@vladmandic/face-api");
       faceApiRef.current = faceApi;
 
-      const MODEL_URL = "/models";
+      const MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model";
       await Promise.all([
         faceApi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
         faceApi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
