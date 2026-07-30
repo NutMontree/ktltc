@@ -423,18 +423,10 @@ function CheckInContent() {
 
   // ตรวจสอบว่าสามารถลงเวลาได้หรือไม่
   const canSubmit = () => {
-    return !!location && locationStatus === "found" && !isProcessing && faceStatus === "matched";
+    return !!location && locationStatus === "found" && !isProcessing;
   };
 
   const submitAttendance = async () => {
-    // ตรวจสอบใบหน้าก่อนส่ง (เข้มงวดเฉพาะ not_matched)
-    if (faceStatus === "not_matched") {
-      alert(
-        "ไม่สามารถลงเวลาได้ เนื่องจากใบหน้าไม่ตรงกับโปรไฟล์ กรุณาลองใหม่อีกครั้ง",
-      );
-      return;
-    }
-
     setIsProcessing(true);
     try {
       let cloudinaryUrl = "";
@@ -581,8 +573,7 @@ function CheckInContent() {
   const submitDisabled =
     isProcessing ||
     !location ||
-    locationStatus !== "found" ||
-    faceStatus !== "matched";
+    locationStatus !== "found";
 
   const theme = isCheckIn
     ? {
