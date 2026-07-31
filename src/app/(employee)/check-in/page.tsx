@@ -393,7 +393,9 @@ function CheckInContent() {
           videoRef.current.srcObject = stream;
           setCameraError("");
           await videoRef.current.play().catch(e => console.error("Play error:", e));
-          loadFaceApiAndProfile();
+          // Face check removed per user request: loadFaceApiAndProfile();
+          setFaceStatus("matched"); // force status to matched to update UI properly
+          setFaceMsg("พร้อมใช้งาน");
         }
       }, 100);
     } catch (err: any) {
