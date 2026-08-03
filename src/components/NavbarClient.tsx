@@ -500,7 +500,7 @@ export default function NavbarClient({
           </div>
 
           {/* --- 3. ACTIONS & USER SECTION (ขวาสุด) --- */}
-          <div className="flex items-center gap-3 shrink-0 h-10">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 h-10">
             {userId && (
               <div className="flex items-center justify-center w-10 h-10">
                 <NotificationBell />
