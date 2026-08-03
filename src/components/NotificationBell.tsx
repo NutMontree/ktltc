@@ -43,6 +43,7 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -106,16 +107,16 @@ export default function NotificationBell() {
 
     // Navigate for other notifications
     let url = n.targetUrl;
-    if (n.type === 'system_deploy' || n.title === 'มีการอัปโหลดโค้ดใหม่') {
-      url = '/dashboard/notifications';
-    } else if (!url) {
-      if (n.type === 'friend_request' || n.type === 'friend_accept') {
-        url = `/dashboard/profile/${n.from}`;
-      }
+    if (n.type === 'friend_request' || n.type === 'friend_accept') {
+      url = `/dashboard/profile/${n.from}`;
     }
 
     if (url) {
       router.push(url);
+      setOpen(false);
+    } else {
+      // เปิด Popup อ่านรายละเอียดเต็มๆ กรณีไม่มี URL ให้นำทางไปไหน (เช่น system alerts)
+      setSelectedNotification(n);
       setOpen(false);
     }
   };

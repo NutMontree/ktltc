@@ -45,6 +45,7 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const router = useRouter();
 
   const fetchNotifications = async () => {
@@ -126,6 +127,8 @@ export default function NotificationsPage() {
 
     if (url) {
       router.push(url);
+    } else {
+      setSelectedNotification(n);
     }
   };
 
@@ -379,6 +382,44 @@ export default function NotificationsPage() {
         open={postModalOpen}
         onClose={() => setPostModalOpen(false)}
       />
+
+      {/* Modal สำหรับอ่านการแจ้งเตือนแบบเต็ม */}
+      {selectedNotification && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedNotification(null)}>
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start gap-4 mb-4">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${
+                selectedNotification.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
+                selectedNotification.type === 'warning' ? 'bg-amber-100 text-amber-600' :
+                selectedNotification.type === 'error' ? 'bg-rose-100 text-rose-600' :
+                'bg-blue-100 text-blue-600'
+              }`}>
+                {selectedNotification.type === 'success' ? <CheckCircle2 size={24} /> :
+                 selectedNotification.type === 'warning' ? <AlertTriangle size={24} /> :
+                 selectedNotification.type === 'error' ? <AlertTriangle size={24} /> :
+                 <Bell size={24} />}
+              </div>
+              <div className="flex-1 mt-1">
+                <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">
+                  {selectedNotification.title || "การแจ้งเตือน"}
+                </h3>
+                <p className="text-xs text-zinc-500 mt-1 font-semibold">
+                  {formatDistanceToNow(new Date(selectedNotification.createdAt), { addSuffix: true, locale: th })}
+                </p>
+              </div>
+            </div>
+            <div className="bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed max-h-[50vh] overflow-y-auto custom-scrollbar">
+              {selectedNotification.message}
+            </div>
+            <button
+              onClick={() => setSelectedNotification(null)}
+              className="w-full mt-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black uppercase tracking-widest text-xs transition-colors"
+            >
+              ปิดหน้าต่าง
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
