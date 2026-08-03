@@ -124,21 +124,7 @@ export default function StudentCarePage() {
         console.error("Failed to fetch roles", err);
       }
     };
-
-    const fetchClassrooms = async () => {
-      try {
-        const res = await fetch("/api/director/student-care/classrooms");
-        const data = await res.json();
-        if (data.success) {
-          setClassroomsList(data.classrooms);
-        }
-      } catch (err) {
-        console.error("Failed to fetch classrooms", err);
-      }
-    };
-
     fetchRoles();
-    fetchClassrooms();
   }, []);
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
