@@ -720,9 +720,13 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                         </h3>
                       </div>
 
-                      {/* Scenario 1: Student role */}
-                      {isStudentRole() && (
+                      {/* All specific fields grouped by category */}
+                      <div className="space-y-8">
+                        {/* 1. Student Information */}
                         <div className="space-y-6">
+                          <h4 className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest border-l-4 border-blue-500 pl-3">
+                            ข้อมูลนักเรียน / นักศึกษา
+                          </h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             {/* Student ID */}
                             <div className="space-y-2">
@@ -869,106 +873,95 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                             </button>
                           </div>
                         </div>
-                      )}
 
-                      {/* Scenario 2: Employee role (Teachers & Staff) */}
-                      {isEmployeeRole() && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                          {/* Position Number */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                              เลขที่ตำแหน่งข้าราชการ / พนักงาน (Position Number)
-                            </label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <Bookmark size={16} />
-                              </span>
-                              <input
-                                type="text"
-                                name="positionNumber"
-                                value={formData.positionNumber}
-                                onChange={handleInputChange}
-                                placeholder="กรอกเลขที่ตำแหน่ง..."
-                                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Affiliation */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                              ส่วนราชการ / สังกัด / หน่วยงานหลัก (Affiliation)
-                            </label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <Building2 size={16} />
-                              </span>
-                              <input
-                                type="text"
-                                name="affiliation"
-                                value={formData.affiliation}
-                                onChange={handleInputChange}
-                                placeholder="วิทยาลัยเทคนิคหลวงพ่อคูณ ปริสุทฺโธ..."
-                                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Government Start Date */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                              วันเริ่มบรรจุรับราชการ / เริ่มปฏิบัติงาน
-                            </label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <Calendar size={16} />
-                              </span>
-                              <input
-                                type="text"
-                                name="govStartDate"
-                                value={formData.govStartDate}
-                                onChange={handleInputChange}
-                                placeholder="ตัวอย่าง: 1 พฤษภาคม 2565..."
-                                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Retirement Date */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
-                              วันครบกำหนดเกษียณอายุราชการ / สิ้นสุดสัญญา
-                            </label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <Calendar size={16} />
-                              </span>
-                              <input
-                                type="text"
-                                name="retirementDate"
-                                value={formData.retirementDate}
-                                onChange={handleInputChange}
-                                placeholder="ตัวอย่าง: 30 กันยายน 2605..."
-                                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Scenario 3: General User role with no special info */}
-                      {formData.role === "user" && (
-                        <div className="py-12 text-center border border-dashed border-slate-200 dark:border-zinc-800 rounded-3xl space-y-3 bg-slate-50/20 dark:bg-zinc-950/10">
-                          <UserIcon className="w-8 h-8 text-slate-300 mx-auto" />
-                          <h4 className="text-xs font-bold text-slate-700 dark:text-zinc-300">
-                            ไม่มีข้อมูลเฉพาะที่จะต้องแสดง
+                        {/* 2. Employee Information */}
+                        <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-zinc-800">
+                          <h4 className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-l-4 border-indigo-500 pl-3">
+                            ข้อมูลบุคลากร / เจ้าหน้าที่
                           </h4>
-                          <p className="text-[10px] text-slate-400 dark:text-zinc-500 max-w-[320px] mx-auto leading-relaxed">
-                            เนื่องจากสิทธิ์ผู้ใช้ของบุคคลนี้เป็น "บุคคลทั่วไป"
-                            ระบบจึงไม่ต้องการฟิลด์กรอกข้อมูลทางการศึกษาหรือประวัติการรับราชการเพิ่มเติม
-                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            {/* Position Number */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                เลขที่ตำแหน่งข้าราชการ / พนักงาน (Position Number)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Bookmark size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="positionNumber"
+                                  value={formData.positionNumber}
+                                  onChange={handleInputChange}
+                                  placeholder="กรอกเลขที่ตำแหน่ง..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Affiliation */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                ส่วนราชการ / สังกัด / หน่วยงานหลัก (Affiliation)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Building2 size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="affiliation"
+                                  value={formData.affiliation}
+                                  onChange={handleInputChange}
+                                  placeholder="วิทยาลัยเทคนิคหลวงพ่อคูณ ปริสุทฺโธ..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Government Start Date */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                วันเริ่มบรรจุรับราชการ / เริ่มปฏิบัติงาน
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Calendar size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="govStartDate"
+                                  value={formData.govStartDate}
+                                  onChange={handleInputChange}
+                                  placeholder="ตัวอย่าง: 1 พฤษภาคม 2565..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Retirement Date */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1">
+                                วันครบกำหนดเกษียณอายุราชการ / สิ้นสุดสัญญา
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Calendar size={16} />
+                                </span>
+                                <input
+                                  type="text"
+                                  name="retirementDate"
+                                  value={formData.retirementDate}
+                                  onChange={handleInputChange}
+                                  placeholder="ตัวอย่าง: 30 กันยายน 2605..."
+                                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none text-xs font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-inner"
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </motion.div>
                   )}
 
