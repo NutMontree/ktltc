@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 
 const DEFAULT_SETTINGS = {
   key: "global_flagpole",
@@ -45,9 +45,16 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    const userRole = session?.user?.role?.toLowerCase();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!session || !["super_admin", "admin"].includes(userRole || "")) {
+    const userRole = (session?.user?.role || "").toLowerCase();
+    const department = (session?.user as any)?.department;
+    const faction = (session?.user as any)?.faction;
+
+    const isAllowed = await hasPermission(userRole, "manage_flagpole_settings", department, faction);
+    if (!isAllowed) {
       return NextResponse.json({ error: "Unauthorized: Access Denied" }, { status: 403 });
     }
 

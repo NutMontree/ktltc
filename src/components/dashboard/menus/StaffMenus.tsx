@@ -1,4 +1,4 @@
-﻿import { ActionCard } from "@/components/dashboard/DashboardCards";
+import { ActionCard } from "@/components/dashboard/DashboardCards";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -7,8 +7,17 @@ import {
   Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
   Database, ServerCrash, Smartphone, Download, UserPlus, Image as ImageIcon,
   BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
-  CalendarCheck, Shield, Bell, Globe, ArrowUpRight
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
 } from "lucide-react";
+
+const IconMap: any = {
+  Clock, BookOpen, MessageSquare, Layout, Users, Activity, FileText, CheckSquare,
+  BarChart3, MonitorPlay, Building2, UserCog, Settings, Flag, Briefcase, Key,
+  Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
+  Database, ServerCrash, Smartphone, Download, UserPlus, ImageIcon,
+  BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
+};
 
 export interface MenuProps {
   permissions: any;
@@ -39,107 +48,109 @@ export default function StaffMenus({ permissions, customMenus, item, userRole, h
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-            {permissions?.manage_drive && (
-              <ActionCard
-                href="/dashboard/drive"
-                title="คลังเอกสารดิจิทัล (Drive)"
-                icon={HardDrive}
-                desc="จัดการไฟล์เอกสารและสื่อดิจิทัลทั้งหมด"
-                variants={item}
-              />
-            )}
-            {permissions?.manage_news && (
-              <ActionCard
-                href="/dashboard/news"
-                title="จัดการข่าวประชาสัมพันธ์"
-                icon={Newspaper}
-                desc="เพิ่ม ลบ แก้ไข ข่าวสารและประกาศต่างๆ"
-                variants={item}
-              />
-            )}
-            {/* {permissions?.manage_elections && (
+                {permissions?.manage_drive && (
+                  <ActionCard
+                    href="/dashboard/drive"
+                    title="คลังเอกสารดิจิทัล (Drive)"
+                    icon={Folder}
+                    desc="ระบบจัดเก็บเอกสารออนไลน์"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_news && (
+                  <ActionCard
+                    href="/dashboard/news"
+                    title="จัดการข่าวประชาสัมพันธ์"
+                    icon={Newspaper}
+                    desc="จัดการข่าวสารและประกาศ"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_elections && (
                   <ActionCard
                     href="/dashboard/election"
                     title="จัดการการเลือกตั้ง"
                     icon={Users}
-                    desc="ควบคุมและดูแลระบบการเลือกตั้งทั้งหมด"
+                    desc="ระบบเลือกตั้งคณะกรรมการ"
                     variants={item}
                   />
-                )} */}
-            {permissions?.manage_qa && (
-              <ActionCard
-                href="/dashboard/questions"
-                title="ระบบถาม-ตอบ"
-                icon={MessageSquare}
-                desc="จัดการคำถามและข้อร้องเรียนจากผู้ใช้"
-                badge={stats?.totalPendingQA > 0 ? stats.totalPendingQA : null}
-                variants={item}
-              />
-            )}
-            {permissions?.manage_flagpole_data && (
-              <ActionCard
-                href="/dashboard/flagpole-data-management"
-                title="จัดการข้อมูลการเข้าแถว"
-                icon={ClipboardList}
-                desc="เครื่องมือปรับแก้พิกัด ระยะห่าง และวันเวลาลงชื่อของนักเรียน"
-                variants={item}
-              />
-            )}
-            {permissions?.manage_flagpole_dashboard && (
-              <ActionCard
-                href="/dashboard/flagpole-dashboard"
-                title="สถิติภาพรวมการเข้าแถว"
-                icon={Layers}
-                desc="รายงานสถิติ แผนที่ และภาพรวมการเข้าแถวหน้าเสาธง"
-                variants={item}
-              />
-            )}
-            {permissions?.manage_flagpole_reports && (
-              <ActionCard
-                href="/dashboard/flagpole-reports"
-                title="ระบบรายงานการเข้าแถว"
-                icon={FileText}
-                desc="ตรวจสอบ แก้ไข และออกรายงานสรุปประวัติเข้าแถวนักศึกษา"
-                variants={item}
-              />
-            )}
-            {permissions?.manage_student_data_validation && (
-              <ActionCard
-                href="/student-data-validation"
-                title="ตรวจสอบข้อมูลนักเรียน"
-                icon={ShieldCheck}
-                desc="ตรวจสอบความถูกต้องของข้อมูลส่วนตัวนักเรียน"
-                variants={item}
-              />
-            )}
-            {permissions?.manage_attendance_work_reports && (
-              <ActionCard
-                href="/work-reports"
-                title="ระบบรายงานการปฏิบัติงาน"
-                icon={ClipboardList}
-                desc="ตรวจสอบและพิมพ์รายงานผลการปฏิบัติงาน"
-                variants={item}
-              />
-            )}
-            {permissions?.manage_ita && (
-              <ActionCard
-                href="/dashboard/ita"
-                title="ระบบข้อมูล ITA / OIT"
-                icon={ClipboardList}
-                desc="แก้ไขตัวชี้วัดความโปร่งใสรายหัวข้อ O1 - O37"
-                variants={item}
-              />
-            )}
-            {customMenus.filter(m => m.workspace === "staff" && permissions?.[m.permissionKey]).map(menu => (
-              <ActionCard
-                key={menu._id}
-                href={menu.href}
-                title={menu.title}
-                icon={Layout}
-                desc={menu.desc}
-                variants={item}
-              />
-            ))}
+                )}
+                {permissions?.manage_qa && (
+                  <ActionCard
+                    href="/dashboard/questions"
+                    title="ระบบถาม-ตอบ"
+                    icon={MessageSquare}
+                    desc="จัดการคำถามและข้อเสนอแนะ"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_flagpole_data && (
+                  <ActionCard
+                    href="/dashboard/flagpole-data-management"
+                    title="จัดการข้อมูลการเข้าแถว"
+                    icon={Edit}
+                    desc="แก้ไขและตรวจสอบการเช็คชื่อ"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_flagpole_dashboard && (
+                  <ActionCard
+                    href="/dashboard/flagpole-dashboard"
+                    title="สถิติภาพรวมการเข้าแถว"
+                    icon={BarChart3}
+                    desc="แดชบอร์ดสรุปผลการเข้าแถว"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_flagpole_reports && (
+                  <ActionCard
+                    href="/dashboard/flagpole-reports"
+                    title="ระบบรายงานการเข้าแถว"
+                    icon={FileText}
+                    desc="พิมพ์รายงานการเข้าแถว"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_student_data_validation && (
+                  <ActionCard
+                    href="/student-data-validation"
+                    title="ตรวจสอบข้อมูลนักเรียน"
+                    icon={ShieldCheck}
+                    desc="ยืนยันและตรวจสอบประวัติ"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_attendance_work_reports && (
+                  <ActionCard
+                    href="/work-reports"
+                    title="ระบบรายงานการปฏิบัติงาน"
+                    icon={ClipboardList}
+                    desc="ตรวจสอบและพิมพ์รายงานผล"
+                    variants={item}
+                  />
+                )}
+                {permissions?.manage_ita && (
+                  <ActionCard
+                    href="/dashboard/ita"
+                    title="ระบบข้อมูล ITA / OIT"
+                    icon={Database}
+                    desc="จัดการข้อมูลประเมินคุณธรรม"
+                    variants={item}
+                  />
+                )}
+                {customMenus.filter(m => m.workspace === "staff" && permissions?.[m.permissionKey]).map(menu => {
+                  const Icon = IconMap[menu.icon] || Layout;
+                  return (
+                    <ActionCard
+                      key={menu._id}
+                      href={menu.href}
+                      title={menu.title}
+                      icon={Icon}
+                      desc={menu.desc}
+                      variants={item}
+                    />
+                  );
+                })}
           </div>
         </div>
       )}

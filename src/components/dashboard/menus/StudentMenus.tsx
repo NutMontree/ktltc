@@ -1,4 +1,4 @@
-﻿import { ActionCard } from "@/components/dashboard/DashboardCards";
+import { ActionCard } from "@/components/dashboard/DashboardCards";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
@@ -7,8 +7,17 @@ import {
   Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
   Database, ServerCrash, Smartphone, Download, UserPlus, Image as ImageIcon,
   BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
-  CalendarCheck, Shield, Bell, Globe, ArrowUpRight
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
 } from "lucide-react";
+
+const IconMap: any = {
+  Clock, BookOpen, MessageSquare, Layout, Users, Activity, FileText, CheckSquare,
+  BarChart3, MonitorPlay, Building2, UserCog, Settings, Flag, Briefcase, Key,
+  Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
+  Database, ServerCrash, Smartphone, Download, UserPlus, ImageIcon,
+  BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
+};
 
 export interface MenuProps {
   permissions: any;
@@ -39,12 +48,12 @@ export default function StudentMenus({ permissions, customMenus, item, userRole,
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                {(userRole === "student" || userRole === "super_admin") && (
+                {permissions?.access_student_flagpole && (
                   <ActionCard
                     href="/student/flagpole"
                     title="เช็คชื่อเข้าแถวหน้าเสาธง"
-                    icon={Clock}
-                    desc="ระบบเช็คชื่อและสแกนพิกัดหน้าเสาธงของนักเรียน"
+                    icon={Users}
+                    desc="ระบบเช็คชื่อเข้าแถว"
                     variants={item}
                   />
                 )}
@@ -53,29 +62,32 @@ export default function StudentMenus({ permissions, customMenus, item, userRole,
                     href="/dashboard/dve/student"
                     title="ศูนย์การศึกษาระบบทวิภาคี (DVE)"
                     icon={BookOpen}
-                    desc="ระบบบันทึกเวลาเรียน เรียนออนไลน์ ส่งงาน และทำแบบทดสอบวิชาทวิภาคี"
+                    desc="ข้อมูลนักศึกษาทวิภาคี"
                     variants={item}
                   />
                 )}
-                {permissions?.student_dashboard && (
+                {permissions?.access_chat && (
                   <ActionCard
                     href="/dashboard/chat"
                     title="แชท / กล่องข้อความ"
                     icon={MessageSquare}
-                    desc="ระบบติดต่อสื่อสาร ส่งข้อความ และคุยแชทประสานงานอาจารย์"
+                    desc="ระบบพูดคุยและติดต่อสื่อสาร"
                     variants={item}
                   />
                 )}
-                {customMenus.filter(m => m.workspace === "student" && permissions?.[m.permissionKey]).map(menu => (
-                  <ActionCard
-                    key={menu._id}
-                    href={menu.href}
-                    title={menu.title}
-                    icon={Layout}
-                    desc={menu.desc}
-                    variants={item}
-                  />
-                ))}
+                {customMenus.filter(m => m.workspace === "student" && permissions?.[m.permissionKey]).map(menu => {
+                  const Icon = IconMap[menu.icon] || Layout;
+                  return (
+                    <ActionCard
+                      key={menu._id}
+                      href={menu.href}
+                      title={menu.title}
+                      icon={Icon}
+                      desc={menu.desc}
+                      variants={item}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}

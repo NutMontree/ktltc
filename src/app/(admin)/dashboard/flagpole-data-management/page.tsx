@@ -204,17 +204,12 @@ export default function FlagpoleDataManagementPage() {
     return () => abortControllerRef.current?.abort();
   }, [debouncedSearch, filterDay, filterMonth, filterYear, status]);
 
-  // สิทธิ์ความปลอดภัย
+  // การตรวจสอบเบื้องต้น
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
-    } else if (status === "authenticated") {
-      const role = session?.user?.role?.toLowerCase();
-      if (!["super_admin", "admin"].includes(role)) {
-        router.replace("/");
-      }
     }
-  }, [status, session]);
+  }, [status]);
 
   /**
    * Action Handlers

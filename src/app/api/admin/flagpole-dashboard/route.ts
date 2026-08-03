@@ -54,39 +54,70 @@ export async function GET(req: Request) {
     const endOfDay = new Date(targetDate);
     endOfDay.setUTCHours(23, 59, 59, 999);
 
-    // 2. ดึงสถิติจำนวนคนเช็คแถวเสาธงแยกตามสถานะ (Present / Late)
+    // 2. ดึงสถิติจำนวนคนเช็คแถวเสาธงแยกตามสถานะ (Present / Late) และกลุ่มผู้เรียน (ปกติ / ฝึกงาน)
     const stats = await db.collection("flagpole_attendances").aggregate([
       { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
       {
+        $addFields: {
+          uId: { 
+            $cond: {
+              if: { $ne: [{ $type: "$userId" }, "missing"] },
+              then: { $toObjectId: "$userId" },
+              else: null
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "uId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      {
         $group: {
-          _id: "$status",
+          _id: { status: "$status", isInternship: "$userDetails.isInternship" },
           count: { $sum: 1 }
         }
       }
     ]).toArray();
 
-    const formattedData = [
-      { name: 'ตรงเวลา', value: 0, color: '#10b981' }, // เขียว
-      { name: 'มาสาย', value: 0, color: '#f59e0b' },   // ส้ม
-      { name: 'ขาดแถว', value: 0, color: '#f43f5e' }    // แดง
-    ];
-
-    let presentCount = 0;
-    let lateCount = 0;
+    let normalPresentCount = 0;
+    let normalLateCount = 0;
+    let internshipPresentCount = 0;
+    let internshipLateCount = 0;
 
     stats.forEach(stat => {
-      if (stat._id === 'Present') presentCount = stat.count;
-      else if (stat._id === 'Late') lateCount = stat.count;
+      const isInternship = stat._id.isInternship === true || stat._id.isInternship === "true";
+      if (isInternship) {
+        if (stat._id.status === 'Present') internshipPresentCount = stat.count;
+        else if (stat._id.status === 'Late') internshipLateCount = stat.count;
+      } else {
+        if (stat._id.status === 'Present') normalPresentCount = stat.count;
+        else if (stat._id.status === 'Late') normalLateCount = stat.count;
+      }
     });
 
-    const reportedTotal = presentCount + lateCount;
-    
-    // คำนวณจำนวนขาดแถวโดยเทียบจากจำนวนนักเรียนที่เรียนปกติอยู่ในวิทยาลัย
-    const realAbsent = Math.max(0, inCollegeStudentsCount - reportedTotal);
+    const normalReportedTotal = normalPresentCount + normalLateCount;
+    const normalAbsentCount = Math.max(0, inCollegeStudentsCount - normalReportedTotal);
 
-    formattedData[0].value = presentCount;
-    formattedData[1].value = lateCount;
-    formattedData[2].value = realAbsent;
+    const internshipReportedTotal = internshipPresentCount + internshipLateCount;
+    const internshipAbsentCount = Math.max(0, internshipStudentsCount - internshipReportedTotal);
+
+    const formattedData = [
+      { name: 'ตรงเวลา (ปกติ)', value: normalPresentCount, color: '#10b981' }, 
+      { name: 'มาสาย (ปกติ)', value: normalLateCount, color: '#f59e0b' },   
+      { name: 'ขาดแถว (ปกติ)', value: normalAbsentCount, color: '#f43f5e' }    
+    ];
+
+    const internshipFormattedData = [
+      { name: 'ตรงเวลา (ฝึกงาน)', value: internshipPresentCount, color: '#10b981' }, 
+      { name: 'มาสาย (ฝึกงาน)', value: internshipLateCount, color: '#f59e0b' },   
+      { name: 'ขาดแถว (ฝึกงาน)', value: internshipAbsentCount, color: '#f43f5e' }    
+    ];
 
     // 3. กิจกรรมลงชื่อเข้าแถวล่าสุด 10 รายการ
     const recentCheckIns = await db.collection("flagpole_attendances").aggregate([
@@ -288,6 +319,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       success: true,
       data: formattedData,
+      internshipData: internshipFormattedData,
       markers: validMarkers,
       totalStudents: totalStudentsCount,
       internshipStudents: internshipStudentsCount,

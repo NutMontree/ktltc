@@ -1,4 +1,4 @@
-﻿import { ActionCard } from "@/components/dashboard/DashboardCards";
+import { ActionCard } from "@/components/dashboard/DashboardCards";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
@@ -7,8 +7,17 @@ import {
   Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
   Database, ServerCrash, Smartphone, Download, UserPlus, Image as ImageIcon,
   BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
-  CalendarCheck, Shield, Bell, Globe, ArrowUpRight
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
 } from "lucide-react";
+
+const IconMap: any = {
+  Clock, BookOpen, MessageSquare, Layout, Users, Activity, FileText, CheckSquare,
+  BarChart3, MonitorPlay, Building2, UserCog, Settings, Flag, Briefcase, Key,
+  Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
+  Database, ServerCrash, Smartphone, Download, UserPlus, ImageIcon,
+  BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
+};
 
 export interface MenuProps {
   permissions: any;

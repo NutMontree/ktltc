@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
 export const dynamic = 'force-dynamic';
@@ -209,7 +209,11 @@ export async function PATCH(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userRole = (session.user as any)?.role?.toLowerCase();
-    if (!["super_admin", "admin"].includes(userRole || "")) {
+    const department = (session.user as any)?.department;
+    const faction = (session.user as any)?.faction;
+
+    const isAllowed = await hasPermission(userRole, "manage_flagpole_data", department, faction);
+    if (!isAllowed) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 
@@ -254,7 +258,11 @@ export async function DELETE(req: Request) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userRole = (session.user as any)?.role?.toLowerCase();
-    if (!["super_admin", "admin"].includes(userRole || "")) {
+    const department = (session.user as any)?.department;
+    const faction = (session.user as any)?.faction;
+
+    const isAllowed = await hasPermission(userRole, "manage_flagpole_data", department, faction);
+    if (!isAllowed) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
     }
 

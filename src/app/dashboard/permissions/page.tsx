@@ -18,6 +18,7 @@ import {
   FiTrash2,
   FiEdit3,
   FiInfo,
+  FiSettings,
 } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
@@ -160,51 +161,32 @@ const FEATURE_LABELS: {
   manage_flagpole_reports: { label: "ระบบรายงานการเข้าแถว", icon: FiFileText, color: "text-amber-500", href: "/dashboard/flagpole-reports" },
 
   manage_broadcast_notification: { label: "ส่งข้อความแจ้งเตือน", icon: FiMessageSquare, color: "text-sky-500", href: "/broadcast-notification" },
+  manage_elections: { label: "จัดการการเลือกตั้ง", icon: FiUsers, color: "text-purple-500", href: "/dashboard/election" },
   manage_attendance_data: { label: "แก้ไขข้อมูลการลงเวลา", icon: FiEdit3, color: "text-sky-500", href: "/dashboard/data-management" },
   manage_work_reports_admin: { label: "แก้ไขรายงานปฏิบัติงาน (Admin)", icon: FiEdit3, color: "text-sky-500", href: "/work-reports-management" },
   manage_reset_views: { label: "รีเซ็ตยอดเข้าชม", icon: FiTrash2, color: "text-red-500", href: "/dashboard" },
+
+  // Advanced Attendance & Roles
+  manage_attendance_dashboard: { label: "ภาพรวมลงเวลา", icon: FiLayout, color: "text-blue-600", href: "/attendance-dashboard" },
+  manage_attendance_report: { label: "รายงานการเข้างาน", icon: FiFileText, color: "text-indigo-600", href: "/attendance-report" },
+  manage_attendance_work_reports: { label: "รายงานปฏิบัติงาน (WFH)", icon: FiMessageSquare, color: "text-emerald-600", href: "/work-reports" },
+  manage_attendance_leave_approvals: { label: "จัดการอนุมัติใบลา", icon: FiCheckCircle, color: "text-rose-600", href: "/leave-approvals" },
+  manage_attendance_settings: { label: "ตั้งค่าเวลาเข้างาน", icon: FiCalendar, color: "text-amber-600", href: "/attendance-settings" },
+  manage_roles_advanced: { label: "จัดการสิทธิ์บุคลากร", icon: FiUsers, color: "text-sky-600", href: "/manage-roles" },
+  
+  // Custom Sidebar Menus
+  access_pdca: { label: "ระบบติดตาม PDCA", icon: FiFileText, color: "text-blue-500", href: "/pdca" },
+  access_general_memo: { label: "บันทึกข้อความทั่วไป", icon: FiFileText, color: "text-indigo-500", href: "/GeneralMemoPage" },
+  access_chart_analytics: { label: "Chart Analytics", icon: FiFileText, color: "text-emerald-500", href: "/chart" },
+  access_form_editor: { label: "แก้ไขหัวข้อฟอร์ม", icon: FiEdit3, color: "text-orange-500", href: "/form-editor" },
+  access_internal_form_editor: { label: "ตั้งค่าระบบภายใน", icon: FiSettings, color: "text-rose-500", href: "/internal-form-editor" },
+
+  // Custom Dashboard Menus
+  access_student_flagpole: { label: "เช็คชื่อเข้าแถวหน้าเสาธง", icon: FiUsers, color: "text-blue-500", href: "/student/flagpole" },
+  access_chat: { label: "แชท / กล่องข้อความ", icon: FiMessageSquare, color: "text-indigo-500", href: "/dashboard/chat" },
+  access_manual_gate_pass: { label: "คู่มือระบบ Gate Pass", icon: FiInfo, color: "text-teal-500", href: "/manual/gate-pass" },
 };
 
-const ADVANCED_FEATURE_LABELS: {
-  [key: string]: { label: string; icon: any; color: string; href?: string };
-} = {
-  manage_attendance_dashboard: {
-    label: "ภาพรวมลงเวลา",
-    icon: FiLayout,
-    color: "text-blue-600",
-    href: "/attendance-dashboard",
-  },
-  manage_attendance_report: {
-    label: "รายงานการเข้างาน",
-    icon: FiFileText,
-    color: "text-indigo-600",
-    href: "/attendance-report",
-  },
-  manage_attendance_work_reports: {
-    label: "รายงานปฏิบัติงาน (WFH)",
-    icon: FiMessageSquare,
-    color: "text-emerald-600",
-    href: "/work-reports",
-  },
-  manage_attendance_leave_approvals: {
-    label: "จัดการอนุมัติใบลา",
-    icon: FiCheckCircle,
-    color: "text-rose-600",
-    href: "/leave-approvals",
-  },
-  manage_attendance_settings: {
-    label: "ตั้งค่าเวลาเข้างาน",
-    icon: FiCalendar,
-    color: "text-amber-600",
-    href: "/attendance-settings",
-  },
-  manage_roles_advanced: {
-    label: "จัดการสิทธิ์บุคลากร",
-    icon: FiUsers,
-    color: "text-sky-600",
-    href: "/manage-roles",
-  },
-};
 
 export default function PermissionsPage() {
   const [permissions, setPermissions] = useState<any>(null);
@@ -903,118 +885,6 @@ export default function PermissionsPage() {
                               >
                                 {permissions[role][feature] &&
                                   !MERGED_FEATURE_LABELS[feature].isSuperAdminOnly ? (
-                                  <FiCheckCircle size={20} />
-                                ) : (
-                                  <FiXCircle size={20} />
-                                )}
-                              </button>
-                            )}
-                          </td>
-                        ))}
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          {/* --- Section 1.5: Advanced Permissions Matrix --- */}
-          <div className="xl:col-span-12 w-full max-w-full overflow-hidden">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl">
-                <FiCalendar size={20} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none mb-1">
-                  Advanced Attendance & Roles
-                </h2>
-                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
-                  จัดการสิทธิ์รายหน้าของระบบลงเวลาและบทบาท
-                </p>
-              </div>
-            </div>
-            <div className="w-full min-w-0 bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[3rem] shadow-2xl shadow-zinc-200/50 dark:shadow-none overflow-hidden">
-              <div className="w-full max-w-full overflow-x-auto overflow-y-auto max-h-[70vh]">
-                <table className="w-full text-left border-separate border-spacing-0 min-w-[1200px]">
-                  <thead>
-                    <tr className="bg-slate-50/95 dark:bg-zinc-800/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
-                      <th className="p-4 md:p-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest min-w-[120px] max-w-[140px] md:min-w-[220px] md:max-w-none sticky top-0 left-0 z-50 bg-slate-50 dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-800">
-                        บทบาท / Role Name
-                      </th>
-                      {Object.keys(ADVANCED_FEATURE_LABELS).map((key) => (
-                        <th
-                          key={key}
-                          className="p-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center min-w-[110px] sticky top-0 z-40 bg-slate-50/95 dark:bg-zinc-800/95 border-b border-zinc-200 dark:border-zinc-800"
-                        >
-                          <Link
-                            href={ADVANCED_FEATURE_LABELS[key].href || "#"}
-                            className="flex flex-col items-center gap-2 group/header cursor-pointer"
-                          >
-                            <div
-                              className={`p-2 rounded-xl bg-white dark:bg-zinc-900 shadow-sm transition-transform group-hover/header:scale-110 ${ADVANCED_FEATURE_LABELS[key].color}`}
-                            >
-                              {(() => {
-                                const Icon = ADVANCED_FEATURE_LABELS[key].icon;
-                                return <Icon size={18} />;
-                              })()}
-                            </div>
-                            <span className="max-w-[100px] text-center leading-tight group-hover/header:text-blue-600 transition-colors">
-                              {ADVANCED_FEATURE_LABELS[key].label}
-                            </span>
-                          </Link>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {rolesOrder.map((role) => (
-                      <motion.tr
-                        key={role}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className={`hover:bg-slate-50/50 dark:hover:bg-zinc-800/30 transition-colors group ${role === "super_admin" ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}
-                      >
-                        <td className="p-3 md:p-6 sticky left-0 z-30 bg-white dark:bg-zinc-900 border-r border-zinc-100 dark:border-zinc-800">
-                          <div className="flex items-center gap-4">
-                            <div
-                              className={`w-1.5 h-10 rounded-full ${role === "super_admin" ? "bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.4)]" : isSystemRole(role) ? "bg-indigo-400" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.2)]"}`}
-                            />
-                            <div className="flex flex-col">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest leading-none">
-                                  {role}
-                                </span>
-                              </div>
-                              <span
-                                className={`font-black text-sm tracking-tight leading-none ${role === "super_admin" ? "text-blue-600 uppercase" : "text-zinc-950 dark:text-white"}`}
-                              >
-                                {roleLabels[role] || role}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-
-                        {Object.keys(ADVANCED_FEATURE_LABELS).map((feature) => (
-                          <td
-                            key={feature}
-                            className="p-2 text-center border-b border-zinc-50 dark:border-zinc-800/50"
-                          >
-                            {role === "super_admin" ? (
-                              <div className="flex justify-center">
-                                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 border border-blue-200 dark:border-blue-800/50">
-                                  <FiCheckCircle size={20} strokeWidth={3} />
-                                </div>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => handleToggle(role, feature)}
-                                className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${permissions[role] && permissions[role][feature]
-                                  ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20"
-                                  : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 hover:border-blue-300"
-                                  }`}
-                              >
-                                {permissions[role] && permissions[role][feature] ? (
                                   <FiCheckCircle size={20} />
                                 ) : (
                                   <FiXCircle size={20} />

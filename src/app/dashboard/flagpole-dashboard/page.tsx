@@ -139,9 +139,14 @@ export default function StudentFlagpoleDashboard() {
   });
 
   const [data, setData] = useState([
-    { name: "ตรงเวลา", value: 0, color: "#10b981" }, // Emerald 500
-    { name: "มาสาย", value: 0, color: "#f59e0b" }, // Amber 500
-    { name: "ขาดแถว", value: 0, color: "#f43f5e" }, // Rose 500
+    { name: "ตรงเวลา (ปกติ)", value: 0, color: "#10b981" }, // Emerald 500
+    { name: "มาสาย (ปกติ)", value: 0, color: "#f59e0b" }, // Amber 500
+    { name: "ขาดแถว (ปกติ)", value: 0, color: "#f43f5e" }, // Rose 500
+  ]);
+  const [internshipData, setInternshipData] = useState([
+    { name: "ตรงเวลา (ฝึกงาน)", value: 0, color: "#10b981" }, // Emerald 500
+    { name: "มาสาย (ฝึกงาน)", value: 0, color: "#f59e0b" }, // Amber 500
+    { name: "ขาดแถว (ฝึกงาน)", value: 0, color: "#f43f5e" }, // Rose 500
   ]);
   const [markers, setMarkers] = useState<any[]>([]);
   const [recentCheckIns, setRecentCheckIns] = useState<any[]>([]);
@@ -158,9 +163,14 @@ export default function StudentFlagpoleDashboard() {
     radius: 200
   });
   const [previousData, setPreviousData] = useState([
-    { name: "ตรงเวลา", value: 0, color: "#10b981" },
-    { name: "มาสาย", value: 0, color: "#f59e0b" },
-    { name: "ขาดแถว", value: 0, color: "#f43f5e" },
+    { name: "ตรงเวลา (ปกติ)", value: 0, color: "#10b981" },
+    { name: "มาสาย (ปกติ)", value: 0, color: "#f59e0b" },
+    { name: "ขาดแถว (ปกติ)", value: 0, color: "#f43f5e" },
+  ]);
+  const [previousInternshipData, setPreviousInternshipData] = useState([
+    { name: "ตรงเวลา (ฝึกงาน)", value: 0, color: "#10b981" },
+    { name: "มาสาย (ฝึกงาน)", value: 0, color: "#f59e0b" },
+    { name: "ขาดแถว (ฝึกงาน)", value: 0, color: "#f43f5e" },
   ]);
   const [deltas, setDeltas] = useState([0, 0, 0]);
   const [mapMode, setMapMode] = useState<"status" | "level">("status");
@@ -227,6 +237,10 @@ export default function StudentFlagpoleDashboard() {
 
           // Update previous data
           setPreviousData(json.data);
+          if (json.internshipData) {
+            setPreviousInternshipData(json.internshipData);
+            setInternshipData(json.internshipData);
+          }
 
           setData(json.data);
           setMarkers(json.markers || []);
@@ -360,7 +374,7 @@ export default function StudentFlagpoleDashboard() {
               delta: 0,
             },
             {
-              label: "มาเข้าแถวตรงเวลา",
+              label: "มาเข้าแถวตรงเวลา (ปกติ)",
               val: data[0].value,
               unit: "คน",
               icon: Activity,
@@ -369,16 +383,16 @@ export default function StudentFlagpoleDashboard() {
               delta: deltas[0] || 0,
             },
             {
-              label: "มาเข้าแถวสาย",
-              val: data[1].value,
+              label: "มาเข้าแถวตรงเวลา (ฝึกงาน)",
+              val: internshipData[0].value,
               unit: "คน",
-              icon: Clock,
-              theme: "amber",
+              icon: Activity,
+              theme: "emerald",
               delay: 0.2,
-              delta: deltas[1] || 0,
+              delta: 0,
             },
             {
-              label: "ขาดเข้าแถวในระบบ",
+              label: "ขาดเข้าแถวในระบบ (ปกติ)",
               val: data[2].value,
               unit: "คน",
               icon: AlertTriangle,

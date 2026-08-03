@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,13 +10,28 @@ import {
   CalendarDays,
   User,
   FileText,
-  Plus,
-  ArrowRight,
+  Camera,
+  MapPin,
+  CheckCircle,
+  Loader2,
   ShieldCheck,
+  ShieldX,
   History,
-  ClipboardList,
+  ClipboardList
 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import imageCompression from "browser-image-compression";
+import { uploadFile } from "@/lib/upload";
+
+type FaceStatus =
+  | "idle"
+  | "loading_models"
+  | "loading_profile"
+  | "no_profile"
+  | "detecting"
+  | "matched"
+  | "not_matched"
+  | "error";
 
 export default function WFHHubPage() {
   const { data: session } = useSession();
@@ -31,11 +46,27 @@ export default function WFHHubPage() {
     image: null,
   });
 
+  // Camera & Check-in state
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [actionType, setActionType] = useState<"in" | "out" | null>(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [cameraError, setCameraError] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("");
+  const [locationStatus, setLocationStatus] = useState<"idle" | "searching" | "found" | "error">("idle");
+  const [locationError, setLocationError] = useState("");
+  const [faceStatus, setFaceStatus] = useState<FaceStatus>("idle");
+  const [faceMsg, setFaceMsg] = useState("");
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const faceApiRef = useRef<any>(null);
+  const profileDescriptorRef = useRef<Float32Array | null>(null);
+  const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     setMounted(true);
     const timer = setInterval(() => setTime(new Date()), 1000);
 
-    // Fetch latest profile data
     const fetchProfile = async () => {
       try {
         const res = await fetch("/api/profile");
@@ -58,228 +89,421 @@ export default function WFHHubPage() {
   const userName = profileData.name || session?.user?.name || "พนักงาน (คุณ)";
   const userImage = profileData.image || session?.user?.image || null;
 
+  const loadFaceApiAndProfile = async () => {
+    try {
+      setFaceStatus("loading_models");
+      setFaceMsg("กำลังโหลดโมเดลใบหน้า...");
+      
+      const faceApi = await import("@vladmandic/face-api");
+      faceApiRef.current = faceApi;
+      
+      const MODEL_URL = "/models";
+      await Promise.all([
+        faceApi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+        faceApi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceApi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+      ]);
+      
+      setFaceStatus("loading_profile");
+      setFaceMsg("กำลังโหลดรูปโปรไฟล์...");
+      
+      if (!profileData.image) {
+        setFaceStatus("no_profile");
+        setFaceMsg("ไม่พบรูปโปรไฟล์ — ข้ามการตรวจใบหน้า");
+        return;
+      }
+      
+      const img = document.createElement("img");
+      img.crossOrigin = "anonymous";
+      img.src = profileData.image;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+      
+      const detection = await faceApi
+        .detectSingleFace(img, new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+        
+      if (!detection) {
+        setFaceMsg("ภาพโปรไฟล์ไม่สมบูรณ์ — ข้ามการตรวจใบหน้า");
+        return;
+      }
+      
+      profileDescriptorRef.current = detection.descriptor;
+      setFaceStatus("detecting");
+      setFaceMsg("กำลังสแกนใบหน้า...");
+      
+      startLiveDetection();
+    } catch (err) {
+      console.error("Face API Error:", err);
+      setFaceStatus("error");
+      setFaceMsg("ตรวจใบหน้าขัดข้อง — ข้ามการตรวจ");
+    }
+  };
+
+  const startLiveDetection = () => {
+    if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+    
+    detectionIntervalRef.current = setInterval(async () => {
+      if (!videoRef.current || !faceApiRef.current || !profileDescriptorRef.current) return;
+      if (videoRef.current.readyState < 2) return;
+      
+      try {
+        const faceApi = faceApiRef.current;
+        const detection = await faceApi
+          .detectSingleFace(videoRef.current, new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+          
+        if (detection) {
+          const distance = faceApi.euclideanDistance(profileDescriptorRef.current, detection.descriptor);
+          if (distance <= 0.5) {
+            setFaceStatus("matched");
+            setFaceMsg(`✅ ยืนยันตัวตนสำเร็จ (${Math.round((1 - distance) * 100)}%)`);
+          } else {
+            setFaceStatus("not_matched");
+            setFaceMsg("❌ ใบหน้าไม่ตรงกับบัญชี");
+          }
+        } else {
+          setFaceStatus("detecting");
+          setFaceMsg("กรุณามองกล้อง");
+        }
+      } catch {}
+    }, 1500);
+  };
+
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus("error");
+      setLocationError("อุปกรณ์ไม่รองรับ GPS");
+      return;
+    }
+    setLocationStatus("searching");
+    setLocationError("");
+    
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocationStatus("found");
+      },
+      (err) => {
+        setLocationStatus("error");
+        setLocationError("ไม่สามารถจับพิกัดได้");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const openCamera = async (type: "in" | "out") => {
+    setActionType(type);
+    setIsCameraOpen(true);
+    setStatusMsg("");
+    getLocation();
+    
+    setTimeout(async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setCameraError("");
+          await videoRef.current.play().catch(console.error);
+          loadFaceApiAndProfile();
+        }
+      } catch (err: any) {
+        console.error("Camera Error:", err);
+        setCameraError("ไม่สามารถเข้าถึงกล้องได้");
+      }
+    }, 100);
+  };
+
+  const cancelCamera = () => {
+    if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+    setIsCameraOpen(false);
+    setActionType(null);
+    setFaceStatus("idle");
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((t) => t.stop());
+    }
+  };
+
+  const submitCheckIn = async () => {
+    if (faceStatus === "not_matched") {
+      alert("ใบหน้าไม่ตรงกับรูปโปรไฟล์บัญชี ไม่สามารถเช็คชื่อแทนกันได้");
+      return;
+    }
+
+    setIsProcessing(true);
+    setStatusMsg("กำลังประมวลผล...");
+
+    try {
+      let photoUrl = "";
+      if (videoRef.current) {
+        const canvas = document.createElement("canvas");
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/jpeg", 0.85));
+          if (blob) {
+            const file = new File([blob], "wfh-photo.jpg", { type: "image/jpeg" });
+            const compressed = await imageCompression(file, { maxSizeMB: 0.1, maxWidthOrHeight: 800 });
+            const uploadRes = await uploadFile(compressed, "attendance_photos");
+            if (uploadRes?.secure_url) photoUrl = uploadRes.secure_url;
+          }
+        }
+      }
+
+      if (!photoUrl) {
+        alert("ไม่สามารถอัปโหลดรูปภาพได้");
+        setIsProcessing(false);
+        return;
+      }
+
+      const endpoint = actionType === "in" ? "/api/attendance/check-in" : "/api/attendance/check-out";
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lat: location?.lat,
+          lng: location?.lng,
+          photoUrl,
+          deviceId: navigator.userAgent.substring(0, 80),
+          address: location ? `พิกัด: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}` : "ไม่ระบุตำแหน่ง",
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+        setStatusMsg(`บันทึกเวลา${actionType === "in" ? "เข้างาน" : "ออกงาน"}สำเร็จ!`);
+        setTimeout(() => {
+          cancelCamera();
+        }, 2000);
+      } else {
+        alert(data.message || "เช็คชื่อไม่สำเร็จ");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const faceUI = (() => {
+    switch (faceStatus) {
+      case "loading_models":
+      case "loading_profile":
+        return { icon: <Loader2 className="animate-spin" size={14} />, color: "bg-slate-100 text-slate-600" };
+      case "detecting":
+        return { icon: <Loader2 className="animate-spin" size={14} />, color: "bg-blue-100 text-blue-700 animate-pulse" };
+      case "matched":
+        return { icon: <ShieldCheck size={14} />, color: "bg-emerald-50 text-emerald-700" };
+      case "not_matched":
+        return { icon: <ShieldX size={14} />, color: "bg-rose-50 text-rose-700" };
+      default:
+        return null;
+    }
+  })();
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-6 px-2 font-sans selection:bg-blue-500/30 overflow-hidden relative">
-      {/* Background Blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/5 dark:bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-xl mx-auto relative z-10 space-y-8">
-        {/* Profile Card - Premium ID Badge Look */}
+        {/* Profile Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 overflow-hidden border border-slate-100 dark:border-zinc-800 p-6 relative group transition-all hover:shadow-2xl hover:shadow-blue-500/5"
+          className="w-full bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 overflow-hidden border border-slate-100 dark:border-zinc-800 p-6 relative group"
         >
-          <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-all group-hover:rotate-12">
-            <User size={100} className="text-blue-500" />
-          </div>
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10 text-center md:text-left">
+          <div className="flex items-center gap-6 relative z-10">
             <div className="relative group/avatar">
-              <div className="h-24 w-24 rounded-4xl overflow-hidden border-4 border-white dark:border-zinc-800 shadow-2xl shadow-black/10 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-500 hover:scale-105">
+              <div className="h-20 w-20 rounded-3xl overflow-hidden border-2 border-slate-100 dark:border-zinc-800 shadow-md flex items-center justify-center bg-slate-100 dark:bg-zinc-800">
                 {userImage ? (
                   <img src={userImage} alt={userName} className="h-full w-full object-cover" />
                 ) : (
-                  <User size={40} className="text-slate-300 dark:text-zinc-700" />
+                  <User size={32} className="text-slate-300 dark:text-zinc-700" />
                 )}
               </div>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-zinc-900 rounded-full flex items-center justify-center shadow-lg">
-                <ShieldCheck size={14} className="text-white" />
-              </div>
             </div>
-            <div className="flex-1 space-y-2">
-              <h1
-                className="font-black text-2xl sm:text-3xl text-slate-800 dark:text-white leading-none tracking-tight truncate max-w-[280px] mx-auto md:mx-0"
-                title={userName}
-              >
-                {userName}
-              </h1>
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" /> WFH ACTIVE
+            <div>
+              <h1 className="font-black text-2xl text-slate-800 dark:text-white leading-none tracking-tight">{userName}</h1>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 mt-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" /> WFH ACTIVE
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        {!isCameraOpen ? (
+          <>
+            {/* Clock Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="w-full bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100 dark:border-zinc-800 p-8 text-center"
+            >
+              <div className="text-6xl font-black tracking-tighter text-slate-800 dark:text-white font-mono flex items-baseline justify-center gap-1">
+                {mounted ? time.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) : "--:--"}
+                <span className="text-2xl text-blue-500/40 font-bold ml-1">
+                  {mounted ? time.getSeconds().toString().padStart(2, "0") : "--"}
                 </span>
               </div>
+              <div className="flex items-center justify-center text-slate-400 dark:text-zinc-500 gap-2 mt-4">
+                <CalendarDays size={16} />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  {mounted ? time.toLocaleDateString("th-TH", { weekday: "long", year: "numeric", month: "long", day: "numeric" }) : "LOADING..."}
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 gap-4">
+              <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-1 px-6">
+                ลงเวลาการปฏิบัติงาน
+              </h3>
+
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => openCamera("in")} className="block group w-full text-left">
+                <div className="bg-linear-to-r from-emerald-500 to-teal-600 p-6 rounded-4xl flex items-center justify-between shadow-xl shadow-emerald-500/20">
+                  <div className="flex items-center gap-6">
+                    <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white shadow-inner"><LogIn size={28} /></div>
+                    <div>
+                      <h2 className="font-black text-2xl text-white uppercase tracking-tight">ลงเวลาเข้างาน</h2>
+                      <p className="text-emerald-50/70 text-[10px] font-bold uppercase tracking-widest">Punch in for today session</p>
+                    </div>
+                  </div>
+                  <div className="bg-white/20 p-2.5 rounded-full text-white backdrop-blur-md group-hover:translate-x-1 transition-transform">
+                    <Camera size={20} />
+                  </div>
+                </div>
+              </motion.button>
+
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => openCamera("out")} className="block group w-full text-left">
+                <div className="bg-linear-to-r from-orange-500 to-rose-600 p-6 rounded-4xl flex items-center justify-between shadow-xl shadow-orange-500/20">
+                  <div className="flex items-center gap-6">
+                    <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white shadow-inner"><LogOut size={28} /></div>
+                    <div>
+                      <h2 className="font-black text-2xl text-white uppercase tracking-tight">ลงเวลาออกงาน</h2>
+                      <p className="text-rose-50/70 text-[10px] font-bold uppercase tracking-widest">Punch out and end shift</p>
+                    </div>
+                  </div>
+                  <div className="bg-white/20 p-2.5 rounded-full text-white backdrop-blur-md group-hover:translate-x-1 transition-transform">
+                    <Camera size={20} />
+                  </div>
+                </div>
+              </motion.button>
             </div>
-          </div>
-        </motion.div>
 
-        {/* Clock Section - Modern Minimalist */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="w-full bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl shadow-blue-500/5 overflow-hidden border border-slate-100 dark:border-zinc-800 p-10 text-center relative group"
-        >
-          <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-blue-500 to-indigo-600 opacity-50 group-hover:opacity-100 transition-opacity" />
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-slate-50 dark:bg-zinc-800 rounded-2xl text-slate-400">
-              <Clock size={28} />
+            {/* Feature Grid */}
+            <div className="space-y-4">
+              <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-1 px-6 mt-4">
+                เมนูเพิ่มเติม (Management)
+              </h3>
+              
+              <Link href="/wfh/history" className="block h-full">
+                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-3xl flex items-center gap-4 transition shadow-md hover:border-pink-200 dark:hover:border-pink-900/40">
+                  <div className="bg-pink-50 dark:bg-pink-500/10 p-4 rounded-2xl text-pink-500"><History size={24} /></div>
+                  <div>
+                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">ประวัติของฉัน</h2>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">My History</p>
+                  </div>
+                </div>
+              </Link>
+              
+              <Link href="/leave-request" className="block h-full">
+                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-3xl flex items-center gap-4 transition shadow-md hover:border-indigo-200">
+                  <div className="bg-indigo-50 dark:bg-indigo-500/10 p-4 rounded-2xl text-indigo-500"><CalendarDays size={24} /></div>
+                  <div>
+                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">แจ้งลางาน</h2>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Leave Request</p>
+                  </div>
+                </div>
+              </Link>
+
+              <Link href="/work-report" className="block h-full">
+                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-3xl flex items-center gap-4 transition shadow-md hover:border-blue-200">
+                  <div className="bg-blue-50 dark:bg-blue-500/10 p-4 rounded-2xl text-blue-500"><ClipboardList size={24} /></div>
+                  <div>
+                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">แบบสรุปรายงานผลการปฏิบัติงาน</h2>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Work Report</p>
+                  </div>
+                </div>
+              </Link>
             </div>
-          </div>
-          <div className="text-7xl font-black tracking-tighter text-slate-800 dark:text-white font-mono flex items-baseline justify-center gap-1 drop-shadow-sm">
-            {mounted
-              ? time.toLocaleTimeString("th-TH", {
-                  timeZone: "Asia/Bangkok",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "--:--"}
-            <span className="text-3xl text-blue-500/40 font-bold ml-1">
-              {mounted ? time.getSeconds().toString().padStart(2, "0") : "--"}
-            </span>
-          </div>
-          <div className="flex items-center justify-center text-slate-400 dark:text-zinc-500 gap-3 mt-6">
-            <CalendarDays size={18} />
-            <span className="text-xs font-black uppercase tracking-[0.2em]">
-              {mounted
-                ? time.toLocaleDateString("th-TH", {
-                    timeZone: "Asia/Bangkok",
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
-                : "LOADING..."}
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Action Buttons - Tactile & Color Coded */}
-        <div className="grid grid-cols-1 gap-4">
-          <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 px-6">
-            ลงเวลาการปฏิบัติงาน (Punch-In/Out)
-          </h3>
-
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Link href="/check-in?action=in" className="block group">
-              <div className="bg-linear-to-r from-emerald-500 to-teal-600 dark:from-emerald-600 dark:to-teal-700 p-6 rounded-4xl flex items-center justify-between transition shadow-2xl shadow-emerald-500/20 active:shadow-lg relative overflow-hidden">
-                <div className="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 rotate-12">
-                  <LogIn size={80} className="text-white" />
-                </div>
-                <div className="flex items-center gap-6 relative z-10">
-                  <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white shadow-inner">
-                    <LogIn size={28} />
-                  </div>
-                  <div className="text-left space-y-1">
-                    <h2 className="font-black text-2xl text-white uppercase tracking-tight">
-                      ลงเวลาเข้างาน
-                    </h2>
-                    <p className="text-emerald-50/70 text-[10px] font-bold uppercase tracking-widest">
-                      Punch in for today session
-                    </p>
-                  </div>
-                </div>
-                <div className="bg-white/20 p-2.5 rounded-full text-white backdrop-blur-md group-hover:translate-x-1 transition-transform relative z-10">
-                  <ArrowRight size={20} />
+          </>
+        ) : (
+          /* Camera UI */
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-4 shadow-xl border border-slate-100 dark:border-zinc-800"
+            >
+              <div className="flex items-center justify-between px-2 mb-4">
+                <h3 className="text-xl font-black text-slate-800 dark:text-white">
+                  {actionType === "in" ? "ลงเวลาเข้างาน" : "ลงเวลาออกงาน"}
+                </h3>
+                <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${actionType === "in" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
+                  {actionType === "in" ? "CHECK-IN" : "CHECK-OUT"}
                 </div>
               </div>
-            </Link>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Link href="/check-in?action=out" className="block group">
-              <div className="bg-linear-to-r from-orange-500 to-rose-600 dark:from-orange-600 dark:to-rose-700 p-6 rounded-4xl flex items-center justify-between transition shadow-2xl shadow-orange-500/20 active:shadow-lg relative overflow-hidden">
-                <div className="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 -rotate-12">
-                  <LogOut size={80} className="text-white" />
-                </div>
-                <div className="flex items-center gap-6 relative z-10">
-                  <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white shadow-inner">
-                    <LogOut size={28} />
+              
+              <div className="w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden relative mb-4 shadow-inner border-2 border-slate-100 dark:border-zinc-800">
+                {!cameraError ? (
+                  <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover scale-x-[-1]" />
+                ) : (
+                  <div className="p-6 text-center text-rose-500 mt-20">
+                    <Camera className="w-8 h-8 mx-auto mb-2" />
+                    <p className="text-xs">{cameraError}</p>
                   </div>
-                  <div className="text-left space-y-1">
-                    <h2 className="font-black text-2xl text-white uppercase tracking-tight">
-                      ลงเวลาออกงาน
-                    </h2>
-                    <p className="text-rose-50/70 text-[10px] font-bold uppercase tracking-widest">
-                      Punch out and end shift
-                    </p>
-                  </div>
-                </div>
-                <div className="bg-white/20 p-2.5 rounded-full text-white backdrop-blur-md group-hover:translate-x-1 transition-transform relative z-10">
-                  <ArrowRight size={20} />
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-        </div>
-
-        {/* Feature Grid - Themed Icons */}
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 px-6">
-            เมนูเพิ่มเติม (Management)
-          </h3>
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Link href="/leave-request" className="block h-full">
-              <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center gap-4 transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-indigo-200 dark:hover:border-indigo-900/40">
-                <div className="bg-indigo-50 dark:bg-indigo-500/10 p-4 rounded-2xl text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-sm">
-                  <CalendarDays size={24} />
-                </div>
-                <div className="text-left">
-                  <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight line-none">
-                    แจ้งลางาน
-                  </h2>
-                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
-                    Leave Request
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="sm:col-span-2"
-          >
-            <Link href="/work-report" className="block h-full">
-              <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center justify-between transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-blue-200 dark:hover:border-blue-900/60 overflow-hidden relative">
-                <div className="absolute right-0 top-0 p-6 opacity-0 group-hover:opacity-5 transition-all group-hover:rotate-12 translate-x-4 -translate-y-4">
-                  <ClipboardList size={120} className="text-blue-500" />
-                </div>
-                <div className="flex items-center gap-6 relative z-10">
-                  <div className="bg-blue-50 dark:bg-blue-500/10 p-5 rounded-3xl text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">
-                    <FileText size={28} />
-                  </div>
-                  <div className="text-left space-y-1">
-                    <h2 className="font-black text-xl text-slate-800 dark:text-zinc-100 uppercase tracking-tight">
-                      แบบสรุปรายงานผลการปฏิบัติงาน
-                    </h2>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">
-                      Daily activity & Project reporting
-                    </p>
+                )}
+                
+                {/* Overlays */}
+                <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5 pointer-events-none">
+                  {faceUI && (
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${faceUI.color}`}>
+                      {faceUI.icon} <span>{faceMsg}</span>
+                    </div>
+                  )}
+                  <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${locationStatus === "found" ? "bg-green-50 text-green-700" : "bg-slate-50 text-slate-500 animate-pulse"}`}>
+                    <MapPin size={12} />
+                    <span>{locationStatus === "searching" ? "กำลังตรวจพิกัด GPS..." : locationStatus === "found" ? "จับพิกัดแล้ว" : "ตรวจพิกัดขัดข้อง"}</span>
                   </div>
                 </div>
-                <div className="bg-blue-500 text-white p-2.5 rounded-full shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform relative z-10">
-                  <Plus size={20} />
-                </div>
+                
+                {statusMsg && (
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 text-center flex-col z-20">
+                    <CheckCircle className="text-emerald-400 w-16 h-16 mb-4" />
+                    <h2 className="text-white text-xl font-bold">{statusMsg}</h2>
+                  </div>
+                )}
               </div>
-            </Link>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Link href="/wfh/history" className="block h-full">
-              <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center gap-4 transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-pink-200 dark:hover:border-pink-900/40">
-                <div className="bg-pink-50 dark:bg-pink-500/10 p-4 rounded-2xl text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-sm">
-                  <History size={24} />
-                </div>
-                <div className="text-left">
-                  <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">
-                    ประวัติของฉัน
-                  </h2>
-                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
-                    My History
-                  </p>
-                </div>
+              
+              <div className="flex gap-2">
+                <button onClick={cancelCamera} className="flex-1 py-4 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-2xl font-black text-xs uppercase tracking-widest">
+                  ยกเลิก
+                </button>
+                <button 
+                  disabled={isProcessing || !location || faceStatus === "not_matched"} 
+                  onClick={submitCheckIn} 
+                  className={`flex-2 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all flex items-center justify-center gap-2 ${actionType === "in" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"} disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {isProcessing ? <Loader2 className="animate-spin" size={14} /> : <span>ยืนยัน{actionType === "in" ? "เข้างาน" : "ออกงาน"}</span>}
+                </button>
               </div>
-            </Link>
-          </motion.div>
-        </div>
-
-        <div className="pt-10 pb-6 text-center">
-          <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.4em]">
-            KTL by AllMaster • Workplace Portal
-          </p>
-        </div>
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
     </div>
   );

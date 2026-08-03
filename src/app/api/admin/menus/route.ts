@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import clientPromise from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { auth, hasPermission } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
 export async function GET(req: Request) {
@@ -27,9 +27,11 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     const role = (session?.user?.role || "").toLowerCase();
+    const department = (session?.user as any)?.department;
+    const faction = (session?.user as any)?.faction;
     
-    // Only super_admin or admin can create menus
-    if (!["super_admin", "admin"].includes(role)) {
+    const isAllowed = await hasPermission(role, "manage_navbar", department, faction);
+    if (!isAllowed) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -70,8 +72,11 @@ export async function PATCH(req: Request) {
   try {
     const session = await auth();
     const role = (session?.user?.role || "").toLowerCase();
+    const department = (session?.user as any)?.department;
+    const faction = (session?.user as any)?.faction;
     
-    if (!["super_admin", "admin"].includes(role)) {
+    const isAllowed = await hasPermission(role, "manage_navbar", department, faction);
+    if (!isAllowed) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -111,8 +116,11 @@ export async function DELETE(req: Request) {
   try {
     const session = await auth();
     const role = (session?.user?.role || "").toLowerCase();
+    const department = (session?.user as any)?.department;
+    const faction = (session?.user as any)?.faction;
     
-    if (!["super_admin", "admin"].includes(role)) {
+    const isAllowed = await hasPermission(role, "manage_navbar", department, faction);
+    if (!isAllowed) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

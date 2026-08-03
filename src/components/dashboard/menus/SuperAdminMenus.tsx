@@ -1,4 +1,4 @@
-﻿import { ActionCard } from "@/components/dashboard/DashboardCards";
+import { ActionCard } from "@/components/dashboard/DashboardCards";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
@@ -7,8 +7,17 @@ import {
   Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
   Database, ServerCrash, Smartphone, Download, UserPlus, Image as ImageIcon,
   BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
-  CalendarCheck, Shield, Bell, Globe, ArrowUpRight
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
 } from "lucide-react";
+
+const IconMap: any = {
+  Clock, BookOpen, MessageSquare, Layout, Users, Activity, FileText, CheckSquare,
+  BarChart3, MonitorPlay, Building2, UserCog, Settings, Flag, Briefcase, Key,
+  Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
+  Database, ServerCrash, Smartphone, Download, UserPlus, ImageIcon,
+  BookMarked, School, Presentation, Video, HardDrive, ScanLine, Navigation, ClipboardList, Layers, LayoutTemplate, Newspaper,
+  CalendarCheck, Shield, Bell, Globe, ArrowUpRight, BarChart2, Edit
+};
 
 export interface MenuProps {
   permissions: any;
@@ -188,6 +197,32 @@ export default function SuperAdminMenus({ permissions, customMenus, item, userRo
                       </div>
                     </button>
                   </motion.div>
+                )}
+              </div>
+            </div>
+
+            {/* ============================== */}
+            {/* MANUALS SECTION */}
+            {/* ============================== */}
+            <div className="mt-12">
+              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
+                  <HelpCircle className="w-4 h-4" /> ส่วนคู่มือ (Manuals)
+                  <span className="h-px bg-teal-500/10 flex-1" />
+                </h2>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  เอกสารคู่มือการใช้งานระบบ
+                </span>
+              </motion.div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                {permissions?.access_manual_gate_pass && (
+                  <ActionCard
+                    href="/manual/gate-pass"
+                    title="คู่มือระบบ Gate Pass"
+                    icon={BookOpen}
+                    desc="คำแนะนำการใช้ระบบ Gate Pass"
+                    variants={item}
+                  />
                 )}
               </div>
             </div>
