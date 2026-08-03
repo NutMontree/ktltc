@@ -936,7 +936,7 @@ export default function StudentCarePage() {
                         className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
                         value={newCare.department}
                         onChange={e => setNewCare({ ...newCare, department: e.target.value })}
-                        disabled={!!searchQuery && !!newCare.studentName} // Disable if student is selected from search
+                        disabled={!!searchQuery && !!newCare.studentName}
                       >
                         <option value="">-- ระบุแผนกวิชา --</option>
                         {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
@@ -944,6 +944,10 @@ export default function StudentCarePage() {
                             {opt.label}
                           </option>
                         ))}
+                        {/* Show current value if it doesn't match any option (legacy data) */}
+                        {newCare.department && !DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.some(o => o.value === newCare.department) && (
+                          <option value={newCare.department}>{newCare.department} (ข้อมูลเดิม)</option>
+                        )}
                       </select>
                     </div>
                     <div>

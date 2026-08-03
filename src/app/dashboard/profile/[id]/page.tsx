@@ -3859,26 +3859,28 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                     className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 appearance-none"
                   >
-                    <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
-                    <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                    {DEPARTMENT_GROUPS.map((group) => (
-                      <optgroup key={group.label} label={group.label}>
-                        {group.options.map((opt) => (
+                    {isStudent ? (
+                      <>
+                        <option value="">-- ระบุแผนกวิชา --</option>
+                        {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
                           <option key={opt.value} value={opt.value}>
                             {opt.label}
                           </option>
                         ))}
-                      </optgroup>
-                    ))}
-                    {profileOptions.departments
-                      .filter(
-                        (opt) =>
-                          opt !== "ไม่มีสังกัด" &&
-                          opt !== "ผู้บริหารสถานศึกษา" &&
-                          !DEPARTMENT_GROUPS.flatMap((g) => g.options.map((o) => o.value)).includes(opt)
-                      )
-                      .length > 0 && (
-                      <optgroup label="แผนก/ฝ่ายงานอื่นๆ (จากฐานข้อมูล)">
+                      </>
+                    ) : (
+                      <>
+                        <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
+                        <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                        {DEPARTMENT_GROUPS.map((group) => (
+                          <optgroup key={group.label} label={group.label}>
+                            {group.options.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
                         {profileOptions.departments
                           .filter(
                             (opt) =>
@@ -3886,12 +3888,23 @@ function FriendProfilePageContent({ id }: { id: string }) {
                               opt !== "ผู้บริหารสถานศึกษา" &&
                               !DEPARTMENT_GROUPS.flatMap((g) => g.options.map((o) => o.value)).includes(opt)
                           )
-                          .map((opt) => (
-                            <option key={`db-${opt}`} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                      </optgroup>
+                          .length > 0 && (
+                          <optgroup label="แผนก/ฝ่ายงานอื่นๆ (จากฐานข้อมูล)">
+                            {profileOptions.departments
+                              .filter(
+                                (opt) =>
+                                  opt !== "ไม่มีสังกัด" &&
+                                  opt !== "ผู้บริหารสถานศึกษา" &&
+                                  !DEPARTMENT_GROUPS.flatMap((g) => g.options.map((o) => o.value)).includes(opt)
+                              )
+                              .map((opt) => (
+                                <option key={`db-${opt}`} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                          </optgroup>
+                        )}
+                      </>
                     )}
                   </select>
                 </div>
