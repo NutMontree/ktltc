@@ -42,7 +42,7 @@ const SDQ_QUESTIONS = [
 
 const normalizeDept = (d: string) => {
   if (!d) return "";
-  return d.replace(/^(แผนกวิชา|ช่าง|แผนก)+/g, '').replace(/\s+/g, '').toLowerCase();
+  return d.replace(/^(แผนกวิชา|สาขาวิชา|สาขางาน|แผนก|สาขา|ช่าง)+/g, '').replace(/\s+/g, '').toLowerCase();
 };
 
 const calculateAge = (dobString: string) => {
