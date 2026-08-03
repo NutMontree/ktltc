@@ -821,14 +821,10 @@ export default function StudentCarePage() {
                     }}
                   >
                     <option value="">ทุกแผนกวิชา</option>
-                    {DEPARTMENT_GROUPS.map((group) => (
-                      <optgroup key={group.label} label={group.label}>
-                        {group.options.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </optgroup>
+                    {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
                     ))}
                   </select>
 
@@ -971,20 +967,21 @@ export default function StudentCarePage() {
                         disabled={!!searchQuery && !!newCare.studentName} // Disable if student is selected from search
                       >
                         <option value="">-- ระบุแผนกวิชา --</option>
-                        {DEPARTMENT_GROUPS.map((group) => (
-                          <optgroup key={group.label} label={group.label}>
-                            {group.options.map((opt) => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </option>
-                            ))}
-                          </optgroup>
+                        {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
                         ))}
                       </select>
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1.5">ชั้นเรียน/ห้อง</label>
-                      <input type="text" placeholder="เช่น พค.11" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
+                      <input type="text" list="classrooms-datalist-form" placeholder="เช่น พค.11" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
+                      <datalist id="classrooms-datalist-form">
+                        {classroomsList.map((c, i) => (
+                          <option key={i} value={c} />
+                        ))}
+                      </datalist>
                     </div>
                   </div>
                   <div className="col-span-1 relative">
