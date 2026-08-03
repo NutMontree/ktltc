@@ -929,37 +929,7 @@ export default function StudentCarePage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 mb-1.5">แผนกวิชา</label>
-                      <select
-                        className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
-                        value={newCare.department}
-                        onChange={e => setNewCare({ ...newCare, department: e.target.value })}
-                        disabled={!!searchQuery && !!newCare.studentName}
-                      >
-                        <option value="">-- ระบุแผนกวิชา --</option>
-                        {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                        {/* Show current value if it doesn't match any option (legacy data) */}
-                        {newCare.department && !DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.some(o => o.value === newCare.department) && (
-                          <option value={newCare.department}>{newCare.department} (ข้อมูลเดิม)</option>
-                        )}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 mb-1.5">ชั้นเรียน/ห้อง</label>
-                      <input type="text" list="classrooms-datalist-form" placeholder="เช่น พค.11" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
-                      <datalist id="classrooms-datalist-form">
-                        {classroomsList.map((c, i) => (
-                          <option key={i} value={c} />
-                        ))}
-                      </datalist>
-                    </div>
-                  </div>
+                  {/* ชื่อ-สกุล นักเรียน - อันดับแรก */}
                   <div className="col-span-1 relative">
                     <label className="block text-xs font-bold text-slate-500 mb-1.5">ชื่อ-สกุล นักเรียน</label>
                     <input
@@ -1004,6 +974,38 @@ export default function StudentCarePage() {
                         ))}
                       </div>
                     )}
+                  </div>
+                  {/* แผนกวิชา + ชั้นเรียน/ห้อง */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5">แผนกวิชา</label>
+                      <select
+                        className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
+                        value={newCare.department}
+                        onChange={e => setNewCare({ ...newCare, department: e.target.value })}
+                        disabled={!!searchQuery && !!newCare.studentName}
+                      >
+                        <option value="">-- ระบุแผนกวิชา --</option>
+                        {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                        {/* Show current value if it doesn't match any option (legacy data) */}
+                        {newCare.department && !DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.some(o => o.value === newCare.department) && (
+                          <option value={newCare.department}>{newCare.department} (ข้อมูลเดิม)</option>
+                        )}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5">ชั้นเรียน/ห้อง</label>
+                      <input type="text" list="classrooms-datalist-form" placeholder="เช่น พค.11" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
+                      <datalist id="classrooms-datalist-form">
+                        {classroomsList.map((c, i) => (
+                          <option key={i} value={c} />
+                        ))}
+                      </datalist>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                     <div>
