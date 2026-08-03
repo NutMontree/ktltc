@@ -31,7 +31,7 @@ export async function GET(req: Request) {
     const db = client.db("ktltc_db");
 
     // 1. Fetch expected users matching criteria (exclude super_admin and basic user/students)
-    const userMatch: any = { role: { $nin: ["super_admin", "user"] } };
+    const userMatch: any = { role: { $nin: ["super_admin", "user", "student"] } };
     if (roleParam !== "all") {
       userMatch.role = roleParam;
     }
