@@ -394,7 +394,7 @@ export default function RegisterPage() {
                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md cursor-pointer appearance-none"
                               required
                             >
-                              <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                              <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                               <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                               {DEPARTMENT_GROUPS.map((group) => (
                                 <optgroup key={group.label} label={group.label}>

@@ -894,7 +894,7 @@ export default function SuperAdminPage() {
                             onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
                             className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
                           >
-                            <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                            <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                             <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                             {DEPARTMENT_GROUPS.map((group) => (
                               <optgroup key={group.label} label={group.label}>
@@ -1122,7 +1122,7 @@ export default function SuperAdminPage() {
                                 }
                                 className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
                               >
-                                <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                                <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                                 <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                                 {DEPARTMENT_GROUPS.map((group) => (
                                   <optgroup key={group.label} label={group.label}>
@@ -1644,7 +1644,7 @@ export default function SuperAdminPage() {
                     onChange={(e) => changeDepartment(activeManageUser._id, e.target.value, activeManageUser.name)}
                     className="w-full text-sm font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-3 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer"
                   >
-                    <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                    <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                     <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                     {DEPARTMENT_GROUPS.map((group) => (
                       <optgroup key={group.label} label={group.label}>

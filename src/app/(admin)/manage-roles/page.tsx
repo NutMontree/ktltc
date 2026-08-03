@@ -349,7 +349,7 @@ export default function ManageRolesPage() {
                         disabled={isProtected}
                         className={`w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-2xl p-4 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none shadow-inner ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
-                        <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                        <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                         <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                         {DEPARTMENT_GROUPS.map((group) => (
                           <optgroup key={group.label} label={group.label}>
