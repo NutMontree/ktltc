@@ -42,7 +42,7 @@ const SDQ_QUESTIONS = [
 
 const normalizeDept = (d: string) => {
   if (!d) return "";
-  return d.replace(/^(ช่าง|แผนกวิชา)/, '').trim();
+  return d.replace(/^(แผนกวิชา|ช่าง|แผนก)/g, '').replace(/\s+/g, '').toLowerCase();
 };
 
 const calculateAge = (dobString: string) => {
@@ -427,8 +427,7 @@ export default function StudentCarePage() {
     setShowDropdown(false);
   };
 
-  const normalizeDept = (dept: string) => dept.replace(/\s+/g, '').toLowerCase();
-
+  // Outer normalizeDept used instead
   const calculateSDQ = () => {
     if (Object.keys(sdqAnswers).length < 25) {
       toast.error("กรุณาตอบคำถามให้ครบทั้ง 25 ข้อ");
@@ -496,8 +495,35 @@ export default function StudentCarePage() {
     setShowSDQModal(false);
   };
 
-  // Stats for Dashboard
-  const screeningRecords = records.filter(r => (r.recordType || 'screening') === 'screening');
+  const uniqueDepartmentsMap = new Map<string, string>();
+  records.forEach(r => {
+    if (r.department) {
+      const norm = normalizeDept(r.department as string);
+      if (!uniqueDepartmentsMap.has(norm)) {
+        // Save the first encountered original name, or prefer one with "แผนกวิชา" if available later?
+        // Let's just prefer the longest string as the display name (usually "แผนกวิชา...")
+        uniqueDepartmentsMap.set(norm, r.department as string);
+      } else {
+        const existing = uniqueDepartmentsMap.get(norm)!;
+        if ((r.department as string).length > existing.length) {
+          uniqueDepartmentsMap.set(norm, r.department as string);
+        }
+      }
+    }
+  });
+  const uniqueDepartments = Array.from(uniqueDepartmentsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+
+  const uniqueClassrooms = Array.from(new Set(records.filter(r => r.classroom && (!filterDepartment || normalizeDept(r.department as string) === normalizeDept(filterDepartment))).map(r => r.classroom as string))).sort();
+
+  // Base filter for Department and Classroom
+  const filteredByDeptAndClass = records.filter(r => {
+    if (filterDepartment && normalizeDept(r.department as string) !== normalizeDept(filterDepartment)) return false;
+    if (filterClassroom && r.classroom !== filterClassroom) return false;
+    return true;
+  });
+
+  // Stats for Dashboard (now respects dept/class filters)
+  const screeningRecords = filteredByDeptAndClass.filter(r => (r.recordType || 'screening') === 'screening');
   const sdqCounts = {
     normal: screeningRecords.filter(r => r.sdqType === 'normal').length,
     risk: screeningRecords.filter(r => r.sdqType === 'risk').length,
@@ -506,13 +532,8 @@ export default function StudentCarePage() {
   };
   const totalSdq = sdqCounts.normal + sdqCounts.risk + sdqCounts.problem + sdqCounts.special || 1;
 
-  const uniqueDepartments = Array.from(new Set(records.filter(r => r.department).map(r => r.department as string))).sort();
-  const uniqueClassrooms = Array.from(new Set(records.filter(r => r.classroom && (!filterDepartment || normalizeDept(r.department as string) === normalizeDept(filterDepartment))).map(r => r.classroom as string))).sort();
-
-  const displayedRecords = records.filter(r => {
+  const displayedRecords = filteredByDeptAndClass.filter(r => {
     if ((r.recordType || 'screening') !== viewTab) return false;
-    if (filterDepartment && normalizeDept(r.department as string) !== normalizeDept(filterDepartment)) return false;
-    if (filterClassroom && r.classroom !== filterClassroom) return false;
     if (filterSdqType && r.sdqType !== filterSdqType) return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
@@ -983,7 +1004,7 @@ export default function StudentCarePage() {
                     )}
                   </div>
                   {/* แผนกวิชา + ชั้นเรียน/ห้อง */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1.5">แผนกวิชา</label>
                       <select
@@ -1027,7 +1048,7 @@ export default function StudentCarePage() {
                         <option value="หญิง">หญิง</option>
                       </select>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-bold text-slate-500 mb-1.5">วัน/เดือน/ปีเกิด</label>
                         <DatePicker
@@ -1194,7 +1215,8 @@ export default function StudentCarePage() {
                     ยังไม่มีประวัติการบันทึก{viewTab === 'home_visit' ? 'เยี่ยมบ้าน' : 'คัดกรอง'}
                   </div>
                 ) : viewMode === 'table' ? (
-                  <table className="w-full text-left border-collapse min-w-[800px]">
+                  <div className="w-full overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                       <tr className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/80 text-slate-500 text-xs uppercase tracking-wider">
                         <th className="p-5 font-bold">วันที่</th>
@@ -1248,6 +1270,7 @@ export default function StudentCarePage() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 ) : (
                   displayedRecords.slice(0, displayLimit).map((r: any) => (
                     <div key={r._id} onClick={() => { setViewRecord(r); setCurrentImageIndex(0); }} className={`cursor-pointer bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group hover:border-teal-300 dark:hover:border-teal-700/50 ${viewMode === 'list' ? 'flex flex-row h-48' : 'flex flex-col'}`}>
@@ -1384,7 +1407,7 @@ export default function StudentCarePage() {
                       {SDQ_QUESTIONS.map((q) => (
                         <div key={q.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 hover:border-teal-300 dark:hover:border-teal-700/50 transition-colors">
                           <p className="font-bold text-slate-700 dark:text-zinc-200 mb-3 text-sm">{q.text}</p>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                             <button
                               onClick={() => setSdqAnswers({ ...sdqAnswers, [q.id]: 0 })}
                               className={`py-2 rounded-xl text-xs font-black transition-all border ${sdqAnswers[q.id] === 0 ? 'bg-teal-500 text-white border-teal-600 shadow-md shadow-teal-500/20' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-700'}`}
@@ -1491,7 +1514,7 @@ export default function StudentCarePage() {
 
                             <div className="mb-3">
                               <p className="text-xs font-bold text-slate-500 mb-2">การคบเพื่อน</p>
-                              <div className="grid grid-cols-4 gap-2">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                                 {[
                                   { val: 0, label: "ไม่" },
                                   { val: 1, label: "เล็กน้อย" },
@@ -1511,7 +1534,7 @@ export default function StudentCarePage() {
 
                             <div>
                               <p className="text-xs font-bold text-slate-500 mb-2">การเรียนในห้องเรียน</p>
-                              <div className="grid grid-cols-4 gap-2">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                                 {[
                                   { val: 0, label: "ไม่" },
                                   { val: 1, label: "เล็กน้อย" },

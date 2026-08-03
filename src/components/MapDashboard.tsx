@@ -97,7 +97,7 @@ export default function MapDashboard({
               <div className="px-3 text-center w-full">
                 <p className="font-black text-slate-800 dark:text-white text-xs uppercase tracking-tight leading-tight mb-1">{m.name}</p>
                 <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold mb-1.5">
-                  ระดับชั้น: {m.academicLevel || "ไม่ระบุชั้นปี"}
+                  {m.department ? `แผนก/ฝ่าย: ${m.department}` : `ระดับชั้น: ${m.academicLevel || "ไม่ระบุชั้นปี"}`}
                 </p>
                 <p className="text-[9px] text-slate-400 dark:text-zinc-500 font-medium mb-2">
                   {new Date(m.time).toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' })} น.
@@ -140,7 +140,7 @@ export default function MapDashboard({
       <MapContainer
         center={dynamicCenter}
         zoom={15}
-        minZoom={10}
+        minZoom={5}
         maxZoom={22}
         zoomControl={false}
         scrollWheelZoom={true}

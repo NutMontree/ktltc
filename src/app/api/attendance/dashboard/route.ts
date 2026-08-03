@@ -280,7 +280,9 @@ export async function GET(req: Request) {
           lng: "$checkIn.location.lng",
           status: "$status",
           time: "$checkIn.time",
-          photoUrl: "$checkIn.photoUrl"
+          department: "$userDetails.department",
+          role: "$userDetails.role",
+          photoUrl: { $cond: [{ $in: ["$checkIn.photoUrl", [null, ""]] }, "$userDetails.image", "$checkIn.photoUrl"] }
         }
       }
     ]).toArray();

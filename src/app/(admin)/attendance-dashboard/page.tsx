@@ -21,6 +21,7 @@ import {
   BarChart3,
   ListRestart,
   Building2,
+  X,
 } from "lucide-react";
 import { 
   PieChart, 
@@ -50,6 +51,166 @@ const MapDashboard = dynamic(() => import("@/components/MapDashboard"), {
   ),
 });
 
+// Animated Number Component
+function AnimatedNumber({ value, duration = 1.5 }: { value: number; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (value !== displayValue) {
+      setIsAnimating(true);
+      const startValue = displayValue;
+      const endValue = value;
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / (duration * 1000), 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+
+        setDisplayValue(Math.round(startValue + (endValue - startValue) * easeProgress));
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setIsAnimating(false);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }
+  }, [value, displayValue, duration]);
+
+  return (
+    <motion.span
+      animate={{
+        scale: isAnimating ? [1, 1.1, 1] : 1,
+        color: isAnimating ? ["#1e293b", "#4f46e5", "#1e293b"] : "#1e293b",
+      }}
+      transition={{ duration: 0.8 }}
+      className="inline-block"
+    >
+      {displayValue}
+    </motion.span>
+  );
+}
+
+// Delta Badge Component
+function DeltaBadge({ delta }: { delta: number }) {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    if (delta > 0) {
+      setShow(true);
+      const timer = setTimeout(() => {
+        setShow(false);
+      }, 60000);
+      return () => clearTimeout(timer);
+    }
+  }, [delta]);
+
+  if (delta <= 0 || !show) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.5 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.5 }}
+      transition={{ duration: 1.0, type: "spring" }}
+      className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg z-20"
+    >
+      +{delta}
+    </motion.div>
+  );
+}
+
+// Status Modal Component
+function StatusModal({ isOpen, onClose, date, statusLabel, statusType }: { isOpen: boolean, onClose: () => void, date: string, statusLabel: string, statusType: string }) {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchData();
+    }
+  }, [isOpen, date, statusType]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/attendance/report?startDate=${date}&endDate=${date}&role=all`);
+      const json = await res.json();
+      if (json.success && json.data) {
+        let filtered = json.data;
+        if (statusType !== 'All') {
+          filtered = json.data.filter((d: any) => d.status === statusType);
+        }
+        setData(filtered);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="bg-white dark:bg-zinc-900 rounded-4xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden border border-slate-200 dark:border-zinc-800"
+        >
+          <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50">
+            <div>
+              <h2 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">รายชื่อบุคลากร</h2>
+              <p className="text-sm font-bold text-slate-500 mt-1">{statusLabel} ({data.length} คน)</p>
+            </div>
+            <button onClick={onClose} className="p-2 bg-slate-200 dark:bg-zinc-800 rounded-full hover:bg-slate-300 dark:hover:bg-zinc-700 transition-colors">
+              <X size={20} className="text-slate-600 dark:text-zinc-400" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {loading ? (
+              <div className="py-12 flex flex-col items-center justify-center gap-3">
+                <LucideLoader className="animate-spin text-blue-500" size={32} />
+                <p className="text-xs font-black uppercase text-slate-400">กำลังโหลดข้อมูล...</p>
+              </div>
+            ) : data.length === 0 ? (
+              <div className="py-12 text-center font-bold text-slate-400">ไม่มีข้อมูล</div>
+            ) : (
+              data.map((item: any) => (
+                <div key={item.id} className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:shadow-md transition-shadow">
+                  {item.user?.image ? (
+                    <img src={item.user.image} alt={item.user.name} className="w-12 h-12 rounded-full object-cover border border-slate-200 dark:border-zinc-700" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-400 border border-slate-200 dark:border-zinc-700">
+                      <Users size={20} />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-slate-800 dark:text-white truncate">{item.user?.name}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide truncate">{item.user?.department}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400">
+                      {item.checkInTime ? new Date(item.checkInTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.' : '-'}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+}
+
 export default function AdminAttendanceDashboard() {
   const [selectedDate, setSelectedDate] = useState(() => {
     const d = new Date();
@@ -70,6 +231,15 @@ export default function AdminAttendanceDashboard() {
   const [departmentStats, setDepartmentStats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [realTotal, setRealTotal] = useState(0);
+  const [modalState, setModalState] = useState<{isOpen: boolean, statusType: string, statusLabel: string}>({isOpen: false, statusType: '', statusLabel: ''});
+  
+  const [previousData, setPreviousData] = useState([
+    { name: "มาทำงานตรงเวลา", value: 0, color: "#10b981" },
+    { name: "มาสาย", value: 0, color: "#f59e0b" },
+    { name: "ลา / ขาด", value: 0, color: "#f43f5e" },
+  ]);
+  const [deltas, setDeltas] = useState([0, 0, 0, 0]); // 4th delta is for total
+
 
   useEffect(() => {
     async function fetchStats() {
@@ -78,6 +248,19 @@ export default function AdminAttendanceDashboard() {
         const res = await fetch(`/api/attendance/dashboard?date=${selectedDate}&range=${trendRange}&_t=${Date.now()}`);
         const json = await res.json();
         if (json.success) {
+          // Calculate deltas
+          const newTotal = json.totalEmployees || 0;
+          const oldTotal = previousData.reduce((acc, curr) => acc + curr.value, 0) || newTotal;
+          const totalDelta = newTotal - (realTotal || newTotal);
+          
+          const newDeltas = json.data.map((newItem: any, idx: number) => {
+            const oldValue = previousData[idx]?.value || 0;
+            return newItem.value - oldValue;
+          });
+          
+          setDeltas([...newDeltas, totalDelta]);
+          setPreviousData(json.data);
+
           setData(json.data);
           setMarkers(json.markers || []);
           setRealTotal(json.totalEmployees || 0);
@@ -125,6 +308,13 @@ export default function AdminAttendanceDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-6 font-sans selection:bg-blue-500/30 overflow-x-hidden relative">
+      <StatusModal 
+        isOpen={modalState.isOpen} 
+        onClose={() => setModalState({...modalState, isOpen: false})} 
+        date={selectedDate} 
+        statusType={modalState.statusType}
+        statusLabel={modalState.statusLabel}
+      />
       {/* Background Blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
@@ -172,6 +362,8 @@ export default function AdminAttendanceDashboard() {
               icon: Users,
               theme: "indigo",
               delay: 0,
+              statusType: "All",
+              delta: deltas[3] || 0
             },
             {
               label: "สถานะการมาทำงานปกติ (ตรงเวลา)",
@@ -180,6 +372,8 @@ export default function AdminAttendanceDashboard() {
               icon: Activity,
               theme: "emerald",
               delay: 0.1,
+              statusType: "Present",
+              delta: deltas[0] || 0
             },
             {
               label: "สถานะการเข้างาน (สาย)",
@@ -188,6 +382,8 @@ export default function AdminAttendanceDashboard() {
               icon: Clock,
               theme: "amber",
               delay: 0.2,
+              statusType: "Late",
+              delta: deltas[1] || 0
             },
             {
               label: "สถานะการลางาน / ขาดงาน",
@@ -196,6 +392,8 @@ export default function AdminAttendanceDashboard() {
               icon: AlertTriangle,
               theme: "rose",
               delay: 0.3,
+              statusType: "Absent",
+              delta: deltas[2] || 0
             },
           ].map((stat, idx) => {
             const Icon = stat.icon;
@@ -205,7 +403,8 @@ export default function AdminAttendanceDashboard() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: stat.delay, type: "spring", damping: 15 }}
-                className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-6 shadow-2xl shadow-black/3 relative group overflow-hidden transition-all hover:shadow-indigo-500/5 hover:-translate-y-1.5"
+                onClick={() => setModalState({ isOpen: true, statusType: stat.statusType, statusLabel: stat.label })}
+                className="cursor-pointer bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-6 shadow-2xl shadow-black/3 relative group overflow-hidden transition-all hover:shadow-indigo-500/5 hover:-translate-y-1.5"
               >
                 <div
                   className={`absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-all group-hover:scale-125 duration-700 text-${stat.theme}-600`}
@@ -213,10 +412,13 @@ export default function AdminAttendanceDashboard() {
                   <Icon size={120} />
                 </div>
                 <div className="flex flex-col items-start gap-6 relative z-10">
-                  <div
-                    className={`p-4 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-2xl shadow-sm border border-${stat.theme}-100 dark:border-${stat.theme}-900/30 group-hover:rotate-12 transition-transform`}
-                  >
-                    <Icon size={24} />
+                  <div className="relative">
+                    <div
+                      className={`p-4 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-2xl shadow-sm border border-${stat.theme}-100 dark:border-${stat.theme}-900/30 group-hover:rotate-12 transition-transform`}
+                    >
+                      <Icon size={24} />
+                    </div>
+                    <DeltaBadge delta={stat.delta} />
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-2">
@@ -224,7 +426,7 @@ export default function AdminAttendanceDashboard() {
                     </p>
                     <div className="flex items-baseline gap-2">
                       <h2 className="text-5xl font-black text-slate-800 dark:text-white tracking-tighter leading-none">
-                        {stat.val}
+                        <AnimatedNumber value={stat.val} />
                       </h2>
                       <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                         {stat.unit}
