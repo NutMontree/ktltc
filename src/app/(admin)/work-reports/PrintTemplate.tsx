@@ -86,13 +86,22 @@ export const PrintTemplate = forwardRef<HTMLDivElement, PrintTemplateProps>(
                 <h2 className="text-2xl">วิทยาลัยเทคนิคกันทรลักษ์</h2>
               </div>
               
-              <div className="mb-6 grid grid-cols-2 gap-4">
-                <div><strong>ชื่อ-สกุล:</strong> {report.user?.name || "-"}</div>
-                <div><strong>ตำแหน่ง:</strong> {roleName}</div>
-                <div><strong>แผนก:</strong> {report.user?.department || "-"}</div>
-                <div>
-                  <strong>วันที่:</strong>{" "}
-                  {format(new Date(report.date), "dd MMMM yyyy", { locale: th })}
+              <div className="mb-6 flex gap-6 items-center">
+                {report.user?.image ? (
+                  <img src={report.user.image} alt={report.user.name} className="w-[2in] h-[2in] rounded-xl object-cover object-center border border-gray-300 shadow-sm shrink-0" />
+                ) : (
+                  <div className="w-[2in] h-[2in] rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 font-bold text-4xl border border-gray-300 shadow-sm shrink-0">
+                    {report.user?.name ? report.user.name.charAt(0) : "?"}
+                  </div>
+                )}
+                <div className="grid grid-cols-2 gap-x-12 gap-y-4 flex-1">
+                  <div><strong>ชื่อ-สกุล:</strong> {report.user?.name || "-"}</div>
+                  <div><strong>ตำแหน่ง:</strong> {roleName}</div>
+                  <div><strong>แผนก:</strong> {report.user?.department || "-"}</div>
+                  <div>
+                    <strong>วันที่:</strong>{" "}
+                    {format(new Date(report.date), "dd MMMM yyyy", { locale: th })}
+                  </div>
                 </div>
               </div>
 

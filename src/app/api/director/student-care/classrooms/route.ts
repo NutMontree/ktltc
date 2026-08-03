@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import User from "@/models/User";
+import clientPromise from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    await connectDB();
-    const classGroups = await User.distinct("classGroupId", { role: "student" });
-    const classrooms = await User.distinct("classroomName", { role: "student" });
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const classGroups = await db.collection("users").distinct("classGroupId", { role: "student" });
+    const classrooms = await db.collection("users").distinct("classroomName", { role: "student" });
     
     let all = [...new Set([...classGroups, ...classrooms])].filter(c => c && isNaN(Number(c)));
     all.sort();

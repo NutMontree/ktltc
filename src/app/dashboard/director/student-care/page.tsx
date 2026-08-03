@@ -105,6 +105,58 @@ export default function StudentCarePage() {
     studentProfileImage: ""
   });
 
+  const [roleMap, setRoleMap] = useState<Record<string, string>>({ all: "ทั้งหมด" });
+  const [classroomsList, setClassroomsList] = useState<string[]>([]);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+
+  const printAllRef = useRef<HTMLDivElement>(null);
+  const printIndividualRef = useRef<HTMLDivElement>(null);
+
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  const handlePrintAll = useReactToPrint({
+    contentRef: printAllRef,
+    documentTitle: `รายงานการปฏิบัติงาน_ทั้งหมด`,
+  });
+
+  const handlePrintIndividual = useReactToPrint({
+    contentRef: printIndividualRef,
+    documentTitle: `รายงานการปฏิบัติงาน_${selectedReport?.user?.name || "รายบุคคล"}`,
+  });
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch("/api/admin/role-settings");
+        const data = await res.json();
+        const map: Record<string, string> = { all: "ทั้งหมด" };
+        data.forEach((r: any) => {
+          if (!["system_global", "student", "user", "super_admin"].includes(r.role)) {
+            map[r.role] = r.roleName;
+          }
+        });
+        setRoleMap(map);
+      } catch (err) {
+        console.error("Failed to fetch roles", err);
+      }
+    };
+
+    const fetchClassrooms = async () => {
+      try {
+        const res = await fetch("/api/director/student-care/classrooms");
+        const data = await res.json();
+        if (data.success) {
+          setClassroomsList(data.classrooms);
+        }
+      } catch (err) {
+        console.error("Failed to fetch classrooms", err);
+      }
+    };
+
+    fetchRoles();
+    fetchClassrooms();
+  }, []);
+
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
