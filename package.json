@@ -111,8 +111,8 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/file-saver": "^2.0.7",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "^26.1.1",
-    "@types/react": "^19.2.9",
+    "@types/node": "26.1.2",
+    "@types/react": "19.2.18",
     "@types/react-dom": "^19.2.3",
     "@types/react-leaflet": "^2.8.3",
     "babel-plugin-react-compiler": "1.0.0",
@@ -121,6 +121,6 @@
     "pm2": "^7.0.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "5.9.3"
   }
 }

@@ -271,7 +271,7 @@ export default function AdminWorkReportsPage() {
             </button>
 
             <button
-              onClick={() => handleExportPDF("all")}
+              onClick={handlePrintAll}
               disabled={isExportingPdf}
               className="group flex items-center gap-2 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 text-slate-800 dark:text-neutral-100 px-6 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all font-black border border-slate-200 dark:border-neutral-700 active:scale-95 disabled:opacity-50"
             >
@@ -676,7 +676,7 @@ export default function AdminWorkReportsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleExportPDF("individual")}
+                      onClick={handlePrintIndividual}
                       disabled={isExportingPdf}
                       className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full hover:bg-red-100 transition-colors shadow-sm disabled:opacity-50"
                       title="Export PDF"
