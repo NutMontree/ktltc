@@ -13,7 +13,7 @@ export const PrintTemplate = forwardRef<HTMLDivElement, PrintTemplateProps>(
     if (!reports || reports.length === 0) return null;
 
     return (
-      <div ref={ref} className="bg-white text-black p-0 hidden print:block w-full">
+      <div ref={ref} className="bg-white text-black p-0 w-full">
         <style type="text/css" media="print">
           {`
             @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');

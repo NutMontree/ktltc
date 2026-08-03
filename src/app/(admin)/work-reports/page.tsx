@@ -44,6 +44,33 @@ export default function AdminWorkReportsPage() {
   const printAllRef = useRef<HTMLDivElement>(null);
   const printIndividualRef = useRef<HTMLDivElement>(null);
 
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  const handleExportPDF = async (type: "all" | "individual") => {
+    try {
+      setIsExportingPdf(true);
+      const element = type === "all" ? printAllRef.current : printIndividualRef.current;
+      if (!element) return;
+
+      const html2pdf = (await import("html2pdf.js")).default;
+      
+      const opt = {
+        margin:       10,
+        filename:     `work_report_${type === "all" ? "all" : selectedReport?.user?.name || "individual"}.pdf`,
+        image:        { type: "jpeg", quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: "mm", format: "a4", orientation: "portrait" }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+    } catch (error) {
+      console.error("Export PDF error:", error);
+      alert("เกิดข้อผิดพลาดในการ Export PDF");
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
+
   const handlePrintAll = useReactToPrint({
     contentRef: printAllRef,
     documentTitle: `รายงานการปฏิบัติงาน_ทั้งหมด`,
@@ -244,11 +271,16 @@ export default function AdminWorkReportsPage() {
             </button>
 
             <button
-              onClick={() => handlePrintAll()}
-              className="group flex items-center gap-2 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 text-slate-800 dark:text-neutral-100 px-6 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all font-black border border-slate-200 dark:border-neutral-700 active:scale-95"
+              onClick={() => handleExportPDF("all")}
+              disabled={isExportingPdf}
+              className="group flex items-center gap-2 bg-white dark:bg-neutral-800 hover:bg-slate-50 dark:hover:bg-neutral-700 text-slate-800 dark:text-neutral-100 px-6 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all font-black border border-slate-200 dark:border-neutral-700 active:scale-95 disabled:opacity-50"
             >
-              <Printer size={20} className="text-slate-500 group-hover:text-slate-800 dark:group-hover:text-white transition-colors" />
-              <span className="hidden xl:inline">พิมพ์ PDF</span>
+              {isExportingPdf ? (
+                <Loader2 size={20} className="animate-spin text-slate-500" />
+              ) : (
+                <FileText size={20} className="text-red-500 group-hover:text-red-600 transition-colors" />
+              )}
+              <span className="hidden xl:inline">Export PDF</span>
             </button>
 
             <button
@@ -644,11 +676,16 @@ export default function AdminWorkReportsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handlePrintIndividual()}
-                      className="p-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full hover:bg-indigo-100 transition-colors shadow-sm"
-                      title="พิมพ์ PDF"
+                      onClick={() => handleExportPDF("individual")}
+                      disabled={isExportingPdf}
+                      className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full hover:bg-red-100 transition-colors shadow-sm disabled:opacity-50"
+                      title="Export PDF"
                     >
-                      <Printer size={24} />
+                      {isExportingPdf ? (
+                        <Loader2 size={24} className="animate-spin" />
+                      ) : (
+                        <FileText size={24} />
+                      )}
                     </button>
                     <button
                       onClick={() => setSelectedReport(null)}
@@ -1071,7 +1108,7 @@ export default function AdminWorkReportsPage() {
       </AnimatePresence>
 
       {/* Hidden Print Templates */}
-      <div className="hidden">
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', width: '210mm', opacity: 0, pointerEvents: 'none', zIndex: -100 }}>
         <PrintTemplate ref={printAllRef} reports={filteredReports} roleMap={roleMap} dailySummary={dailySummary} />
         {selectedReport && (
           <PrintTemplate ref={printIndividualRef} reports={[selectedReport]} roleMap={roleMap} />
