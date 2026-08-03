@@ -88,7 +88,7 @@ export default function AdminWorkReportsPage() {
         const data = await res.json();
         const map: Record<string, string> = { all: "ทั้งหมด" };
         data.forEach((r: any) => {
-          if (r.role !== "system_global") {
+          if (!["system_global", "student", "user", "super_admin"].includes(r.role)) {
             map[r.role] = r.roleName;
           }
         });
