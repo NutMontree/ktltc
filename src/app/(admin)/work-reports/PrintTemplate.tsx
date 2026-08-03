@@ -33,7 +33,7 @@ export const PrintTemplate = forwardRef<HTMLDivElement, PrintTemplateProps>(
             </div>
 
             {dailySummary.filter(sum => sum.submittedUsers?.length > 0).map((sum, i) => (
-              <div key={i} className="mb-8 break-inside-avoid">
+              <div key={i} className="mb-8">
                 <h3 className="text-2xl font-bold border-b border-gray-300 mb-3 pb-1">
                   วันที่: {format(new Date(sum.date), "dd MMMM yyyy", { locale: th })}
                 </h3>
