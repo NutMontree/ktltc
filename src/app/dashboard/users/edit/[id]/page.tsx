@@ -723,8 +723,9 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                       {/* All specific fields grouped by category */}
                       <div className="space-y-8">
                         {/* 1. Student Information */}
-                        <div className="space-y-6">
-                          <h4 className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest border-l-4 border-blue-500 pl-3">
+                        {formData.role === "student" && (
+                          <div className="space-y-6">
+                            <h4 className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest border-l-4 border-blue-500 pl-3">
                             ข้อมูลนักเรียน / นักศึกษา
                           </h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -873,9 +874,11 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                             </button>
                           </div>
                         </div>
+                        )}
 
                         {/* 2. Employee Information */}
-                        <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-zinc-800">
+                        {formData.role !== "student" && (
+                          <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-zinc-800">
                           <h4 className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-l-4 border-indigo-500 pl-3">
                             ข้อมูลบุคลากร / เจ้าหน้าที่
                           </h4>
@@ -961,6 +964,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
                             </div>
                           </div>
                         </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
