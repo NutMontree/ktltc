@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast";
 import { uploadFile } from "@/lib/upload";
 import * as XLSX from "xlsx";
+import { DEPARTMENT_GROUPS } from "@/constants/departments";
 
 const SDQ_QUESTIONS = [
   { id: 1, text: "1. ห่วงใยความรู้สึกของคนอื่น", category: "P", reverse: false },
@@ -768,8 +769,14 @@ export default function StudentCarePage() {
                     }}
                   >
                     <option value="">ทุกแผนกวิชา</option>
-                    {uniqueDepartments.map(dep => (
-                      <option key={dep} value={dep}>{dep}</option>
+                    {DEPARTMENT_GROUPS.map((group) => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
 
@@ -905,7 +912,23 @@ export default function StudentCarePage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1.5">แผนกวิชา</label>
-                      <input type="text" placeholder="เช่น ช่างยนต์" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.department} onChange={e => setNewCare({ ...newCare, department: e.target.value })} />
+                      <select
+                        className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
+                        value={newCare.department}
+                        onChange={e => setNewCare({ ...newCare, department: e.target.value })}
+                        disabled={!!searchQuery && !!newCare.studentName} // Disable if student is selected from search
+                      >
+                        <option value="">-- ระบุแผนกวิชา --</option>
+                        {DEPARTMENT_GROUPS.map((group) => (
+                          <optgroup key={group.label} label={group.label}>
+                            {group.options.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1.5">ชั้นเรียน/ห้อง</label>
