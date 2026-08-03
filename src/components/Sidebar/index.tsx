@@ -28,7 +28,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
   const [customMenus, setCustomMenus] = useState<any[]>([]);
   const { data: session } = useSession();
-  const permissions = session?.user?.permissions || {};
+  const permissions = (session?.user as any)?.permissions || {};
 
   useEffect(() => {
     const fetchMenus = async () => {

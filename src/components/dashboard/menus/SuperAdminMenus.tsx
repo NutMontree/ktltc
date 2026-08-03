@@ -199,31 +199,27 @@ export default function SuperAdminMenus({ permissions, customMenus, item, userRo
                   </motion.div>
                 )}
               </div>
-            </div>
-
-            {/* ============================== */}
-            {/* MANUALS SECTION */}
-            {/* ============================== */}
-            <div className="mt-12">
-              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
-                  <HelpCircle className="w-4 h-4" /> ส่วนคู่มือ (Manuals)
-                  <span className="h-px bg-teal-500/10 flex-1" />
-                </h2>
-                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  เอกสารคู่มือการใช้งานระบบ
-                </span>
-              </motion.div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                {permissions?.access_manual_gate_pass && (
-                  <ActionCard
-                    href="/manual/gate-pass"
-                    title="คู่มือระบบ Gate Pass"
-                    icon={BookOpen}
-                    desc="คำแนะนำการใช้ระบบ Gate Pass"
-                    variants={item}
-                  />
-                )}
+              <div className="mt-12">
+                <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+                  <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
+                    <HelpCircle className="w-4 h-4" /> ส่วนคู่มือ (Manuals)
+                    <span className="h-px bg-teal-500/10 flex-1" />
+                  </h2>
+                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                    เอกสารคู่มือการใช้งานระบบ
+                  </span>
+                </motion.div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                  {permissions?.access_manual_gate_pass && (
+                    <ActionCard
+                      href="/manual/gate-pass"
+                      title="คู่มือระบบ Gate Pass"
+                      icon={BookOpen}
+                      desc="คำแนะนำการใช้ระบบ Gate Pass"
+                      variants={item}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           )}
