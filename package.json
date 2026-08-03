@@ -57,6 +57,7 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^12.34.0",
     "gray-matter": "^4.0.3",
+    "html2pdf.js": "^0.14.0",
     "html5-qrcode": "^2.3.8",
     "import": "^0.0.6",
     "isomorphic-dompurify": "^3.19.0",
