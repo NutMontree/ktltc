@@ -111,7 +111,7 @@ export default function NotificationBell() {
       url = `/dashboard/profile/${n.from}`;
     }
 
-    if (url) {
+    if (url && url !== "#") {
       router.push(url);
       setOpen(false);
     } else {

@@ -119,13 +119,15 @@ export default function NotificationsPage() {
 
     // Navigate for other notifications
     let url = n.targetUrl;
-    if (!url) {
+    if (!url || url === "#") {
       if (n.type === "friend_request" || n.type === "friend_accept") {
         url = `/dashboard/profile/${n.from}`;
+      } else {
+        url = ""; // Clear it so it doesn't navigate
       }
     }
 
-    if (url) {
+    if (url && url !== "#") {
       router.push(url);
     } else {
       setSelectedNotification(n);
