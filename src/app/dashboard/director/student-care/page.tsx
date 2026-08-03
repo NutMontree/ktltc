@@ -40,6 +40,11 @@ const SDQ_QUESTIONS = [
   { id: 25, text: "25. ทำงานได้จนเสร็จ มีความตั้งใจในการทำงาน", category: "H", reverse: true }
 ];
 
+const normalizeDept = (d: string) => {
+  if (!d) return "";
+  return d.replace(/^(ช่าง|แผนกวิชา)/, '').trim();
+};
+
 const calculateAge = (dobString: string) => {
   if (!dobString) return "";
   const dob = new Date(dobString);
@@ -422,6 +427,8 @@ export default function StudentCarePage() {
     setShowDropdown(false);
   };
 
+  const normalizeDept = (dept: string) => dept.replace(/\s+/g, '').toLowerCase();
+
   const calculateSDQ = () => {
     if (Object.keys(sdqAnswers).length < 25) {
       toast.error("กรุณาตอบคำถามให้ครบทั้ง 25 ข้อ");
@@ -500,11 +507,11 @@ export default function StudentCarePage() {
   const totalSdq = sdqCounts.normal + sdqCounts.risk + sdqCounts.problem + sdqCounts.special || 1;
 
   const uniqueDepartments = Array.from(new Set(records.filter(r => r.department).map(r => r.department as string))).sort();
-  const uniqueClassrooms = Array.from(new Set(records.filter(r => r.classroom && (!filterDepartment || r.department === filterDepartment)).map(r => r.classroom as string))).sort();
+  const uniqueClassrooms = Array.from(new Set(records.filter(r => r.classroom && (!filterDepartment || normalizeDept(r.department as string) === normalizeDept(filterDepartment))).map(r => r.classroom as string))).sort();
 
   const displayedRecords = records.filter(r => {
     if ((r.recordType || 'screening') !== viewTab) return false;
-    if (filterDepartment && r.department !== filterDepartment) return false;
+    if (filterDepartment && normalizeDept(r.department as string) !== normalizeDept(filterDepartment)) return false;
     if (filterClassroom && r.classroom !== filterClassroom) return false;
     if (filterSdqType && r.sdqType !== filterSdqType) return false;
     if (!searchTerm) return true;
@@ -983,7 +990,7 @@ export default function StudentCarePage() {
                         className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
                         value={newCare.department}
                         onChange={e => setNewCare({ ...newCare, department: e.target.value })}
-                        disabled={!!searchQuery && !!newCare.studentName}
+                        disabled={!!searchQuery && !!newCare.studentName && !editingId}
                       >
                         <option value="">-- ระบุแผนกวิชา --</option>
                         {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
