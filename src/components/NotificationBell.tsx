@@ -6,6 +6,7 @@ import { Popover, Badge, Empty, Button } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import { th } from "date-fns/locale";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import PostModal from "./PostModal";
@@ -225,18 +226,16 @@ export default function NotificationBell() {
 
       {/* ส่วนท้าย Popover */}
       <div className="p-4 bg-white dark:bg-zinc-900 border-t dark:border-zinc-800">
-        <button
+        <Link
+          href="/dashboard/notifications"
+          onClick={() => setOpen(false)}
           className="w-full group flex items-center justify-center gap-2 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white rounded-2xl transition-all duration-300"
-          onClick={() => {
-            router.push("/dashboard/notifications");
-            setOpen(false);
-          }}
         >
           <span className="text-[11px] font-black uppercase tracking-[0.2em]">
             {notifications.length > 0 ? `ดูทั้งหมด (${notifications.length})` : 'จัดการการแจ้งเตือน'}
           </span>
           <Info size={14} className="opacity-50 group-hover:opacity-100" />
-        </button>
+        </Link>
       </div>
     </div>
   );
@@ -282,6 +281,44 @@ export default function NotificationBell() {
         open={postModalOpen}
         onClose={() => setPostModalOpen(false)}
       />
+
+      {/* Modal สำหรับอ่านการแจ้งเตือนแบบเต็ม */}
+      {selectedNotification && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedNotification(null)}>
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start gap-4 mb-4">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${
+                selectedNotification.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
+                selectedNotification.type === 'warning' ? 'bg-amber-100 text-amber-600' :
+                selectedNotification.type === 'error' ? 'bg-rose-100 text-rose-600' :
+                'bg-blue-100 text-blue-600'
+              }`}>
+                {selectedNotification.type === 'success' ? <CheckCircle2 size={24} /> :
+                 selectedNotification.type === 'warning' ? <AlertTriangle size={24} /> :
+                 selectedNotification.type === 'error' ? <AlertTriangle size={24} /> :
+                 <Bell size={24} />}
+              </div>
+              <div className="flex-1 mt-1">
+                <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">
+                  {selectedNotification.title || "การแจ้งเตือน"}
+                </h3>
+                <p className="text-xs text-zinc-500 mt-1 font-semibold">
+                  {formatDistanceToNow(new Date(selectedNotification.createdAt), { addSuffix: true, locale: th })}
+                </p>
+              </div>
+            </div>
+            <div className="bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed max-h-[50vh] overflow-y-auto custom-scrollbar">
+              {selectedNotification.message}
+            </div>
+            <button
+              onClick={() => setSelectedNotification(null)}
+              className="w-full mt-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black uppercase tracking-widest text-xs transition-colors"
+            >
+              ปิดหน้าต่าง
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

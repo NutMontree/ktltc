@@ -115,6 +115,14 @@ export default function TeacherStudentsPage() {
     }
   }, [isTeacher, userDept, selectedDept]);
 
+  // Auto-fetch when department or group changes
+  useEffect(() => {
+    if (selectedDept) {
+      fetchStudents(selectedDept, selectedGroup);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDept, selectedGroup]);
+
   const academicDepts = useMemo(() => {
     const group = DEPARTMENT_GROUPS.find((g) => g.label.includes("แผนกวิชา"));
     return group ? group.options : [];
