@@ -46,31 +46,6 @@ export default function AdminWorkReportsPage() {
 
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
-  const handleExportPDF = async (type: "all" | "individual") => {
-    try {
-      setIsExportingPdf(true);
-      const element = type === "all" ? printAllRef.current : printIndividualRef.current;
-      if (!element) return;
-
-      const html2pdf = (await import("html2pdf.js")).default;
-      
-      const opt = {
-        margin:       10,
-        filename:     `work_report_${type === "all" ? "all" : selectedReport?.user?.name || "individual"}.pdf`,
-        image:        { type: "jpeg", quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: "mm", format: "a4", orientation: "portrait" }
-      };
-
-      await html2pdf().set(opt).from(element).save();
-    } catch (error) {
-      console.error("Export PDF error:", error);
-      alert("เกิดข้อผิดพลาดในการ Export PDF");
-    } finally {
-      setIsExportingPdf(false);
-    }
-  };
-
   const handlePrintAll = useReactToPrint({
     contentRef: printAllRef,
     documentTitle: `รายงานการปฏิบัติงาน_ทั้งหมด`,
@@ -147,7 +122,7 @@ export default function AdminWorkReportsPage() {
       );
       const json = await res.json();
       if (json.success) {
-        setReports((prev) => (p === 1 ? json.data : [...prev, ...json.data]));
+        setReports((prev: any[]) => (p === 1 ? json.data : [...prev, ...json.data]));
         setTotal(json.total || 0);
         setHasMore(json.hasMore || false);
         setPage(p);
@@ -187,7 +162,7 @@ export default function AdminWorkReportsPage() {
       return;
     }
 
-    const dataRows = reports.map((r) => {
+    const dataRows = reports.map((r: any) => {
       const d = new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
       const roleName = roleMap[r.user?.role] || r.user?.role || "-";
       const totalTasks = r.activities?.length || 0;
@@ -237,7 +212,7 @@ export default function AdminWorkReportsPage() {
   };
 
   const filteredReports = reports.filter(
-    (r) =>
+    (r: any) =>
       r.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.user.department.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -315,7 +290,7 @@ export default function AdminWorkReportsPage() {
                 type="text"
                 placeholder="พิมพ์ชื่อพนักงาน หรือ แผนก..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: any) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium text-sm"
               />
             </div>
@@ -328,7 +303,7 @@ export default function AdminWorkReportsPage() {
             <div className="relative">
               <select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
+                onChange={(e: any) => setRoleFilter(e.target.value)}
                 className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-sm appearance-none"
               >
                 {Object.entries(roleMap).map(([val, label]) => (
@@ -351,7 +326,7 @@ export default function AdminWorkReportsPage() {
             <div className="relative">
               <select
                 value={departmentFilter}
-                onChange={(e) => setDepartmentFilter(e.target.value)}
+                onChange={(e: any) => setDepartmentFilter(e.target.value)}
                 className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-sm appearance-none truncate pr-10"
               >
                 <option value="all">ทั้งหมด</option>
@@ -381,7 +356,7 @@ export default function AdminWorkReportsPage() {
                 <DatePicker
                   format="DD/MM/YYYY"
                   value={startDate ? dayjs(startDate) : null}
-                  onChange={(date) => setStartDate(date ? date.format("YYYY-MM-DD") : "")}
+                  onChange={(date: any) => setStartDate(date ? date.format("YYYY-MM-DD") : "")}
                   allowClear={false}
                   className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm [&_.ant-picker-input_input]:font-bold [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
                 />
@@ -397,7 +372,7 @@ export default function AdminWorkReportsPage() {
               <DatePicker
                 format="DD/MM/YYYY"
                 value={endDate ? dayjs(endDate) : null}
-                onChange={(date) => setEndDate(date ? date.format("YYYY-MM-DD") : "")}
+                onChange={(date: any) => setEndDate(date ? date.format("YYYY-MM-DD") : "")}
                 allowClear={false}
                 className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm [&_.ant-picker-input_input]:font-bold [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
               />
