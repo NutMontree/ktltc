@@ -3860,7 +3860,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                     className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 appearance-none"
                   >
                     <option value="" disabled>-- เลือกแผนก / สังกัด --</option>
-                    {DEPARTMENT_GROUPS.filter(g => g.label.includes("แผนกวิชา"))
+                    {DEPARTMENT_GROUPS
                       .flatMap(g => g.options)
                       .map((opt) => (
                         <option key={opt.value} value={opt.value}>
