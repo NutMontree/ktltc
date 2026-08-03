@@ -107,22 +107,6 @@ export default function StudentCarePage() {
 
   const [roleMap, setRoleMap] = useState<Record<string, string>>({ all: "ทั้งหมด" });
   const [classroomsList, setClassroomsList] = useState<string[]>([]);
-  const [selectedReport, setSelectedReport] = useState<any>(null);
-
-  const printAllRef = useRef<HTMLDivElement>(null);
-  const printIndividualRef = useRef<HTMLDivElement>(null);
-
-  const [isExportingPdf, setIsExportingPdf] = useState(false);
-
-  const handlePrintAll = useReactToPrint({
-    contentRef: printAllRef,
-    documentTitle: `รายงานการปฏิบัติงาน_ทั้งหมด`,
-  });
-
-  const handlePrintIndividual = useReactToPrint({
-    contentRef: printIndividualRef,
-    documentTitle: `รายงานการปฏิบัติงาน_${selectedReport?.user?.name || "รายบุคคล"}`,
-  });
 
   useEffect(() => {
     const fetchRoles = async () => {
