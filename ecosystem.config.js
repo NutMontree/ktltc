@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: "ktltc",
-      script: ".next/standalone/server.js",
-      cwd: "/home/ktltc/ktltc",
+      script: "server.js",
+      cwd: "/home/ktltc/ktltc/.next/standalone",
       instances: 4,
       exec_mode: "cluster",
       env: {
