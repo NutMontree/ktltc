@@ -9,6 +9,8 @@ import { toast, Toaster } from "react-hot-toast";
 import { uploadFile } from "@/lib/upload";
 import * as XLSX from "xlsx";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
+import { CLASSROOMS_LIST } from "@/constants/classrooms";
+
 
 const SDQ_QUESTIONS = [
   { id: 1, text: "1. ห่วงใยความรู้สึกของคนอื่น", category: "P", reverse: false },
@@ -106,7 +108,7 @@ export default function StudentCarePage() {
   });
 
   const [roleMap, setRoleMap] = useState<Record<string, string>>({ all: "ทั้งหมด" });
-  const [classroomsList, setClassroomsList] = useState<string[]>([]);
+  const classroomsList = CLASSROOMS_LIST;
 
   useEffect(() => {
     const fetchRoles = async () => {
