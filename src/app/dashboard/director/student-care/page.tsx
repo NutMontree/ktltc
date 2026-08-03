@@ -909,7 +909,7 @@ export default function StudentCarePage() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1.5">ชั้นเรียน/ห้อง</label>
-                      <input type="text" placeholder="เช่น ปวช.1/1" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
+                      <input type="text" placeholder="เช่น พค.11" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
                     </div>
                   </div>
                   <div className="col-span-1 relative">

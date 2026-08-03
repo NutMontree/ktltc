@@ -329,7 +329,9 @@ export default function AdminWorkReportsPage() {
                 onChange={(e: any) => setDepartmentFilter(e.target.value)}
                 className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-sm appearance-none truncate pr-10"
               >
-                <option value="all">ทั้งหมด</option>
+                <option value="all">ทั้งหมด (All Departments)</option>
+                <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
+                <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                 {DEPARTMENT_GROUPS.map((group, idx) => (
                   <optgroup key={idx} label={group.label}>
                     {group.options.map((opt, i) => (
