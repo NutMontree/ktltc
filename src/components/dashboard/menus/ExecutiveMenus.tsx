@@ -48,72 +48,7 @@ export default function ExecutiveMenus({ permissions, customMenus, item, userRol
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                {permissions?.access_teacher_dashboard && (
-                  <ActionCard
-                    href="/teacher-dashboard"
-                    title="แดชบอร์ดติดตามงานครู"
-                    icon={Clock}
-                    desc="สถิติภาพรวมและติดตามความก้าวหน้าการเรียนการสอนของครู"
-                    variants={item}
-                  />
-                )}
-                {permissions?.access_teacher_verification && (
-                  <ActionCard
-                    href="/teacher-verification"
-                    title="ตรวจสอบการจัดการเรียนการสอน"
-                    icon={CalendarCheck}
-                    desc="ตรวจสอบบันทึกการเรียนการสอนและการเข้าเรียนของนักเรียนแยกตามรายวิชา"
-                    variants={item}
-                  />
-                )}
 
-                {permissions?.manage_attendance_dashboard && (
-                  <>
-                    <ActionCard
-                      href="/attendance-dashboard"
-                      title="แดชบอร์ดการเข้างานบุคลากร"
-                      icon={CalendarCheck}
-                      desc="สถิติการเข้างานภาพรวมของฝ่ายต่างๆ"
-                      variants={item}
-                    />
-                    <ActionCard
-                      href="/attendance-report"
-                      title="รายงานการเข้างาน"
-                      icon={Clock}
-                      desc="ระบบออกรายงานสรุปการเข้างานบุคลากร"
-                      variants={item}
-                    />
-                  </>
-                )}
-
-                {permissions?.manage_attendance_work_reports && (
-                  <ActionCard
-                    href="/work-reports"
-                    title="ระบบรายงานการปฏิบัติงาน"
-                    icon={ClipboardList}
-                    desc="ตรวจสอบและพิมพ์รายงานผลการปฏิบัติงาน"
-                    variants={item}
-                  />
-                )}
-
-                {permissions?.manage_attendance_leave_approvals && (
-                  <ActionCard
-                    href="/leave-approvals"
-                    title="อนุมัติการลางาน"
-                    icon={CalendarCheck}
-                    desc="ระบบพิจารณาและอนุมัติใบลาอิเล็กทรอนิกส์"
-                    variants={item}
-                  />
-                )}
-                {permissions?.manage_supervision_requests && (
-                  <ActionCard
-                    href="/dashboard/supervision/requests"
-                    title="คำร้องการนิเทศ"
-                    icon={ShieldCheck}
-                    desc="ตรวจพิจารณาและอนุมัติผลการนิเทศ"
-                    variants={item}
-                  />
-                )}
                 {customMenus.filter(m => m.workspace === "executive" && permissions?.[m.permissionKey]).map(menu => (
                   <ActionCard
                     key={menu._id}
