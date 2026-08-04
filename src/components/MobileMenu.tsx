@@ -218,6 +218,7 @@ export default function MobileMenu({
                       <h2 className="text-lg font-black text-zinc-900 dark:text-white tracking-tighter uppercase italic">
                         KTL<span className="text-blue-600 dark:text-blue-500">TC</span>
                       </h2>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">ทดสอบครั้งที่ 1</p>
                     </div>
                   </div>
                   <button
