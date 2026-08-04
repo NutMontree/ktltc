@@ -150,76 +150,76 @@ const ProfileModal = ({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 mt-[0px]">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-xl transition-all"
-        />
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-3xl bg-white dark:bg-[#161616] rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]"
-        >
-          {/* Header */}
-          <div className="px-6 sm:px-8 py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 z-20">
-            <h3 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-3">
-              <span className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                <EditOutlined className="text-sm" />
-              </span>
-              {title}
-            </h3>
-            <button
-              onClick={onClose}
-              className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95"
-            >
-              <CloseOutlined className="text-lg" />
-            </button>
-          </div>
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 mt-0">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-xl transition-all"
+          />
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative w-full max-w-3xl bg-white dark:bg-[#161616] rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]"
+          >
+            {/* Header */}
+            <div className="px-6 sm:px-8 py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 z-20">
+              <h3 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                  <EditOutlined className="text-sm" />
+                </span>
+                {title}
+              </h3>
+              <button
+                onClick={onClose}
+                className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95"
+              >
+                <CloseOutlined className="text-lg" />
+              </button>
+            </div>
 
-          <div className="p-0 overflow-y-auto custom-scrollbar flex-1 relative bg-zinc-50/50 dark:bg-black/20">
-            {/* Subtle gradient background element for depth */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="p-0 overflow-y-auto custom-scrollbar flex-1 relative bg-zinc-50/50 dark:bg-black/20">
+              {/* Subtle gradient background element for depth */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="relative z-10 h-full">{children}</div>
-          </div>
+              <div className="relative z-10 h-full">{children}</div>
+            </div>
 
-          {/* Footer */}
-          <div className="px-6 sm:px-8 py-4 sm:py-5 border-t border-zinc-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md flex justify-end gap-3 z-20">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={saving}
-              className="px-6 py-2.5 rounded-full font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all disabled:opacity-50 border border-transparent"
-            >
-              ยกเลิก
-            </button>
-            <button
-              type="button"
-              onClick={onSubmit}
-              disabled={saving}
-              className="px-8 py-2.5 rounded-full bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:shadow-none flex items-center gap-2"
-            >
-              {saving ? (
-                <>
-                  <LoadingOutlined /> บันทึก...
-                </>
-              ) : (
-                "บันทึกข้อมูล"
-              )}
-            </button>
-          </div>
-        </motion.div>
-      </div>
-    )}
-  </AnimatePresence>,
-  document.body
-);
+            {/* Footer */}
+            <div className="px-6 sm:px-8 py-4 sm:py-5 border-t border-zinc-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md flex justify-end gap-3 z-20">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={saving}
+                className="px-6 py-2.5 rounded-full font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all disabled:opacity-50 border border-transparent"
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="button"
+                onClick={onSubmit}
+                disabled={saving}
+                className="px-8 py-2.5 rounded-full bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:shadow-none flex items-center gap-2"
+              >
+                {saving ? (
+                  <>
+                    <LoadingOutlined /> บันทึก...
+                  </>
+                ) : (
+                  "บันทึกข้อมูล"
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
 };
 
 // Profile Not Found Page Component with Countdown
@@ -1118,7 +1118,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
     switch (activeTab) {
       case "โพสต์": {
         return (
-          <div className="max-w-3xl mx-auto w-full space-y-4 px-2">
+          <div className="max-w-3xl mx-auto w-full space-y-4">
             {/* What's on your mind? (Create Post Section) */}
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
               <div className="flex gap-3 items-center">

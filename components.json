@@ -12,8 +12,10 @@
   },
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils"
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui"
   },
+  "iconLibrary": "lucide",
   "registries": [
     {
       "name": "reactbits-starter",

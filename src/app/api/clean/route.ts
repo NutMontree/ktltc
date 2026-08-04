@@ -4,7 +4,7 @@ import path from "path";
 
 export async function GET() {
   try {
-    const filePath = "d:\\ktltc\\src\\app\\(website)\\administrativestructure\\page.tsx";
+    const filePath = path.join(process.cwd(), "src", "app", "(website)", "administrativestructure", "page.tsx");
     let content = fs.readFileSync(filePath, "utf-8");
 
     const idx1 = content.indexOf("setCommittee(commStaff);");
