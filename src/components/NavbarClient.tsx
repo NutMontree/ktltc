@@ -131,7 +131,7 @@ const menuIconMap: Record<string, LucideIcon> = {
   เกี่ยวกับ: Info,
 };
 
-function getMenuIcon(label: string): LucideIcon {
+export function getMenuIcon(label: string): LucideIcon {
   return menuIconMap[label] ?? FileText;
 }
 
@@ -398,8 +398,8 @@ export default function NavbarClient({
         </div>
         <div className="relative z-10 flex items-center justify-between gap-4">
           {/* --- 1. LOGO & BRANDING --- */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group outline-none">
-            <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group outline-none">
+            <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
               <Image
                 src="/images/favicon.ico"
                 alt="KTL Logo"
@@ -409,7 +409,7 @@ export default function NavbarClient({
                 className="object-contain"
               />
             </div>
-            <span className="text-zinc-900 dark:text-white font-black text-[22px] tracking-tighter uppercase italic drop-shadow-sm hidden sm:block">
+            <span className="text-zinc-900 dark:text-white font-black text-lg sm:text-[22px] tracking-tighter uppercase italic drop-shadow-sm flex items-center">
               KTL<span className="text-blue-600 dark:text-blue-500">TC</span>
             </span>
           </Link>
