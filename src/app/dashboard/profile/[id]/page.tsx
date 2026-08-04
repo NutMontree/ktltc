@@ -3859,7 +3859,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
           onSubmit={handleCreatePost}
           saving={isPosting}
         >
-          <div className="space-y-4">
+          <div className="space-y-4 px-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                 {previewImage && <img src={previewImage} className="w-full h-full object-cover" />}
