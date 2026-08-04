@@ -47,48 +47,14 @@
 
 .glass-surface--fallback {
   background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px) saturate(1.2);
-}
-
-.glass-surface--fallback::before,
-.glass-surface--fallback::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.glass-surface--fallback::before {
-  backdrop-filter: blur(4px);
-  transform: translateX(-3px);
-  background: rgba(255, 0, 0, 0.05);
-  mix-blend-mode: color-burn;
-}
-
-.glass-surface--fallback::after {
-  backdrop-filter: blur(4px);
-  transform: translateX(3px);
-  background: rgba(0, 255, 255, 0.05);
-  mix-blend-mode: color-burn;
+  backdrop-filter: blur(12px) saturate(1.2);
 }
 
 @media (prefers-color-scheme: dark) {
   .glass-surface--fallback {
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
+    backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .glass-surface--fallback::before {
-    background: rgba(255, 0, 0, 0.1);
-    mix-blend-mode: screen;
-  }
-  
-  .glass-surface--fallback::after {
-    background: rgba(0, 255, 255, 0.1);
-    mix-blend-mode: screen;
   }
 }
 
