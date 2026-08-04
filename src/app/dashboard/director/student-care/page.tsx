@@ -766,7 +766,7 @@ export default function StudentCarePage() {
       )}
 
       <div className="max-w-[1600px] mx-auto w-full px-2 py-8 md:py-12 relative print:hidden">
-        <div className="px-2 mt-8">
+        <div className="mt-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shadow-lg shadow-teal-500/20">
@@ -800,7 +800,7 @@ export default function StudentCarePage() {
             </button>
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-xl border border-zinc-200 dark:border-zinc-800">
+          <div className="">
 
             {/* Tabs and View Mode Controls */}
             {!showAdd && (
@@ -915,7 +915,7 @@ export default function StudentCarePage() {
 
             {/* Dashboard Summary (Only if records exist) */}
             {!showAdd && viewTab === 'screening' && records.some(r => (r.recordType || 'screening') === 'screening') && (
-              <div className="mb-8 p-6 bg-slate-50 dark:bg-zinc-950 rounded-3xl border border-slate-100 dark:border-zinc-800">
+              <div className="mb-8 p-4 bg-slate-50 dark:bg-zinc-950 rounded-3xl border border-slate-100 dark:border-zinc-800">
                 <h3 className="text-sm font-black text-slate-800 dark:text-zinc-200 mb-4 flex items-center gap-2">
                   <ShieldCheck size={18} className="text-teal-500" /> ภาพรวมผลการคัดกรองนักเรียนทั้งหมด
                 </h3>
@@ -950,7 +950,7 @@ export default function StudentCarePage() {
 
             {/* Add Form */}
             {showAdd && (
-              <div className="mb-8 p-6 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-teal-100 dark:border-teal-900/30">
+              <div className="mb-8 p-2 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-teal-100 dark:border-teal-900/30">
                 <div className="flex gap-4 mb-6 pb-4 border-b border-slate-200 dark:border-zinc-700">
                   <button
                     onClick={() => setRecordType("screening")}
@@ -1227,59 +1227,59 @@ export default function StudentCarePage() {
                 ) : viewMode === 'table' ? (
                   <div className="w-full overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-[800px]">
-                    <thead>
-                      <tr className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/80 text-slate-500 text-xs uppercase tracking-wider">
-                        <th className="p-5 font-bold">วันที่</th>
-                        <th className="p-5 font-bold">นักเรียน</th>
-                        <th className="p-5 font-bold">แผนก / ชั้น</th>
-                        <th className="p-5 font-bold">ประเภท</th>
-                        <th className="p-5 font-bold">ผลคัดกรอง</th>
-                        <th className="p-5 font-bold">ครูที่ปรึกษา</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {displayedRecords.slice(0, displayLimit).map((r: any) => (
-                        <tr key={r._id} onClick={() => { setViewRecord(r); setCurrentImageIndex(0); }} className="border-b border-slate-100 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors group">
-                          <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">
-                            {new Date(r.visitDate || r.createdAt).toLocaleDateString('th-TH')}
-                          </td>
-                          <td className="p-5 font-bold flex items-center gap-3">
-                            {r.studentProfileImage ? (
-                              <img src={r.studentProfileImage} className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-zinc-700 shadow-sm" alt="Student Profile" />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-slate-400"><User size={16} /></div>
-                            )}
-                            <span className="group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{r.studentName}</span>
-                          </td>
-                          <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">{r.department} <br /><span className="text-xs text-slate-400">{r.classroom}</span></td>
-                          <td className="p-5 text-sm whitespace-nowrap">
-                            <span className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 rounded-md text-xs font-bold text-slate-600 dark:text-zinc-400">
-                              {r.recordType === 'home_visit' ? 'เยี่ยมบ้าน' : 'คัดกรอง'}
-                            </span>
-                          </td>
-                          <td className="p-5 whitespace-nowrap">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-black rounded-md border ${r.sdqType === 'normal' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
-                              r.sdqType === 'special' ? 'bg-blue-50 text-blue-600 border-blue-200' :
-                                r.sdqType === 'risk' ? 'bg-amber-50 text-amber-600 border-amber-200' :
-                                  'bg-rose-50 text-rose-600 border-rose-200'
-                              }`}>
-                              {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
-                            </span>
-                          </td>
-                          <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">
-                            {r.teacherName}
-                            {r.status !== 'active' && (
-                              <div className="mt-1">
-                                <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-sm ${r.status === 'referred' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                                  {r.status === 'referred' ? 'ส่งต่อ' : 'แก้ไขแล้ว'}
-                                </span>
-                              </div>
-                            )}
-                          </td>
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/80 text-slate-500 text-xs uppercase tracking-wider">
+                          <th className="p-5 font-bold">วันที่</th>
+                          <th className="p-5 font-bold">นักเรียน</th>
+                          <th className="p-5 font-bold">แผนก / ชั้น</th>
+                          <th className="p-5 font-bold">ประเภท</th>
+                          <th className="p-5 font-bold">ผลคัดกรอง</th>
+                          <th className="p-5 font-bold">ครูที่ปรึกษา</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {displayedRecords.slice(0, displayLimit).map((r: any) => (
+                          <tr key={r._id} onClick={() => { setViewRecord(r); setCurrentImageIndex(0); }} className="border-b border-slate-100 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors group">
+                            <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">
+                              {new Date(r.visitDate || r.createdAt).toLocaleDateString('th-TH')}
+                            </td>
+                            <td className="p-5 font-bold flex items-center gap-3">
+                              {r.studentProfileImage ? (
+                                <img src={r.studentProfileImage} className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-zinc-700 shadow-sm" alt="Student Profile" />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-slate-400"><User size={16} /></div>
+                              )}
+                              <span className="group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{r.studentName}</span>
+                            </td>
+                            <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">{r.department} <br /><span className="text-xs text-slate-400">{r.classroom}</span></td>
+                            <td className="p-5 text-sm whitespace-nowrap">
+                              <span className="px-2 py-1 bg-slate-100 dark:bg-zinc-800 rounded-md text-xs font-bold text-slate-600 dark:text-zinc-400">
+                                {r.recordType === 'home_visit' ? 'เยี่ยมบ้าน' : 'คัดกรอง'}
+                              </span>
+                            </td>
+                            <td className="p-5 whitespace-nowrap">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-black rounded-md border ${r.sdqType === 'normal' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
+                                r.sdqType === 'special' ? 'bg-blue-50 text-blue-600 border-blue-200' :
+                                  r.sdqType === 'risk' ? 'bg-amber-50 text-amber-600 border-amber-200' :
+                                    'bg-rose-50 text-rose-600 border-rose-200'
+                                }`}>
+                                {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
+                              </span>
+                            </td>
+                            <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">
+                              {r.teacherName}
+                              {r.status !== 'active' && (
+                                <div className="mt-1">
+                                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-sm ${r.status === 'referred' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                                    {r.status === 'referred' ? 'ส่งต่อ' : 'แก้ไขแล้ว'}
+                                  </span>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 ) : (
                   displayedRecords.slice(0, displayLimit).map((r: any) => (
