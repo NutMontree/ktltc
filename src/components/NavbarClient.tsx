@@ -451,7 +451,7 @@ export default function NavbarClient({
                         }`}
                     >
                       <div
-                        className={`bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${item.children!.length > 8 ? "min-w-[460px] w-[460px]" : "min-w-[240px]"
+                        className={`bg-white/70 dark:bg-zinc-950/70 border border-zinc-200/60 dark:border-zinc-800/50 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-2.5 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${item.children!.length > 8 ? "min-w-[460px] w-[460px]" : "min-w-[240px]"
                           }`}
                       >
                         <div
@@ -466,9 +466,9 @@ export default function NavbarClient({
                                 key={child._id}
                                 href={ensureAbsolute(child.path) || "#"}
                                 onClick={() => setActiveMenuId(null)}
-                                className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all group"
+                                className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-bold text-zinc-800 dark:text-zinc-200 hover:bg-white/60 dark:hover:bg-blue-500/20 hover:text-blue-600 dark:hover:text-blue-400 rounded-2xl transition-all group backdrop-blur-sm"
                               >
-                                <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl bg-white/50 dark:bg-zinc-800/50 group-hover:bg-blue-100/80 dark:group-hover:bg-blue-900/40 transition-colors text-zinc-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 shadow-sm">
                                   <ChildIcon size={14} />
                                 </span>
                                 <span className="leading-snug">{child.label}</span>
@@ -565,9 +565,9 @@ export default function NavbarClient({
                     : "opacity-0 translate-y-3 scale-95 pointer-events-none"
                     }`}
                 >
-                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] overflow-hidden w-72 max-w-[calc(100vw-1.5rem)] ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
+                  <div className="bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl border border-zinc-200/60 dark:border-zinc-800/50 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden w-72 max-w-[calc(100vw-1.5rem)] ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
                     {/* ข้อมูลสรุปผู้ใช้ด้านบนสุด (Profile Header) */}
-                    <div className="p-5 bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800/60">
+                    <div className="p-5 bg-white/40 dark:bg-zinc-900/40 border-b border-zinc-100/60 dark:border-zinc-800/60">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                           {image ? (
