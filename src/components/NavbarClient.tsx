@@ -383,18 +383,11 @@ export default function NavbarClient({
   });
 
   return (
-    <div
-      className={`fixed top-0 left-0 right-0 z-9999 transition-[padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 min-[1381px]:px-2" : ""}`}
-    >
-      <nav
-        className={`relative w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
-          ? "bg-white/60 dark:bg-zinc-950/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 min-[1381px]:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
-          : "py-3 px-4 min-[1381px]:px-6 bg-white/70 dark:bg-zinc-950/70 border border-transparent"
-          }`}
+    <div className="fixed top-0 left-0 right-0 z-9999 pt-2.5 px-3 sm:px-6 transition-all duration-300">
+      <nav 
+        className="relative w-full max-w-[1600px] mx-auto bg-white/10 dark:bg-zinc-950/20 backdrop-blur-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-[28px] border border-white/40 dark:border-zinc-800/60 py-2 px-4 sm:px-6 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300" 
+        style={{ WebkitBackdropFilter: "blur(40px)" }}
       >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-inherit">
-          <GlassSurface width="100%" height="100%" borderRadius={isScrolled ? 24 : 0} />
-        </div>
         <div className="relative z-10 flex items-center justify-between gap-4">
           {/* --- 1. LOGO & BRANDING --- */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group outline-none">
@@ -413,7 +406,7 @@ export default function NavbarClient({
             </span>
           </Link>
 
-          {/* --- 2. DESKTOP NAVIGATION (รายการเมนูจาก DB) --- */}
+          {/* --- 2. DESKTOP MENU TREE (แสดงเฉพาะบนจอใหญ่ > 1380px) --- */}
           <div className="hidden min-[1381px]:flex items-center gap-1.5 desktop-menu-container">
             {filteredMenuTree.map((item) => {
               const hasChildren = item.children && item.children.length > 0;

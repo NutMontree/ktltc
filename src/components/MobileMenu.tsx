@@ -197,12 +197,11 @@ export default function MobileMenu({
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  backdropFilter: "blur(24px)",
-                  WebkitBackdropFilter: "blur(24px)",
+                style={{ 
+                  WebkitBackdropFilter: "blur(40px)",
+                  backdropFilter: "blur(40px)"
                 }}
-                className="mobile-menu-root fixed top-0 right-0 bottom-0 w-[88%] max-w-sm border-l border-white/30 dark:border-white/10 z-10000 shadow-2xl flex flex-col"
+                className="mobile-menu-root fixed top-0 right-0 bottom-0 w-[88%] max-w-sm border-l border-white/30 dark:border-white/10 z-10000 shadow-2xl flex flex-col bg-white/10 dark:bg-black/20"
               >
                 {/* ส่วนหัวเมนู (Drawer Header) */}
                 <div className="p-5 flex items-center justify-between border-b border-white/20 dark:border-white/10 bg-white/10 dark:bg-zinc-900/10 backdrop-blur-md">
