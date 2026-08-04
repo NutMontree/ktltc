@@ -227,16 +227,17 @@ export default function StudentFlagpoleDashboard() {
         const res = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&_t=${Date.now()}`);
         const json = await res.json();
         if (json.success) {
-          // Calculate deltas before updating data
-          const newDeltas = json.data.map((newItem: any, idx: number) => {
-            const oldValue = previousData[idx]?.value || 0;
-            const newValue = newItem.value;
-            return newValue - oldValue;
+          setPreviousData(prev => {
+            // Calculate deltas before updating data
+            const newDeltas = json.data.map((newItem: any, idx: number) => {
+              const oldValue = prev[idx]?.value || 0;
+              const newValue = newItem.value;
+              return newValue - oldValue;
+            });
+            setDeltas(newDeltas);
+            return json.data;
           });
-          setDeltas(newDeltas);
 
-          // Update previous data
-          setPreviousData(json.data);
           if (json.internshipData) {
             setPreviousInternshipData(json.internshipData);
             setInternshipData(json.internshipData);
@@ -266,7 +267,7 @@ export default function StudentFlagpoleDashboard() {
       if (document.visibilityState === "visible") fetchStats();
     }, 30000);
     return () => clearInterval(interval);
-  }, [selectedDate, trendRange, status, previousData]);
+  }, [selectedDate, trendRange, status]);
 
   const total = inCollegeCount || data.reduce((acc, curr) => acc + curr.value, 0);
 

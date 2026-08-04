@@ -390,7 +390,7 @@ export default function NavbarClient({
       <nav
         className={`relative w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
           ? "bg-white/60 dark:bg-zinc-950/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 min-[1381px]:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
-          : "py-3 px-4 min-[1381px]:px-6 bg-white/80 dark:bg-zinc-950/80 border border-transparent"
+          : "py-3 px-4 min-[1381px]:px-6 bg-white/70 dark:bg-zinc-950/70 border border-transparent"
           }`}
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-inherit">
@@ -729,21 +729,6 @@ export default function NavbarClient({
                               คลังไฟล์งาน (Drive)
                             </Link>
                           )}
-
-                          {(permissions?.access_dve_teacher ||
-                            isSuperAdmin ||
-                            role?.toLowerCase() === "teacher") && (
-                              <Link
-                                href="/dashboard/dve"
-                                onClick={() => setIsUserDropdownOpen(false)}
-                                className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-2xl transition-all group"
-                              >
-                                <div className="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors shadow-sm">
-                                  <BookOpen size={16} />
-                                </div>
-                                ศูนย์ฝึกทวีภาคี (DVE Portal)
-                              </Link>
-                            )}
                         </div>
                       </div>
                     </div>
