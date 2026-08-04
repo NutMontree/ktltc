@@ -13,6 +13,7 @@ import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import BorderGlow from "@/components/ui/BorderGlow";
 
 const ScrollVelocity = dynamic(() => import("@/components/Scrollvelocity"), { ssr: true });
 
@@ -88,40 +89,49 @@ export default async function Home() {
         <div className="max-w-[1600px] mx-auto w-full">
           {/* Student Verify Button */}
           <div className="py-12 flex justify-center">
-            <Link
-              href="/student/verify"
-              className="group relative inline-flex items-center gap-3 px-4 py-4 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full text-white font-bold text-lg shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1 overflow-hidden"
+            <BorderGlow
+              borderRadius={9999}
+              glowRadius={15}
+              glowColor="250 80 60"
+              colors={['#3b82f6', '#8b5cf6', '#ec4899']}
+              backgroundColor="transparent"
+              className="inline-block p-0 overflow-visible!"
             >
-              <div className="absolute inset-0 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 bg-white/20 group-hover:bg-white/30 transition-all duration-300" />
-              <svg
-                className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              <Link
+                href="/student/verify"
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full text-white font-bold text-lg shadow-2xl transition-all duration-300 overflow-hidden"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                />
-              </svg>
-              <span className="relative z-10">ระบบพิสูจน์ตัวตนนักเรียน นักศึกษา</span>
-              <svg
-                className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </Link>
+                <div className="absolute inset-0 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-all duration-300" />
+                <svg
+                  className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+                <span className="relative z-10">ระบบพิสูจน์ตัวตนนักเรียน นักศึกษา</span>
+                <svg
+                  className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </Link>
+            </BorderGlow>
           </div>
           {isShow.student_support !== false && <StudentSupportSystem />}
           {isShow.qa_ita !== false && <ExternalQualityAssurance />}
