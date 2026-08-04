@@ -239,7 +239,7 @@ export default function LanguageSwitcher() {
         arrow={false}
       >
         <button
-          className="flex items-center justify-center w-10 h-10 rounded-full bg-white/50 dark:bg-zinc-900/30 border border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 transition-all shadow-sm group"
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90 dark:bg-zinc-800/90 border border-white dark:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800 transition-all shadow-sm group"
           title={`เปลี่ยนสไตล์ภาษา: ${currentName}`}
         >
           <span className="text-xl leading-none transition-transform group-hover:scale-110">{currentIcon}</span>

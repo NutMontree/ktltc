@@ -19,7 +19,7 @@ if (!process.env.MONGODB_URI) {
 const uri = process.env.MONGODB_URI;
 // ทำการเซนเซอร์รหัสผ่านใน Log เพื่อความปลอดภัย
 const sanitizedUri = uri.replace(/\/\/.*@/, "//****:****@");
-console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
+// console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
 
 const options = {
   connectTimeoutMS: 30000,        // เพิ่มจาก 10s -> 30s: เผื่อเน็ต VPN สวิงหรือปิงขึ้นสูง
@@ -124,7 +124,7 @@ const globalWithMongo = global as typeof globalThis & {
 };
 
 if (!globalWithMongo._mongoClientPromise) {
-  console.log("🔌 [MongoDB] Initializing new connection...");
+  // console.log("🔌 [MongoDB] Initializing new connection...");
   client = new MongoClient(uri, options);
   globalWithMongo._mongoClientPromise = client.connect()
     .then((connectedClient) => {

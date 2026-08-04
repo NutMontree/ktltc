@@ -39,7 +39,7 @@ export async function GET(
           clearTimeout(timeoutId);
           
           if (prodRes.ok) {
-            console.log(`🌐 Proxying Media from Production: ${prodUrl}`);
+            // console.log(`🌐 Proxying Media from Production: ${prodUrl}`);
             const arrayBuffer = await prodRes.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
             

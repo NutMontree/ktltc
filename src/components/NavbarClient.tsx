@@ -383,12 +383,22 @@ export default function NavbarClient({
   });
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-9999 pt-2.5 px-3 sm:px-6 transition-all duration-300">
-      <nav
-        className="relative w-full max-w-[1600px] mx-auto bg-white/10 dark:bg-zinc-950/20 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-[28px] border border-white/40 dark:border-zinc-800/60 py-2 px-4 sm:px-6 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300"
-        style={{ WebkitBackdropFilter: "blur(40px)" }}
+    <div className="fixed top-0 left-0 right-0 z-9999 pt-2.5 px-3 sm:px-6 transition-all duration-300 flex justify-center pointer-events-none">
+      <GlassSurface
+        width="100%"
+        height="fit-content"
+        borderRadius={9999}
+        displace={0.5}
+        distortionScale={-180}
+        redOffset={0}
+        greenOffset={10}
+        blueOffset={20}
+        brightness={50}
+        opacity={0.93}
+        mixBlendMode="screen"
+        className="overflow-visible! max-w-[1600px] mx-auto w-full px-2 pointer-events-auto relative shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300"
       >
-        <div className="relative z-10 flex items-center justify-between gap-4">
+        <div className="relative z-10 flex items-center justify-between w-full">
           {/* --- 1. LOGO & BRANDING --- */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group outline-none">
             <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
@@ -449,7 +459,7 @@ export default function NavbarClient({
                       >
                         <div
                           className={
-                            item.children!.length > 8 ? "grid grid-cols-2 gap-x-1" : "flex flex-col"
+                            item.children!.length > 8 ? "grid grid-cols-2 gap-1" : "flex flex-col gap-1"
                           }
                         >
                           {item.children!.map((child) => {
@@ -492,20 +502,20 @@ export default function NavbarClient({
           </div>
 
           {/* --- 3. ACTIONS & USER SECTION (ขวาสุด) --- */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 h-10">
+          <div className="flex items-center gap-1 sm:gap-1 shrink-0 h-11">
             {userId && (
-              <div className="flex items-center justify-center w-10 h-10">
+              <div className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-zinc-800 shadow-sm border border-zinc-100 dark:border-zinc-700">
                 <NotificationBell />
               </div>
             )}
-            <div className="flex items-center justify-center w-10 h-10">
+            <div className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-zinc-800 shadow-sm border border-zinc-100 dark:border-zinc-700">
               <LanguageSwitcher />
             </div>
-            <div className="flex items-center justify-center w-10 h-10">
+            <div className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-zinc-800 shadow-sm border border-zinc-100 dark:border-zinc-700">
               <ThemeToggle />
             </div>
 
-            <div className="hidden min-[1381px]:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+            {/* Removing vertical divider to match image */}
 
             {userId ? (
               <div className="relative user-dropdown-container">
@@ -515,12 +525,12 @@ export default function NavbarClient({
                     setIsUserDropdownOpen(!isUserDropdownOpen);
                     setActiveMenuId(null);
                   }}
-                  className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${isUserDropdownOpen
-                    ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
-                    : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
+                  className={`flex items-center justify-center w-11 h-11 rounded-full border transition-all duration-300 outline-none p-[3px] bg-white dark:bg-zinc-800 shadow-sm ${isUserDropdownOpen
+                    ? "border-blue-500/30 ring-2 ring-blue-500/20"
+                    : "border-zinc-100 dark:border-zinc-700 hover:shadow"
                     }`}
                 >
-                  <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
+                  <div className="relative w-full h-full rounded-full overflow-hidden shrink-0">
                     {image ? (
                       <Image
                         src={image}
@@ -536,19 +546,6 @@ export default function NavbarClient({
                       </div>
                     )}
                   </div>
-                  <div className="text-left hidden md:block overflow-hidden">
-                    <p
-                      className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}
-                    >
-                      {displayRole}
-                    </p>
-                    <p className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px]">
-                      {username}
-                    </p>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 hidden md:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
-                  />
                 </button>
 
                 {/* เมนู Dropdown สำหรับผู้ใช้ (User Dropdown Menu) */}
@@ -558,9 +555,9 @@ export default function NavbarClient({
                     : "opacity-0 translate-y-3 scale-95 pointer-events-none"
                     }`}
                 >
-                  <div className="bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl border border-zinc-200/60 dark:border-zinc-800/50 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden w-72 max-w-[calc(100vw-1.5rem)] ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
+                  <div className="bg-white/90 dark:bg-zinc-950/90 backdrop-blur-3xl border border-zinc-200/60 dark:border-zinc-800/50 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden w-72 max-w-[calc(100vw-1.5rem)] ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
                     {/* ข้อมูลสรุปผู้ใช้ด้านบนสุด (Profile Header) */}
-                    <div className="p-5 bg-white/40 dark:bg-zinc-900/40 border-b border-zinc-100/60 dark:border-zinc-800/60">
+                    <div className="p-5 bg-white/80 dark:bg-zinc-900/80 border-b border-zinc-100/60 dark:border-zinc-800/60">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                           {image ? (
@@ -743,7 +740,7 @@ export default function NavbarClient({
             )}
 
             {/* ปุ่ม Mobile Menu (แสดงเฉพาะบนจอเล็ก) */}
-            <div className="min-[1381px]:hidden sm:pl-2">
+            <div className="min-[1381px]:hidden">
               <MobileMenu
                 menuTree={filteredMenuTree}
                 image={image}
@@ -757,7 +754,7 @@ export default function NavbarClient({
             </div>
           </div>
         </div>
-      </nav>
+      </GlassSurface>
     </div>
   );
 }

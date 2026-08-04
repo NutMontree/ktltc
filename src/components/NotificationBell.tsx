@@ -270,7 +270,7 @@ export default function NotificationBell() {
         }}
         arrow={false}
       >
-        <button className="relative w-10 h-10 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shadow-sm active:scale-95 group">
+        <button className="relative w-10 h-10 flex items-center justify-center bg-white/90 dark:bg-zinc-800/90 text-zinc-600 dark:text-zinc-400 rounded-full hover:bg-white dark:hover:bg-zinc-700 transition-all shadow-sm border border-white dark:border-zinc-700 active:scale-95 group">
           <Badge count={unreadCount} overflowCount={99} size="small" offset={[-1, 1]} className="notification-badge">
             <Bell size={20} className="group-hover:rotate-12 transition-transform" />
           </Badge>
@@ -285,19 +285,18 @@ export default function NotificationBell() {
 
       {/* Modal สำหรับอ่านการแจ้งเตือนแบบเต็ม */}
       {selectedNotification && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedNotification(null)}>
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedNotification(null)}>
           <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start gap-4 mb-4">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${
-                selectedNotification.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
-                selectedNotification.type === 'warning' ? 'bg-amber-100 text-amber-600' :
-                selectedNotification.type === 'error' ? 'bg-rose-100 text-rose-600' :
-                'bg-blue-100 text-blue-600'
-              }`}>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${selectedNotification.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
+                  selectedNotification.type === 'warning' ? 'bg-amber-100 text-amber-600' :
+                    selectedNotification.type === 'error' ? 'bg-rose-100 text-rose-600' :
+                      'bg-blue-100 text-blue-600'
+                }`}>
                 {selectedNotification.type === 'success' ? <CheckCircle2 size={24} /> :
-                 selectedNotification.type === 'warning' ? <AlertTriangle size={24} /> :
-                 selectedNotification.type === 'error' ? <AlertTriangle size={24} /> :
-                 <Bell size={24} />}
+                  selectedNotification.type === 'warning' ? <AlertTriangle size={24} /> :
+                    selectedNotification.type === 'error' ? <AlertTriangle size={24} /> :
+                      <Bell size={24} />}
               </div>
               <div className="flex-1 mt-1">
                 <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">

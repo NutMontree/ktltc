@@ -1,31 +1,8 @@
-"use client";
-import { useEffect, useState, useRef, useId, CSSProperties, ReactNode } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useRef, useId } from 'react';
 import './GlassSurface.css';
 
-export interface GlassSurfaceProps {
-  children?: ReactNode;
-  width?: number | string;
-  height?: number | string;
-  borderRadius?: number;
-  borderWidth?: number;
-  brightness?: number;
-  opacity?: number;
-  blur?: number;
-  displace?: number;
-  backgroundOpacity?: number;
-  saturation?: number;
-  distortionScale?: number;
-  redOffset?: number;
-  greenOffset?: number;
-  blueOffset?: number;
-  xChannel?: 'R' | 'G' | 'B';
-  yChannel?: 'R' | 'G' | 'B';
-  mixBlendMode?: 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' | 'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
-  className?: string;
-  style?: CSSProperties;
-}
-
-const GlassSurface: React.FC<GlassSurfaceProps> = ({
+const GlassSurface = ({
   children,
   width = 200,
   height = 80,
@@ -46,7 +23,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   mixBlendMode = 'difference',
   className = '',
   style = {}
-}) => {
+}: any) => {
   const uniqueId = useId().replace(/:/g, '-');
   const filterId = `glass-filter-${uniqueId}`;
   const redGradId = `red-grad-${uniqueId}`;
@@ -108,7 +85,6 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     });
 
     gaussianBlurRef.current?.setAttribute('stdDeviation', displace.toString());
-  // eslint-disable-next-deps
   }, [
     width,
     height,
@@ -147,7 +123,6 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
 
   useEffect(() => {
     setSvgSupported(supportsSVGFilters());
-  // eslint-disable-next-deps
   }, []);
 
   const supportsSVGFilters = () => {
@@ -168,7 +143,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     return div.style.backdropFilter !== '';
   };
 
-  const containerStyle: React.CSSProperties = {
+  const containerStyle = {
     ...style,
     width: typeof width === 'number' ? `${width}px` : width,
     height: typeof height === 'number' ? `${height}px` : height,
