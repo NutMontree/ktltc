@@ -5,23 +5,23 @@ PROJECT_DIR="/home/ktltc/ktltc"
 export PATH=$PATH:/usr/bin:/usr/local/bin
 cd $PROJECT_DIR || exit
 
-# 1. Update remote info (fetch only, no pull)
-git fetch origin production
+# 1. Update remote info (fetch main & production)
+git fetch origin main production
 
 # 2. Compare hashes and check if pull is needed
 LOCAL_HEAD=$(git rev-parse HEAD)
-REMOTE_HEAD=$(git rev-parse origin/production)
+REMOTE_HEAD=$(git rev-parse origin/main)
 LAST_BUILT_COMMIT=""
 
 if [ -f ".last_built_commit" ]; then
     LAST_BUILT_COMMIT=$(cat .last_built_commit)
 fi
 
-# PULL & DEPLOY: If the production branch commit differs from the last built commit
+# PULL & DEPLOY: If the main branch commit differs from the last built commit
 if [ "$REMOTE_HEAD" != "$LAST_BUILT_COMMIT" ]; then
-    echo "[$(date)] New successful build detected on production branch. Pulling..."
+    echo "[$(date)] New commit detected on origin/main. Pulling..."
     # Pull production changes into current branch (main)
-    git pull origin production --no-rebase
+    git pull origin main --no-rebase
     
     # Refresh LOCAL_HEAD after pull
     LOCAL_HEAD=$(git rev-parse HEAD)
