@@ -22,7 +22,6 @@ const sanitizedUri = uri.replace(/\/\/.*@/, "//****:****@");
 console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
 
 const options = {
-  directConnection: true,          // ★ บังคับต่อตรง 127.0.0.1 เท่านั้น ไม่ให้ driver ค้นหา IP อื่น (แก้ ETIMEDOUT 100.64.x.x)
   connectTimeoutMS: 30000,        // เพิ่มจาก 10s -> 30s: เผื่อเน็ต VPN สวิงหรือปิงขึ้นสูง
   serverSelectionTimeoutMS: 30000, // เพิ่มจาก 10s -> 30s: ให้โค้ดรอการเชื่อมต่อฐานข้อมูลนานขึ้น
   socketTimeoutMS: 45000,         // เพิ่มจาก 15s -> 45s: ถ้า query ค้างเกิน 45 วิ ถึงจะตัดจบ

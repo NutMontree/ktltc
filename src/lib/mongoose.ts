@@ -26,7 +26,6 @@ export async function connectMongoose() {
 
   if (!cached.promise) {
     const opts = {
-      directConnection: true,  // ★ บังคับต่อตรง 127.0.0.1 ไม่ให้ driver ค้นหา IP อื่น
       bufferCommands: true,
       maxPoolSize: 50,         // 50 ต่อ instance x 4 = 200 รวม
     };
