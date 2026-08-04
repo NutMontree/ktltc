@@ -415,11 +415,21 @@ export default function StudentCarePage() {
     }
   };
 
+  const detectGenderFromName = (name: string): string => {
+    if (!name) return "";
+    const trimmed = name.trim();
+    if (trimmed.startsWith("นางสาว") || trimmed.startsWith("นาง") || trimmed.startsWith("ด.ญ.") || trimmed.startsWith("เด็กหญิง")) return "หญิง";
+    if (trimmed.startsWith("นาย") || trimmed.startsWith("ด.ช.") || trimmed.startsWith("เด็กชาย")) return "ชาย";
+    return "";
+  };
+
   const selectStudent = (student: any) => {
+    const detectedGender = detectGenderFromName(student.name) || detectGenderFromName(searchQuery);
     setSearchQuery(student.name);
     setNewCare({
       ...newCare,
       studentName: student.name,
+      gender: detectedGender || newCare.gender,
       department: student.department || newCare.department || "",
       classroom: student.classroomName || student.classGroupId || newCare.classroom,
       studentProfileImage: student.image || student.imageUrl || ""

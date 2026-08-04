@@ -384,8 +384,8 @@ export default function NavbarClient({
 
   return (
     <div className="fixed top-0 left-0 right-0 z-9999 pt-2.5 px-3 sm:px-6 transition-all duration-300">
-      <nav 
-        className="relative w-full max-w-[1600px] mx-auto bg-white/10 dark:bg-zinc-950/20 backdrop-blur-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-[28px] border border-white/40 dark:border-zinc-800/60 py-2 px-4 sm:px-6 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300" 
+      <nav
+        className="relative w-full max-w-[1600px] mx-auto bg-white/10 dark:bg-zinc-950/20 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-[28px] border border-white/40 dark:border-zinc-800/60 py-2 px-4 sm:px-6 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300"
         style={{ WebkitBackdropFilter: "blur(40px)" }}
       >
         <div className="relative z-10 flex items-center justify-between gap-4">
