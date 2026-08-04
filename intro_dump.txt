@@ -1,0 +1,130 @@
+              {/* Intro Section */}
+              <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
+                <h2 className="text-xl font-black text-zinc-900 dark:text-white mb-4">แนะนำตัว</h2>
+                <div className="space-y-4">
+                  {/* Validation Status Indicator for Students */}
+                  {isMyProfile && isStudent && (
+                    <div
+                      className={`p-4 rounded-xl border ${validationStatus?.isValid
+                        ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
+                        : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
+                        }`}
+                    >
+                      {loadingValidation ? (
+                        <div className="flex items-center gap-2 text-sm text-zinc-500">
+                          <div className="w-4 h-4 border-2 border-zinc-300 border-t-blue-600 rounded-full animate-spin" />
+                          กำลังตรวจสอบข้อมูล...
+                        </div>
+                      ) : validationStatus?.isValid ? (
+                        <div className="flex items-start gap-3">
+                          <CheckCircleFilled className="text-emerald-600 dark:text-emerald-400 text-xl mt-0.5" />
+                          <div>
+                            <p className="font-bold text-emerald-800 dark:text-emerald-200 text-sm">
+                              ข้อมูลส่วนตัวถูกต้องครบถ้วน
+                            </p>
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
+                              รหัสบัตรประจำตัวประชาชน, รหัสนักศึกษา,
+                              และชื่อห้องเรียนถูกต้องครบถ้วน
+                            </p>
+                          </div>
+                        </div>
+                      ) : validationStatus?.errors && validationStatus.errors.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-3">
+                            <ExclamationCircleOutlined className="text-rose-600 dark:text-rose-400 text-xl mt-0.5" />
+                            <div>
+                              <p className="font-bold text-rose-800 dark:text-rose-200 text-sm">
+                                ข้อมูลส่วนตัวไม่ครบถ้วนหรือไม่ถูกต้อง
+                              </p>
+                              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">
+                                กรุณาแก้ไขข้อมูลดังนี้:
+                              </p>
+                            </div>
+                          </div>
+                          <ul className="ml-7 space-y-1">
+                            {validationStatus.errors.map((error: string, idx: number) => (
+                              <li
+                                key={idx}
+                                className="text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2"
+                              >
+                                <span className="text-rose-500">•</span>
+                                {error}
+                              </li>
+                            ))}
+                          </ul>
+                          <button
+                            onClick={() => setActiveModal("profile")}
+                            className="w-full mt-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-black text-xs transition-all"
+                          >
+                            แก้ไขข้อมูลทันที
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
+                  <p className="text-center text-zinc-600 dark:text-zinc-400 italic">
+                    &quot;
+                    {formData.description || "เขียนอะไรบางอย่างเกี่ยวกับคุณ..."}
+                    &quot;
+                  </p>
+                  {isMyProfile && (
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => setActiveModal("intro")}
+                        className="w-full py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg font-bold text-sm hover:bg-zinc-200 transition-all active:scale-95"
+                      >
+                        แก้ไขคำแนะนำตัว
+                      </button>
+                      <button
+                        onClick={() => setActiveModal("profile")}
+                        className="w-full py-2 bg-blue-600 text-white rounded-lg font-black text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20"
+                      >
+                        แก้ไขข้อมูลส่วนตัวทั้งหมด
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="space-y-3 py-2 border-t dark:border-zinc-800 mt-2 pt-4">
+                    {!isStudent && (
+                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                        <SafetyCertificateOutlined className="text-zinc-400 text-xl" />
+                        <span className="text-sm">
+                          ตำแหน่ง{" "}
+                          <b className="text-zinc-900 dark:text-white">
+                            {formData.position || "-"}
+                          </b>
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                      <UserOutlined className="text-zinc-400 text-xl" />
+                      <span className="text-sm">
+                        แผนก{" "}
+                        <b className="text-zinc-900 dark:text-white">
+                          {formData.department || "-"}
+                        </b>
+                      </span>
+                    </div>
+                    {!isStudent && (
+                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                        <DatabaseOutlined className="text-zinc-400 text-xl" />
+                        <span className="text-sm">
+                          ฝ่าย{" "}
+                          <b className="text-zinc-900 dark:text-white">{formData.faction || "-"}</b>
+                        </span>
+                      </div>
+                    )}
+                    {formData.currentCity && (
+                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+                        <GlobalOutlined className="text-zinc-400 text-xl" />
+                        <span className="text-sm">
+                          อาศัยอยู่ที่{" "}
+                          <b className="text-zinc-900 dark:text-white">{formData.currentCity}</b>
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>

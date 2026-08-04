@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, use, Suspense } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
@@ -46,6 +47,8 @@ import {
   EyeInvisibleOutlined,
   ExclamationCircleOutlined,
   BellOutlined,
+  IdcardOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Popover, message, Popconfirm, Modal, DatePicker } from "antd";
 import { useSession, signIn } from "next-auth/react";
@@ -53,6 +56,8 @@ import dayjs from "dayjs";
 import imageCompression from "browser-image-compression";
 import { formatDistanceToNow } from "date-fns";
 import { th } from "date-fns/locale";
+import ParallaxCarousel from "@/components/ui/ParallaxCarousel";
+import ProfileCard from "@/components/ui/ProfileCard";
 import { DEPARTMENTS, FACTIONS, POSITIONS } from "@/lib/constants";
 
 import {
@@ -73,6 +78,8 @@ import {
 } from "@dnd-kit/sortable";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { BriefcaseIcon } from "lucide-react";
+import { user } from "@heroui/react";
 
 // Sortable Item Component for dnd-kit
 const SortableItem = ({ item, idx, onRemove }: any) => {
@@ -134,54 +141,86 @@ const ProfileModal = ({
   onClose: () => void;
   onSubmit: (e: any) => void;
   saving: boolean;
-}) => (
-  <AnimatePresence>
-    {isOpen && (
-      <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+}) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 mt-[0px]">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md"
+          className="absolute inset-0 bg-black/60 backdrop-blur-xl transition-all"
         />
         <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+          exit={{ scale: 0.95, opacity: 0, y: 20 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="relative w-full max-w-3xl bg-white dark:bg-[#161616] rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]"
         >
-          <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
-            <h3 className="text-xl font-black text-zinc-900 dark:text-white">{title}</h3>
+          {/* Header */}
+          <div className="px-6 sm:px-8 py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 z-20">
+            <h3 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <EditOutlined className="text-sm" />
+              </span>
+              {title}
+            </h3>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200"
+              className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95"
             >
-              <CloseOutlined className="w-5 h-5" />
+              <CloseOutlined className="text-lg" />
             </button>
           </div>
-          <div className="p-6 max-h-[70vh] overflow-y-auto custom-scrollbar">{children}</div>
-          <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-800/50 flex justify-end gap-3">
+
+          <div className="p-0 overflow-y-auto custom-scrollbar flex-1 relative bg-zinc-50/50 dark:bg-black/20">
+            {/* Subtle gradient background element for depth */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 h-full">{children}</div>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 sm:px-8 py-4 sm:py-5 border-t border-zinc-100 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md flex justify-end gap-3 z-20">
             <button
+              type="button"
               onClick={onClose}
-              className="px-6 py-2 rounded-lg font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              disabled={saving}
+              className="px-6 py-2.5 rounded-full font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all disabled:opacity-50 border border-transparent"
             >
               ยกเลิก
             </button>
             <button
-              onClick={(e) => {
-                onSubmit(e);
-              }}
-              className="px-8 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-black shadow-lg shadow-blue-600/20"
+              type="button"
+              onClick={onSubmit}
+              disabled={saving}
+              className="px-8 py-2.5 rounded-full bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:shadow-none flex items-center gap-2"
             >
-              {saving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
+              {saving ? (
+                <>
+                  <LoadingOutlined /> บันทึก...
+                </>
+              ) : (
+                "บันทึกข้อมูล"
+              )}
             </button>
           </div>
         </motion.div>
       </div>
     )}
-  </AnimatePresence>
+  </AnimatePresence>,
+  document.body
 );
+};
 
 // Profile Not Found Page Component with Countdown
 const ProfileNotFoundPage = ({ router }: { router: any }) => {
@@ -273,6 +312,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
 
   const [activeTab, setActiveTab] = useState("โพสต์");
   const [activeAboutTab, setActiveAboutTab] = useState("ข้อมูลภาพรวม");
+  const [editProfileTab, setEditProfileTab] = useState("general");
   const [showSettings, setShowSettings] = useState(false);
   const [showFullStudentId, setShowFullStudentId] = useState(false);
   const [showFullPhone, setShowFullPhone] = useState(false);
@@ -323,6 +363,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
     friends: [],
     work: "",
     education: "",
+    skills: "",
     currentCity: "",
     hometown: "",
     relationship: "",
@@ -372,6 +413,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
   const [postAudience, setPostAudience] = useState<"public" | "friends" | "private">("public");
   const [showAudienceMenu, setShowAudienceMenu] = useState(false);
   const [imageViewer, setImageViewer] = useState<{ src: string; label: string } | null>(null);
+  const [isFollowingUser, setIsFollowingUser] = useState(false);
+  const [isProfileLiked, setIsProfileLiked] = useState(false);
 
   const startCamera = async () => {
     setShowCamera(true);
@@ -629,6 +672,8 @@ function FriendProfilePageContent({ id }: { id: string }) {
         });
         if (data.image) setPreviewImage(data.image);
         if (data.coverImage) setPreviewCover(data.coverImage);
+        setIsFollowingUser((data.followers || []).map(String).includes(String(userId)));
+        setIsProfileLiked((data.profileLikes || []).map(String).includes(String(userId)));
       } else {
         // Profile not found - set formData to null to trigger error page
         setFormData(null as any);
@@ -780,6 +825,42 @@ function FriendProfilePageContent({ id }: { id: string }) {
       }
     } catch (error) {
       console.error("Like error:", error);
+    }
+  };
+
+  const handleToggleFollow = async () => {
+    if (!session) {
+      alert("กรุณาเข้าสู่ระบบก่อนติดตาม");
+      signIn();
+      return;
+    }
+    try {
+      const res = await fetch(`/api/users/${id}/follow`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        setIsFollowingUser(data.isFollowing);
+        fetchData(true); // Refresh user data silently to update follower count
+      }
+    } catch (error) {
+      console.error("Follow error:", error);
+    }
+  };
+
+  const handleToggleProfileLike = async () => {
+    if (!session) {
+      alert("กรุณาเข้าสู่ระบบก่อนกดถูกใจ");
+      signIn();
+      return;
+    }
+    try {
+      const res = await fetch(`/api/users/${id}/like`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        setIsProfileLiked(data.isLiked);
+        fetchData(true); // Refresh user data silently to update likes count
+      }
+    } catch (error) {
+      console.error("Like profile error:", error);
     }
   };
 
@@ -1037,1232 +1118,945 @@ function FriendProfilePageContent({ id }: { id: string }) {
     switch (activeTab) {
       case "โพสต์": {
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <div className="lg:col-span-5 space-y-4">
-              {/* Intro Section */}
-              <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
-                <h2 className="text-xl font-black text-zinc-900 dark:text-white mb-4">แนะนำตัว</h2>
-                <div className="space-y-4">
-                  {/* Validation Status Indicator for Students */}
-                  {isMyProfile && isStudent && (
-                    <div
-                      className={`p-4 rounded-xl border ${validationStatus?.isValid
-                        ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
-                        : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
-                        }`}
-                    >
-                      {loadingValidation ? (
-                        <div className="flex items-center gap-2 text-sm text-zinc-500">
-                          <div className="w-4 h-4 border-2 border-zinc-300 border-t-blue-600 rounded-full animate-spin" />
-                          กำลังตรวจสอบข้อมูล...
-                        </div>
-                      ) : validationStatus?.isValid ? (
-                        <div className="flex items-start gap-3">
-                          <CheckCircleFilled className="text-emerald-600 dark:text-emerald-400 text-xl mt-0.5" />
-                          <div>
-                            <p className="font-bold text-emerald-800 dark:text-emerald-200 text-sm">
-                              ข้อมูลส่วนตัวถูกต้องครบถ้วน
-                            </p>
-                            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                              รหัสบัตรประจำตัวประชาชน, รหัสนักศึกษา,
-                              และชื่อห้องเรียนถูกต้องครบถ้วน
-                            </p>
-                          </div>
-                        </div>
-                      ) : validationStatus?.errors && validationStatus.errors.length > 0 ? (
-                        <div className="space-y-2">
-                          <div className="flex items-start gap-3">
-                            <ExclamationCircleOutlined className="text-rose-600 dark:text-rose-400 text-xl mt-0.5" />
-                            <div>
-                              <p className="font-bold text-rose-800 dark:text-rose-200 text-sm">
-                                ข้อมูลส่วนตัวไม่ครบถ้วนหรือไม่ถูกต้อง
-                              </p>
-                              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">
-                                กรุณาแก้ไขข้อมูลดังนี้:
-                              </p>
-                            </div>
-                          </div>
-                          <ul className="ml-7 space-y-1">
-                            {validationStatus.errors.map((error: string, idx: number) => (
-                              <li
-                                key={idx}
-                                className="text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2"
-                              >
-                                <span className="text-rose-500">•</span>
-                                {error}
-                              </li>
-                            ))}
-                          </ul>
-                          <button
-                            onClick={() => setActiveModal("profile")}
-                            className="w-full mt-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-black text-xs transition-all"
-                          >
-                            แก้ไขข้อมูลทันที
-                          </button>
-                        </div>
-                      ) : null}
-                    </div>
+          <div className="max-w-3xl mx-auto w-full space-y-4 px-2">
+            {/* What's on your mind? (Create Post Section) */}
+            <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
+              <div className="flex gap-3 items-center">
+                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-blue-400 to-indigo-500 overflow-hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 shrink-0">
+                  {previewImage ? (
+                    <img src={previewImage} className="w-full h-full object-cover" />
+                  ) : (
+                    <UserOutlined className="text-zinc-300" />
                   )}
-
-                  <p className="text-center text-zinc-600 dark:text-zinc-400 italic">
-                    &quot;
-                    {formData.description || "เขียนอะไรบางอย่างเกี่ยวกับคุณ..."}
-                    &quot;
-                  </p>
-                  {isMyProfile && (
-                    <div className="flex flex-col gap-2">
-                      <button
-                        onClick={() => setActiveModal("intro")}
-                        className="w-full py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg font-bold text-sm hover:bg-zinc-200 transition-all active:scale-95"
-                      >
-                        แก้ไขคำแนะนำตัว
-                      </button>
-                      <button
-                        onClick={() => setActiveModal("profile")}
-                        className="w-full py-2 bg-blue-600 text-white rounded-lg font-black text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20"
-                      >
-                        แก้ไขข้อมูลส่วนตัวทั้งหมด
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="space-y-3 py-2 border-t dark:border-zinc-800 mt-2 pt-4">
-                    {!isStudent && (
-                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                        <SafetyCertificateOutlined className="text-zinc-400 text-xl" />
-                        <span className="text-sm">
-                          ตำแหน่ง{" "}
-                          <b className="text-zinc-900 dark:text-white">
-                            {formData.position || "-"}
-                          </b>
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                      <UserOutlined className="text-zinc-400 text-xl" />
-                      <span className="text-sm">
-                        แผนก{" "}
-                        <b className="text-zinc-900 dark:text-white">
-                          {formData.department || "-"}
-                        </b>
-                      </span>
-                    </div>
-                    {!isStudent && (
-                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                        <DatabaseOutlined className="text-zinc-400 text-xl" />
-                        <span className="text-sm">
-                          ฝ่าย{" "}
-                          <b className="text-zinc-900 dark:text-white">{formData.faction || "-"}</b>
-                        </span>
-                      </div>
-                    )}
-                    {formData.currentCity && (
-                      <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                        <GlobalOutlined className="text-zinc-400 text-xl" />
-                        <span className="text-sm">
-                          อาศัยอยู่ที่{" "}
-                          <b className="text-zinc-900 dark:text-white">{formData.currentCity}</b>
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                </div>
+                <div
+                  onClick={() => {
+                    if (!session) {
+                      alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้");
+                      signIn();
+                      return;
+                    }
+                    setActiveModal("post");
+                  }}
+                  className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2.5 text-zinc-500 font-medium cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                >
+                  {isMyProfile
+                    ? `${session?.user?.name?.split(" ")[0]} คุณกำลังคิดอะไรอยู่?`
+                    : `เขียนอะไรบางอย่างให้ ${formData.name?.split(" ")[0]}...`}
                 </div>
               </div>
-
-              {/* Photos Section */}
-              <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-black mb-0">รูปภาพ</h2>
-                  <span
-                    onClick={() => setActiveTab("รูปภาพ")}
-                    className="text-blue-600 text-sm font-bold cursor-pointer hover:underline"
-                  >
-                    ดูรูปภาพทั้งหมด
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-1 rounded-xl overflow-hidden border dark:border-zinc-700">
-                  {userPosts
-                    .flatMap((p) => p.images || (p.image ? [p.image] : []))
-                    .filter((img) => img)
-                    .slice(0, 9)
-                    .map((imgSrc: string, idx: number) => (
-                      <div
-                        key={`photo-${idx}`}
-                        onClick={() => setSelectedImage({ images: [imgSrc], index: 0 })}
-                        className="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 cursor-pointer transition-all overflow-hidden"
-                      >
-                        <img
-                          src={imgSrc}
-                          className="w-full h-full object-cover"
-                          alt="Post thumbnail"
-                        />
-                      </div>
-                    ))}
-                  {userPosts.filter((p) => (p.images && p.images.length > 0) || p.image).length ===
-                    0 && (
-                      <div className="col-span-3 py-10 text-center text-zinc-400 text-xs italic">
-                        ยังไม่มีรูปภาพ
-                      </div>
-                    )}
-                </div>
-              </div>
-
-              {/* Friends Section */}
-              <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <h2 className="text-xl font-black mb-0">เพื่อน</h2>
-                    <p className="text-xs text-zinc-400 font-bold">
-                      {(formData?.friends || []).length} คน
-                    </p>
-                  </div>
-                  <span
-                    onClick={() => setActiveTab("เพื่อน")}
-                    className="text-blue-600 font-bold text-sm cursor-pointer hover:underline"
-                  >
-                    ดูทั้งหมด
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {allUsers
-                    .filter((u) =>
-                      (formData?.friends || []).some((fId) => String(fId) === String(u._id)),
-                    )
-                    .slice(0, 9)
-                    .map((u) => (
-                      <div
-                        key={String(u._id)}
-                        onClick={() => {
-                          if (String(u._id) === String(id)) return;
-                          router.push(`/dashboard/profile/${String(u._id)}`);
-                        }}
-                        className="cursor-pointer group"
-                      >
-                        <div className="aspect-square rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden mb-1 border dark:border-zinc-800">
-                          {u.image ? (
-                            <img
-                              src={u.image}
-                              className="w-full h-full object-cover object-top transition-transform group-hover:scale-110"
-                              alt={u.name}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <UserOutlined className="text-xl text-zinc-300" />
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-[10px] font-black truncate dark:text-white">
-                          {u.name?.split(" ")[0]}
-                        </p>
-                      </div>
-                    ))}
+              <hr className="my-4 border-zinc-50 dark:border-zinc-800" />
+              <div className="flex justify-center">
+                <div
+                  onClick={() => {
+                    if (!session) {
+                      alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้");
+                      signIn();
+                      return;
+                    }
+                    setActiveModal("post");
+                    setTimeout(() => postImageInputRef.current?.click(), 100);
+                  }}
+                  className="flex items-center gap-2 text-zinc-500 font-bold text-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 py-2 px-4 rounded-lg flex-1 justify-center transition-all"
+                >
+                  <PictureOutlined className="text-emerald-500 text-xl" /> รูปภาพ/วิดีโอ
                 </div>
               </div>
             </div>
 
-            <div className="lg:col-span-7 space-y-4">
-              {/* What's on your mind? (Create Post Section) */}
-              <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
-                <div className="flex gap-3 items-center">
-                  <div className="w-10 h-10 rounded-full bg-linear-to-tr from-blue-400 to-indigo-500 overflow-hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 shrink-0">
-                    {previewImage ? (
-                      <img src={previewImage} className="w-full h-full object-cover" />
+            {/* People you may know */}
+            {displayedSuggestedUsers.length > 0 && (
+              <ParallaxCarousel
+                users={displayedSuggestedUsers}
+                currentUserId={session?.user?.id || ""}
+                myFriendsIds={(formData?.friends || []).map((fId: any) => String(fId))}
+                onAddFriend={(e, userId) => {
+                  e.stopPropagation();
+                  handleRequestFriend(userId);
+                }}
+              />
+            )}
+
+            <div className="mt-2 text-center">
+              <button
+                onClick={() => router.push("/dashboard/members")}
+                className="text-blue-600 font-black text-xs hover:underline"
+              >
+                ดูสมาชิกทั้งหมด
+              </button>
+            </div>
+
+            {/* Posts Feed */}
+            <div className="space-y-4">
+              {userPosts.map((post: any) => (
+                <div
+                  key={post._id}
+                  className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center border dark:border-zinc-700">
+                        {post.authorImage ||
+                          post.userImage ||
+                          (String(post.authorId?.$oid || post.authorId || "") === id
+                            ? formData.image
+                            : null) ? (
+                          <img
+                            src={
+                              post.authorImage ||
+                              post.userImage ||
+                              (String(post.authorId?.$oid || post.authorId || "") === id
+                                ? formData.image
+                                : "")
+                            }
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <UserOutlined className="text-zinc-300" />
+                        )}
+                      </div>
+                      <div>
+                        <h4
+                          className="font-black text-sm text-zinc-900 dark:text-white hover:underline cursor-pointer"
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/profile/${post.authorId?.$oid || post.authorId || id}`,
+                            )
+                          }
+                        >
+                          {post.authorName ||
+                            post.userName ||
+                            (String(post.authorId?.$oid || post.authorId || "") === id
+                              ? formData.name
+                              : "สมาชิก")}
+                        </h4>
+                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                          {new Date(post.createdAt).toLocaleString("th-TH")} •
+                          {post.audience === "friends" ? (
+                            <>
+                              <TeamOutlined className="text-[8px]" /> เพื่อน
+                            </>
+                          ) : post.audience === "private" ? (
+                            <>
+                              <LockOutlined className="text-[8px]" /> เฉพาะฉัน
+                            </>
+                          ) : (
+                            <>
+                              <GlobalOutlined className="text-[8px]" /> สาธารณะ
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    {(String(post.authorId?.$oid || post.authorId || "") ===
+                      String(session?.user?.id) ||
+                      String(post.userId?.$oid || post.userId || "") ===
+                      String(session?.user?.id) ||
+                      isMyProfile) && (
+                        <div className="relative">
+                          <button
+                            onClick={() =>
+                              setOpenPostMenuId(openPostMenuId === post._id ? null : post._id)
+                            }
+                            className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-all text-zinc-600 dark:text-zinc-300 border-2 border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 z-10"
+                          >
+                            <EllipsisOutlined className="text-2xl" />
+                          </button>
+
+                          <AnimatePresence>
+                            {openPostMenuId === post._id && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 5 }}
+                                className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl shadow-2xl z-40 py-2 overflow-hidden"
+                              >
+                                {String(post.authorId?.$oid || post.authorId || "") ===
+                                  String(session?.user?.id) && (
+                                    <div
+                                      onClick={() => {
+                                        setEditingPostId(post._id);
+                                        setPostText(post.content);
+                                        const images =
+                                          post.images || (post.image ? [post.image] : []);
+                                        setPostImagePreviews(
+                                          images.map((src: string, idx: number) => ({
+                                            id: `img-${idx}`,
+                                            preview: src,
+                                            src,
+                                          })),
+                                        );
+                                        setActiveModal("post");
+                                        setOpenPostMenuId(null);
+                                      }}
+                                      className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
+                                    >
+                                      <EditOutlined />{" "}
+                                      <span className="text-sm font-bold">แก้ไขโพสต์</span>
+                                    </div>
+                                  )}
+                                <div
+                                  onClick={() => {
+                                    handleDeletePost(post._id);
+                                    setOpenPostMenuId(null);
+                                  }}
+                                  className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
+                                >
+                                  <DeleteOutlined />{" "}
+                                  <span className="text-sm font-bold">ลบโพสต์</span>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      )}
+                  </div>
+                  <div className="text-sm text-zinc-800 dark:text-zinc-300 leading-relaxed mb-4 whitespace-pre-wrap">
+                    {expandedPosts.includes(post._id) || (post.content?.length || 0) <= 200 ? (
+                      renderContentWithLinks(post.content)
                     ) : (
-                      <UserOutlined className="text-zinc-300" />
+                      <>
+                        {renderContentWithLinks(post.content.slice(0, 200))}
+                        ...{" "}
+                        <span
+                          onClick={() => setExpandedPosts((prev) => [...prev, post._id])}
+                          className="text-zinc-500 font-black cursor-pointer hover:underline ml-1"
+                        >
+                          ดูเพิ่มเติม
+                        </span>
+                      </>
                     )}
                   </div>
-                  <div
-                    onClick={() => {
-                      if (!session) {
-                        alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้");
-                        signIn();
-                        return;
-                      }
-                      setActiveModal("post");
-                    }}
-                    className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full px-4 py-2.5 text-zinc-500 font-medium cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                  >
-                    {isMyProfile
-                      ? `${session?.user?.name?.split(" ")[0]} คุณกำลังคิดอะไรอยู่?`
-                      : `เขียนอะไรบางอย่างให้ ${formData.name?.split(" ")[0]}...`}
-                  </div>
-                </div>
-                <hr className="my-4 border-zinc-50 dark:border-zinc-800" />
-                <div className="flex justify-center">
-                  <div
-                    onClick={() => {
-                      if (!session) {
-                        alert("กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้");
-                        signIn();
-                        return;
-                      }
-                      setActiveModal("post");
-                      setTimeout(() => postImageInputRef.current?.click(), 100);
-                    }}
-                    className="flex items-center gap-2 text-zinc-500 font-bold text-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 py-2 px-4 rounded-lg flex-1 justify-center transition-all"
-                  >
-                    <PictureOutlined className="text-emerald-500 text-xl" /> รูปภาพ/วิดีโอ
-                  </div>
-                </div>
-              </div>
 
-              {/* People you may know */}
-              <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-2">
-                    <TeamOutlined className="text-zinc-500" />
-                    <h3 className="text-sm font-black text-zinc-900 dark:text-white">
-                      คนที่คุณอาจจะรู้จัก
-                    </h3>
-                  </div>
-                  <button className="text-zinc-400 hover:text-zinc-600 transition-colors">
-                    <EllipsisOutlined />
-                  </button>
-                </div>
-
-                <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar snap-x">
-                  {displayedSuggestedUsers.map((u) => {
-                    const myFriendsIds = (formData?.friends || []).map((fId: any) => String(fId));
-                    const uFriendsIds = (u.friends || []).map((fId: any) => String(fId));
-                    const mutualCount = uFriendsIds.filter((fId: any) =>
-                      myFriendsIds.includes(fId),
-                    ).length;
-
-                    return (
-                      <div
-                        key={String(u._id)}
-                        onClick={() => router.push(`/dashboard/profile/${String(u._id)}`)}
-                        className="min-w-[180px] w-[180px] bg-white dark:bg-zinc-900 rounded-2xl border dark:border-zinc-800 overflow-hidden flex flex-col snap-start group cursor-pointer hover:shadow-xl hover:shadow-blue-500/10 transition-all hover:-translate-y-1"
-                      >
-                        <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                          {u.image ? (
+                  {/* Shared Post Content */}
+                  {post.sharedPostData && (
+                    <div className="border dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-800/30 p-4 mb-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden border dark:border-zinc-600">
+                          {post.sharedPostData.authorImage && (
                             <img
-                              src={u.image}
-                              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
-                              alt={u.name}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
-                              <UserOutlined className="text-4xl" />
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDismissedUsers((prev) => [...prev, String(u._id)]);
-                              setDisplayedSuggestedUsers((prev) => prev.filter((user) => String(user._id) !== String(u._id)));
-                            }}
-                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/20 hover:bg-rose-500 text-white flex items-center justify-center backdrop-blur-md transition-all z-10 opacity-0 group-hover:opacity-100"
-                          >
-                            <CloseOutlined className="text-[10px]" />
-                          </button>
-                        </div>
-                        <div className="p-3 flex-1 flex flex-col">
-                          <h4 className="font-black text-sm text-zinc-900 dark:text-white truncate mb-1">
-                            {u.name}
-                          </h4>
-                          <p className="text-[10px] text-zinc-500 font-bold flex items-center gap-1 mb-4">
-                            <TeamOutlined className="text-[8px]" /> {mutualCount} เพื่อนร่วมกัน
-                            {mutualCount !== 1 ? "s" : ""}
-                          </p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRequestFriend(String(u._id));
-                            }}
-                            className="mt-auto w-full py-2 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-600 hover:text-white font-black text-xs transition-all flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white"
-                          >
-                            <UserAddOutlined /> Add friend
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-2 text-center">
-                  <button
-                    onClick={() => router.push("/dashboard/members")}
-                    className="text-blue-600 font-black text-xs hover:underline"
-                  >
-                    ดูสมาชิกทั้งหมด
-                  </button>
-                </div>
-              </div>
-
-              {/* Posts Feed */}
-              <div className="space-y-4">
-                {userPosts.map((post: any) => (
-                  <div
-                    key={post._id}
-                    className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center border dark:border-zinc-700">
-                          {post.authorImage ||
-                            post.userImage ||
-                            (String(post.authorId?.$oid || post.authorId || "") === id
-                              ? formData.image
-                              : null) ? (
-                            <img
-                              src={
-                                post.authorImage ||
-                                post.userImage ||
-                                (String(post.authorId?.$oid || post.authorId || "") === id
-                                  ? formData.image
-                                  : "")
-                              }
+                              src={post.sharedPostData.authorImage}
                               className="w-full h-full object-cover"
                             />
-                          ) : (
-                            <UserOutlined className="text-zinc-300" />
                           )}
                         </div>
                         <div>
-                          <h4
-                            className="font-black text-sm text-zinc-900 dark:text-white hover:underline cursor-pointer"
-                            onClick={() =>
-                              router.push(
-                                `/dashboard/profile/${post.authorId?.$oid || post.authorId || id}`,
+                          <span className="font-black text-xs text-zinc-900 dark:text-white block hover:underline cursor-pointer">
+                            {post.sharedPostData.authorName}
+                          </span>
+                          <span className="text-[10px] text-zinc-400 font-bold">
+                            {post.sharedPostData.createdAt
+                              ? new Date(post.sharedPostData.createdAt).toLocaleDateString(
+                                "th-TH",
                               )
-                            }
-                          >
-                            {post.authorName ||
-                              post.userName ||
-                              (String(post.authorId?.$oid || post.authorId || "") === id
-                                ? formData.name
-                                : "สมาชิก")}
-                          </h4>
-                          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                            {new Date(post.createdAt).toLocaleString("th-TH")} •
-                            {post.audience === "friends" ? (
-                              <>
-                                <TeamOutlined className="text-[8px]" /> เพื่อน
-                              </>
-                            ) : post.audience === "private" ? (
-                              <>
-                                <LockOutlined className="text-[8px]" /> เฉพาะฉัน
-                              </>
-                            ) : (
-                              <>
-                                <GlobalOutlined className="text-[8px]" /> สาธารณะ
-                              </>
-                            )}
-                          </p>
+                              : "เมื่อสักครู่"}
+                          </span>
                         </div>
                       </div>
-
-                      {(String(post.authorId?.$oid || post.authorId || "") ===
-                        String(session?.user?.id) ||
-                        String(post.userId?.$oid || post.userId || "") ===
-                        String(session?.user?.id) ||
-                        isMyProfile) && (
-                          <div className="relative">
-                            <button
-                              onClick={() =>
-                                setOpenPostMenuId(openPostMenuId === post._id ? null : post._id)
-                              }
-                              className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-all text-zinc-600 dark:text-zinc-300 border-2 border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 z-10"
-                            >
-                              <EllipsisOutlined className="text-2xl" />
-                            </button>
-
-                            <AnimatePresence>
-                              {openPostMenuId === post._id && (
-                                <motion.div
-                                  initial={{ opacity: 0, y: 5 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: 5 }}
-                                  className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl shadow-2xl z-40 py-2 overflow-hidden"
-                                >
-                                  {String(post.authorId?.$oid || post.authorId || "") ===
-                                    String(session?.user?.id) && (
-                                      <div
-                                        onClick={() => {
-                                          setEditingPostId(post._id);
-                                          setPostText(post.content);
-                                          const images =
-                                            post.images || (post.image ? [post.image] : []);
-                                          setPostImagePreviews(
-                                            images.map((src: string, idx: number) => ({
-                                              id: `img-${idx}`,
-                                              preview: src,
-                                              src,
-                                            })),
-                                          );
-                                          setActiveModal("post");
-                                          setOpenPostMenuId(null);
-                                        }}
-                                        className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-3 text-zinc-600 dark:text-zinc-300 transition-colors"
-                                      >
-                                        <EditOutlined />{" "}
-                                        <span className="text-sm font-bold">แก้ไขโพสต์</span>
-                                      </div>
-                                    )}
-                                  <div
-                                    onClick={() => {
-                                      handleDeletePost(post._id);
-                                      setOpenPostMenuId(null);
-                                    }}
-                                    className="px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer flex items-center gap-3 text-red-500 transition-colors"
-                                  >
-                                    <DeleteOutlined />{" "}
-                                    <span className="text-sm font-bold">ลบโพสต์</span>
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        )}
-                    </div>
-                    <div className="text-sm text-zinc-800 dark:text-zinc-300 leading-relaxed mb-4 whitespace-pre-wrap">
-                      {expandedPosts.includes(post._id) || (post.content?.length || 0) <= 200 ? (
-                        renderContentWithLinks(post.content)
-                      ) : (
-                        <>
-                          {renderContentWithLinks(post.content.slice(0, 200))}
-                          ...{" "}
-                          <span
-                            onClick={() => setExpandedPosts((prev) => [...prev, post._id])}
-                            className="text-zinc-500 font-black cursor-pointer hover:underline ml-1"
-                          >
-                            ดูเพิ่มเติม
-                          </span>
-                        </>
+                      <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-3">
+                        {post.sharedPostData.content}
+                      </p>
+                      {(post.sharedPostData.image || post.sharedPostData.images?.length > 0) && (
+                        <div className="rounded-lg overflow-hidden border dark:border-zinc-700 max-h-[400px] bg-zinc-200 dark:bg-zinc-800">
+                          <img
+                            src={post.sharedPostData.image || post.sharedPostData.images[0]}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       )}
                     </div>
-
-                    {/* Shared Post Content */}
-                    {post.sharedPostData && (
-                      <div className="border dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-800/30 p-4 mb-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden border dark:border-zinc-600">
-                            {post.sharedPostData.authorImage && (
-                              <img
-                                src={post.sharedPostData.authorImage}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
-                          <div>
-                            <span className="font-black text-xs text-zinc-900 dark:text-white block hover:underline cursor-pointer">
-                              {post.sharedPostData.authorName}
-                            </span>
-                            <span className="text-[10px] text-zinc-400 font-bold">
-                              {post.sharedPostData.createdAt
-                                ? new Date(post.sharedPostData.createdAt).toLocaleDateString(
-                                  "th-TH",
-                                )
-                                : "เมื่อสักครู่"}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-3">
-                          {post.sharedPostData.content}
-                        </p>
-                        {(post.sharedPostData.image || post.sharedPostData.images?.length > 0) && (
-                          <div className="rounded-lg overflow-hidden border dark:border-zinc-700 max-h-[400px] bg-zinc-200 dark:bg-zinc-800">
-                            <img
-                              src={post.sharedPostData.image || post.sharedPostData.images[0]}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {/* Image Grid */}
-                    {(post.images || post.image) && (
-                      <div
-                        className={`w-full rounded-xl overflow-hidden border dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 mb-4 grid gap-1 
+                  )}
+                  {/* Image Grid */}
+                  {(post.images || post.image) && (
+                    <div
+                      className={`w-full rounded-xl overflow-hidden border dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 mb-4 grid gap-1 
                           ${(post.images?.length || 1) === 1 ? "grid-cols-1" : "grid-cols-2"}`}
-                      >
-                        {(post.images || [post.image])
-                          .slice(0, 4)
-                          .map((img: string, idx: number, arr: string[]) => {
-                            const totalImages = (post.images || [post.image]).length;
-                            return (
-                              <div
-                                key={idx}
-                                className={`relative overflow-hidden ${totalImages === 1
-                                  ? "h-auto"
-                                  : totalImages === 3 && idx === 0
-                                    ? "row-span-2 h-full"
-                                    : totalImages >= 3
-                                      ? "h-[150px] sm:h-[250px]"
-                                      : "h-[200px] sm:h-[300px]"
+                    >
+                      {(post.images || [post.image])
+                        .slice(0, 4)
+                        .map((img: string, idx: number, arr: string[]) => {
+                          const totalImages = (post.images || [post.image]).length;
+                          return (
+                            <div
+                              key={idx}
+                              className={`relative overflow-hidden ${totalImages === 1
+                                ? "h-auto"
+                                : totalImages === 3 && idx === 0
+                                  ? "row-span-2 h-full"
+                                  : totalImages >= 3
+                                    ? "h-[150px] sm:h-[250px]"
+                                    : "h-[200px] sm:h-[300px]"
+                                }`}
+                            >
+                              <img
+                                src={img}
+                                onClick={() =>
+                                  setSelectedImage({
+                                    images: post.images || [post.image],
+                                    index: idx,
+                                  })
+                                }
+                                className={`w-full cursor-pointer hover:scale-[1.01] transition-transform duration-500 ${totalImages === 1
+                                  ? "h-auto object-contain"
+                                  : "h-full object-cover"
                                   }`}
-                              >
-                                <img
-                                  src={img}
+                                alt={`Post ${idx}`}
+                              />
+                              {totalImages > 4 && idx === 3 && (
+                                <div
                                   onClick={() =>
                                     setSelectedImage({
                                       images: post.images || [post.image],
                                       index: idx,
                                     })
                                   }
-                                  className={`w-full cursor-pointer hover:scale-[1.01] transition-transform duration-500 ${totalImages === 1
-                                    ? "h-auto object-contain"
-                                    : "h-full object-cover"
-                                    }`}
-                                  alt={`Post ${idx}`}
-                                />
-                                {totalImages > 4 && idx === 3 && (
-                                  <div
-                                    onClick={() =>
-                                      setSelectedImage({
-                                        images: post.images || [post.image],
-                                        index: idx,
-                                      })
-                                    }
-                                    className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center cursor-pointer group"
-                                  >
-                                    <span className="text-white text-3xl font-black group-hover:scale-110 transition-transform">
-                                      +{totalImages - 4}
-                                    </span>
-                                    <span className="text-white/80 text-[10px] font-bold uppercase tracking-widest mt-1">
-                                      ดูรูปภาพเพิ่มเติม
-                                    </span>
+                                  className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center cursor-pointer group"
+                                >
+                                  <span className="text-white text-3xl font-black group-hover:scale-110 transition-transform">
+                                    +{totalImages - 4}
+                                  </span>
+                                  <span className="text-white/80 text-[10px] font-bold uppercase tracking-widest mt-1">
+                                    ดูรูปภาพเพิ่มเติม
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between px-2 py-1 mb-2 min-h-[32px]">
+                    {(post.likes?.length || 0) > 0 ? (
+                      <button
+                        onClick={() => {
+                          if (post.likes?.length > 0) {
+                            const likedUsers = allUsers.filter((u) =>
+                              post.likes.includes(String(u._id?.$oid || u._id)),
+                            );
+                            setLikersList(likedUsers);
+                            setShowLikersModal(true);
+                          }
+                        }}
+                        className="flex items-center gap-1.5 hover:underline transition-all group"
+                      >
+                        <div className="flex -space-x-1 items-center">
+                          <div className="w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 shadow-sm z-10">
+                            <HeartFilled style={{ color: "white" }} className="text-[10px]" />
+                          </div>
+                        </div>
+                        <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
+                          {post.likes?.length || 0}
+                        </span>
+                      </button>
+                    ) : (
+                      <div />
+                    )}
+                    <div className="flex items-center gap-4 text-zinc-500 text-sm font-bold">
+                      {(post.comments?.length || 0) > 0 && (
+                        <span>{post.comments?.length} ความคิดเห็น</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <hr className="border-zinc-100 dark:border-zinc-800 mb-2" />
+
+                  <div className="flex items-center justify-around gap-1">
+                    <button
+                      onClick={() => handleLikePost(post._id)}
+                      className={`flex-1 py-1.5 rounded-md flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800 ${post.likes?.includes(session?.user?.id) ? "text-blue-500" : "text-zinc-600 dark:text-zinc-400 hover:text-blue-500"}`}
+                    >
+                      {post.likes?.includes(session?.user?.id) ? (
+                        <HeartFilled className="text-xl" />
+                      ) : (
+                        <HeartOutlined className="text-xl" />
+                      )}
+                      <span>ถูกใจ</span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        setCommentingPostId(commentingPostId === post._id ? null : post._id)
+                      }
+                      className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 font-bold text-sm text-zinc-500 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    >
+                      <CommentOutlined className="text-lg" /> แสดงความคิดเห็น
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSharingPost(post);
+                        setShareText("");
+                      }}
+                      className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 font-bold text-sm text-zinc-500 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    >
+                      <ShareAltOutlined className="text-lg" /> แชร์
+                    </button>
+                  </div>
+
+                  {(post.comments?.length > 0 || commentingPostId === post._id) && (
+                    <div className="mt-4 pt-4 border-t dark:border-zinc-800">
+                      {/* Comment List */}
+                      <div className="space-y-4 mb-6">
+                        {post.comments
+                          ?.filter((c: any) => !c.parentId)
+                          ?.map((comment: any, idx: number) => {
+                            const commentId = comment.id || comment._id;
+                            const isCommentOwner =
+                              String(comment.userId) === String(session?.user?.id) ||
+                              (comment.userId?.$oid &&
+                                String(comment.userId.$oid) ===
+                                String(session?.user?.id));
+                            const isEditing = editingCommentId === commentId;
+                            const replies =
+                              post.comments?.filter((c: any) => c.parentId === commentId) || [];
+
+                            return (
+                              <div key={comment.id || idx} className="space-y-3">
+                                {/* Main Comment */}
+                                <div className="flex gap-2 group/comment">
+                                  <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 shadow-sm border dark:border-zinc-700">
+                                    {comment.userImage ? (
+                                      <img
+                                        src={comment.userImage}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <UserOutlined className="text-zinc-300 text-[10px]" />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 space-y-1">
+                                    <div className="flex items-center gap-2 group">
+                                      {isEditing ? (
+                                        <div className="flex-1 flex flex-col gap-2">
+                                          <textarea
+                                            value={editingCommentText}
+                                            onChange={(e) =>
+                                              setEditingCommentText(e.target.value)
+                                            }
+                                            className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-xl px-3 py-2 outline-none text-sm resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
+                                            rows={2}
+                                          />
+                                          <div className="flex gap-2">
+                                            <button
+                                              onClick={() =>
+                                                handleUpdateComment(post._id, commentId)
+                                              }
+                                              className="px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95"
+                                            >
+                                              บันทึก
+                                            </button>
+                                            <button
+                                              onClick={() => setEditingCommentId(null)}
+                                              className="px-4 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-full text-xs font-bold hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-all active:scale-95"
+                                            >
+                                              ยกเลิก
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <>
+                                          <div className="bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl px-3.5 py-2 relative shadow-xs max-w-[90%]">
+                                            <p className="text-[11px] font-black text-zinc-900 dark:text-white mb-0.5 hover:underline cursor-pointer">
+                                              {comment.userName}
+                                            </p>
+                                            <p className="text-[13px] text-zinc-700 dark:text-zinc-300 leading-tight">
+                                              {comment.text}
+                                            </p>
+                                            {comment.image && (
+                                              <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
+                                                <img
+                                                  src={comment.image}
+                                                  className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
+                                                  onClick={() =>
+                                                    setSelectedImage({
+                                                      images: [comment.image],
+                                                      index: 0,
+                                                    })
+                                                  }
+                                                />
+                                              </div>
+                                            )}
+
+                                            {(comment.likes?.length || 0) > 0 && (
+                                              <div className="absolute -bottom-1.5 -right-2 flex items-center bg-white dark:bg-zinc-800 rounded-full shadow-md border dark:border-zinc-700 px-1 py-0.5 scale-75 origin-left">
+                                                <div className="flex -space-x-1">
+                                                  <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center ring-1 ring-white dark:ring-zinc-800">
+                                                    <HeartFilled
+                                                      style={{ color: "white" }}
+                                                      className="text-[8px]"
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <span className="text-[10px] font-bold text-zinc-500 ml-1">
+                                                  {comment.likes.length}
+                                                </span>
+                                              </div>
+                                            )}
+                                          </div>
+
+                                          {isCommentOwner && (
+                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                              <Dropdown
+                                                menu={{
+                                                  items: [
+                                                    {
+                                                      key: "edit",
+                                                      label: "แก้ไขคอมเม้น",
+                                                      icon: <EditOutlined />,
+                                                      onClick: () => {
+                                                        setEditingCommentId(commentId);
+                                                        setEditingCommentText(comment.text);
+                                                      },
+                                                    },
+                                                    {
+                                                      key: "delete",
+                                                      label: "ลบคอมเม้น",
+                                                      icon: <DeleteOutlined />,
+                                                      danger: true,
+                                                      onClick: () =>
+                                                        handleDeleteComment(post._id, commentId),
+                                                    },
+                                                  ],
+                                                }}
+                                                trigger={["click"]}
+                                                placement="bottomRight"
+                                              >
+                                                <button className="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-all border dark:border-zinc-800 shadow-sm">
+                                                  <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400 text-lg" />
+                                                </button>
+                                              </Dropdown>
+                                            </div>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+
+                                    {!isEditing && (
+                                      <div className="flex items-center gap-4 pl-3 text-[11px] font-black text-zinc-500 dark:text-zinc-400">
+                                        <span className="hover:underline cursor-pointer">
+                                          {formatDistanceToNow(
+                                            new Date(comment.createdAt || Date.now()),
+                                            { addSuffix: false, locale: th },
+                                          )}
+                                        </span>
+                                        <span
+                                          onClick={() => handleLikeComment(post._id, commentId)}
+                                          className={`hover:underline cursor-pointer ${comment.likes?.includes(session?.user?.id) ? "text-blue-500" : "text-zinc-600 dark:text-zinc-300 hover:text-blue-500"}`}
+                                        >
+                                          ถูกใจ
+                                        </span>
+                                        <span
+                                          onClick={() => {
+                                            setReplyingTo({
+                                              postId: post._id,
+                                              commentId: commentId,
+                                            });
+                                            setNewCommentText("");
+                                          }}
+                                          className="hover:underline cursor-pointer text-zinc-600 dark:text-zinc-300"
+                                        >
+                                          ตอบกลับ
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Replies */}
+                                {replies.length > 0 && (
+                                  <div className="pl-10 space-y-3 relative">
+                                    <div className="absolute left-4 top-0 bottom-4 w-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
+
+                                    {replies.map((reply: any, replyIdx: number) => (
+                                      <div
+                                        key={reply.id || `reply-${replyIdx}`}
+                                        className="flex gap-2 group/reply relative"
+                                      >
+                                        <div className="absolute -left-6 top-4 w-6 h-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
+
+                                        <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 border dark:border-zinc-700">
+                                          {reply.userImage ? (
+                                            <img
+                                              src={reply.userImage}
+                                              className="w-full h-full object-cover"
+                                            />
+                                          ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                              <UserOutlined className="text-zinc-300 text-[8px]" />
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="flex-1 space-y-1">
+                                          <div className="flex items-center gap-2 group">
+                                            <div className="bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl px-3 py-1.5 shadow-xs max-w-[90%]">
+                                              <p className="text-[10px] font-black text-zinc-900 dark:text-white mb-0.5">
+                                                {reply.userName}
+                                              </p>
+                                              {editingCommentId === (reply.id || reply._id) ? (
+                                                <div className="flex-1 flex flex-col gap-2 min-w-[200px] py-1">
+                                                  <textarea
+                                                    autoFocus
+                                                    value={editingCommentText}
+                                                    onChange={(e) =>
+                                                      setEditingCommentText(e.target.value)
+                                                    }
+                                                    onKeyDown={(e) => {
+                                                      if (e.key === "Enter" && !e.shiftKey) {
+                                                        e.preventDefault();
+                                                        handleUpdateComment(
+                                                          post._id,
+                                                          reply.id || reply._id,
+                                                        );
+                                                      } else if (e.key === "Escape") {
+                                                        setEditingCommentId(null);
+                                                      }
+                                                    }}
+                                                    className="w-full bg-white dark:bg-zinc-900 rounded-lg px-3 py-1.5 outline-none text-xs resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
+                                                    rows={2}
+                                                  />
+                                                  <div className="flex gap-2">
+                                                    <button
+                                                      onClick={() =>
+                                                        handleUpdateComment(
+                                                          post._id,
+                                                          reply.id || reply._id,
+                                                        )
+                                                      }
+                                                      className="px-3 py-1 bg-blue-600 text-white rounded-full text-[10px] font-bold hover:bg-blue-700"
+                                                    >
+                                                      บันทึก
+                                                    </button>
+                                                    <button
+                                                      onClick={() => setEditingCommentId(null)}
+                                                      className="px-3 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-full text-[10px] font-bold"
+                                                    >
+                                                      ยกเลิก
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <>
+                                                  <p className="text-[12px] text-zinc-700 dark:text-zinc-300 leading-tight">
+                                                    {reply.text}
+                                                  </p>
+                                                  {reply.image && (
+                                                    <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
+                                                      <img
+                                                        src={reply.image}
+                                                        className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
+                                                        onClick={() =>
+                                                          setSelectedImage({
+                                                            images: [reply.image],
+                                                            index: 0,
+                                                          })
+                                                        }
+                                                      />
+                                                    </div>
+                                                  )}
+                                                </>
+                                              )}
+                                            </div>
+                                            {(String(reply.userId) ===
+                                              String(session?.user?.id) ||
+                                              (reply.userId?.$oid &&
+                                                String(reply.userId.$oid) ===
+                                                String(session?.user?.id))) && (
+                                                <Dropdown
+                                                  menu={{
+                                                    items: [
+                                                      {
+                                                        key: "edit",
+                                                        label: "แก้ไข",
+                                                        icon: <EditOutlined />,
+                                                        onClick: () => {
+                                                          setEditingCommentId(
+                                                            reply.id || reply._id,
+                                                          );
+                                                          setEditingCommentText(reply.text);
+                                                        },
+                                                      },
+                                                      {
+                                                        key: "delete",
+                                                        label: "ลบ",
+                                                        icon: <DeleteOutlined />,
+                                                        danger: true,
+                                                        onClick: () =>
+                                                          handleDeleteComment(
+                                                            post._id,
+                                                            reply.id || reply._id,
+                                                          ),
+                                                      },
+                                                    ],
+                                                  }}
+                                                  trigger={["click"]}
+                                                >
+                                                  <button className="w-7 h-7 rounded-full bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700 flex items-center justify-center transition-all shadow-sm">
+                                                    <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400" />
+                                                  </button>
+                                                </Dropdown>
+                                              )}
+                                          </div>
+                                          <div className="flex items-center gap-4 pl-2 text-[10px] font-black text-zinc-500 dark:text-zinc-400">
+                                            <span>
+                                              {formatDistanceToNow(
+                                                new Date(reply.createdAt || Date.now()),
+                                                {
+                                                  addSuffix: false,
+                                                  locale: th,
+                                                },
+                                              )}
+                                            </span>
+                                            <span
+                                              onClick={() =>
+                                                handleLikeComment(post._id, reply.id || reply._id)
+                                              }
+                                              className={`hover:underline cursor-pointer ${reply.likes?.includes(session?.user?.id) ? "text-blue-500" : "hover:text-blue-500"}`}
+                                            >
+                                              ถูกใจ
+                                            </span>
+                                            <span
+                                              onClick={() => {
+                                                setReplyingTo({
+                                                  postId: post._id,
+                                                  commentId: commentId,
+                                                });
+                                                setNewCommentText("");
+                                              }}
+                                              className="hover:underline cursor-pointer"
+                                            >
+                                              ตอบกลับ
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Reply Input */}
+                                {replyingTo?.commentId === comment.id && (
+                                  <div className="pl-10 mt-2 relative">
+                                    {/* Curved Line connector */}
+                                    <div className="absolute -left-6 top-0 w-6 h-6 border-l-[1.5px] border-b-[1.5px] border-zinc-200 dark:border-zinc-800 rounded-bl-xl" />
+
+                                    <div className="flex gap-2 group/reply-input">
+                                      <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 border dark:border-zinc-700 shadow-sm">
+                                        {session?.user?.image ? (
+                                          <img
+                                            src={session.user.image}
+                                            className="w-full h-full object-cover"
+                                          />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center">
+                                            <UserOutlined className="text-zinc-300 text-[10px]" />
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="flex-1 bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl p-3 border dark:border-zinc-700/50 shadow-sm focus-within:ring-1 focus-within:ring-blue-500/30 transition-all">
+                                        <div className="flex flex-col gap-2">
+                                          <input
+                                            autoFocus
+                                            value={newCommentText}
+                                            onChange={(e) => setNewCommentText(e.target.value)}
+                                            onKeyDown={(e) =>
+                                              e.key === "Enter" &&
+                                              handleCommentSubmit(post._id, commentId)
+                                            }
+                                            placeholder="เขียนตอบกลับ..."
+                                            className="flex-1 bg-transparent outline-none text-[13px] placeholder:text-zinc-400 min-w-[100px]"
+                                          />
+                                          {commentImage && (
+                                            <div className="relative w-32 h-32 mt-1 group">
+                                              <img
+                                                src={commentImage}
+                                                className="w-full h-full object-cover rounded-lg border-2 border-white dark:border-zinc-700 shadow-sm"
+                                              />
+                                              <button
+                                                onClick={() => setCommentImage(null)}
+                                                className="absolute -top-2 -right-2 w-6 h-6 bg-zinc-800 text-white rounded-full flex items-center justify-center text-[12px] hover:bg-zinc-700 shadow-md transition-all"
+                                              >
+                                                <CloseOutlined />
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center justify-between mt-1 pt-2 border-t border-zinc-200/50 dark:border-zinc-700/30">
+                                          <div className="flex items-center gap-3">
+                                            <Popover
+                                              content={
+                                                <div className="grid grid-cols-6 gap-2">
+                                                  {[
+                                                    "😊",
+                                                    "😂",
+                                                    "🥰",
+                                                    "😮",
+                                                    "😢",
+                                                    "😡",
+                                                    "👍",
+                                                    "❤️",
+                                                    "🔥",
+                                                    "✨",
+                                                    "🙌",
+                                                    "🙏",
+                                                  ].map((emoji) => (
+                                                    <span
+                                                      key={emoji}
+                                                      className="text-xl cursor-pointer hover:scale-125 transition-transform"
+                                                      onClick={() =>
+                                                        setNewCommentText((prev) => prev + emoji)
+                                                      }
+                                                    >
+                                                      {emoji}
+                                                    </span>
+                                                  ))}
+                                                </div>
+                                              }
+                                              trigger="click"
+                                              placement="top"
+                                            >
+                                              <SmileOutlined className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors" />
+                                            </Popover>
+                                            <CameraOutlined
+                                              onClick={startCamera}
+                                              className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors"
+                                            />
+                                            <PictureOutlined
+                                              onClick={() =>
+                                                commentImageInputRef.current?.click()
+                                              }
+                                              className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors"
+                                            />
+                                          </div>
+                                          <button
+                                            onClick={() =>
+                                              handleCommentSubmit(post._id, commentId)
+                                            }
+                                            className={`transition-all ${newCommentText.trim() || commentImage ? "text-blue-600 scale-110" : "text-zinc-300"}`}
+                                          >
+                                            <SendOutlined className="text-lg" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={() => setReplyingTo(null)}
+                                      className="text-[10px] text-zinc-500 hover:underline mt-1 ml-10 font-bold"
+                                    >
+                                      ยกเลิกการตอบกลับ
+                                    </button>
                                   </div>
                                 )}
                               </div>
                             );
                           })}
                       </div>
-                    )}
 
-                    <div className="flex items-center justify-between px-2 py-1 mb-2 min-h-[32px]">
-                      {(post.likes?.length || 0) > 0 ? (
-                        <button
-                          onClick={() => {
-                            if (post.likes?.length > 0) {
-                              const likedUsers = allUsers.filter((u) =>
-                                post.likes.includes(String(u._id?.$oid || u._id)),
-                              );
-                              setLikersList(likedUsers);
-                              setShowLikersModal(true);
-                            }
-                          }}
-                          className="flex items-center gap-1.5 hover:underline transition-all group"
-                        >
-                          <div className="flex -space-x-1 items-center">
-                            <div className="w-5 h-5 rounded-full bg-linear-to-b from-red-400 to-red-600 flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 shadow-sm z-10">
-                              <HeartFilled style={{ color: "white" }} className="text-[10px]" />
-                            </div>
-                          </div>
-                          <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
-                            {post.likes?.length || 0}
-                          </span>
-                        </button>
-                      ) : (
-                        <div />
-                      )}
-                      <div className="flex items-center gap-4 text-zinc-500 text-sm font-bold">
-                        {(post.comments?.length || 0) > 0 && (
-                          <span>{post.comments?.length} ความคิดเห็น</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <hr className="border-zinc-100 dark:border-zinc-800 mb-2" />
-
-                    <div className="flex items-center justify-around gap-1">
-                      <button
-                        onClick={() => handleLikePost(post._id)}
-                        className={`flex-1 py-1.5 rounded-md flex items-center justify-center gap-2 font-bold text-sm transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800 ${post.likes?.includes(session?.user?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-400 hover:text-red-500"}`}
-                      >
-                        {post.likes?.includes(session?.user?.id) ? (
-                          <HeartFilled className="text-xl" />
-                        ) : (
-                          <HeartOutlined className="text-xl" />
-                        )}
-                        <span>ถูกใจ</span>
-                      </button>
-                      <button
-                        onClick={() =>
-                          setCommentingPostId(commentingPostId === post._id ? null : post._id)
-                        }
-                        className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 font-bold text-sm text-zinc-500 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                      >
-                        <CommentOutlined className="text-lg" /> แสดงความคิดเห็น
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSharingPost(post);
-                          setShareText("");
-                        }}
-                        className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 font-bold text-sm text-zinc-500 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                      >
-                        <ShareAltOutlined className="text-lg" /> แชร์
-                      </button>
-                    </div>
-
-                    {(post.comments?.length > 0 || commentingPostId === post._id) && (
-                      <div className="mt-4 pt-4 border-t dark:border-zinc-800">
-                        {/* Comment List */}
-                        <div className="space-y-4 mb-6">
-                          {post.comments
-                            ?.filter((c: any) => !c.parentId)
-                            ?.map((comment: any, idx: number) => {
-                              const commentId = comment.id || comment._id;
-                              const isCommentOwner =
-                                String(comment.userId) === String(session?.user?.id) ||
-                                (comment.userId?.$oid &&
-                                  String(comment.userId.$oid) ===
-                                  String(session?.user?.id));
-                              const isEditing = editingCommentId === commentId;
-                              const replies =
-                                post.comments?.filter((c: any) => c.parentId === commentId) || [];
-
-                              return (
-                                <div key={comment.id || idx} className="space-y-3">
-                                  {/* Main Comment */}
-                                  <div className="flex gap-2 group/comment">
-                                    <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 shadow-sm border dark:border-zinc-700">
-                                      {comment.userImage ? (
-                                        <img
-                                          src={comment.userImage}
-                                          className="w-full h-full object-cover"
-                                        />
-                                      ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                          <UserOutlined className="text-zinc-300 text-[10px]" />
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="flex-1 space-y-1">
-                                      <div className="flex items-center gap-2 group">
-                                        {isEditing ? (
-                                          <div className="flex-1 flex flex-col gap-2">
-                                            <textarea
-                                              value={editingCommentText}
-                                              onChange={(e) =>
-                                                setEditingCommentText(e.target.value)
-                                              }
-                                              className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-xl px-3 py-2 outline-none text-sm resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
-                                              rows={2}
-                                            />
-                                            <div className="flex gap-2">
-                                              <button
-                                                onClick={() =>
-                                                  handleUpdateComment(post._id, commentId)
-                                                }
-                                                className="px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95"
-                                              >
-                                                บันทึก
-                                              </button>
-                                              <button
-                                                onClick={() => setEditingCommentId(null)}
-                                                className="px-4 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-full text-xs font-bold hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-all active:scale-95"
-                                              >
-                                                ยกเลิก
-                                              </button>
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <>
-                                            <div className="bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl px-3.5 py-2 relative shadow-xs max-w-[90%]">
-                                              <p className="text-[11px] font-black text-zinc-900 dark:text-white mb-0.5 hover:underline cursor-pointer">
-                                                {comment.userName}
-                                              </p>
-                                              <p className="text-[13px] text-zinc-700 dark:text-zinc-300 leading-tight">
-                                                {comment.text}
-                                              </p>
-                                              {comment.image && (
-                                                <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
-                                                  <img
-                                                    src={comment.image}
-                                                    className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
-                                                    onClick={() =>
-                                                      setSelectedImage({
-                                                        images: [comment.image],
-                                                        index: 0,
-                                                      })
-                                                    }
-                                                  />
-                                                </div>
-                                              )}
-
-                                              {(comment.likes?.length || 0) > 0 && (
-                                                <div className="absolute -bottom-1.5 -right-2 flex items-center bg-white dark:bg-zinc-800 rounded-full shadow-md border dark:border-zinc-700 px-1 py-0.5 scale-75 origin-left">
-                                                  <div className="flex -space-x-1">
-                                                    <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center ring-1 ring-white dark:ring-zinc-800">
-                                                      <HeartFilled
-                                                        style={{ color: "white" }}
-                                                        className="text-[8px]"
-                                                      />
-                                                    </div>
-                                                  </div>
-                                                  <span className="text-[10px] font-bold text-zinc-500 ml-1">
-                                                    {comment.likes.length}
-                                                  </span>
-                                                </div>
-                                              )}
-                                            </div>
-
-                                            {isCommentOwner && (
-                                              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Dropdown
-                                                  menu={{
-                                                    items: [
-                                                      {
-                                                        key: "edit",
-                                                        label: "แก้ไขคอมเม้น",
-                                                        icon: <EditOutlined />,
-                                                        onClick: () => {
-                                                          setEditingCommentId(commentId);
-                                                          setEditingCommentText(comment.text);
-                                                        },
-                                                      },
-                                                      {
-                                                        key: "delete",
-                                                        label: "ลบคอมเม้น",
-                                                        icon: <DeleteOutlined />,
-                                                        danger: true,
-                                                        onClick: () =>
-                                                          handleDeleteComment(post._id, commentId),
-                                                      },
-                                                    ],
-                                                  }}
-                                                  trigger={["click"]}
-                                                  placement="bottomRight"
-                                                >
-                                                  <button className="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-all border dark:border-zinc-800 shadow-sm">
-                                                    <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400 text-lg" />
-                                                  </button>
-                                                </Dropdown>
-                                              </div>
-                                            )}
-                                          </>
-                                        )}
-                                      </div>
-
-                                      {!isEditing && (
-                                        <div className="flex items-center gap-4 pl-3 text-[11px] font-black text-zinc-500 dark:text-zinc-400">
-                                          <span className="hover:underline cursor-pointer">
-                                            {formatDistanceToNow(
-                                              new Date(comment.createdAt || Date.now()),
-                                              { addSuffix: false, locale: th },
-                                            )}
-                                          </span>
-                                           <span
-                                            onClick={() => handleLikeComment(post._id, commentId)}
-                                            className={`hover:underline cursor-pointer ${comment.likes?.includes(session?.user?.id) ? "text-red-500" : "text-zinc-600 dark:text-zinc-300 hover:text-red-500"}`}
-                                          >
-                                            ถูกใจ
-                                          </span>
-                                          <span
-                                            onClick={() => {
-                                              setReplyingTo({
-                                                postId: post._id,
-                                                commentId: commentId,
-                                              });
-                                              setNewCommentText("");
-                                            }}
-                                            className="hover:underline cursor-pointer text-zinc-600 dark:text-zinc-300"
-                                          >
-                                            ตอบกลับ
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* Replies */}
-                                  {replies.length > 0 && (
-                                    <div className="pl-10 space-y-3 relative">
-                                      <div className="absolute left-4 top-0 bottom-4 w-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
-
-                                      {replies.map((reply: any, replyIdx: number) => (
-                                        <div
-                                          key={reply.id || `reply-${replyIdx}`}
-                                          className="flex gap-2 group/reply relative"
-                                        >
-                                          <div className="absolute -left-6 top-4 w-6 h-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
-
-                                          <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 border dark:border-zinc-700">
-                                            {reply.userImage ? (
-                                              <img
-                                                src={reply.userImage}
-                                                className="w-full h-full object-cover"
-                                              />
-                                            ) : (
-                                              <div className="w-full h-full flex items-center justify-center">
-                                                <UserOutlined className="text-zinc-300 text-[8px]" />
-                                              </div>
-                                            )}
-                                          </div>
-                                          <div className="flex-1 space-y-1">
-                                            <div className="flex items-center gap-2 group">
-                                              <div className="bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl px-3 py-1.5 shadow-xs max-w-[90%]">
-                                                <p className="text-[10px] font-black text-zinc-900 dark:text-white mb-0.5">
-                                                  {reply.userName}
-                                                </p>
-                                                {editingCommentId === (reply.id || reply._id) ? (
-                                                  <div className="flex-1 flex flex-col gap-2 min-w-[200px] py-1">
-                                                    <textarea
-                                                      autoFocus
-                                                      value={editingCommentText}
-                                                      onChange={(e) =>
-                                                        setEditingCommentText(e.target.value)
-                                                      }
-                                                      onKeyDown={(e) => {
-                                                        if (e.key === "Enter" && !e.shiftKey) {
-                                                          e.preventDefault();
-                                                          handleUpdateComment(
-                                                            post._id,
-                                                            reply.id || reply._id,
-                                                          );
-                                                        } else if (e.key === "Escape") {
-                                                          setEditingCommentId(null);
-                                                        }
-                                                      }}
-                                                      className="w-full bg-white dark:bg-zinc-900 rounded-lg px-3 py-1.5 outline-none text-xs resize-none border dark:border-zinc-700 focus:ring-2 focus:ring-blue-500"
-                                                      rows={2}
-                                                    />
-                                                    <div className="flex gap-2">
-                                                      <button
-                                                        onClick={() =>
-                                                          handleUpdateComment(
-                                                            post._id,
-                                                            reply.id || reply._id,
-                                                          )
-                                                        }
-                                                        className="px-3 py-1 bg-blue-600 text-white rounded-full text-[10px] font-bold hover:bg-blue-700"
-                                                      >
-                                                        บันทึก
-                                                      </button>
-                                                      <button
-                                                        onClick={() => setEditingCommentId(null)}
-                                                        className="px-3 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-full text-[10px] font-bold"
-                                                      >
-                                                        ยกเลิก
-                                                      </button>
-                                                    </div>
-                                                  </div>
-                                                ) : (
-                                                  <>
-                                                    <p className="text-[12px] text-zinc-700 dark:text-zinc-300 leading-tight">
-                                                      {reply.text}
-                                                    </p>
-                                                    {reply.image && (
-                                                      <div className="mt-2 rounded-lg overflow-hidden border dark:border-zinc-700 bg-black/5">
-                                                        <img
-                                                          src={reply.image}
-                                                          className="max-w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity"
-                                                          onClick={() =>
-                                                            setSelectedImage({
-                                                              images: [reply.image],
-                                                              index: 0,
-                                                            })
-                                                          }
-                                                        />
-                                                      </div>
-                                                    )}
-                                                  </>
-                                                )}
-                                              </div>
-                                              {(String(reply.userId) ===
-                                                String(session?.user?.id) ||
-                                                (reply.userId?.$oid &&
-                                                  String(reply.userId.$oid) ===
-                                                  String(session?.user?.id))) && (
-                                                  <Dropdown
-                                                    menu={{
-                                                      items: [
-                                                        {
-                                                          key: "edit",
-                                                          label: "แก้ไข",
-                                                          icon: <EditOutlined />,
-                                                          onClick: () => {
-                                                            setEditingCommentId(
-                                                              reply.id || reply._id,
-                                                            );
-                                                            setEditingCommentText(reply.text);
-                                                          },
-                                                        },
-                                                        {
-                                                          key: "delete",
-                                                          label: "ลบ",
-                                                          icon: <DeleteOutlined />,
-                                                          danger: true,
-                                                          onClick: () =>
-                                                            handleDeleteComment(
-                                                              post._id,
-                                                              reply.id || reply._id,
-                                                            ),
-                                                        },
-                                                      ],
-                                                    }}
-                                                    trigger={["click"]}
-                                                  >
-                                                    <button className="w-7 h-7 rounded-full bg-zinc-50 dark:bg-zinc-800 border dark:border-zinc-700 flex items-center justify-center transition-all shadow-sm">
-                                                      <EllipsisOutlined className="text-zinc-500 dark:text-zinc-400" />
-                                                    </button>
-                                                  </Dropdown>
-                                                )}
-                                            </div>
-                                            <div className="flex items-center gap-4 pl-2 text-[10px] font-black text-zinc-500 dark:text-zinc-400">
-                                              <span>
-                                                {formatDistanceToNow(
-                                                  new Date(reply.createdAt || Date.now()),
-                                                  {
-                                                    addSuffix: false,
-                                                    locale: th,
-                                                  },
-                                                )}
-                                              </span>
-                                               <span
-                                                onClick={() =>
-                                                  handleLikeComment(post._id, reply.id || reply._id)
-                                                }
-                                                className={`hover:underline cursor-pointer ${reply.likes?.includes(session?.user?.id) ? "text-red-500" : "hover:text-red-500"}`}
-                                              >
-                                                ถูกใจ
-                                              </span>
-                                              <span
-                                                onClick={() => {
-                                                  setReplyingTo({
-                                                    postId: post._id,
-                                                    commentId: commentId,
-                                                  });
-                                                  setNewCommentText("");
-                                                }}
-                                                className="hover:underline cursor-pointer"
-                                              >
-                                                ตอบกลับ
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  {/* Reply Input */}
-                                  {replyingTo?.commentId === comment.id && (
-                                    <div className="pl-10 mt-2 relative">
-                                      {/* Curved Line connector */}
-                                      <div className="absolute -left-6 top-0 w-6 h-6 border-l-[1.5px] border-b-[1.5px] border-zinc-200 dark:border-zinc-800 rounded-bl-xl" />
-
-                                      <div className="flex gap-2 group/reply-input">
-                                        <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 border dark:border-zinc-700 shadow-sm">
-                                          {session?.user?.image ? (
-                                            <img
-                                              src={session.user.image}
-                                              className="w-full h-full object-cover"
-                                            />
-                                          ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                              <UserOutlined className="text-zinc-300 text-[10px]" />
-                                            </div>
-                                          )}
-                                        </div>
-                                        <div className="flex-1 bg-zinc-100 dark:bg-zinc-800/80 backdrop-blur-sm rounded-2xl p-3 border dark:border-zinc-700/50 shadow-sm focus-within:ring-1 focus-within:ring-blue-500/30 transition-all">
-                                          <div className="flex flex-col gap-2">
-                                            <input
-                                              autoFocus
-                                              value={newCommentText}
-                                              onChange={(e) => setNewCommentText(e.target.value)}
-                                              onKeyDown={(e) =>
-                                                e.key === "Enter" &&
-                                                handleCommentSubmit(post._id, commentId)
-                                              }
-                                              placeholder="เขียนตอบกลับ..."
-                                              className="flex-1 bg-transparent outline-none text-[13px] placeholder:text-zinc-400 min-w-[100px]"
-                                            />
-                                            {commentImage && (
-                                              <div className="relative w-32 h-32 mt-1 group">
-                                                <img
-                                                  src={commentImage}
-                                                  className="w-full h-full object-cover rounded-lg border-2 border-white dark:border-zinc-700 shadow-sm"
-                                                />
-                                                <button
-                                                  onClick={() => setCommentImage(null)}
-                                                  className="absolute -top-2 -right-2 w-6 h-6 bg-zinc-800 text-white rounded-full flex items-center justify-center text-[12px] hover:bg-zinc-700 shadow-md transition-all"
-                                                >
-                                                  <CloseOutlined />
-                                                </button>
-                                              </div>
-                                            )}
-                                          </div>
-                                          <div className="flex items-center justify-between mt-1 pt-2 border-t border-zinc-200/50 dark:border-zinc-700/30">
-                                            <div className="flex items-center gap-3">
-                                              <Popover
-                                                content={
-                                                  <div className="grid grid-cols-6 gap-2">
-                                                    {[
-                                                      "😊",
-                                                      "😂",
-                                                      "🥰",
-                                                      "😮",
-                                                      "😢",
-                                                      "😡",
-                                                      "👍",
-                                                      "❤️",
-                                                      "🔥",
-                                                      "✨",
-                                                      "🙌",
-                                                      "🙏",
-                                                    ].map((emoji) => (
-                                                      <span
-                                                        key={emoji}
-                                                        className="text-xl cursor-pointer hover:scale-125 transition-transform"
-                                                        onClick={() =>
-                                                          setNewCommentText((prev) => prev + emoji)
-                                                        }
-                                                      >
-                                                        {emoji}
-                                                      </span>
-                                                    ))}
-                                                  </div>
-                                                }
-                                                trigger="click"
-                                                placement="top"
-                                              >
-                                                <SmileOutlined className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors" />
-                                              </Popover>
-                                              <CameraOutlined
-                                                onClick={startCamera}
-                                                className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors"
-                                              />
-                                              <PictureOutlined
-                                                onClick={() =>
-                                                  commentImageInputRef.current?.click()
-                                                }
-                                                className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors"
-                                              />
-                                            </div>
-                                            <button
-                                              onClick={() =>
-                                                handleCommentSubmit(post._id, commentId)
-                                              }
-                                              className={`transition-all ${newCommentText.trim() || commentImage ? "text-blue-600 scale-110" : "text-zinc-300"}`}
-                                            >
-                                              <SendOutlined className="text-lg" />
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <button
-                                        onClick={() => setReplyingTo(null)}
-                                        className="text-[10px] text-zinc-500 hover:underline mt-1 ml-10 font-bold"
-                                      >
-                                        ยกเลิกการตอบกลับ
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                        </div>
-
-                        {/* Comment Input (Moved to bottom) */}
-                        {commentingPostId === post._id && (
-                          <div className="flex gap-2 mt-4">
-                            <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 shadow-sm border dark:border-zinc-700">
-                              {session?.user?.image ? (
-                                <img
-                                  src={session.user.image}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <UserOutlined className="text-zinc-300 text-[10px]" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl px-4 py-2 relative border dark:border-zinc-700/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all">
-                              <input
-                                value={newCommentText}
-                                onChange={(e) => setNewCommentText(e.target.value)}
-                                onKeyDown={(e) =>
-                                  e.key === "Enter" && handleCommentSubmit(post._id)
-                                }
-                                placeholder={`แสดงความคิดเห็นในนาม ${session?.user?.name}`}
-                                className="w-full bg-transparent outline-none text-[13px] py-1 placeholder:text-zinc-400"
+                      {/* Comment Input (Moved to bottom) */}
+                      {commentingPostId === post._id && (
+                        <div className="flex gap-2 mt-4">
+                          <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 shadow-sm border dark:border-zinc-700">
+                            {session?.user?.image ? (
+                              <img
+                                src={session.user.image}
+                                className="w-full h-full object-cover"
                               />
-                              {commentImage && (
-                                <div className="relative w-32 h-32 my-2 group">
-                                  <img
-                                    src={commentImage}
-                                    className="w-full h-full object-cover rounded-xl border-2 border-white dark:border-zinc-700 shadow-md"
-                                  />
-                                  <button
-                                    onClick={() => setCommentImage(null)}
-                                    className="absolute -top-2 -right-2 w-7 h-7 bg-zinc-800 text-white rounded-full flex items-center justify-center text-sm hover:bg-zinc-700 shadow-lg transition-all"
-                                  >
-                                    <CloseOutlined />
-                                  </button>
-                                </div>
-                              )}
-                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-200 dark:border-zinc-700/50">
-                                <div className="flex items-center gap-2.5">
-                                  <Popover
-                                    content={
-                                      <div className="grid grid-cols-6 gap-2">
-                                        {[
-                                          "😊",
-                                          "😂",
-                                          "🥰",
-                                          "😮",
-                                          "😢",
-                                          "😡",
-                                          "👍",
-                                          "❤️",
-                                          "🔥",
-                                          "✨",
-                                          "🙌",
-                                          "🙏",
-                                        ].map((emoji) => (
-                                          <span
-                                            key={emoji}
-                                            className="text-xl cursor-pointer hover:scale-125 transition-transform"
-                                            onClick={() =>
-                                              setNewCommentText((prev) => prev + emoji)
-                                            }
-                                          >
-                                            {emoji}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    }
-                                    trigger="click"
-                                    placement="top"
-                                  >
-                                    <SmileOutlined className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors" />
-                                  </Popover>
-                                  <CameraOutlined
-                                    onClick={startCamera}
-                                    className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm"
-                                  />
-                                  <PictureOutlined
-                                    onClick={() => commentImageInputRef.current?.click()}
-                                    className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm"
-                                  />
-                                </div>
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <UserOutlined className="text-zinc-300 text-[10px]" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl px-4 py-2 relative border dark:border-zinc-700/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all">
+                            <input
+                              value={newCommentText}
+                              onChange={(e) => setNewCommentText(e.target.value)}
+                              onKeyDown={(e) =>
+                                e.key === "Enter" && handleCommentSubmit(post._id)
+                              }
+                              placeholder={`แสดงความคิดเห็นในนาม ${session?.user?.name}`}
+                              className="w-full bg-transparent outline-none text-[13px] py-1 placeholder:text-zinc-400"
+                            />
+                            {commentImage && (
+                              <div className="relative w-32 h-32 my-2 group">
+                                <img
+                                  src={commentImage}
+                                  className="w-full h-full object-cover rounded-xl border-2 border-white dark:border-zinc-700 shadow-md"
+                                />
                                 <button
-                                  onClick={() => handleCommentSubmit(post._id)}
-                                  className={`p-1.5 rounded-full transition-all ${newCommentText.trim() || commentImage ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20" : "text-zinc-300"}`}
+                                  onClick={() => setCommentImage(null)}
+                                  className="absolute -top-2 -right-2 w-7 h-7 bg-zinc-800 text-white rounded-full flex items-center justify-center text-sm hover:bg-zinc-700 shadow-lg transition-all"
                                 >
-                                  <SendOutlined className="text-sm" />
+                                  <CloseOutlined />
                                 </button>
                               </div>
+                            )}
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-200 dark:border-zinc-700/50">
+                              <div className="flex items-center gap-2.5">
+                                <Popover
+                                  content={
+                                    <div className="grid grid-cols-6 gap-2">
+                                      {[
+                                        "😊",
+                                        "😂",
+                                        "🥰",
+                                        "😮",
+                                        "😢",
+                                        "😡",
+                                        "👍",
+                                        "❤️",
+                                        "🔥",
+                                        "✨",
+                                        "🙌",
+                                        "🙏",
+                                      ].map((emoji) => (
+                                        <span
+                                          key={emoji}
+                                          className="text-xl cursor-pointer hover:scale-125 transition-transform"
+                                          onClick={() =>
+                                            setNewCommentText((prev) => prev + emoji)
+                                          }
+                                        >
+                                          {emoji}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  }
+                                  trigger="click"
+                                  placement="top"
+                                >
+                                  <SmileOutlined className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm transition-colors" />
+                                </Popover>
+                                <CameraOutlined
+                                  onClick={startCamera}
+                                  className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm"
+                                />
+                                <PictureOutlined
+                                  onClick={() => commentImageInputRef.current?.click()}
+                                  className="text-zinc-400 hover:text-blue-500 cursor-pointer text-sm"
+                                />
+                              </div>
+                              <button
+                                onClick={() => handleCommentSubmit(post._id)}
+                                className={`p-1.5 rounded-full transition-all ${newCommentText.trim() || commentImage ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20" : "text-zinc-300"}`}
+                              >
+                                <SendOutlined className="text-sm" />
+                              </button>
                             </div>
                           </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
 
-                {userPosts.length === 0 && (
-                  <div className="p-10 text-center bg-white dark:bg-zinc-900 rounded-xl border dark:border-zinc-800">
-                    <p className="text-zinc-400 font-bold italic">ไม่มีโพสต์ที่จะแสดงในขณะนี้</p>
-                  </div>
-                )}
-              </div>
+              {userPosts.length === 0 && (
+                <div className="p-10 text-center bg-white dark:bg-zinc-900 rounded-xl border dark:border-zinc-800">
+                  <p className="text-zinc-400 font-bold italic">ไม่มีโพสต์ที่จะแสดงในขณะนี้</p>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -2342,7 +2136,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            
+
                           </button>
                         )}
                       </div>
@@ -2383,7 +2177,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            
+
                           </button>
                         )}
                       </div>
@@ -2403,7 +2197,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            
+
                           </button>
                         )}
                       </div>
@@ -2490,7 +2284,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                           className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          
+
                         </button>
                       )}
                     </div>
@@ -2511,7 +2305,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        
+
                       </button>
                     )}
                   </div>
@@ -2530,7 +2324,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                           className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          
+
                         </button>
                       )}
                     </div>
@@ -2550,7 +2344,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                           className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          
+
                         </button>
                       )}
                     </div>
@@ -2578,7 +2372,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        
+
                       </button>
                     )}
                   </div>
@@ -2600,7 +2394,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        
+
                       </button>
                     )}
                   </div>
@@ -2621,7 +2415,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                           className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                         >
                           <EditOutlined />
-                          
+
                         </button>
                       )}
                     </div>
@@ -2649,7 +2443,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        
+
                       </button>
                     )}
                   </div>
@@ -2671,7 +2465,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                         className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                       >
                         <EditOutlined />
-                        
+
                       </button>
                     )}
                   </div>
@@ -2725,7 +2519,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                           className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40 shrink-0" title="แก้ไข"
                         >
                           <EditOutlined />
-                          
+
                         </button>
                       )}
                     </div>
@@ -2745,7 +2539,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                           className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40 shrink-0" title="แก้ไข"
                         >
                           <EditOutlined />
-                          
+
                         </button>
                       )}
                     </div>
@@ -2772,7 +2566,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             className="flex items-center justify-center w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40" title="แก้ไข"
                           >
                             <EditOutlined />
-                            
+
                           </button>
                         )}
                       </div>
@@ -3184,176 +2978,51 @@ function FriendProfilePageContent({ id }: { id: string }) {
         animate="visible"
         variants={containerVariants}
       >
-        {/* Header Section */}
-        <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-b-xl overflow-hidden mb-4 border-b dark:border-zinc-800">
-          {/* Cover Image */}
-          <div
-            className={`h-[180px] sm:h-[300px] lg:h-[400px] relative bg-zinc-200 dark:bg-zinc-800 overflow-hidden ${formData.coverImage ? "cursor-zoom-in" : ""}`}
-            onClick={() =>
-              formData.coverImage && setImageViewer({ src: formData.coverImage, label: "ภาพปก" })
+        {/* Profile Card Refactored */}
+        <ProfileCard
+          user={{
+            ...formData,
+            createdAt: (formData as any)?.createdAt // Pass actual createdAt
+          }}
+          isMe={!!isMyProfile}
+          onEditClick={() => setActiveModal("profile")}
+          friendStatus={friendStatus}
+          onFriendAction={() => {
+            if (friendStatus === "none") handleAddFriend();
+            else if (friendStatus === "request_received") handleAcceptFriend();
+            else if (friendStatus === "friends") {
+              Modal.confirm({
+                title: "ยืนยันการเลิกเป็นเพื่อน",
+                content: "คุณแน่ใจหรือไม่ว่าต้องการเลิกเป็นเพื่อนกับผู้ใช้นี้?",
+                okText: "เลิกเป็นเพื่อน",
+                okType: "danger",
+                cancelText: "ยกเลิก",
+                centered: true,
+                onOk() {
+                  handleUnfriend();
+                }
+              });
             }
-          >
-            {formData.coverImage && (
-              <img
-                src={formData.coverImage}
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02]"
-              />
-            )}
-            <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
-            {formData.coverImage && (
-              <div className="absolute bottom-3 right-3 bg-black/40 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
-                <EyeOutlined /> กดเพื่อดูภาพเต็ม
-              </div>
-            )}
-          </div>
-
-          <div className="px-2 pb-4 relative">
-            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 pt-10 -mt-12 sm:-mt-20 mb-6 px-2">
-              <div className="relative group">
-                <div
-                  className="h-40 w-40 sm:h-44 sm:w-44 lg:h-48 lg:w-48 rounded-full overflow-hidden border-4 border-white dark:border-zinc-900 bg-white dark:bg-zinc-800 shadow-xl transition-transform group-hover:scale-[1.01] cursor-zoom-in"
-                  onClick={() =>
-                    formData.image && setImageViewer({ src: formData.image, label: "รูปโปรไฟล์" })
-                  }
-                >
-                  {formData.image ? (
-                    <img
-                      src={formData.image}
-                      className="w-full h-full object-cover"
-                      alt="Profile"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
-                      <UserOutlined className="text-6xl" />
-                    </div>
-                  )}
-                </div>
-                <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all pointer-events-none">
-                  {formData.image && (
-                    <EyeOutlined className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                  )}
-                </div>
-              </div>
-              <div className="flex-1 text-center sm:text-left mb-2 z-10 overflow-hidden">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white tracking-tight truncate">
-                  {formData.name}
-                </h1>
-
-                <div className="flex items-center justify-center sm:justify-start -space-x-2">
-                  {allUsers
-                    .filter(
-                      (u) =>
-                        String(u._id) !== String(id) &&
-                        (formData?.friends || []).some((fId: any) => String(fId) === String(u._id)),
-                    )
-                    .slice(0, 8)
-                    .map((u) => (
-                      <div
-                        key={String(u._id)}
-                        className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 overflow-hidden shadow-sm flex items-center justify-center"
-                      >
-                        {u.image ? (
-                          <img src={u.image} className="w-full h-full object-cover" alt="Friend" />
-                        ) : (
-                          <UserOutlined className="text-[10px] text-zinc-400" />
-                        )}
-                      </div>
-                    ))}
-                  <span className="ml-4 text-sm font-bold text-zinc-400 tracking-tight">
-                    เพื่อน {(formData?.friends || []).length} คน
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-2 z-10">
-                {isMyProfile ? (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setActiveModal("profile")}
-                      className="px-6 py-2 rounded-lg bg-blue-600 text-white font-black flex items-center gap-2 transition-all hover:bg-blue-700 active:scale-95 shadow-lg shadow-blue-600/20"
-                    >
-                      <EditOutlined /> แก้ไขโปรไฟล์
-                    </button>
-                    <button
-                      onClick={() => setActiveModal("security")}
-                      className="px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center gap-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 border dark:border-zinc-700 font-black text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap"
-                    >
-                      <LockOutlined className="text-zinc-600 dark:text-zinc-400" />
-                      <span>เปลี่ยนรหัสผ่าน</span>
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {friendStatus === "none" && (
-                      <button
-                        onClick={handleAddFriend}
-                        className="px-6 py-2 rounded-lg bg-blue-600 text-white font-black flex items-center gap-2 transition-all hover:bg-blue-700 active:scale-95 shadow-lg shadow-blue-600/20"
-                      >
-                        <UserOutlined /> เพิ่มเพื่อน
-                      </button>
-                    )}
-                    {friendStatus === "request_sent" && (
-                      <button className="px-6 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-black flex items-center gap-2 cursor-default">
-                        <SafetyCertificateOutlined /> ส่งคำขอแล้ว
-                      </button>
-                    )}
-                    {friendStatus === "request_received" && (
-                      <button
-                        onClick={handleAcceptFriend}
-                        className="px-6 py-2 rounded-lg bg-emerald-600 text-white font-black flex items-center gap-2 transition-all hover:bg-emerald-700 active:scale-95 shadow-lg shadow-emerald-600/20"
-                      >
-                        <CheckCircleFilled /> ยอมรับเป็นเพื่อน
-                      </button>
-                    )}
-                    {friendStatus === "friends" && (
-                      <Popconfirm
-                        title="เลิกเป็นเพื่อน"
-                        description="คุณต้องการเลิกเป็นเพื่อนกับผู้ใช้นี้ใช่หรือไม่?"
-                        onConfirm={handleUnfriend}
-                        okText="ใช่, เลิกเป็นเพื่อน"
-                        cancelText="ยกเลิก"
-                        okButtonProps={{ danger: true }}
-                      >
-                        <button className="px-6 py-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-black flex items-center gap-2 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 transition-all border border-blue-100 dark:border-blue-500/20 hover:border-rose-100 dark:hover:border-rose-500/20 shadow-sm">
-                          <TeamOutlined /> เพื่อน
-                        </button>
-                      </Popconfirm>
-                    )}
-                    <button
-                      onClick={() => router.push(`/dashboard/chat?u=${id}`)}
-                      className="px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 font-black flex items-center gap-2 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95"
-                    >
-                      <MessageOutlined /> ข้อความ
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <hr className="border-zinc-100 dark:border-zinc-800 hidden sm:block" />
-            <div className="flex items-center justify-center sm:justify-start gap-1 sm:gap-2 mt-1 sm:-mb-1 px-1 overflow-x-auto no-scrollbar">
-              {["โพสต์", "เกี่ยวกับ", "เพื่อน", "รูปภาพ"].map((tab) => (
-                <div
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-4 font-bold text-sm sm:text-base cursor-pointer whitespace-nowrap transition-all relative group ${activeTab === tab
-                    ? "text-blue-600"
-                    : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg"
-                    }`}
-                >
-                  {tab}
-                  {activeTab === tab && (
-                    <motion.div
-                      layoutId="active-tab-line"
-                      className="absolute bottom-0 left-4 right-4 h-1 bg-blue-600 rounded-t-full"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 px-4 sm:px-0">
+          }}
+          isFollowingUser={isFollowingUser}
+          onToggleFollow={handleToggleFollow}
+          isProfileLiked={isProfileLiked}
+          onToggleLike={handleToggleProfileLike}
+          onMessage={() => router.push(`/dashboard/chat?u=${id}`)}
+          tabs={["โพสต์", "เกี่ยวกับ", "เพื่อน", "รูปภาพ"]}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onImageClick={() => {
+            if (formData.image) {
+              setImageViewer({ src: formData.image, label: "รูปโปรไฟล์" });
+            }
+          }}
+          onCoverClick={() => {
+            if (formData.coverImage) {
+              setImageViewer({ src: formData.coverImage, label: "รูปปก" });
+            }
+          }}
+        >
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 10 }}
@@ -3362,7 +3031,7 @@ function FriendProfilePageContent({ id }: { id: string }) {
           >
             {renderTabContent()}
           </motion.div>
-        </div>
+        </ProfileCard>
 
         {/* Share Modal */}
         <ProfileModal
@@ -3591,305 +3260,418 @@ function FriendProfilePageContent({ id }: { id: string }) {
           onSubmit={handleSubmit}
           saving={saving}
         >
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-zinc-400">รูปประจำตัว</label>
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden"
+          <div className="flex flex-col md:flex-row gap-6 h-full">
+            {/* Sidebar Tabs */}
+            <div className="w-full px-2 md:w-48 shrink-0 flex flex-row md:flex-col gap-1 overflow-x-auto pb-2 md:pb-0 md:pr-6 border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800 custom-scrollbar">
+              {[
+                { id: "general", label: "ข้อมูลทั่วไป", icon: <UserOutlined /> },
+                { id: "contact", label: "ข้อมูลติดต่อ", icon: <GlobalOutlined /> },
+                isStudent ? { id: "education", label: "การศึกษา", icon: <BookOutlined /> } : { id: "work", label: "การทำงาน", icon: <BriefcaseIcon className="w-4 h-4" /> }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setEditProfileTab(tab.id)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap text-left ${editProfileTab === tab.id
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                    : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+                    }`}
                 >
-                  {previewImage ? (
-                    <img src={previewImage} className="w-full h-full object-cover" />
-                  ) : (
-                    <CameraOutlined className="text-3xl text-zinc-300" />
-                  )}
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImageChange}
-                    hidden
-                    accept="image/*"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-zinc-400">รูปหน้าปก</label>
-                <div
-                  onClick={() => coverInputRef.current?.click()}
-                  className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden"
-                >
-                  {previewCover ? (
-                    <img src={previewCover} className="w-full h-full object-cover" />
-                  ) : (
-                    <PictureOutlined className="text-3xl text-zinc-300" />
-                  )}
-                  <input
-                    type="file"
-                    ref={coverInputRef}
-                    onChange={handleCoverChange}
-                    hidden
-                    accept="image/*"
-                  />
-                </div>
-              </div>
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            <div className="grid gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">ชื่อ-นามสกุล</label>
-                <input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">
-                    เบอร์โทรศัพท์
-                  </label>
-                  <input
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">Line ID</label>
-                  <input
-                    value={formData.lineId}
-                    onChange={(e) => setFormData({ ...formData, lineId: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
+            {/* Form Area */}
+            <div className="flex-1 pb-10 px-4 md:px-0">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={editProfileTab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6"
+                >
+                  {editProfileTab === "general" && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase text-zinc-400">รูปประจำตัว</label>
+                          <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="aspect-square rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden relative group"
+                          >
+                            {previewImage ? (
+                              <>
+                                <img src={previewImage} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <CameraOutlined className="text-3xl text-white" />
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center gap-2 text-zinc-400 group-hover:text-blue-500 transition-colors">
+                                <CameraOutlined className="text-3xl" />
+                                <span className="text-xs font-bold">อัปโหลดรูป</span>
+                              </div>
+                            )}
+                            <input type="file" ref={fileInputRef} onChange={handleImageChange} hidden accept="image/*" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase text-zinc-400">รูปหน้าปก</label>
+                          <div
+                            onClick={() => coverInputRef.current?.click()}
+                            className="aspect-square rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all overflow-hidden relative group"
+                          >
+                            {previewCover ? (
+                              <>
+                                <img src={previewCover} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <PictureOutlined className="text-3xl text-white" />
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center gap-2 text-zinc-400 group-hover:text-blue-500 transition-colors">
+                                <PictureOutlined className="text-3xl" />
+                                <span className="text-xs font-bold">อัปโหลดปก</span>
+                              </div>
+                            )}
+                            <input type="file" ref={coverInputRef} onChange={handleCoverChange} hidden accept="image/*" />
+                          </div>
+                        </div>
+                      </div>
 
-              {/* รหัสบัตรประชาชน */}
-              <div className="space-y-1">
-                <label className="text-xs font-black text-zinc-500 uppercase">
-                  รหัสบัตรประจำตัวประชาชน (13 หลัก)
-                </label>
-                <input
-                  value={formData.citizenId || ""}
-                  onChange={(e) => setFormData({ ...formData, citizenId: e.target.value })}
-                  placeholder="เช่น 1234567890123"
-                  maxLength={13}
-                  className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-zinc-500 uppercase">ชื่อ-นามสกุล</label>
+                        <input
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                        />
+                      </div>
 
-              {isStudent && (
-                <div className="space-y-4">
-                  {/* หัวข้อ */}
-                  <div className="border-t dark:border-zinc-800 pt-4">
-                    <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
-                      <SafetyCertificateOutlined /> ข้อมูลนักเรียน/นักศึกษา
-                    </h4>
-                  </div>
+                      {/* รหัสบัตรประชาชน */}
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-zinc-500 uppercase">
+                          รหัสบัตรประจำตัวประชาชน (13 หลัก)
+                        </label>
+                        <input
+                          value={formData.citizenId || ""}
+                          onChange={(e) => setFormData({ ...formData, citizenId: e.target.value })}
+                          placeholder="เช่น 1234567890123"
+                          maxLength={13}
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                        />
+                      </div>
 
-                  {/* รหัสนักศึกษา + ชื่อห้องเรียน */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        รหัสนักศึกษา (11 หลัก)
-                      </label>
-                      <input
-                        value={formData.studentId || ""}
-                        onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
-                        placeholder="เช่น 00000000000"
-                        maxLength={11}
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-zinc-500 uppercase">คำแนะนำตัว (Bio)</label>
+                        <textarea
+                          value={formData.description || ""}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                          placeholder="อธิบายความเป็นตัวคุณสั้นๆ..."
+                          rows={3}
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-medium resize-none"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-zinc-500 uppercase">ทักษะความสามารถ (Skills)</label>
+                        <textarea
+                          value={formData.skills || ""}
+                          onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                          placeholder="เช่น พัฒนาเว็บไซต์, ถ่ายภาพ, ตัดต่อวิดีโอ (คั่นด้วยเครื่องหมายจุลภาค)"
+                          rows={2}
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-medium resize-none"
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        ชื่อห้องเรียน (เช่น สคบ.11)
-                      </label>
-                      <input
-                        value={formData.groupCode || ""}
-                        onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
-                        placeholder="เช่น สคบ.11"
-                        maxLength={30}
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
+                  )}
 
-                  {/* ระดับการศึกษา + ประเภทผู้เรียน */}
-                  {/* <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        ระดับการศึกษา
-                        {!isSuperAdmin && (
-                          <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
-                            🔒 super admin เท่านั้น
-                          </span>
-                        )}
-                      </label>
-                      <input
-                        value={formData.academicLevel || ""}
-                        onChange={(e) =>
-                          setFormData({ ...formData, academicLevel: e.target.value })
-                        }
-                        placeholder="เช่น ปวช. / ปวส."
-                        disabled={!isSuperAdmin}
-                        className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${
-                          isSuperAdmin
-                            ? "bg-zinc-100 dark:bg-zinc-800"
-                            : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
-                        }`}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        ประเภทผู้เรียน
-                        {!isSuperAdmin && (
-                          <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
-                            🔒 super admin เท่านั้น
-                          </span>
-                        )}
-                      </label>
-                      <input
-                        value={formData.learnerType || ""}
-                        onChange={(e) => setFormData({ ...formData, learnerType: e.target.value })}
-                        placeholder="เช่น ปกติ / ทวิภาคี"
-                        disabled={!isSuperAdmin}
-                        className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${
-                          isSuperAdmin
-                            ? "bg-zinc-100 dark:bg-zinc-800"
-                            : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
-                        }`}
-                      />
-                    </div>
-                  </div> */}
+                  {editProfileTab === "contact" && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">เบอร์โทรศัพท์</label>
+                          <input
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">Line ID</label>
+                          <input
+                            value={formData.lineId}
+                            onChange={(e) => setFormData({ ...formData, lineId: e.target.value })}
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                          />
+                        </div>
+                      </div>
 
-                  {/* สถานภาพนักเรียน — super_admin only */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase flex items-center gap-1.5">
-                      สถานภาพนักเรียน
-                      {!isSuperAdmin && (
-                        <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
-                          🔒 super admin เท่านั้น
-                        </span>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-zinc-500 uppercase">อีเมล</label>
+                        <input
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">เมืองปัจจุบัน</label>
+                          <input
+                            value={formData.currentCity}
+                            onChange={(e) => setFormData({ ...formData, currentCity: e.target.value })}
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">บ้านเกิด</label>
+                          <input
+                            value={formData.hometown}
+                            onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      {!isStudent && (
+                        <div className="space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">สถานะความสัมพันธ์</label>
+                          <select
+                            value={formData.relationship}
+                            onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                          >
+                            <option value="">ไม่ระบุ</option>
+                            <option value="โสด">โสด</option>
+                            <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
+                            <option value="หมั้นแล้ว">หมั้นแล้ว</option>
+                            <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
+                            <option value="หย่าร้าง">หย่าร้าง</option>
+                          </select>
+                        </div>
                       )}
-                    </label>
-                    <select
-                      value={formData.studentStatus || ""}
-                      onChange={(e) => setFormData({ ...formData, studentStatus: e.target.value })}
-                      disabled={!isSuperAdmin}
-                      className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${isSuperAdmin
-                        ? "bg-zinc-100 dark:bg-zinc-800"
-                        : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
-                        }`}
-                    >
-                      <option value="">ไม่ระบุ</option>
-                      <option value="กำลังศึกษา">กำลังศึกษา</option>
-                      <option value="จบการศึกษา">จบการศึกษา</option>
-                      <option value="พักการศึกษา">พักการศึกษา</option>
-                      <option value="ลาออก">ลาออก</option>
-                    </select>
-                  </div>
 
-                  {/* ฝึกงาน — super_admin only */}
-                  <div
-                    className={`flex items-center justify-between p-3 rounded-xl border ${isSuperAdmin
-                      ? "bg-zinc-50 dark:bg-zinc-800/50 dark:border-zinc-700"
-                      : "bg-zinc-50/50 dark:bg-zinc-900/50 dark:border-zinc-800 opacity-60"
-                      }`}
-                  >
-                    <div>
-                      <p className="text-sm font-black text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-                        สถานะทวิภาคี / ฝึกงาน
-                        {!isSuperAdmin && (
-                          <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
-                            🔒 super admin เท่านั้น
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-xs text-zinc-400 mt-0.5">
-                        เปิดหากกำลังฝึกงานอยู่ในปัจจุบัน
-                      </p>
+                      <div className="border-t dark:border-zinc-800 pt-6 mt-4">
+                        <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                          <GlobalOutlined /> ข้อมูลที่อยู่ปัจจุบัน
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">บ้านเลขที่ หมู่ที่ ซอย</label>
+                            <input
+                              value={formData.addressHouse || ""}
+                              onChange={(e) => setFormData({ ...formData, addressHouse: e.target.value })}
+                              placeholder="เช่น 123 ม.4 ซ.โชคดี"
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">อาคาร หมู่บ้าน ถนน</label>
+                            <input
+                              value={formData.addressVillage || ""}
+                              onChange={(e) => setFormData({ ...formData, addressVillage: e.target.value })}
+                              placeholder="เช่น อาคารทองคำ ถ.สุขุมวิท"
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mt-4">
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">ตำบล/แขวง</label>
+                            <input
+                              value={formData.addressSubdistrict || ""}
+                              onChange={(e) => setFormData({ ...formData, addressSubdistrict: e.target.value })}
+                              placeholder="ตำบล..."
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">อำเภอ/เขต</label>
+                            <input
+                              value={formData.addressDistrict || ""}
+                              onChange={(e) => setFormData({ ...formData, addressDistrict: e.target.value })}
+                              placeholder="อำเภอ..."
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">จังหวัด</label>
+                            <input
+                              value={formData.addressProvince || ""}
+                              onChange={(e) => setFormData({ ...formData, addressProvince: e.target.value })}
+                              placeholder="จังหวัด..."
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                            />
+                          </div>
+                        </div>
+                        <div className="mt-4 space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">รหัสไปรษณีย์</label>
+                          <input
+                            value={formData.addressZipcode || ""}
+                            onChange={(e) => setFormData({ ...formData, addressZipcode: e.target.value })}
+                            placeholder="เช่น 10400"
+                            maxLength={5}
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        isSuperAdmin &&
-                        setFormData({ ...formData, isInternship: !formData.isInternship })
-                      }
-                      disabled={!isSuperAdmin}
-                      className={`relative w-12 h-6 rounded-full transition-all duration-300 ${formData.isInternship ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"
-                        } ${!isSuperAdmin ? "cursor-not-allowed" : "cursor-pointer"}`}
-                    >
-                      <div
-                        className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${formData.isInternship ? "left-6" : "left-0.5"
-                          }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-4">
-                {!isStudent && (
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">ตำแหน่ง</label>
-                    <input
-                      list="positions-list"
-                      value={formData.position}
-                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                      placeholder="พิมพ์หรือเลือกตำแหน่ง..."
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                    <datalist id="positions-list">
-                      {POSITIONS.map((opt) => (
-                        <option key={opt} value={opt} />
-                      ))}
-                      {profileOptions.positions.map((opt) => (
-                        <option key={`db-${opt}`} value={opt} />
-                      ))}
-                    </datalist>
-                  </div>
-                )}
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">
-                    แผนก / สังกัด
-                  </label>
-                  <select
-                    value={formData.department || ""}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 appearance-none"
-                  >
-                    {isStudent ? (
-                      <>
-                        <option value="">-- ระบุแผนกวิชา --</option>
-                        {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
-                        <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                        {DEPARTMENT_GROUPS.map((group) => (
-                          <optgroup key={group.label} label={group.label}>
-                            {group.options.map((opt) => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </option>
+                  )}
+
+                  {/* Education / Work Tabs */}
+                  {editProfileTab === "education" && isStudent && (
+                    <div className="space-y-6">
+                      {isStudent && (
+                        <div className="space-y-4">
+                          {/* หัวข้อ */}
+                          <div className="border-t dark:border-zinc-800 pt-4">
+                            <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
+                              <SafetyCertificateOutlined /> ข้อมูลนักเรียน/นักศึกษา
+                            </h4>
+                          </div>
+
+                          {/* รหัสนักศึกษา + ชื่อห้องเรียน */}
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                              <label className="text-xs font-black text-zinc-500 uppercase">
+                                รหัสนักศึกษา (11 หลัก)
+                              </label>
+                              <input
+                                value={formData.studentId || ""}
+                                onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                                placeholder="เช่น 00000000000"
+                                maxLength={11}
+                                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-xs font-black text-zinc-500 uppercase">
+                                ชื่อห้องเรียน (เช่น สคบ.11)
+                              </label>
+                              <input
+                                value={formData.groupCode || ""}
+                                onChange={(e) => setFormData({ ...formData, groupCode: e.target.value })}
+                                placeholder="เช่น สคบ.11"
+                                maxLength={30}
+                                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          {/* สถานภาพนักเรียน — super_admin only */}
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase flex items-center gap-1.5">
+                              สถานภาพนักเรียน
+                              {!isSuperAdmin && (
+                                <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                                  🔒 super admin เท่านั้น
+                                </span>
+                              )}
+                            </label>
+                            <select
+                              value={formData.studentStatus || ""}
+                              onChange={(e) => setFormData({ ...formData, studentStatus: e.target.value })}
+                              disabled={!isSuperAdmin}
+                              className={`w-full border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 ${isSuperAdmin
+                                ? "bg-zinc-100 dark:bg-zinc-800"
+                                : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 cursor-not-allowed opacity-60"
+                                }`}
+                            >
+                              <option value="">ไม่ระบุ</option>
+                              <option value="กำลังศึกษา">กำลังศึกษา</option>
+                              <option value="จบการศึกษา">จบการศึกษา</option>
+                              <option value="พักการศึกษา">พักการศึกษา</option>
+                              <option value="ลาออก">ลาออก</option>
+                            </select>
+                          </div>
+
+                          {/* ฝึกงาน — super_admin only */}
+                          <div
+                            className={`flex items-center justify-between p-3 rounded-xl border ${isSuperAdmin
+                              ? "bg-zinc-50 dark:bg-zinc-800/50 dark:border-zinc-700"
+                              : "bg-zinc-50/50 dark:bg-zinc-900/50 dark:border-zinc-800 opacity-60"
+                              }`}
+                          >
+                            <div>
+                              <p className="text-sm font-black text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                                สถานะทวิภาคี / ฝึกงาน
+                                {!isSuperAdmin && (
+                                  <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                                    🔒 super admin เท่านั้น
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs text-zinc-400 mt-0.5">
+                                เปิดหากกำลังฝึกงานอยู่ในปัจจุบัน
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                isSuperAdmin &&
+                                setFormData({ ...formData, isInternship: !formData.isInternship })
+                              }
+                              disabled={!isSuperAdmin}
+                              className={`relative w-12 h-6 rounded-full transition-all duration-300 ${formData.isInternship ? "bg-blue-600" : "bg-zinc-300 dark:bg-zinc-600"
+                                } ${!isSuperAdmin ? "cursor-not-allowed" : "cursor-pointer"}`}
+                            >
+                              <div
+                                className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${formData.isInternship ? "left-6" : "left-0.5"
+                                  }`}
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {editProfileTab === "work" && !isStudent && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">ตำแหน่ง</label>
+                          <input
+                            list="positions-list"
+                            value={formData.position}
+                            onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                            placeholder="พิมพ์หรือเลือกตำแหน่ง..."
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+                          />
+                          <datalist id="positions-list">
+                            {POSITIONS.map((opt) => (
+                              <option key={opt} value={opt} />
                             ))}
-                          </optgroup>
-                        ))}
-                        {profileOptions.departments
-                          .filter(
-                            (opt) =>
-                              opt !== "ไม่มีสังกัด" &&
-                              opt !== "ผู้บริหารสถานศึกษา" &&
-                              !DEPARTMENT_GROUPS.flatMap((g) => g.options.map((o) => o.value)).includes(opt)
-                          )
-                          .length > 0 && (
-                          <optgroup label="แผนก/ฝ่ายงานอื่นๆ (จากฐานข้อมูล)">
+                            {profileOptions.positions.map((opt) => (
+                              <option key={`db-${opt}`} value={opt} />
+                            ))}
+                          </datalist>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-black text-zinc-500 uppercase">
+                            แผนก / สังกัด
+                          </label>
+                          <select
+                            value={formData.department || ""}
+                            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                            className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 appearance-none"
+                          >
+                            <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
+                            <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                            {DEPARTMENT_GROUPS.map((group) => (
+                              <optgroup key={group.label} label={group.label}>
+                                {group.options.map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ))}
                             {profileOptions.departments
                               .filter(
                                 (opt) =>
@@ -3902,318 +3684,114 @@ function FriendProfilePageContent({ id }: { id: string }) {
                                   {opt}
                                 </option>
                               ))}
-                          </optgroup>
-                        )}
-                      </>
-                    )}
-                  </select>
-                </div>
-                {!isStudent && (
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">
-                      สาขาวิชา / หลักสูตร
-                    </label>
-                    <input
-                      value={formData.program}
-                      onChange={(e) => setFormData({ ...formData, program: e.target.value })}
-                      placeholder="เช่น สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล"
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {!isStudent && (
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">ฝ่าย</label>
-                    <input
-                      list="factions-list"
-                      value={formData.faction}
-                      onChange={(e) => setFormData({ ...formData, faction: e.target.value })}
-                      placeholder="พิมพ์หรือเลือกฝ่าย..."
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                    <datalist id="factions-list">
-                      {FACTIONS.map((opt) => (
-                        <option key={opt} value={opt} />
-                      ))}
-                      {profileOptions.factions.map((opt) => (
-                        <option key={`db-${opt}`} value={opt} />
-                      ))}
-                    </datalist>
-                  </div>
-                )}
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">อีเมล</label>
-                  <input
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              {!isStudent && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">
-                      ที่ทำงาน (เดิม/ปัจจุบัน)
-                    </label>
-                    <input
-                      value={formData.work}
-                      onChange={(e) => setFormData({ ...formData, work: e.target.value })}
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">การศึกษา</label>
-                    <input
-                      value={formData.education}
-                      onChange={(e) => setFormData({ ...formData, education: e.target.value })}
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">
-                    เมืองปัจจุบัน
-                  </label>
-                  <input
-                    value={formData.currentCity}
-                    onChange={(e) => setFormData({ ...formData, currentCity: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">บ้านเกิด</label>
-                  <input
-                    value={formData.hometown}
-                    onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              {!isStudent && (
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">
-                    สถานะความสัมพันธ์
-                  </label>
-                  <select
-                    value={formData.relationship}
-                    onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">ไม่ระบุ</option>
-                    <option value="โสด">โสด</option>
-                    <option value="มีแฟนแล้ว">มีแฟนแล้ว</option>
-                    <option value="หมั้นแล้ว">หมั้นแล้ว</option>
-                    <option value="แต่งงานแล้ว">แต่งงานแล้ว</option>
-                    <option value="หย่าร้าง">หย่าร้าง</option>
-                  </select>
-                </div>
-              )}
-
-              {/* --- ข้อมูลเพิ่มเติมตามคำขอ --- */}
-              <div className="border-t dark:border-zinc-800 pt-6 mt-4">
-                <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                  <GlobalOutlined /> ข้อมูลที่อยู่ปัจจุบัน
-                </h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">
-                      บ้านเลขที่ หมู่ที่ ซอย
-                    </label>
-                    <input
-                      value={formData.addressHouse || ""}
-                      onChange={(e) => setFormData({ ...formData, addressHouse: e.target.value })}
-                      placeholder="เช่น 123 ม.4 ซ.โชคดี"
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">
-                      อาคาร หมู่บ้าน ถนน
-                    </label>
-                    <input
-                      value={formData.addressVillage || ""}
-                      onChange={(e) => setFormData({ ...formData, addressVillage: e.target.value })}
-                      placeholder="เช่น อาคารทองคำ ถ.สุขุมวิท"
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">ตำบล/แขวง</label>
-                    <input
-                      value={formData.addressSubdistrict || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, addressSubdistrict: e.target.value })
-                      }
-                      placeholder="ตำบล..."
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">อำเภอ/เขต</label>
-                    <input
-                      value={formData.addressDistrict || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, addressDistrict: e.target.value })
-                      }
-                      placeholder="อำเภอ..."
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-zinc-500 uppercase">จังหวัด</label>
-                    <input
-                      value={formData.addressProvince || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, addressProvince: e.target.value })
-                      }
-                      placeholder="จังหวัด..."
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                <div className="mt-4 space-y-1">
-                  <label className="text-xs font-black text-zinc-500 uppercase">รหัสไปรษณีย์</label>
-                  <input
-                    value={formData.addressZipcode || ""}
-                    onChange={(e) => setFormData({ ...formData, addressZipcode: e.target.value })}
-                    placeholder="เช่น 10400"
-                    maxLength={5}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              {!isStudent && (
-                <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-                  <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                    <SafetyCertificateOutlined /> ข้อมูลตำแหน่งและสังกัด
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        เลขที่ตำแหน่ง
-                      </label>
-                      <input
-                        value={formData.positionNumber || ""}
-                        onChange={(e) =>
-                          setFormData({ ...formData, positionNumber: e.target.value })
-                        }
-                        placeholder="เช่น 1845-02"
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">สังกัด</label>
-                      <input
-                        value={formData.affiliation || ""}
-                        onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
-                        placeholder="กองการศึกษา ศาสนาและวัฒนธรรม โรงเรียน..."
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {!isStudent && (
-                <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-                  <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                    <DatabaseOutlined /> ข้อมูลประวัติการรับราชการและเกษียณ
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        วันเดือนปีที่เริ่มเข้ารับราชการ
-                      </label>
-                      <DatePicker
-                        format="DD/MM/YYYY"
-                        allowClear={true}
-                        value={formData.govStartDate ? dayjs(formData.govStartDate) : null}
-                        onChange={(date) => setFormData({ ...formData, govStartDate: date ? date.format("YYYY-MM-DD") : "" })}
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-xs font-black text-zinc-500 uppercase">
-                          วันที่ครบเกษียณอายุ
-                        </label>
-                        <DatePicker
-                          format="DD/MM/YYYY"
-                          allowClear={true}
-                          value={formData.retirementDate ? dayjs(formData.retirementDate) : null}
-                          onChange={(date) => setFormData({ ...formData, retirementDate: date ? date.format("YYYY-MM-DD") : "" })}
-                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
-                        />
+                          </select>
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-black text-zinc-500 uppercase">
-                          เกษียณปีงบประมาณ (พ.ศ.)
-                        </label>
-                        <input
-                          type="number"
-                          value={formData.retirementFiscalYear || ""}
-                          onChange={(e) =>
-                            setFormData({ ...formData, retirementFiscalYear: e.target.value })
-                          }
-                          placeholder="เช่น 2575"
-                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                        />
+
+                      <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                        <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                          <SafetyCertificateOutlined /> ข้อมูลตำแหน่งและสังกัด
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">เลขที่ตำแหน่ง</label>
+                            <input
+                              value={formData.positionNumber || ""}
+                              onChange={(e) => setFormData({ ...formData, positionNumber: e.target.value })}
+                              placeholder="เช่น 1845-02"
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">สังกัด</label>
+                            <input
+                              value={formData.affiliation || ""}
+                              onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
+                              placeholder="กองการศึกษา ศาสนาและวัฒนธรรม..."
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                        <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                          <DatabaseOutlined /> ข้อมูลประวัติการรับราชการและเกษียณ
+                        </h4>
+                        <div className="space-y-4">
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">วันเดือนปีที่เริ่มเข้ารับราชการ</label>
+                            <DatePicker
+                              format="DD/MM/YYYY"
+                              allowClear={true}
+                              value={formData.govStartDate ? dayjs(formData.govStartDate) : null}
+                              onChange={(date) => setFormData({ ...formData, govStartDate: date ? date.format("YYYY-MM-DD") : "" })}
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                              <label className="text-xs font-black text-zinc-500 uppercase">วันที่ครบเกษียณอายุ</label>
+                              <DatePicker
+                                format="DD/MM/YYYY"
+                                allowClear={true}
+                                value={formData.retirementDate ? dayjs(formData.retirementDate) : null}
+                                onChange={(date) => setFormData({ ...formData, retirementDate: date ? date.format("YYYY-MM-DD") : "" })}
+                                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500 [&_.ant-picker-input_input]:text-slate-800 dark:[&_.ant-picker-input_input]:text-white"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-xs font-black text-zinc-500 uppercase">เกษียณปีงบประมาณ (พ.ศ.)</label>
+                              <input
+                                type="number"
+                                value={formData.retirementFiscalYear || ""}
+                                onChange={(e) => setFormData({ ...formData, retirementFiscalYear: e.target.value })}
+                                placeholder="เช่น 2575"
+                                className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t dark:border-zinc-800 pt-6 mt-6">
+                        <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                          <BookOutlined /> ข้อมูลหน้าที่รับผิดชอบ
+                        </h4>
+                        <div className="space-y-4">
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก</label>
+                            <input
+                              value={formData.respDeptHead || ""}
+                              onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
+                              placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบ เช่น หัวหน้างาน...</label>
+                            <input
+                              value={formData.respWorkHead || ""}
+                              onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
+                              placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...</label>
+                            <input
+                              value={formData.respOther || ""}
+                              onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
+                              placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {!isStudent && (
-                <div className="border-t dark:border-zinc-800 pt-6 mt-6">
-                  <h4 className="text-sm font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                    <BookOutlined /> ข้อมูลหน้าที่รับผิดชอบ
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        หน้าที่รับผิดชอบ เช่น หัวหน้าแผนก
-                      </label>
-                      <input
-                        value={formData.respDeptHead || ""}
-                        onChange={(e) => setFormData({ ...formData, respDeptHead: e.target.value })}
-                        placeholder="เช่น หัวหน้าแผนกวิชาช่างยนต์"
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        หน้าที่รับผิดชอบ เช่น หัวหน้างาน...
-                      </label>
-                      <input
-                        value={formData.respWorkHead || ""}
-                        onChange={(e) => setFormData({ ...formData, respWorkHead: e.target.value })}
-                        placeholder="เช่น หัวหน้างานพัฒนาหลักสูตรการเรียนการสอน"
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-zinc-500 uppercase">
-                        หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน...
-                      </label>
-                      <input
-                        value={formData.respOther || ""}
-                        onChange={(e) => setFormData({ ...formData, respOther: e.target.value })}
-                        placeholder="เช่น ผู้ช่วยงานพัสดุและอาคารสถานที่"
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </ProfileModal>

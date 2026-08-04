@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, CSSProperties } from 'react';
 import './Folder.css';
 
-const darkenColor = (hex, percent) => {
+const darkenColor = (hex: string, percent: number) => {
   let color = hex.startsWith('#') ? hex.slice(1) : hex;
   if (color.length === 3) {
     color = color
@@ -19,7 +19,7 @@ const darkenColor = (hex, percent) => {
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 };
 
-const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => {
+const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }: any) => {
   const maxItems = 3;
   const papers = items.slice(0, maxItems);
   while (papers.length < maxItems) {
@@ -41,7 +41,7 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => 
     }
   };
 
-  const handlePaperMouseMove = (e, index) => {
+  const handlePaperMouseMove = (e: React.MouseEvent, index: number) => {
     if (!open) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -55,7 +55,7 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => 
     });
   };
 
-  const handlePaperMouseLeave = (e, index) => {
+  const handlePaperMouseLeave = (e: React.MouseEvent, index: number) => {
     setPaperOffsets(prev => {
       const newOffsets = [...prev];
       newOffsets[index] = { x: 0, y: 0 };
@@ -69,10 +69,10 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => 
     '--paper-1': paper1,
     '--paper-2': paper2,
     '--paper-3': paper3
-  };
+  } as CSSProperties;
 
   const folderClassName = `folder ${open ? 'open' : ''}`.trim();
-  const scaleStyle = { transform: `scale(${size})` };
+  const scaleStyle = { transform: `scale(${size})` } as CSSProperties;
 
   return (
     <div style={scaleStyle} className={className}>
@@ -93,7 +93,7 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => 
         aria-label={open ? 'Close folder' : 'Open folder'}
       >
         <div className="folder__back">
-          {papers.map((item, i) => (
+          {papers.map((item: any, i: number) => (
             <div
               key={i}
               className={`paper paper-${i + 1}`}
@@ -104,7 +104,7 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => 
                   ? {
                       '--magnet-x': `${paperOffsets[i]?.x || 0}px`,
                       '--magnet-y': `${paperOffsets[i]?.y || 0}px`
-                    }
+                    } as CSSProperties
                   : {}
               }
             >

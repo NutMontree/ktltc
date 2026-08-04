@@ -387,7 +387,7 @@ export default function NotificationsPage() {
 
       {/* Modal สำหรับอ่านการแจ้งเตือนแบบเต็ม */}
       {selectedNotification && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedNotification(null)}>
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedNotification(null)}>
           <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start gap-4 mb-4">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${
