@@ -31,7 +31,6 @@ const options = {
   retryWrites: true,              // retry อัตโนมัติเมื่อ write ล้มเหลว
   retryReads: true,               // retry อัตโนมัติเมื่อ read ล้มเหลว
 };
-
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
