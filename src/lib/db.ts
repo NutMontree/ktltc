@@ -22,10 +22,11 @@ const sanitizedUri = uri.replace(/\/\/.*@/, "//****:****@");
 console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
 
 const options = {
+  directConnection: true,          // ★ บังคับต่อตรง 127.0.0.1 เท่านั้น ไม่ให้ driver ค้นหา IP อื่น (แก้ ETIMEDOUT 100.64.x.x)
   connectTimeoutMS: 30000,        // เพิ่มจาก 10s -> 30s: เผื่อเน็ต VPN สวิงหรือปิงขึ้นสูง
   serverSelectionTimeoutMS: 30000, // เพิ่มจาก 10s -> 30s: ให้โค้ดรอการเชื่อมต่อฐานข้อมูลนานขึ้น
   socketTimeoutMS: 45000,         // เพิ่มจาก 15s -> 45s: ถ้า query ค้างเกิน 45 วิ ถึงจะตัดจบ
-  maxPoolSize: 200,               // ขยายให้รับ 200 connection ต่อ 1 PM2 Instance (รวม 3000 connections)
+  maxPoolSize: 50,                // 50 ต่อ instance x 4 instances = 200 connections รวม (ลดจาก 200 ต่อ instance)
   minPoolSize: 5,                 // เลี้ยง connection ขั้นต่ำไว้ 5 เส้น (warm connection)
   heartbeatFrequencyMS: 10000,   // ตรวจสอบสุขภาพ connection ทุก 10 วิ
   retryWrites: true,              // retry อัตโนมัติเมื่อ write ล้มเหลว
