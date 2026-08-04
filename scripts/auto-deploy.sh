@@ -31,10 +31,13 @@ if [ "$REMOTE_HEAD" != "$LAST_BUILT_COMMIT" ]; then
     # 3. Install dependencies and Build the project
     echo "[$(date)] Installing dependencies..."
     if npm install && npm run build; then
-        # 4. Restart PM2 service
-        echo "[$(date)] Restarting PM2 service..."
-        # Make sure pm2 is in path or use absolute path
-        /usr/local/bin/pm2 restart ktltc --update-env || pm2 restart ktltc --update-env
+        # Re-create standalone symlinks
+        ln -snf /home/ktltc/ktltc/public /home/ktltc/ktltc/.next/standalone/public
+        ln -snf /home/ktltc/ktltc/.next/static /home/ktltc/ktltc/.next/standalone/.next/static
+
+        # 4. Reload PM2 service (Zero-Downtime)
+        echo "[$(date)] Reloading PM2 service (Zero-Downtime)..."
+        pm2 reload ktltc --update-env || /usr/local/bin/pm2 reload ktltc --update-env
         
         # Save the successful build commit
         echo $REMOTE_HEAD > .last_built_commit
