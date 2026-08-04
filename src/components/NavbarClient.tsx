@@ -388,11 +388,11 @@ export default function NavbarClient({
         width="100%"
         height="fit-content"
         borderRadius={9999}
-        displace={0.5}
-        distortionScale={-180}
+        displace={0}
+        distortionScale={-50}
         redOffset={0}
         greenOffset={10}
-        blueOffset={20}
+        blueOffset={10}
         brightness={50}
         opacity={0.93}
         mixBlendMode="screen"
