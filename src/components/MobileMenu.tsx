@@ -197,7 +197,7 @@ export default function MobileMenu({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="mobile-menu-root fixed top-0 right-0 bottom-0 w-[88%] max-w-sm bg-white dark:bg-zinc-950 z-10000 shadow-2xl flex flex-col"
+              className="mobile-menu-root fixed top-0 right-0 bottom-0 w-[88%] max-w-sm bg-white/80 dark:bg-zinc-950/80 backdrop-blur-2xl border-l border-zinc-200/60 dark:border-zinc-800/50 z-10000 shadow-2xl flex flex-col"
             >
               {/* ส่วนหัวเมนู (Drawer Header) */}
               <div className="p-5 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">

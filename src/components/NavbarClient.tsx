@@ -367,7 +367,6 @@ export default function NavbarClient({
     return `/${path}`;
   };
 
-  // กรองรายการเมนูตามสิทธิ์การเข้าถึงของผู้ใช้
   const filteredMenuTree = menuTree.filter((item) => {
     const path = item.path || "";
     const isStaff = !["user", "student"].includes(role?.toLowerCase() || "");
@@ -383,355 +382,347 @@ export default function NavbarClient({
     return true;
   });
 
+  const renderMenuItems = (isMobileView: boolean = false) =>
+    filteredMenuTree.map((item) => {
+      const hasChildren = item.children && item.children.length > 0;
+      const isActiveNode =
+        pathname === ensureAbsolute(item.path) || activeMenuId === item._id;
+
+      return (
+        <div
+          key={item._id}
+          className="relative shrink-0 desktop-menu-container"
+          onMouseEnter={() => !isMobileView && setActiveMenuId(item._id)}
+          onMouseLeave={() => !isMobileView && setActiveMenuId(null)}
+        >
+          {hasChildren ? (
+            <button
+              type="button"
+              onClick={() => setActiveMenuId(activeMenuId === item._id ? null : item._id)}
+              className={`px-3 py-1.5 rounded-full flex items-center gap-1 text-[13px] sm:text-[14px] font-bold transition-all whitespace-nowrap outline-none ${isActiveNode
+                ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
+                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
+                }`}
+            >
+              <span className="px-1">{item.label}</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
+              />
+            </button>
+          ) : (
+            <Link
+              href={ensureAbsolute(item.path) || "#"}
+              onClick={() => setActiveMenuId(null)}
+              className={`px-3 py-1.5 rounded-full flex items-center gap-1 text-[13px] sm:text-[14px] font-bold transition-all whitespace-nowrap outline-none ${isActiveNode
+                ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
+                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
+                }`}
+            >
+              <span className="px-1">{item.label}</span>
+            </Link>
+          )}
+
+          {hasChildren && (
+            <div
+              className={`absolute ${isMobileView ? "left-0 sm:left-1/2 sm:-translate-x-1/2" : "left-1/2 -translate-x-1/2"} top-full pt-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${activeMenuId === item._id
+                ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-9999"
+                : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                }`}
+            >
+              <div
+                className={`bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${item.children!.length > 8 ? "min-w-[280px] sm:min-w-[460px] sm:w-[460px]" : "min-w-[220px]"
+                  }`}
+              >
+                <div
+                  className={
+                    item.children!.length > 8 ? "grid grid-cols-1 sm:grid-cols-2 gap-x-1" : "flex flex-col"
+                  }
+                >
+                  {item.children!.map((child) => {
+                    const ChildIcon = getMenuIcon(child.label);
+                    return (
+                      <Link
+                        key={child._id}
+                        href={ensureAbsolute(child.path) || "#"}
+                        onClick={() => setActiveMenuId(null)}
+                        className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all group"
+                      >
+                        <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                          <ChildIcon size={14} />
+                        </span>
+                        <span className="leading-snug">{child.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+                {item.label === "อื่นๆ" && deferredPrompt && (
+                  <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+                    <button
+                      onClick={handleInstallClick}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                    >
+                      <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                        <Download size={16} />
+                      </div>
+                      ติดตั้งแอพพลิเคชั่น
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    });
+
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-9999 transition-[padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? "pt-1 sm:pt-2 px-2 sm:px-2 min-[1381px]:px-2" : ""}`}
+      className="fixed top-0 left-0 right-0 z-9999 pt-1.5 sm:pt-2.5 px-2 sm:px-4 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
     >
       <nav
-        className={`relative w-full max-w-[1600px] mx-auto transition-[padding,background-color,box-shadow,border-radius,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
-          ? "bg-white/60 dark:bg-zinc-950/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 px-4 min-[1381px]:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5"
-          : "py-3 px-4 min-[1381px]:px-6 bg-white/70 dark:bg-zinc-950/70 border border-transparent"
-          }`}
+        className="relative w-full max-w-[1600px] mx-auto bg-white/60 dark:bg-zinc-950/60 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl border border-zinc-200/60 dark:border-zinc-800/50 py-2 sm:py-2.5 px-3 sm:px-4 min-[1381px]:px-6 ring-1 ring-zinc-900/5 dark:ring-white/5 transition-all duration-500"
       >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-inherit">
-          <GlassSurface width="100%" height="100%" borderRadius={isScrolled ? 24 : 0} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-3xl">
+          <GlassSurface width="100%" height="100%" borderRadius={24} />
         </div>
-        <div className="relative z-10 flex items-center justify-between gap-4">
-          {/* --- 1. LOGO & BRANDING --- */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group outline-none">
-            <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
-              <Image
-                src="/images/favicon.ico"
-                alt="KTL Logo"
-                fill
-                sizes="40px"
-                priority
-                className="object-contain"
-              />
+        <div className="relative z-10 flex flex-col gap-1.5 min-[1381px]:gap-0">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group outline-none">
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
+                <Image
+                  src="/images/favicon.ico"
+                  alt="KTL Logo"
+                  fill
+                  sizes="40px"
+                  priority
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-zinc-900 dark:text-white font-black text-lg sm:text-[22px] tracking-tighter uppercase italic drop-shadow-sm flex items-center">
+                KTL<span className="text-blue-600 dark:text-blue-500">TC</span>
+              </span>
+            </Link>
+
+            <div className="hidden min-[1381px]:flex items-center gap-1.5">
+              {renderMenuItems(false)}
             </div>
-            <span className="text-zinc-900 dark:text-white font-black text-lg sm:text-[22px] tracking-tighter uppercase italic drop-shadow-sm flex items-center">
-              KTL<span className="text-blue-600 dark:text-blue-500">TC</span>
-            </span>
-          </Link>
 
-          {/* --- 2. DESKTOP NAVIGATION (รายการเมนูจาก DB) --- */}
-          <div className="hidden min-[1381px]:flex items-center gap-1.5 desktop-menu-container">
-            {filteredMenuTree.map((item) => {
-              const hasChildren = item.children && item.children.length > 0;
-              const isActiveNode =
-                pathname === ensureAbsolute(item.path) || activeMenuId === item._id;
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 h-10">
+              {userId && (
+                <div className="flex items-center justify-center w-10 h-10">
+                  <NotificationBell />
+                </div>
+              )}
+              <div className="flex items-center justify-center w-10 h-10">
+                <LanguageSwitcher />
+              </div>
+              <div className="flex items-center justify-center w-10 h-10">
+                <ThemeToggle />
+              </div>
 
-              return (
-                <div
-                  key={item._id}
-                  className="relative"
-                  onMouseEnter={() => setActiveMenuId(item._id)}
-                  onMouseLeave={() => setActiveMenuId(null)}
-                >
-                  <Link
-                    href={hasChildren ? "#" : ensureAbsolute(item.path) || "#"}
-                    className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${isActiveNode
-                      ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
-                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
+              <div className="hidden min-[1381px]:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+
+              {userId ? (
+                <div className="relative user-dropdown-container">
+                  <button
+                    onClick={() => {
+                      setIsUserDropdownOpen(!isUserDropdownOpen);
+                      setActiveMenuId(null);
+                    }}
+                    className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${isUserDropdownOpen
+                      ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
+                      : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
                       }`}
                   >
-                    <span className="px-1">{item.label}</span>
-                    {hasChildren && (
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
-                      />
-                    )}
-                  </Link>
-
-                  {/* Mega Menu / Dropdown Content */}
-                  {hasChildren && (
-                    <div
-                      className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${activeMenuId === item._id
-                        ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-9999"
-                        : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-                        }`}
-                    >
-                      <div
-                        className={`bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5 ${item.children!.length > 8 ? "min-w-[460px] w-[460px]" : "min-w-[240px]"
-                          }`}
+                    <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
+                      {image ? (
+                        <Image
+                          src={image}
+                          alt={username || "User"}
+                          fill
+                          sizes="36px"
+                          priority
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
+                          {(username || "U").charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-left hidden md:block overflow-hidden">
+                      <p
+                        className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}
                       >
-                        <div
-                          className={
-                            item.children!.length > 8 ? "grid grid-cols-2 gap-x-1" : "flex flex-col"
-                          }
-                        >
-                          {item.children!.map((child) => {
-                            const ChildIcon = getMenuIcon(child.label);
-                            return (
-                              <Link
-                                key={child._id}
-                                href={ensureAbsolute(child.path) || "#"}
-                                onClick={() => setActiveMenuId(null)}
-                                className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all group"
-                              >
-                                <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                                  <ChildIcon size={14} />
-                                </span>
-                                <span className="leading-snug">{child.label}</span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                        {/* ปุ่มติดตั้ง PWA เฉพาะในเมนู 'อื่นๆ' */}
-                        {item.label === "อื่นๆ" && deferredPrompt && (
-                          <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800/60">
-                            <button
-                              onClick={handleInstallClick}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
-                                <Download size={18} />
+                        {displayRole}
+                      </p>
+                      <p className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px]">
+                        {username}
+                      </p>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 hidden md:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
+                    />
+                  </button>
+
+                  <div
+                    className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${isUserDropdownOpen
+                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
+                      : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                      }`}
+                  >
+                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] overflow-hidden w-72 max-w-[calc(100vw-1.5rem)] ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
+                      <div className="p-5 bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800/60">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
+                            {image ? (
+                              <Image
+                                src={image}
+                                alt={username || "User"}
+                                width={48}
+                                height={48}
+                                priority
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-lg font-black">
+                                {(username || "U").charAt(0)}
                               </div>
-                              ติดตั้งแอพพลิเคชั่น
-                            </button>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* --- 3. ACTIONS & USER SECTION (ขวาสุด) --- */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 h-10">
-            {userId && (
-              <div className="flex items-center justify-center w-10 h-10">
-                <NotificationBell />
-              </div>
-            )}
-            <div className="flex items-center justify-center w-10 h-10">
-              <LanguageSwitcher />
-            </div>
-            <div className="flex items-center justify-center w-10 h-10">
-              <ThemeToggle />
-            </div>
-
-            <div className="hidden min-[1381px]:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
-
-            {userId ? (
-              <div className="relative user-dropdown-container">
-                {/* ปุ่มแสดงโปรไฟล์ผู้ใช้ (User Profile Button) */}
-                <button
-                  onClick={() => {
-                    setIsUserDropdownOpen(!isUserDropdownOpen);
-                    setActiveMenuId(null);
-                  }}
-                  className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${isUserDropdownOpen
-                    ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
-                    : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
-                    }`}
-                >
-                  <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
-                    {image ? (
-                      <Image
-                        src={image}
-                        alt={username || "User"}
-                        fill
-                        sizes="36px"
-                        priority
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
-                        {(username || "U").charAt(0)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-left hidden md:block overflow-hidden">
-                    <p
-                      className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}
-                    >
-                      {displayRole}
-                    </p>
-                    <p className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px]">
-                      {username}
-                    </p>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 hidden md:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
-                  />
-                </button>
-
-                {/* เมนู Dropdown สำหรับผู้ใช้ (User Dropdown Menu) */}
-                <div
-                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${isUserDropdownOpen
-                    ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
-                    : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-                    }`}
-                >
-                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] overflow-hidden w-72 ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
-                    {/* ข้อมูลสรุปผู้ใช้ด้านบนสุด (Profile Header) */}
-                    <div className="p-5 bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800/60">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
-                          {image ? (
-                            <Image
-                              src={image}
-                              alt={username || "User"}
-                              width={48}
-                              height={48}
-                              priority
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-lg font-black">
-                              {(username || "U").charAt(0)}
-                            </div>
-                          )}
-                        </div>
-                        <div className="overflow-hidden">
-                          <span
-                            className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest mb-1 inline-block ${isSuperAdmin ? "bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400" : isAdmin ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"}`}
-                          >
-                            {displayRole}
-                          </span>
-                          <h3 className="text-[15px] font-black text-zinc-900 dark:text-white leading-none truncate">
-                            {username}
-                          </h3>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link
-                          href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
-                          onClick={() => setIsUserDropdownOpen(false)}
-                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all"
-                        >
-                          <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
-                        </Link>
-                        <button
-                          onClick={() => {
-                            handleLogout();
-                            setIsUserDropdownOpen(false);
-                          }}
-                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all"
-                        >
-                          <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* รายการเมนูจัดการระบบ (Dashboard & Admin) */}
-                    <div className="p-3 space-y-4 overflow-y-auto">
-                      <div>
-                        <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                          <Command className="w-3 h-3" /> เมนูหลัก
-                        </h4>
-
-                        {/* ปุ่มจัดการข่าวสารแบบด่วน (Featured Quick Action) */}
-                        {canManageNews && (
-                          <Link
-                            href="/dashboard/news"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                            className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-                          >
-                            <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform duration-500">
-                              <Newspaper size={48} strokeWidth={1.5} />
-                            </div>
-                            <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-md shadow-inner">
-                              <Newspaper size={20} />
-                            </div>
-                            <div className="relative z-10">
-                              <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">
-                                Content Center
-                              </p>
-                              <h4 className="text-sm font-black uppercase tracking-tight">
-                                จัดการข่าวสาร / ประชาสัมพันธ์
-                              </h4>
-                            </div>
-                          </Link>
-                        )}
-
-                        {/* ส่วนการจัดการระบบ (Admin & Executive Section) */}
-                        {(canManageAttendance ||
-                          canManageUsers ||
-                          canManageSystem ||
-                          canManageNews ||
-                          canManageQA) && (
-                            <div>
-                              {!["user", "student"].includes(role?.toLowerCase() || "") && (
-                                <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                                  <Shield className="w-3 h-3" /> ระบบจัดการ
-                                </h4>
-                              )}
-
-                              {/* การ์ดเมนูเฉพาะผู้มีสิทธิ์พิเศษ */}
-                              {(isSuperAdmin || permissions?.manage_supervision_requests) && (
-                                <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
-                                  <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
-                                    <Shield size={12} /> เครื่องมือพิเศษ
-                                  </p>
-                                  {isSuperAdmin && (
-                                    <>
-                                      <Link
-                                        href="/dashboard/super-admin"
-                                        onClick={() => setIsUserDropdownOpen(false)}
-                                        className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
-                                      >
-                                        <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
-                                      </Link>
-                                      <Link
-                                        href="/dashboard/permissions"
-                                        onClick={() => setIsUserDropdownOpen(false)}
-                                        className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-                                      >
-                                        <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
-                                      </Link>
-                                    </>
-                                  )}
-
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                        {canAccessDashboard && (
-                          <Link
-                            href="/dashboard"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
-                          >
-                            <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
-                              <Command size={16} />
-                            </div>
-                            เข้าสู่ระบบ Dashboard
-                          </Link>
-                        )}
-
-                        <div className="space-y-0.5">
-                          <Link
-                            href="/dashboard/chat"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-2xl transition-all group"
-                          >
-                            <div className="p-1.5 rounded-xl bg-sky-100 dark:bg-sky-900/30 group-hover:bg-sky-200 dark:group-hover:bg-sky-900/50 transition-colors shadow-sm">
-                              <MessageSquare size={16} />
-                            </div>
-                            ระบบแชท / กล่องข้อความ
-                          </Link>
-
-
-                          {!["student"].includes(role?.toLowerCase() || "") && (
-                            <Link
-                              href="/dashboard/drive"
-                              onClick={() => setIsUserDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
+                          <div className="overflow-hidden">
+                            <span
+                              className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest mb-1 inline-block ${isSuperAdmin ? "bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400" : isAdmin ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"}`}
                             >
-                              <div className="p-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors shadow-sm">
-                                <HardDrive size={16} />
+                              {displayRole}
+                            </span>
+                            <h3 className="text-[15px] font-black text-zinc-900 dark:text-white leading-none truncate">
+                              {username}
+                            </h3>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all"
+                          >
+                            <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
+                          </Link>
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              setIsUserDropdownOpen(false);
+                            }}
+                            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all"
+                          >
+                            <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-3 space-y-4 overflow-y-auto">
+                        <div>
+                          <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                            <Command className="w-3 h-3" /> เมนูหลัก
+                          </h4>
+                          {canManageNews && (
+                            <Link
+                              href="/dashboard/news"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                            >
+                              <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform duration-500">
+                                <Newspaper size={48} strokeWidth={1.5} />
                               </div>
-                              คลังไฟล์งาน (Drive)
+                              <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-md shadow-inner">
+                                <Newspaper size={20} />
+                              </div>
+                              <div className="relative z-10">
+                                <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">
+                                  Content Center
+                                </p>
+                                <h4 className="text-sm font-black uppercase tracking-tight">
+                                  จัดการข่าวสาร / ประชาสัมพันธ์
+                                </h4>
+                              </div>
                             </Link>
                           )}
+                          {(canManageAttendance ||
+                            canManageUsers ||
+                            canManageSystem ||
+                            canManageNews ||
+                            canManageQA) && (
+                              <div>
+                                {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                                  <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                                    <Shield className="w-3 h-3" /> ระบบจัดการ
+                                  </h4>
+                                )}
+                                {(isSuperAdmin || permissions?.manage_supervision_requests) && (
+                                  <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
+                                    <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
+                                      <Shield size={12} /> เครื่องมือพิเศษ
+                                    </p>
+                                    {isSuperAdmin && (
+                                      <>
+                                        <Link
+                                          href="/dashboard/super-admin"
+                                          onClick={() => setIsUserDropdownOpen(false)}
+                                          className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                        >
+                                          <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
+                                        </Link>
+                                        <Link
+                                          href="/dashboard/permissions"
+                                          onClick={() => setIsUserDropdownOpen(false)}
+                                          className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                                        >
+                                          <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
+                                        </Link>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          {canAccessDashboard && (
+                            <Link
+                              href="/dashboard"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
+                                <Command size={16} />
+                              </div>
+                              เข้าสู่ระบบ Dashboard
+                            </Link>
+                          )}
+                          <div className="space-y-0.5">
+                            <Link
+                              href="/dashboard/chat"
+                              onClick={() => setIsUserDropdownOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-2xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-xl bg-sky-100 dark:bg-sky-900/30 group-hover:bg-sky-200 dark:group-hover:bg-sky-900/50 transition-colors shadow-sm">
+                                <MessageSquare size={16} />
+                              </div>
+                              ระบบแชท / กล่องข้อความ
+                            </Link>
+                            {!["student"].includes(role?.toLowerCase() || "") && (
+                              <Link
+                                href="/dashboard/drive"
+                                onClick={() => setIsUserDropdownOpen(false)}
+                                className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
+                              >
+                                <div className="p-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors shadow-sm">
+                                  <HardDrive size={16} />
+                                </div>
+                                คลังไฟล์งาน (Drive)
+                              </Link>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
                     {/* ส่วนท้ายเมนู (Footer) */}
                     <div className="p-3 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/30">
@@ -768,6 +759,14 @@ export default function NavbarClient({
             </div>
           </div>
         </div>
+
+        {/* --- MOBILE / TABLET NAVIGATION ROW (< 1381px) --- */}
+        {filteredMenuTree && filteredMenuTree.length > 0 && (
+          <div className="min-[1381px]:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 border-t border-zinc-100/60 dark:border-zinc-800/40 pt-1.5 px-0.5">
+            {renderMenuItems(true)}
+          </div>
+        )}
+      </div>
       </nav>
     </div>
   );
