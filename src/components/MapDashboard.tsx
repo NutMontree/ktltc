@@ -83,9 +83,16 @@ export default function MapDashboard({
         <Marker key={`${m.lat}-${m.lng}-${i}`} position={[m.lat, m.lng]} icon={markerIcon}>
           <Popup className="premium-popup" closeButton={false}>
             <div className="flex flex-col items-center min-w-[170px] pb-3 bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden text-left">
-              {m.photoUrl ? (
-                <div className="w-full h-24 overflow-hidden mb-3 border-b border-slate-100 dark:border-zinc-800">
-                   <img src={m.photoUrl} alt="face" className="w-full h-full object-cover" />
+              {m.photoUrl || m.image ? (
+                <div className="w-full h-24 overflow-hidden mb-3 border-b border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900">
+                   <img 
+                      src={m.photoUrl || m.image} 
+                      alt={m.name} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=random`;
+                      }}
+                    />
                 </div>
               ) : (
                 <div className="w-full h-24 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-3">

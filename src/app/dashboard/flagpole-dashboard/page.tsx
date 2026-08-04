@@ -704,8 +704,15 @@ export default function StudentFlagpoleDashboard() {
                         className="flex items-center gap-4 group/row"
                       >
                         <div className="relative">
-                          {item.image ? (
-                            <img src={item.image} alt={item.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-zinc-800" />
+                          {item.photoUrl || item.image ? (
+                            <img 
+                              src={item.photoUrl || item.image} 
+                              alt={item.name} 
+                              className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-zinc-800" 
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random`;
+                              }}
+                            />
                           ) : (
                             <div className="w-10 h-10 bg-slate-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-400 text-xs font-black">
                               {item.name.charAt(0)}

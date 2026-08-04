@@ -43,8 +43,11 @@ export async function GET(req: Request) {
     // 1. นับจำนวนนักเรียนทั้งหมดในระบบ (role === "student")
     const totalStudentsCount = await db.collection("users").countDocuments({ role: "student" });
 
-    // นับจำนวนนักศึกษาที่ออกฝึกงาน (isInternship === true)
-    const internshipStudentsCount = await db.collection("users").countDocuments({ role: "student", isInternship: true });
+    // นับจำนวนนักศึกษาที่ออกฝึกงาน (isInternship === true หรือ "true")
+    const internshipStudentsCount = await db.collection("users").countDocuments({ 
+      role: "student", 
+      isInternship: { $in: [true, "true"] } 
+    });
 
     // นับจำนวนนักศึกษาที่เรียนปกติในวิทยาลัย (isInternship !== true)
     const inCollegeStudentsCount = Math.max(0, totalStudentsCount - internshipStudentsCount);
@@ -57,6 +60,14 @@ export async function GET(req: Request) {
     // 2. ดึงสถิติจำนวนคนเช็คแถวเสาธงแยกตามสถานะ (Present / Late) และกลุ่มผู้เรียน (ปกติ / ฝึกงาน)
     const stats = await db.collection("flagpole_attendances").aggregate([
       { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
+      { $sort: { "checkIn.time": -1 } },
+      {
+        $group: {
+          _id: "$userId",
+          doc: { $first: "$$ROOT" }
+        }
+      },
+      { $replaceRoot: { newRoot: "$doc" } },
       {
         $addFields: {
           uId: { 
@@ -166,16 +177,16 @@ export async function GET(req: Request) {
     if (trendRange === 'day') {
       trendStartDate = startOfDay;
       trendGroup = {
-        _id: { $hour: { date: "$checkIn.time", timezone: "Asia/Bangkok" } },
-        present: { $sum: { $cond: [{ $in: ["$status", ["Present", "Late"]] }, 1, 0] } }
+        _id: { $hour: { date: "$doc.checkIn.time", timezone: "Asia/Bangkok" } },
+        present: { $sum: { $cond: [{ $in: ["$doc.status", ["Present", "Late"]] }, 1, 0] } }
       };
     } else if (trendRange === 'month') {
       trendStartDate = new Date(targetDate);
       trendStartDate.setUTCDate(trendStartDate.getUTCDate() - 29);
       trendStartDate.setUTCHours(0, 0, 0, 0);
       trendGroup = {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-        present: { $sum: { $cond: [{ $in: ["$status", ["Present", "Late"]] }, 1, 0] } }
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$doc.date" } },
+        present: { $sum: { $cond: [{ $in: ["$doc.status", ["Present", "Late"]] }, 1, 0] } }
       };
     } else {
       // Default: week (7 วัน)
@@ -183,13 +194,25 @@ export async function GET(req: Request) {
       trendStartDate.setUTCDate(trendStartDate.getUTCDate() - 6);
       trendStartDate.setUTCHours(0, 0, 0, 0);
       trendGroup = {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-        present: { $sum: { $cond: [{ $in: ["$status", ["Present", "Late"]] }, 1, 0] } }
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$doc.date" } },
+        present: { $sum: { $cond: [{ $in: ["$doc.status", ["Present", "Late"]] }, 1, 0] } }
       };
     }
 
     let trends = await db.collection("flagpole_attendances").aggregate([
       { $match: { date: { $gte: trendStartDate, $lte: endOfDay } } },
+      {
+        $sort: { "checkIn.time": -1 }
+      },
+      {
+        $group: {
+          _id: {
+            dateStr: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            userId: "$userId"
+          },
+          doc: { $first: "$$ROOT" }
+        }
+      },
       { $group: trendGroup },
       { $sort: { "_id": 1 } }
     ]).toArray();
@@ -211,6 +234,14 @@ export async function GET(req: Request) {
     // 5. สถิติการเข้าแถวแบ่งตามระดับชั้นปีการศึกษา (Academic Level Stats) - แบบละเอียด
     const departmentStats = await db.collection("flagpole_attendances").aggregate([
       { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
+      { $sort: { "checkIn.time": -1 } },
+      {
+        $group: {
+          _id: "$userId",
+          doc: { $first: "$$ROOT" }
+        }
+      },
+      { $replaceRoot: { newRoot: "$doc" } },
       {
         $addFields: {
           uId: {
@@ -276,6 +307,7 @@ export async function GET(req: Request) {
           status: "$status",
           time: "$checkIn.time",
           photoUrl: "$checkIn.photoUrl",
+          image: "$userDetails.image",
           statusTag: "$checkIn.statusTag",  // "อยู่ในพื้นที่ (In-Site)" หรือ "นอกพื้นที่ (Remote/WFH)"
           distance: "$checkIn.distance"     // ระยะห่างจากเสาธง (เมตร)
         }

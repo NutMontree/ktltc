@@ -48,33 +48,7 @@ export default function StudentMenus({ permissions, customMenus, item, userRole,
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                {permissions?.access_student_flagpole && (
-                  <ActionCard
-                    href="/student/flagpole"
-                    title="เช็คชื่อเข้าแถวหน้าเสาธง"
-                    icon={Users}
-                    desc="ระบบเช็คชื่อเข้าแถว"
-                    variants={item}
-                  />
-                )}
-                {permissions?.access_dve_student && (
-                  <ActionCard
-                    href="/dashboard/dve/student"
-                    title="ศูนย์การศึกษาระบบทวิภาคี (DVE)"
-                    icon={BookOpen}
-                    desc="ข้อมูลนักศึกษาทวิภาคี"
-                    variants={item}
-                  />
-                )}
-                {permissions?.access_chat && (
-                  <ActionCard
-                    href="/dashboard/chat"
-                    title="แชท / กล่องข้อความ"
-                    icon={MessageSquare}
-                    desc="ระบบพูดคุยและติดต่อสื่อสาร"
-                    variants={item}
-                  />
-                )}
+
                 {customMenus.filter(m => m.workspace === "student" && permissions?.[m.permissionKey]).map(menu => {
                   const Icon = IconMap[menu.icon] || Layout;
                   return (

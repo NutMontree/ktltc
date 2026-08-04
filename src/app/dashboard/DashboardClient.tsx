@@ -294,18 +294,6 @@ export default function DashboardClient({ initialStats, initialPermissions, init
                 />
               </motion.div>
 
-              {hasSuperAdminAccess && (
-                <motion.div variants={item} className="shrink-0 h-[42px]">
-                  <Link
-                    href="/dashboard/permissions"
-                    className="flex items-center justify-center gap-2 px-6 h-full rounded-full bg-emerald-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    จัดการสิทธิ์
-                  </Link>
-                </motion.div>
-              )}
-
               {/* ปุ่ม Logout Other Devices */}
               <motion.div variants={item} className="shrink-0 h-[42px]">
                 <LogoutOtherDevicesBtn />
@@ -385,32 +373,7 @@ export default function DashboardClient({ initialStats, initialPermissions, init
             {/* SuperAdminMenus */}
             <SuperAdminMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasSuperAdminAccess} activeTab={activeTab} stats={stats} />
 
-            {/* ============================== */}
-            {/* 6. MANUALS & GUIDES */}
-            {/* ============================== */}
-            {(activeTab === "all") && (
-              <div>
-                <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                  <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 flex items-center gap-4">
-                    <BookOpen className="w-4 h-4" /> คู่มือการใช้งาน (Manuals & Guides)
-                    <span className="h-px bg-amber-500/10 flex-1" />
-                  </h2>
-                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                    เอกสารและคู่มือแนะนำการใช้งานระบบต่างๆ
-                  </span>
-                </motion.div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                  <ActionCard
-                    href="/manual/gate-pass"
-                    title="คู่มือระบบ Gate Pass"
-                    icon={BookOpen}
-                    desc="เอกสารคู่มือการใช้งานระบบสแกนเข้า-ออกและติดตาม GPS"
-                    variants={item}
-                  />
-                </div>
-              </div>
-            )}
           </motion.div>
 
           <motion.div

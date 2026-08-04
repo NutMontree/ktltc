@@ -196,7 +196,6 @@ export default function PermissionsPage() {
   const [rolesOrder, setRolesOrder] = useState<string[]>([]);
   const [customFeatures, setCustomFeatures] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const [savingRole, setSavingRole] = useState<string | null>(null);
 
   // For Adding Custom Menu
   const [showAddMenuModal, setShowAddMenuModal] = useState(false);
@@ -350,43 +349,7 @@ export default function PermissionsPage() {
     }).catch(() => fetchPermissions());
   };
 
-  const handleSaveAll = async () => {
-    if (!permissions) return;
-    try {
-      setSavingRole("all");
-      const updates = Object.keys(permissions)
-        .filter((role) => role !== "super_admin")
-        .map((role) => ({
-          role,
-          permissions: permissions[role],
-          label: roleLabels[role],
-        }));
 
-      const deptUpdates = Object.keys(departmentPermissions).map((dept) => ({
-        department: dept,
-        permissions: departmentPermissions[dept],
-      }));
-
-      console.log("💾 [Frontend] Saving all permissions:", { updates, deptUpdates });
-
-      const res = await fetch("/api/admin/permissions", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ updates, deptUpdates }),
-      });
-
-      if (res.ok) {
-        toast.success("บันทึกการตั้งค่าทั้งหมดเรียบร้อยแล้ว");
-      } else {
-        const err = await res.json();
-        toast.error(err.error || "บันทึกล้มเหลว");
-      }
-    } catch (error) {
-      toast.error("เกิดข้อผิดพลาดในการบันทึก");
-    } finally {
-      setSavingRole(null);
-    }
-  };
 
   const handleAddRole = async () => {
     if (!newRoleID || !newRoleLabel) {
@@ -632,22 +595,7 @@ export default function PermissionsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-            <div className="flex items-center gap-3 mr-4">
-              <Link
-                href="/dashboard/super-admin"
-                className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-rose-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
-              >
-                <FiLayout size={16} />
-                <span>Super Admin</span>
-              </Link>
-              <Link
-                href="/manage-roles"
-                className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-indigo-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all border border-zinc-200 dark:border-zinc-800 shadow-sm active:scale-95"
-              >
-                <FiUsers size={16} />
-                <span>จัดการรายบุคคล</span>
-              </Link>
-            </div>
+
             <div className="flex flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
               <button
                 onClick={() => setShowAddMenuModal(true)}
