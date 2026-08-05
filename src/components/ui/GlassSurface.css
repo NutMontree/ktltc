@@ -50,12 +50,10 @@
   backdrop-filter: blur(12px) saturate(1.2);
 }
 
-@media (prefers-color-scheme: dark) {
-  .glass-surface--fallback {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.dark .glass-surface--fallback {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @supports not (backdrop-filter: blur(10px)) {
@@ -77,14 +75,12 @@
 }
 
 @supports not (backdrop-filter: blur(10px)) {
-  @media (prefers-color-scheme: dark) {
-    .glass-surface--fallback {
-      background: rgba(0, 0, 0, 0.4);
-    }
+  .dark .glass-surface--fallback {
+    background: rgba(0, 0, 0, 0.4);
+  }
 
-    .glass-surface--fallback::before {
-      background: rgba(255, 255, 255, 0.05);
-    }
+  .dark .glass-surface--fallback::before {
+    background: rgba(255, 255, 255, 0.05);
   }
 }
 

@@ -383,20 +383,20 @@ export default function NavbarClient({
   });
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-9999 pt-2.5 px-3 sm:px-6 transition-all duration-300 flex justify-center pointer-events-none">
+    <div className={`fixed top-0 left-0 right-0 z-9999 transition-all duration-300 flex justify-center pointer-events-none ${isScrolled ? "pt-2.5 px-3 sm:px-6" : "pt-0 px-0"}`}>
       <GlassSurface
         width="100%"
         height="fit-content"
-        borderRadius={9999}
+        borderRadius={isScrolled ? 9999 : 0}
         displace={0}
         distortionScale={-50}
         redOffset={0}
         greenOffset={10}
         blueOffset={10}
-        brightness={50}
-        opacity={0.93}
+        brightness={100}
+        opacity={0.85}
         mixBlendMode="screen"
-        className="overflow-visible! max-w-[1600px] mx-auto w-full px-2 pointer-events-auto relative shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300"
+        className={`overflow-visible! mx-auto w-full px-2 pointer-events-auto relative transition-all duration-300 ${isScrolled ? "max-w-[1600px]" : "max-w-full"}`}
       >
         <div className="relative z-10 flex items-center justify-between w-full">
           {/* --- 1. LOGO & BRANDING --- */}
