@@ -383,7 +383,7 @@ export default function NavbarClient({
   });
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-9999 transition-all duration-300 flex justify-center pointer-events-none ${isScrolled ? "pt-2.5 px-3 sm:px-6" : "pt-0 px-0"}`}>
+    <div className={`fixed top-0 left-0 right-0 z-9999 transition-all duration-500 ease-in-out flex justify-center pointer-events-none ${isScrolled ? "pt-2.5 px-3 sm:px-6" : "px-0 sm:px-0"}`}>
       <GlassSurface
         width="100%"
         height="fit-content"
@@ -396,7 +396,7 @@ export default function NavbarClient({
         brightness={100}
         opacity={0.85}
         mixBlendMode="screen"
-        className={`overflow-visible! mx-auto w-full px-2 pointer-events-auto relative transition-all duration-300 ${isScrolled ? "max-w-[1600px]" : "max-w-full"}`}
+        className={`overflow-visible! mx-auto w-full px-2 pointer-events-auto relative transition-all duration-500 ease-in-out max-w-[1600px] pt-2`}
       >
         <div className="relative z-10 flex items-center justify-between w-full">
           {/* --- 1. LOGO & BRANDING --- */}

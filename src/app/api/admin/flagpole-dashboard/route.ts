@@ -104,11 +104,11 @@ export async function GET(req: Request) {
     stats.forEach(stat => {
       const isInternship = stat._id.isInternship === true || stat._id.isInternship === "true";
       if (isInternship) {
-        if (stat._id.status === 'Present') internshipPresentCount = stat.count;
-        else if (stat._id.status === 'Late') internshipLateCount = stat.count;
+        if (stat._id.status === 'Present') internshipPresentCount += stat.count;
+        else if (stat._id.status === 'Late') internshipLateCount += stat.count;
       } else {
-        if (stat._id.status === 'Present') normalPresentCount = stat.count;
-        else if (stat._id.status === 'Late') normalLateCount = stat.count;
+        if (stat._id.status === 'Present') normalPresentCount += stat.count;
+        else if (stat._id.status === 'Late') normalLateCount += stat.count;
       }
     });
 

@@ -86,8 +86,6 @@ const GlassSurface = ({
 
     gaussianBlurRef.current?.setAttribute('stdDeviation', displace.toString());
   }, [
-    width,
-    height,
     borderRadius,
     borderWidth,
     brightness,
@@ -106,14 +104,17 @@ const GlassSurface = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    let timeoutId: NodeJS.Timeout;
     const resizeObserver = new ResizeObserver(() => {
-      setTimeout(updateDisplacementMap, 0);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateDisplacementMap, 150);
     });
 
     resizeObserver.observe(containerRef.current);
 
     return () => {
       resizeObserver.disconnect();
+      clearTimeout(timeoutId);
     };
   }, []);
 
