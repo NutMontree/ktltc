@@ -41,12 +41,13 @@ export async function GET(req: Request) {
     targetDate.setUTCHours(0, 0, 0, 0);
 
     // 1. นับจำนวนนักเรียนทั้งหมดในระบบ (role === "student")
-    const totalStudentsCount = await db.collection("users").countDocuments({ role: "student" });
+    const totalStudentsCount = await db.collection("users").countDocuments({ role: "student", isActive: { $ne: false } });
 
     // นับจำนวนนักศึกษาที่ออกฝึกงาน (isInternship === true หรือ "true")
     const internshipStudentsCount = await db.collection("users").countDocuments({ 
       role: "student", 
-      isInternship: { $in: [true, "true"] } 
+      isInternship: { $in: [true, "true"] },
+      isActive: { $ne: false }
     });
 
     // นับจำนวนนักศึกษาที่เรียนปกติในวิทยาลัย (isInternship !== true)
@@ -88,6 +89,7 @@ export async function GET(req: Request) {
         }
       },
       { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      { $match: { "userDetails.isActive": { $ne: false } } },
       {
         $group: {
           _id: { status: "$status", isInternship: "$userDetails.isInternship" },

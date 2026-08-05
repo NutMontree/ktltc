@@ -146,10 +146,10 @@ export default function MapDashboard({
     <div className="w-full h-full rounded-xl overflow-hidden z-0 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-inner">
       <MapContainer
         center={dynamicCenter}
-        zoom={15}
-        minZoom={5}
+        zoom={16}
+        minZoom={3}
         maxZoom={22}
-        zoomControl={false}
+        zoomControl={true}
         scrollWheelZoom={true}
         preferCanvas={true}
         style={{ height: '100%', width: '100%', zIndex: 0 }}
