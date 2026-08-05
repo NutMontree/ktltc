@@ -180,17 +180,26 @@ export default function StudentFlagpoleDashboard() {
   const [isListModalOpen, setIsListModalOpen] = useState(false);
   const [listData, setListData] = useState<any[]>([]);
   const [listLoading, setListLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"AllNormal" | "PresentNormal" | "LateNormal" | "AbsentNormal" | "AllIntern" | "PresentIntern" | "LateIntern" | "AbsentIntern">("AllNormal");
+  const [listPage, setListPage] = useState(1);
+  const [listHasMore, setListHasMore] = useState(false);
+  const [listTotal, setListTotal] = useState(0);
+  const [activeTab, setActiveTab] = useState<string>("");
 
-  const fetchStudentList = async (tabName: string) => {
-    setActiveTab(tabName as any);
+  const fetchStudentList = async (tabName: string, page = 1, isLoadMore = false) => {
+    setActiveTab(tabName);
+    setListPage(page);
+    if (!isLoadMore) {
+      setIsListModalOpen(true);
+      setListData([]);
+    }
     setListLoading(true);
-    setIsListModalOpen(true);
     try {
-      const res = await fetch(`/api/admin/flagpole-dashboard/list?date=${selectedDate}&_t=${Date.now()}`);
+      const res = await fetch(`/api/admin/flagpole-dashboard/list?date=${selectedDate}&tab=${tabName}&page=${page}&limit=20&_t=${Date.now()}`);
       const json = await res.json();
       if (json.success) {
-        setListData(json.data);
+        setListData(prev => isLoadMore ? [...prev, ...json.data] : json.data);
+        setListHasMore(json.pagination?.hasMore || false);
+        setListTotal(json.pagination?.total || 0);
       }
     } catch (error) {
       console.error("Failed to fetch student list", error);
@@ -407,7 +416,7 @@ export default function StudentFlagpoleDashboard() {
                         <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">{stat.unit}</span>
                       </div>
                     </div>
-                    <button onClick={() => fetchStudentList(stat.tab)} className={`flex items-center gap-2 px-4 py-2 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-${stat.theme}-100 dark:hover:bg-${stat.theme}-500/20 transition-colors w-full justify-center border border-${stat.theme}-200/50 dark:border-${stat.theme}-500/20`}>
+                    <button onClick={() => fetchStudentList(stat.tab, 1, false)} className={`flex items-center gap-2 px-4 py-2 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-${stat.theme}-100 dark:hover:bg-${stat.theme}-500/20 transition-colors w-full justify-center border border-${stat.theme}-200/50 dark:border-${stat.theme}-500/20`}>
                       <List size={14} /> ดูรายชื่อ
                     </button>
                   </div>
@@ -445,7 +454,7 @@ export default function StudentFlagpoleDashboard() {
                         <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">{stat.unit}</span>
                       </div>
                     </div>
-                    <button onClick={() => fetchStudentList(stat.tab)} className={`flex items-center gap-2 px-4 py-2 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-${stat.theme}-100 dark:hover:bg-${stat.theme}-500/20 transition-colors w-full justify-center border border-${stat.theme}-200/50 dark:border-${stat.theme}-500/20`}>
+                    <button onClick={() => fetchStudentList(stat.tab, 1, false)} className={`flex items-center gap-2 px-4 py-2 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-${stat.theme}-100 dark:hover:bg-${stat.theme}-500/20 transition-colors w-full justify-center border border-${stat.theme}-200/50 dark:border-${stat.theme}-500/20`}>
                       <List size={14} /> ดูรายชื่อ
                     </button>
                   </div>
@@ -876,7 +885,7 @@ export default function StudentFlagpoleDashboard() {
 
       <AnimatePresence>
         {isListModalOpen && (
-          <div className="fixed inset-0 z-10000 flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -893,121 +902,97 @@ export default function StudentFlagpoleDashboard() {
               <div className="flex items-center justify-between p-6 sm:p-8 border-b border-slate-100 dark:border-zinc-800">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                    รายชื่อ <span className="text-indigo-500">นักเรียนเข้าแถว</span>
+                    รายชื่อ <span className="text-indigo-500">
+                      {activeTab.includes('All') ? 'ทั้งหมด' : activeTab.includes('Present') ? 'มาตรงเวลา' : activeTab.includes('Late') ? 'มาสาย' : 'ขาดเข้าแถว'}
+                    </span>
                   </h3>
                   <p className="text-[10px] sm:text-xs text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest mt-1">
-                    {activeTab.includes("Normal") ? "นักศึกษาเรียนปกติในวิทยาลัย" : "นักศึกษาที่ออกฝึกงานภายนอก"} • {selectedDate}
+                    {activeTab.includes("Normal") ? "นักศึกษาเรียนปกติในวิทยาลัย" : "นักศึกษาที่ออกฝึกงานภายนอก"} • {selectedDate} • {listTotal} คน
                   </p>
                 </div>
                 <button
                   onClick={() => setIsListModalOpen(false)}
-                  className="p-3 bg-slate-100 dark:bg-zinc-800 text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-2xl transition-colors"
+                  className="p-3 bg-slate-100 dark:bg-zinc-800 text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-2xl transition-colors shrink-0"
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              <div className="flex px-6 sm:px-8 pt-4 gap-4 border-b border-slate-100 dark:border-zinc-800">
-                {[
-                  { base: 'All', label: 'ทั้งหมด', activeCls: 'text-indigo-600 dark:text-indigo-400', bgCls: 'bg-indigo-500' },
-                  { base: 'Present', label: 'มาตรงเวลา', activeCls: 'text-emerald-600 dark:text-emerald-400', bgCls: 'bg-emerald-500' },
-                  { base: 'Late', label: 'มาสาย', activeCls: 'text-amber-600 dark:text-amber-400', bgCls: 'bg-amber-500' },
-                  { base: 'Absent', label: 'ขาดเข้าแถว', activeCls: 'text-rose-600 dark:text-rose-400', bgCls: 'bg-rose-500' }
-                ].map((tab) => {
-                  const tabId = tab.base + (activeTab.includes("Intern") ? "Intern" : "Normal");
-                  const isActive = activeTab === tabId;
-                  return (
-                    <button
-                      key={tabId}
-                      onClick={() => setActiveTab(tabId as any)}
-                      className={`pb-4 px-2 text-sm font-black uppercase tracking-widest transition-colors relative ${
-                        isActive
-                          ? tab.activeCls
-                          : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
-                      }`}
-                    >
-                      {tab.label}
-                      {isActive && (
-                        <motion.div layoutId="activeTabIndicator" className={`absolute bottom-0 left-0 right-0 h-1 rounded-t-full ${tab.bgCls}`} />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
               <div className="flex-1 overflow-y-auto p-6 sm:p-8 bg-slate-50/50 dark:bg-zinc-900/50">
-                {listLoading ? (
+                {listData.length === 0 && listLoading ? (
                   <div className="h-full flex flex-col items-center justify-center gap-4 py-20">
                     <LucideLoader className="animate-spin text-indigo-500" size={40} />
                     <p className="text-xs font-black uppercase text-slate-400 tracking-widest">กำลังดึงข้อมูลรายชื่อ...</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(() => {
-                      const filteredList = listData.filter(d => {
-                        const isTargetGroup = activeTab.includes("Intern") ? d.isInternship : !d.isInternship;
-                        if (!isTargetGroup) return false;
-                        if (activeTab.startsWith("Present")) return d.status === "Present";
-                        if (activeTab.startsWith("Late")) return d.status === "Late";
-                        if (activeTab.startsWith("Absent")) return d.status === "Absent";
-                        return true; // "All"
-                      });
-
-                      if (filteredList.length === 0) {
-                        return (
-                          <div className="col-span-1 md:col-span-2 py-16 text-center">
-                            <p className="text-sm font-black text-slate-400 uppercase tracking-widest">ไม่พบรายชื่อในหมวดหมู่นี้</p>
-                          </div>
-                        );
-                      }
-
-                      return filteredList.map((student, idx) => (
-                        <div key={idx} className="bg-white dark:bg-zinc-800/80 p-4 rounded-2xl border border-slate-100 dark:border-zinc-700/50 flex items-center gap-4 hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-colors">
-                          <img 
-                            src={student.photoUrl || student.image || "/default-avatar.png"} 
-                            alt={student.name}
-                            className="w-12 h-12 rounded-xl object-cover bg-slate-100 dark:bg-zinc-700 shadow-sm"
-                            onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=random'; }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <Link href={`/dashboard/members/${student.userId}`} className="text-sm font-black text-slate-800 dark:text-white truncate hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors block">
-                              {student.name}
-                            </Link>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] px-2 py-0.5 bg-slate-100 dark:bg-zinc-700 text-slate-600 dark:text-zinc-300 rounded-md font-black">
-                                {student.department}
-                              </span>
-                              {student.isInternship && (
-                                <span className="text-[10px] px-2 py-0.5 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-md font-black">
-                                  ฝึกงาน
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {listData.length === 0 ? (
+                        <div className="col-span-1 md:col-span-2 py-16 text-center">
+                          <p className="text-sm font-black text-slate-400 uppercase tracking-widest">ไม่พบรายชื่อในหมวดหมู่นี้</p>
+                        </div>
+                      ) : (
+                        listData.map((student, idx) => (
+                          <div key={idx} className="bg-white dark:bg-zinc-800/80 p-4 rounded-2xl border border-slate-100 dark:border-zinc-700/50 flex items-center gap-4 hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-colors">
+                            <img 
+                              src={student.photoUrl || student.image || "/default-avatar.png"} 
+                              alt={student.name}
+                              className="w-12 h-12 rounded-xl object-cover bg-slate-100 dark:bg-zinc-700 shadow-sm"
+                              onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=random'; }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <Link href={`/dashboard/members/${student.userId}`} className="text-sm font-black text-slate-800 dark:text-white truncate hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors block">
+                                {student.name}
+                              </Link>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-[10px] px-2 py-0.5 bg-slate-100 dark:bg-zinc-700 text-slate-600 dark:text-zinc-300 rounded-md font-black">
+                                  {student.department}
+                                </span>
+                                {student.isInternship && (
+                                  <span className="text-[10px] px-2 py-0.5 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-md font-black">
+                                    ฝึกงาน
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right flex flex-col items-end">
+                              {student.status !== "Absent" ? (
+                                <>
+                                  <p className={`text-sm font-black ${student.status === 'Present' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                                    {student.time ? new Date(student.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) : "-"}
+                                  </p>
+                                  <p className="text-[8px] font-black uppercase text-slate-400 mt-1">เวลาสแกน</p>
+                                </>
+                              ) : (
+                                <span className="px-2 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-500 rounded-lg text-xs font-black">
+                                  ขาด
                                 </span>
                               )}
                             </div>
                           </div>
-                          <div className="text-right flex flex-col items-end">
-                            {student.status !== "Absent" ? (
-                              <>
-                                <p className={`text-sm font-black ${student.status === 'Present' ? 'text-emerald-500' : 'text-amber-500'}`}>
-                                  {student.time ? new Date(student.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) : "-"}
-                                </p>
-                                <p className="text-[8px] font-black uppercase text-slate-400 mt-1">เวลาสแกน</p>
-                              </>
-                            ) : (
-                              <span className="px-2 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-500 rounded-lg text-xs font-black">
-                                ขาด
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ));
-                    })()}
-                  </div>
+                        ))
+                      )}
+                    </div>
+                    {listHasMore && (
+                      <div className="mt-8 flex justify-center">
+                        <button 
+                          onClick={() => fetchStudentList(activeTab, listPage + 1, true)}
+                          disabled={listLoading}
+                          className="px-6 py-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                          {listLoading ? <LucideLoader className="animate-spin" size={16} /> : <List size={16} />}
+                          โหลดข้อมูลเพิ่มเติม
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+
     </div>
   );
 }
