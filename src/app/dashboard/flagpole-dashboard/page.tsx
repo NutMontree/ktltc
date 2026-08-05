@@ -248,41 +248,52 @@ export default function StudentFlagpoleDashboard() {
     async function fetchStats() {
       if (status !== "authenticated") return;
       try {
-        const res = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&_t=${Date.now()}`);
-        const json = await res.json();
-        if (json.success) {
+        // Phase 1: Fetch stats only for immediate rendering
+        const resStats = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&statsOnly=true&_t=${Date.now()}`);
+        const jsonStats = await resStats.json();
+        
+        if (jsonStats.success) {
           setPreviousData(prev => {
-            // Calculate deltas before updating data
-            const newDeltas = json.data.map((newItem: any, idx: number) => {
+            const newDeltas = jsonStats.data.map((newItem: any, idx: number) => {
               const oldValue = prev[idx]?.value || 0;
-              const newValue = newItem.value;
-              return newValue - oldValue;
+              return newItem.value - oldValue;
             });
             setDeltas(newDeltas);
-            return json.data;
+            return jsonStats.data;
           });
 
-          if (json.internshipData) {
-            setPreviousInternshipData(json.internshipData);
-            setInternshipData(json.internshipData);
+          if (jsonStats.internshipData) {
+            setPreviousInternshipData(jsonStats.internshipData);
+            setInternshipData(jsonStats.internshipData);
           }
 
-          setData(json.data);
-          setMarkers(json.markers || []);
-          setRealTotal(json.totalStudents || 0);
-          setInCollegeCount(json.inCollegeStudents || 0);
-          setInternshipCount(json.internshipStudents || 0);
-          setRecentCheckIns(json.recentCheckIns || []);
-          setTrends(json.trends || []);
-          setDepartmentStats(json.departmentStats || []);
-          if (json.config) {
-            setConfig(json.config);
+          setData(jsonStats.data);
+          setRealTotal(jsonStats.totalStudents || 0);
+          setInCollegeCount(jsonStats.inCollegeStudents || 0);
+          setInternshipCount(jsonStats.internshipStudents || 0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch flagpole fast stats", error);
+      } finally {
+        // Hide loader as soon as stats are ready!
+        setLoading(false);
+      }
+
+      // Phase 2: Fetch the heavy data in the background
+      try {
+        const resHeavy = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&_t=${Date.now()}`);
+        const jsonHeavy = await resHeavy.json();
+        if (jsonHeavy.success) {
+          setMarkers(jsonHeavy.markers || []);
+          setRecentCheckIns(jsonHeavy.recentCheckIns || []);
+          setTrends(jsonHeavy.trends || []);
+          setDepartmentStats(jsonHeavy.departmentStats || []);
+          if (jsonHeavy.config) {
+            setConfig(jsonHeavy.config);
           }
         }
       } catch (error) {
-        console.error("Failed to fetch flagpole stats", error);
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch flagpole heavy stats", error);
       }
     }
     fetchStats();

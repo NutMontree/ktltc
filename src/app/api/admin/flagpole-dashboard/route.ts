@@ -132,6 +132,18 @@ export async function GET(req: Request) {
       { name: 'ขาดแถว (ฝึกงาน)', value: internshipAbsentCount, color: '#f43f5e' }    
     ];
 
+    const statsOnly = searchParams.get('statsOnly') === 'true';
+    if (statsOnly) {
+      return NextResponse.json({
+        success: true,
+        data: formattedData,
+        internshipData: internshipFormattedData,
+        totalStudents: totalStudentsCount,
+        inCollegeStudents: inCollegeStudentsCount,
+        internshipStudents: internshipStudentsCount,
+      });
+    }
+
     // 3. กิจกรรมลงชื่อเข้าแถวล่าสุด 10 รายการ
     const recentCheckIns = await db.collection("flagpole_attendances").aggregate([
       { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },

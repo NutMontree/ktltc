@@ -138,6 +138,8 @@ export default function StudentCarePage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [displayLimit, setDisplayLimit] = useState(30);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [sdqCounts, setSdqCounts] = useState({ normal: 0, risk: 0, problem: 0, special: 0 });
   const [filterSdqType, setFilterSdqType] = useState<string | null>(null);
 
   const formatStudentName = (name: string, gender: string) => {
@@ -172,9 +174,15 @@ export default function StudentCarePage() {
   const isAdmin = ["super_admin", "admin", "director"].includes(user.role?.toLowerCase() || "");
 
   useEffect(() => {
-    fetchRecords();
     fetchDeputy();
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchRecords(0, false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [viewTab, filterDepartment, filterClassroom, filterSdqType, searchTerm]);
 
   const fetchDeputy = async () => {
     try {
@@ -191,17 +199,37 @@ export default function StudentCarePage() {
     }
   };
 
-  const fetchRecords = async () => {
-    setLoading(true);
+  const fetchRecords = async (skip = 0, append = false) => {
+    if (skip === 0) setLoading(true);
     try {
-      const res = await fetch("/api/director/student-care");
-      const data = await res.json();
-      setRecords(Array.isArray(data) ? data : []);
+      const params = new URLSearchParams({
+        limit: displayLimit.toString(),
+        skip: skip.toString(),
+        search: searchTerm,
+        department: filterDepartment,
+        classroom: filterClassroom,
+        sdqType: filterSdqType || "",
+        recordType: viewTab
+      });
+      const res = await fetch("/api/director/student-care?" + params.toString());
+      const { data, total, sdqCounts: stats } = await res.json();
+      
+      if (append) {
+        setRecords(prev => [...prev, ...(Array.isArray(data) ? data : [])]);
+      } else {
+        setRecords(Array.isArray(data) ? data : []);
+      }
+      setTotalRecords(total || 0);
+      if (stats) setSdqCounts(stats);
     } catch (error) {
       console.error(error);
       toast.error("ดึงข้อมูลล้มเหลว");
     }
     setLoading(false);
+  };
+
+  const loadMore = () => {
+    fetchRecords(records.length, true);
   };
 
   const getLocation = () => {
@@ -505,63 +533,42 @@ export default function StudentCarePage() {
     setShowSDQModal(false);
   };
 
-  const uniqueDepartmentsMap = new Map<string, string>();
-  records.forEach(r => {
-    if (r.department) {
-      const norm = normalizeDept(r.department as string);
-      if (!uniqueDepartmentsMap.has(norm)) {
-        // Save the first encountered original name, or prefer one with "แผนกวิชา" if available later?
-        // Let's just prefer the longest string as the display name (usually "แผนกวิชา...")
-        uniqueDepartmentsMap.set(norm, r.department as string);
-      } else {
-        const existing = uniqueDepartmentsMap.get(norm)!;
-        if ((r.department as string).length > existing.length) {
-          uniqueDepartmentsMap.set(norm, r.department as string);
-        }
-      }
-    }
-  });
-  const uniqueDepartments = Array.from(uniqueDepartmentsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-
-  const uniqueClassrooms = Array.from(new Set(records.filter(r => r.classroom && (!filterDepartment || normalizeDept(r.department as string) === normalizeDept(filterDepartment))).map(r => r.classroom as string))).sort();
-
-  // Base filter for Department and Classroom
-  const filteredByDeptAndClass = records.filter(r => {
-    if (filterDepartment && normalizeDept(r.department as string) !== normalizeDept(filterDepartment)) return false;
-    if (filterClassroom && r.classroom !== filterClassroom) return false;
-    return true;
-  });
-
-  // Stats for Dashboard (now respects dept/class filters)
-  const screeningRecords = filteredByDeptAndClass.filter(r => (r.recordType || 'screening') === 'screening');
-  const sdqCounts = {
-    normal: screeningRecords.filter(r => r.sdqType === 'normal').length,
-    risk: screeningRecords.filter(r => r.sdqType === 'risk').length,
-    problem: screeningRecords.filter(r => r.sdqType === 'problem').length,
-    special: screeningRecords.filter(r => r.sdqType === 'special').length,
-  };
+  // Pagination replaces client-side filtering
+  const displayedRecords = records;
   const totalSdq = sdqCounts.normal + sdqCounts.risk + sdqCounts.problem + sdqCounts.special || 1;
 
-  const displayedRecords = filteredByDeptAndClass.filter(r => {
-    if ((r.recordType || 'screening') !== viewTab) return false;
-    if (filterSdqType && r.sdqType !== filterSdqType) return false;
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      (r.studentName && r.studentName.toLowerCase().includes(term)) ||
-      (r.classroom && r.classroom.toLowerCase().includes(term)) ||
-      (r.department && r.department.toLowerCase().includes(term)) ||
-      (r.teacherName && r.teacherName.toLowerCase().includes(term))
-    );
-  });
+  const exportToExcel = async () => {
+    let exportData = displayedRecords;
+    
+    // Fetch full data for export if we haven't loaded everything
+    if (records.length < totalRecords) {
+      toast.loading("กำลังดึงข้อมูลทั้งหมดสำหรับส่งออก...");
+      try {
+        const params = new URLSearchParams({
+          exportAll: 'true',
+          search: searchTerm,
+          department: filterDepartment,
+          classroom: filterClassroom,
+          sdqType: filterSdqType || "",
+          recordType: viewTab
+        });
+        const res = await fetch("/api/director/student-care?" + params.toString());
+        const { data } = await res.json();
+        exportData = data;
+        toast.dismiss();
+      } catch (err) {
+        toast.dismiss();
+        toast.error("ดึงข้อมูลส่งออกล้มเหลว");
+        return;
+      }
+    }
 
-  const exportToExcel = () => {
-    if (displayedRecords.length === 0) {
+    if (exportData.length === 0) {
       toast.error("ไม่มีข้อมูลสำหรับส่งออก");
       return;
     }
 
-    const data = displayedRecords.map((r, index) => {
+    const data = exportData.map((r, index) => {
       const isSdq = r.recordType === 'screening' && r.sdqData;
 
       return {
@@ -844,8 +851,8 @@ export default function StudentCarePage() {
                     onChange={(e) => setFilterClassroom(e.target.value)}
                   >
                     <option value="">ทุกห้องเรียน</option>
-                    {uniqueClassrooms.map(cls => (
-                      <option key={cls} value={cls}>{cls}</option>
+                    {classroomsList.map((cls, i) => (
+                      <option key={i} value={cls}>{cls}</option>
                     ))}
                   </select>
 
@@ -1238,7 +1245,7 @@ export default function StudentCarePage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {displayedRecords.slice(0, displayLimit).map((r: any) => (
+                        {displayedRecords.map((r: any) => (
                           <tr key={r._id} onClick={() => { setViewRecord(r); setCurrentImageIndex(0); }} className="border-b border-slate-100 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors group">
                             <td className="p-5 text-sm text-slate-600 dark:text-zinc-400 whitespace-nowrap">
                               {new Date(r.visitDate || r.createdAt).toLocaleDateString('th-TH')}
@@ -1282,7 +1289,7 @@ export default function StudentCarePage() {
                     </table>
                   </div>
                 ) : (
-                  displayedRecords.slice(0, displayLimit).map((r: any) => (
+                  displayedRecords.map((r: any) => (
                     <div key={r._id} onClick={() => { setViewRecord(r); setCurrentImageIndex(0); }} className={`cursor-pointer bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group hover:border-teal-300 dark:hover:border-teal-700/50 ${viewMode === 'list' ? 'flex flex-row h-48' : 'flex flex-col'}`}>
 
                       {/* Status Badge */}
@@ -1384,13 +1391,14 @@ export default function StudentCarePage() {
               </div>
             )}
 
-            {!showAdd && displayedRecords.length > displayLimit && (
-              <div className="flex justify-center mt-6">
+            {/* Load More Button */}
+            {!showAdd && records.length < totalRecords && !loading && (
+              <div className="flex justify-center mt-8 pb-8">
                 <button
-                  onClick={() => setDisplayLimit(prev => prev + 30)}
-                  className="px-6 py-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  onClick={loadMore}
+                  className="px-8 py-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-full text-sm font-bold text-slate-600 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"
                 >
-                  แสดงเพิ่มอีก 30 รายการ ({displayLimit} / {displayedRecords.length})
+                  โหลดเพิ่มเติม ({records.length} / {totalRecords})
                 </button>
               </div>
             )}

@@ -3,12 +3,64 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const limit = parseInt(searchParams.get('limit') || '30');
+    const skip = parseInt(searchParams.get('skip') || '0');
+    const search = searchParams.get('search') || '';
+    const department = searchParams.get('department') || '';
+    const classroom = searchParams.get('classroom') || '';
+    const recordType = searchParams.get('recordType') || '';
+    const sdqType = searchParams.get('sdqType') || '';
+    const exportAll = searchParams.get('exportAll') === 'true';
+
+    const query: any = {};
+
+    if (recordType) query.recordType = recordType;
+    if (sdqType) query.sdqType = sdqType;
+    if (department) query.department = { $regex: new RegExp(department, 'i') };
+    if (classroom) query.classroom = classroom;
+    if (search) {
+      query.$or = [
+        { studentName: { $regex: new RegExp(search, 'i') } },
+        { teacherName: { $regex: new RegExp(search, 'i') } },
+        { studentIdNum: { $regex: new RegExp(search, 'i') } }
+      ];
+    }
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const records = await db.collection("student_care_records").find({}).sort({ createdAt: -1 }).toArray();
-    return NextResponse.json(records);
+
+    // If exporting all, don't limit/skip
+    if (exportAll) {
+      const records = await db.collection("student_care_records").find(query).sort({ createdAt: -1 }).toArray();
+      return NextResponse.json({ data: records, total: records.length });
+    }
+
+    const [records, total, statsAgg] = await Promise.all([
+      db.collection("student_care_records").find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
+      db.collection("student_care_records").countDocuments(query),
+      db.collection("student_care_records").aggregate([
+        { $match: { ...query, recordType: 'screening' } },
+        { $group: { _id: "$sdqType", count: { $sum: 1 } } }
+      ]).toArray()
+    ]);
+
+    const sdqCounts = {
+      normal: 0,
+      risk: 0,
+      problem: 0,
+      special: 0,
+    };
+    statsAgg.forEach(s => {
+      if (s._id === 'normal') sdqCounts.normal = s.count;
+      else if (s._id === 'risk') sdqCounts.risk = s.count;
+      else if (s._id === 'problem') sdqCounts.problem = s.count;
+      else if (s._id === 'special') sdqCounts.special = s.count;
+    });
+
+    return NextResponse.json({ data: records, total, sdqCounts });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch student care records" }, { status: 500 });
   }
