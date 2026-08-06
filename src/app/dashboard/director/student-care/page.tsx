@@ -811,58 +811,61 @@ export default function StudentCarePage() {
 
             {/* Tabs and View Mode Controls */}
             {!showAdd && (
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div className="flex flex-wrap bg-slate-100 dark:bg-zinc-900/50 p-1 rounded-2xl gap-1 border border-slate-200 dark:border-zinc-800/50">
+              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-8">
+                <div className="flex flex-nowrap sm:flex-wrap overflow-x-auto sm:overflow-visible bg-slate-100 dark:bg-zinc-900/50 p-1 rounded-2xl gap-1 border border-slate-200 dark:border-zinc-800/50 w-full xl:w-auto shrink-0 hide-scrollbar">
                   <button
                     onClick={() => setViewTab("screening")}
-                    className={`px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center ${viewTab === 'screening' ? 'bg-white dark:bg-zinc-800 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
+                    className={`px-4 sm:px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center whitespace-nowrap ${viewTab === 'screening' ? 'bg-white dark:bg-zinc-800 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
                   >
-                    <ShieldCheck size={18} className="mr-2" /> 1. แบบคัดกรอง (คป.02)
+                    <ShieldCheck size={18} className="mr-2 shrink-0" /> 1. แบบคัดกรอง (คป.02)
                   </button>
                   <button
                     onClick={() => setViewTab("home_visit")}
-                    className={`px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center ${viewTab === 'home_visit' ? 'bg-white dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
+                    className={`px-4 sm:px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center whitespace-nowrap ${viewTab === 'home_visit' ? 'bg-white dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
                   >
-                    <HeartHandshake size={18} className="mr-2" /> 2. บันทึกเยี่ยมบ้าน (คป.11)
+                    <HeartHandshake size={18} className="mr-2 shrink-0" /> 2. บันทึกเยี่ยมบ้าน (คป.11)
                   </button>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-                  {/* Filters */}
-                  <select
-                    className="w-full sm:w-auto py-2.5 px-4 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-2 focus:ring-teal-500 font-bold text-slate-600 dark:text-zinc-300"
-                    value={filterDepartment}
-                    onChange={(e) => {
-                      setFilterDepartment(e.target.value);
-                      setFilterClassroom(""); // Reset classroom when department changes
-                    }}
-                  >
-                    <option value="">ทุกแผนกวิชา</option>
-                    {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-3 w-full xl:w-auto">
+                  
+                  {/* Selectors Row */}
+                  <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                    <select
+                      className="w-full sm:w-auto py-2.5 px-4 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-2 focus:ring-teal-500 font-bold text-slate-600 dark:text-zinc-300 shrink-0"
+                      value={filterDepartment}
+                      onChange={(e) => {
+                        setFilterDepartment(e.target.value);
+                        setFilterClassroom(""); // Reset classroom when department changes
+                      }}
+                    >
+                      <option value="">ทุกแผนกวิชา</option>
+                      {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
 
-                  <select
-                    className="w-full sm:w-auto py-2.5 px-4 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-2 focus:ring-teal-500 font-bold text-slate-600 dark:text-zinc-300"
-                    value={filterClassroom}
-                    onChange={(e) => setFilterClassroom(e.target.value)}
-                  >
-                    <option value="">ทุกห้องเรียน</option>
-                    {classroomsList.filter(cls => {
-                      if (!filterDepartment) return true; // Show all if no department selected
-                      const prefixes = DEPT_CLASSROOM_PREFIX_MAP[filterDepartment];
-                      if (!prefixes) return true; // Show all if department is unknown
-                      return prefixes.some(prefix => cls.startsWith(prefix));
-                    }).map((cls, i) => (
-                      <option key={i} value={cls}>{cls}</option>
-                    ))}
-                  </select>
+                    <select
+                      className="w-full sm:w-auto py-2.5 px-4 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-2 focus:ring-teal-500 font-bold text-slate-600 dark:text-zinc-300 shrink-0"
+                      value={filterClassroom}
+                      onChange={(e) => setFilterClassroom(e.target.value)}
+                    >
+                      <option value="">ทุกห้องเรียน</option>
+                      {classroomsList.filter(cls => {
+                        if (!filterDepartment) return true; // Show all if no department selected
+                        const prefixes = DEPT_CLASSROOM_PREFIX_MAP[filterDepartment];
+                        if (!prefixes) return true; // Show all if department is unknown
+                        return prefixes.some(prefix => cls.startsWith(prefix));
+                      }).map((cls, i) => (
+                        <option key={i} value={cls}>{cls}</option>
+                      ))}
+                    </select>
+                  </div>
 
                   {/* Search Input */}
-                  <div className="relative w-full sm:w-64 group">
+                  <div className="relative w-full sm:w-64 group shrink-0">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-teal-500 text-slate-400">
                       <Search size={16} />
                     </div>
@@ -883,45 +886,50 @@ export default function StudentCarePage() {
                     )}
                   </div>
 
-                  <div className="h-8 w-px bg-slate-200 dark:bg-zinc-800 hidden sm:block mx-1"></div>
+                  <div className="h-8 w-px bg-slate-200 dark:bg-zinc-800 hidden xl:block mx-1"></div>
 
-                  <button
-                    onClick={exportToExcel}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl text-sm font-bold hover:bg-emerald-100 hover:shadow-md hover:shadow-emerald-500/10 active:scale-95 transition-all shrink-0 border border-emerald-200 dark:border-emerald-800/50"
-                    title="ดาวน์โหลดข้อมูลเป็น Excel"
-                  >
-                    <Download size={16} /> Excel
-                  </button>
+                  {/* Buttons and Views Row */}
+                  <div className="flex flex-row items-center justify-between sm:justify-start w-full sm:w-auto gap-2 shrink-0">
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <button
+                        onClick={exportToExcel}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl text-sm font-bold hover:bg-emerald-100 hover:shadow-md hover:shadow-emerald-500/10 active:scale-95 transition-all border border-emerald-200 dark:border-emerald-800/50"
+                        title="ดาวน์โหลดข้อมูลเป็น Excel"
+                      >
+                        <Download size={16} /> <span className="hidden sm:inline">Excel</span>
+                      </button>
 
-                  <button
-                    onClick={() => {
-                      if (displayedRecords.length === 0) {
-                        toast.error("ไม่มีข้อมูลสำหรับพิมพ์");
-                        return;
-                      }
-                      setIsPrintingSummary(true);
-                      setTimeout(() => {
-                        window.print();
-                        setTimeout(() => setIsPrintingSummary(false), 500);
-                      }, 500);
-                    }}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-500/10 active:scale-95 transition-all shrink-0 border border-indigo-200 dark:border-indigo-800/50"
-                    title="พิมพ์สรุปเป็น PDF"
-                  >
-                    <Printer size={16} /> PDF
-                  </button>
+                      <button
+                        onClick={() => {
+                          if (displayedRecords.length === 0) {
+                            toast.error("ไม่มีข้อมูลสำหรับพิมพ์");
+                            return;
+                          }
+                          setIsPrintingSummary(true);
+                          setTimeout(() => {
+                            window.print();
+                            setTimeout(() => setIsPrintingSummary(false), 500);
+                          }, 500);
+                        }}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-500/10 active:scale-95 transition-all border border-indigo-200 dark:border-indigo-800/50"
+                        title="พิมพ์สรุปเป็น PDF"
+                      >
+                        <Printer size={16} /> <span className="hidden sm:inline">PDF</span>
+                      </button>
+                    </div>
 
-                  {/* View Mode Switcher */}
-                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800/50 p-1 rounded-xl mb-px shrink-0 ml-1">
-                    <button onClick={() => setViewMode("grid")} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300'}`} title="Grid View">
-                      <LayoutGrid size={18} />
-                    </button>
-                    <button onClick={() => setViewMode("table")} className={`p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white dark:bg-zinc-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300'}`} title="Table View">
-                      <Table size={18} />
-                    </button>
-                    <button onClick={() => setViewMode("list")} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-zinc-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300'}`} title="List View">
-                      <List size={18} />
-                    </button>
+                    {/* View Mode Switcher */}
+                    <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800/50 p-1 rounded-xl mb-px shrink-0 ml-auto sm:ml-1">
+                      <button onClick={() => setViewMode("grid")} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300'}`} title="Grid View">
+                        <LayoutGrid size={18} />
+                      </button>
+                      <button onClick={() => setViewMode("table")} className={`p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white dark:bg-zinc-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300'}`} title="Table View">
+                        <Table size={18} />
+                      </button>
+                      <button onClick={() => setViewMode("list")} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-zinc-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300'}`} title="List View">
+                        <List size={18} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
