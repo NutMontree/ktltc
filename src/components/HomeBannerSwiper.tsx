@@ -43,7 +43,7 @@ export default function HomeBannerSwiper({
   if (loading) {
     return (
       <div className="w-full max-w-[1600px] mx-auto my-4 px-2">
-        <div className="relative aspect-[21/9] md:aspect-[1920/820] overflow-hidden bg-slate-200 dark:bg-zinc-800 animate-pulse rounded-4xl" />
+        <div className="relative aspect-21/9d:aspect-[1920/820] overflow-hidden bg-slate-200 dark:bg-zinc-800 animate-pulse rounded-4xl" />
       </div>
     );
   }
@@ -95,12 +95,12 @@ export default function HomeBannerSwiper({
             "!w-12 !h-12 !bg-white/10 hover:!bg-white/30 backdrop-blur-md border border-white/20 !rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 !flex items-center justify-center !after:content-['']";
           return (
             <>
-              <div className={`swiper-button-prev ${btnBase} !left-6 group-hover:!translate-x-0 !-translate-x-2`}>
+              <div className={`swiper-button-prev ${btnBase} left-6! group-hover:translate-x-0! -translate-x-2!`}>
                 <svg className="w-6 h-6 text-white drop-shadow-md" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
               </div>
-              <div className={`swiper-button-next ${btnBase} !right-6 group-hover:!translate-x-0 !translate-x-2`}>
+              <div className={`swiper-button-next ${btnBase} right-6! group-hover:translate-x-0! translate-x-2!`}>
                 <svg className="w-6 h-6 text-white drop-shadow-md" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
