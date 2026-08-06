@@ -20,10 +20,13 @@ export async function GET(req: Request) {
     if (recordType) query.recordType = recordType;
     if (sdqType) query.sdqType = sdqType;
     if (department) query.department = { $regex: new RegExp(department, 'i') };
+
     if (classroom) {
-      // Escape special characters in classroom (e.g. brackets) and match any variations
-      const escapedClassroom = classroom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      // e.g. "พบ.21" matches "พบ.21", "พบ.21(ทวิภาคี)", "พบ.21 ทวิ"
+      // Extract only the base classroom name (e.g., "พบ.21" from "พบ.21(ทวิภาคี)")
+      const baseClassroom = classroom.split(/[ (]/)[0];
+      // Escape special characters in classroom
+      const escapedClassroom = baseClassroom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // match any variations that start with or contain the base name
       query.classroom = { $regex: new RegExp(escapedClassroom, 'i') };
     }
     if (search) {

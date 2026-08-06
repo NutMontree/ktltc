@@ -186,10 +186,10 @@ export default function StudentCarePage() {
 
   const fetchDeputy = async () => {
     try {
-      const res = await fetch("/api/users/all");
+      const res = await fetch("/api/users/all?role=deputy_student_affairs");
       if (res.ok) {
         const data = await res.json();
-        const deputy = (data.users || []).find((u: any) => u.role === "deputy_student_affairs");
+        const deputy = data.users?.[0]; // Since we filtered by role, the first one is likely it.
         if (deputy && deputy.name) {
           setDeputyName(`(${deputy.name})`);
         }

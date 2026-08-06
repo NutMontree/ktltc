@@ -3,14 +3,22 @@ import clientPromise from "@/lib/db";
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const role = searchParams.get("role");
+    
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    const query: any = { isActive: true };
+    if (role) {
+      query.role = role;
+    }
+
     const users = await db
       .collection("users")
-      .find({ isActive: true })
+      .find(query)
       .project({ _id: 1, name: 1, username: 1, role: 1, position: 1, department: 1, orderIndex: 1, image: 1, phone: 1, email: 1, lineId: 1, description: 1, positionNumber: 1, affiliation: 1, faction: 1, respDeptHead: 1, respWorkHead: 1, respOther: 1 })
       .toArray();
 
