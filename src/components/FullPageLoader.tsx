@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Strands from "./Strands";
 
 /**
  * FullPageLoader.tsx: พรีเมียม Loading Overlay
@@ -62,30 +63,23 @@ export default function FullPageLoader({
       </div>
 
       <div className="relative z-10 flex flex-col items-center w-full px-6 max-w-sm">
-        {/* Core Animated Loader */}
-        <div className="relative flex items-center justify-center mb-12">
-          {/* Outer Rotating Ring */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute w-32 h-32 rounded-full border border-dashed border-slate-300 dark:border-slate-700 opacity-50"
+        <div className="relative flex items-center justify-center mb-12 w-full h-48 sm:h-64">
+          <Strands
+            colors={["#4f46e5", "#3b82f6", "#06b6d4"]} // Indigo, Blue, Cyan
+            count={3}
+            speed={0.5}
+            amplitude={1}
+            waviness={1}
+            thickness={0.7}
+            glow={2.6}
+            taper={3}
+            spread={1}
+            intensity={0.6}
+            saturation={1.5}
+            opacity={1}
+            scale={1.5}
+            glass={false}
           />
-          
-          {/* Inner Glowing Ring */}
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            className="absolute w-24 h-24 rounded-full border-[3px] border-transparent border-t-blue-600 border-l-indigo-600 dark:border-t-blue-500 dark:border-l-indigo-500 shadow-[0_0_30px_rgba(79,70,229,0.3)]"
-          />
-
-          {/* Center Orb */}
-          <motion.div
-            animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.8, 1, 0.8] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shadow-[0_0_40px_rgba(79,70,229,0.5)] flex items-center justify-center"
-          >
-            <div className="w-4 h-4 bg-white rounded-full blur-[2px] opacity-80" />
-          </motion.div>
         </div>
 
         {/* Text Typography */}
