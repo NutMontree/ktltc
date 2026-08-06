@@ -18,15 +18,8 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import NavbarSkeleton from "@/components/NavbarSkeleton";
 import { Suspense } from "react";
-import NextAuthProvider from "@/providers/NextAuthProvider";
-import ScrollUp from "@/components/Common/ScrollUp";
-import CookieConsent from "@/components/CookieConsent";
-import ActiveUserTracker from "@/components/ActiveUserTracker";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
-import GlobalEffectRenderer from "@/components/effects/GlobalEffectRenderer";
-import GoogleTranslate from "@/components/GoogleTranslate";
-import CustomSlangTranslator from "@/components/CustomSlangTranslator";
+import ClientProviders from "@/providers/ClientProviders";
+import ClientBackgroundEffects from "@/components/ClientBackgroundEffects";
 
 import { Prompt, Inter, Sarabun, Charm } from 'next/font/google';
 
@@ -125,37 +118,19 @@ export default async function RootLayout({
 
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
       <body className={`${prompt.className} antialiased`} suppressHydrationWarning={true}>
-        <AntdRegistry>
-          <NextAuthProvider
-            refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
-            refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
-          >
-            <ActiveUserTracker />
-            {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light" // เริ่มต้นเป็น light mode เสมอ
-              enableSystem={false}
-              disableTransitionOnChange
-            >
+        <ClientProviders>
               {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
               <Suspense fallback={<NavbarSkeleton />}>
                 <Navbar />
               </Suspense>
-
-              {/* เรนเดอร์เอฟเฟคหน้าเว็บแบบ Global */}
-              <GlobalEffectRenderer initialEffect={globalEffect} />
 
               {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
               <Suspense fallback={null}>
                 <div className="pt-20">{children}</div>
               </Suspense>
 
-              {/* วิดเจ็ตแปลภาษา Google Translate ซ่อนอยู่หลังฉาก */}
-              <GoogleTranslate />
-
-              {/* สคริปต์แปลภาษาพิเศษ (ภาษาเจนซี / ภาษากะเทย) */}
-              <CustomSlangTranslator />
+              {/* รวมเอฟเฟกต์และของที่โหลดเบื้องหลังให้อยู่ฝั่ง Client (ไม่บล็อก Server) */}
+              <ClientBackgroundEffects globalEffect={globalEffect} />
 
               {/* ปิดการใช้งาน Vercel Analytics & Speed Insights ชั่วคราว */}
               {/* <SpeedInsights /> */}
@@ -164,8 +139,6 @@ export default async function RootLayout({
               {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
               {/* ❗ ต้องห่อด้วย Suspense เพื่อป้องกัน "Application error" */}
               {/* เมื่อ Footer ดึงข้อมูล DB ไม่ได้ (timeout/connection error) */}
-              <ScrollUp />
-              <CookieConsent />
               {/* <Suspense fallback={
                 <footer className="bg-[#0f172a] text-slate-500 text-xs text-center py-6 border-t border-slate-800">
                   กำลังโหลดข้อมูล...
@@ -173,9 +146,7 @@ export default async function RootLayout({
               }>
               </Suspense> */}
               <Footer />
-            </ThemeProvider>
-          </NextAuthProvider>
-        </AntdRegistry>
+        </ClientProviders>
       </body>
     </html>
   );

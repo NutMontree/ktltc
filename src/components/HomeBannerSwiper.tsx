@@ -138,6 +138,7 @@ function BannerImage({
         width={1920}
         height={1080}
         priority={isFirst}
+        unoptimized={true}
         sizes="(max-width: 768px) 100vw, 1600px"
         className="w-full h-auto object-contain"
       />

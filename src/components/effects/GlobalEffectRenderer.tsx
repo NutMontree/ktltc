@@ -20,6 +20,12 @@ export default function GlobalEffectRenderer({ initialEffect = "none" }: GlobalE
 
   // Initialize tsParticles engine
   useEffect(() => {
+    // Disable on mobile to save CPU and battery
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setInit(false);
+      return;
+    }
+
     initParticlesEngine(async (engine) => {
       // loadFull loads all plugins, shapes, and updaters
       await loadFull(engine);
