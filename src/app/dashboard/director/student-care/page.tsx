@@ -861,6 +861,30 @@ export default function StudentCarePage() {
                     ))}
                   </select>
 
+                  {/* Search Input */}
+                  <div className="relative w-full sm:w-64 group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-teal-500 text-slate-400">
+                      <Search size={16} />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="ค้นหาชื่อ, รหัส, แผนก, ชั้นเรียน..."
+                      className="pl-10 w-full py-2.5 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-medium"
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="h-8 w-px bg-slate-200 dark:bg-zinc-800 hidden sm:block mx-1"></div>
+
                   <button
                     onClick={exportToExcel}
                     className="flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl text-sm font-bold hover:bg-emerald-100 hover:shadow-md hover:shadow-emerald-500/10 active:scale-95 transition-all shrink-0 border border-emerald-200 dark:border-emerald-800/50"
@@ -887,30 +911,8 @@ export default function StudentCarePage() {
                     <Printer size={16} /> PDF
                   </button>
 
-                  {/* Search Input */}
-                  <div className="relative w-full sm:w-64 group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-teal-500 text-slate-400">
-                      <Search size={16} />
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="ค้นหาชื่อ, รหัส, แผนก, ชั้นเรียน..."
-                      className="pl-10 w-full py-2.5 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-medium"
-                      value={searchTerm}
-                      onChange={e => setSearchTerm(e.target.value)}
-                    />
-                    {searchTerm && (
-                      <button
-                        onClick={() => setSearchTerm("")}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                  </div>
-
                   {/* View Mode Switcher */}
-                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800/50 p-1 rounded-xl mb-px shrink-0">
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800/50 p-1 rounded-xl mb-px shrink-0 ml-1">
                     <button onClick={() => setViewMode("grid")} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300'}`} title="Grid View">
                       <LayoutGrid size={18} />
                     </button>
