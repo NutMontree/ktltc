@@ -43,7 +43,7 @@ export default function HomeBannerSwiper({
   if (loading) {
     return (
       <div className="w-full max-w-[1600px] mx-auto my-4 px-2">
-        <div className="relative aspect-21/9d:aspect-[1920/820] overflow-hidden bg-slate-200 dark:bg-zinc-800 animate-pulse rounded-4xl" />
+        <div className="relative aspect-21/9 md:aspect-1920/820 overflow-hidden bg-slate-200 dark:bg-zinc-800 animate-pulse rounded-4xl" />
       </div>
     );
   }

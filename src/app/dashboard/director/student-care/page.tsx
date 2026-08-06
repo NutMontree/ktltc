@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast";
 import { uploadFile } from "@/lib/upload";
 import * as XLSX from "xlsx";
-import { DEPARTMENT_GROUPS } from "@/constants/departments";
+import { DEPARTMENT_GROUPS, DEPT_CLASSROOM_PREFIX_MAP } from "@/constants/departments";
 import { CLASSROOMS_LIST } from "@/constants/classrooms";
 
 
@@ -851,7 +851,12 @@ export default function StudentCarePage() {
                     onChange={(e) => setFilterClassroom(e.target.value)}
                   >
                     <option value="">ทุกห้องเรียน</option>
-                    {classroomsList.map((cls, i) => (
+                    {classroomsList.filter(cls => {
+                      if (!filterDepartment) return true; // Show all if no department selected
+                      const prefixes = DEPT_CLASSROOM_PREFIX_MAP[filterDepartment];
+                      if (!prefixes) return true; // Show all if department is unknown
+                      return prefixes.some(prefix => cls.startsWith(prefix));
+                    }).map((cls, i) => (
                       <option key={i} value={cls}>{cls}</option>
                     ))}
                   </select>
@@ -889,7 +894,7 @@ export default function StudentCarePage() {
                     </div>
                     <input
                       type="text"
-                      placeholder="ค้นหาชื่อ, รหัส..."
+                      placeholder="ค้นหาชื่อ, รหัส, แผนก, ชั้นเรียน..."
                       className="pl-10 w-full py-2.5 border rounded-xl dark:bg-zinc-950 dark:border-zinc-800 text-sm focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-medium"
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
@@ -1046,7 +1051,12 @@ export default function StudentCarePage() {
                       <label className="block text-xs font-bold text-slate-500 mb-1.5">ชั้นเรียน/ห้อง</label>
                       <input type="text" list="classrooms-datalist-form" placeholder="เช่น พค.11" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
                       <datalist id="classrooms-datalist-form">
-                        {classroomsList.map((c, i) => (
+                        {classroomsList.filter(cls => {
+                          if (!newCare.department) return true;
+                          const prefixes = DEPT_CLASSROOM_PREFIX_MAP[newCare.department];
+                          if (!prefixes) return true;
+                          return prefixes.some(prefix => cls.startsWith(prefix));
+                        }).map((c, i) => (
                           <option key={i} value={c} />
                         ))}
                       </datalist>

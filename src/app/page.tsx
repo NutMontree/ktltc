@@ -14,6 +14,8 @@ import ExternalQualityAssurance from "./ExternalQualityAssurance";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import BorderGlow from "@/components/ui/BorderGlow";
+import { Suspense } from "react";
+import SectionSkeleton from "@/components/SectionSkeleton";
 
 const ScrollVelocity = dynamic(() => import("@/components/Scrollvelocity"), { ssr: true });
 
@@ -169,14 +171,16 @@ export default async function Home() {
         </div>
 
         <div className="max-w-[1600px] mx-auto w-full px-2">
-          <div className="py-12">{isShow.press_release !== false && <PressRelease />}</div>
-          <div className="py-12">{isShow.newsletter !== false && <Newsletter />}</div>
-          <div className="py-12">{isShow.announcement !== false && <Announcement />}</div>
-          <div className="py-12">{isShow.tender !== false && <TenderPage />}</div>
-          <div className="py-12">{isShow.command !== false && <CommandPage />}</div>
-          <div className="py-12">{isShow.internship !== false && <InternshipPage />}</div>
+          <div className="py-12">{isShow.press_release !== false && <Suspense fallback={<SectionSkeleton />}><PressRelease /></Suspense>}</div>
+          <div className="py-12">{isShow.newsletter !== false && <Suspense fallback={<SectionSkeleton />}><Newsletter /></Suspense>}</div>
+          <div className="py-12">{isShow.announcement !== false && <Suspense fallback={<SectionSkeleton />}><Announcement /></Suspense>}</div>
+          <div className="py-12">{isShow.tender !== false && <Suspense fallback={<SectionSkeleton />}><TenderPage /></Suspense>}</div>
+          <div className="py-12">{isShow.command !== false && <Suspense fallback={<SectionSkeleton />}><CommandPage /></Suspense>}</div>
+          <div className="py-12">{isShow.internship !== false && <Suspense fallback={<SectionSkeleton />}><InternshipPage /></Suspense>}</div>
           <div className="py-12">
-            <ShowFacebookClient />
+            <Suspense fallback={<SectionSkeleton />}>
+              <ShowFacebookClient />
+            </Suspense>
           </div>
 
           {isShow.social_feed !== false && (feeds?.length ?? 0) > 0 && (

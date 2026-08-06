@@ -20,12 +20,21 @@ export async function GET(req: Request) {
     if (recordType) query.recordType = recordType;
     if (sdqType) query.sdqType = sdqType;
     if (department) query.department = { $regex: new RegExp(department, 'i') };
-    if (classroom) query.classroom = classroom;
+    if (classroom) {
+      // Escape special characters in classroom (e.g. brackets) and match any variations
+      const escapedClassroom = classroom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // e.g. "พบ.21" matches "พบ.21", "พบ.21(ทวิภาคี)", "พบ.21 ทวิ"
+      query.classroom = { $regex: new RegExp(escapedClassroom, 'i') };
+    }
     if (search) {
+      // Escape special characters for text search
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query.$or = [
-        { studentName: { $regex: new RegExp(search, 'i') } },
-        { teacherName: { $regex: new RegExp(search, 'i') } },
-        { studentIdNum: { $regex: new RegExp(search, 'i') } }
+        { studentName: { $regex: new RegExp(escapedSearch, 'i') } },
+        { teacherName: { $regex: new RegExp(escapedSearch, 'i') } },
+        { studentIdNum: { $regex: new RegExp(escapedSearch, 'i') } },
+        { classroom: { $regex: new RegExp(escapedSearch, 'i') } },
+        { department: { $regex: new RegExp(escapedSearch, 'i') } }
       ];
     }
 
