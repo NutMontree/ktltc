@@ -156,7 +156,7 @@ export default function TrackingDashboard() {
             Live GPS Tracking
           </div>
           <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-400 tracking-tight mb-3">
-            ระบบติดตามตำแหน่ง <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-green-600">(Live Tracking)</span>
+            หน้าติดตามตำแหน่ง <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-green-600">(Live Tracking)</span>
           </h1>
           <p className="text-zinc-500 font-medium max-w-2xl text-sm md:text-base">
             ติดตามตำแหน่งและข้อมูลของนักเรียนที่ถูกสแกนอนุญาตให้ออกนอกวิทยาลัยแบบเรียลไทม์ผ่านระบบพิกัด GPS ความแม่นยำสูง

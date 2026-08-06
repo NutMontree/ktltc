@@ -9,13 +9,13 @@ export default function DpaEvaluationPage() {
   const [evaluations, setEvaluations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [newEval, setNewEval] = useState<any>({ 
-    academicYear: String(new Date().getFullYear() + 543), 
-    goals: "", 
-    videoUrl1: "", 
-    videoUrl2: "", 
-    studentOutcomeUrl: "", 
-    evidenceLink: "" 
+  const [newEval, setNewEval] = useState<any>({
+    academicYear: String(new Date().getFullYear() + 543),
+    goals: "",
+    videoUrl1: "",
+    videoUrl2: "",
+    studentOutcomeUrl: "",
+    evidenceLink: ""
   });
   const [studentOutcomeFile, setStudentOutcomeFile] = useState<File | null>(null);
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
@@ -48,7 +48,7 @@ export default function DpaEvaluationPage() {
 
   const handleAdd = async () => {
     if (!newEval.academicYear || !newEval.goals) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-    
+
     setUploading(true);
     try {
       let finalStudentOutcomeUrl = newEval.studentOutcomeUrl;
@@ -72,17 +72,17 @@ export default function DpaEvaluationPage() {
         if (data.success) finalEvidenceLink = data.url;
       }
 
-      const payload = { 
-        ...newEval, 
+      const payload = {
+        ...newEval,
         videoUrls: [newEval.videoUrl1, newEval.videoUrl2].filter(Boolean),
         studentOutcomeUrls: finalStudentOutcomeUrl ? [finalStudentOutcomeUrl] : [],
         evidenceLinks: finalEvidenceLink ? [finalEvidenceLink] : [],
-        teacherName: newEval.teacherName || user.username || "Unknown", 
-        status: newEval.status || "submitted" 
+        teacherName: newEval.teacherName || user.username || "Unknown",
+        status: newEval.status || "submitted"
       };
-      
+
       const method = newEval._id ? "PATCH" : "POST";
-      
+
       const res = await fetch("/api/director/dpa-evaluation", {
         method,
         headers: { "Content-Type": "application/json" },
@@ -141,7 +141,7 @@ export default function DpaEvaluationPage() {
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
       <div className="max-w-[1600px] mx-auto w-full px-2 py-8 md:py-12 relative">
         {/* Header Removed */}
-        
+
         <div className="px-2 mt-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
@@ -150,7 +150,7 @@ export default function DpaEvaluationPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-                  ประเมินผล PA/DPA
+                  ระบบประเมินผล PA/DPA
                 </h1>
                 <p className="text-sm font-bold text-zinc-500">ระบบตรวจสอบแฟ้มพัฒนางานและประเมินผลการสอน</p>
               </div>
@@ -169,41 +169,41 @@ export default function DpaEvaluationPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1">ปีการศึกษา</label>
-                    <input type="text" placeholder="เช่น 2567" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.academicYear} onChange={e => setNewEval({...newEval, academicYear: e.target.value})} />
+                    <input type="text" placeholder="เช่น 2567" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.academicYear} onChange={e => setNewEval({ ...newEval, academicYear: e.target.value })} />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1">เป้าหมายที่คาดหวัง</label>
-                    <input type="text" placeholder="ระบุเป้าหมาย" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.goals} onChange={e => setNewEval({...newEval, goals: e.target.value})} />
+                    <input type="text" placeholder="ระบุเป้าหมาย" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.goals} onChange={e => setNewEval({ ...newEval, goals: e.target.value })} />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1">ลิงก์คลิปการสอน 1 (YouTube/Drive)</label>
-                    <input type="url" placeholder="https://" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.videoUrl1} onChange={e => setNewEval({...newEval, videoUrl1: e.target.value})} />
+                    <input type="url" placeholder="https://" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.videoUrl1} onChange={e => setNewEval({ ...newEval, videoUrl1: e.target.value })} />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1">ลิงก์คลิปการสอน 2 (YouTube/Drive)</label>
-                    <input type="url" placeholder="https://" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.videoUrl2} onChange={e => setNewEval({...newEval, videoUrl2: e.target.value})} />
+                    <input type="url" placeholder="https://" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.videoUrl2} onChange={e => setNewEval({ ...newEval, videoUrl2: e.target.value })} />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1">ผลลัพธ์ผู้เรียน (อัปโหลดไฟล์ หรือ วางลิงก์)</label>
                     <div className="flex flex-col gap-2">
-                      <input 
-                        type="file" 
-                        className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-rose-50 file:text-rose-700 dark:file:bg-rose-900/30 dark:file:text-rose-400 hover:file:bg-rose-100 bg-white dark:bg-zinc-900" 
+                      <input
+                        type="file"
+                        className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-rose-50 file:text-rose-700 dark:file:bg-rose-900/30 dark:file:text-rose-400 hover:file:bg-rose-100 bg-white dark:bg-zinc-900"
                         onChange={e => setStudentOutcomeFile(e.target.files?.[0] || null)}
                       />
-                      <input type="url" placeholder="หรือวางลิงก์ (https://)" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.studentOutcomeUrl} onChange={e => setNewEval({...newEval, studentOutcomeUrl: e.target.value})} disabled={!!studentOutcomeFile} />
+                      <input type="url" placeholder="หรือวางลิงก์ (https://)" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.studentOutcomeUrl} onChange={e => setNewEval({ ...newEval, studentOutcomeUrl: e.target.value })} disabled={!!studentOutcomeFile} />
                     </div>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1">เอกสารข้อตกลง PA (อัปโหลด PDF หรือ วางลิงก์)</label>
                     <div className="flex flex-col gap-2">
-                      <input 
-                        type="file" 
+                      <input
+                        type="file"
                         accept=".pdf,.doc,.docx"
-                        className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-rose-50 file:text-rose-700 dark:file:bg-rose-900/30 dark:file:text-rose-400 hover:file:bg-rose-100 bg-white dark:bg-zinc-900" 
+                        className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-rose-50 file:text-rose-700 dark:file:bg-rose-900/30 dark:file:text-rose-400 hover:file:bg-rose-100 bg-white dark:bg-zinc-900"
                         onChange={e => setEvidenceFile(e.target.files?.[0] || null)}
                       />
-                      <input type="url" placeholder="หรือวางลิงก์ (https://)" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.evidenceLink} onChange={e => setNewEval({...newEval, evidenceLink: e.target.value})} disabled={!!evidenceFile} />
+                      <input type="url" placeholder="หรือวางลิงก์ (https://)" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-rose-500" value={newEval.evidenceLink} onChange={e => setNewEval({ ...newEval, evidenceLink: e.target.value })} disabled={!!evidenceFile} />
                     </div>
                   </div>
                 </div>
@@ -242,7 +242,7 @@ export default function DpaEvaluationPage() {
                           <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">{e.goals}</p>
                           <div className="flex flex-wrap gap-2">
                             {e.videoUrls?.map((url: string, idx: number) => (
-                              <a key={idx} href={url} target="_blank" rel="noreferrer" className="text-[10px] px-2 py-1 bg-rose-50 text-rose-600 rounded-md font-bold hover:bg-rose-100">คลิป {idx+1}</a>
+                              <a key={idx} href={url} target="_blank" rel="noreferrer" className="text-[10px] px-2 py-1 bg-rose-50 text-rose-600 rounded-md font-bold hover:bg-rose-100">คลิป {idx + 1}</a>
                             ))}
                             {e.studentOutcomeUrls?.map((url: string, idx: number) => (
                               <a key={idx} href={url} target="_blank" rel="noreferrer" className="text-[10px] px-2 py-1 bg-amber-50 text-amber-600 rounded-md font-bold hover:bg-amber-100">ผลลัพธ์ผู้เรียน</a>

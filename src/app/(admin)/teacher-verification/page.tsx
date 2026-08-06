@@ -518,11 +518,11 @@ export default function TeacherVerificationPage() {
             </thead>
             <tbody>
               ${selectedTeacher.subjects && selectedTeacher.subjects.length > 0 ? selectedTeacher.subjects.map((s, idx) => {
-                const matchingPlans = teacherLessonPlans.filter((lp: any) =>
-                  lp.subject === s.name || lp.subject === s.code || lp.subject?.includes(s.name) || s.name?.includes(lp.subject)
-                );
-                const hasPlan = matchingPlans.length > 0;
-                return `
+      const matchingPlans = teacherLessonPlans.filter((lp: any) =>
+        lp.subject === s.name || lp.subject === s.code || lp.subject?.includes(s.name) || s.name?.includes(lp.subject)
+      );
+      const hasPlan = matchingPlans.length > 0;
+      return `
                   <tr>
                     <td style="text-align: center;">${idx + 1}</td>
                     <td>${s.code}</td>
@@ -535,7 +535,7 @@ export default function TeacherVerificationPage() {
                     </td>
                   </tr>
                 `;
-              }).join("") : `<tr><td colspan="5" style="text-align: center;">ไม่มีข้อมูลรายวิชา</td></tr>`}
+    }).join("") : `<tr><td colspan="5" style="text-align: center;">ไม่มีข้อมูลรายวิชา</td></tr>`}
             </tbody>
           </table>
 
@@ -625,7 +625,7 @@ export default function TeacherVerificationPage() {
         <div className="bg-white dark:bg-zinc-900 rounded-4xl p-8 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
-              ระบบตรวจสอบข้อมูลครู <span className="text-indigo-500">(Teacher Verification)</span>
+              ตรวจสอบการจัดการเรียนการสอน <span className="text-indigo-500">(Teacher Verification)</span>
             </h1>
             <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">
               เจาะลึกข้อมูลรายบุคคล เพื่อประกอบการประเมินเลื่อนวิทยฐานะ
@@ -940,11 +940,10 @@ export default function TeacherVerificationPage() {
                                         <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{lp.title}</p>
                                         <div className="flex items-center gap-2 mt-1">
                                           <span className="text-[10px] font-bold text-slate-400">เทอม {lp.semester}/{lp.academicYear}</span>
-                                          <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${
-                                            lp.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' :
-                                            lp.status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400' :
-                                            'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400'
-                                          }`}>
+                                          <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${lp.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' :
+                                              lp.status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400' :
+                                                'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400'
+                                            }`}>
                                             {lp.status === 'approved' ? 'อนุมัติแล้ว' : lp.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
                                           </span>
                                         </div>
@@ -988,11 +987,10 @@ export default function TeacherVerificationPage() {
                                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{lp.subject} — {lp.title}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                       <span className="text-[10px] font-bold text-slate-400">เทอม {lp.semester}/{lp.academicYear}</span>
-                                      <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${
-                                        lp.status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
-                                        lp.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
-                                        'bg-amber-50 text-amber-600'
-                                      }`}>
+                                      <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${lp.status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
+                                          lp.status === 'rejected' ? 'bg-rose-50 text-rose-600' :
+                                            'bg-amber-50 text-amber-600'
+                                        }`}>
                                         {lp.status === 'approved' ? 'อนุมัติแล้ว' : lp.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
                                       </span>
                                     </div>
@@ -1036,19 +1034,19 @@ export default function TeacherVerificationPage() {
                         <h4 className="font-black text-slate-800 dark:text-white mb-4">Checklist ความพร้อม</h4>
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            {selectedTeacher.checklist?.hasLessonPlan ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-rose-500 w-5 h-5" />} 
+                            {selectedTeacher.checklist?.hasLessonPlan ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-rose-500 w-5 h-5" />}
                             <span className="text-sm font-bold">1. จัดทำแผนการสอนล่วงหน้า</span>
                           </div>
                           <div className="flex items-center gap-3">
-                            {selectedTeacher.checklist?.hasAfterClassNote ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />} 
+                            {selectedTeacher.checklist?.hasAfterClassNote ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />}
                             <span className="text-sm font-bold">2. บันทึกหลังสอนครบถ้วน</span>
                           </div>
                           <div className="flex items-center gap-3">
-                            {(selectedTeacher.checklist?.videoCount || 0) >= 2 ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />} 
+                            {(selectedTeacher.checklist?.videoCount || 0) >= 2 ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />}
                             <span className="text-sm font-bold">3. อัปโหลดคลิปวิดีโอการสอน ({selectedTeacher.checklist?.videoCount || 0}/2 คลิป)</span>
                           </div>
                           <div className="flex items-center gap-3">
-                            {selectedTeacher.checklist?.hasStudentOutcome ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />} 
+                            {selectedTeacher.checklist?.hasStudentOutcome ? <CheckCircle className="text-emerald-500 w-5 h-5" /> : <AlertCircle className="text-amber-500 w-5 h-5" />}
                             <span className="text-sm font-bold">4. รายงานผลลัพธ์ผู้เรียน</span>
                           </div>
                         </div>

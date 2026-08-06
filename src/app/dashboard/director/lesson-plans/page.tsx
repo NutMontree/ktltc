@@ -20,7 +20,7 @@ export default function LessonPlansPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [newPlan, setNewPlan] = useState<any>({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" });
-  
+
   const handleEditClick = (plan: any) => {
     setNewPlan({
       _id: plan._id,
@@ -75,7 +75,7 @@ export default function LessonPlansPage() {
     if (!newPlan.subject || !newPlan.title) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
 
     let uploadedUrls = [...(newPlan.fileUrls || [])];
-    
+
     // Upload main files
     if (selectedFiles.length > 0) {
       for (const file of selectedFiles) {
@@ -107,13 +107,13 @@ export default function LessonPlansPage() {
     }
 
     try {
-      const payload = { 
-        ...newPlan, 
-        fileUrls: uploadedUrls, 
+      const payload = {
+        ...newPlan,
+        fileUrls: uploadedUrls,
         afterClassNoteUrl: uploadedAfterClassUrl,
-        teacherName: user.username || "Unknown" 
+        teacherName: user.username || "Unknown"
       };
-      
+
       const method = newPlan._id ? "PATCH" : "POST";
       const res = await fetch("/api/director/lesson-plans", {
         method,
@@ -182,7 +182,7 @@ export default function LessonPlansPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-                  {isDirector ? "ตรวจสอบแผนการสอน" : "แผนการจัดการเรียนรู้ของฉัน"}
+                  {isDirector ? "ระบบตรวจสอบแผนการสอน" : "แผนการจัดการเรียนรู้ของฉัน"}
                 </h1>
                 <p className="text-sm font-bold text-zinc-500">
                   {isDirector ? "ระบบตรวจและอนุมัติแผนการจัดการเรียนรู้" : "ระบบส่งและติดตามแผนการจัดการเรียนรู้"}
@@ -337,26 +337,26 @@ export default function LessonPlansPage() {
                           <button onClick={() => {
                             const updated = [...newPlan.fileUrls];
                             updated.splice(idx, 1);
-                            setNewPlan({...newPlan, fileUrls: updated});
-                          }} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                            setNewPlan({ ...newPlan, fileUrls: updated });
+                          }} className="text-red-500 hover:text-red-700 font-bold"><X size={14} /></button>
                         </div>
                       ))}
                       {selectedFiles.map((f, idx) => (
                         <div key={`new-${idx}`} className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-lg text-xs border border-emerald-100 dark:border-emerald-800/50">
                           <span className="truncate max-w-[80%] font-bold text-emerald-700 dark:text-emerald-400">{f.name}</span>
-                          <button onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                          <button onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 font-bold"><X size={14} /></button>
                         </div>
                       ))}
                     </div>
                   </div>
-                  
+
                   <div className="md:col-span-2 lg:col-span-3">
                     <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-xl dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-                      <input 
-                        type="checkbox" 
-                        className="w-4 h-4 text-emerald-600 rounded-sm focus:ring-emerald-500" 
-                        checked={!!newPlan.hasAfterClassNote} 
-                        onChange={e => setNewPlan({ ...newPlan, hasAfterClassNote: e.target.checked })} 
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-emerald-600 rounded-sm focus:ring-emerald-500"
+                        checked={!!newPlan.hasAfterClassNote}
+                        onChange={e => setNewPlan({ ...newPlan, hasAfterClassNote: e.target.checked })}
                       />
                       <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">แนบบันทึกหลังสอนแล้ว (has After Class Note)</span>
                     </label>
@@ -380,13 +380,13 @@ export default function LessonPlansPage() {
                           {newPlan.afterClassNoteUrl && !selectedAfterClassFile && (
                             <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 p-2 rounded-lg text-xs">
                               <span className="truncate max-w-[80%] text-amber-600 dark:text-amber-400">{newPlan.afterClassNoteUrl.split('/').pop()}</span>
-                              <button onClick={() => setNewPlan({...newPlan, afterClassNoteUrl: ""})} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                              <button onClick={() => setNewPlan({ ...newPlan, afterClassNoteUrl: "" })} className="text-red-500 hover:text-red-700 font-bold"><X size={14} /></button>
                             </div>
                           )}
                           {selectedAfterClassFile && (
                             <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg text-xs border border-amber-100 dark:border-amber-800/50">
                               <span className="truncate max-w-[80%] font-bold text-amber-700 dark:text-amber-400">{selectedAfterClassFile.name}</span>
-                              <button onClick={() => setSelectedAfterClassFile(null)} className="text-red-500 hover:text-red-700 font-bold"><X size={14}/></button>
+                              <button onClick={() => setSelectedAfterClassFile(null)} className="text-red-500 hover:text-red-700 font-bold"><X size={14} /></button>
                             </div>
                           )}
                         </div>
@@ -476,13 +476,12 @@ export default function LessonPlansPage() {
                           </td>
                           <td className="px-5 py-5 text-center">
                             <div className="flex flex-col items-center gap-1">
-                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold shadow-sm ${
-                                p.status === 'approved'
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold shadow-sm ${p.status === 'approved'
                                   ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50'
                                   : p.status === 'rejected'
-                                  ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
-                                  : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50'
-                              }`}>
+                                    ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
+                                    : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50'
+                                }`}>
                                 {p.status === 'approved' ? 'อนุมัติแล้ว' : p.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
                               </span>
                               {p.feedback && (
@@ -568,13 +567,12 @@ export default function LessonPlansPage() {
                             </div>
                           </div>
                         </div>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-                          p.status === 'approved'
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold ${p.status === 'approved'
                             ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50'
                             : p.status === 'rejected'
-                            ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
-                            : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50'
-                        }`}>
+                              ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
+                              : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50'
+                          }`}>
                           {p.status === 'approved' ? 'อนุมัติแล้ว' : p.status === 'rejected' ? 'ไม่อนุมัติ' : 'รอการอนุมัติ'}
                         </span>
                       </div>

@@ -173,7 +173,7 @@ const FEATURE_LABELS: {
   manage_attendance_leave_approvals: { label: "จัดการอนุมัติใบลา", icon: FiCheckCircle, color: "text-rose-600", href: "/leave-approvals" },
   manage_attendance_settings: { label: "ตั้งค่าเวลาเข้างาน", icon: FiCalendar, color: "text-amber-600", href: "/attendance-settings" },
   manage_roles_advanced: { label: "จัดการสิทธิ์บุคลากร", icon: FiUsers, color: "text-sky-600", href: "/manage-roles" },
-  
+
   // Custom Sidebar Menus
   access_pdca: { label: "ระบบติดตาม PDCA", icon: FiFileText, color: "text-blue-500", href: "/pdca" },
   access_general_memo: { label: "บันทึกข้อความทั่วไป", icon: FiFileText, color: "text-indigo-500", href: "/GeneralMemoPage" },

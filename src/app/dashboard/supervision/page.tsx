@@ -126,7 +126,7 @@ export default function SupervisionPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800">
           <div>
             <h1 className="text-2xl font-black text-zinc-900 dark:text-white">
-              ข้อมูลผลการนิเทศนักเรียนนักศึกษาฝึกงาน
+              ระบบนิเทศนักศึกษาฝึกงาน
             </h1>
             <p className="text-sm text-zinc-500 font-bold mt-1">
               ระบบจัดการและบันทึกผลการนิเทศการฝึกงานและฝึกประสบการณ์วิชาชีพ
@@ -264,13 +264,12 @@ export default function SupervisionPage() {
                         สัปดาห์ที่ {rec.weekNumber}
                       </td>
                       <td className="p-4">
-                        <span className={`px-2.5 py-1 rounded-lg text-xs font-black ${
-                          rec.status === "อนุมัติแล้ว" 
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                            : rec.status === "เสร็จสมบูรณ์"
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-black ${rec.status === "อนุมัติแล้ว"
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          : rec.status === "เสร็จสมบูรณ์"
                             ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                             : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                        }`}>
+                          }`}>
                           {rec.status || "รอตรวจสอบ"}
                         </span>
                       </td>
