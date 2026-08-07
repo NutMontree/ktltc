@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     
     const hasAccess = STAFF_ROLES.includes(role) && role !== "student";
     
-    console.log("FLAGPOLE DASHBOARD API - User Role:", role, "Has Access:", hasAccess);
+    console.log("FLAGPOLE DASHBOARD API DEBUG - Role:", role, "Access:", hasAccess, "Session:", JSON.stringify(session.user));
                       
     if (!hasAccess) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
