@@ -54,7 +54,7 @@ export default function TeacherMenus({ permissions, customMenus, item, userRole,
                     key={menu._id}
                     href={menu.href}
                     title={menu.title}
-                    icon={Layout}
+                    icon={IconMap[menu.icon] || Layout}
                     desc={menu.desc}
                     variants={item}
                   />
