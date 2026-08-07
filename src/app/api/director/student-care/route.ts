@@ -19,7 +19,11 @@ export async function GET(req: Request) {
 
     if (recordType) query.recordType = recordType;
     if (sdqType) query.sdqType = sdqType;
-    if (department) query.department = { $regex: new RegExp(department, 'i') };
+    if (department) {
+      const baseDept = department.replace(/^(แผนกวิชา|งาน|สาขาวิชา|สาขา)/, '').trim();
+      const escapedDept = baseDept.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.department = { $regex: new RegExp(escapedDept, 'i') };
+    }
 
     if (classroom) {
       // Extract only the base classroom name (e.g., "พบ.21" from "พบ.21(ทวิภาคี)")
