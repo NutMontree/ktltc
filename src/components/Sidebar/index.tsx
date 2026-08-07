@@ -16,12 +16,7 @@ interface SidebarProps {
 
 import { Activity, FileText, BarChart2, Edit, Settings, Layout } from "lucide-react";
 
-const menuGroups: any[] = [
-  {
-    name: "ระบบปฏิบัติงาน",
-    menuItems: [],
-  },
-];
+// Removed unused menuGroups constant
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
@@ -48,19 +43,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     fetchMenus();
   }, []);
 
-  const staticMenuItems = [
-    ...(permissions.access_pdca ? [{ icon: <Activity size={18} />, label: "ระบบติดตาม PDCA", route: "/pdca" }] : []),
-    ...(permissions.access_general_memo ? [{ icon: <FileText size={18} />, label: "บันทึกข้อความทั่วไป", route: "/GeneralMemoPage" }] : []),
-    ...(permissions.access_chart_analytics ? [{ icon: <BarChart2 size={18} />, label: "Chart Analytics", route: "/chart" }] : []),
-    ...(permissions.access_form_editor ? [{ icon: <Edit size={18} />, label: "แก้ไขหัวข้อฟอร์ม", route: "/form-editor" }] : []),
-    ...(permissions.access_internal_form_editor ? [{ icon: <Settings size={18} />, label: "ตั้งค่าระบบภายใน", route: "/internal-form-editor" }] : []),
+  const mainMenuItems = [
+    { icon: <Activity size={18} />, label: "ระบบติดตาม PDCA", route: "/pdca" },
+    { icon: <FileText size={18} />, label: "บันทึกข้อความทั่วไป", route: "/GeneralMemoPage" },
+  ];
+
+  const otherMenuItems = [
+    { icon: <BarChart2 size={18} />, label: "Chart Analytics", route: "/chart" },
+    { icon: <Edit size={18} />, label: "แก้ไขหัวข้อฟอร์ม", route: "/form-editor" },
+    { icon: <Settings size={18} />, label: "ตั้งค่าระบบภายใน", route: "/internal-form-editor" },
   ];
 
   const dynamicMenuGroups = [
     {
-      name: "ระบบปฏิบัติงาน",
-      menuItems: [...menuGroups[0].menuItems, ...staticMenuItems],
+      name: "เมนูหลัก",
+      menuItems: mainMenuItems,
     },
+    ...(otherMenuItems.length > 0 ? [{
+      name: "อื่น ๆ",
+      menuItems: otherMenuItems,
+    }] : []),
     ...(customMenus.length > 0
       ? [
           {

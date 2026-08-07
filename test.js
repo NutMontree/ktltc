@@ -1,19 +1,18 @@
-const { MongoClient } = require('mongodb');
-require('dotenv').config({ path: '.env' });
+const mongoose = require("mongoose");
+const MONGODB_URI = "mongodb://nut:Nut29122539@100.64.196.104:27017/ktltc_db?authSource=admin";
 
-async function run() {
-  const uri = process.env.MONGODB_URI;
-  const client = new MongoClient(uri);
+async function checkDB() {
   try {
-    await client.connect();
-    const db = client.db('ktltc_db');
-    const roles = await db.collection('users').distinct('role');
-    console.log("Roles in users:", roles);
-    
-    const perms = await db.collection('role_permissions').find({}).toArray();
-    console.log("Permissions:", JSON.stringify(perms, null, 2));
-  } finally {
-    await client.close();
+    await mongoose.connect(MONGODB_URI);
+    const db = mongoose.connection.db;
+    const navbarCount = await db.collection("navbar").countDocuments();
+    const pdcaCount = await db.collection("pdcas").countDocuments();
+    console.log(`Navbar items: ${navbarCount}`);
+    console.log(`Pdca items: ${pdcaCount}`);
+    process.exit(0);
+  } catch (err) {
+    console.error("Error:", err);
+    process.exit(1);
   }
 }
-run().catch(console.dir);
+checkDB();

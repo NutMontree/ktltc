@@ -1,3 +1,9 @@
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
+
 export default function DashboardLayout({ children }) {
-  return <>{children}</>;
+  return (
+    <DefaultLayout>
+      {children}
+    </DefaultLayout>
+  );
 }
