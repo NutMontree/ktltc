@@ -111,7 +111,7 @@ export default function MagicRings({
   clickBurst = false,
 }: MagicRingsProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const propsRef = useRef<MagicRingsProps | null>(null);
+  const propsRef = useRef<Required<MagicRingsProps> | null>(null);
   const mouseRef = useRef([0, 0]);
   const smoothMouseRef = useRef([0, 0]);
   const hoverAmountRef = useRef(0);
@@ -120,7 +120,7 @@ export default function MagicRings({
 
   propsRef.current = {
     color, colorTwo, speed, ringCount, attenuation, lineThickness,
-    baseRadius, radiusStep, scaleRate, opacity, noiseAmount,
+    baseRadius, radiusStep, scaleRate, opacity, blur, noiseAmount,
     rotation, ringGap, fadeIn, fadeOut, followMouse, mouseInfluence,
     hoverScale, parallax, clickBurst,
   };

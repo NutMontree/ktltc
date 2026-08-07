@@ -141,6 +141,7 @@ export default function StudentCarePage() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [sdqCounts, setSdqCounts] = useState({ normal: 0, risk: 0, problem: 0, special: 0 });
   const [filterSdqType, setFilterSdqType] = useState<string | null>(null);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const formatStudentName = (name: string, gender: string) => {
     if (!name) return "";
@@ -166,6 +167,7 @@ export default function StudentCarePage() {
   };
 
   const user = {
+    id: session?.user?.id,
     username: session?.user?.name || session?.user?.username,
     role: session?.user?.role,
     image: session?.user?.image,
@@ -200,7 +202,11 @@ export default function StudentCarePage() {
   };
 
   const fetchRecords = async (skip = 0, append = false) => {
-    if (skip === 0) setLoading(true);
+    if (skip === 0) {
+      setLoading(true);
+    } else {
+      setIsFetchingMore(true);
+    }
     try {
       const params = new URLSearchParams({
         limit: displayLimit.toString(),
@@ -226,6 +232,7 @@ export default function StudentCarePage() {
       toast.error("ดึงข้อมูลล้มเหลว");
     }
     setLoading(false);
+    setIsFetchingMore(false);
   };
 
   const loadMore = () => {
@@ -317,14 +324,14 @@ export default function StudentCarePage() {
       const existingUrls = imagePreviews.filter(url => !url.startsWith("blob:"));
       const finalImageUrls = [...existingUrls, ...uploadedUrls];
 
-      const bodyData = isEdit
-        ? { _id: editingId, ...newCare, imageUrls: finalImageUrls, recordType }
-        : { ...newCare, imageUrls: finalImageUrls, recordType, teacherName: user.username || "Unknown", visitDate: new Date() };
+      const saveData = isEdit 
+        ? { ...newCare, _id: editingId, imageUrls: finalImageUrls, recordType }
+        : { ...newCare, imageUrls: finalImageUrls, recordType, teacherName: user.username || "Unknown", teacherId: user.id || "", visitDate: new Date() };
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bodyData)
+        body: JSON.stringify(saveData)
       });
       if (res.ok) {
         toast.success(isEdit ? "แก้ไขข้อมูลสำเร็จ" : "บันทึกข้อมูลดูแลนักเรียนสำเร็จ");
@@ -821,7 +828,7 @@ export default function StudentCarePage() {
                   </button>
                   <button
                     onClick={() => setViewTab("home_visit")}
-                    className={`px-4 sm:px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center whitespace-nowrap ${viewTab === 'home_visit' ? 'bg-white dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
+                    className={`px-4 sm:px-6 py-2.5 text-sm font-bold transition-all rounded-xl flex items-center whitespace-nowrap ${viewTab === 'home_visit' ? 'bg-white dark:bg-zinc-800 text-indigo-600 dark:indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50'}`}
                   >
                     <HeartHandshake size={18} className="mr-2 shrink-0" /> 2. บันทึกเยี่ยมบ้าน (คป.11)
                   </button>

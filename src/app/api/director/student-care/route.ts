@@ -93,8 +93,10 @@ export async function POST(req: Request) {
     let teacherDepartment = "ไม่ระบุ";
     let realTeacherName = body.teacherName !== "Unknown" ? body.teacherName : (user.name || "ไม่ระบุชื่อ");
     
-    if (user.id && user.id !== "system" && ObjectId.isValid(user.id)) {
-      const dbUser = await db.collection("users").findOne({ _id: new ObjectId(user.id) });
+    const userId = (user.id && user.id !== "system") ? user.id : body.teacherId;
+    
+    if (userId && ObjectId.isValid(userId)) {
+      const dbUser = await db.collection("users").findOne({ _id: new ObjectId(userId) });
       if (dbUser) {
         if (dbUser.department) teacherDepartment = dbUser.department;
         realTeacherName = dbUser.name || dbUser.username || realTeacherName;
