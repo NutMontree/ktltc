@@ -219,9 +219,13 @@ export default function StudentCarePage() {
       });
       const res = await fetch("/api/director/student-care?" + params.toString());
       const { data, total, sdqCounts: stats } = await res.json();
-      
+
       if (append) {
-        setRecords(prev => [...prev, ...(Array.isArray(data) ? data : [])]);
+        setRecords(prev => {
+          const newData = Array.isArray(data) ? data : [];
+          const newItems = newData.filter(item => !prev.some(p => p._id === item._id));
+          return [...prev, ...newItems];
+        });
       } else {
         setRecords(Array.isArray(data) ? data : []);
       }
@@ -324,7 +328,7 @@ export default function StudentCarePage() {
       const existingUrls = imagePreviews.filter(url => !url.startsWith("blob:"));
       const finalImageUrls = [...existingUrls, ...uploadedUrls];
 
-      const saveData = isEdit 
+      const saveData = isEdit
         ? { ...newCare, _id: editingId, imageUrls: finalImageUrls, recordType }
         : { ...newCare, imageUrls: finalImageUrls, recordType, teacherName: user.username || "Unknown", teacherId: user.id || "", visitDate: new Date() };
 
@@ -546,7 +550,7 @@ export default function StudentCarePage() {
 
   const exportToExcel = async () => {
     let exportData = displayedRecords;
-    
+
     // Fetch full data for export if we haven't loaded everything
     if (records.length < totalRecords) {
       toast.loading("กำลังดึงข้อมูลทั้งหมดสำหรับส่งออก...");
@@ -835,7 +839,7 @@ export default function StudentCarePage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-3 w-full xl:w-auto">
-                  
+
                   {/* Selectors Row */}
                   <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
                     <select

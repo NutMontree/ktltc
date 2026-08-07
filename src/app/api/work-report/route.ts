@@ -35,6 +35,18 @@ export async function GET(req: Request) {
     // Case 1: Fetch all reports for a date range (Admin only)
     if (startDateParam && endDateParam) {
       const canAccess = await hasPermission(userRole || "", "manage_attendance_work_reports", userDepartment, userFaction);
+      
+      require('fs').appendFileSync('D:\\ktltc\\work_report_debug.log', JSON.stringify({
+        time: new Date(),
+        userRole,
+        userDepartment,
+        canAccess,
+        startDateParam,
+        endDateParam,
+        roleParam,
+        departmentParam,
+      }) + '\n');
+
       if (!canAccess) {
         return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
       }
@@ -117,6 +129,12 @@ export async function GET(req: Request) {
 
       const total = result[0]?.metadata[0]?.total || 0;
       const records = result[0]?.data || [];
+
+      require('fs').appendFileSync('D:\\ktltc\\work_report_debug.log', JSON.stringify({
+        time: new Date(),
+        action: "result",
+        total
+      }) + '\n');
 
       return NextResponse.json({
         success: true,
