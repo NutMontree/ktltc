@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     
     const STAFF_ROLES = [
       "super_admin", "admin", "director", "deputy_director", 
-      "deputy_academic", "deputy_student_affairs", "deputy_resource", "deputy_plan",
+      "deputy_academic", "deputy_student_affairs", "deputy_resource", "deputy_plan", "deputy_strategy",
       "hr", "head_department", "staff", "editor", "teacher"
     ];
     
