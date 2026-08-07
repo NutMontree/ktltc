@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-const uri = "mongodb://nut:Nut29122539@100.64.196.104:27017/ktltc_db?authSource=admin";
+const uri = "mongodb://nut:Nut29122539@127.0.0.1:27017/ktltc_db?authSource=admin";
 const client = new MongoClient(uri);
 
 async function run() {
