@@ -24,11 +24,11 @@ import {
   X,
   List
 } from "lucide-react";
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  ResponsiveContainer, 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
   Tooltip as RechartsTooltip,
   AreaChart,
   Area,
@@ -215,12 +215,6 @@ export default function StudentFlagpoleDashboard() {
         router.replace("/login");
       } else if (status === "authenticated") {
         const role = session?.user?.role?.toLowerCase();
-        
-        // อนุญาตให้บทบาทระบบพื้นฐานเข้าถึงได้เลย
-        if (["super_admin", "admin", "deputy_student_affairs"].includes(role)) {
-          return;
-        }
-        
         // นักเรียนไม่สามารถเข้าถึงหน้าแดชบอร์ดแอดมินนี้ได้ในทุกกรณี
         if (role === "student") {
           router.replace("/");
@@ -233,6 +227,7 @@ export default function StudentFlagpoleDashboard() {
           if (res.ok) {
             const data = await res.json();
             const perms = data || {};
+            // ตรวจสอบสิทธิ์จากเมนู manage_flagpole_dashboard
             if (
               perms.manage_flagpole_dashboard ||
               perms.manage_flagpole_reports ||
@@ -245,7 +240,7 @@ export default function StudentFlagpoleDashboard() {
         } catch (error) {
           console.error("Failed to fetch permissions", error);
         }
-        
+
         // หากไม่มีสิทธิ์ ให้ดีดกลับหน้าหลัก
         router.replace("/");
       }
@@ -260,7 +255,7 @@ export default function StudentFlagpoleDashboard() {
         // Phase 1: Fetch stats only for immediate rendering
         const resStats = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&statsOnly=true&_t=${Date.now()}`);
         const jsonStats = await resStats.json();
-        
+
         if (jsonStats.success) {
           setPreviousData(prev => {
             const newDeltas = jsonStats.data.map((newItem: any, idx: number) => {
@@ -483,34 +478,32 @@ export default function StudentFlagpoleDashboard() {
                     พิกัด GPS ตำแหน่งเช็คชื่อเข้าแถวของนักเรียนยามเช้า
                   </p>
                 </div>
-                
+
                 {/* 🌟 Sliding Map Mode Tabs Toggle */}
                 <div className="flex bg-slate-50 dark:bg-zinc-800/40 p-1 rounded-2xl border border-slate-100 dark:border-zinc-800 shrink-0">
                   <button
                     onClick={() => setMapMode("status")}
-                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${
-                      mapMode === "status"
+                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${mapMode === "status"
                         ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
                         : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
-                    }`}
+                      }`}
                   >
                     สถานะพื้นที่
                   </button>
                   <button
                     onClick={() => setMapMode("level")}
-                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${
-                      mapMode === "level"
+                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${mapMode === "level"
                         ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
                         : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
-                    }`}
+                      }`}
                   >
                     ระดับชั้น (ปวช/ปวส)
                   </button>
                 </div>
               </div>
               <div className="h-[480px] w-full rounded-3xl overflow-hidden relative border border-slate-100 dark:border-zinc-800 shadow-inner">
-                <MapDashboard 
-                  markers={markers} 
+                <MapDashboard
+                  markers={markers}
                   centerLat={config.lat}
                   centerLng={config.lng}
                   radius={config.radius}
@@ -521,10 +514,10 @@ export default function StudentFlagpoleDashboard() {
 
             {/* Trends Section */}
             <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl shadow-black/3 group relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all duration-1000">
+              <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all duration-1000">
                 <TrendingUp size={120} className="text-emerald-500" />
               </div>
-              
+
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 relative z-10 gap-4">
                 <div>
                   <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
@@ -534,7 +527,7 @@ export default function StudentFlagpoleDashboard() {
                     แนวโน้มการเช็คชื่อ ({trendRange === 'day' ? 'รายชั่วโมง' : trendRange === 'week' ? 'ย้อนหลัง 7 วัน' : 'ย้อนหลัง 30 วัน'})
                   </p>
                 </div>
-                
+
                 <div className="flex bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-2xl border border-slate-100 dark:border-zinc-800">
                   {[
                     { id: "day", label: "วัน" },
@@ -544,11 +537,10 @@ export default function StudentFlagpoleDashboard() {
                     <button
                       key={r.id}
                       onClick={() => setTrendRange(r.id as any)}
-                      className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${
-                        trendRange === r.id
+                      className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${trendRange === r.id
                           ? "bg-white dark:bg-zinc-700 text-emerald-500 shadow-sm"
                           : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
-                      }`}
+                        }`}
                     >
                       {r.label}
                     </button>
@@ -561,15 +553,15 @@ export default function StudentFlagpoleDashboard() {
                   <AreaChart data={trends}>
                     <defs>
                       <linearGradient id="colorPresent" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.1} />
-                    <XAxis 
-                      dataKey="_id" 
-                      axisLine={false} 
-                      tickLine={false} 
+                    <XAxis
+                      dataKey="_id"
+                      axisLine={false}
+                      tickLine={false}
                       tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 800 }}
                       tickFormatter={(val) => {
                         if (trendRange === 'day') return `${val}:00`;
@@ -580,10 +572,10 @@ export default function StudentFlagpoleDashboard() {
                       }}
                     />
                     <YAxis hide />
-                    <RechartsTooltip 
-                      contentStyle={{ 
-                        backgroundColor: "rgba(0,0,0,0.8)", 
-                        borderRadius: "16px", 
+                    <RechartsTooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(0,0,0,0.8)",
+                        borderRadius: "16px",
                         border: "none",
                         backdropFilter: "blur(10px)",
                         color: "#fff"
@@ -594,13 +586,13 @@ export default function StudentFlagpoleDashboard() {
                         return `วันที่ ${label}`;
                       }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="present" 
-                      stroke="#10b981" 
+                    <Area
+                      type="monotone"
+                      dataKey="present"
+                      stroke="#10b981"
                       strokeWidth={4}
-                      fillOpacity={1} 
-                      fill="url(#colorPresent)" 
+                      fillOpacity={1}
+                      fill="url(#colorPresent)"
                       animationDuration={1000}
                     />
                   </AreaChart>
@@ -716,63 +708,62 @@ export default function StudentFlagpoleDashboard() {
                         ? item.statusTag.includes("In-Site")
                         : true; // ข้อมูลเก่าไม่มี statusTag ให้ถือว่าอยู่ในพื้นที่
                       return (
-                      <motion.div
-                        key={item._id || idx}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.6 }}
-                        className="flex items-center gap-4 group/row"
-                      >
-                        <div className="relative">
-                          {item.photoUrl || item.image ? (
-                            <img 
-                              src={item.photoUrl || item.image} 
-                              alt={item.name} 
-                              className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-zinc-800" 
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random`;
-                              }}
-                            />
-                          ) : (
-                            <div className="w-10 h-10 bg-slate-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-400 text-xs font-black">
-                              {item.name.charAt(0)}
-                            </div>
-                          )}
-                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-zinc-900 ${item.status === 'Late' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
-                            {item.name}
-                          </p>
-                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                            <p className="text-[9px] text-slate-400 font-bold uppercase truncate">
-                              {item.department}
-                            </p>
-                            {/* Zone badge */}
-                            <span className={`inline-flex items-center text-[8px] font-black px-1.5 py-0.5 rounded-md border ${
-                              isInZone
-                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30'
-                                : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30'
-                            }`}>
-                              {isInZone ? '✅ ในพื้นที่' : '⚠️ นอกพื้นที่'}
-                            </span>
-                            {item.distance != null && item.distance >= 0 && (
-                              <span className="text-[8px] text-slate-400 font-bold">
-                                {Math.round(item.distance)}ม.
-                              </span>
+                        <motion.div
+                          key={item._id || idx}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          transition={{ duration: 0.6 }}
+                          className="flex items-center gap-4 group/row"
+                        >
+                          <div className="relative">
+                            {item.photoUrl || item.image ? (
+                              <img
+                                src={item.photoUrl || item.image}
+                                alt={item.name}
+                                className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 dark:ring-zinc-800"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random`;
+                                }}
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-slate-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-400 text-xs font-black">
+                                {item.name.charAt(0)}
+                              </div>
                             )}
+                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-zinc-900 ${item.status === 'Late' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 tabular-nums">
-                            {new Date(item.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                          <p className="text-[8px] text-slate-400 font-black uppercase tracking-tighter">
-                            น.
-                          </p>
-                        </div>
-                      </motion.div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
+                              {item.name}
+                            </p>
+                            <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase truncate">
+                                {item.department}
+                              </p>
+                              {/* Zone badge */}
+                              <span className={`inline-flex items-center text-[8px] font-black px-1.5 py-0.5 rounded-md border ${isInZone
+                                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30'
+                                  : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30'
+                                }`}>
+                                {isInZone ? '✅ ในพื้นที่' : '⚠️ นอกพื้นที่'}
+                              </span>
+                              {item.distance != null && item.distance >= 0 && (
+                                <span className="text-[8px] text-slate-400 font-bold">
+                                  {Math.round(item.distance)}ม.
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-black text-slate-700 dark:text-zinc-300 tabular-nums">
+                              {new Date(item.time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                            <p className="text-[8px] text-slate-400 font-black uppercase tracking-tighter">
+                              น.
+                            </p>
+                          </div>
+                        </motion.div>
                       );
                     })
                   ) : (
@@ -934,8 +925,8 @@ export default function StudentFlagpoleDashboard() {
                       ) : (
                         listData.map((student, idx) => (
                           <div key={idx} className="bg-white dark:bg-zinc-800/80 p-4 rounded-2xl border border-slate-100 dark:border-zinc-700/50 flex items-center gap-4 hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-colors">
-                            <img 
-                              src={student.photoUrl || student.image || "/default-avatar.png"} 
+                            <img
+                              src={student.photoUrl || student.image || "/default-avatar.png"}
                               alt={student.name}
                               className="w-12 h-12 rounded-xl object-cover bg-slate-100 dark:bg-zinc-700 shadow-sm"
                               onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.name) + '&background=random'; }}
@@ -975,7 +966,7 @@ export default function StudentFlagpoleDashboard() {
                     </div>
                     {listHasMore && (
                       <div className="mt-8 flex justify-center">
-                        <button 
+                        <button
                           onClick={() => fetchStudentList(activeTab, listPage + 1, true)}
                           disabled={listLoading}
                           className="px-6 py-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
