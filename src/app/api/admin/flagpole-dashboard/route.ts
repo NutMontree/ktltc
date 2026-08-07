@@ -18,8 +18,9 @@ export async function GET(req: Request) {
       "hr", "head_department", "staff", "editor", "teacher"
     ];
     
-    // ตรวจสอบสิทธิ์ว่ามีสิทธิ์เข้าใช้งานหรือไม่ (ดูจากระบบ Permissions Matrix)
     const hasAccess = STAFF_ROLES.includes(role) && role !== "student";
+    
+    console.log("FLAGPOLE DASHBOARD API - User Role:", role, "Has Access:", hasAccess);
                       
     if (!hasAccess) {
       return NextResponse.json({ error: "Forbidden: Access Denied" }, { status: 403 });
