@@ -92,6 +92,7 @@ export async function POST(req: Request) {
     
     let teacherDepartment = "ไม่ระบุ";
     let realTeacherName = body.teacherName !== "Unknown" ? body.teacherName : (user.name || "ไม่ระบุชื่อ");
+    let teacherImage = user.image || "";
     
     const userId = (user.id && user.id !== "system") ? user.id : body.teacherId;
     
@@ -100,6 +101,7 @@ export async function POST(req: Request) {
       if (dbUser) {
         if (dbUser.department) teacherDepartment = dbUser.department;
         realTeacherName = dbUser.name || dbUser.username || realTeacherName;
+        teacherImage = dbUser.image || teacherImage;
       }
     }
     
@@ -126,8 +128,9 @@ export async function POST(req: Request) {
         type: "info",
         isRead: false,
         read: false,
-        from: user.id || "system",
-        fromName: user.name || "System",
+        from: userId || "system",
+        fromName: realTeacherName,
+        fromImage: teacherImage,
         targetUrl: "/dashboard/director/student-care",
         createdAt: new Date()
       }));
