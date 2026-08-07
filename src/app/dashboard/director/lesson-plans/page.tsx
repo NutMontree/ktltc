@@ -19,6 +19,7 @@ export default function LessonPlansPage() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState<string | null>(null);
   const [newPlan, setNewPlan] = useState<any>({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" });
 
   const handleEditClick = (plan: any) => {
@@ -452,21 +453,21 @@ export default function LessonPlansPage() {
                             <div className="flex flex-col gap-1.5 items-center">
                               {/* Legacy single file */}
                               {p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (
-                                <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
+                                <button onClick={() => setPreviewDoc(p.fileUrl)} className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
                                   <FileText size={14} /> เอกสารแผน
-                                </a>
+                                </button>
                               )}
                               {/* Multiple lesson plan files */}
                               {p.fileUrls?.map((url: string, idx: number) => (
-                                <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
+                                <button key={idx} onClick={() => setPreviewDoc(url)} className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors">
                                   <FileText size={14} /> เอกสารแผน {p.fileUrls.length > 1 ? idx + 1 : ""}
-                                </a>
+                                </button>
                               ))}
                               {/* After class note file */}
                               {p.hasAfterClassNote && (p.afterClassNoteUrl || (p.afterClassNoteUrls && p.afterClassNoteUrls.length > 0)) && (
-                                <a href={p.afterClassNoteUrl || p.afterClassNoteUrls[0]} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors">
+                                <button onClick={() => setPreviewDoc(p.afterClassNoteUrl || p.afterClassNoteUrls[0])} className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors">
                                   <FileText size={14} /> บันทึกหลังสอน
-                                </a>
+                                </button>
                               )}
                               {/* Fallback */}
                               {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (!p.hasAfterClassNote || (!p.afterClassNoteUrl && (!p.afterClassNoteUrls || p.afterClassNoteUrls.length === 0))) && (
@@ -597,21 +598,21 @@ export default function LessonPlansPage() {
                         <div className="flex flex-col gap-1.5">
                           {/* Legacy single file */}
                           {p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (
-                            <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
+                            <button onClick={() => setPreviewDoc(p.fileUrl)} className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
                               <FileText size={13} /> เอกสารแผน
-                            </a>
+                            </button>
                           )}
                           {/* Multiple lesson plan files */}
                           {p.fileUrls?.map((url: string, idx: number) => (
-                            <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
+                            <button key={idx} onClick={() => setPreviewDoc(url)} className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-950/60 transition-colors uppercase tracking-wider">
                               <FileText size={13} /> เอกสารแผน {p.fileUrls.length > 1 ? idx + 1 : ""}
-                            </a>
+                            </button>
                           ))}
                           {/* After class note file */}
                           {p.hasAfterClassNote && (p.afterClassNoteUrl || (p.afterClassNoteUrls && p.afterClassNoteUrls.length > 0)) && (
-                            <a href={p.afterClassNoteUrl || p.afterClassNoteUrls[0]} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors uppercase tracking-wider">
+                            <button onClick={() => setPreviewDoc(p.afterClassNoteUrl || p.afterClassNoteUrls[0])} className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors uppercase tracking-wider">
                               <FileText size={13} /> บันทึกหลังสอน
-                            </a>
+                            </button>
                           )}
                           {/* Fallback */}
                           {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (!p.hasAfterClassNote || (!p.afterClassNoteUrl && (!p.afterClassNoteUrls || p.afterClassNoteUrls.length === 0))) && (
@@ -672,6 +673,38 @@ export default function LessonPlansPage() {
           </div>
         </div>
       </div>
+
+      {/* Document Preview Modal */}
+      {previewDoc && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                <FileText size={18} className="text-indigo-500" />
+                ตัวอย่างเอกสาร
+              </h3>
+              <div className="flex items-center gap-2">
+                <a href={previewDoc} target="_blank" rel="noopener noreferrer" className="p-2 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 hover:text-indigo-700 transition-colors text-xs font-bold px-4">
+                  เปิดในหน้าต่างใหม่
+                </a>
+                <button
+                  onClick={() => setPreviewDoc(null)}
+                  className="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-800 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 rounded-xl transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 w-full h-full bg-zinc-100 dark:bg-zinc-950 relative overflow-hidden">
+              <iframe
+                src={previewDoc}
+                className="w-full h-full absolute inset-0 border-none"
+                title="Document Preview"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
