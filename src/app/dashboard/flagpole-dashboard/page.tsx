@@ -253,8 +253,13 @@ export default function StudentFlagpoleDashboard() {
       if (status !== "authenticated") return;
       try {
         // Phase 1: Fetch stats only for immediate rendering
-        const resStats = await fetch(`/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&statsOnly=true&_t=${Date.now()}`);
+        const url = `/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&statsOnly=true&_t=${Date.now()}`;
+        const resStats = await fetch(url);
         const jsonStats = await resStats.json();
+        
+        if (!resStats.ok || !jsonStats.success) {
+          alert(`API Error: ${resStats.status} - ${JSON.stringify(jsonStats)}`);
+        }
 
         if (jsonStats.success) {
           setPreviousData(prev => {
@@ -276,7 +281,8 @@ export default function StudentFlagpoleDashboard() {
           setInCollegeCount(jsonStats.inCollegeStudents || 0);
           setInternshipCount(jsonStats.internshipStudents || 0);
         }
-      } catch (error) {
+      } catch (error: any) {
+        alert("Fetch Error: " + error.message);
         console.error("Failed to fetch flagpole fast stats", error);
       } finally {
         // Hide loader as soon as stats are ready!
