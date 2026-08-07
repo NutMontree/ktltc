@@ -1050,7 +1050,6 @@ export default function StudentCarePage() {
                         className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
                         value={newCare.department}
                         onChange={e => setNewCare({ ...newCare, department: e.target.value })}
-                        disabled={!!searchQuery && !!newCare.studentName && !editingId}
                       >
                         <option value="">-- ระบุแผนกวิชา --</option>
                         {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map((opt) => (
@@ -1066,17 +1065,24 @@ export default function StudentCarePage() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1.5">ชั้นเรียน/ห้อง</label>
-                      <input type="text" list="classrooms-datalist-form" placeholder="เช่น พค.11" className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500" value={newCare.classroom} onChange={e => setNewCare({ ...newCare, classroom: e.target.value })} />
-                      <datalist id="classrooms-datalist-form">
+                      <select
+                        className="w-full p-3 border rounded-xl dark:bg-zinc-950 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-teal-500"
+                        value={newCare.classroom}
+                        onChange={e => setNewCare({ ...newCare, classroom: e.target.value })}
+                      >
+                        <option value="">-- ระบุชั้นเรียน/ห้อง --</option>
                         {classroomsList.filter(cls => {
                           if (!newCare.department) return true;
                           const prefixes = DEPT_CLASSROOM_PREFIX_MAP[newCare.department];
                           if (!prefixes) return true;
                           return prefixes.some(prefix => cls.startsWith(prefix));
                         }).map((c, i) => (
-                          <option key={i} value={c} />
+                          <option key={i} value={c}>{c}</option>
                         ))}
-                      </datalist>
+                        {newCare.classroom && !classroomsList.includes(newCare.classroom) && (
+                          <option value={newCare.classroom}>{newCare.classroom} (ข้อมูลเดิม)</option>
+                        )}
+                      </select>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
