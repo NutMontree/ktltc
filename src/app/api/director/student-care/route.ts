@@ -87,15 +87,19 @@ export async function POST(req: Request) {
     const body = await req.json();
     
     let teacherDepartment = "ไม่ระบุ";
+    let realTeacherName = body.teacherName !== "Unknown" ? body.teacherName : (user.name || "ไม่ระบุชื่อ");
+    
     if (user.id && user.id !== "system" && ObjectId.isValid(user.id)) {
       const dbUser = await db.collection("users").findOne({ _id: new ObjectId(user.id) });
-      if (dbUser && dbUser.department) {
-        teacherDepartment = dbUser.department;
+      if (dbUser) {
+        if (dbUser.department) teacherDepartment = dbUser.department;
+        realTeacherName = dbUser.name || dbUser.username || realTeacherName;
       }
     }
     
     const newRecord = {
       ...body,
+      teacherName: realTeacherName,
       teacherDepartment,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -112,7 +116,7 @@ export async function POST(req: Request) {
       const notifications = targetUsers.map(u => ({
         userId: u._id,
         title: "ระบบดูแลผู้เรียนใหม่",
-        message: `ครู ${newRecord.teacherName || user.name || 'ไม่ระบุชื่อ'} ได้เพิ่มข้อมูลการดูแลนักเรียนใหม่`,
+        message: `ครู ${realTeacherName} ได้เพิ่มข้อมูลการดูแลนักเรียนใหม่`,
         type: "info",
         isRead: false,
         read: false,
