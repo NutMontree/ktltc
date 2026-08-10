@@ -3,6 +3,46 @@ import { auth } from "@/lib/auth";
 import axios from "axios";
 import https from "https";
 
+const MAX_RETRIES = 3;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`;
+
+async function callGeminiWithRetry(
+  apiKey: string,
+  requestBody: object,
+  httpsAgent: https.Agent
+) {
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const res = await axios.post(
+        `${GEMINI_URL}?key=${apiKey}`,
+        requestBody,
+        {
+          headers: { "Content-Type": "application/json" },
+          httpsAgent,
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        }
+      );
+      return res.data;
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const retryMsg = err?.response?.data?.error?.message || "";
+
+      if (status === 429 && attempt < MAX_RETRIES) {
+        const match = retryMsg.match(/retry in ([\d.]+)s/i);
+        const waitSec = match ? Math.ceil(parseFloat(match[1])) + 2 : 30;
+        console.warn(
+          `[Gemini] Rate limited (attempt ${attempt}/${MAX_RETRIES}). Waiting ${waitSec}s...`
+        );
+        await new Promise((r) => setTimeout(r, waitSec * 1000));
+        continue;
+      }
+
+      throw err;
+    }
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -58,26 +98,22 @@ export async function POST(req: Request) {
     const httpsAgent = new https.Agent({ family: 4 });
     let data;
     try {
-      const axiosResponse = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-        requestBody,
-        {
-          headers: { "Content-Type": "application/json" },
-          httpsAgent,
-          maxBodyLength: Infinity,
-          maxContentLength: Infinity,
-        }
-      );
-      data = axiosResponse.data;
+      data = await callGeminiWithRetry(apiKey, requestBody, httpsAgent);
     } catch (apiError: any) {
-      console.error("Gemini API Error:", apiError?.response?.data || apiError.message);
+      const errData = apiError?.response?.data || apiError.message;
+      console.error("Gemini API Error:", errData);
+      const isRateLimit = apiError?.response?.status === 429;
       return NextResponse.json(
-        { error: "การสร้างเนื้อหาด้วย AI ล้มเหลว โปรดลองอีกครั้ง" },
-        { status: 500 }
+        {
+          error: isRateLimit
+            ? "ระบบ AI มีผู้ใช้งานเยอะ กรุณารอสักครู่แล้วลองใหม่อีกครั้ง"
+            : "การสร้างเนื้อหาด้วย AI ล้มเหลว โปรดลองอีกครั้ง",
+        },
+        { status: isRateLimit ? 429 : 500 }
       );
     }
 
-    const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const candidateText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!candidateText) {
       return NextResponse.json(
@@ -86,7 +122,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Try parsing the text as JSON
     let parsedResult;
     try {
       parsedResult = JSON.parse(candidateText);

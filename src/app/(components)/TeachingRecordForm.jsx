@@ -231,9 +231,22 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       }
       setAiOptions(newAiOptions);
 
+      // Auto-fill form fields with the first extracted value
+      const autoFill = {};
+      if (newAiOptions.semester?.length === 1) autoFill.semester = String(newAiOptions.semester[0]);
+      if (newAiOptions.academicYear?.length === 1) autoFill.academicYear = String(newAiOptions.academicYear[0]);
+      if (newAiOptions.courseCode?.length === 1) autoFill.courseCode = String(newAiOptions.courseCode[0]);
+      if (newAiOptions.courseName?.length === 1) autoFill.courseName = String(newAiOptions.courseName[0]);
+      if (newAiOptions.teachingNo?.length === 1) autoFill.teachingNo = String(newAiOptions.teachingNo[0]);
+      if (newAiOptions.date?.length === 1) autoFill.date = String(newAiOptions.date[0]);
+      if (newAiOptions.weekNo?.length === 1) autoFill.weekNo = String(newAiOptions.weekNo[0]);
+      if (newAiOptions.unitNo?.length === 1) autoFill.unitNo = String(newAiOptions.unitNo[0]);
+      if (newAiOptions.unitName?.length === 1) autoFill.unitName = String(newAiOptions.unitName[0]);
+      if (newAiOptions.topic?.length === 1) autoFill.topic = String(newAiOptions.topic[0]);
+
       setFormData((prev) => ({
         ...prev,
-        ...data.data,
+        ...autoFill,
       }));
 
       setMessage({ type: "success", text: "ดึงข้อมูลสำเร็จ! กรุณาตรวจสอบความถูกต้อง" });
