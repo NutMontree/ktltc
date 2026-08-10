@@ -6,6 +6,7 @@ module.exports = {
       cwd: "/home/ktltc/ktltc/.next/standalone",
       instances: 4,
       exec_mode: "cluster",
+      node_args: "--dns-result-order=ipv4first",
       env: {
         NODE_ENV: "production",
         PORT: 3000

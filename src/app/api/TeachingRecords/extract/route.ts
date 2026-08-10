@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import axios from "axios";
+import https from "https";
 
 export async function POST(req: Request) {
   try {
@@ -72,25 +74,28 @@ export async function POST(req: Request) {
       },
     };
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("Gemini API Error:", errorData);
+    const httpsAgent = new https.Agent({ family: 4 });
+    let data;
+    try {
+      const axiosResponse = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+        requestBody,
+        {
+          headers: { "Content-Type": "application/json" },
+          httpsAgent,
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        }
+      );
+      data = axiosResponse.data;
+    } catch (apiError: any) {
+      console.error("Gemini API Error:", apiError?.response?.data || apiError.message);
       return NextResponse.json(
         { error: "การวิเคราะห์ด้วย AI ล้มเหลว โปรดลองอีกครั้ง" },
         { status: 500 }
       );
     }
 
-    const data = await response.json();
     const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!candidateText) {
