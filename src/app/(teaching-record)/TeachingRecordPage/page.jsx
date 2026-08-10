@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
+
 export default function TeachingRecordPage() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
