@@ -19,6 +19,11 @@ const teachingRecordSchema = new mongoose.Schema(
     problems: { type: String, required: true },
     signerName: { type: String, required: true },
     headName: { type: String, required: true },
+    activitiesImages: { type: [String], default: [] },
+    resultsImages: { type: [String], default: [] },
+    problemsImages: { type: [String], default: [] },
+    teacherSignature: { type: String, default: "" },
+    headSignature: { type: String, default: "" },
   },
   { timestamps: true }
 );
