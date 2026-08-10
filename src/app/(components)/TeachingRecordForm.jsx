@@ -359,37 +359,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       `;
     };
 
-    const renderParagraphs = (text) => {
-      if (!text) return `<div class="para">-</div>`;
-      return text
-        .split("\n")
-        .map((p) => `<div class="para">${p}</div>`)
-        .join("");
-    };
 
-    const renderSectionImages = (images = []) => {
-      if (!images || images.length === 0) return "";
-
-      if (images.length === 1) {
-        return `
-          <div style="text-align: center; margin-top: 15px;">
-            <img src="${images[0]}" style="max-height: 250px; max-width: 90%; object-fit: contain; border: 1px solid #ddd; border-radius: 4px;" />
-          </div>
-        `;
-      }
-
-      return `
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px;">
-          ${images
-            .map(
-              (img) => `
-            <img src="${img}" style="max-height: 200px; max-width: 45%; object-fit: contain; border: 1px solid #ddd; border-radius: 4px;" />
-          `,
-            )
-            .join("")}
-        </div>
-      `;
-    };
 
     printWindow.document.write(`
       <html>
