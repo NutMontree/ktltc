@@ -1284,6 +1284,7 @@ export default function PermissionsPage() {
                 <div className="flex gap-3 pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800">
                   <button
                     onClick={() => setShowAddMenuModal(false)}
+                    title="ยกเลิกการทำรายการและปิดหน้าต่างนี้"
                     className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
                   >
                     ยกเลิก
@@ -1291,6 +1292,7 @@ export default function PermissionsPage() {
                   <button
                     onClick={handleAddMenu}
                     disabled={isAddingMenu}
+                    title="ยืนยันการบันทึกข้อมูลเพื่อสร้างเมนูใหม่"
                     className="flex-2 py-4 rounded-2xl bg-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
                     {isAddingMenu ? <FiLoader className="animate-spin" /> : "บันทึกข้อมูล"}
@@ -1379,6 +1381,7 @@ export default function PermissionsPage() {
                 <div className="flex gap-3 pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800">
                   <button
                     onClick={() => setShowEditMenuModal(false)}
+                    title="ยกเลิกการแก้ไขเมนูและปิดหน้าต่าง"
                     className="flex-1 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
                   >
                     ยกเลิก
@@ -1386,6 +1389,7 @@ export default function PermissionsPage() {
                   <button
                     onClick={handleEditMenuSubmit}
                     disabled={isEditingMenu}
+                    title="บันทึกการแก้ไขข้อมูลเมนู"
                     className="flex-2 py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
                     {isEditingMenu ? <FiLoader className="animate-spin" /> : "บันทึกการแก้ไข"}

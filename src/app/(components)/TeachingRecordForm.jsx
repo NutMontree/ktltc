@@ -1,20 +1,46 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import PremiumDatePicker from "./PremiumDatePicker";
 
 const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
+  const [generatingText, setGeneratingText] = useState(false);
   const [message, setMessage] = useState(null);
   const [aiOptions, setAiOptions] = useState({});
   const fileInputRef = React.useRef(null);
 
   const EDITMODE = recordId !== "new";
   const defaultTeacherName = searchParams.get("teacher") || "";
+
+  const formatDateToThai = (dateString) => {
+    if (!dateString) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split("-");
+      const thaiMonths = [
+        "มกราคม",
+        "กุมภาพันธ์",
+        "มีนาคม",
+        "เมษายน",
+        "พฤษภาคม",
+        "มิถุนายน",
+        "กรกฎาคม",
+        "สิงหาคม",
+        "กันยายน",
+        "ตุลาคม",
+        "พฤศจิกายน",
+        "ธันวาคม",
+      ];
+      const thaiYear = parseInt(year) + (parseInt(year) < 2500 ? 543 : 0);
+      return `${parseInt(day)} ${thaiMonths[parseInt(month) - 1]} ${thaiYear}`;
+    }
+    return dateString;
+  };
 
   const [formData, setFormData] = useState({
     semester: initialData.semester || "1",
@@ -41,6 +67,48 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     headSignature: initialData.headSignature || "",
   });
 
+  // ดึงข้อมูลลายเซ็นครูผู้สอนอัตโนมัติเมื่อเปลี่ยนชื่อ
+  useEffect(() => {
+    if (EDITMODE && formData.signerName === initialData?.signerName) return;
+    if (!formData.signerName) return;
+    
+    const delayId = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/TeachingRecords/lastSignature?name=${encodeURIComponent(formData.signerName)}&type=teacher`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.signature) {
+            setFormData(prev => ({ ...prev, teacherSignature: data.signature }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to auto-fetch teacher signature:", err);
+      }
+    }, 800);
+    return () => clearTimeout(delayId);
+  }, [formData.signerName, EDITMODE, initialData]);
+
+  // ดึงข้อมูลลายเซ็นหัวหน้าแผนกอัตโนมัติเมื่อเปลี่ยนชื่อ
+  useEffect(() => {
+    if (EDITMODE && formData.headName === initialData?.headName) return;
+    if (!formData.headName) return;
+    
+    const delayId = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/TeachingRecords/lastSignature?name=${encodeURIComponent(formData.headName)}&type=head`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.signature) {
+            setFormData(prev => ({ ...prev, headSignature: data.signature }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to auto-fetch head signature:", err);
+      }
+    }, 800);
+    return () => clearTimeout(delayId);
+  }, [formData.headName, EDITMODE, initialData]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -48,7 +116,45 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  const handleGenerateDetails = async () => {
+    try {
+      setGeneratingText(true);
+      setMessage({ type: "info", text: "AI กำลังช่วยเขียนรายละเอียดการสอน..." });
 
+      const res = await fetch("/api/TeachingRecords/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseName: formData.courseName,
+          unitName: formData.unitName,
+          topic: formData.topic,
+          isTheory: formData.isTheory,
+          isPractice: formData.isPractice,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to generate text");
+      }
+
+      const data = await res.json();
+      
+      setFormData(prev => ({
+        ...prev,
+        activities: data.activities || prev.activities,
+        results: data.results || prev.results,
+        problems: data.problems || prev.problems,
+      }));
+      
+      setMessage({ type: "success", text: "AI ช่วยเขียนรายละเอียดการสอนเสร็จเรียบร้อย!" });
+    } catch (error) {
+      console.error(error);
+      setMessage({ type: "error", text: "เกิดข้อผิดพลาดในการเรียก AI กรุณาลองใหม่" });
+    } finally {
+      setGeneratingText(false);
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
   const handleSave = async (e) => {
     e?.preventDefault();
     setLoading(true);
@@ -215,9 +321,11 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
   const handleExportPDF = () => {
     const printWindow = window.open("", "_blank");
-
     const checkTheory = formData.isTheory ? "☑" : "☐";
+
     const checkPractice = formData.isPractice ? "☑" : "☐";
+
+    const formattedDate = formatDateToThai(formData.date);
 
     const renderParagraphs = (text) => {
       if (!text) return `<div class="para">-</div>`;
@@ -302,7 +410,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             </div>
             <div class="flex-row">
               <span>สอนครั้งที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.teachingNo}</span>
-              <span>วันที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.date}</span>
+              <span>วันที่</span><span style="margin-left: 5px; margin-right:15px;">${formattedDate}</span>
               <span>สัปดาห์ที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.weekNo}</span>
               <span>หน่วยการเรียนรู้ที่</span><span style="margin-left: 5px;">${formData.unitNo}</span>
             </div>
@@ -408,7 +516,12 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     // We show a select if it's either explicitly in aiOptions, or it's a fixedOption and not explicitly disabled
     const hasOptions = isAiOption || (isFixedOption && aiOptions[name] !== false);
 
-    const optionsToRender = isAiOption ? aiOptions[name] : isFixedOption ? fixedOptions[name] : [];
+    let optionsToRender = isAiOption ? aiOptions[name] : isFixedOption ? fixedOptions[name] : [];
+
+    // Ensure the current value is available in the dropdown options
+    if (hasOptions && formData[name] && !optionsToRender.includes(formData[name])) {
+      optionsToRender = [formData[name], ...optionsToRender];
+    }
 
     // Convert text inputs that should be dates to date pickers if they don't have options
     const inputType = name === "date" && !hasOptions ? "date" : "text";
@@ -459,16 +572,21 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             <option value="">-- เลือกจากเอกสาร --</option>
             {optionsToRender.map((u, i) => (
               <option key={i} value={u}>
-                {u}
+                {name === "date" ? formatDateToThai(u) : u}
               </option>
             ))}
           </select>
+        ) : inputType === "date" ? (
+          <PremiumDatePicker
+            value={formData[name] || ""}
+            onChange={(val) => setFormData((prev) => ({ ...prev, [name]: val }))}
+          />
         ) : (
           <input
             name={name}
             type={inputType}
             placeholder={placeholder}
-            value={formData[name]}
+            value={formData[name] || ""}
             onChange={handleChange}
             className="w-full rounded-2xl border-2 border-stroke bg-gray-50 px-4 py-3 text-base font-bold text-black outline-none transition focus:border-primary focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary md:px-6 md:py-4 md:text-lg"
           />
@@ -558,13 +676,15 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-2">
+    <div className="max-w-[1600px] mx-auto w-full px-2">
       <form onSubmit={handleSave} className="space-y-10">
-        <div className="relative overflow-hidden rounded-3xl border border-stroke bg-white/90 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:border-strokedark dark:bg-boxdark/90 md:rounded-[2.5rem]">
-          <div className="relative overflow-hidden bg-white px-6 py-8 dark:bg-boxdark md:px-12 md:py-12">
+        <div className="relative rounded-3xl border border-stroke bg-white/90 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:border-strokedark dark:bg-boxdark/90 md:rounded-[2.5rem]">
+          <div className="absolute inset-0 overflow-hidden rounded-3xl md:rounded-[2.5rem]">
             <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]"></div>
             <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-[80px]"></div>
+          </div>
 
+          <div className="relative bg-white px-6 py-8 dark:bg-boxdark md:px-12 md:py-12 rounded-3xl md:rounded-[2.5rem]">
             <div className="relative z-10 flex flex-col justify-between gap-8 border-b border-stroke pb-8 dark:border-strokedark md:flex-row md:items-center">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5">
@@ -578,7 +698,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                 </div>
                 <h2 className="text-3xl font-black tracking-tight text-black dark:text-white md:text-4xl">
                   {EDITMODE ? "แก้ไขข้อมูล" : "แบบฟอร์มบันทึก"}{" "}
-                  <span className="text-primary">การสอน (PDCA)</span>
+                  <span className="text-primary">การสอน</span>
                 </h2>
                 <p className="max-w-lg text-sm font-medium leading-relaxed text-gray-500">
                   กรอกข้อมูลรายละเอียดการสอนประจำสัปดาห์ให้ครบถ้วน ข้อมูลจะถูกนำไปใช้ออกแบบฟอร์ม PDF
@@ -631,7 +751,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               </div>
             </div>
 
-            <div className="relative z-10 pt-10">
+            <div className="relative z-30 pt-10">
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                 {renderInput("ภาคเรียนที่", "semester")}
                 {renderInput("ปีการศึกษา", "academicYear")}
@@ -650,9 +770,33 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
           </div>
 
           <div className="relative z-20 border-t border-stroke bg-white p-6 dark:border-strokedark dark:bg-boxdark md:p-12">
-            <h3 className="text-xl font-black text-black dark:text-white mb-6 flex items-center gap-2">
-              <span className="text-primary">▶</span> รายละเอียดการสอน
-            </h3>
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+              <h3 className="text-xl font-black text-black dark:text-white flex items-center gap-2">
+                <span className="text-primary">▶</span> รายละเอียดการสอน
+              </h3>
+              
+              <button
+                type="button"
+                onClick={handleGenerateDetails}
+                disabled={generatingText || !formData.courseName || !formData.topic}
+                className="flex w-fit items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50"
+              >
+                {generatingText ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                ) : (
+                  <span className="text-lg leading-none">✨</span>
+                )}
+                {generatingText
+                  ? "AI กำลังเขียน..."
+                  : "ให้ AI ช่วยเขียนรายละเอียดการสอน"}
+              </button>
+            </div>
+
+            {(!formData.courseName || !formData.topic) && (
+              <p className="text-xs text-danger mb-4 font-semibold">
+                * กรุณากรอก "ชื่อวิชา" และ "เรื่อง" ด้านบนก่อน เพื่อให้ AI ช่วยเขียนรายละเอียดได้ตรงจุด
+              </p>
+            )}
 
             {renderTextarea("1. กิจกรรมการเรียนการสอน", "activities", 4, "activitiesImages")}
 
