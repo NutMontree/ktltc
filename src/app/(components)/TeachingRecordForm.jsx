@@ -1,10 +1,6 @@
 "use client";
 
-<<<<<<< HEAD
 import React, { useState, useEffect, useRef } from "react";
-=======
-import React, { useState } from "react";
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import PremiumDatePicker from "./PremiumDatePicker";
@@ -14,17 +10,13 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
-<<<<<<< HEAD
   const [generatingText, setGeneratingText] = useState(false);
-=======
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
   const [message, setMessage] = useState(null);
   const [aiOptions, setAiOptions] = useState({});
   const fileInputRef = React.useRef(null);
 
   const EDITMODE = recordId !== "new";
   const defaultTeacherName = searchParams.get("teacher") || "";
-<<<<<<< HEAD
 
   const formatDateToThai = (dateString) => {
     if (!dateString) return "";
@@ -49,8 +41,6 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     }
     return dateString;
   };
-=======
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
 
   const [formData, setFormData] = useState({
     semester: initialData.semester || "1",
@@ -333,7 +323,6 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     const printWindow = window.open("", "_blank");
     const checkTheory = formData.isTheory ? "☑" : "☐";
 
-<<<<<<< HEAD
     const checkPractice = formData.isPractice ? "☑" : "☐";
 
     const formattedDate = formatDateToThai(formData.date);
@@ -369,10 +358,6 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
         </div>
       `;
     };
-=======
-    const checkTheory = formData.isTheory ? "☑" : "☐";
-    const checkPractice = formData.isPractice ? "☑" : "☐";
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
 
     const renderParagraphs = (text) => {
       if (!text) return `<div class="para">-</div>`;
@@ -457,11 +442,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             </div>
             <div class="flex-row">
               <span>สอนครั้งที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.teachingNo}</span>
-<<<<<<< HEAD
               <span>วันที่</span><span style="margin-left: 5px; margin-right:15px;">${formattedDate}</span>
-=======
-              <span>วันที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.date}</span>
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
               <span>สัปดาห์ที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.weekNo}</span>
               <span>หน่วยการเรียนรู้ที่</span><span style="margin-left: 5px;">${formData.unitNo}</span>
             </div>
@@ -567,16 +548,12 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     // We show a select if it's either explicitly in aiOptions, or it's a fixedOption and not explicitly disabled
     const hasOptions = isAiOption || (isFixedOption && aiOptions[name] !== false);
 
-<<<<<<< HEAD
     let optionsToRender = isAiOption ? aiOptions[name] : isFixedOption ? fixedOptions[name] : [];
 
     // Ensure the current value is available in the dropdown options
     if (hasOptions && formData[name] && !optionsToRender.includes(formData[name])) {
       optionsToRender = [formData[name], ...optionsToRender];
     }
-=======
-    const optionsToRender = isAiOption ? aiOptions[name] : isFixedOption ? fixedOptions[name] : [];
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
 
     // Convert text inputs that should be dates to date pickers if they don't have options
     const inputType = name === "date" && !hasOptions ? "date" : "text";
@@ -627,7 +604,6 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             <option value="">-- เลือกจากเอกสาร --</option>
             {optionsToRender.map((u, i) => (
               <option key={i} value={u}>
-<<<<<<< HEAD
                 {name === "date" ? formatDateToThai(u) : u}
               </option>
             ))}
@@ -637,22 +613,12 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             value={formData[name] || ""}
             onChange={(val) => setFormData((prev) => ({ ...prev, [name]: val }))}
           />
-=======
-                {u}
-              </option>
-            ))}
-          </select>
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
         ) : (
           <input
             name={name}
             type={inputType}
             placeholder={placeholder}
-<<<<<<< HEAD
             value={formData[name] || ""}
-=======
-            value={formData[name]}
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
             onChange={handleChange}
             className="w-full rounded-2xl border-2 border-stroke bg-gray-50 px-4 py-3 text-base font-bold text-black outline-none transition focus:border-primary focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary md:px-6 md:py-4 md:text-lg"
           />
@@ -744,13 +710,8 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   return (
     <div className="max-w-[1600px] mx-auto w-full px-2">
       <form onSubmit={handleSave} className="space-y-10">
-<<<<<<< HEAD
         <div className="relative rounded-3xl border border-stroke bg-white/90 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:border-strokedark dark:bg-boxdark/90 md:rounded-[2.5rem]">
           <div className="absolute inset-0 overflow-hidden rounded-3xl md:rounded-[2.5rem]">
-=======
-        <div className="relative overflow-hidden rounded-3xl border border-stroke bg-white/90 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:border-strokedark dark:bg-boxdark/90 md:rounded-[2.5rem]">
-          <div className="relative overflow-hidden bg-white px-6 py-8 dark:bg-boxdark md:px-12 md:py-12">
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
             <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]"></div>
             <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-[80px]"></div>
           </div>
@@ -841,7 +802,6 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
           </div>
 
           <div className="relative z-20 border-t border-stroke bg-white p-6 dark:border-strokedark dark:bg-boxdark md:p-12">
-<<<<<<< HEAD
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <h3 className="text-xl font-black text-black dark:text-white flex items-center gap-2">
                 <span className="text-primary">▶</span> รายละเอียดการสอน
@@ -869,11 +829,6 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                 * กรุณากรอก "ชื่อวิชา" และ "เรื่อง" ด้านบนก่อน เพื่อให้ AI ช่วยเขียนรายละเอียดได้ตรงจุด
               </p>
             )}
-=======
-            <h3 className="text-xl font-black text-black dark:text-white mb-6 flex items-center gap-2">
-              <span className="text-primary">▶</span> รายละเอียดการสอน
-            </h3>
->>>>>>> 84401b95 (Auto-commit from Lenovo machine [2026-08-10 04:28:02])
 
             {renderTextarea("1. กิจกรรมการเรียนการสอน", "activities", 4, "activitiesImages")}
 
