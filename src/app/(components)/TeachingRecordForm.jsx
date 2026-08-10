@@ -1,15 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [message, setMessage] = useState(null);
+  const [aiOptions, setAiOptions] = useState({});
+  const fileInputRef = React.useRef(null);
 
   const EDITMODE = recordId !== "new";
+  const defaultTeacherName = searchParams.get("teacher") || "";
 
   const [formData, setFormData] = useState({
     semester: initialData.semester || "1",
@@ -27,8 +32,13 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     isPractice: initialData.isPractice || true,
     results: initialData.results || "",
     problems: initialData.problems || "",
-    signerName: initialData.signerName || "",
+    activitiesImages: initialData.activitiesImages || [],
+    resultsImages: initialData.resultsImages || [],
+    problemsImages: initialData.problemsImages || [],
+    signerName: initialData.signerName || defaultTeacherName,
     headName: initialData.headName || "นางกิ่งดาว บุญประสิทธิ์",
+    teacherSignature: initialData.teacherSignature || "",
+    headSignature: initialData.headSignature || "",
   });
 
   const handleChange = (e) => {
@@ -72,16 +82,174 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     }
   };
 
+  const handleAIUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setExtracting(true);
+    setMessage({ type: "info", text: "กำลังให้ AI อ่านข้อมูลจากเอกสาร..." });
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
+      if (formData.unitName) formDataUpload.append("unitName", formData.unitName);
+      if (formData.topic) formDataUpload.append("topic", formData.topic);
+
+      const res = await fetch("/api/TeachingRecords/extract", {
+        method: "POST",
+        body: formDataUpload,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "เกิดข้อผิดพลาดในการดึงข้อมูล");
+
+      // Extract options from AI response
+      const optionsMapping = {
+        semester: data.data.availableSemesters,
+        academicYear: data.data.availableAcademicYears,
+        courseCode: data.data.availableCourseCodes,
+        courseName: data.data.availableCourseNames,
+        teachingNo: data.data.availableTeachingNos,
+        date: data.data.availableDates,
+        weekNo: data.data.availableWeekNos,
+        unitNo: data.data.availableUnitNos,
+        unitName: data.data.availableUnitNames,
+        topic: data.data.availableTopics,
+      };
+
+      const newAiOptions = {};
+      for (const [key, val] of Object.entries(optionsMapping)) {
+        if (Array.isArray(val) && val.length > 0) {
+          newAiOptions[key] = val;
+        }
+      }
+      setAiOptions(newAiOptions);
+
+      setFormData((prev) => ({
+        ...prev,
+        ...data.data,
+      }));
+
+      setMessage({ type: "success", text: "ดึงข้อมูลสำเร็จ! กรุณาตรวจสอบความถูกต้อง" });
+      setTimeout(() => setMessage(null), 3000);
+    } catch (error) {
+      setMessage({ type: "error", text: error.message });
+      setTimeout(() => setMessage(null), 3000);
+    } finally {
+      setExtracting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSignatureUpload = async (e, fieldName) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setMessage({ type: "info", text: "กำลังอัปโหลดลายเซ็น..." });
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
+      });
+
+      if (!res.ok) throw new Error("อัปโหลดไม่สำเร็จ");
+      const data = await res.json();
+
+      setFormData((prev) => ({
+        ...prev,
+        [fieldName]: data.url,
+      }));
+      setMessage({ type: "success", text: "อัปโหลดลายเซ็นสำเร็จ" });
+      setTimeout(() => setMessage(null), 3000);
+    } catch (error) {
+      setMessage({ type: "error", text: error.message });
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
+
+  const handleMultipleImageUpload = async (e, fieldName) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setMessage({ type: "info", text: "กำลังอัปโหลดรูปภาพ..." });
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const formDataUpload = new FormData();
+        formDataUpload.append("file", file);
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formDataUpload,
+        });
+        if (!res.ok) throw new Error("อัปโหลดไม่สำเร็จ");
+        const data = await res.json();
+        return data.url;
+      });
+
+      const urls = await Promise.all(uploadPromises);
+
+      setFormData((prev) => ({
+        ...prev,
+        [fieldName]: [...(prev[fieldName] || []), ...urls],
+      }));
+
+      setMessage({ type: "success", text: "อัปโหลดรูปภาพสำเร็จ" });
+      setTimeout(() => setMessage(null), 3000);
+    } catch (error) {
+      setMessage({ type: "error", text: error.message });
+      setTimeout(() => setMessage(null), 3000);
+    }
+    // clear input
+    e.target.value = "";
+  };
+
+  const handleRemoveImage = (fieldName, index) => {
+    setFormData((prev) => {
+      const newArray = [...(prev[fieldName] || [])];
+      newArray.splice(index, 1);
+      return { ...prev, [fieldName]: newArray };
+    });
+  };
+
   const handleExportPDF = () => {
     const printWindow = window.open("", "_blank");
 
-    const toThaiDigits = (str) => {
-      if (!str) return "";
-      return str.toString(); 
-    };
-
     const checkTheory = formData.isTheory ? "☑" : "☐";
     const checkPractice = formData.isPractice ? "☑" : "☐";
+
+    const renderParagraphs = (text) => {
+      if (!text) return `<div class="para">-</div>`;
+      return text
+        .split("\n")
+        .map((p) => `<div class="para">${p}</div>`)
+        .join("");
+    };
+
+    const renderSectionImages = (images = []) => {
+      if (!images || images.length === 0) return "";
+
+      if (images.length === 1) {
+        return `
+          <div style="text-align: center; margin-top: 15px;">
+            <img src="${images[0]}" style="max-height: 250px; max-width: 90%; object-fit: contain; border: 1px solid #ddd; border-radius: 4px;" />
+          </div>
+        `;
+      }
+
+      return `
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px;">
+          ${images
+            .map(
+              (img) => `
+            <img src="${img}" style="max-height: 200px; max-width: 45%; object-fit: contain; border: 1px solid #ddd; border-radius: 4px;" />
+          `,
+            )
+            .join("")}
+        </div>
+      `;
+    };
 
     printWindow.document.write(`
       <html>
@@ -98,13 +266,13 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               src: url('https://cdn.jsdelivr.net/gh/Sarabun-New/font@master/fonts/THSarabunNew-Bold.ttf') format('truetype');
               font-weight: bold; font-style: normal;
             }
-            @page { size: A4; margin: 0; }
+            @page { size: A4; margin: 1cm 1.5cm; }
             body { 
-              font-family: 'TH Sarabun New', sans-serif; 
+              font-family: 'TH Sarabun IT9', 'TH Sarabun New', serif; 
               font-size: 16pt; 
               line-height: 1.3; 
               margin: 0;
-              padding: 2cm 2.5cm;
+              padding: 0;
               color: black;
               box-sizing: border-box;
             }
@@ -118,10 +286,10 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             .flex-row { display: flex; align-items: baseline; margin-bottom: 5px; }
             .content-section { margin-top: 15px; }
             .section-title { font-weight: bold; margin-bottom: 5px; }
-            .para { text-indent: 1.5cm; text-align: justify; white-space: pre-line; }
+            .para { text-indent: 1.5cm; text-align: justify; text-justify: inter-character; white-space: pre-line; word-break: break-word; }
             .checkbox-group { text-align: center; margin: 15px 0; font-size: 18pt;}
-            .signature-section { display: flex; justify-content: space-around; margin-top: 40px; }
-            .signature-box { text-align: center; width: 40%; }
+            .signature-section { display: flex; justify-content: space-around; margin-top: 20px; page-break-inside: avoid; }
+            .signature-box { text-align: center; width: 45%; }
           </style>
         </head>
         <body>
@@ -129,26 +297,27 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             <div class="header-title">บันทึกหลังการสอน รายวิชา ภาคเรียนที่ ${formData.semester} ปีการศึกษา ${formData.academicYear}</div>
             <div class="header-subtitle">วิทยาลัยเทคนิคกันทรลักษ์</div>
             <div class="flex-row">
-              <span style="font-weight:bold;">รหัสวิชา</span><span style="margin-left: 5px; margin-right:15px;">${formData.courseCode}</span>
-              <span style="font-weight:bold;">ชื่อวิชา</span><span style="margin-left: 5px;">${formData.courseName}</span>
+              <span>รหัสวิชา</span><span style="margin-left: 5px; margin-right:15px;">${formData.courseCode}</span>
+              <span>ชื่อวิชา</span><span style="margin-left: 5px;">${formData.courseName}</span>
             </div>
             <div class="flex-row">
-              <span style="font-weight:bold;">สอนครั้งที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.teachingNo}</span>
-              <span style="font-weight:bold;">วันที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.date}</span>
-              <span style="font-weight:bold;">สัปดาห์ที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.weekNo}</span>
-              <span style="font-weight:bold;">หน่วยการเรียนรู้ที่</span><span style="margin-left: 5px;">${formData.unitNo}</span>
+              <span>สอนครั้งที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.teachingNo}</span>
+              <span>วันที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.date}</span>
+              <span>สัปดาห์ที่</span><span style="margin-left: 5px; margin-right:15px;">${formData.weekNo}</span>
+              <span>หน่วยการเรียนรู้ที่</span><span style="margin-left: 5px;">${formData.unitNo}</span>
             </div>
             <div class="flex-row">
-              <span style="font-weight:bold;">ชื่อหน่วย</span><span style="margin-left: 5px;">${formData.unitName}</span>
+              <span>ชื่อหน่วย</span><span style="margin-left: 5px;">${formData.unitName}</span>
             </div>
             <div class="flex-row">
-              <span style="font-weight:bold;">เรื่อง</span><span style="margin-left: 5px;">${formData.topic}</span>
+              <span>เรื่อง</span><span style="margin-left: 5px;">${formData.topic}</span>
             </div>
           </div>
 
           <div class="content-section">
             <div class="section-title">1. กิจกรรมการเรียนการสอน</div>
-            <div class="para">${formData.activities}</div>
+            ${renderParagraphs(formData.activities)}
+            ${renderSectionImages(formData.activitiesImages)}
             <div class="checkbox-group">
               <span style="margin-right: 40px;">${checkTheory} ทฤษฎี</span>
               <span>${checkPractice} ปฏิบัติ</span>
@@ -157,24 +326,52 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
           <div class="content-section">
             <div class="section-title">2. ผลการดำเนินกิจกรรมการเรียนการสอน</div>
-            <div class="para">${formData.results}</div>
+            ${renderParagraphs(formData.results)}
+            ${renderSectionImages(formData.resultsImages)}
           </div>
 
           <div class="content-section">
             <div class="section-title">3. ปัญหาอุปสรรค/แนวทางการแก้ไขปัญหา</div>
-            <div class="para">${formData.problems}</div>
+            ${renderParagraphs(formData.problems)}
+            ${renderSectionImages(formData.problemsImages)}
           </div>
 
           <div class="signature-section">
-            <div class="signature-box">
-              <div style="margin-bottom: 40px;">ลงชื่อ.........................................................</div>
-              <div>( ${formData.signerName || "...................................."} )</div>
-              <div>ครูผู้สอน</div>
+            <div class="signature-box" style="display: flex; justify-content: center;">
+              <table style="border-collapse: collapse; border: none; font-size: 16pt;">
+                <tr>
+                  <td style="vertical-align: bottom; padding-right: 5px; padding-bottom: 5px; border: none;">ลงชื่อ</td>
+                  <td style="text-align: center; vertical-align: bottom; border-bottom: 1px dotted black; width: 220px; height: 80px; border-top: none; border-left: none; border-right: none;">
+                    ${formData.teacherSignature ? `<img src="${formData.teacherSignature}" style="max-height: 75px; object-fit: contain; margin-bottom: -5px;" />` : ``}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border: none;"></td>
+                  <td style="text-align: center; padding-top: 5px; border: none;">(${formData.signerName || "...................................."})</td>
+                </tr>
+                <tr>
+                  <td style="border: none;"></td>
+                  <td style="text-align: center; padding-top: 5px; border: none;">ครูผู้สอน</td>
+                </tr>
+              </table>
             </div>
-            <div class="signature-box">
-              <div style="margin-bottom: 40px;">ลงชื่อ.........................................................</div>
-              <div>( ${formData.headName || "...................................."} )</div>
-              <div>หัวหน้าแผนกวิชาเทคโนโลยีธุรกิจดิจิทัล</div>
+            <div class="signature-box" style="display: flex; justify-content: center;">
+              <table style="border-collapse: collapse; border: none; font-size: 16pt;">
+                <tr>
+                  <td style="vertical-align: bottom; padding-right: 5px; padding-bottom: 5px; border: none;">ลงชื่อ</td>
+                  <td style="text-align: center; vertical-align: bottom; border-bottom: 1px dotted black; width: 220px; height: 80px; border-top: none; border-left: none; border-right: none;">
+                    ${formData.headSignature ? `<img src="${formData.headSignature}" style="max-height: 75px; object-fit: contain; margin-bottom: -5px;" />` : ``}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border: none;"></td>
+                  <td style="text-align: center; padding-top: 5px; border: none;">(${formData.headName || "...................................."})</td>
+                </tr>
+                <tr>
+                  <td style="border: none;"></td>
+                  <td style="text-align: center; padding-top: 5px; border: none;">หัวหน้าแผนกวิชาเทคโนโลยีธุรกิจดิจิทัล</td>
+                </tr>
+              </table>
             </div>
           </div>
 
@@ -189,31 +386,110 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     printWindow.document.close();
   };
 
-  const renderInput = (label, name, placeholder = "", colSpan = "col-span-1") => (
-    <div className={`group space-y-3 ${colSpan}`}>
-      <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors group-focus-within:text-primary">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="16" x2="12" y2="12"></line>
-          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-        </svg>
-        {label}
-      </label>
-      <input
-        name={name}
-        type="text"
-        placeholder={placeholder}
-        value={formData[name]}
-        onChange={handleChange}
-        className="w-full rounded-2xl border-2 border-stroke bg-gray-50 px-4 py-3 text-base font-bold text-black outline-none transition focus:border-primary focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary md:px-6 md:py-4 md:text-lg"
-      />
-    </div>
-  );
+  const fixedOptions = {
+    semester: ["1", "2", "3"],
+    academicYear: ["2568", "2569", "2570"],
+    courseCode: ["21910-2018"],
+    courseName: ["คอมพิวเตอร์และการบำรุงรักษา"],
+    teachingNo: Array.from({ length: 18 }, (_, i) => (i + 1).toString()),
+    date: ["10 สิงหาคม 2569"],
+    weekNo: Array.from({ length: 18 }, (_, i) => (i + 1).toString()),
+    unitNo: Array.from({ length: 18 }, (_, i) => (i + 1).toString()),
+    unitName: ["หน่วยที่ 9 การติดตั้งซอฟต์แวร์ประยุกต์"],
+    topic: ["อุปกรณ์ฮาร์ดแวร์ภายในและภายนอก และหลักการทำงานของ CPU, RAM, Mainboard"],
+  };
 
-  const renderTextarea = (label, name, rows = 3) => (
+  const renderInput = (label, name, placeholder = "", colSpan = "col-span-1") => {
+    // Determine if we should show a select or text input based on aiOptions state
+    // By default, if the field is in fixedOptions and the user hasn't toggled it off, use select
+    const isFixedOption = fixedOptions[name] !== undefined;
+    const isAiOption = aiOptions[name] && aiOptions[name].length > 0;
+
+    // We show a select if it's either explicitly in aiOptions, or it's a fixedOption and not explicitly disabled
+    const hasOptions = isAiOption || (isFixedOption && aiOptions[name] !== false);
+
+    const optionsToRender = isAiOption ? aiOptions[name] : isFixedOption ? fixedOptions[name] : [];
+
+    // Convert text inputs that should be dates to date pickers if they don't have options
+    const inputType = name === "date" && !hasOptions ? "date" : "text";
+
+    return (
+      <div className={`group space-y-3 ${colSpan}`}>
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors group-focus-within:text-primary">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            {label}
+          </label>
+          {hasOptions && (
+            <button
+              type="button"
+              onClick={() => {
+                setAiOptions((prev) => ({
+                  ...prev,
+                  [name]: false, // Mark as false to disable dropdown and switch to text input
+                }));
+              }}
+              className="text-[10px] font-bold text-blue-500 hover:underline"
+            >
+              (พิมพ์เอง)
+            </button>
+          )}
+        </div>
+
+        {hasOptions ? (
+          <select
+            name={name}
+            value={formData[name] || ""}
+            onChange={handleChange}
+            className="w-full appearance-none rounded-2xl border-2 border-stroke bg-gray-50 px-4 py-3 text-base font-bold text-black outline-none transition focus:border-primary focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary md:px-6 md:py-4 md:text-lg"
+          >
+            <option value="">-- เลือกจากเอกสาร --</option>
+            {optionsToRender.map((u, i) => (
+              <option key={i} value={u}>
+                {u}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            name={name}
+            type={inputType}
+            placeholder={placeholder}
+            value={formData[name]}
+            onChange={handleChange}
+            className="w-full rounded-2xl border-2 border-stroke bg-gray-50 px-4 py-3 text-base font-bold text-black outline-none transition focus:border-primary focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary md:px-6 md:py-4 md:text-lg"
+          />
+        )}
+      </div>
+    );
+  };
+
+  const renderTextarea = (label, name, rows = 3, imageFieldName = null) => (
     <div className="group space-y-3 mt-8">
       <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors group-focus-within:text-primary">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
         {label}
@@ -225,6 +501,59 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
         onChange={handleChange}
         className="w-full rounded-2xl border-2 border-stroke bg-gray-50 px-4 py-3 text-base font-bold text-black outline-none transition focus:border-primary focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary md:px-6 md:py-4 md:text-lg"
       />
+      {imageFieldName && (
+        <div className="mt-4 rounded-xl border border-dashed border-gray-300 p-4 dark:border-strokedark">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-500">
+              รูปภาพประกอบ (สามารถอัปโหลดได้หลายรูป)
+            </span>
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary hover:text-white">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              อัปโหลดรูปภาพ
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => handleMultipleImageUpload(e, imageFieldName)}
+                className="hidden"
+              />
+            </label>
+          </div>
+          {formData[imageFieldName] && formData[imageFieldName].length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+              {formData[imageFieldName].map((url, idx) => (
+                <div key={idx} className="relative group/img">
+                  <img
+                    src={url}
+                    alt="Preview"
+                    className="h-20 w-auto rounded border border-gray-200 object-contain shadow-sm dark:border-strokedark bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(imageFieldName, idx)}
+                    className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover/img:opacity-100 hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-xs text-gray-400">ยังไม่มีรูปภาพประกอบ</div>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -232,7 +561,6 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     <div className="mx-auto max-w-5xl px-2">
       <form onSubmit={handleSave} className="space-y-10">
         <div className="relative overflow-hidden rounded-3xl border border-stroke bg-white/90 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:border-strokedark dark:bg-boxdark/90 md:rounded-[2.5rem]">
-          
           <div className="relative overflow-hidden bg-white px-6 py-8 dark:bg-boxdark md:px-12 md:py-12">
             <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]"></div>
             <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-[80px]"></div>
@@ -253,8 +581,50 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                   <span className="text-primary">การสอน (PDCA)</span>
                 </h2>
                 <p className="max-w-lg text-sm font-medium leading-relaxed text-gray-500">
-                  กรอกข้อมูลรายละเอียดการสอนประจำสัปดาห์ให้ครบถ้วน ข้อมูลจะถูกนำไปใช้ออกแบบฟอร์ม PDF บันทึกหลังการสอน
+                  กรอกข้อมูลรายละเอียดการสอนประจำสัปดาห์ให้ครบถ้วน ข้อมูลจะถูกนำไปใช้ออกแบบฟอร์ม PDF
+                  บันทึกหลังการสอน
                 </p>
+
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleAIUpload}
+                    accept="image/jpeg, image/png, image/webp, application/pdf"
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={extracting}
+                    className="flex w-fit items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition hover:bg-purple-700 disabled:opacity-50"
+                  >
+                    {extracting ? (
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    ) : (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                    )}
+                    {extracting
+                      ? "กำลังวิเคราะห์ด้วย AI..."
+                      : "ดึงข้อมูลอัตโนมัติด้วย AI (PDF/รูปภาพ)"}
+                  </button>
+                  <p className="text-xs text-gray-400">
+                    รองรับไฟล์ แผนการสอน/ตารางสอน (ไม่เกิน 5MB)
+                  </p>
+                </div>
               </div>
               <div className="hidden h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 to-blue-500/10 text-4xl shadow-inner backdrop-blur-md md:flex">
                 📝
@@ -283,37 +653,157 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             <h3 className="text-xl font-black text-black dark:text-white mb-6 flex items-center gap-2">
               <span className="text-primary">▶</span> รายละเอียดการสอน
             </h3>
-            
-            {renderTextarea("1. กิจกรรมการเรียนการสอน", "activities", 4)}
-            
-            <div className="mt-4 flex gap-6">
+
+            {renderTextarea("1. กิจกรรมการเรียนการสอน", "activities", 4, "activitiesImages")}
+
+            <div className="mt-4 flex gap-6 justify-center">
               <label className="flex items-center gap-3 cursor-pointer group">
-                <div className={`flex h-6 w-6 items-center justify-center rounded border transition-colors ${formData.isTheory ? 'bg-primary border-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
-                  {formData.isTheory && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>}
+                <div
+                  className={`flex h-6 w-6 items-center justify-center rounded border transition-colors ${formData.isTheory ? "bg-primary border-primary text-white" : "border-gray-300 dark:border-gray-600"}`}
+                >
+                  {formData.isTheory && (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  )}
                 </div>
-                <input type="checkbox" name="isTheory" checked={formData.isTheory} onChange={handleChange} className="hidden" />
-                <span className="text-sm font-bold text-gray-700 group-hover:text-primary dark:text-gray-300">ทฤษฎี</span>
+                <input
+                  type="checkbox"
+                  name="isTheory"
+                  checked={formData.isTheory}
+                  onChange={handleChange}
+                  className="hidden"
+                />
+                <span className=" text-sm font-bold text-gray-700 group-hover:text-primary dark:text-gray-300">
+                  ทฤษฎี
+                </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <div className={`flex h-6 w-6 items-center justify-center rounded border transition-colors ${formData.isPractice ? 'bg-primary border-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
-                  {formData.isPractice && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>}
+                <div
+                  className={`flex h-6 w-6 items-center justify-center rounded border transition-colors ${formData.isPractice ? "bg-primary border-primary text-white" : "border-gray-300 dark:border-gray-600"}`}
+                >
+                  {formData.isPractice && (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  )}
                 </div>
-                <input type="checkbox" name="isPractice" checked={formData.isPractice} onChange={handleChange} className="hidden" />
-                <span className="text-sm font-bold text-gray-700 group-hover:text-primary dark:text-gray-300">ปฏิบัติ</span>
+                <input
+                  type="checkbox"
+                  name="isPractice"
+                  checked={formData.isPractice}
+                  onChange={handleChange}
+                  className="hidden"
+                />
+                <span className="text-sm font-bold text-gray-700 group-hover:text-primary dark:text-gray-300">
+                  ปฏิบัติ
+                </span>
               </label>
             </div>
 
-            {renderTextarea("2. ผลการดำเนินกิจกรรมการเรียนการสอน", "results", 3)}
-            {renderTextarea("3. ปัญหาอุปสรรค/แนวทางการแก้ไขปัญหา", "problems", 3)}
+            {renderTextarea("2. ผลการดำเนินกิจกรรมการเรียนการสอน", "results", 3, "resultsImages")}
+            {renderTextarea("3. ปัญหาอุปสรรค/แนวทางการแก้ไขปัญหา", "problems", 3, "problemsImages")}
           </div>
 
           <div className="relative z-10 border-t border-stroke bg-gray-50/50 p-6 dark:border-strokedark dark:bg-meta-4/20 md:p-12">
             <h3 className="text-xl font-black text-black dark:text-white mb-6 flex items-center gap-2">
               <span className="text-primary">✍️</span> การลงนาม
             </h3>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {renderInput("ชื่อครูผู้สอน", "signerName")}
-              {renderInput("ชื่อหัวหน้าแผนก", "headName")}
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-4">
+                {renderInput("ชื่อครูผู้สอน", "signerName")}
+                <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 p-6 text-center transition hover:border-primary/50 dark:border-strokedark">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    อัปโหลดรูปลายเซ็นครูผู้สอน (แนบภาพ)
+                  </div>
+                  {formData.teacherSignature && (
+                    <div className="relative mb-2">
+                      <img
+                        src={formData.teacherSignature}
+                        alt="Teacher Signature"
+                        className="h-28 w-auto rounded-lg border border-stroke bg-white p-2 shadow-sm dark:border-strokedark"
+                      />
+                    </div>
+                  )}
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary/10 px-6 py-2.5 text-sm font-bold text-primary transition hover:bg-primary hover:text-white">
+                    <svg
+                      width="18"
+                      height="18"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    {formData.teacherSignature ? "เปลี่ยนรูปภาพใหม่" : "เลือกไฟล์รูปภาพ"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleSignatureUpload(e, "teacherSignature")}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {renderInput("ชื่อหัวหน้าแผนก", "headName")}
+                <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 p-6 text-center transition hover:border-primary/50 dark:border-strokedark">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    อัปโหลดรูปลายเซ็นหัวหน้าแผนก (แนบภาพ)
+                  </div>
+                  {formData.headSignature && (
+                    <div className="relative mb-2">
+                      <img
+                        src={formData.headSignature}
+                        alt="Head Signature"
+                        className="h-28 w-auto rounded-lg border border-stroke bg-white p-2 shadow-sm dark:border-strokedark"
+                      />
+                    </div>
+                  )}
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary/10 px-6 py-2.5 text-sm font-bold text-primary transition hover:bg-primary hover:text-white">
+                    <svg
+                      width="18"
+                      height="18"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    {formData.headSignature ? "เปลี่ยนรูปภาพใหม่" : "เลือกไฟล์รูปภาพ"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleSignatureUpload(e, "headSignature")}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -326,7 +816,16 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
           >
             <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full"></div>
             <div className="relative z-10 flex items-center gap-3">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -347,14 +846,27 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               {loading ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
               ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v13a2 2 0 0 1-2 2z"></path>
                   <polyline points="17 21 17 13 7 13 7 21"></polyline>
                   <polyline points="7 3 7 8 15 8"></polyline>
                 </svg>
               )}
               <span className="text-sm sm:text-base">
-                {loading ? "กำลังประมวลผล..." : EDITMODE ? "อัปเดตข้อมูลทั้งหมด" : "บันทึกข้อมูลหลัก"}
+                {loading
+                  ? "กำลังประมวลผล..."
+                  : EDITMODE
+                    ? "อัปเดตข้อมูลทั้งหมด"
+                    : "บันทึกข้อมูลหลัก"}
               </span>
             </div>
           </button>
@@ -363,7 +875,17 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             href="/TeachingRecordPage"
             className="group flex h-12 items-center justify-center gap-3 rounded-xl bg-gray-50 px-8 font-bold text-gray-600 transition-all hover:bg-gray-200 hover:text-black dark:bg-meta-4 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white sm:h-14 sm:px-10"
           >
-            <svg className="transition-transform group-hover:-translate-x-1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              className="transition-transform group-hover:-translate-x-1"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
@@ -373,7 +895,9 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       </form>
 
       {message && (
-        <div className={`fixed bottom-10 right-10 z-9999 animate-bounce rounded-2xl px-8 py-4 font-bold shadow-2xl ${message.type === "success" ? "bg-success text-white" : "bg-danger text-white"}`}>
+        <div
+          className={`fixed bottom-10 right-10 z-9999 animate-bounce rounded-2xl px-8 py-4 font-bold shadow-2xl ${message.type === "success" ? "bg-success text-white" : message.type === "info" ? "bg-blue-500 text-white" : "bg-danger text-white"}`}
+        >
           {message.text}
         </div>
       )}

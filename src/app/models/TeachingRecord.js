@@ -17,8 +17,13 @@ const teachingRecordSchema = new mongoose.Schema(
     isPractice: { type: Boolean, default: false },
     results: { type: String, required: true },
     problems: { type: String, required: true },
+    activitiesImages: { type: [String], default: [] },
+    resultsImages: { type: [String], default: [] },
+    problemsImages: { type: [String], default: [] },
     signerName: { type: String, required: true },
     headName: { type: String, required: true },
+    teacherSignature: { type: String, default: "" },
+    headSignature: { type: String, default: "" },
   },
   { timestamps: true }
 );
