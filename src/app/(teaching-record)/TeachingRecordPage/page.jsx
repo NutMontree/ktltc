@@ -327,7 +327,7 @@ export default function TeachingRecordPage() {
   )).sort();
 
   const filteredRecords = records.filter(r => {
-    if (!validTeacherNames.has(r.signerName)) return false;
+    // No filtering by name anymore
 
     const sem = r.semester || "1";
     const year = r.academicYear || "2569";
