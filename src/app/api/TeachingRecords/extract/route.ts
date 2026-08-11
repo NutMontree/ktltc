@@ -66,7 +66,8 @@ export async function POST(req: Request) {
     if (user && user.geminiApiKey) {
       const decryptedKey = decrypt(user.geminiApiKey);
       if (decryptedKey) {
-        keysToTry.push(decryptedKey);
+        const userKeys = decryptedKey.split(',').map(k => k.trim()).filter(k => k.length > 0);
+        keysToTry.push(...userKeys);
       }
     }
 

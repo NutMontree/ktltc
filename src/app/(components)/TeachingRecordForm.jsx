@@ -1310,7 +1310,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               <label className="mb-2 block text-sm font-bold text-black dark:text-white">Gemini API Key</label>
               <input
                 type="password"
-                placeholder="ปล่อยว่างเพื่อลบออกและกลับไปใช้ของส่วนกลาง"
+                placeholder="ปล่อยว่างเพื่อกลับไปใช้ของส่วนกลาง (คั่นหลายคีย์ด้วยเครื่องหมาย ,)"
                 value={apiKeyInput}
                 onChange={(e) => setApiKeyInput(e.target.value)}
                 className="w-full rounded-xl border border-stroke bg-transparent px-4 py-3 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
