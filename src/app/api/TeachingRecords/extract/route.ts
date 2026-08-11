@@ -66,7 +66,8 @@ export async function POST(req: Request) {
     if (user && user.geminiApiKey) {
       const decryptedKey = decrypt(user.geminiApiKey);
       if (decryptedKey) {
-        keysToTry.push(decryptedKey);
+        const userKeys = decryptedKey.split(',').map(k => k.trim()).filter(k => k.length > 0);
+        keysToTry.push(...userKeys);
       }
     }
 
@@ -108,7 +109,7 @@ export async function POST(req: Request) {
 - ห้ามตอบกลับเป็นข้อความธรรมดา ให้ตอบกลับเป็น JSON ที่ถูกต้องเท่านั้น
 `;
 
-    const requestBody = {
+    const requestBody: any = {
       contents: [
         {
           parts: [
@@ -123,8 +124,9 @@ export async function POST(req: Request) {
         },
       ],
       generationConfig: {
-        response_mime_type: "application/json",
+        responseMimeType: "application/json",
         temperature: 0.2,
+        maxOutputTokens: 8192,
       },
     };
 
@@ -139,7 +141,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error: isRateLimit
-            ? "ระบบ AI มีผู้ใช้งานเยอะ กรุณารอสักครู่แล้วลองใหม่อีกครั้ง"
+            ? "โควตา Token การใช้งาน AI เต็มชั่วคราว (ระบบมีผู้ใช้งานเยอะ) กรุณารอสักครู่แล้วลองใหม่อีกครั้ง"
             : "การวิเคราะห์ด้วย AI ล้มเหลว โปรดลองอีกครั้ง",
         },
         { status: isRateLimit ? 429 : 500 }
@@ -159,8 +161,12 @@ export async function POST(req: Request) {
     try {
       parsedResult = JSON.parse(candidateText);
     } catch (e) {
-      const jsonStr = candidateText.replace(/```json|```/g, "").trim();
-      parsedResult = JSON.parse(jsonStr);
+      try {
+        const jsonStr = candidateText.replace(/```json|```/g, "").trim();
+        parsedResult = JSON.parse(jsonStr);
+      } catch (err2) {
+        parsedResult = {};
+      }
     }
 
     // Save to cache

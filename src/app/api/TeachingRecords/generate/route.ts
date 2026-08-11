@@ -56,7 +56,8 @@ export async function POST(req: Request) {
     if (user && user.geminiApiKey) {
       const decryptedKey = decrypt(user.geminiApiKey);
       if (decryptedKey) {
-        keysToTry.push(decryptedKey);
+        const userKeys = decryptedKey.split(',').map(k => k.trim()).filter(k => k.length > 0);
+        keysToTry.push(...userKeys);
       }
     }
 
@@ -92,7 +93,7 @@ export async function POST(req: Request) {
 }
 `;
 
-    const requestBody = {
+    const requestBody: any = {
       contents: [
         {
           parts: [
@@ -101,8 +102,9 @@ export async function POST(req: Request) {
         },
       ],
       generationConfig: {
-        response_mime_type: "application/json",
+        responseMimeType: "application/json",
         temperature: 0.7,
+        maxOutputTokens: 8192,
       },
     };
 
@@ -137,8 +139,16 @@ export async function POST(req: Request) {
     try {
       parsedResult = JSON.parse(candidateText);
     } catch (e) {
-      const jsonStr = candidateText.replace(/```json|```/g, "").trim();
-      parsedResult = JSON.parse(jsonStr);
+      try {
+        const jsonStr = candidateText.replace(/```json|```/g, "").trim();
+        parsedResult = JSON.parse(jsonStr);
+      } catch (err2) {
+        parsedResult = {
+          activities: candidateText.trim(),
+          results: "AI ไม่สามารถจัดรูปแบบ JSON ได้ กรุณาตรวจสอบข้อมูล",
+          problems: "ไม่มีปัญหา"
+        };
+      }
     }
 
     return NextResponse.json(parsedResult, { status: 200 });

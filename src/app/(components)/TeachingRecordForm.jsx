@@ -161,10 +161,31 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: type === "checkbox" ? checked : value };
+      
+      // Auto-link related fields based on the index of the selected option
+      // If the user selects e.g. the 5th week, we should auto-select the 5th topic/unit
+      if (aiOptions && aiOptions[name] && aiOptions[name].length > 1) {
+        const selectedIndex = aiOptions[name].indexOf(value);
+        if (selectedIndex !== -1) {
+          const linkedFields = ["teachingNo", "date", "weekNo", "unitNo", "unitName", "topic"];
+          if (linkedFields.includes(name)) {
+            linkedFields.forEach(field => {
+              if (field !== name && aiOptions[field] && aiOptions[field].length > selectedIndex) {
+                // Ensure we don't overwrite with undefined or empty if the AI missed a field
+                if (aiOptions[field][selectedIndex]) {
+                  newData[field] = aiOptions[field][selectedIndex];
+                }
+              }
+            });
+          }
+        }
+      }
+      
+      return newData;
+    });
   };
   const handleGenerateDetails = async () => {
     try {
@@ -277,6 +298,25 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       });
 
       setAiOptions(cleanedOptions);
+
+      // Auto-fill form fields with the first extracted value
+      const autoFill = {};
+      if (cleanedOptions.semester?.length > 0) autoFill.semester = String(cleanedOptions.semester[0]);
+      if (cleanedOptions.academicYear?.length > 0) autoFill.academicYear = String(cleanedOptions.academicYear[0]);
+      if (cleanedOptions.courseCode?.length > 0) autoFill.courseCode = String(cleanedOptions.courseCode[0]);
+      if (cleanedOptions.courseName?.length > 0) autoFill.courseName = String(cleanedOptions.courseName[0]);
+      if (cleanedOptions.teachingNo?.length > 0) autoFill.teachingNo = String(cleanedOptions.teachingNo[0]);
+      if (cleanedOptions.date?.length > 0) autoFill.date = String(cleanedOptions.date[0]);
+      if (cleanedOptions.weekNo?.length > 0) autoFill.weekNo = String(cleanedOptions.weekNo[0]);
+      if (cleanedOptions.unitNo?.length > 0) autoFill.unitNo = String(cleanedOptions.unitNo[0]);
+      if (cleanedOptions.unitName?.length > 0) autoFill.unitName = String(cleanedOptions.unitName[0]);
+      if (cleanedOptions.topic?.length > 0) autoFill.topic = String(cleanedOptions.topic[0]);
+
+      setFormData((prev) => ({
+        ...prev,
+        ...autoFill,
+      }));
+
       setTimeout(() => setMessage(null), 3000);
     }
   };
@@ -363,16 +403,16 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
       // Auto-fill form fields with the first extracted value
       const autoFill = {};
-      if (newAiOptions.semester?.length === 1) autoFill.semester = String(newAiOptions.semester[0]);
-      if (newAiOptions.academicYear?.length === 1) autoFill.academicYear = String(newAiOptions.academicYear[0]);
-      if (newAiOptions.courseCode?.length === 1) autoFill.courseCode = String(newAiOptions.courseCode[0]);
-      if (newAiOptions.courseName?.length === 1) autoFill.courseName = String(newAiOptions.courseName[0]);
-      if (newAiOptions.teachingNo?.length === 1) autoFill.teachingNo = String(newAiOptions.teachingNo[0]);
-      if (newAiOptions.date?.length === 1) autoFill.date = String(newAiOptions.date[0]);
-      if (newAiOptions.weekNo?.length === 1) autoFill.weekNo = String(newAiOptions.weekNo[0]);
-      if (newAiOptions.unitNo?.length === 1) autoFill.unitNo = String(newAiOptions.unitNo[0]);
-      if (newAiOptions.unitName?.length === 1) autoFill.unitName = String(newAiOptions.unitName[0]);
-      if (newAiOptions.topic?.length === 1) autoFill.topic = String(newAiOptions.topic[0]);
+      if (newAiOptions.semester?.length > 0) autoFill.semester = String(newAiOptions.semester[0]);
+      if (newAiOptions.academicYear?.length > 0) autoFill.academicYear = String(newAiOptions.academicYear[0]);
+      if (newAiOptions.courseCode?.length > 0) autoFill.courseCode = String(newAiOptions.courseCode[0]);
+      if (newAiOptions.courseName?.length > 0) autoFill.courseName = String(newAiOptions.courseName[0]);
+      if (newAiOptions.teachingNo?.length > 0) autoFill.teachingNo = String(newAiOptions.teachingNo[0]);
+      if (newAiOptions.date?.length > 0) autoFill.date = String(newAiOptions.date[0]);
+      if (newAiOptions.weekNo?.length > 0) autoFill.weekNo = String(newAiOptions.weekNo[0]);
+      if (newAiOptions.unitNo?.length > 0) autoFill.unitNo = String(newAiOptions.unitNo[0]);
+      if (newAiOptions.unitName?.length > 0) autoFill.unitName = String(newAiOptions.unitName[0]);
+      if (newAiOptions.topic?.length > 0) autoFill.topic = String(newAiOptions.topic[0]);
 
       setFormData((prev) => ({
         ...prev,
@@ -383,7 +423,8 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       setMessage({ type: "error", text: error.message });
-      setTimeout(() => setMessage(null), 3000);
+      const isApiError = error.message.includes("ผู้ใช้งานเยอะ") || error.message.includes("API Key") || error.message.includes("AI ล้มเหลว");
+      setTimeout(() => setMessage(null), isApiError ? 10000 : 3000);
     } finally {
       setExtracting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -519,7 +560,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               src: url('https://cdn.jsdelivr.net/gh/Sarabun-New/font@master/fonts/THSarabunNew-Bold.ttf') format('truetype');
               font-weight: bold; font-style: normal;
             }
-            @page { size: A4; margin: 1cm 1.5cm; }
+            @page { size: A4; margin: 0; }
             body { 
               font-family: 'TH Sarabun IT9', 'TH Sarabun New', serif; 
               font-size: 16pt; 
@@ -546,6 +587,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
           </style>
         </head>
         <body>
+          <div style="padding: 1cm 1.5cm; box-sizing: border-box; min-height: 297mm;">
           <div class="header-box">
             <div class="header-title">บันทึกหลังการสอน รายวิชา ภาคเรียนที่ ${formData.semester} ปีการศึกษา ${formData.academicYear}</div>
             <div class="header-subtitle">วิทยาลัยเทคนิคกันทรลักษ์</div>
@@ -625,6 +667,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                   <td style="text-align: center; padding-top: 5px; border: none;">หัวหน้าแผนกวิชาเทคโนโลยีธุรกิจดิจิทัล</td>
                 </tr>
               </table>
+            </div>
             </div>
           </div>
 
@@ -1225,9 +1268,20 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
       {message && (
         <div
-          className={`fixed bottom-10 right-10 z-9999 animate-bounce rounded-2xl px-8 py-4 font-bold shadow-2xl ${message.type === "success" ? "bg-success text-white" : message.type === "info" ? "bg-blue-500 text-white" : "bg-danger text-white"}`}
+          className={`fixed bottom-10 right-10 z-9999 rounded-2xl px-8 py-4 font-bold shadow-2xl transition-all duration-300 ${message.type === "success" ? "bg-success text-white" : message.type === "info" ? "bg-blue-500 text-white" : "bg-danger text-white"}`}
         >
-          {message.text}
+          <div className="flex flex-col gap-3">
+            <span>{message.text}</span>
+            {(message.text.includes("ผู้ใช้งานเยอะ") || message.text.includes("API Key") || message.text.includes("AI ล้มเหลว")) && (
+              <button
+                type="button"
+                onClick={() => setIsApiKeyModalOpen(true)}
+                className="w-full rounded-xl bg-white px-4 py-2 text-sm font-bold text-danger hover:bg-gray-100 transition-colors shadow-sm active:scale-95"
+              >
+                ⚙️ ตั้งค่า API ส่วนตัว
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -1258,7 +1312,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               <label className="mb-2 block text-sm font-bold text-black dark:text-white">Gemini API Key</label>
               <input
                 type="password"
-                placeholder="ปล่อยว่างเพื่อลบออกและกลับไปใช้ของส่วนกลาง"
+                placeholder="ปล่อยว่างเพื่อกลับไปใช้ของส่วนกลาง (คั่นหลายคีย์ด้วยเครื่องหมาย ,)"
                 value={apiKeyInput}
                 onChange={(e) => setApiKeyInput(e.target.value)}
                 className="w-full rounded-xl border border-stroke bg-transparent px-4 py-3 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"

@@ -107,7 +107,7 @@ export default function TeachingRecordPage() {
       const formattedDate = formatDateToThai(record.date);
 
       return `
-        <div style="${index < recordsArray.length - 1 ? 'page-break-after: always;' : ''}">
+        <div style="padding: 1cm 1.5cm; box-sizing: border-box; min-height: 297mm; ${index < recordsArray.length - 1 ? 'page-break-after: always;' : ''}">
           <div class="header-box">
             <div class="header-title">บันทึกหลังการสอน รายวิชา ภาคเรียนที่ ${record.semester} ปีการศึกษา ${record.academicYear}</div>
             <div class="header-subtitle">วิทยาลัยเทคนิคกันทรลักษ์</div>
@@ -210,7 +210,7 @@ export default function TeachingRecordPage() {
               src: url('https://cdn.jsdelivr.net/gh/Sarabun-New/font@master/fonts/THSarabunNew-Bold.ttf') format('truetype');
               font-weight: bold; font-style: normal;
             }
-            @page { size: A4; margin: 1cm 1.5cm; }
+            @page { size: A4; margin: 0; }
             body { 
               font-family: 'TH Sarabun IT9', 'TH Sarabun New', serif; 
               font-size: 16pt; 
@@ -311,11 +311,24 @@ export default function TeachingRecordPage() {
   const teacherUsers = users.filter(u => u.role === "teacher");
   const validTeacherNames = new Set(teacherUsers.map(u => u.name));
 
+  const cleanName = (name) => {
+    if (!name) return "";
+    return name.replace(/^(นาย|นางสาว|นาง|ว่าที่ร\.ต\.|ว่าที่ ร\.ต\.|ว่าที่ร้อยตรี|ดร\.)\s*/, "").trim();
+  };
+
   const userDeptMap = {};
   const userImageMap = {};
   teacherUsers.forEach(u => {
-    userDeptMap[u.name] = u.department || "ไม่ระบุแผนก";
-    userImageMap[u.name] = u.image || "";
+    const originalName = u.name || "";
+    const cleaned = cleanName(originalName);
+    const dept = u.department || "ไม่ระบุแผนก";
+    const img = u.image || "";
+
+    userDeptMap[originalName] = dept;
+    userDeptMap[cleaned] = dept;
+    
+    userImageMap[originalName] = img;
+    userImageMap[cleaned] = img;
   });
 
   const availableSemesters = Array.from(new Set(records.map(r => r.semester || "1"))).sort();
@@ -327,7 +340,7 @@ export default function TeachingRecordPage() {
   )).sort();
 
   const filteredRecords = records.filter(r => {
-    if (!validTeacherNames.has(r.signerName)) return false;
+    // No filtering by name anymore
 
     const sem = r.semester || "1";
     const year = r.academicYear || "2569";
@@ -359,6 +372,15 @@ export default function TeachingRecordPage() {
       weekGroups[w].push(r);
     }
   });
+
+  const [selectedModalTeacher, setSelectedModalTeacher] = useState(null);
+
+  useEffect(() => {
+    // Reset selected teacher when closing modal or changing tabs
+    if (!viewingWeekRecords || activeTab !== 'submitted') {
+      setSelectedModalTeacher(null);
+    }
+  }, [viewingWeekRecords, activeTab]);
 
   return (
     <div className="p-2 md:p-8 max-w-[1600px] mx-auto w-full">
@@ -470,7 +492,7 @@ export default function TeachingRecordPage() {
                 บันทึกการสอน สัปดาห์ที่ {viewingWeekRecords.week}
               </h3>
               <button
-                onClick={() => setViewingWeekRecords(null)}
+                onClick={() => { setViewingWeekRecords(null); setSelectedModalTeacher(null); }}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-500 transition hover:bg-danger hover:text-white dark:bg-boxdark"
               >
                 ✕
@@ -479,98 +501,146 @@ export default function TeachingRecordPage() {
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-white dark:bg-boxdark">
               {(() => {
-                const submittedTeachers = new Set(viewingWeekRecords.records.map(r => r.signerName));
+                const submittedCleanNames = new Set(viewingWeekRecords.records.map(r => cleanName(r.signerName)));
                 const targetTeachers = teacherUsers.filter(u => {
                   if (selectedDepartment) return u.department === selectedDepartment;
                   return u.department && availableDepts.includes(u.department);
                 });
-                const unsubmittedTeachers = targetTeachers.filter(u => u.name && !submittedTeachers.has(u.name));
+                const unsubmittedTeachers = targetTeachers.filter(u => u.name && !submittedCleanNames.has(cleanName(u.name)));
+                
+                // Group records by teacher for the submitted tab
+                const submittedUniqueNames = Array.from(new Set(viewingWeekRecords.records.map(r => r.signerName)));
+                const submittedTeachersArray = submittedUniqueNames.map(name => {
+                  return {
+                    name: name || "ไม่ระบุชื่อครูผู้สอน",
+                    count: viewingWeekRecords.records.filter(r => r.signerName === name).length,
+                    department: userDeptMap[name] || "ไม่ระบุแผนก"
+                  };
+                });
+
                 return (
                   <>
-                    <div className="mb-6 flex space-x-2 border-b border-stroke dark:border-strokedark pb-2">
-                      <button
-                        onClick={() => setActiveTab('submitted')}
-                        className={`px-4 py-2 font-bold transition ${activeTab === 'submitted' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
-                      >
-                        ส่งแล้ว ({viewingWeekRecords.records.length} รายการ)
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('missing')}
-                        className={`px-4 py-2 font-bold transition ${activeTab === 'missing' ? 'border-b-2 border-danger text-danger' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
-                      >
-                        ยังไม่ส่ง ({unsubmittedTeachers.length} คน)
-                      </button>
-                    </div>
-
-                    <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-bold text-gray-500">
-                          แสดงข้อมูล: {selectedDepartment || "ทุกแผนก"} | เทอม {selectedSemester || "ทั้งหมด"} | ปี {selectedAcademicYear || "ทั้งหมด"}
-                        </p>
-                      </div>
-                      {activeTab === 'submitted' && (
+                    {!selectedModalTeacher && (
+                      <div className="mb-6 flex space-x-2 border-b border-stroke dark:border-strokedark pb-2">
                         <button
-                          onClick={() => triggerPrint(viewingWeekRecords.records)}
-                          className="rounded-xl bg-indigo-500 px-6 py-3 font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-opacity-90 flex items-center gap-2"
+                          onClick={() => setActiveTab('submitted')}
+                          className={`px-4 py-2 font-bold transition ${activeTab === 'submitted' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
                         >
-                          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"></path><path d="M6 14h12v8H6z"></path></svg>
-                          Export PDF ทั้งสัปดาห์
+                          ส่งแล้ว ({submittedTeachersArray.length} คน)
                         </button>
-                      )}
-                    </div>
+                        <button
+                          onClick={() => setActiveTab('missing')}
+                          className={`px-4 py-2 font-bold transition ${activeTab === 'missing' ? 'border-b-2 border-danger text-danger' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
+                        >
+                          ยังไม่ส่ง ({unsubmittedTeachers.length} คน)
+                        </button>
+                      </div>
+                    )}
+
+                    {!selectedModalTeacher && (
+                      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                          <p className="text-sm font-bold text-gray-500">
+                            แสดงข้อมูล: {selectedDepartment || "ทุกแผนก"} | เทอม {selectedSemester || "ทั้งหมด"} | ปี {selectedAcademicYear || "ทั้งหมด"}
+                          </p>
+                        </div>
+                        {activeTab === 'submitted' && (
+                          <button
+                            onClick={() => triggerPrint(viewingWeekRecords.records)}
+                            className="rounded-xl bg-indigo-500 px-6 py-3 font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-opacity-90 flex items-center gap-2"
+                          >
+                            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"></path><path d="M6 14h12v8H6z"></path></svg>
+                            Export PDF ทั้งสัปดาห์
+                          </button>
+                        )}
+                      </div>
+                    )}
 
                     {activeTab === 'submitted' ? (
-                      <div className="grid gap-4 md:grid-cols-2">
-                        {viewingWeekRecords.records.map((record) => (
-                          <div key={record._id} className="flex flex-col rounded-2xl border border-stroke bg-gray-50 p-6 shadow-sm transition hover:border-primary/50 dark:border-strokedark dark:bg-meta-4">
-                            <div className="flex justify-between items-start mb-4">
-                              <h3 className="text-lg font-bold text-black dark:text-white line-clamp-1 pr-4">{record.courseName}</h3>
-                              <span className="shrink-0 text-xs font-bold bg-white dark:bg-boxdark text-primary px-3 py-1.5 rounded-lg shadow-sm border border-stroke dark:border-strokedark">สอนครั้งที่ {record.teachingNo}</span>
-                            </div>
-
-                            <div className="flex items-center gap-3 mb-4 rounded-xl bg-white p-3 border border-stroke dark:bg-boxdark dark:border-strokedark shadow-sm">
-                              {userImageMap[record.signerName] ? (
-                                <img src={userImageMap[record.signerName]} alt={record.signerName} className="h-10 w-10 rounded-full object-cover border border-primary/20" />
-                              ) : (
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-lg">
-                                  {(record.signerName || "อ")[0]}
-                                </div>
-                              )}
-                              <div>
-                                <p className="text-sm font-bold text-black dark:text-white">{record.signerName || "ไม่ระบุชื่อครูผู้สอน"}</p>
-                                <p className="text-xs font-semibold text-gray-500">วันที่: {record.date || "ไม่ระบุ"}</p>
-                              </div>
-                            </div>
-
-                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-2 flex-1 mb-4">เรื่อง: {record.topic}</p>
-
-                            <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-stroke dark:border-strokedark">
-                              {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
-                                <Link
-                                  href={`/TeachingRecordPage/${record._id}`}
-                                  className="flex-1 rounded-xl bg-primary/10 py-2.5 text-center text-sm font-bold text-primary transition hover:bg-primary hover:text-white min-w-[80px]"
-                                >
-                                  แก้ไข
-                                </Link>
-                              )}
+                      selectedModalTeacher ? (
+                        <div>
+                          <div className="mb-6 flex items-center justify-between">
+                            <button
+                              onClick={() => setSelectedModalTeacher(null)}
+                              className="flex items-center gap-2 rounded-xl bg-gray-100 px-4 py-2 font-bold text-gray-600 transition hover:bg-gray-200 dark:bg-meta-4 dark:text-gray-300 dark:hover:bg-strokedark"
+                            >
+                              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                              กลับ
+                            </button>
+                            <div className="flex items-center gap-3">
+                              <h4 className="text-lg font-bold">ข้อมูลของ: {selectedModalTeacher}</h4>
                               <button
-                                onClick={() => triggerPrint([record])}
-                                className="flex-1 rounded-xl bg-indigo-500/10 py-2.5 text-center text-sm font-bold text-indigo-600 transition hover:bg-indigo-600 hover:text-white min-w-[80px]"
+                                onClick={() => triggerPrint(viewingWeekRecords.records.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedModalTeacher))}
+                                className="rounded-xl bg-indigo-500 px-4 py-2 font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-opacity-90 text-sm"
                               >
                                 Export PDF
                               </button>
-                              {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
-                                <button
-                                  onClick={(e) => handleDelete(record._id, e)}
-                                  className="rounded-xl bg-danger/10 px-4 py-2.5 text-sm font-bold text-danger transition hover:bg-danger hover:text-white"
-                                >
-                                  ลบ
-                                </button>
-                              )}
                             </div>
                           </div>
-                        ))}
-                      </div>
+                          <div className="grid gap-4 md:grid-cols-2">
+                            {viewingWeekRecords.records.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedModalTeacher).map((record) => (
+                              <div key={record._id} className="flex flex-col rounded-2xl border border-stroke bg-gray-50 p-6 shadow-sm transition hover:border-primary/50 dark:border-strokedark dark:bg-meta-4">
+                                <div className="flex justify-between items-start mb-4">
+                                  <h3 className="text-lg font-bold text-black dark:text-white line-clamp-1 pr-4">{record.courseName}</h3>
+                                  <span className="shrink-0 text-xs font-bold bg-white dark:bg-boxdark text-primary px-3 py-1.5 rounded-lg shadow-sm border border-stroke dark:border-strokedark">สอนครั้งที่ {record.teachingNo}</span>
+                                </div>
+                                
+                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-2 flex-1 mb-4">เรื่อง: {record.topic}</p>
+
+                                <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-stroke dark:border-strokedark">
+                                  {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
+                                    <Link
+                                      href={`/TeachingRecordPage/${record._id}`}
+                                      className="flex-1 rounded-xl bg-primary/10 py-2.5 text-center text-sm font-bold text-primary transition hover:bg-primary hover:text-white min-w-[80px]"
+                                    >
+                                      แก้ไข
+                                    </Link>
+                                  )}
+                                  <button
+                                    onClick={() => triggerPrint([record])}
+                                    className="flex-1 rounded-xl bg-indigo-500/10 py-2.5 text-center text-sm font-bold text-indigo-600 transition hover:bg-indigo-600 hover:text-white min-w-[80px]"
+                                  >
+                                    Export PDF
+                                  </button>
+                                  {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
+                                    <button
+                                      onClick={(e) => handleDelete(record._id, e)}
+                                      className="rounded-xl bg-danger/10 px-4 py-2.5 text-sm font-bold text-danger transition hover:bg-danger hover:text-white"
+                                    >
+                                      ลบ
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+                          {submittedTeachersArray.map((t) => (
+                            <div 
+                              key={t.name} 
+                              onClick={() => setSelectedModalTeacher(t.name)}
+                              className="flex items-center gap-3 rounded-2xl border border-stroke bg-gray-50 p-4 shadow-sm cursor-pointer hover:border-primary transition dark:border-strokedark dark:bg-meta-4 hover:shadow-md"
+                            >
+                              {userImageMap[t.name] ? (
+                                <img src={userImageMap[t.name]} alt={t.name} className="h-12 w-12 shrink-0 rounded-full object-cover border border-primary/20" />
+                              ) : (
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xl">
+                                  {(t.name || "อ")[0]}
+                                </div>
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-black dark:text-white line-clamp-1">{t.name}</p>
+                                <p className="text-xs font-semibold text-gray-500 line-clamp-1">{t.department}</p>
+                              </div>
+                              <div className="shrink-0 flex flex-col items-center justify-center h-8 min-w-[32px] px-2 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                                {t.count}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )
                     ) : (
                       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
                         {unsubmittedTeachers.length > 0 ? unsubmittedTeachers.map((t) => (
