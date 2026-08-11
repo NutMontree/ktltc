@@ -93,7 +93,7 @@ export async function POST(req: Request) {
 }
 `;
 
-    const requestBody = {
+    const requestBody: any = {
       contents: [
         {
           parts: [
@@ -105,9 +105,9 @@ export async function POST(req: Request) {
         responseMimeType: "application/json",
         temperature: 0.7,
         maxOutputTokens: 8192,
-        thinkingConfig: {
-          thinkingBudget: 0,
-        },
+      },
+      thinkingConfig: {
+        thinkingBudget: 0,
       },
     };
 

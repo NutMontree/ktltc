@@ -109,7 +109,7 @@ export async function POST(req: Request) {
 - ห้ามตอบกลับเป็นข้อความธรรมดา ให้ตอบกลับเป็น JSON ที่ถูกต้องเท่านั้น
 `;
 
-    const requestBody = {
+    const requestBody: any = {
       contents: [
         {
           parts: [
@@ -127,9 +127,9 @@ export async function POST(req: Request) {
         responseMimeType: "application/json",
         temperature: 0.2,
         maxOutputTokens: 8192,
-        thinkingConfig: {
-          thinkingBudget: 0,
-        },
+      },
+      thinkingConfig: {
+        thinkingBudget: 0,
       },
     };
 
