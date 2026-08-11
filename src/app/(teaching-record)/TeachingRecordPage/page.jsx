@@ -2,13 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 
 export default function TeachingRecordPage() {
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role?.toLowerCase() === "super_admin";
+  const currentUser = session?.user?.name || "";
+
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const triggerPrint = async (recordsToPrint) => {
     const printWindow = window.open("", "_blank");
@@ -280,21 +286,43 @@ export default function TeachingRecordPage() {
     }
   };
 
-  const teachers = Array.from(new Set(records.map(r => r.signerName || "ไม่ระบุชื่อครูผู้สอน")));
+  const filteredRecords = records.filter(r => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (r.courseName || "").toLowerCase().includes(term) ||
+           (r.topic || "").toLowerCase().includes(term) ||
+           (r.signerName || "ไม่ระบุชื่อครูผู้สอน").toLowerCase().includes(term);
+  });
+
+  const teachers = Array.from(new Set(filteredRecords.map(r => r.signerName || "ไม่ระบุชื่อครูผู้สอน")));
 
   return (
     <div className="p-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-black dark:text-white">บันทึกการสอน</h1>
           <p className="mt-1 text-sm text-gray-500">จัดการข้อมูลบันทึกหลังการสอน</p>
         </div>
-        <Link
-          href="/TeachingRecordPage/new"
-          className="rounded-xl bg-primary px-6 py-3 font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-opacity-90"
-        >
-          + สร้างบันทึกใหม่
-        </Link>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:flex-none">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              🔍
+            </span>
+            <input 
+              type="text" 
+              placeholder="ค้นหาวิชา, เรื่อง, ครูผู้สอน..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full md:w-80 rounded-xl border border-stroke bg-white py-3 pl-10 pr-4 text-sm outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
+            />
+          </div>
+          <Link
+            href="/TeachingRecordPage/new"
+            className="shrink-0 rounded-xl bg-primary px-6 py-3 font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-opacity-90"
+          >
+            + สร้างบันทึกใหม่
+          </Link>
+        </div>
       </div>
 
       {loading ? (
@@ -306,7 +334,7 @@ export default function TeachingRecordPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
           {teachers.map((teacherName) => {
-            const teacherRecords = records.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === teacherName);
+            const teacherRecords = filteredRecords.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === teacherName);
             return (
               <div
                 key={teacherName}
@@ -363,7 +391,7 @@ export default function TeachingRecordPage() {
                     className="rounded-xl border border-stroke bg-transparent px-4 py-2 font-bold text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
                   >
                     <option value="">ทั้งหมด</option>
-                    {Array.from(new Set(records.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedTeacher).map(r => r.weekNo))).sort((a,b)=>parseInt(a)-parseInt(b)).map(w => (
+                    {Array.from(new Set(filteredRecords.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedTeacher).map(r => r.weekNo))).sort((a,b)=>parseInt(a)-parseInt(b)).map(w => (
                       <option key={w} value={w}>สัปดาห์ที่ {w}</option>
                     ))}
                   </select>
@@ -372,7 +400,7 @@ export default function TeachingRecordPage() {
                   {selectedWeek && (
                     <button
                       onClick={() => {
-                        const weekRecords = records
+                        const weekRecords = filteredRecords
                           .filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedTeacher)
                           .filter(r => String(r.weekNo) === String(selectedWeek))
                           .sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -397,7 +425,7 @@ export default function TeachingRecordPage() {
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                {records
+                {filteredRecords
                   .filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedTeacher)
                   .filter(r => selectedWeek ? String(r.weekNo) === String(selectedWeek) : true)
                   .map((record) => (
@@ -424,24 +452,28 @@ export default function TeachingRecordPage() {
                      }</p>
                      
                      <div className="mt-auto flex flex-wrap gap-3 pt-4 border-t border-stroke dark:border-strokedark">
-                        <Link
-                          href={`/TeachingRecordPage/${record._id}`}
-                          className="flex-1 rounded-xl bg-primary/10 py-2.5 text-center text-sm font-bold text-primary transition hover:bg-primary hover:text-white min-w-[120px]"
-                        >
-                          ดูข้อมูล / แก้ไข
-                        </Link>
+                        {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
+                          <Link
+                            href={`/TeachingRecordPage/${record._id}`}
+                            className="flex-1 rounded-xl bg-primary/10 py-2.5 text-center text-sm font-bold text-primary transition hover:bg-primary hover:text-white min-w-[120px]"
+                          >
+                            ดูข้อมูล / แก้ไข
+                          </Link>
+                        )}
                         <button
                           onClick={() => triggerPrint(record)}
                           className="flex-1 rounded-xl bg-indigo-500/10 py-2.5 text-center text-sm font-bold text-indigo-600 transition hover:bg-indigo-600 hover:text-white min-w-[120px]"
                         >
                           Export PDF
                         </button>
-                        <button
-                          onClick={(e) => handleDelete(record._id, e)}
-                          className="rounded-xl bg-danger/10 px-5 py-2.5 text-sm font-bold text-danger transition hover:bg-danger hover:text-white"
-                        >
-                          ลบ
-                        </button>
+                        {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
+                          <button
+                            onClick={(e) => handleDelete(record._id, e)}
+                            className="rounded-xl bg-danger/10 px-5 py-2.5 text-sm font-bold text-danger transition hover:bg-danger hover:text-white"
+                          >
+                            ลบ
+                          </button>
+                        )}
                      </div>
                   </div>
                 ))}

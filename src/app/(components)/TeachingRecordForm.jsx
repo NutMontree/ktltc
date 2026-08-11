@@ -11,8 +11,14 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [generatingText, setGeneratingText] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
   const [message, setMessage] = useState(null);
   const [aiOptions, setAiOptions] = useState({});
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [hasApiKey, setHasApiKey] = useState(false);
+  const [savedDocuments, setSavedDocuments] = useState([]);
+  const [selectedDocumentId, setSelectedDocumentId] = useState("");
   const fileInputRef = React.useRef(null);
 
   const EDITMODE = recordId !== "new";
@@ -109,6 +115,36 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     return () => clearTimeout(delayId);
   }, [formData.headName, EDITMODE, initialData]);
 
+  useEffect(() => {
+    const checkApiKey = async () => {
+      try {
+        const res = await fetch("/api/user/settings/apikey");
+        if (res.ok) {
+          const data = await res.json();
+          setHasApiKey(data.hasKey);
+        }
+      } catch (error) {
+        console.error("Failed to check api key status");
+      }
+    };
+    checkApiKey();
+
+    const fetchSavedDocuments = async () => {
+      try {
+        const res = await fetch("/api/TeachingRecords/extracted-cache");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setSavedDocuments(data.data);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch saved documents");
+      }
+    };
+    fetchSavedDocuments();
+  }, [isApiKeyModalOpen]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -152,6 +188,16 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       setMessage({ type: "error", text: "เกิดข้อผิดพลาดในการเรียก AI กรุณาลองใหม่" });
     } finally {
       setGeneratingText(false);
+      setCooldownTime(15);
+      const timer = setInterval(() => {
+        setCooldownTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
       setTimeout(() => setMessage(null), 3000);
     }
   };
@@ -175,16 +221,72 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       setMessage({ type: "success", text: "บันทึกข้อมูลสำเร็จ!" });
       setTimeout(() => {
         setMessage(null);
-        if (!EDITMODE) {
-          router.push("/TeachingRecordPage");
-          router.refresh();
-        }
+        router.push("/TeachingRecordPage");
+        router.refresh();
       }, 2000);
     } catch (error) {
       setMessage({ type: "error", text: error.message || "เกิดข้อผิดพลาดในการบันทึก" });
       setTimeout(() => setMessage(null), 3000);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLoadCachedDocument = (docId) => {
+    setSelectedDocumentId(docId);
+    if (!docId) {
+      setAiOptions({});
+      return;
+    }
+
+    const doc = savedDocuments.find(d => d._id === docId);
+    if (doc && doc.data) {
+      setMessage({ type: "info", text: `โหลดข้อมูลจากเอกสารเก่า: ${doc.documentName}` });
+      const optionsMapping = {
+        semester: doc.data.availableSemesters,
+        academicYear: doc.data.availableAcademicYears,
+        courseCode: doc.data.availableCourseCodes,
+        courseName: doc.data.availableCourseNames,
+        teachingNo: doc.data.availableTeachingNos,
+        date: doc.data.availableDates,
+        weekNo: doc.data.availableWeekNos,
+        unitNo: doc.data.availableUnitNos,
+        unitName: doc.data.availableUnitNames,
+        topic: doc.data.availableTopics,
+      };
+
+      const cleanedOptions = {};
+      Object.entries(optionsMapping).forEach(([key, val]) => {
+        cleanedOptions[key] = Array.isArray(val)
+          ? val.map((item) => String(item).trim()).filter((item) => item !== "" && item !== "undefined")
+          : [];
+      });
+
+      setAiOptions(cleanedOptions);
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
+
+  const handleDeleteCachedDocument = async (docId) => {
+    if (!confirm("ต้องการลบเอกสารนี้ออกจากระบบหรือไม่?")) return;
+    try {
+      const res = await fetch("/api/TeachingRecords/extracted-cache", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: docId })
+      });
+      if (res.ok) {
+        setSavedDocuments(prev => prev.filter(d => d._id !== docId));
+        if (selectedDocumentId === docId) {
+          setSelectedDocumentId("");
+          setAiOptions({});
+        }
+        setMessage({ type: "success", text: "ลบเอกสารสำเร็จ" });
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (e) {
+      setMessage({ type: "error", text: "ลบเอกสารไม่สำเร็จ" });
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -208,6 +310,20 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "เกิดข้อผิดพลาดในการดึงข้อมูล");
+
+      // Refetch saved documents to include the newly uploaded one
+      try {
+        const cacheRes = await fetch("/api/TeachingRecords/extracted-cache");
+        if (cacheRes.ok) {
+          const cacheData = await cacheRes.json();
+          if (cacheData.success) {
+            setSavedDocuments(cacheData.data);
+            if (cacheData.data.length > 0) {
+              setSelectedDocumentId(cacheData.data[0]._id);
+            }
+          }
+        }
+      } catch (e) { console.error(e); }
 
       // Extract options from AI response
       const optionsMapping = {
@@ -720,45 +836,73 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                   บันทึกหลังการสอน
                 </p>
 
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleAIUpload}
-                    accept="image/jpeg, image/png, image/webp, application/pdf"
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={extracting}
-                    className="flex w-fit items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition hover:bg-purple-700 disabled:opacity-50"
-                  >
-                    {extracting ? (
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    ) : (
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                <div className="mt-4 flex flex-col gap-4">
+                  {/* Saved Documents Dropdown */}
+                  {savedDocuments.length > 0 && (
+                    <div className="flex items-center gap-2 w-full max-w-lg">
+                      <select
+                        value={selectedDocumentId}
+                        onChange={(e) => handleLoadCachedDocument(e.target.value)}
+                        className="flex-1 rounded-xl border-2 border-stroke bg-gray-50 px-4 py-2.5 text-sm font-bold text-black outline-none transition focus:border-purple-500 dark:border-strokedark dark:bg-meta-4 dark:text-white"
                       >
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                      </svg>
-                    )}
-                    {extracting
-                      ? "กำลังวิเคราะห์ด้วย AI..."
-                      : "ดึงข้อมูลอัตโนมัติด้วย AI (PDF/รูปภาพ)"}
-                  </button>
-                  <p className="text-xs text-gray-400">
-                    รองรับไฟล์ แผนการสอน/ตารางสอน (ไม่เกิน 5MB)
-                  </p>
+                        <option value="">📄 เลือกจากเอกสารที่เคยอัปโหลดไว้...</option>
+                        {savedDocuments.map(doc => (
+                          <option key={doc._id} value={doc._id}>{doc.documentName}</option>
+                        ))}
+                      </select>
+                      {selectedDocumentId && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteCachedDocument(selectedDocumentId)}
+                          className="rounded-xl bg-danger/10 p-2.5 text-danger transition hover:bg-danger hover:text-white"
+                          title="ลบเอกสารนี้"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleAIUpload}
+                      accept="image/jpeg, image/png, image/webp, application/pdf"
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={extracting}
+                      className="flex w-fit items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition hover:bg-purple-700 disabled:opacity-50"
+                    >
+                      {extracting ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      ) : (
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                      )}
+                      {extracting
+                        ? "กำลังวิเคราะห์ด้วย AI..."
+                        : "ดึงข้อมูลอัตโนมัติด้วย AI (PDF/รูปภาพ)"}
+                    </button>
+                    <p className="text-xs text-gray-400">
+                      รองรับไฟล์ แผนการสอน/ตารางสอน (ไม่เกิน 5MB)
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="hidden h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 to-blue-500/10 text-4xl shadow-inner backdrop-blur-md md:flex">
@@ -789,13 +933,21 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               <h3 className="text-xl font-black text-black dark:text-white flex items-center gap-2">
                 <span className="text-primary">▶</span> รายละเอียดการสอน
               </h3>
-              
-              <button
-                type="button"
-                onClick={handleGenerateDetails}
-                disabled={generatingText || !formData.courseName || !formData.topic}
-                className="flex w-fit items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50"
-              >
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsApiKeyModalOpen(true)}
+                  className="rounded-xl border border-stroke bg-white px-4 py-2.5 text-sm font-bold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-strokedark dark:bg-meta-4 dark:text-gray-300 dark:hover:bg-meta-3"
+                  title="ตั้งค่า API Key ส่วนตัวเพื่อป้องกันการติดลิมิต"
+                >
+                  ⚙️ ตั้งค่า API
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGenerateDetails}
+                  disabled={generatingText || !formData.courseName || !formData.topic || cooldownTime > 0}
+                  className="flex w-fit items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50"
+                >
                 {generatingText ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                 ) : (
@@ -803,8 +955,11 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                 )}
                 {generatingText
                   ? "AI กำลังเขียน..."
+                  : cooldownTime > 0
+                  ? `รอ ${cooldownTime} วิ...`
                   : "ให้ AI ช่วยเขียนรายละเอียดการสอน"}
-              </button>
+                </button>
+              </div>
             </div>
 
             {(!formData.courseName || !formData.topic) && (
@@ -1058,6 +1213,78 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
           className={`fixed bottom-10 right-10 z-9999 animate-bounce rounded-2xl px-8 py-4 font-bold shadow-2xl ${message.type === "success" ? "bg-success text-white" : message.type === "info" ? "bg-blue-500 text-white" : "bg-danger text-white"}`}
         >
           {message.text}
+        </div>
+      )}
+
+      {/* API Key Modal */}
+      {isApiKeyModalOpen && (
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl dark:bg-boxdark">
+            <h3 className="mb-2 text-2xl font-black text-black dark:text-white">ตั้งค่า Gemini API Key</h3>
+            <p className="mb-6 text-sm text-gray-500">
+              กรอก API Key ส่วนตัวของท่านเพื่อป้องกันการติดลิมิตรวมของระบบ<br/>
+              (ระบบใช้ความปลอดภัยระดับสูงสุด โดยเก็บเข้ารหัสไว้ในฐานข้อมูลและไม่นำมาแสดงบนหน้าจออีก)
+            </p>
+            <div className="mb-6 rounded-xl border border-stroke p-4 dark:border-strokedark bg-gray-50 dark:bg-meta-4">
+              <h4 className="font-bold text-black dark:text-white mb-2 text-sm">สถานะ API Key ของคุณ:</h4>
+              {hasApiKey ? (
+                 <div className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-500">
+                   <span>✅</span>
+                   <span>ตั้งค่าแล้ว (ระบบกำลังใช้ API Key ของคุณ)</span>
+                 </div>
+              ) : (
+                 <div className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400">
+                   <span>🌐</span>
+                   <span>ยังไม่ได้ตั้งค่า (กำลังใช้ API Key ส่วนกลาง)</span>
+                 </div>
+              )}
+            </div>
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-bold text-black dark:text-white">Gemini API Key</label>
+              <input
+                type="password"
+                placeholder="ปล่อยว่างเพื่อลบออกและกลับไปใช้ของส่วนกลาง"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                className="w-full rounded-xl border border-stroke bg-transparent px-4 py-3 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setIsApiKeyModalOpen(false);
+                  setApiKeyInput("");
+                }}
+                className="rounded-xl bg-gray-200 px-6 py-2.5 font-bold text-gray-700 transition hover:bg-gray-300 dark:bg-meta-4 dark:text-white dark:hover:bg-meta-3"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch("/api/user/settings/apikey", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ apiKey: apiKeyInput }),
+                    });
+                    if (res.ok) {
+                      alert("บันทึก API Key สำเร็จ");
+                      setHasApiKey(!!apiKeyInput.trim());
+                      setIsApiKeyModalOpen(false);
+                      setApiKeyInput("");
+                    } else {
+                      alert("เกิดข้อผิดพลาดในการบันทึก");
+                    }
+                  } catch (error) {
+                    alert("เกิดข้อผิดพลาดในการบันทึก");
+                  }
+                }}
+                className="rounded-xl bg-primary px-6 py-2.5 font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-opacity-90"
+              >
+                บันทึกอย่างปลอดภัย
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

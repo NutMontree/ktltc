@@ -40,6 +40,7 @@
  * - respOther: หน้าที่รับผิดชอบอื่น เช่น ผู้ช่วยงาน (string)
  * - createdAt: วันที่สร้างบัญชี (Date)
  * - updatedAt: วันที่อัปเดตข้อมูลล่าสุด (Date)
+ * - geminiApiKey: API Key ส่วนตัวที่เข้ารหัสไว้ (Encrypted string) (Optional)
  */
 
 /**
