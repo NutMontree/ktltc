@@ -277,6 +277,25 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       });
 
       setAiOptions(cleanedOptions);
+
+      // Auto-fill form fields with the first extracted value if there is only 1 option
+      const autoFill = {};
+      if (cleanedOptions.semester?.length === 1) autoFill.semester = String(cleanedOptions.semester[0]);
+      if (cleanedOptions.academicYear?.length === 1) autoFill.academicYear = String(cleanedOptions.academicYear[0]);
+      if (cleanedOptions.courseCode?.length === 1) autoFill.courseCode = String(cleanedOptions.courseCode[0]);
+      if (cleanedOptions.courseName?.length === 1) autoFill.courseName = String(cleanedOptions.courseName[0]);
+      if (cleanedOptions.teachingNo?.length === 1) autoFill.teachingNo = String(cleanedOptions.teachingNo[0]);
+      if (cleanedOptions.date?.length === 1) autoFill.date = String(cleanedOptions.date[0]);
+      if (cleanedOptions.weekNo?.length === 1) autoFill.weekNo = String(cleanedOptions.weekNo[0]);
+      if (cleanedOptions.unitNo?.length === 1) autoFill.unitNo = String(cleanedOptions.unitNo[0]);
+      if (cleanedOptions.unitName?.length === 1) autoFill.unitName = String(cleanedOptions.unitName[0]);
+      if (cleanedOptions.topic?.length === 1) autoFill.topic = String(cleanedOptions.topic[0]);
+
+      setFormData((prev) => ({
+        ...prev,
+        ...autoFill,
+      }));
+
       setTimeout(() => setMessage(null), 3000);
     }
   };
