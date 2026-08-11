@@ -103,6 +103,7 @@ export async function POST(req: Request) {
       generationConfig: {
         response_mime_type: "application/json",
         temperature: 0.7,
+        maxOutputTokens: 300,
       },
     };
 
