@@ -161,10 +161,31 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: type === "checkbox" ? checked : value };
+      
+      // Auto-link related fields based on the index of the selected option
+      // If the user selects e.g. the 5th week, we should auto-select the 5th topic/unit
+      if (aiOptions && aiOptions[name] && aiOptions[name].length > 1) {
+        const selectedIndex = aiOptions[name].indexOf(value);
+        if (selectedIndex !== -1) {
+          const linkedFields = ["teachingNo", "date", "weekNo", "unitNo", "unitName", "topic"];
+          if (linkedFields.includes(name)) {
+            linkedFields.forEach(field => {
+              if (field !== name && aiOptions[field] && aiOptions[field].length > selectedIndex) {
+                // Ensure we don't overwrite with undefined or empty if the AI missed a field
+                if (aiOptions[field][selectedIndex]) {
+                  newData[field] = aiOptions[field][selectedIndex];
+                }
+              }
+            });
+          }
+        }
+      }
+      
+      return newData;
+    });
   };
   const handleGenerateDetails = async () => {
     try {
