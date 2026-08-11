@@ -19,6 +19,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   const [hasApiKey, setHasApiKey] = useState(false);
   const [savedDocuments, setSavedDocuments] = useState([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState("");
+  const [users, setUsers] = useState([]);
   const fileInputRef = React.useRef(null);
 
   const EDITMODE = recordId !== "new";
@@ -128,6 +129,19 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       }
     };
     checkApiKey();
+
+    const fetchAllUsers = async () => {
+      try {
+        const res = await fetch("/api/users/all");
+        if (res.ok) {
+          const data = await res.json();
+          setUsers(data.users || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+    fetchAllUsers();
 
     const fetchSavedDocuments = async () => {
       try {
@@ -636,6 +650,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
     unitNo: Array.from({ length: 18 }, (_, i) => (i + 1).toString()),
     unitName: ["หน่วยที่ 9 การติดตั้งซอฟต์แวร์ประยุกต์"],
     topic: ["อุปกรณ์ฮาร์ดแวร์ภายในและภายนอก และหลักการทำงานของ CPU, RAM, Mainboard"],
+    signerName: users.filter(u => u.role === "teacher").map(u => u.name).filter(Boolean),
   };
 
   const renderInput = (label, name, placeholder = "", colSpan = "col-span-1") => {

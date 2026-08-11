@@ -7,7 +7,8 @@ import { useSession } from "next-auth/react";
 
 export default function TeachingRecordPage() {
   const { data: session } = useSession();
-  const isSuperAdmin = session?.user?.role?.toLowerCase() === "super_admin";
+  const userRole = session?.user?.role?.toLowerCase() || "";
+  const isSuperAdmin = userRole === "super_admin" || userRole === "admin";
   const currentUser = session?.user?.name || "";
 
   const [records, setRecords] = useState([]);
@@ -19,7 +20,7 @@ export default function TeachingRecordPage() {
   const triggerPrint = async (recordsToPrint) => {
     const printWindow = window.open("", "_blank");
     printWindow.document.write("<html><head><title>Loading...</title></head><body><h2 style='text-align:center;font-family:sans-serif;margin-top:20vh;'>กำลังเตรียมข้อมูล PDF... กรุณารอสักครู่</h2></body></html>");
-    
+
     let recordsArray = Array.isArray(recordsToPrint) ? recordsToPrint : [recordsToPrint];
 
     // Fetch missing signatures asynchronously
@@ -34,7 +35,7 @@ export default function TeachingRecordPage() {
             const data = await res.json();
             teacherSig = data.signature || "";
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       if (!headSig && record.headName) {
@@ -44,7 +45,7 @@ export default function TeachingRecordPage() {
             const data = await res.json();
             headSig = data.signature || "";
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       return {
@@ -90,12 +91,12 @@ export default function TeachingRecordPage() {
       return `
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px;">
           ${images
-            .map(
-              (img) => `
+          .map(
+            (img) => `
             <img src="${img}" style="max-height: 200px; max-width: 45%; object-fit: contain; border: 1px solid #ddd; border-radius: 4px;" />
           `
-            )
-            .join("")}
+          )
+          .join("")}
         </div>
       `;
     };
@@ -255,103 +256,206 @@ export default function TeachingRecordPage() {
     printWindow.document.close();
   };
 
+  const [users, setUsers] = useState([]);
+  const [selectedSemester, setSelectedSemester] = useState("");
+  const [selectedAcademicYear, setSelectedAcademicYear] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [viewingWeekRecords, setViewingWeekRecords] = useState(null);
+  const [activeTab, setActiveTab] = useState("submitted");
+
   useEffect(() => {
-    fetchRecords();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [resRecords, resUsers] = await Promise.all([
+          fetch("/api/TeachingRecords"),
+          fetch("/api/users/all")
+        ]);
+        if (resRecords.ok) {
+          setRecords(await resRecords.json());
+        }
+        if (resUsers.ok) {
+          const uData = await resUsers.json();
+          setUsers(uData.users || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
-  const fetchRecords = async () => {
-    try {
-      const res = await fetch("/api/TeachingRecords");
-      if (res.ok) {
-        const data = await res.json();
-        setRecords(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch records:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = async (id, e) => {
-    if(e) e.stopPropagation();
+    if (e) e.stopPropagation();
     if (!confirm("คุณต้องการลบข้อมูลนี้ใช่หรือไม่?")) return;
     try {
       const res = await fetch(`/api/TeachingRecords/${id}`, { method: "DELETE" });
       if (res.ok) {
         setRecords(records.filter((r) => r._id !== id));
+        if (viewingWeekRecords) {
+          const updatedRecords = viewingWeekRecords.records.filter(r => r._id !== id);
+          if (updatedRecords.length === 0) {
+            setViewingWeekRecords(null);
+          } else {
+            setViewingWeekRecords({ ...viewingWeekRecords, records: updatedRecords });
+          }
+        }
       }
     } catch (error) {
       console.error("Failed to delete record:", error);
     }
   };
 
-  const filteredRecords = records.filter(r => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (r.courseName || "").toLowerCase().includes(term) ||
-           (r.topic || "").toLowerCase().includes(term) ||
-           (r.signerName || "ไม่ระบุชื่อครูผู้สอน").toLowerCase().includes(term);
+  const teacherUsers = users.filter(u => u.role === "teacher");
+  const validTeacherNames = new Set(teacherUsers.map(u => u.name));
+
+  const userDeptMap = {};
+  const userImageMap = {};
+  teacherUsers.forEach(u => {
+    userDeptMap[u.name] = u.department || "ไม่ระบุแผนก";
+    userImageMap[u.name] = u.image || "";
   });
 
-  const teachers = Array.from(new Set(filteredRecords.map(r => r.signerName || "ไม่ระบุชื่อครูผู้สอน")));
+  const availableSemesters = Array.from(new Set(records.map(r => r.semester || "1"))).sort();
+  const availableYears = Array.from(new Set(records.map(r => r.academicYear || "2569"))).sort().reverse();
+  const availableDepts = Array.from(new Set(
+    teacherUsers.map(u => u.department)
+         .filter(Boolean)
+         .filter(d => !d.startsWith("งาน") && d.includes("แผนก"))
+  )).sort();
+
+  const filteredRecords = records.filter(r => {
+    if (!validTeacherNames.has(r.signerName)) return false;
+
+    const sem = r.semester || "1";
+    const year = r.academicYear || "2569";
+    const dept = userDeptMap[r.signerName] || "ไม่ระบุแผนก";
+    
+    if (selectedSemester && sem !== selectedSemester) return false;
+    if (selectedAcademicYear && String(year) !== String(selectedAcademicYear)) return false;
+    if (selectedDepartment && dept !== selectedDepartment) return false;
+
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      if (!(r.courseName || "").toLowerCase().includes(term) &&
+          !(r.signerName || "").toLowerCase().includes(term) &&
+          !(r.courseCode || "").toLowerCase().includes(term)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const weekGroups = {};
+  for (let i = 1; i <= 18; i++) {
+    weekGroups[i] = [];
+  }
+  
+  filteredRecords.forEach(r => {
+    const w = parseInt(r.weekNo);
+    if (!isNaN(w) && w >= 1 && w <= 18) {
+      weekGroups[w].push(r);
+    }
+  });
 
   return (
-    <div className="p-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-black dark:text-white">บันทึกการสอน</h1>
-          <p className="mt-1 text-sm text-gray-500">จัดการข้อมูลบันทึกหลังการสอน</p>
-        </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:flex-none">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-              🔍
-            </span>
-            <input 
-              type="text" 
-              placeholder="ค้นหาวิชา, เรื่อง, ครูผู้สอน..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-80 rounded-xl border border-stroke bg-white py-3 pl-10 pr-4 text-sm outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
-            />
+    <div className="p-4 md:p-8 max-w-[1600px] mx-auto w-full">
+      <div className="mb-6 flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-black dark:text-white">ภาพรวมบันทึกการสอนรายสัปดาห์</h1>
+            <p className="mt-1 text-sm text-gray-500">ตรวจสอบยอดการส่งบันทึกการสอนแบ่งตามสัปดาห์</p>
           </div>
           <Link
-            href="/TeachingRecordPage/new"
-            className="shrink-0 rounded-xl bg-primary px-6 py-3 font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-opacity-90"
+            href={`/TeachingRecordPage/new?teacher=${encodeURIComponent(currentUser)}`}
+            className="shrink-0 rounded-xl bg-primary px-6 py-3 font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-opacity-90 self-start md:self-auto"
           >
             + สร้างบันทึกใหม่
           </Link>
+        </div>
+
+        {/* Filters */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 rounded-3xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-500">ภาคเรียน</label>
+            <select
+              value={selectedSemester}
+              onChange={(e) => setSelectedSemester(e.target.value)}
+              className="w-full rounded-xl border-2 border-stroke bg-gray-50 px-4 py-2 font-bold outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
+            >
+              <option value="">ทั้งหมด</option>
+              {availableSemesters.map(s => <option key={s} value={s}>เทอม {s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-500">ปีการศึกษา</label>
+            <select
+              value={selectedAcademicYear}
+              onChange={(e) => setSelectedAcademicYear(e.target.value)}
+              className="w-full rounded-xl border-2 border-stroke bg-gray-50 px-4 py-2 font-bold outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
+            >
+              <option value="">ทั้งหมด</option>
+              {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-500">แผนกวิชา</label>
+            <select
+              value={selectedDepartment}
+              onChange={(e) => setSelectedDepartment(e.target.value)}
+              className="w-full rounded-xl border-2 border-stroke bg-gray-50 px-4 py-2 font-bold outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
+            >
+              <option value="">ทั้งหมด</option>
+              {availableDepts.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-500">ค้นหาวิชา / ผู้สอน</label>
+            <input
+              type="text"
+              placeholder="พิมพ์ชื่อวิชา..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-xl border-2 border-stroke bg-gray-50 px-4 py-2 font-bold outline-none transition focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
+            />
+          </div>
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center p-10 text-gray-500">กำลังโหลด...</div>
-      ) : records.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-gray-300 p-10 text-center text-gray-500 dark:border-strokedark">
-          ยังไม่มีข้อมูลบันทึกการสอน
-        </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {teachers.map((teacherName) => {
-            const teacherRecords = filteredRecords.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === teacherName);
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+          {Array.from({ length: 18 }, (_, i) => i + 1).map((week) => {
+            const recordsForWeek = weekGroups[week];
+            const hasRecord = recordsForWeek.length > 0;
             return (
               <div
-                key={teacherName}
-                onClick={() => setSelectedTeacher(teacherName)}
-                className="group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-stroke bg-white p-8 shadow-sm transition hover:border-primary hover:shadow-lg dark:border-strokedark dark:bg-boxdark"
+                key={week}
+                onClick={() => {
+                  setViewingWeekRecords({ week, records: recordsForWeek });
+                  setActiveTab('submitted');
+                }}
+                className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border p-6 shadow-sm transition hover:scale-105 hover:shadow-lg ${
+                  hasRecord 
+                    ? "border-primary/30 bg-primary/5 hover:border-primary dark:bg-boxdark dark:border-strokedark" 
+                    : "border-stroke bg-white hover:border-primary/50 dark:border-strokedark dark:bg-boxdark opacity-70 hover:opacity-100"
+                }`}
               >
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary transition group-hover:scale-110 group-hover:bg-primary group-hover:text-white">
-                  <svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
+                <div className={`mb-3 flex h-16 w-16 items-center justify-center rounded-full transition ${
+                  hasRecord 
+                    ? "bg-primary text-white shadow-lg shadow-primary/30" 
+                    : "bg-gray-100 text-gray-400 group-hover:bg-primary/20 group-hover:text-primary dark:bg-meta-4"
+                }`}>
+                  <span className="text-2xl font-black">{week}</span>
                 </div>
-                <h3 className="text-xl font-bold text-black group-hover:text-primary dark:text-white text-center line-clamp-2">
-                  {teacherName}
+                <h3 className="text-lg font-bold text-black dark:text-white text-center">
+                  สัปดาห์ที่ {week}
                 </h3>
-                <p className="mt-2 text-sm font-semibold text-gray-500 text-center">
-                  มีบันทึกการสอน {teacherRecords.length} รายการ
+                <p className={`mt-2 text-sm font-semibold text-center rounded-lg px-3 py-1 ${hasRecord ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500 dark:bg-meta-4 dark:text-gray-400'}`}>
+                  {hasRecord ? `ส่งแล้ว ${recordsForWeek.length} รายการ` : 'ยังไม่มีคนส่ง'}
                 </p>
               </div>
             );
@@ -359,125 +463,142 @@ export default function TeachingRecordPage() {
         </div>
       )}
 
-      {/* Modal แสดงรายการบันทึกของครู */}
-      {selectedTeacher && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="relative max-h-[90vh] w-full max-w-5xl flex flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-boxdark">
-            
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-stroke p-6 dark:border-strokedark bg-gray-50 dark:bg-meta-4">
-              <h2 className="text-2xl font-black text-black dark:text-white flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                </div>
-                บันทึกการสอนของ: <span className="text-primary">{selectedTeacher}</span>
-              </h2>
+      {/* Modal View Week Records */}
+      {viewingWeekRecords && (
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-boxdark">
+            <div className="flex items-center justify-between border-b border-stroke bg-gray-50 p-6 dark:border-strokedark dark:bg-meta-4">
+              <h3 className="text-2xl font-black text-black dark:text-white">
+                บันทึกการสอน สัปดาห์ที่ {viewingWeekRecords.week}
+              </h3>
               <button
-                onClick={() => setSelectedTeacher(null)}
+                onClick={() => setViewingWeekRecords(null)}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-500 transition hover:bg-danger hover:text-white dark:bg-boxdark"
               >
                 ✕
               </button>
             </div>
             
-            {/* Body */}
             <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-boxdark">
-              <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <label className="text-sm font-bold text-gray-500">กรองตามสัปดาห์:</label>
-                  <select
-                    value={selectedWeek}
-                    onChange={(e) => setSelectedWeek(e.target.value)}
-                    className="rounded-xl border border-stroke bg-transparent px-4 py-2 font-bold text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
-                  >
-                    <option value="">ทั้งหมด</option>
-                    {Array.from(new Set(filteredRecords.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedTeacher).map(r => r.weekNo))).sort((a,b)=>parseInt(a)-parseInt(b)).map(w => (
-                      <option key={w} value={w}>สัปดาห์ที่ {w}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  {selectedWeek && (
-                    <button
-                      onClick={() => {
-                        const weekRecords = filteredRecords
-                          .filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedTeacher)
-                          .filter(r => String(r.weekNo) === String(selectedWeek))
-                          .sort((a, b) => new Date(a.date) - new Date(b.date));
-                        if(weekRecords.length > 0) {
-                           triggerPrint(weekRecords);
-                        }
-                      }}
-                      className="rounded-xl bg-indigo-500 px-6 py-3 font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-opacity-90 flex items-center gap-2"
-                    >
-                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"></path><path d="M6 14h12v8H6z"></path></svg>
-                      Export PDF ทั้งสัปดาห์
-                    </button>
-                  )}
-                  <Link
-                    href={`/TeachingRecordPage/new?teacher=${encodeURIComponent(selectedTeacher === "ไม่ระบุชื่อครูผู้สอน" ? "" : selectedTeacher)}`}
-                    className="rounded-xl bg-primary px-6 py-3 font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-opacity-90 flex items-center gap-2"
-                  >
-                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    เพิ่มข้อมูล
-                  </Link>
-                </div>
-              </div>
+              {(() => {
+                const submittedTeachers = new Set(viewingWeekRecords.records.map(r => r.signerName));
+                const targetTeachers = teacherUsers.filter(u => {
+                  if (selectedDepartment) return u.department === selectedDepartment;
+                  return u.department && availableDepts.includes(u.department); 
+                });
+                const unsubmittedTeachers = targetTeachers.filter(u => u.name && !submittedTeachers.has(u.name));
+                return (
+                  <>
+                    <div className="mb-6 flex space-x-2 border-b border-stroke dark:border-strokedark pb-2">
+                      <button
+                        onClick={() => setActiveTab('submitted')}
+                        className={`px-4 py-2 font-bold transition ${activeTab === 'submitted' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
+                      >
+                        ส่งแล้ว ({viewingWeekRecords.records.length} รายการ)
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('missing')}
+                        className={`px-4 py-2 font-bold transition ${activeTab === 'missing' ? 'border-b-2 border-danger text-danger' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
+                      >
+                        ยังไม่ส่ง ({unsubmittedTeachers.length} คน)
+                      </button>
+                    </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                {filteredRecords
-                  .filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedTeacher)
-                  .filter(r => selectedWeek ? String(r.weekNo) === String(selectedWeek) : true)
-                  .map((record) => (
-                  <div key={record._id} className="flex flex-col rounded-2xl border border-stroke bg-gray-50 p-6 shadow-sm transition hover:border-primary/50 dark:border-strokedark dark:bg-meta-4">
-                     <div className="flex justify-between items-start mb-3">
-                       <h3 className="text-lg font-bold text-black dark:text-white line-clamp-1 pr-4">{record.courseName}</h3>
-                       <span className="shrink-0 text-xs font-bold bg-white dark:bg-boxdark text-primary px-3 py-1.5 rounded-lg shadow-sm border border-stroke dark:border-strokedark">สอนครั้งที่ {record.teachingNo}</span>
-                     </div>
-                     <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-1">เรื่อง: {record.topic}</p>
-                     <p className="text-sm text-gray-500 mb-5 mt-1">วันที่สอน: {
-                        ((dateString) => {
-                          if (!dateString) return "";
-                          if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-                            const [year, month, day] = dateString.split("-");
-                            const thaiMonths = [
-                              "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-                              "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-                            ];
-                            const thaiYear = parseInt(year) + (parseInt(year) < 2500 ? 543 : 0);
-                            return `${parseInt(day)} ${thaiMonths[parseInt(month) - 1]} ${thaiYear}`;
-                          }
-                          return dateString;
-                        })(record.date)
-                     }</p>
-                     
-                     <div className="mt-auto flex flex-wrap gap-3 pt-4 border-t border-stroke dark:border-strokedark">
-                        {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
-                          <Link
-                            href={`/TeachingRecordPage/${record._id}`}
-                            className="flex-1 rounded-xl bg-primary/10 py-2.5 text-center text-sm font-bold text-primary transition hover:bg-primary hover:text-white min-w-[120px]"
-                          >
-                            ดูข้อมูล / แก้ไข
-                          </Link>
-                        )}
+                    <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-bold text-gray-500">
+                          แสดงข้อมูล: {selectedDepartment || "ทุกแผนก"} | เทอม {selectedSemester || "ทั้งหมด"} | ปี {selectedAcademicYear || "ทั้งหมด"}
+                        </p>
+                      </div>
+                      {activeTab === 'submitted' && (
                         <button
-                          onClick={() => triggerPrint(record)}
-                          className="flex-1 rounded-xl bg-indigo-500/10 py-2.5 text-center text-sm font-bold text-indigo-600 transition hover:bg-indigo-600 hover:text-white min-w-[120px]"
+                          onClick={() => triggerPrint(viewingWeekRecords.records)}
+                          className="rounded-xl bg-indigo-500 px-6 py-3 font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-opacity-90 flex items-center gap-2"
                         >
-                          Export PDF
+                          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"></path><path d="M6 14h12v8H6z"></path></svg>
+                          Export PDF ทั้งสัปดาห์
                         </button>
-                        {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
-                          <button
-                            onClick={(e) => handleDelete(record._id, e)}
-                            className="rounded-xl bg-danger/10 px-5 py-2.5 text-sm font-bold text-danger transition hover:bg-danger hover:text-white"
-                          >
-                            ลบ
-                          </button>
+                      )}
+                    </div>
+
+                    {activeTab === 'submitted' ? (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {viewingWeekRecords.records.map((record) => (
+                          <div key={record._id} className="flex flex-col rounded-2xl border border-stroke bg-gray-50 p-6 shadow-sm transition hover:border-primary/50 dark:border-strokedark dark:bg-meta-4">
+                            <div className="flex justify-between items-start mb-4">
+                              <h3 className="text-lg font-bold text-black dark:text-white line-clamp-1 pr-4">{record.courseName}</h3>
+                              <span className="shrink-0 text-xs font-bold bg-white dark:bg-boxdark text-primary px-3 py-1.5 rounded-lg shadow-sm border border-stroke dark:border-strokedark">สอนครั้งที่ {record.teachingNo}</span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 mb-4 rounded-xl bg-white p-3 border border-stroke dark:bg-boxdark dark:border-strokedark shadow-sm">
+                              {userImageMap[record.signerName] ? (
+                                <img src={userImageMap[record.signerName]} alt={record.signerName} className="h-10 w-10 rounded-full object-cover border border-primary/20" />
+                              ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-lg">
+                                  {(record.signerName || "อ")[0]}
+                                </div>
+                              )}
+                              <div>
+                                <p className="text-sm font-bold text-black dark:text-white">{record.signerName || "ไม่ระบุชื่อครูผู้สอน"}</p>
+                                <p className="text-xs font-semibold text-gray-500">วันที่: {record.date || "ไม่ระบุ"}</p>
+                              </div>
+                            </div>
+                            
+                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-2 flex-1 mb-4">เรื่อง: {record.topic}</p>
+
+                            <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-stroke dark:border-strokedark">
+                              {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
+                                <Link
+                                  href={`/TeachingRecordPage/${record._id}`}
+                                  className="flex-1 rounded-xl bg-primary/10 py-2.5 text-center text-sm font-bold text-primary transition hover:bg-primary hover:text-white min-w-[80px]"
+                                >
+                                  แก้ไข
+                                </Link>
+                              )}
+                              <button
+                                onClick={() => triggerPrint([record])}
+                                className="flex-1 rounded-xl bg-indigo-500/10 py-2.5 text-center text-sm font-bold text-indigo-600 transition hover:bg-indigo-600 hover:text-white min-w-[80px]"
+                              >
+                                Export PDF
+                              </button>
+                              {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
+                                <button
+                                  onClick={(e) => handleDelete(record._id, e)}
+                                  className="rounded-xl bg-danger/10 px-4 py-2.5 text-sm font-bold text-danger transition hover:bg-danger hover:text-white"
+                                >
+                                  ลบ
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+                        {unsubmittedTeachers.length > 0 ? unsubmittedTeachers.map((t) => (
+                          <div key={t._id || t.name} className="flex items-center gap-3 rounded-2xl border border-stroke bg-gray-50 p-4 shadow-sm dark:border-strokedark dark:bg-meta-4">
+                            {userImageMap[t.name] ? (
+                              <img src={userImageMap[t.name]} alt={t.name} className="h-12 w-12 shrink-0 rounded-full object-cover border border-danger/20" />
+                            ) : (
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-danger/10 text-danger font-bold text-xl">
+                                {(t.name || "อ")[0]}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold text-black dark:text-white line-clamp-1">{t.name}</p>
+                              <p className="text-xs font-semibold text-gray-500 line-clamp-1">{t.department}</p>
+                            </div>
+                          </div>
+                        )) : (
+                          <div className="col-span-full py-10 text-center text-gray-500 font-bold">
+                            ส่งครบทุกคนแล้ว! 🎉
+                          </div>
                         )}
-                     </div>
-                  </div>
-                ))}
-              </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
