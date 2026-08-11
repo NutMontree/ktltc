@@ -560,7 +560,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               src: url('https://cdn.jsdelivr.net/gh/Sarabun-New/font@master/fonts/THSarabunNew-Bold.ttf') format('truetype');
               font-weight: bold; font-style: normal;
             }
-            @page { size: A4; margin: 1cm 1.5cm; }
+            @page { size: A4; margin: 0; }
             body { 
               font-family: 'TH Sarabun IT9', 'TH Sarabun New', serif; 
               font-size: 16pt; 
@@ -587,6 +587,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
           </style>
         </head>
         <body>
+          <div style="padding: 1cm 1.5cm; box-sizing: border-box; min-height: 297mm;">
           <div class="header-box">
             <div class="header-title">บันทึกหลังการสอน รายวิชา ภาคเรียนที่ ${formData.semester} ปีการศึกษา ${formData.academicYear}</div>
             <div class="header-subtitle">วิทยาลัยเทคนิคกันทรลักษ์</div>
@@ -666,6 +667,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                   <td style="text-align: center; padding-top: 5px; border: none;">หัวหน้าแผนกวิชาเทคโนโลยีธุรกิจดิจิทัล</td>
                 </tr>
               </table>
+            </div>
             </div>
           </div>
 
