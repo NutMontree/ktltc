@@ -126,7 +126,10 @@ export async function POST(req: Request) {
       generationConfig: {
         responseMimeType: "application/json",
         temperature: 0.2,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 8192,
+        thinkingConfig: {
+          thinkingBudget: 0,
+        },
       },
     };
 
