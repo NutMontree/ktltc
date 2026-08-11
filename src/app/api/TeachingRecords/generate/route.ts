@@ -106,9 +106,6 @@ export async function POST(req: Request) {
         temperature: 0.7,
         maxOutputTokens: 8192,
       },
-      thinkingConfig: {
-        thinkingBudget: 0,
-      },
     };
 
     const httpsAgent = new https.Agent({ family: 4 });
