@@ -161,8 +161,12 @@ export async function POST(req: Request) {
     try {
       parsedResult = JSON.parse(candidateText);
     } catch (e) {
-      const jsonStr = candidateText.replace(/```json|```/g, "").trim();
-      parsedResult = JSON.parse(jsonStr);
+      try {
+        const jsonStr = candidateText.replace(/```json|```/g, "").trim();
+        parsedResult = JSON.parse(jsonStr);
+      } catch (err2) {
+        parsedResult = {};
+      }
     }
 
     // Save to cache

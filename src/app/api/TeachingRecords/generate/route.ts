@@ -139,8 +139,16 @@ export async function POST(req: Request) {
     try {
       parsedResult = JSON.parse(candidateText);
     } catch (e) {
-      const jsonStr = candidateText.replace(/```json|```/g, "").trim();
-      parsedResult = JSON.parse(jsonStr);
+      try {
+        const jsonStr = candidateText.replace(/```json|```/g, "").trim();
+        parsedResult = JSON.parse(jsonStr);
+      } catch (err2) {
+        parsedResult = {
+          activities: candidateText.trim(),
+          results: "AI ไม่สามารถจัดรูปแบบ JSON ได้ กรุณาตรวจสอบข้อมูล",
+          problems: "ไม่มีปัญหา"
+        };
+      }
     }
 
     return NextResponse.json(parsedResult, { status: 200 });
