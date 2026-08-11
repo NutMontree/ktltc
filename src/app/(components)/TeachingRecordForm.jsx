@@ -78,7 +78,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   useEffect(() => {
     if (EDITMODE && formData.signerName === initialData?.signerName) return;
     if (!formData.signerName) return;
-    
+
     const delayId = setTimeout(async () => {
       try {
         const res = await fetch(`/api/TeachingRecords/lastSignature?name=${encodeURIComponent(formData.signerName)}&type=teacher`);
@@ -99,7 +99,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   useEffect(() => {
     if (EDITMODE && formData.headName === initialData?.headName) return;
     if (!formData.headName) return;
-    
+
     const delayId = setTimeout(async () => {
       try {
         const res = await fetch(`/api/TeachingRecords/lastSignature?name=${encodeURIComponent(formData.headName)}&type=head`);
@@ -188,14 +188,14 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       }
 
       const data = await res.json();
-      
+
       setFormData(prev => ({
         ...prev,
         activities: data.activities || prev.activities,
         results: data.results || prev.results,
         problems: data.problems || prev.problems,
       }));
-      
+
       setMessage({ type: "success", text: "AI ช่วยเขียนรายละเอียดการสอนเสร็จเรียบร้อย!" });
     } catch (error) {
       console.error(error);
@@ -492,12 +492,12 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       return `
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px;">
           ${images
-            .map(
-              (img) => `
+          .map(
+            (img) => `
             <img src="${img}" style="max-height: 200px; max-width: 45%; object-fit: contain; border: 1px solid #ddd; border-radius: 4px;" />
           `,
-            )
-            .join("")}
+          )
+          .join("")}
         </div>
       `;
     };
@@ -822,7 +822,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   );
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full px-2">
+    <div className="max-w-[1600px] mx-auto w-full px-2 py-2">
       <form onSubmit={handleSave} className="space-y-10">
         <div className="relative rounded-3xl border border-stroke bg-white/90 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:border-strokedark dark:bg-boxdark/90 md:rounded-[2.5rem]">
           <div className="absolute inset-0 overflow-hidden rounded-3xl md:rounded-[2.5rem]">
@@ -830,7 +830,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
             <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-[80px]"></div>
           </div>
 
-          <div className="relative bg-white px-6 py-8 dark:bg-boxdark md:px-12 md:py-12 rounded-3xl md:rounded-[2.5rem]">
+          <div className="relative bg-white px-4 py-6 dark:bg-boxdark md:px-12 md:py-12 rounded-3xl md:rounded-[2.5rem]">
             <div className="relative z-10 flex flex-col justify-between gap-8 border-b border-stroke pb-8 dark:border-strokedark md:flex-row md:items-center">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5">
@@ -858,7 +858,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                       <select
                         value={selectedDocumentId}
                         onChange={(e) => handleLoadCachedDocument(e.target.value)}
-                        className="flex-1 rounded-xl border-2 border-stroke bg-gray-50 px-4 py-2.5 text-sm font-bold text-black outline-none transition focus:border-purple-500 dark:border-strokedark dark:bg-meta-4 dark:text-white"
+                        className="w-full flex-1 truncate rounded-xl border-2 border-stroke bg-gray-50 px-4 py-2.5 text-sm font-bold text-black outline-none transition focus:border-purple-500 dark:border-strokedark dark:bg-meta-4 dark:text-white"
                       >
                         <option value="">📄 เลือกจากเอกสารที่เคยอัปโหลดไว้...</option>
                         {savedDocuments.map(doc => (
@@ -963,16 +963,16 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
                   disabled={generatingText || !formData.courseName || !formData.topic || cooldownTime > 0}
                   className="flex w-fit items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50"
                 >
-                {generatingText ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                ) : (
-                  <span className="text-lg leading-none">✨</span>
-                )}
-                {generatingText
-                  ? "AI กำลังเขียน..."
-                  : cooldownTime > 0
-                  ? `รอ ${cooldownTime} วิ...`
-                  : "ให้ AI ช่วยเขียนรายละเอียดการสอน"}
+                  {generatingText ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  ) : (
+                    <span className="text-lg leading-none">✨</span>
+                  )}
+                  {generatingText
+                    ? "AI กำลังเขียน..."
+                    : cooldownTime > 0
+                      ? `รอ ${cooldownTime} วิ...`
+                      : "ให้ AI ช่วยเขียนรายละเอียดการสอน"}
                 </button>
               </div>
             </div>
@@ -1237,21 +1237,21 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
           <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl dark:bg-boxdark">
             <h3 className="mb-2 text-2xl font-black text-black dark:text-white">ตั้งค่า Gemini API Key</h3>
             <p className="mb-6 text-sm text-gray-500">
-              กรอก API Key ส่วนตัวของท่านเพื่อป้องกันการติดลิมิตรวมของระบบ<br/>
+              กรอก API Key ส่วนตัวของท่านเพื่อป้องกันการติดลิมิตรวมของระบบ<br />
               (ระบบใช้ความปลอดภัยระดับสูงสุด โดยเก็บเข้ารหัสไว้ในฐานข้อมูลและไม่นำมาแสดงบนหน้าจออีก)
             </p>
             <div className="mb-6 rounded-xl border border-stroke p-4 dark:border-strokedark bg-gray-50 dark:bg-meta-4">
               <h4 className="font-bold text-black dark:text-white mb-2 text-sm">สถานะ API Key ของคุณ:</h4>
               {hasApiKey ? (
-                 <div className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-500">
-                   <span>✅</span>
-                   <span>ตั้งค่าแล้ว (ระบบกำลังใช้ API Key ของคุณ)</span>
-                 </div>
+                <div className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-500">
+                  <span>✅</span>
+                  <span>ตั้งค่าแล้ว (ระบบกำลังใช้ API Key ของคุณ)</span>
+                </div>
               ) : (
-                 <div className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400">
-                   <span>🌐</span>
-                   <span>ยังไม่ได้ตั้งค่า (กำลังใช้ API Key ส่วนกลาง)</span>
-                 </div>
+                <div className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400">
+                  <span>🌐</span>
+                  <span>ยังไม่ได้ตั้งค่า (กำลังใช้ API Key ส่วนกลาง)</span>
+                </div>
               )}
             </div>
             <div className="mb-6">

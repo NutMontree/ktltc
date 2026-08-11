@@ -46,7 +46,7 @@ export default function EditTeachingRecordPage({ params }) {
   }
 
   return (
-    <div className="p-8">
+    <div className="">
       <TeachingRecordForm recordId={recordId} initialData={initialData} />
     </div>
   );

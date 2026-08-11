@@ -322,8 +322,8 @@ export default function TeachingRecordPage() {
   const availableYears = Array.from(new Set(records.map(r => r.academicYear || "2569"))).sort().reverse();
   const availableDepts = Array.from(new Set(
     teacherUsers.map(u => u.department)
-         .filter(Boolean)
-         .filter(d => !d.startsWith("งาน") && d.includes("แผนก"))
+      .filter(Boolean)
+      .filter(d => !d.startsWith("งาน") && d.includes("แผนก"))
   )).sort();
 
   const filteredRecords = records.filter(r => {
@@ -332,7 +332,7 @@ export default function TeachingRecordPage() {
     const sem = r.semester || "1";
     const year = r.academicYear || "2569";
     const dept = userDeptMap[r.signerName] || "ไม่ระบุแผนก";
-    
+
     if (selectedSemester && sem !== selectedSemester) return false;
     if (selectedAcademicYear && String(year) !== String(selectedAcademicYear)) return false;
     if (selectedDepartment && dept !== selectedDepartment) return false;
@@ -340,8 +340,8 @@ export default function TeachingRecordPage() {
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       if (!(r.courseName || "").toLowerCase().includes(term) &&
-          !(r.signerName || "").toLowerCase().includes(term) &&
-          !(r.courseCode || "").toLowerCase().includes(term)) {
+        !(r.signerName || "").toLowerCase().includes(term) &&
+        !(r.courseCode || "").toLowerCase().includes(term)) {
         return false;
       }
     }
@@ -352,7 +352,7 @@ export default function TeachingRecordPage() {
   for (let i = 1; i <= 18; i++) {
     weekGroups[i] = [];
   }
-  
+
   filteredRecords.forEach(r => {
     const w = parseInt(r.weekNo);
     if (!isNaN(w) && w >= 1 && w <= 18) {
@@ -361,7 +361,7 @@ export default function TeachingRecordPage() {
   });
 
   return (
-    <div className="p-4 md:p-8 max-w-[1600px] mx-auto w-full">
+    <div className="p-2 md:p-8 max-w-[1600px] mx-auto w-full">
       <div className="mb-6 flex flex-col gap-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -377,7 +377,7 @@ export default function TeachingRecordPage() {
         </div>
 
         {/* Filters */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 rounded-3xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 rounded-3xl border border-stroke bg-white p-4 shadow-sm dark:border-strokedark dark:bg-boxdark">
           <div>
             <label className="mb-2 block text-sm font-bold text-gray-500">ภาคเรียน</label>
             <select
@@ -438,17 +438,15 @@ export default function TeachingRecordPage() {
                   setViewingWeekRecords({ week, records: recordsForWeek });
                   setActiveTab('submitted');
                 }}
-                className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border p-6 shadow-sm transition hover:scale-105 hover:shadow-lg ${
-                  hasRecord 
-                    ? "border-primary/30 bg-primary/5 hover:border-primary dark:bg-boxdark dark:border-strokedark" 
-                    : "border-stroke bg-white hover:border-primary/50 dark:border-strokedark dark:bg-boxdark opacity-70 hover:opacity-100"
-                }`}
+                className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border p-6 shadow-sm transition hover:scale-105 hover:shadow-lg ${hasRecord
+                  ? "border-primary/30 bg-primary/5 hover:border-primary dark:bg-boxdark dark:border-strokedark"
+                  : "border-stroke bg-white hover:border-primary/50 dark:border-strokedark dark:bg-boxdark opacity-70 hover:opacity-100"
+                  }`}
               >
-                <div className={`mb-3 flex h-16 w-16 items-center justify-center rounded-full transition ${
-                  hasRecord 
-                    ? "bg-primary text-white shadow-lg shadow-primary/30" 
-                    : "bg-gray-100 text-gray-400 group-hover:bg-primary/20 group-hover:text-primary dark:bg-meta-4"
-                }`}>
+                <div className={`mb-3 flex h-16 w-16 items-center justify-center rounded-full transition ${hasRecord
+                  ? "bg-primary text-white shadow-lg shadow-primary/30"
+                  : "bg-gray-100 text-gray-400 group-hover:bg-primary/20 group-hover:text-primary dark:bg-meta-4"
+                  }`}>
                   <span className="text-2xl font-black">{week}</span>
                 </div>
                 <h3 className="text-lg font-bold text-black dark:text-white text-center">
@@ -478,13 +476,13 @@ export default function TeachingRecordPage() {
                 ✕
               </button>
             </div>
-            
-            <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-boxdark">
+
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-white dark:bg-boxdark">
               {(() => {
                 const submittedTeachers = new Set(viewingWeekRecords.records.map(r => r.signerName));
                 const targetTeachers = teacherUsers.filter(u => {
                   if (selectedDepartment) return u.department === selectedDepartment;
-                  return u.department && availableDepts.includes(u.department); 
+                  return u.department && availableDepts.includes(u.department);
                 });
                 const unsubmittedTeachers = targetTeachers.filter(u => u.name && !submittedTeachers.has(u.name));
                 return (
@@ -529,7 +527,7 @@ export default function TeachingRecordPage() {
                               <h3 className="text-lg font-bold text-black dark:text-white line-clamp-1 pr-4">{record.courseName}</h3>
                               <span className="shrink-0 text-xs font-bold bg-white dark:bg-boxdark text-primary px-3 py-1.5 rounded-lg shadow-sm border border-stroke dark:border-strokedark">สอนครั้งที่ {record.teachingNo}</span>
                             </div>
-                            
+
                             <div className="flex items-center gap-3 mb-4 rounded-xl bg-white p-3 border border-stroke dark:bg-boxdark dark:border-strokedark shadow-sm">
                               {userImageMap[record.signerName] ? (
                                 <img src={userImageMap[record.signerName]} alt={record.signerName} className="h-10 w-10 rounded-full object-cover border border-primary/20" />
@@ -543,7 +541,7 @@ export default function TeachingRecordPage() {
                                 <p className="text-xs font-semibold text-gray-500">วันที่: {record.date || "ไม่ระบุ"}</p>
                               </div>
                             </div>
-                            
+
                             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-2 flex-1 mb-4">เรื่อง: {record.topic}</p>
 
                             <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-stroke dark:border-strokedark">
