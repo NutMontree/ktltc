@@ -488,7 +488,7 @@ export default function TeachingRecordPage() {
         <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-boxdark">
             <div className="flex items-center justify-between border-b border-stroke bg-gray-50 p-6 dark:border-strokedark dark:bg-meta-4">
-              <h3 className="text-2xl font-black text-black dark:text-white">
+              <h3 className="text-xl md:text-2xl font-black text-black dark:text-white">
                 บันทึกการสอน สัปดาห์ที่ {viewingWeekRecords.week}
               </h3>
               <button
@@ -524,13 +524,13 @@ export default function TeachingRecordPage() {
                       <div className="mb-6 flex space-x-2 border-b border-stroke dark:border-strokedark pb-2">
                         <button
                           onClick={() => setActiveTab('submitted')}
-                          className={`px-4 py-2 font-bold transition ${activeTab === 'submitted' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
+                          className={`px-4 py-2 text-sm md:text-base font-bold transition ${activeTab === 'submitted' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
                         >
                           ส่งแล้ว ({submittedTeachersArray.length} คน)
                         </button>
                         <button
                           onClick={() => setActiveTab('missing')}
-                          className={`px-4 py-2 font-bold transition ${activeTab === 'missing' ? 'border-b-2 border-danger text-danger' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
+                          className={`px-4 py-2 text-sm md:text-base font-bold transition ${activeTab === 'missing' ? 'border-b-2 border-danger text-danger' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
                         >
                           ยังไม่ส่ง ({unsubmittedTeachers.length} คน)
                         </button>
@@ -540,7 +540,7 @@ export default function TeachingRecordPage() {
                     {!selectedModalTeacher && (
                       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                         <div>
-                          <p className="text-sm font-bold text-gray-500">
+                          <p className="text-xs md:text-sm font-bold text-gray-500">
                             แสดงข้อมูล: {selectedDepartment || "ทุกแผนก"} | เทอม {selectedSemester || "ทั้งหมด"} | ปี {selectedAcademicYear || "ทั้งหมด"}
                           </p>
                         </div>
@@ -568,7 +568,7 @@ export default function TeachingRecordPage() {
                               กลับ
                             </button>
                             <div className="flex items-center gap-3">
-                              <h4 className="text-lg font-bold">ข้อมูลของ: {selectedModalTeacher}</h4>
+                              <h4 className="text-base md:text-lg font-bold">ข้อมูลของ: {selectedModalTeacher}</h4>
                               <button
                                 onClick={() => triggerPrint(viewingWeekRecords.records.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedModalTeacher))}
                                 className="rounded-xl bg-indigo-500 px-4 py-2 font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-opacity-90 text-sm"
@@ -581,11 +581,11 @@ export default function TeachingRecordPage() {
                             {viewingWeekRecords.records.filter(r => (r.signerName || "ไม่ระบุชื่อครูผู้สอน") === selectedModalTeacher).map((record) => (
                               <div key={record._id} className="flex flex-col rounded-2xl border border-stroke bg-gray-50 p-6 shadow-sm transition hover:border-primary/50 dark:border-strokedark dark:bg-meta-4">
                                 <div className="flex justify-between items-start mb-4">
-                                  <h3 className="text-lg font-bold text-black dark:text-white line-clamp-1 pr-4">{record.courseName}</h3>
-                                  <span className="shrink-0 text-xs font-bold bg-white dark:bg-boxdark text-primary px-3 py-1.5 rounded-lg shadow-sm border border-stroke dark:border-strokedark">สอนครั้งที่ {record.teachingNo}</span>
+                                  <h3 className="text-base font-bold text-black dark:text-white line-clamp-1 pr-4">{record.courseName}</h3>
+                                  <span className="shrink-0 text-[10px] md:text-xs font-bold bg-white dark:bg-boxdark text-primary px-3 py-1.5 rounded-lg shadow-sm border border-stroke dark:border-strokedark">สอนครั้งที่ {record.teachingNo}</span>
                                 </div>
                                 
-                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-2 flex-1 mb-4">เรื่อง: {record.topic}</p>
+                                <p className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-2 flex-1 mb-4">เรื่อง: {record.topic}</p>
 
                                 <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-stroke dark:border-strokedark">
                                   {(isSuperAdmin || currentUser === (record.signerName || "ไม่ระบุชื่อครูผู้สอน")) && (
@@ -624,15 +624,15 @@ export default function TeachingRecordPage() {
                               className="flex items-center gap-3 rounded-2xl border border-stroke bg-gray-50 p-4 shadow-sm cursor-pointer hover:border-primary transition dark:border-strokedark dark:bg-meta-4 hover:shadow-md"
                             >
                               {userImageMap[t.name] ? (
-                                <img src={userImageMap[t.name]} alt={t.name} className="h-12 w-12 shrink-0 rounded-full object-cover border border-primary/20" />
+                                <img src={userImageMap[t.name]} alt={t.name} className="h-10 w-10 md:h-12 md:w-12 shrink-0 rounded-full object-cover border border-primary/20" />
                               ) : (
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xl">
+                                <div className="flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-lg md:text-xl">
                                   {(t.name || "อ")[0]}
                                 </div>
                               )}
                               <div className="min-w-0 flex-1">
-                                <p className="text-sm font-bold text-black dark:text-white line-clamp-1">{t.name}</p>
-                                <p className="text-xs font-semibold text-gray-500 line-clamp-1">{t.department}</p>
+                                <p className="text-xs md:text-sm font-bold text-black dark:text-white line-clamp-1">{t.name}</p>
+                                <p className="text-[10px] md:text-xs font-semibold text-gray-500 line-clamp-1">{t.department}</p>
                               </div>
                               <div className="shrink-0 flex flex-col items-center justify-center h-8 min-w-[32px] px-2 rounded-full bg-primary/10 text-primary text-xs font-bold">
                                 {t.count}
@@ -646,15 +646,15 @@ export default function TeachingRecordPage() {
                         {unsubmittedTeachers.length > 0 ? unsubmittedTeachers.map((t) => (
                           <div key={t._id || t.name} className="flex items-center gap-3 rounded-2xl border border-stroke bg-gray-50 p-4 shadow-sm dark:border-strokedark dark:bg-meta-4">
                             {userImageMap[t.name] ? (
-                              <img src={userImageMap[t.name]} alt={t.name} className="h-12 w-12 shrink-0 rounded-full object-cover border border-danger/20" />
+                              <img src={userImageMap[t.name]} alt={t.name} className="h-10 w-10 md:h-12 md:w-12 shrink-0 rounded-full object-cover border border-danger/20" />
                             ) : (
-                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-danger/10 text-danger font-bold text-xl">
+                              <div className="flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full bg-danger/10 text-danger font-bold text-lg md:text-xl">
                                 {(t.name || "อ")[0]}
                               </div>
                             )}
                             <div className="min-w-0">
-                              <p className="text-sm font-bold text-black dark:text-white line-clamp-1">{t.name}</p>
-                              <p className="text-xs font-semibold text-gray-500 line-clamp-1">{t.department}</p>
+                              <p className="text-xs md:text-sm font-bold text-black dark:text-white line-clamp-1">{t.name}</p>
+                              <p className="text-[10px] md:text-xs font-semibold text-gray-500 line-clamp-1">{t.department}</p>
                             </div>
                           </div>
                         )) : (
