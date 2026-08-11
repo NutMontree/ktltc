@@ -383,7 +383,8 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       setMessage({ type: "error", text: error.message });
-      setTimeout(() => setMessage(null), 3000);
+      const isApiError = error.message.includes("ผู้ใช้งานเยอะ") || error.message.includes("API Key") || error.message.includes("AI ล้มเหลว");
+      setTimeout(() => setMessage(null), isApiError ? 10000 : 3000);
     } finally {
       setExtracting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -1225,9 +1226,20 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 
       {message && (
         <div
-          className={`fixed bottom-10 right-10 z-9999 animate-bounce rounded-2xl px-8 py-4 font-bold shadow-2xl ${message.type === "success" ? "bg-success text-white" : message.type === "info" ? "bg-blue-500 text-white" : "bg-danger text-white"}`}
+          className={`fixed bottom-10 right-10 z-9999 rounded-2xl px-8 py-4 font-bold shadow-2xl transition-all duration-300 ${message.type === "success" ? "bg-success text-white" : message.type === "info" ? "bg-blue-500 text-white" : "bg-danger text-white"}`}
         >
-          {message.text}
+          <div className="flex flex-col gap-3">
+            <span>{message.text}</span>
+            {(message.text.includes("ผู้ใช้งานเยอะ") || message.text.includes("API Key") || message.text.includes("AI ล้มเหลว")) && (
+              <button
+                type="button"
+                onClick={() => setIsApiKeyModalOpen(true)}
+                className="w-full rounded-xl bg-white px-4 py-2 text-sm font-bold text-danger hover:bg-gray-100 transition-colors shadow-sm active:scale-95"
+              >
+                ⚙️ ตั้งค่า API ส่วนตัว
+              </button>
+            )}
+          </div>
         </div>
       )}
 
