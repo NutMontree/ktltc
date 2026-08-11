@@ -139,7 +139,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error: isRateLimit
-            ? "ระบบ AI มีผู้ใช้งานเยอะ กรุณารอสักครู่แล้วลองใหม่อีกครั้ง"
+            ? "โควตา Token การใช้งาน AI เต็มชั่วคราว (ระบบมีผู้ใช้งานเยอะ) กรุณารอสักครู่แล้วลองใหม่อีกครั้ง"
             : "การวิเคราะห์ด้วย AI ล้มเหลว โปรดลองอีกครั้ง",
         },
         { status: isRateLimit ? 429 : 500 }
