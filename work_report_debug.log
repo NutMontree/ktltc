@@ -10,3 +10,11 @@
 {"time":"2026-08-07T10:24:10.445Z","action":"result","total":84}
 {"time":"2026-08-07T10:24:10.623Z","userRole":"super_admin","userDepartment":"งานศูนย์ดิจิทัลและสื่อสารองค์กร","canAccess":true,"startDateParam":"2026-07-31","endDateParam":"2026-08-07","roleParam":"all","departmentParam":"all"}
 {"time":"2026-08-07T10:24:10.773Z","action":"result","total":84}
+{"time":"2026-08-13T10:36:42.473Z","userRole":"super_admin","userDepartment":"งานศูนย์ดิจิทัลและสื่อสารองค์กร","canAccess":true,"startDateParam":"2026-08-06","endDateParam":"2026-08-13","roleParam":"all","departmentParam":"all"}
+{"time":"2026-08-13T10:36:42.603Z","action":"result","total":0}
+{"time":"2026-08-13T10:36:42.783Z","userRole":"super_admin","userDepartment":"งานศูนย์ดิจิทัลและสื่อสารองค์กร","canAccess":true,"startDateParam":"2026-08-06","endDateParam":"2026-08-13","roleParam":"all","departmentParam":"all"}
+{"time":"2026-08-13T10:36:42.885Z","action":"result","total":0}
+{"time":"2026-08-13T10:36:48.789Z","userRole":"super_admin","userDepartment":"งานศูนย์ดิจิทัลและสื่อสารองค์กร","canAccess":true,"startDateParam":"2026-08-06","endDateParam":"2026-08-13","roleParam":"all","departmentParam":"all"}
+{"time":"2026-08-13T10:36:48.917Z","action":"result","total":0}
+{"time":"2026-08-13T10:37:20.799Z","userRole":"super_admin","userDepartment":"งานศูนย์ดิจิทัลและสื่อสารองค์กร","canAccess":true,"startDateParam":"2026-08-06","endDateParam":"2026-08-13","roleParam":"all","departmentParam":"all"}
+{"time":"2026-08-13T10:37:20.904Z","action":"result","total":0}

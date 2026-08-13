@@ -76,6 +76,17 @@ export async function GET(req: Request) {
     if (startDateParam && endDateParam) {
       startD = new Date(`${startDateParam}T00:00:00.000+07:00`);
       endD = new Date(`${endDateParam}T23:59:59.999+07:00`);
+
+      // Validate: startDate must be <= endDate
+      if (startD > endD) {
+        return NextResponse.json({ success: false, message: "วันที่เริ่มต้นต้องไม่เกินวันที่สิ้นสุด" }, { status: 400 });
+      }
+
+      // Safety: limit range to 365 days to prevent excessive data generation
+      const diffDays = (endD.getTime() - startD.getTime()) / (1000 * 60 * 60 * 24);
+      if (diffDays > 365) {
+        return NextResponse.json({ success: false, message: "ช่วงเวลาต้องไม่เกิน 365 วัน" }, { status: 400 });
+      }
     } else {
       // Fallback to today in Thai time
       const today = new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -108,9 +119,13 @@ export async function GET(req: Request) {
 
     // 4. ลูปเพื่อสร้างและรวมข้อมูลแบบรายวัน
     while (current <= limitD) {
-      const dStr = current.toISOString().split('T')[0];
-      const dayAttend = attendancesByDate[dStr] || [];
-      const presentUserIds = new Set(dayAttend.map(a => a.userId?.toString()));
+      const dayOfWeek = current.getUTCDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+      if (!isWeekend) {
+        const dStr = current.toISOString().split('T')[0];
+        const dayAttend = attendancesByDate[dStr] || [];
+        const presentUserIds = new Set(dayAttend.map(a => a.userId?.toString()));
 
       // 4.1 ใส่ข้อมูลคนที่มีสถานะ (Present / Late)
       if (statusFilter === 'all' || statusFilter === 'Present' || statusFilter === 'Late') {
@@ -172,6 +187,8 @@ export async function GET(req: Request) {
           }
         });
       }
+
+      } // End of !isWeekend check
 
       current.setUTCDate(current.getUTCDate() + 1);
     }

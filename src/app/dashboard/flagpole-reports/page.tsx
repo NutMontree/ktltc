@@ -35,9 +35,11 @@ import {
   Smartphone,
   MapIcon,
   Users,
+  BarChart2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast";
 import * as XLSX from "xlsx";
@@ -276,6 +278,16 @@ function FlagpoleReportsManagementContent() {
         return;
       }
 
+      // Sort by department and then by class group
+      json.data.sort((a: any, b: any) => {
+        const deptA = a.user?.department || "";
+        const deptB = b.user?.department || "";
+        if (deptA !== deptB) return deptA.localeCompare(deptB, 'th');
+        const classA = a.user?.classGroupId || "";
+        const classB = b.user?.classGroupId || "";
+        return classA.localeCompare(classB, 'th');
+      });
+
       const data = json.data.map((r: any) => ({
         รหัสนักศึกษา: r.user?.studentId || "-",
         "ชื่อ-นามสกุล": r.user?.name || "-",
@@ -323,6 +335,16 @@ function FlagpoleReportsManagementContent() {
         return;
       }
 
+      // Sort by department and then by class group
+      json.data.sort((a: any, b: any) => {
+        const deptA = a.user?.department || "";
+        const deptB = b.user?.department || "";
+        if (deptA !== deptB) return deptA.localeCompare(deptB, 'th');
+        const classA = a.user?.classGroupId || "";
+        const classB = b.user?.classGroupId || "";
+        return classA.localeCompare(classB, 'th');
+      });
+
       const printWindow = window.open("", "_blank");
 
       const formatDisplayDate = (dateStr: string) => {
@@ -331,6 +353,38 @@ function FlagpoleReportsManagementContent() {
       };
 
       if (printWindow) {
+        const statsByDept: Record<string, any> = {};
+        json.data.forEach((r: any) => {
+          const dept = r.user?.department || "ไม่ระบุแผนก";
+          if (!statsByDept[dept]) {
+            statsByDept[dept] = {
+              attended: 0,
+              present: 0,
+              late: 0,
+              absent: 0,
+              inSite: 0,
+              outSite: 0
+            };
+          }
+          if (r.status === "Present") {
+            statsByDept[dept].present++;
+            statsByDept[dept].attended++;
+          } else if (r.status === "Late") {
+            statsByDept[dept].late++;
+            statsByDept[dept].attended++;
+          } else if (r.status === "Absent") {
+            statsByDept[dept].absent++;
+          }
+          if (r.status !== "Absent") {
+            const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่" : "นอกพื้นที่") : "");
+            if (inAreaStatus.includes("ในพื้นที่")) {
+              statsByDept[dept].inSite++;
+            } else if (inAreaStatus.includes("นอกพื้นที่") || (r.distance !== undefined && r.distance > 50)) {
+              statsByDept[dept].outSite++;
+            }
+          }
+        });
+
         printWindow.document.write(`
           <html>
             <head>
@@ -421,6 +475,15 @@ function FlagpoleReportsManagementContent() {
                   background-color: #fee2e2;
                   color: #991b1b;
                 }
+                h2.section-title {
+                  font-size: 16px;
+                  font-weight: 700;
+                  margin-top: 25px;
+                  margin-bottom: 10px;
+                  color: #1f2937;
+                  border-bottom: 1px solid #e5e7eb;
+                  padding-bottom: 5px;
+                }
                 @media print {
                   body { padding: 0; }
                   @page { size: A4 landscape; margin: 15mm; }
@@ -455,6 +518,35 @@ function FlagpoleReportsManagementContent() {
                 </div>
               </div>
 
+              <h2 class="section-title">สถิติการเข้าแถวแยกตามแผนกวิชา</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 30%;">แผนกวิชา</th>
+                    <th style="width: 10%; text-align: right;">เข้าแถว (คน)</th>
+                    <th style="width: 10%; text-align: right; color: #ef4444;">ไม่เข้าแถว (คน)</th>
+                    <th style="width: 10%; text-align: right; color: #059669;">ตรงเวลา (คน)</th>
+                    <th style="width: 10%; text-align: right; color: #d97706;">มาสาย (คน)</th>
+                    <th style="width: 15%; text-align: right; color: #059669;">อยู่ในสถานที่ (คน)</th>
+                    <th style="width: 15%; text-align: right; color: #d97706;">อยู่นอกสถานที่ (คน)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${Object.keys(statsByDept).map(dept => `
+                    <tr>
+                      <td style="font-weight: 600;">${dept}</td>
+                      <td style="text-align: right; font-weight: 700;">${statsByDept[dept].attended}</td>
+                      <td style="text-align: right; color: #ef4444;">${statsByDept[dept].absent}</td>
+                      <td style="text-align: right; color: #059669;">${statsByDept[dept].present}</td>
+                      <td style="text-align: right; color: #d97706;">${statsByDept[dept].late}</td>
+                      <td style="text-align: right; color: #059669;">${statsByDept[dept].inSite}</td>
+                      <td style="text-align: right; color: #d97706;">${statsByDept[dept].outSite}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+
+              <h2 class="section-title">รายละเอียดประวัติการเข้าร่วมกิจกรรม</h2>
               <table>
                 <thead>
                   <tr>
@@ -589,6 +681,13 @@ function FlagpoleReportsManagementContent() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 relative z-10 w-full lg:w-auto">
+            <Link
+              href="/dashboard/flagpole-reports/evaluation"
+              className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-md text-xs font-black transition-all active:scale-95 cursor-pointer"
+            >
+              <BarChart2 size={16} /> ประเมินผล
+            </Link>
+
             <button
               onClick={() => fetchReports()}
               className="flex items-center gap-2 px-5 py-3 bg-slate-50 dark:bg-zinc-800/50 text-slate-800 dark:text-zinc-100 rounded-2xl shadow-sm text-xs font-black hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all active:scale-95 border border-slate-200 dark:border-zinc-700"
