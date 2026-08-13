@@ -28,16 +28,18 @@ const nextConfig = {
   },
 
   async headers() {
-    return [
+    const staticCache = [
       {
-        source: "/models/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
+        key: "Cache-Control",
+        value: "public, max-age=86400, stale-while-revalidate=2592000, immutable",
       },
+    ];
+    return [
+      { source: "/models/:path*", headers: staticCache },
+      { source: "/images/:path*", headers: staticCache },
+      { source: "/uploads/:path*", headers: staticCache },
+      { source: "/attendance_photos/:path*", headers: staticCache },
+      { source: "/pdf/:path*", headers: staticCache },
     ];
   },
 

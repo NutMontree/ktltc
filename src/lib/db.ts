@@ -28,6 +28,7 @@ const options = {
   maxPoolSize: 50,                // 50 ต่อ instance x 4 instances = 200 connections รวม (ลดจาก 200 ต่อ instance)
   minPoolSize: 5,                 // เลี้ยง connection ขั้นต่ำไว้ 5 เส้น (warm connection)
   heartbeatFrequencyMS: 10000,   // ตรวจสอบสุขภาพ connection ทุก 10 วิ
+  maxIdleTimeMS: 60000,           // เคลียร์ connection ที่ไม่ได้ใช้เกิน 60 วิ คืน RAM ให้ระบบ
   retryWrites: true,              // retry อัตโนมัติเมื่อ write ล้มเหลว
   retryReads: true,               // retry อัตโนมัติเมื่อ read ล้มเหลว
 };
