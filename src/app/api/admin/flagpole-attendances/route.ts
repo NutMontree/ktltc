@@ -61,13 +61,11 @@ export async function GET(req: Request) {
 
     // 2. สร้าง List ของ Class Groups ให้ตัวกรอง
     let classGroups: string[] = [];
-    if (departmentFilter) {
-      const cgSet = new Set<string>();
-      allMatchingUsers.forEach(u => {
-         if (u.classGroupId) cgSet.add(u.classGroupId);
-      });
-      classGroups = Array.from(cgSet).sort();
-    }
+    const cgSet = new Set<string>();
+    allMatchingUsers.forEach(u => {
+       if (u.classGroupId) cgSet.add(u.classGroupId);
+    });
+    classGroups = Array.from(cgSet).sort();
 
     // 3. ค้นหาประวัติการเข้าแถวทั้งหมดในช่วงเวลา (อิงตามเวลาไทย +07:00)
     let startD = new Date();

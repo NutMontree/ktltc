@@ -54,7 +54,7 @@ export default function FlagpoleEvaluationPage() {
     }
   }, [status, router]);
 
-  const fetchClassGroups = async (dept: string) => {
+  const fetchClassGroups = async (dept: string = "") => {
     try {
       const res = await fetch(`/api/admin/flagpole-attendances?department=${encodeURIComponent(dept)}&limit=1`);
       const json = await res.json();
@@ -66,15 +66,14 @@ export default function FlagpoleEvaluationPage() {
     }
   };
 
+  useEffect(() => {
+    fetchClassGroups(departmentFilter);
+  }, [departmentFilter]);
+
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setDepartmentFilter(val);
     setClassGroupFilter("");
-    if (val) {
-      fetchClassGroups(val);
-    } else {
-      setAvailableClassGroups([]);
-    }
   };
 
   const evaluateData = async () => {
@@ -88,94 +87,27 @@ export default function FlagpoleEvaluationPage() {
       return;
     }
 
-    if (!departmentFilter) {
-      toast.error("กรุณาเลือกแผนกวิชา");
-      return;
-    }
-
     setLoading(true);
     setHasEvaluated(true);
 
     try {
-      // ดึงข้อมูลทั้งหมดโดยวนลูป pagination เพื่อไม่ให้ข้อมูลหาย
-      const PAGE_SIZE = 5000;
-      let allRecords: any[] = [];
-      let currentPage = 1;
-      let keepFetching = true;
+      const res = await fetch(
+        `/api/admin/flagpole-attendances/evaluation?startDate=${startDate}&endDate=${endDate}&department=${encodeURIComponent(
+          departmentFilter
+        )}&classGroupId=${encodeURIComponent(classGroupFilter)}`
+      );
+      const json = await res.json();
 
-      while (keepFetching) {
-        const res = await fetch(
-          `/api/admin/flagpole-attendances?startDate=${startDate}&endDate=${endDate}&department=${encodeURIComponent(
-            departmentFilter
-          )}&classGroupId=${encodeURIComponent(classGroupFilter)}&page=${currentPage}&limit=${PAGE_SIZE}`
-        );
-        const json = await res.json();
-
-        if (json.success && json.data) {
-          allRecords = allRecords.concat(json.data);
-          if (json.hasMore) {
-            currentPage++;
-          } else {
-            keepFetching = false;
-          }
+      if (json.success && json.data) {
+        setData(json.data);
+        if (json.data.length > 0) {
+          toast.success(`ประมวลผลเสร็จสิ้น พบข้อมูล ${json.data.length} คน`);
         } else {
-          keepFetching = false;
+          toast.error("ไม่พบข้อมูลนักศึกษาในช่วงเวลาที่เลือก");
         }
-      }
-
-      if (allRecords.length === 0) {
-        setData([]);
-        toast.error("ไม่พบข้อมูลในช่วงเวลาที่เลือก");
-        return;
-      }
-
-      // Group by user
-      const userStats: Record<string, any> = {};
-
-      allRecords.forEach((r: any) => {
-        if (!r.user) return;
-        const uId = r.user.studentId || r.user.email || r.user.id;
-
-        if (!userStats[uId]) {
-          userStats[uId] = {
-            studentId: r.user.studentId || "-",
-            name: r.user.name || "-",
-            department: r.user.department || "-",
-            classGroupId: r.user.classGroupId || "-",
-            academicLevel: r.user.academicLevel || "-",
-            present: 0,
-            late: 0,
-            absent: 0,
-            total: 0,
-          };
-        }
-
-        userStats[uId].total++;
-        if (r.status === "Present") userStats[uId].present++;
-        else if (r.status === "Late") userStats[uId].late++;
-        else if (r.status === "Absent") userStats[uId].absent++;
-      });
-
-      // Convert to array and calculate percentages
-      const evaluatedList = Object.values(userStats).map((stat: any) => {
-        const presentLate = stat.present + stat.late;
-        const percent = stat.total > 0 ? (presentLate / stat.total) * 100 : 0;
-        return { ...stat, percent: percent.toFixed(2) };
-      });
-
-      // Sort by department, class, then name
-      evaluatedList.sort((a, b) => {
-        if (a.department !== b.department) return a.department.localeCompare(b.department, 'th');
-        if (a.classGroupId !== b.classGroupId) return a.classGroupId.localeCompare(b.classGroupId, 'th');
-        return a.name.localeCompare(b.name, 'th');
-      });
-
-      setData(evaluatedList);
-
-      if (evaluatedList.length > 0) {
-        toast.success(`ประมวลผลเสร็จสิ้น พบข้อมูล ${evaluatedList.length} คน`);
       } else {
-        toast.error("ไม่พบข้อมูลนักศึกษาในช่วงเวลาที่เลือก");
+        setData([]);
+        toast.error(json.message || "เกิดข้อผิดพลาดในการประมวลผล");
       }
     } catch (err) {
       console.error(err);
@@ -281,7 +213,7 @@ export default function FlagpoleEvaluationPage() {
                 onChange={handleDepartmentChange}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"
               >
-                <option value="" disabled>-- เลือกแผนกวิชา --</option>
+                <option value="">ทุกแผนกวิชา</option>
                 {DEPARTMENT_GROUPS.find((g) => g.label.includes("แผนกวิชา"))?.options.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
@@ -293,7 +225,7 @@ export default function FlagpoleEvaluationPage() {
                 value={classGroupFilter}
                 onChange={(e) => setClassGroupFilter(e.target.value)}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"
-                disabled={!departmentFilter && availableClassGroups.length === 0}
+                disabled={availableClassGroups.length === 0}
               >
                 <option value="">ทั้งหมด</option>
                 {availableClassGroups.map((g) => (

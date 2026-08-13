@@ -2,18 +2,21 @@
   "tailwindCSS.lint.unknownClasses": "ignore",
   "tailwindCSS.lint.cssConflict": "ignore",
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "vscode.typescript-language-features",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
   "css.lint.unknownAtRules": "ignore",
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
-  }
+  },
+  "git.path": "C:\\Program Files\\Git\\cmd\\git.exe",
+  "git.enabled": true
 }
+
