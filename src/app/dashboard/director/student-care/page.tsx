@@ -1102,26 +1102,28 @@ export default function StudentCarePage() {
               </p>
             </div>
 
-            <div className="mb-4 flex justify-center break-inside-avoid">
-              <div className="grid grid-cols-4 w-full max-w-2xl border border-black text-center text-sm">
-                <div className="border-r border-black p-2">
-                  <div className="font-bold">กลุ่มปกติ</div>
-                  <div className="text-lg font-bold">{sdqCounts.normal} <span className="text-xs font-normal">คน</span></div>
-                </div>
-                <div className="border-r border-black p-2">
-                  <div className="font-bold">กลุ่มพิเศษ</div>
-                  <div className="text-lg font-bold">{sdqCounts.special} <span className="text-xs font-normal">คน</span></div>
-                </div>
-                <div className="border-r border-black p-2">
-                  <div className="font-bold">กลุ่มเสี่ยง</div>
-                  <div className="text-lg font-bold">{sdqCounts.risk} <span className="text-xs font-normal">คน</span></div>
-                </div>
-                <div className="p-2">
-                  <div className="font-bold">กลุ่มมีปัญหา</div>
-                  <div className="text-lg font-bold">{sdqCounts.problem} <span className="text-xs font-normal">คน</span></div>
+            {viewTab === 'screening' && (
+              <div className="mb-4 flex justify-center break-inside-avoid">
+                <div className="grid grid-cols-4 w-full max-w-2xl border border-black text-center text-sm">
+                  <div className="border-r border-black p-2">
+                    <div className="font-bold">กลุ่มปกติ</div>
+                    <div className="text-lg font-bold">{sdqCounts.normal} <span className="text-xs font-normal">คน</span></div>
+                  </div>
+                  <div className="border-r border-black p-2">
+                    <div className="font-bold">กลุ่มพิเศษ</div>
+                    <div className="text-lg font-bold">{sdqCounts.special} <span className="text-xs font-normal">คน</span></div>
+                  </div>
+                  <div className="border-r border-black p-2">
+                    <div className="font-bold">กลุ่มเสี่ยง</div>
+                    <div className="text-lg font-bold">{sdqCounts.risk} <span className="text-xs font-normal">คน</span></div>
+                  </div>
+                  <div className="p-2">
+                    <div className="font-bold">กลุ่มมีปัญหา</div>
+                    <div className="text-lg font-bold">{sdqCounts.problem} <span className="text-xs font-normal">คน</span></div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div id="print-table-wrapper" className="w-full">
               <table className="w-full border-collapse border border-black">
@@ -1143,7 +1145,6 @@ export default function StudentCarePage() {
                         <th className="border border-black text-center w-20">แผนก/ชั้น</th>
                         <th className="border border-black text-center">สภาพที่พักอาศัย</th>
                         <th className="border border-black text-center">บันทึกเพิ่มเติม</th>
-                        <th className="border border-black text-center w-16">ผลการประเมิน</th>
                       </>
                     )}
                   </tr>
@@ -1169,9 +1170,6 @@ export default function StudentCarePage() {
                           <td className="border border-black text-center">{r.department}<br/>{r.classroom}</td>
                           <td className="border border-black text-left">{r.address || '-'}</td>
                           <td className="border border-black text-left">{r.notes || '-'}</td>
-                          <td className="border border-black text-center font-bold">
-                            {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
-                          </td>
                         </>
                       )}
                     </tr>
