@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev.js",
     "build": "next build && ln -sf ../../public .next/standalone/public && ln -sf ../../static .next/standalone/.next/static",
     "start": "next start",
     "lint": "eslint",

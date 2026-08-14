@@ -88,6 +88,24 @@ export const metadata: Metadata = {
 
 import clientPromise from "@/lib/db";
 
+import { unstable_cache } from "next/cache";
+
+const getGlobalEffect = unstable_cache(
+  async () => {
+    try {
+      const client = await clientPromise;
+      const db = client.db("ktltc_db");
+      const effectSetting = await db.collection("site_settings").findOne({ key: "global_effect" });
+      return effectSetting ? effectSetting.value : "none";
+    } catch (error) {
+      console.error("Failed to fetch global_effect:", error);
+      return "none";
+    }
+  },
+  ["global_effect_cache"],
+  { revalidate: 300 } // Cache for 5 minutes
+);
+
 // 3. ฟังก์ชัน RootLayout: โครงสร้างหลักของหน้าเว็บ
 export default async function RootLayout({
   children, // children คือเนื้อหาของแต่ละหน้า (Page) ที่จะถูกแทรกเข้ามาตรงกลาง
@@ -96,17 +114,7 @@ export default async function RootLayout({
 }>) {
 
   // ดึงค่า Global Effect จากฐานข้อมูลเพื่อนำไปเรนเดอร์ให้กับทุกคน
-  let globalEffect = "none";
-  try {
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
-    const effectSetting = await db.collection("site_settings").findOne({ key: "global_effect" });
-    if (effectSetting) {
-      globalEffect = effectSetting.value;
-    }
-  } catch (error) {
-    console.error("Failed to fetch global_effect:", error);
-  }
+  const globalEffect = await getGlobalEffect();
 
   return (
     // suppressHydrationWarning ใส่ไว้เพื่อแก้ Error ที่เกิดจาก ThemeProvider (Dark Mode)
