@@ -58,7 +58,7 @@ export async function GET(req: Request) {
       db.collection("student_care_records").find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
       db.collection("student_care_records").countDocuments(query),
       db.collection("student_care_records").aggregate([
-        { $match: { ...query, recordType: 'screening' } },
+        { $match: { ...query, recordType: query.recordType || { $in: ['screening', 'home_visit'] } } },
         { $group: { _id: "$sdqType", count: { $sum: 1 } } }
       ]).toArray()
     ]);

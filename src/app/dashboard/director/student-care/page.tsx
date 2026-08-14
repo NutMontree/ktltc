@@ -183,8 +183,388 @@ export default function StudentCarePage() {
     const timer = setTimeout(() => {
       fetchRecords(0, false);
     }, 300);
+
+
     return () => clearTimeout(timer);
   }, [viewTab, filterDepartment, filterClassroom, filterSdqType, searchTerm]);
+  const renderStudentPrintView = (viewRecord: any) => (
+    <div className="break-before-page pt-8 print:pt-0 w-full relative individual-record print-page">
+            {/* Modal Header/Images */}
+            <div className="bg-slate-100 dark:bg-zinc-950 print:bg-white relative rounded-t-3xl print:rounded-none overflow-hidden print:overflow-visible group/img">
+              <div className="h-64 hidden-in-print w-full relative">
+                {(viewRecord.imageUrls && viewRecord.imageUrls.length > 0) ? (
+                  <div className="w-full h-full relative cursor-pointer" onClick={() => setFullscreenImage(viewRecord.imageUrls[currentImageIndex])}>
+                    <img src={viewRecord.imageUrls[currentImageIndex] || undefined} alt={`Record Image ${currentImageIndex + 1}`} className="w-full h-full object-contain transition-transform hover:scale-105 duration-500" />
+
+                    <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
+                      ขยายเต็มจอ
+                    </div>
+
+                    {viewRecord.imageUrls.length > 1 && (
+                      <>
+                        <div className="no-print print:hidden absolute top-4 right-14 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10">
+                          <ImageIcon size={14} /> รูปที่ {currentImageIndex + 1} / {viewRecord.imageUrls.length}
+                        </div>
+
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCurrentImageIndex((prev: number) => prev === 0 ? viewRecord.imageUrls.length - 1 : prev - 1);
+                          }}
+                          className="no-print print:hidden absolute left-2 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm shadow-xl z-20"
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCurrentImageIndex((prev: number) => prev === viewRecord.imageUrls.length - 1 ? 0 : prev + 1);
+                          }}
+                          className="no-print print:hidden absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm shadow-xl z-20"
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ) : viewRecord.imageUrl ? (
+                  <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.imageUrl)}>
+                    <img src={viewRecord.imageUrl || undefined} alt="Record Image" className="w-full h-full object-contain transition-transform hover:scale-105 duration-500" />
+                    <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
+                      ขยายเต็มจอ
+                    </div>
+                  </div>
+                ) : viewRecord.studentProfileImage ? (
+                  <div className="w-full h-full relative cursor-pointer group/img" onClick={() => setFullscreenImage(viewRecord.studentProfileImage)}>
+                    <img src={viewRecord.studentProfileImage || undefined} alt="Profile Image" className="w-full h-full object-contain transition-transform hover:scale-105 duration-500" />
+                    <div className="no-print print:hidden absolute top-4 left-4 bg-black/60 hover:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-lg border border-white/10 z-10 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6M21 7.8V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6" /></svg>
+                      ขยายเต็มจอ
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
+                    {viewRecord.recordType === 'home_visit' ? <Camera size={64} /> : <ShieldCheck size={64} />}
+                  </div>
+                )}
+              </div>
+
+              <div className="hidden print:block text-center mb-4 print-title">
+                <h1 className="text-xl font-bold mb-1">{viewRecord.recordType === 'home_visit' ? 'บันทึกเยี่ยมบ้าน (คป.11)' : 'สรุปผลการประเมิน SDQ (แบบคัดกรอง)'}</h1>
+                <h2 className="text-lg font-bold mb-1">วิทยาลัยเทคนิคกันทรลักษ์</h2>
+                <p className="text-sm">
+                  แผนก: {viewRecord.department || '-'} | ชั้นเรียน: {viewRecord.classroom || '-'}
+                </p>
+                <p className="text-sm mt-1">
+                  ข้อมูล ณ วันที่: {new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })} น.
+                </p>
+              </div>
+
+              <div className="absolute print:relative bottom-0 print:bottom-auto inset-x-0 print:inset-0 bg-linear-to-t from-black/80 to-transparent print:bg-none p-6 pt-20 print:pt-0 print:px-0 print:pb-2 print:mb-2 print:border-b print:border-slate-300 flex justify-between items-end print:items-start">
+                <div>
+                  <div className="flex items-center gap-4 mb-1">
+                    {viewRecord.studentProfileImage && (viewRecord.imageUrls?.length > 0 || viewRecord.imageUrl) && (
+                      <img src={viewRecord.studentProfileImage} className="w-14 h-14 rounded-full border-2 border-white object-cover shadow-lg print:hidden" alt="Student Profile" />
+                    )}
+                    <h2 className="text-3xl print:text-2xl font-black text-white print:text-black leading-tight">{formatStudentName(viewRecord.studentName, viewRecord.gender)}</h2>
+                  </div>
+                  <div className={`flex flex-col gap-1 print:gap-0 text-white/80 print:text-black text-sm font-bold ${viewRecord.studentProfileImage && (viewRecord.imageUrls?.length > 0 || viewRecord.imageUrl) ? 'ml-[72px] print:ml-0' : ''}`}>
+                    <div className="flex items-center gap-2">
+                      <span>{viewRecord.department && `${viewRecord.department} - `}{viewRecord.classroom}</span>
+                      <span>•</span>
+                      <span>{viewRecord.recordType === 'home_visit' ? 'บันทึกเยี่ยมบ้าน' : 'แบบคัดกรอง'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-white/60 print:text-black">
+                      {viewRecord.gender && <span>เพศ: {viewRecord.gender}</span>}
+                      {viewRecord.gender && viewRecord.dob && <span>•</span>}
+                      {viewRecord.dob && <span>วันเกิด: {new Date(viewRecord.dob).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })} (อายุ {calculateAge(viewRecord.dob)} ปี)</span>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Print mode only: Add student photo to the right side of the banner */}
+                <div className="hidden print:block shrink-0 ml-4">
+                  <img
+                    src={viewRecord.studentProfileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(viewRecord.studentName)}&background=random`}
+                    className="w-[2.5cm] h-[2.5cm] object-cover object-center rounded-md"
+                    alt="Student"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 md:p-8 space-y-6 print:space-y-2 print:p-0">
+              {/* Status & Actions */}
+              <div className="no-print flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800 pb-6">
+                <div className="flex items-center gap-3">
+                  <span className={`inline-flex items-center gap-1.5 px-4 py-2 text-sm font-black rounded-xl border ${viewRecord.sdqType === 'normal' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
+                    viewRecord.sdqType === 'special' ? 'bg-blue-50 text-blue-600 border-blue-200' :
+                      viewRecord.sdqType === 'risk' ? 'bg-amber-50 text-amber-600 border-amber-200' :
+                        'bg-rose-50 text-rose-600 border-rose-200'
+                    }`}>
+                    {viewRecord.sdqType === 'problem' && <AlertCircle size={16} />}
+                    {viewRecord.sdqType === 'normal' ? 'ปกติ (Normal)' : viewRecord.sdqType === 'special' ? 'พิเศษ (Special)' : viewRecord.sdqType === 'risk' ? 'เสี่ยง (Risk)' : 'มีปัญหา (Problem)'}
+                  </span>
+
+                  {viewRecord.status === 'referred' && (
+                    <span className="px-3 py-2 text-xs font-black uppercase rounded-xl bg-rose-500 text-white shadow-md flex items-center gap-1">
+                      <Send size={14} /> ส่งต่อ
+                    </span>
+                  )}
+                  {viewRecord.status === 'resolved' && (
+                    <span className="px-3 py-2 text-xs font-black uppercase rounded-xl bg-emerald-500 text-white shadow-md flex items-center gap-1">
+                      <Check size={14} /> แก้ไขแล้ว
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const originalTitle = document.title;
+                      document.title = viewRecord.recordType === 'home_visit' ? `บันทึกเยี่ยมบ้าน_${viewRecord.studentName}` : `แบบประเมินSDQ_${viewRecord.studentName}`;
+                      window.print();
+                      document.title = originalTitle;
+                    }}
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-500/10 active:scale-95 transition-all border border-indigo-200 dark:border-indigo-800/50"
+                    title="พิมพ์หรือบันทึกเป็น PDF"
+                  >
+                    <Printer size={16} /> พิมพ์
+                  </button>
+
+                  {(user.role === 'super_admin' || user.username === viewRecord.teacherName) && (
+                    <>
+                      <button
+                        onClick={() => handleEdit(viewRecord)}
+                        className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+                      >
+                        <Edit size={16} /> แก้ไข
+                      </button>
+                      <button
+                        onClick={() => handleDelete(viewRecord._id)}
+                        className="flex items-center gap-1.5 bg-red-50 hover:bg-red-500 hover:text-white dark:bg-red-900/20 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+                      >
+                        <Trash2 size={16} /> ลบ
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Details */}
+              {viewRecord.recordType === 'home_visit' && viewRecord.address && (
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 mb-2 print:mb-0 uppercase tracking-wider">ที่อยู่ / สภาพที่พักอาศัย</h4>
+                  <p className="text-slate-800 dark:text-zinc-200 text-sm leading-relaxed print:leading-tight p-4 print:p-0 print:bg-transparent print:border-none bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-800">{viewRecord.address}</p>
+                </div>
+              )}
+
+              {viewRecord.recordType === 'home_visit' && viewRecord.gpsLat && viewRecord.gpsLng && (
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 mb-2 print:mb-0 uppercase tracking-wider">พิกัดเยี่ยมบ้าน</h4>
+                  {/* Screen View */}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${viewRecord.gpsLat},${viewRecord.gpsLng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="print:hidden flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-sm font-bold p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors w-fit border border-indigo-100 dark:border-indigo-900/50"
+                  >
+                    <MapPin size={16} /> ดูพิกัดบน Google Maps
+                  </a>
+                  {/* Print View */}
+                  <div className="hidden print:block text-slate-800 dark:text-zinc-200 text-sm leading-relaxed print:leading-tight p-3 print:p-0 print:bg-transparent print:border-none bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 w-fit">
+                    <div className="flex items-center gap-2 font-mono">
+                      <MapPin size={16} className="text-indigo-600" />
+                      <span>{viewRecord.gpsLat}, {viewRecord.gpsLng}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* SDQ Details if available */}
+              {viewRecord.recordType === 'screening' && viewRecord.sdqData && (
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">รายละเอียดคะแนน SDQ (ฉบับครูประเมิน)</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 1: อารมณ์</div>
+                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.E}</div>
+                      {viewRecord.sdqData.E_res && (
+                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.E_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.E_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                          แปลผล: {viewRecord.sdqData.E_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.E_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
+                        </div>
+                      )}
+                    </div>
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 2: ความประพฤติ</div>
+                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.C}</div>
+                      {viewRecord.sdqData.C_res && (
+                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.C_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.C_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                          แปลผล: {viewRecord.sdqData.C_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.C_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
+                        </div>
+                      )}
+                    </div>
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 3: สมาธิสั้น</div>
+                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.H}</div>
+                      {viewRecord.sdqData.H_res && (
+                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.H_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.H_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                          แปลผล: {viewRecord.sdqData.H_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.H_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
+                        </div>
+                      )}
+                    </div>
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 4: สัมพันธ์กับเพื่อน</div>
+                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.Pe}</div>
+                      {viewRecord.sdqData.Pe_res && (
+                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.Pe_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.Pe_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                          แปลผล: {viewRecord.sdqData.Pe_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.Pe_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                    <div className="print-box p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30">
+                      <div className="text-[10px] text-amber-600 font-bold mb-1">รวม 4 ด้าน</div>
+                      <div className="text-xl font-black text-amber-700 dark:text-amber-500">{viewRecord.sdqData.total}</div>
+                      <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqType === 'problem' ? 'text-rose-600' : viewRecord.sdqType === 'risk' ? 'text-amber-600' : 'text-emerald-600'}`}>
+                        แปลผล: {viewRecord.sdqType === 'problem' ? 'มีปัญหา' : viewRecord.sdqType === 'risk' ? 'เสี่ยง' : 'ปกติ'}
+                      </div>
+                    </div>
+                    <div className="print-box p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                      <div className="text-[10px] text-emerald-600 font-bold mb-1">สัมพันธภาพทางสังคม</div>
+                      <div className="text-xl font-black text-emerald-700 dark:text-emerald-500">{viewRecord.sdqData.P}</div>
+                      {viewRecord.sdqData.P_res && (
+                        <div className="mt-1 text-[10px] font-bold text-emerald-600">
+                          แปลผล: {viewRecord.sdqData.P_res === 'strength' ? 'เป็นจุดแข็ง' : 'ไม่มีจุดแข็ง'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {viewRecord.sdqData.impact && (
+                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
+                      <h5 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider flex items-center justify-between">
+                        <span>ผลประเมินผลกระทบ (ด้านหลัง)</span>
+                        {viewRecord.sdqData.impact.result && (
+                          <span className={`px-2 py-1 rounded text-xs ${viewRecord.sdqData.impact.result === 'problem' ? 'bg-rose-100 text-rose-600' : viewRecord.sdqData.impact.result === 'risk' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                            แปลผล: {viewRecord.sdqData.impact.result === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.impact.result === 'risk' ? 'เสี่ยง' : 'ปกติ'}
+                          </span>
+                        )}
+                      </h5>
+                      {viewRecord.sdqData.impact.hasProblem === 0 ? (
+                        <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
+                          <p className="text-sm font-bold text-slate-600 dark:text-zinc-400">ไม่มีปัญหา</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                            <p className="text-[10px] text-slate-500 font-bold mb-1">ระดับปัญหา</p>
+                            <p className="text-sm font-black text-rose-600 dark:text-rose-400">
+                              {['ไม่', 'มีปัญหาเล็กน้อย', 'มีปัญหาชัดเจน', 'มีปัญหาอย่างมาก'][viewRecord.sdqData.impact.hasProblem]}
+                            </p>
+                          </div>
+                          {viewRecord.sdqData.impact.duration > -1 && (
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                              <p className="text-[10px] text-slate-500 font-bold mb-1">ระยะเวลาที่เกิดปัญหา</p>
+                              <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
+                                {['น้อยกว่า 1 เดือน', '1 - 5 เดือน', '6 - 12 เดือน', 'มากกว่า 1 ปี'][viewRecord.sdqData.impact.duration]}
+                              </p>
+                            </div>
+                          )}
+                          {viewRecord.sdqData.impact.distress > -1 && (
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                              <p className="text-[10px] text-slate-500 font-bold mb-1">ความไม่สบายใจของเด็ก</p>
+                              <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
+                                {['ไม่เลย', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.distress]}
+                              </p>
+                            </div>
+                          )}
+                          {viewRecord.sdqData.impact.interferePeer > -1 && (
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                              <p className="text-[10px] text-slate-500 font-bold mb-1">รบกวนชีวิตประจำวัน (เพื่อน)</p>
+                              <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
+                                {['ไม่', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.interferePeer]}
+                              </p>
+                            </div>
+                          )}
+                          {viewRecord.sdqData.impact.interfereClass > -1 && (
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                              <p className="text-[10px] text-slate-500 font-bold mb-1">รบกวนการเรียน (ห้องเรียน)</p>
+                              <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
+                                {['ไม่', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.interfereClass]}
+                              </p>
+                            </div>
+                          )}
+                          {viewRecord.sdqData.impact.burden > -1 && (
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                              <p className="text-[10px] text-slate-500 font-bold mb-1">ความยุ่งยากต่อชั้นเรียน/ครู</p>
+                              <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
+                                {['ไม่เลย', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.burden]}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-6 print:mt-2 space-y-6 print:space-y-2">
+                {viewRecord.recordType === 'screening' && viewRecord.sdqData && viewRecord.sdqData.otherConcerns && (
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-400 mb-2 print:mb-0 uppercase tracking-wider">ความเห็นหรือความกังวลอื่น</h4>
+                    <p className="text-slate-800 dark:text-zinc-200 text-sm leading-relaxed print:leading-tight p-4 print:p-0 print:bg-transparent print:border-none print:min-h-0 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-800 min-h-24">
+                      {viewRecord.sdqData.otherConcerns}
+                    </p>
+                  </div>
+                )}
+
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 mb-2 print:mb-0 uppercase tracking-wider">บันทึกเพิ่มเติม / ข้อเสนอแนะ</h4>
+                  <p className="text-slate-800 dark:text-zinc-200 text-sm leading-relaxed print:leading-tight p-4 print:p-0 print:bg-transparent print:border-none print:min-h-0 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-800 min-h-24">
+                    {viewRecord.notes || "ไม่มีบันทึกเพิ่มเติม"}
+                  </p>
+                </div>
+              </div>
+
+              {viewRecord.imageUrls && viewRecord.imageUrls.length > 0 && (
+                <div className="mt-6 print:mt-4 hidden print:block">
+                  <h4 className="text-xs font-bold text-slate-400 mb-2 print:mb-0 uppercase tracking-wider">ภาพถ่ายประกอบ ({viewRecord.imageUrls.length} ภาพ)</h4>
+                  <div className="grid grid-cols-3 print:grid-cols-3 gap-2">
+                    {viewRecord.imageUrls.map((url: string, index: number) => (
+                      <div key={index} className="aspect-4/3 relative rounded-lg print:rounded-none overflow-hidden border border-slate-200 print:border-none bg-slate-50 print:bg-transparent break-inside-avoid">
+                        <img src={url} alt={`ภาพประกอบ ${index + 1}`} className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-4 mt-4 print:pt-8 print:mt-4 text-center md:text-right print:text-right break-inside-avoid">
+                <div className="inline-flex flex-col items-center justify-center text-center">
+                  <div className="flex items-baseline mb-1">
+                    <span className="text-sm text-slate-500 mr-2 whitespace-nowrap">ลงชื่อ</span>
+                    <span className="text-sm text-slate-500 leading-none">..............................................................</span>
+                    <span className="text-sm ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                  </div>
+                  <div className="font-bold text-slate-800 dark:text-zinc-200 text-sm">({viewRecord.teacherName})</div>
+                  {viewRecord.teacherDepartment && <div className="text-xs font-medium text-slate-600 dark:text-slate-400">แผนก: {viewRecord.teacherDepartment}</div>}
+                  <div className="text-xs font-medium text-slate-600 dark:text-slate-400">ครูที่ปรึกษา/ผู้ประเมิน</div>
+                  <div className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                    วันที่ประเมิน: {new Date(viewRecord.visitDate || viewRecord.createdAt).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })} น.
+                  </div>
+                </div>
+              </div>
+            </div>
+    </div>
+  );
 
   const fetchDeputy = async () => {
     try {
@@ -640,6 +1020,16 @@ export default function StudentCarePage() {
         <>
           <style>{`
             @media print {
+              @page {
+                margin: 10mm 5mm; /* Reduce left and right margins */
+              }
+              html, body {
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+              }
               body * {
                 visibility: hidden;
               }
@@ -647,7 +1037,7 @@ export default function StudentCarePage() {
                 visibility: visible;
               }
               #print-summary-section {
-                position: absolute !important;
+                position: relative !important;
                 left: 0;
                 top: 0;
                 width: 100% !important;
@@ -671,6 +1061,9 @@ export default function StudentCarePage() {
                 font-size: 16px !important; /* Adjusted text size */
                 word-wrap: break-word !important;
                 white-space: normal !important;
+              }
+              #print-summary-section .whitespace-nowrap {
+                white-space: nowrap !important;
               }
               #print-summary-section th:first-child,
               #print-summary-section td:first-child {
@@ -697,13 +1090,37 @@ export default function StudentCarePage() {
           `}</style>
           <div id="print-summary-section" className="print:relative fixed inset-0 z-999999 bg-white text-black p-4 overflow-visible print:overflow-visible">
             <div className="text-center mb-4">
-              <h1 className="text-xl font-bold mb-1 print-title">สรุปผลการประเมิน SDQ {viewTab === 'home_visit' ? '(บันทึกเยี่ยมบ้าน)' : '(แบบคัดกรอง)'}</h1>
+              <h1 className="text-xl font-bold mb-1 print-title">{viewTab === 'home_visit' ? 'บันทึกเยี่ยมบ้าน (คป.11)' : 'สรุปผลการประเมิน SDQ (แบบคัดกรอง)'}</h1>
               <h2 className="text-lg font-bold mb-1">วิทยาลัยเทคนิคกันทรลักษ์</h2>
               <p className="text-sm">
                 {filterDepartment ? `แผนก: ${filterDepartment}` : 'ทุกแผนก'}
                 {' | '}
                 {filterClassroom ? `ชั้นเรียน: ${filterClassroom}` : 'ทุกชั้นเรียน'}
               </p>
+              <p className="text-sm mt-1">
+                ข้อมูล ณ วันที่: {new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })} น.
+              </p>
+            </div>
+
+            <div className="mb-4 flex justify-center break-inside-avoid">
+              <div className="grid grid-cols-4 w-full max-w-2xl border border-black text-center text-sm">
+                <div className="border-r border-black p-2">
+                  <div className="font-bold">กลุ่มปกติ</div>
+                  <div className="text-lg font-bold">{sdqCounts.normal} <span className="text-xs font-normal">คน</span></div>
+                </div>
+                <div className="border-r border-black p-2">
+                  <div className="font-bold">กลุ่มพิเศษ</div>
+                  <div className="text-lg font-bold">{sdqCounts.special} <span className="text-xs font-normal">คน</span></div>
+                </div>
+                <div className="border-r border-black p-2">
+                  <div className="font-bold">กลุ่มเสี่ยง</div>
+                  <div className="text-lg font-bold">{sdqCounts.risk} <span className="text-xs font-normal">คน</span></div>
+                </div>
+                <div className="p-2">
+                  <div className="font-bold">กลุ่มมีปัญหา</div>
+                  <div className="text-lg font-bold">{sdqCounts.problem} <span className="text-xs font-normal">คน</span></div>
+                </div>
+              </div>
             </div>
 
             <div id="print-table-wrapper" className="w-full">
@@ -711,7 +1128,7 @@ export default function StudentCarePage() {
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="border border-black text-center">ที่</th>
-                    <th className="border border-black text-center">ชื่อ-นามสกุล</th>
+                    <th className="border border-black text-center whitespace-nowrap">ชื่อ-นามสกุล</th>
                     {viewTab === 'screening' ? (
                       <>
                         <th className="border border-black text-center">ด้านอารมณ์</th>
@@ -722,7 +1139,12 @@ export default function StudentCarePage() {
                         <th className="border border-black text-center">สรุปผลประเมิน</th>
                       </>
                     ) : (
-                      <th className="border border-black text-center">ผลการประเมิน (โดยครูที่ปรึกษา)</th>
+                      <>
+                        <th className="border border-black text-center w-20">แผนก/ชั้น</th>
+                        <th className="border border-black text-center">สภาพที่พักอาศัย</th>
+                        <th className="border border-black text-center">บันทึกเพิ่มเติม</th>
+                        <th className="border border-black text-center w-16">ผลการประเมิน</th>
+                      </>
                     )}
                   </tr>
                 </thead>
@@ -730,7 +1152,7 @@ export default function StudentCarePage() {
                   {displayedRecords.map((r, i) => (
                     <tr key={r._id}>
                       <td className="border border-black text-center">{i + 1}</td>
-                      <td className="border border-black">{formatStudentName(r.studentName, r.gender)}</td>
+                      <td className="border border-black whitespace-nowrap px-2">{formatStudentName(r.studentName, r.gender)}</td>
                       {viewTab === 'screening' ? (
                         <>
                           <td className="border border-black text-center">{getTranslate(r.sdqData?.E_res)}</td>
@@ -743,9 +1165,14 @@ export default function StudentCarePage() {
                           </td>
                         </>
                       ) : (
-                        <td className="border border-black text-center">
-                          {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
-                        </td>
+                        <>
+                          <td className="border border-black text-center">{r.department}<br/>{r.classroom}</td>
+                          <td className="border border-black text-left">{r.address || '-'}</td>
+                          <td className="border border-black text-left">{r.notes || '-'}</td>
+                          <td className="border border-black text-center font-bold">
+                            {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
+                          </td>
+                        </>
                       )}
                     </tr>
                   ))}
@@ -754,32 +1181,46 @@ export default function StudentCarePage() {
             </div>
 
             {/* Signature Section */}
-            <div className="mt-20 pt-8 print:break-inside-avoid">
+            <div className="mt-6 pt-4 break-inside-avoid print:break-inside-avoid">
               <div className="flex justify-between px-8 md:px-16">
                 {/* Left: Advisor */}
-                <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex flex-col items-center justify-center text-center gap-0">
                   <div className="flex items-baseline">
                     <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
-                    <span contentEditable suppressContentEditableWarning className="inline-block text-center outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text border-b border-transparent hover:border-slate-300 print:border-none">(.........................................................)</span>
+                    <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
                     <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
                   </div>
-                  <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>ครูที่ปรึกษา</div>
-                  <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>
+                    {(() => {
+                      const teachers = Array.from(new Set(displayedRecords.map(r => r.teacherName).filter(Boolean)));
+                      return teachers.length === 1 ? `(${teachers[0]})` : '(...................................................)';
+                    })()}
+                  </div>
+                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>ครูที่ปรึกษา</div>
+                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
                 </div>
 
                 {/* Right: Deputy Director */}
-                <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex flex-col items-center justify-center text-center gap-0">
                   <div className="flex items-baseline">
                     <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
-                    <span contentEditable suppressContentEditableWarning className="inline-block text-center outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text border-b border-transparent hover:border-slate-300 print:border-none">{deputyName}</span>
+                    <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
                     <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
                   </div>
-                  <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ</div>
-                  <div className="mt-2 outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>{deputyName || '(...................................................)'}</div>
+                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ</div>
+                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
                 </div>
               </div>
             </div>
+            {/* Batch Print Individual Records */}
+            {displayedRecords.map((r) => (
+              <div key={r._id}>
+                {renderStudentPrintView(r)}
+              </div>
+            ))}
           </div>
+
         </>
       )}
 
@@ -1662,6 +2103,13 @@ export default function StudentCarePage() {
               <X size={20} />
             </button>
 
+            {/* PRINT VIEW (Matches Batch Print Layout) */}
+            <div className="hidden print:block w-full relative bg-white text-black">
+              {renderStudentPrintView(viewRecord)}
+            </div>
+
+            {/* SCREEN VIEW (Interactive Modal) */}
+            <div className="print:hidden flex flex-col w-full h-full relative">
             {/* Modal Header/Images */}
             <div className="bg-slate-100 dark:bg-zinc-950 print:bg-white relative rounded-t-3xl print:rounded-none overflow-hidden print:overflow-visible group/img">
               <div className="h-64 hidden-in-print w-full relative">
@@ -1795,8 +2243,13 @@ export default function StudentCarePage() {
 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => window.print()}
-                    className="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-400 px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+                    onClick={() => {
+                      const originalTitle = document.title;
+                      document.title = viewRecord.recordType === 'home_visit' ? `บันทึกเยี่ยมบ้าน_${viewRecord.studentName}` : `แบบประเมินSDQ_${viewRecord.studentName}`;
+                      window.print();
+                      document.title = originalTitle;
+                    }}
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-500/10 active:scale-95 transition-all border border-indigo-200 dark:border-indigo-800/50"
                     title="พิมพ์หรือบันทึกเป็น PDF"
                   >
                     <Printer size={16} /> พิมพ์
@@ -1973,7 +2426,7 @@ export default function StudentCarePage() {
                 </div>
               )}
 
-              <div className="print:break-before-page print:pt-12 space-y-6">
+              <div className="mt-6 space-y-6">
                 {viewRecord.recordType === 'screening' && viewRecord.sdqData && viewRecord.sdqData.otherConcerns && (
                   <div>
                     <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">ความเห็นหรือความกังวลอื่น</h4>
@@ -1991,6 +2444,19 @@ export default function StudentCarePage() {
                 </div>
               </div>
 
+              {viewRecord.imageUrls && viewRecord.imageUrls.length > 0 && (
+                <div className="mt-6 hidden print:block break-inside-avoid">
+                  <h4 className="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider">ภาพถ่ายประกอบ ({viewRecord.imageUrls.length} ภาพ)</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    {viewRecord.imageUrls.map((url: string, index: number) => (
+                      <div key={index} className="aspect-4/3 relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                        <img src={url} alt={`ภาพประกอบ ${index + 1}`} className="w-full h-full object-contain" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="pt-6 print:pt-[120px] mt-2 border-t border-slate-100 dark:border-zinc-800 flex justify-center md:justify-end print:justify-end">
                 <div className="flex items-baseline">
                   <span className="text-sm text-slate-500 mr-2 whitespace-nowrap">ลงชื่อ</span>
@@ -2005,7 +2471,9 @@ export default function StudentCarePage() {
                   </div>
                 </div>
               </div>
+              </div>
             </div>
+            {/* End of Screen View Wrapper */}
           </div>
         </div>
       )}
@@ -2069,8 +2537,8 @@ export default function StudentCarePage() {
         @media print {
           @page {
             size: A4;
-            margin-top: 0.5cm !important;
-            margin-bottom: 0.5cm !important;
+            margin-top: 1cm !important;
+            margin-bottom: 1cm !important;
             margin-left: 1cm !important;
             margin-right: 1cm !important;
           }
