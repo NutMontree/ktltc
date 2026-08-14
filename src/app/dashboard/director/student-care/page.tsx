@@ -709,7 +709,7 @@ export default function StudentCarePage() {
       const finalImageUrls = [...existingUrls, ...uploadedUrls];
 
       const saveData = isEdit
-        ? { ...newCare, _id: editingId, imageUrls: finalImageUrls, recordType }
+        ? { ...newCare, _id: editingId, imageUrls: finalImageUrls, recordType, teacherName: user.username || "Unknown" }
         : { ...newCare, imageUrls: finalImageUrls, recordType, teacherName: user.username || "Unknown", teacherId: user.id || "", visitDate: new Date() };
 
       const res = await fetch(url, {
