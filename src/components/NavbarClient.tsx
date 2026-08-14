@@ -411,8 +411,8 @@ export default function NavbarClient({
                 className="object-contain"
               />
             </div>
-            <span className="text-zinc-900 dark:text-white font-black text-lg sm:text-[22px] tracking-tighter uppercase italic drop-shadow-sm flex items-center">
-              KTL<span className="text-blue-600 dark:text-blue-500">TC</span>
+            <span className="text-[#FF6600] font-black text-lg sm:text-[22px] tracking-tighter uppercase italic drop-shadow-sm flex items-center">
+              KTL<span className="text-[#003399] dark:text-blue-500">TC</span>
             </span>
           </Link>
 
