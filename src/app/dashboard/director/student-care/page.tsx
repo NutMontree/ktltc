@@ -255,7 +255,7 @@ export default function StudentCarePage() {
               </div>
 
               <div className="hidden print:block text-center mb-4 print-title">
-                <h1 className="text-xl font-bold mb-1">{viewRecord.recordType === 'home_visit' ? 'บันทึกเยี่ยมบ้าน (คป.11)' : 'สรุปผลการประเมิน SDQ (แบบคัดกรอง)'}</h1>
+                <h1 className="text-xl font-bold mb-1">{viewRecord.recordType === 'home_visit' ? 'บันทึกเยี่ยมบ้าน (คป.11)' : 'แบบคัดกรอง (คป.02)'}</h1>
                 <h2 className="text-lg font-bold mb-1">วิทยาลัยเทคนิคกันทรลักษ์</h2>
                 <p className="text-sm">
                   แผนก: {viewRecord.department || '-'} | ชั้นเรียน: {viewRecord.classroom || '-'}
@@ -391,7 +391,7 @@ export default function StudentCarePage() {
                 <div>
                   <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">รายละเอียดคะแนน SDQ (ฉบับครูประเมิน)</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                       <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 1: อารมณ์</div>
                       <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.E}</div>
                       {viewRecord.sdqData.E_res && (
@@ -400,7 +400,7 @@ export default function StudentCarePage() {
                         </div>
                       )}
                     </div>
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                       <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 2: ความประพฤติ</div>
                       <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.C}</div>
                       {viewRecord.sdqData.C_res && (
@@ -409,7 +409,7 @@ export default function StudentCarePage() {
                         </div>
                       )}
                     </div>
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                       <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 3: สมาธิสั้น</div>
                       <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.H}</div>
                       {viewRecord.sdqData.H_res && (
@@ -418,7 +418,7 @@ export default function StudentCarePage() {
                         </div>
                       )}
                     </div>
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                       <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 4: สัมพันธ์กับเพื่อน</div>
                       <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.Pe}</div>
                       {viewRecord.sdqData.Pe_res && (
@@ -429,14 +429,14 @@ export default function StudentCarePage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    <div className="print-box p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30">
+                    <div className="print-box p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                       <div className="text-[10px] text-amber-600 font-bold mb-1">รวม 4 ด้าน</div>
                       <div className="text-xl font-black text-amber-700 dark:text-amber-500">{viewRecord.sdqData.total}</div>
                       <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqType === 'problem' ? 'text-rose-600' : viewRecord.sdqType === 'risk' ? 'text-amber-600' : 'text-emerald-600'}`}>
                         แปลผล: {viewRecord.sdqType === 'problem' ? 'มีปัญหา' : viewRecord.sdqType === 'risk' ? 'เสี่ยง' : 'ปกติ'}
                       </div>
                     </div>
-                    <div className="print-box p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                    <div className="print-box p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                       <div className="text-[10px] text-emerald-600 font-bold mb-1">สัมพันธภาพทางสังคม</div>
                       <div className="text-xl font-black text-emerald-700 dark:text-emerald-500">{viewRecord.sdqData.P}</div>
                       {viewRecord.sdqData.P_res && (
@@ -458,19 +458,19 @@ export default function StudentCarePage() {
                         )}
                       </h5>
                       {viewRecord.sdqData.impact.hasProblem === 0 ? (
-                        <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
+                        <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 text-center print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                           <p className="text-sm font-bold text-slate-600 dark:text-zinc-400">ไม่มีปัญหา</p>
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                          <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                             <p className="text-[10px] text-slate-500 font-bold mb-1">ระดับปัญหา</p>
                             <p className="text-sm font-black text-rose-600 dark:text-rose-400">
                               {['ไม่', 'มีปัญหาเล็กน้อย', 'มีปัญหาชัดเจน', 'มีปัญหาอย่างมาก'][viewRecord.sdqData.impact.hasProblem]}
                             </p>
                           </div>
                           {viewRecord.sdqData.impact.duration > -1 && (
-                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                               <p className="text-[10px] text-slate-500 font-bold mb-1">ระยะเวลาที่เกิดปัญหา</p>
                               <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
                                 {['น้อยกว่า 1 เดือน', '1 - 5 เดือน', '6 - 12 เดือน', 'มากกว่า 1 ปี'][viewRecord.sdqData.impact.duration]}
@@ -478,7 +478,7 @@ export default function StudentCarePage() {
                             </div>
                           )}
                           {viewRecord.sdqData.impact.distress > -1 && (
-                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                               <p className="text-[10px] text-slate-500 font-bold mb-1">ความไม่สบายใจของเด็ก</p>
                               <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
                                 {['ไม่เลย', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.distress]}
@@ -486,7 +486,7 @@ export default function StudentCarePage() {
                             </div>
                           )}
                           {viewRecord.sdqData.impact.interferePeer > -1 && (
-                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                               <p className="text-[10px] text-slate-500 font-bold mb-1">รบกวนชีวิตประจำวัน (เพื่อน)</p>
                               <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
                                 {['ไม่', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.interferePeer]}
@@ -494,7 +494,7 @@ export default function StudentCarePage() {
                             </div>
                           )}
                           {viewRecord.sdqData.impact.interfereClass > -1 && (
-                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                               <p className="text-[10px] text-slate-500 font-bold mb-1">รบกวนการเรียน (ห้องเรียน)</p>
                               <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
                                 {['ไม่', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.interfereClass]}
@@ -502,7 +502,7 @@ export default function StudentCarePage() {
                             </div>
                           )}
                           {viewRecord.sdqData.impact.burden > -1 && (
-                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                            <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
                               <p className="text-[10px] text-slate-500 font-bold mb-1">ความยุ่งยากต่อชั้นเรียน/ครู</p>
                               <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
                                 {['ไม่เลย', 'เล็กน้อย', 'ค่อนข้างมาก', 'มาก'][viewRecord.sdqData.impact.burden]}
@@ -1090,7 +1090,7 @@ export default function StudentCarePage() {
           `}</style>
           <div id="print-summary-section" className="print:relative fixed inset-0 z-999999 bg-white text-black p-4 overflow-visible print:overflow-visible">
             <div className="text-center mb-4">
-              <h1 className="text-xl font-bold mb-1 print-title">{viewTab === 'home_visit' ? 'บันทึกเยี่ยมบ้าน (คป.11)' : 'สรุปผลการประเมิน SDQ (แบบคัดกรอง)'}</h1>
+              <h1 className="text-xl font-bold mb-1 print-title">{viewTab === 'home_visit' ? 'บันทึกเยี่ยมบ้าน (คป.11)' : 'แบบคัดกรอง (คป.02)'}</h1>
               <h2 className="text-lg font-bold mb-1">วิทยาลัยเทคนิคกันทรลักษ์</h2>
               <p className="text-sm">
                 {filterDepartment ? `แผนก: ${filterDepartment}` : 'ทุกแผนก'}
