@@ -337,7 +337,7 @@ export default function StudentCarePage() {
                     <Printer size={16} /> พิมพ์
                   </button>
 
-                  {(user.role === 'super_admin' || user.username === viewRecord.teacherName) && (
+                  {(user.role === 'super_admin' || user.username === viewRecord.teacherName || (user.id && viewRecord.teacherId && user.id === viewRecord.teacherId)) && (
                     <>
                       <button
                         onClick={() => handleEdit(viewRecord)}
@@ -2255,7 +2255,7 @@ export default function StudentCarePage() {
                     <Printer size={16} /> พิมพ์
                   </button>
 
-                  {(user.role === 'super_admin' || user.username === viewRecord.teacherName) && (
+                  {(user.role === 'super_admin' || user.username === viewRecord.teacherName || (user.id && viewRecord.teacherId && user.id === viewRecord.teacherId)) && (
                     <>
                       <button
                         onClick={() => handleEdit(viewRecord)}
