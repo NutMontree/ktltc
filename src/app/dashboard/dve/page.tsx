@@ -720,7 +720,7 @@ function DVETeacherWorkspace() {
   }, [internshipStudents]);
 
   const displayedInternshipStudents = useMemo(() => {
-    let list = internshipStudents;
+    let list = [...internshipStudents];
     if (internshipSearchQuery.trim()) {
       const q = internshipSearchQuery.toLowerCase().trim();
       list = list.filter(
@@ -729,6 +729,16 @@ function DVETeacherWorkspace() {
           (s.studentIdNum && s.studentIdNum.toLowerCase().includes(q)),
       );
     }
+    
+    list.sort((a, b) => {
+      const classA = standardizeClassGroupName(a.classGroupId || "");
+      const classB = standardizeClassGroupName(b.classGroupId || "");
+      if (classA !== classB) {
+        return classA.localeCompare(classB, "th");
+      }
+      return (a.studentIdNum || "").localeCompare(b.studentIdNum || "", "th");
+    });
+    
     return list;
   }, [internshipStudents, internshipSearchQuery]);
 
