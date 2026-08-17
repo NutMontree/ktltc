@@ -228,6 +228,11 @@ export function DVEStudentPortal() {
   // File preview sub-modal state (opens inside submission modal)
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [filePreviewName, setFilePreviewName] = useState<string | null>(null);
+  // Media Preview Modal (for videos/youtube)
+  const [mediaPreviewUrl, setMediaPreviewUrl] = useState<string | null>(null);
+  const [mediaPreviewType, setMediaPreviewType] = useState<"video" | "youtube" | null>(null);
+  const [mediaPreviewName, setMediaPreviewName] = useState<string | null>(null);
+
   const openImageModal = (att: any) => {
     setImageModalAtt(att);
     setImageModalOpen(true);
@@ -2139,20 +2144,88 @@ export function DVEStudentPortal() {
                               📂 ไฟล์เอกสารประกอบการเรียน:
                             </span>
                             <div className="space-y-2">
-                              {directFiles.map((file: any, fIdx: number) => (
-                                <a
-                                  key={fIdx}
-                                  href={file.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-black transition-colors border border-emerald-500/10 cursor-pointer"
-                                >
-                                  <Download size={14} className="shrink-0" />
-                                  <span className="truncate">
-                                    {file.name || "เอกสารประกอบการเรียน"}
-                                  </span>
-                                </a>
-                              ))}
+                              {directFiles.map((file: any, fIdx: number) => {
+                                const isVideo = file.url?.match(/\.(mp4|webm|ogg)$/i);
+                                const isPdf = file.url?.match(/\.pdf$/i);
+                                const isCloudinary = file.url?.includes("res.cloudinary.com");
+                                const thumbUrl = isCloudinary ? file.url.replace(/\.(pdf|mp4|webm|ogg)$/i, ".jpg") : null;
+
+                                if (isVideo) {
+                                  return (
+                                    <div
+                                      key={fIdx}
+                                      onClick={() => {
+                                        setMediaPreviewUrl(file.url);
+                                        setMediaPreviewType("video");
+                                        setMediaPreviewName(file.name);
+                                      }}
+                                      className="group relative flex flex-col p-3 gap-3 rounded-xl bg-teal-500/5 hover:bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-black transition-colors border border-teal-500/10 cursor-pointer overflow-hidden"
+                                    >
+                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-teal-500/20 bg-black/5 dark:bg-white/5 flex items-center justify-center">
+                                        {thumbUrl ? (
+                                          <img src={thumbUrl} alt="Video Thumbnail" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        ) : (
+                                          <video src={file.url} preload="metadata" className="w-full h-full object-cover" />
+                                        )}
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+                                          <div className="w-12 h-12 bg-teal-600/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:bg-teal-600 transition-colors">
+                                            <Youtube size={24} className="text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-start gap-2">
+                                        <Youtube size={16} className="shrink-0 mt-0.5" />
+                                        <span className="truncate whitespace-normal line-clamp-2">
+                                          {file.name || "ชมวีดีโอประกอบการเรียน"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                }
+
+                                if (isPdf) {
+                                  return (
+                                    <a
+                                      key={fIdx}
+                                      href={file.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="group relative flex flex-col p-3 gap-3 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-black transition-colors border border-rose-500/10 cursor-pointer overflow-hidden"
+                                    >
+                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-rose-500/20 bg-rose-50 dark:bg-rose-950/20 flex items-center justify-center">
+                                        {thumbUrl ? (
+                                          <img src={thumbUrl} alt="PDF Thumbnail" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        ) : (
+                                          <FileText size={48} className="text-rose-300 dark:text-rose-800" />
+                                        )}
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-colors">
+                                        </div>
+                                      </div>
+                                      <div className="flex items-start gap-2">
+                                        <FileText size={16} className="shrink-0 mt-0.5" />
+                                        <span className="truncate whitespace-normal line-clamp-2">
+                                          {file.name || "เปิดอ่านเอกสาร PDF"}
+                                        </span>
+                                      </div>
+                                    </a>
+                                  );
+                                }
+
+                                return (
+                                  <a
+                                    key={fIdx}
+                                    href={file.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-black transition-colors border border-emerald-500/10 cursor-pointer"
+                                  >
+                                    <Download size={14} className="shrink-0" />
+                                    <span className="truncate">
+                                      {file.name || "เอกสารประกอบการเรียน"}
+                                    </span>
+                                  </a>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
@@ -2170,11 +2243,13 @@ export function DVEStudentPortal() {
 
                                 if (youtubeId) {
                                   return (
-                                    <a
+                                    <div
                                       key={fIdx}
-                                      href={file.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
+                                      onClick={() => {
+                                        setMediaPreviewUrl(`https://www.youtube.com/embed/${youtubeId}?autoplay=1`);
+                                        setMediaPreviewType("youtube");
+                                        setMediaPreviewName(file.name);
+                                      }}
                                       className="group relative flex flex-col p-3 gap-3 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-black transition-colors border border-red-500/10 cursor-pointer overflow-hidden"
                                     >
                                       <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-red-500/20 bg-black/5 dark:bg-white/5">
@@ -2195,7 +2270,7 @@ export function DVEStudentPortal() {
                                           {file.name || "ชมวิดีโอบน YouTube"}
                                         </span>
                                       </div>
-                                    </a>
+                                    </div>
                                   );
                                 }
 
@@ -3104,6 +3179,55 @@ export function DVEStudentPortal() {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {mediaPreviewUrl && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-5xl rounded-2xl overflow-hidden bg-black shadow-2xl flex flex-col"
+            >
+              <div className="absolute top-0 inset-x-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between pointer-events-none">
+                <span className="text-white font-black drop-shadow-md truncate pr-8 pointer-events-auto">
+                  {mediaPreviewName || "วีดีโอประกอบการเรียน"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMediaPreviewUrl(null);
+                    setMediaPreviewType(null);
+                    setMediaPreviewName(null);
+                  }}
+                  className="pointer-events-auto w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all cursor-pointer border border-white/20"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="w-full aspect-video flex items-center justify-center bg-black">
+                {mediaPreviewType === "youtube" ? (
+                  <iframe
+                    src={mediaPreviewUrl}
+                    title={mediaPreviewName || "YouTube Video"}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                  />
+                ) : (
+                  <video
+                    src={mediaPreviewUrl}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
