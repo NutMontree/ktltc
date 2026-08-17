@@ -21,6 +21,7 @@ import {
   ArrowRight,
   LogOut,
   AlertTriangle,
+  X,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import imageCompression from "browser-image-compression";
@@ -28,15 +29,7 @@ import { uploadFile } from "@/lib/upload";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
-type FaceStatus =
-  | "idle"
-  | "loading_models"
-  | "loading_profile"
-  | "no_profile"
-  | "detecting"
-  | "matched"
-  | "not_matched"
-  | "error";
+type FaceState = "idle" | "loading" | "detecting" | "no_face" | "unstable" | "ready";
 
 export default function StudentFlagpolePortal() {
   const router = useRouter();
@@ -68,9 +61,9 @@ export default function StudentFlagpolePortal() {
     "idle",
   );
   const [locationError, setLocationError] = useState("");
-  const [faceStatus, setFaceStatus] = useState<FaceStatus>("idle");
-  const [faceMsg, setFaceMsg] = useState("");
+  const [faceState, setFaceState] = useState<FaceState>("idle");
   const [recordedTime, setRecordedTime] = useState<string>("");
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const [timeState, setTimeState] = useState({
     isLocked: false,
@@ -90,8 +83,9 @@ export default function StudentFlagpolePortal() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const faceApiRef = useRef<any>(null);
-  const profileDescriptorRef = useRef<Float32Array | null>(null);
   const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFaceBoxRef = useRef<{ x: number; y: number } | null>(null);
+  const stableFramesCountRef = useRef<number>(0);
 
   // Fetch student profile, history, and today check-in status
   const loadStudentData = async () => {
@@ -200,95 +194,79 @@ export default function StudentFlagpolePortal() {
     return () => clearInterval(timer);
   }, [flagpoleConfig]);
 
-  const loadFaceApiAndProfile = async () => {
-    try {
-      setFaceStatus("loading_models");
-      setFaceMsg("กำลังโหลดโมเดลใบหน้า...");
 
+  const loadFaceApi = async () => {
+    try {
+      setFaceState("loading");
       const faceApi = await import("@vladmandic/face-api");
       faceApiRef.current = faceApi;
-
       const MODEL_URL = "/models";
-      await Promise.all([
-        faceApi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-        faceApi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-        faceApi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-      ]);
-
-      setFaceStatus("loading_profile");
-      setFaceMsg("กำลังโหลดรูปข้อมูลสิทธิ์ใบหน้า...");
-
-      if (!profileData.image) {
-        setFaceStatus("no_profile");
-        setFaceMsg("ไม่พบรูปถ่ายโปรไฟล์ — ข้ามการตรวจสิทธิ์ใบหน้า");
-        return;
-      }
-
-      const img = document.createElement("img");
-      img.crossOrigin = "anonymous";
-      img.src = profileData.image;
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-
-      const detection = await faceApi
-        .detectSingleFace(img, new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-      if (!detection) {
-        setFaceMsg("ภาพโปรไฟล์ไม่สมบูรณ์ — ข้ามการตรวจใบหน้า");
-        return;
-      }
-
-      profileDescriptorRef.current = detection.descriptor;
-      setFaceStatus("detecting");
-      setFaceMsg("กำลังวิเคราะห์สแกนใบหน้า...");
-
+      await faceApi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+      
+      setFaceState("detecting");
       startLiveDetection();
     } catch (err) {
       console.error("Face API Error:", err);
-      setFaceStatus("error");
-      setFaceMsg("ตรวจใบหน้าขัดข้อง — ข้ามการประมวลผล");
+      setFaceState("idle");
     }
   };
 
   const startLiveDetection = () => {
     if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+    stableFramesCountRef.current = 0;
+    lastFaceBoxRef.current = null;
 
     detectionIntervalRef.current = setInterval(async () => {
-      if (!videoRef.current || !faceApiRef.current || !profileDescriptorRef.current) return;
+      if (!videoRef.current || !faceApiRef.current) return;
       if (videoRef.current.readyState < 2) return;
 
       try {
         const faceApi = faceApiRef.current;
-        const detection = await faceApi
-          .detectSingleFace(
-            videoRef.current,
-            new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }),
-          )
-          .withFaceLandmarks()
-          .withFaceDescriptor();
+        const detection = await faceApi.detectSingleFace(
+          videoRef.current,
+          new faceApi.SsdMobilenetv1Options({ minConfidence: 0.75 })
+        );
 
         if (detection) {
-          const distance = faceApi.euclideanDistance(
-            profileDescriptorRef.current,
-            detection.descriptor,
-          );
-          if (distance <= 0.5) {
-            setFaceStatus("matched");
-            setFaceMsg(`✅ ยืนยันใบหน้านักศึกษาสำเร็จ (${Math.round((1 - distance) * 100)}%)`);
-          } else {
-            setFaceStatus("not_matched");
-            setFaceMsg("❌ ใบหน้าไม่ตรงกับรหัสบัญชีโปรไฟล์");
+          const box = detection.box;
+          
+          if (box.width < 50 || box.height < 50) {
+             setFaceState("no_face");
+             stableFramesCountRef.current = 0;
+             lastFaceBoxRef.current = null;
+             return;
           }
+
+          if (lastFaceBoxRef.current) {
+            const dx = Math.abs(lastFaceBoxRef.current.x - box.x);
+            const dy = Math.abs(lastFaceBoxRef.current.y - box.y);
+            const movement = Math.sqrt(dx * dx + dy * dy);
+
+            if (movement > 20) {
+              setFaceState("unstable");
+              stableFramesCountRef.current = 0;
+            } else {
+              stableFramesCountRef.current += 1;
+              if (stableFramesCountRef.current >= 3) {
+                setFaceState("ready");
+              } else {
+                setFaceState("detecting");
+              }
+            }
+          } else {
+            setFaceState("detecting");
+          }
+          lastFaceBoxRef.current = { x: box.x, y: box.y };
+
         } else {
-          setFaceStatus("detecting");
-          setFaceMsg("กรุณาจ้องมองตรงมาที่เลนส์กล้องหน้า");
+          setFaceState("no_face");
+          stableFramesCountRef.current = 0;
+          lastFaceBoxRef.current = null;
         }
-      } catch {}
-    }, 1500);
+      } catch (e) {
+        console.error("Face detection error:", e);
+      }
+    }, 500);
   };
 
   const getDistanceToFlagpole = () => {
@@ -321,12 +299,13 @@ export default function StudentFlagpolePortal() {
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        // อนุญาตให้เช็คชื่อแม้พิกัดคลาดเคลื่อนสูง แต่แจ้งเตือนให้ทราบ
+        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocationStatus("found");
         if (pos.coords.accuracy > 500) {
-          setLocationStatus("error");
-          setLocationError(`GPS คลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม. กรุณาอยู่ในที่โล่ง`);
+          setLocationError(`⚠️ GPS คลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม. (สามารถเช็คชื่อได้)`);
         } else {
-          setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-          setLocationStatus("found");
+          setLocationError("");
         }
       },
       (err) => {
@@ -334,12 +313,12 @@ export default function StudentFlagpolePortal() {
         // Fallback to standard accuracy which is much more reliable indoors/on certain devices
         navigator.geolocation.getCurrentPosition(
           (pos) => {
+            setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+            setLocationStatus("found");
             if (pos.coords.accuracy > 500) {
-              setLocationStatus("error");
-              setLocationError(`สัญญาณ GPS อ่อน (ความคลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม.)`);
+              setLocationError(`⚠️ สัญญาณ GPS อ่อน (ความคลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม. - สามารถเช็คชื่อได้)`);
             } else {
-              setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-              setLocationStatus("found");
+              setLocationError("");
             }
           },
           (fallbackErr) => {
@@ -382,7 +361,7 @@ export default function StudentFlagpolePortal() {
           setCameraError("");
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch((e) => console.error(e));
-          loadFaceApiAndProfile();
+          loadFaceApi();
           getLocation();
         } catch (err: any) {
           console.error("Camera Error:", err);
@@ -400,15 +379,13 @@ export default function StudentFlagpolePortal() {
     if (isCameraOpen) startCamera();
 
     return () => {
+      if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
       if (stream) stream.getTracks().forEach((t) => t.stop());
     };
   }, [isCameraOpen]);
 
   const submitCheckIn = async () => {
-    if (faceStatus === "not_matched") {
-      alert("ใบหน้าไม่ตรงกับรูปโปรไฟล์บัญชี ไม่สามารถเช็คชื่อแทนกันได้");
-      return;
-    }
+
 
     setIsProcessing(true);
     setStatusMsg("กำลังอัปเดตพิกัด GPS ปัจจุบัน...");
@@ -420,11 +397,7 @@ export default function StudentFlagpolePortal() {
         finalLocation = await new Promise<{lat: number, lng: number}>((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(
             (pos) => {
-              if (pos.coords.accuracy > 500) {
-                reject(new Error(`สัญญาณ GPS อ่อน (ความคลาดเคลื่อน ${Math.round(pos.coords.accuracy)} เมตร) กรุณาออกไปที่โล่งแจ้ง`));
-              } else {
-                resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-              }
+              resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
             },
             (err) => reject(err),
             { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 } // บังคับไม่ใช้แคช
@@ -507,35 +480,26 @@ export default function StudentFlagpolePortal() {
   const cancelCheckIn = () => {
     if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
     setIsCameraOpen(false);
-    setFaceStatus("idle");
   };
 
-  const getFaceStatusUI = () => {
-    switch (faceStatus) {
-      case "loading_models":
-      case "loading_profile":
-        return {
-          icon: <Loader2 className="animate-spin" />,
-          color: "bg-slate-100 text-slate-600 border-slate-200",
-        };
+  const getFaceStateUI = () => {
+    switch (faceState) {
+      case "loading":
+        return { icon: <Loader2 className="animate-spin" />, text: "กำลังเตรียมระบบ...", color: "bg-slate-100 text-slate-600 border-slate-200" };
       case "detecting":
-        return {
-          icon: <Loader2 className="animate-spin" />,
-          color: "bg-indigo-100 text-indigo-700 border-indigo-200 animate-pulse",
-        };
-      case "matched":
-        return {
-          icon: <ShieldCheck />,
-          color: "bg-emerald-50 text-emerald-700 border-emerald-200",
-        };
-      case "not_matched":
-        return { icon: <ShieldX />, color: "bg-rose-50 text-rose-700 border-rose-200" };
+        return { icon: <ScanFace className="animate-pulse" />, text: "กำลังจับใบหน้า...", color: "bg-amber-50 text-amber-600 border-amber-200" };
+      case "no_face":
+        return { icon: <AlertCircle />, text: "ไม่พบใบหน้า กรุณาหันหน้าเข้ากล้อง", color: "bg-rose-50 text-rose-600 border-rose-200" };
+      case "unstable":
+        return { icon: <AlertCircle />, text: "กรุณาถือกล้องให้นิ่ง!", color: "bg-orange-50 text-orange-600 border-orange-200" };
+      case "ready":
+        return { icon: <CheckCircle2 />, text: "พร้อมถ่ายรูป", color: "bg-emerald-50 text-emerald-700 border-emerald-200" };
       default:
         return null;
     }
   };
 
-  const faceUI = getFaceStatusUI();
+  const faceUI = getFaceStateUI();
 
   if (status === "loading") {
     return (
@@ -764,25 +728,35 @@ export default function StudentFlagpolePortal() {
                           </div>
                           <h4 className="text-white font-bold mb-2">กล้องไม่สามารถใช้งานได้</h4>
                           <p className="text-slate-400 text-[11px] max-w-[200px] mx-auto leading-relaxed">{cameraError}</p>
-                          <button 
-                            onClick={() => window.location.reload()} 
-                            className="mt-6 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-full transition-colors shadow-lg"
-                          >
-                            รีเฟรชหน้าเว็บ
-                          </button>
+                          <div className="flex gap-2 justify-center mt-6">
+                            <button 
+                              onClick={() => setShowHelpModal(true)} 
+                              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-colors shadow-lg flex items-center justify-center gap-1.5"
+                            >
+                              <AlertCircle size={14} /> วิธีแก้ปัญหา
+                            </button>
+                            <button 
+                              onClick={() => window.location.reload()} 
+                              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-full transition-colors shadow-lg"
+                            >
+                              รีเฟรชหน้าเว็บ
+                            </button>
+                          </div>
                         </div>
                       )}
 
                       {/* Video Tags overlay */}
                       <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5 pointer-events-none">
+
                         {faceUI && (
                           <div
                             className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${faceUI.color}`}
                           >
                             {faceUI.icon}
-                            <span>{faceMsg}</span>
+                            <span>{faceUI.text}</span>
                           </div>
                         )}
+
                         <div
                           className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${
                             locationStatus === "found"
@@ -809,11 +783,37 @@ export default function StudentFlagpolePortal() {
                     </div>
 
                     {locationError && (
-                      <div className="p-3 bg-red-50 text-red-600 rounded-2xl text-[10px] font-bold flex gap-2 border border-red-100 mb-3 text-left">
-                        <AlertCircle size={14} className="shrink-0" />
-                        <span>{locationError}</span>
+                      <div className="flex flex-col gap-2 mb-3">
+                        <div className="p-3 bg-red-50 text-red-600 rounded-2xl text-[10px] font-bold flex gap-2 border border-red-100 text-left">
+                          <AlertCircle size={14} className="shrink-0" />
+                          <span>{locationError}</span>
+                        </div>
+                        <button 
+                          onClick={() => setShowHelpModal(true)}
+                          className="self-center px-4 py-1.5 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 text-[10px] font-bold rounded-full border border-slate-200 dark:border-zinc-700 hover:bg-slate-200 transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <AlertCircle size={12} /> วิธีแก้ปัญหาพิกัด/กล้อง
+                        </button>
                       </div>
                     )}
+
+                    {(() => {
+                      const dist = getDistanceToFlagpole();
+                      if (dist !== null && dist > flagpoleConfig.inSiteDistance) {
+                        return (
+                          <div className="flex flex-col gap-2 mb-3">
+                            <div className="p-3 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-2xl text-[10px] font-bold flex gap-3 border border-amber-200 dark:border-amber-900/30 text-left shadow-sm">
+                              <AlertTriangle size={24} className="shrink-0 text-amber-500 mt-0.5" />
+                              <div className="flex flex-col gap-1">
+                                <span className="text-xs font-black">⚠️ ห่างจากโดม {Math.round(dist)} เมตร</span>
+                                <span className="leading-relaxed">พิกัด GPS คลาดเคลื่อนเกินที่กำหนด แนะนำให้เข้าไปภายในโดม แล้วรีเฟรชเริ่มหน้านี้ใหม่เพื่อให้ระบบจับพิกัดได้แม่นยำขึ้น 100% (หากจำเป็น คุณยังคงสามารถกดเช็คชื่อได้)</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
 
                     <div className="flex gap-2">
                       <button
@@ -823,7 +823,7 @@ export default function StudentFlagpolePortal() {
                         ยกเลิก
                       </button>
                       <button
-                        disabled={isProcessing || !location || faceStatus === "not_matched"}
+                        disabled={isProcessing || !location || faceState !== "ready"}
                         onClick={submitCheckIn}
                         className="flex-2 py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5"
                       >
@@ -942,6 +942,70 @@ export default function StudentFlagpolePortal() {
           </p>
         </div>
       </div>
+
+      {/* Help Modal */}
+      <AnimatePresence>
+        {showHelpModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-zinc-800 max-h-[80vh] overflow-y-auto text-left relative"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <AlertTriangle className="text-amber-500" size={20} />
+                  วิธีแก้ปัญหาเข้ากล้อง/GPS
+                </h3>
+                <button
+                  onClick={() => setShowHelpModal(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="space-y-4 text-sm text-slate-600 dark:text-zinc-400">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800">
+                  <h4 className="font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> 1. เผลอกด "ไม่อนุญาต"</h4>
+                  <p className="text-[11px] leading-relaxed">
+                    - <strong>iPhone/Safari:</strong> กด <span className="text-blue-500 font-bold bg-blue-50 px-1 rounded">aA</span> ที่ช่อง URL ด้านบนสุด &gt; เลือก "การตั้งค่าเว็บไซต์" &gt; อนุญาต กล้อง/ตำแหน่ง
+                    <br />
+                    - <strong>Android/Chrome:</strong> กดรูป <span className="font-bold bg-slate-200 px-1 rounded">🔒</span> ที่ช่อง URL &gt; เลือก "การอนุญาต" &gt; อนุญาต กล้อง/ตำแหน่ง
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800">
+                  <h4 className="font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> 2. เปิดเว็บจากแอป LINE</h4>
+                  <p className="text-[11px] leading-relaxed">
+                    แอป LINE มักจะบล็อกกล้องอัตโนมัติ ให้กดจุด 3 จุด <span className="font-bold text-indigo-500 bg-indigo-50 px-1 rounded">⋮</span> ที่มุมขวาบนจอ แล้วเลือก <strong>"เปิดในเบราว์เซอร์ (Open in Browser)"</strong>
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800">
+                  <h4 className="font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> 3. ไม่ได้เปิด GPS เครื่อง</h4>
+                  <p className="text-[11px] leading-relaxed">
+                    อย่าลืมปัดหน้าจอมือถือลงมา แล้วกดเปิด <span className="font-bold text-blue-500">ตำแหน่งที่ตั้ง (Location/GPS)</span> ด้วยนะครับ
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="w-full mt-6 py-3 bg-slate-800 hover:bg-slate-900 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white rounded-2xl font-black text-sm transition-colors cursor-pointer"
+              >
+                เข้าใจแล้ว
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1513,7 +1513,7 @@ export function DVEStudentPortal() {
                         className="w-full text-left p-4 sm:p-5 bg-white/70 dark:bg-zinc-800/70 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 rounded-[20px] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300 border border-slate-200/60 dark:border-zinc-700/60 shadow-xs hover:shadow-md hover:border-emerald-300/50 dark:hover:border-emerald-700/50 group cursor-pointer relative overflow-hidden"
                       >
                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        
+
                         <div className="flex items-start sm:items-center gap-4">
                           <div className="w-12 h-12 rounded-[14px] bg-linear-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-800/50 group-hover:from-emerald-100 group-hover:to-teal-50 dark:group-hover:from-emerald-900/40 dark:group-hover:to-teal-900/20 flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 shadow-inner border border-zinc-200/50 dark:border-zinc-700/50 shrink-0 transition-all group-hover:scale-105">
                             <span className="text-[9px] font-black uppercase tracking-wider leading-none mb-0.5">EP</span>
@@ -1852,7 +1852,7 @@ export function DVEStudentPortal() {
                 <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mb-3 tracking-tight">ยินดีต้อนรับสู่ DVE Portal 🚀</h2>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-base font-medium">เริ่มต้นการเรียนรู้ออนไลน์และส่งงานของคุณง่ายๆ ใน 3 ขั้นตอน</p>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Step 1 */}
                 <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-200 dark:hover:border-blue-800/50">
@@ -1865,7 +1865,7 @@ export function DVEStudentPortal() {
                     เลือกแผนกวิชา, ชื่ออาจารย์ผู้สอน และวิชาเรียนที่คุณต้องการเรียนจากกล่องค้นหาด้านบนสุดของหน้าจอ
                   </p>
                 </div>
-                
+
                 {/* Step 2 */}
                 <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-200 dark:hover:border-emerald-800/50">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
@@ -1890,7 +1890,7 @@ export function DVEStudentPortal() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="mt-14 text-center animate-bounce">
                 <p className="text-sm font-bold text-blue-500 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/20 w-fit mx-auto px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800/50">
                   <ArrowRight size={16} className="-rotate-90" />
@@ -1922,7 +1922,7 @@ export function DVEStudentPortal() {
               <div className="bg-linear-to-r from-emerald-600 via-teal-500 to-cyan-600 text-white p-5 sm:p-8 relative shrink-0 overflow-hidden shadow-md">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-20 -left-10 w-40 h-40 bg-teal-400/20 rounded-full blur-2xl pointer-events-none" />
-                
+
                 <div className="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="max-w-2xl">
                     <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md text-[9px] uppercase font-black tracking-widest px-3 py-1.5 rounded-full text-white/95 shadow-sm border border-white/20 mb-3">
@@ -2177,9 +2177,9 @@ export function DVEStudentPortal() {
                                       className="group relative flex flex-col p-2 gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-500 dark:hover:border-red-500 transition-colors cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
                                     >
                                       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950">
-                                        <img 
-                                          src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`} 
-                                          alt="YouTube Thumbnail" 
+                                        <img
+                                          src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
+                                          alt="YouTube Thumbnail"
                                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         />
                                         <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
@@ -3115,7 +3115,7 @@ export function DVEStudentPortal() {
                   <X size={20} />
                 </button>
               </div>
-              
+
               <div className="w-full aspect-video flex items-center justify-center bg-black">
                 {mediaPreviewType === "youtube" ? (
                   <iframe
