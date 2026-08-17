@@ -1979,139 +1979,61 @@ export function DVEStudentPortal() {
               <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 flex-1 overflow-y-auto">
                 {/* ⏱️ TIMER BANNER */}
                 {Number(activeStudyUnit.studyMinutes) > 0 && (
-                  <div
-                    className={`p-5 sm:p-6 rounded-[24px] border relative overflow-hidden transition-all duration-700 ${isStudyCompleted
-                      ? "bg-linear-to-br from-emerald-500/10 to-teal-500/5 dark:from-emerald-900/20 dark:to-teal-900/10 border-emerald-500/20 shadow-md shadow-emerald-500/5"
-                      : isMinimumTimeReached
-                      ? "bg-linear-to-br from-teal-500/10 to-cyan-500/5 dark:from-teal-900/20 dark:to-cyan-900/10 border-teal-500/20 shadow-md shadow-teal-500/5"
-                      : "bg-linear-to-br from-blue-500/10 to-indigo-500/5 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-500/20 shadow-md shadow-blue-500/5"
-                      }`}
-                  >
-                    {isStudyCompleted && (
-                      <div className="absolute -right-10 -top-10 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
-                    )}
-                    {!isStudyCompleted && !isMinimumTimeReached && (
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl pointer-events-none animate-pulse" />
-                    )}
-
-                    <div className="flex flex-col md:flex-row items-center gap-5 sm:gap-6 relative z-10">
-                      {/* Left: Icon Status */}
-                      <div className="shrink-0 flex items-center justify-center relative">
-                        {isStudyCompleted ? (
-                          <>
-                            <div className="absolute inset-0 bg-emerald-400/30 rounded-full blur-xl animate-ping opacity-50"></div>
-                            <div className="w-16 h-16 bg-linear-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30 text-white relative z-10 border-4 border-white dark:border-zinc-800">
-                              <Award size={32} className="drop-shadow-sm" />
-                            </div>
-                          </>
-                        ) : isMinimumTimeReached ? (
-                          <>
-                            <div className="absolute inset-0 bg-teal-400/20 rounded-full blur-xl animate-pulse"></div>
-                            <div className="w-16 h-16 bg-linear-to-br from-teal-400 to-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/20 text-white relative z-10 border-4 border-white dark:border-zinc-800">
-                              <CheckCircle size={32} className="drop-shadow-sm" />
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="absolute inset-0 rounded-full border-2 border-blue-400/50 border-t-transparent animate-[spin_2s_linear_infinite] scale-125"></div>
-                            <div className="absolute inset-0 rounded-full border-2 border-indigo-400/30 border-b-transparent animate-[spin_3s_linear_infinite_reverse] scale-110"></div>
-                            <div className="w-16 h-16 bg-linear-to-br from-blue-100 to-indigo-50 dark:from-blue-900/60 dark:to-indigo-900/40 rounded-full flex items-center justify-center shadow-inner text-blue-600 dark:text-blue-400 relative z-10 border-2 border-blue-200 dark:border-blue-700/50">
-                              <Clock size={28} className="drop-shadow-sm" />
-                            </div>
-                          </>
-                        )}
+                  <div className="p-4 sm:p-5 rounded-2xl border bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${isStudyCompleted ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : isMinimumTimeReached ? "bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400" : "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"}`}>
+                        {isStudyCompleted ? <Award size={24} /> : isMinimumTimeReached ? <CheckCircle size={24} /> : <Clock size={24} />}
                       </div>
-
-                      {/* Right: Text & Progress */}
-                      <div className="flex-1 w-full flex flex-col md:flex-row gap-4 items-center md:items-start justify-between">
-                        <div className="text-center md:text-left space-y-1">
-                          {isStudyCompleted ? (
-                            <>
-                              <h4 className="text-lg font-black text-emerald-700 dark:text-emerald-400 tracking-tight">
-                                เรียนครบเวลาทั้งหมดแล้ว! 🎉
-                              </h4>
-                              <p className="text-xs text-emerald-600/90 dark:text-emerald-500/90 font-bold max-w-sm">
-                                ท่านเข้าเรียนและศึกษาเนื้อหาวิชานี้เรียบร้อยแล้ว สามารถทำแบบทดสอบท้ายบทหรือดาวน์โหลดเอกสารได้ทันที
-                              </p>
-                            </>
-                          ) : isMinimumTimeReached ? (
-                            <>
-                              <h4 className="text-lg font-black text-teal-700 dark:text-teal-400 tracking-tight">
-                                บันทึกเข้าเรียนสำเร็จ! ✅
-                              </h4>
-                              <p className="text-xs text-teal-600/90 dark:text-teal-500/90 font-bold max-w-sm">
-                                เวลาเรียนถึงเกณฑ์ขั้นต่ำแล้ว สามารถทำแบบทดสอบได้ทันที หรือเปิดทิ้งไว้เพื่อสะสมเวลาต่อ
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              <h4 className="text-lg font-black text-blue-800 dark:text-blue-400 tracking-tight flex items-center justify-center md:justify-start gap-1.5">
-                                กำลังจับเวลาเข้าเรียน <span className="flex gap-0.5"><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></span><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span></span>
-                              </h4>
-                              <p className="text-xs text-blue-700/80 dark:text-blue-500/80 font-bold max-w-sm">
-                                กรุณาเปิดหน้านี้ทิ้งไว้จนกว่าจะครบเวลาขั้นต่ำ {activeStudyUnit.studyMinutes} นาที เพื่อรักษาสิทธิ์การเข้าเรียน
-                              </p>
-                            </>
+                      <div>
+                        <h4 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                          {isStudyCompleted ? "เรียนครบเวลาทั้งหมดแล้ว" : isMinimumTimeReached ? "บันทึกเข้าเรียนสำเร็จ" : "กำลังจับเวลาเข้าเรียน"}
+                          {!isStudyCompleted && !isMinimumTimeReached && (
+                            <span className="flex gap-0.5"><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></span><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span><span className="w-1 h-1 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span></span>
                           )}
-                        </div>
+                        </h4>
+                        <p className="text-xs text-zinc-500 mt-0.5 max-w-md leading-relaxed">
+                          {isStudyCompleted ? "ท่านเข้าเรียนและศึกษาเนื้อหาวิชานี้เรียบร้อยแล้ว สามารถทำแบบทดสอบหรือดาวน์โหลดเอกสารได้" : isMinimumTimeReached ? "เวลาเรียนถึงเกณฑ์ขั้นต่ำแล้ว สามารถทำแบบทดสอบได้ทันที หรือเปิดทิ้งไว้เพื่อสะสมเวลาต่อ" : `กรุณาเปิดหน้านี้ทิ้งไว้จนกว่าจะครบเวลาขั้นต่ำ ${activeStudyUnit.studyMinutes} นาที เพื่อรักษาสิทธิ์การเข้าเรียน`}
+                        </p>
+                      </div>
+                    </div>
 
-                        {/* Focus Bar */}
-                        <div className="w-full md:w-[280px] shrink-0 bg-white/70 dark:bg-zinc-900/60 p-3 rounded-2xl border border-white/50 dark:border-zinc-800/80 shadow-xs backdrop-blur-sm relative mt-2 md:mt-0">
-                          <div className="flex justify-between items-end mb-2">
-                            <div>
-                              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-0.5">
-                                เวลาที่สะสมได้
-                              </span>
-                              <span className="text-lg font-black text-zinc-900 dark:text-white leading-none tabular-nums flex items-baseline gap-1">
-                                {Math.floor(studySecondsElapsed / 60)} <span className="text-xs text-zinc-400">น.</span>
-                                {String(studySecondsElapsed % 60).padStart(2, '0')} <span className="text-xs text-zinc-400">วิ.</span>
-                              </span>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-0.5">
-                                เป้าหมายขั้นต่ำ
-                              </span>
-                              <span className="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-md inline-block">
-                                {Number(activeStudyUnit.studyMinutes)} นาที
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-2.5 rounded-full overflow-hidden relative shadow-inner">
-                            <div
-                              className={`h-full transition-all duration-1000 relative ${isStudyCompleted ? "bg-linear-to-r from-emerald-400 to-emerald-500" : isMinimumTimeReached ? "bg-linear-to-r from-teal-400 to-emerald-500" : "bg-linear-to-r from-blue-400 to-indigo-500"}`}
-                              style={{ width: `${Math.min(100, (studySecondsElapsed / ((Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)) * 60)) * 100)}%` }}
-                            >
-                              {!isStudyCompleted && (
-                                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-size-[1rem_1rem] animate-[progress_1s_linear_infinite]" />
-                              )}
-                            </div>
-                            {/* Minimum time marker */}
-                            <div
-                              className="absolute top-0 bottom-0 w-0.5 bg-zinc-900/30 dark:bg-zinc-100/40 z-10"
-                              style={{ left: `${(Number(activeStudyUnit.studyMinutes) / (Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes))) * 100}%` }}
-                            />
-                          </div>
+                    <div className="w-full md:w-64 bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 shrink-0">
+                      <div className="flex justify-between items-end mb-2">
+                        <div>
+                          <span className="text-[10px] font-bold text-zinc-500 block mb-0.5">เวลาที่สะสมได้</span>
+                          <span className="text-sm font-black text-zinc-900 dark:text-white tabular-nums flex items-baseline gap-1">
+                            {Math.floor(studySecondsElapsed / 60)} <span className="text-xs text-zinc-400 font-medium">น.</span> {String(studySecondsElapsed % 60).padStart(2, '0')} <span className="text-xs text-zinc-400 font-medium">วิ.</span>
+                          </span>
                         </div>
+                        <div className="text-right">
+                          <span className="text-[10px] font-bold text-zinc-500 block mb-0.5">เป้าหมายขั้นต่ำ</span>
+                          <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 bg-zinc-200/50 dark:bg-zinc-800/50 px-2 py-0.5 rounded-md">
+                            {Number(activeStudyUnit.studyMinutes)} นาที
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden relative">
+                        <div
+                          className={`h-full transition-all duration-1000 ${isStudyCompleted ? "bg-emerald-500" : isMinimumTimeReached ? "bg-teal-500" : "bg-blue-500"}`}
+                          style={{ width: `${Math.min(100, (studySecondsElapsed / ((Number(activeStudyUnit.totalMinutes) || Number(activeStudyUnit.studyMinutes)) * 60)) * 100)}%` }}
+                        />
                       </div>
                     </div>
                   </div>
                 )}
 
                 {/* 📝 LESSON CONTENT */}
-                <div className="space-y-2">
-                  <h3 className="text-sm font-black text-zinc-955 dark:text-white flex items-center gap-1.5 border-b pb-2 dark:border-zinc-800">
-                    <BookOpen size={16} className="text-emerald-500" />
+                <div className="space-y-3">
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-white flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                    <BookOpen size={16} className="text-zinc-400" />
                     คำอธิบายและเนื้อหาหน่วยเรียน
                   </h3>
                   {activeStudyUnit.content ? (
-                    <p className="text-xs text-zinc-700   leading-relaxed whitespace-pre-line bg-zinc-50 dark:bg-zinc-850 p-4 rounded-xl border dark:border-zinc-800">
+                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/50">
                       {activeStudyUnit.content}
                     </p>
                   ) : (
-                    <p className="text-xs text-zinc-450 italic">
-                      ไม่มีรายละเอียดเนื้อหาของหน่วยเรียนนี้
-                    </p>
+                    <p className="text-xs text-zinc-400 italic">ไม่มีรายละเอียดเนื้อหาของหน่วยเรียนนี้</p>
                   )}
                 </div>
 
@@ -2131,17 +2053,17 @@ export function DVEStudentPortal() {
 
                   return (
                     <div className="space-y-4">
-                      <h3 className="text-sm font-black text-zinc-955 dark:text-white flex items-center gap-1.5 border-b pb-2 dark:border-zinc-800">
-                        <FolderOpen size={16} className="text-emerald-500" />
+                      <h3 className="text-sm font-black text-zinc-900 dark:text-white flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                        <FolderOpen size={16} className="text-zinc-400" />
                         ไฟล์เอกสารและแหล่งดาวน์โหลดข้อมูล
                       </h3>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* Direct Files */}
                         {directFiles.length > 0 && (
                           <div className="space-y-2">
-                            <span className="text-[10px] font-bold text-zinc-450 dark:text-zinc-555 uppercase tracking-wider block">
-                              📂 ไฟล์เอกสารประกอบการเรียน:
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">
+                              📂 ไฟล์เอกสารประกอบการเรียน
                             </span>
                             <div className="space-y-2">
                               {directFiles.map((file: any, fIdx: number) => {
@@ -2159,23 +2081,23 @@ export function DVEStudentPortal() {
                                         setMediaPreviewType("video");
                                         setMediaPreviewName(file.name);
                                       }}
-                                      className="group relative flex flex-col p-3 gap-3 rounded-xl bg-teal-500/5 hover:bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-black transition-colors border border-teal-500/10 cursor-pointer overflow-hidden"
+                                      className="group relative flex flex-col p-2 gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
                                     >
-                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-teal-500/20 bg-black/5 dark:bg-white/5 flex items-center justify-center">
+                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center">
                                         {thumbUrl ? (
                                           <img src={thumbUrl} alt="Video Thumbnail" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                         ) : (
                                           <video src={file.url} preload="metadata" className="w-full h-full object-cover" />
                                         )}
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                                          <div className="w-12 h-12 bg-teal-600/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:bg-teal-600 transition-colors">
-                                            <Youtube size={24} className="text-white" />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                          <div className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:bg-blue-600 transition-colors">
+                                            <Youtube size={20} className="text-white" />
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="flex items-start gap-2">
-                                        <Youtube size={16} className="shrink-0 mt-0.5" />
-                                        <span className="truncate whitespace-normal line-clamp-2">
+                                      <div className="flex items-start gap-2 px-1 pb-1">
+                                        <Youtube size={14} className="shrink-0 mt-0.5 text-zinc-400 group-hover:text-blue-500" />
+                                        <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate">
                                           {file.name || "ชมวีดีโอประกอบการเรียน"}
                                         </span>
                                       </div>
@@ -2190,20 +2112,20 @@ export function DVEStudentPortal() {
                                       href={file.url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="group relative flex flex-col p-3 gap-3 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-black transition-colors border border-rose-500/10 cursor-pointer overflow-hidden"
+                                      className="group relative flex flex-col p-2 gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-rose-500 dark:hover:border-rose-500 transition-colors cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
                                     >
-                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-rose-500/20 bg-rose-50 dark:bg-rose-950/20 flex items-center justify-center">
+                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
                                         {thumbUrl ? (
                                           <img src={thumbUrl} alt="PDF Thumbnail" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                         ) : (
-                                          <FileText size={48} className="text-rose-300 dark:text-rose-800" />
+                                          <FileText size={32} className="text-zinc-300 dark:text-zinc-700" />
                                         )}
                                         <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-colors">
                                         </div>
                                       </div>
-                                      <div className="flex items-start gap-2">
-                                        <FileText size={16} className="shrink-0 mt-0.5" />
-                                        <span className="truncate whitespace-normal line-clamp-2">
+                                      <div className="flex items-start gap-2 px-1 pb-1">
+                                        <FileText size={14} className="shrink-0 mt-0.5 text-zinc-400 group-hover:text-rose-500" />
+                                        <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate">
                                           {file.name || "เปิดอ่านเอกสาร PDF"}
                                         </span>
                                       </div>
@@ -2217,10 +2139,12 @@ export function DVEStudentPortal() {
                                     href={file.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-black transition-colors border border-emerald-500/10 cursor-pointer"
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm cursor-pointer group"
                                   >
-                                    <Download size={14} className="shrink-0" />
-                                    <span className="truncate">
+                                    <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
+                                      <Download size={14} className="text-zinc-500 dark:text-zinc-400" />
+                                    </div>
+                                    <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate flex-1">
                                       {file.name || "เอกสารประกอบการเรียน"}
                                     </span>
                                   </a>
@@ -2233,8 +2157,8 @@ export function DVEStudentPortal() {
                         {/* External Links */}
                         {externalLinks.length > 0 && (
                           <div className="space-y-2">
-                            <span className="text-[10px] font-bold text-zinc-455 dark:text-zinc-555 uppercase tracking-wider block">
-                              🔗 ลิงก์และแหล่งข้อมูลภายนอก:
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">
+                              🔗 ลิงก์และแหล่งข้อมูลภายนอก
                             </span>
                             <div className="space-y-2">
                               {externalLinks.map((file: any, fIdx: number) => {
@@ -2250,23 +2174,23 @@ export function DVEStudentPortal() {
                                         setMediaPreviewType("youtube");
                                         setMediaPreviewName(file.name);
                                       }}
-                                      className="group relative flex flex-col p-3 gap-3 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-black transition-colors border border-red-500/10 cursor-pointer overflow-hidden"
+                                      className="group relative flex flex-col p-2 gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-500 dark:hover:border-red-500 transition-colors cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
                                     >
-                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-red-500/20 bg-black/5 dark:bg-white/5">
+                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950">
                                         <img 
                                           src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`} 
                                           alt="YouTube Thumbnail" 
                                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         />
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                                          <div className="w-12 h-12 bg-red-600/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:bg-red-600 transition-colors">
-                                            <Youtube size={24} className="text-white" />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                          <div className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:bg-red-600 transition-colors">
+                                            <Youtube size={20} className="text-white" />
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="flex items-start gap-2">
-                                        <Youtube size={16} className="shrink-0 mt-0.5" />
-                                        <span className="truncate whitespace-normal line-clamp-2">
+                                      <div className="flex items-start gap-2 px-1 pb-1">
+                                        <Youtube size={14} className="shrink-0 mt-0.5 text-zinc-400 group-hover:text-red-500" />
+                                        <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate">
                                           {file.name || "ชมวิดีโอบน YouTube"}
                                         </span>
                                       </div>
@@ -2280,10 +2204,12 @@ export function DVEStudentPortal() {
                                     href={file.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 p-3 rounded-xl bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-black transition-colors border border-blue-500/10 cursor-pointer"
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm cursor-pointer group"
                                   >
-                                    <ExternalLink size={14} className="shrink-0" />
-                                    <span className="truncate">
+                                    <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
+                                      <ExternalLink size={14} className="text-zinc-500 dark:text-zinc-400" />
+                                    </div>
+                                    <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate flex-1">
                                       {file.name || "เปิดแหล่งข้อมูลภายนอก"}
                                     </span>
                                   </a>
@@ -2308,17 +2234,18 @@ export function DVEStudentPortal() {
                   if (unitQuizzes.length === 0) return null;
 
                   return (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider block">
-                          📝 แบบทดสอบของหน่วยเรียน ({unitQuizzes.length}):
-                        </span>
+                    <div className="space-y-4 pt-2">
+                      <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                        <h3 className="text-sm font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                          <ClipboardList size={16} className="text-zinc-400" />
+                          แบบทดสอบประจำหน่วย ({unitQuizzes.length})
+                        </h3>
                         {/* To-Do / Submitted Toggle */}
-                        <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 rounded-full p-1">
+                        <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
                           <button
                             onClick={() => setTaskView("todo")}
-                            className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "todo"
-                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                            className={`px-3 py-1 rounded-md text-[10px] font-black transition-all ${taskView === "todo"
+                              ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm"
                               : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                               }`}
                           >
@@ -2326,8 +2253,8 @@ export function DVEStudentPortal() {
                           </button>
                           <button
                             onClick={() => setTaskView("submitted")}
-                            className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${taskView === "submitted"
-                              ? "bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm"
+                            className={`px-3 py-1 rounded-md text-[10px] font-black transition-all ${taskView === "submitted"
+                              ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm"
                               : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                               }`}
                           >
@@ -2335,7 +2262,7 @@ export function DVEStudentPortal() {
                           </button>
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {unitQuizzes
                           .filter((quiz: any) => {
                             if (taskView === "submitted") return quiz.isSubmitted;
@@ -2346,49 +2273,35 @@ export function DVEStudentPortal() {
                             return (
                               <div
                                 key={quiz.id || qIdx}
-                                className={`p-4 rounded-2xl border flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 ${isQuizSubmitted
-                                  ? "bg-zinc-100/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800/80 opacity-75 animate-none"
-                                  : "bg-teal-500/5 dark:bg-teal-950/10 border-teal-500/10"
+                                className={`p-4 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-4 transition-all duration-300 shadow-sm ${isQuizSubmitted
+                                  ? "bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 opacity-80"
+                                  : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"
                                   }`}
                               >
-                                <div className="space-y-0.5 text-center sm:text-left">
-                                  <span className="text-[9px] uppercase font-black text-teal-600 dark:text-teal-400 tracking-wider">
-                                    แบบทดสอบวิชาเรียนที่ {qIdx + 1}
-                                  </span>
-                                  <div className="flex flex-wrap items-center gap-1.5 justify-center sm:justify-start">
+                                <div className="space-y-1 text-center sm:text-left">
+                                  <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
                                     <h4 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">
                                       {quiz.title}
                                     </h4>
                                     {quiz.quizType === "pretest" && (
-                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
-                                        ก่อนเรียน (Pre-test)
-                                      </span>
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-black bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">ก่อนเรียน</span>
                                     )}
                                     {quiz.quizType === "posttest" && (
-                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
-                                        หลังเรียน (Post-test)
-                                      </span>
-                                    )}
-                                    {quiz.quizType === "general" && (
-                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20">
-                                        ทั่วไป
-                                      </span>
-                                    )}
-                                    {quiz.isBuiltIn && quiz.isShuffle && (
-                                      <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none border bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20">
-                                        🔀 สลับข้อ
-                                      </span>
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-black bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">หลังเรียน</span>
                                     )}
                                   </div>
+                                  <p className="text-[10px] font-bold text-zinc-500">
+                                    แบบทดสอบวิชาเรียนที่ {qIdx + 1}
+                                  </p>
                                 </div>
                                 <button
                                   type="button"
                                   disabled={isQuizSubmitted || !isMinimumTimeReached}
-                                  className={`px-4 py-2 text-xs font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-300 border shadow-sm ${isQuizSubmitted
-                                    ? "bg-zinc-100 text-zinc-400 border-zinc-200 dark:bg-zinc-900/50 dark:text-zinc-600 dark:border-zinc-800 cursor-not-allowed select-none"
+                                  className={`px-4 py-2 text-xs font-black rounded-lg inline-flex items-center gap-2 transition-all duration-300 border ${isQuizSubmitted
+                                    ? "bg-zinc-100 text-zinc-400 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-500 dark:border-zinc-700 cursor-not-allowed"
                                     : !isMinimumTimeReached
-                                      ? "bg-zinc-50 text-zinc-400 border-zinc-200 dark:bg-zinc-800/50 dark:text-zinc-500 dark:border-zinc-700 cursor-not-allowed opacity-80"
-                                      : "bg-linear-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 border-transparent text-white cursor-pointer hover:-translate-y-0.5 shadow-teal-500/25 hover:shadow-lg group"
+                                      ? "bg-zinc-50 text-zinc-400 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-600 dark:border-zinc-800 cursor-not-allowed"
+                                      : "bg-zinc-900 text-white hover:bg-zinc-800 border-transparent dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white cursor-pointer shadow-sm hover:shadow-md"
                                     }`}
                                   onClick={() => {
                                     if (isQuizSubmitted) return;
@@ -2403,32 +2316,27 @@ export function DVEStudentPortal() {
                                 >
                                   {isQuizSubmitted ? (
                                     <>
-                                      <CheckCircle size={14} className="text-emerald-500" />
-                                      ทำแบบทดสอบแล้ว
+                                      <CheckCircle size={14} /> ทำแบบทดสอบแล้ว
                                     </>
                                   ) : !isMinimumTimeReached ? (
                                     <>
-                                      <span className="flex items-center gap-1">
-                                        <Lock size={12} />
-                                        รอเวลาครบกำหนด
-                                      </span>
+                                      <Lock size={14} /> รอเวลาครบกำหนด
                                     </>
                                   ) : (
                                     <>
-                                      {quiz.isBuiltIn
-                                        ? "เริ่มทำข้อสอบท้ายบทเรียน"
-                                        : "เริ่มทำแบบทดสอบประเมิน"}
-                                      {quiz.isBuiltIn ? (
-                                        <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                                      ) : (
-                                        <ExternalLink size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                                      )}
+                                      <Edit2 size={14} /> เริ่มทำแบบทดสอบ
                                     </>
                                   )}
                                 </button>
                               </div>
                             );
                           })}
+                        {unitQuizzes.filter((q: any) => taskView === "submitted" ? q.isSubmitted : !q.isSubmitted).length === 0 && (
+                          <div className="text-center py-6 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800/50">
+                            <ClipboardList size={24} className="mx-auto text-zinc-300 mb-2" />
+                            <p className="text-xs text-zinc-500 font-bold">ไม่มีรายการแบบทดสอบ</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -3191,7 +3099,7 @@ export function DVEStudentPortal() {
               exit={{ scale: 0.95, opacity: 0 }}
               className="relative w-full max-w-5xl rounded-2xl overflow-hidden bg-black shadow-2xl flex flex-col"
             >
-              <div className="absolute top-0 inset-x-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between pointer-events-none">
+              <div className="absolute top-0 inset-x-0 p-4 bg-linear-to-b from-black/80 to-transparent z-10 flex items-center justify-between pointer-events-none">
                 <span className="text-white font-black drop-shadow-md truncate pr-8 pointer-events-auto">
                   {mediaPreviewName || "วีดีโอประกอบการเรียน"}
                 </span>
