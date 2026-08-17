@@ -82,6 +82,7 @@ export default function StudentFlagpolePortal() {
   });
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const faceApiRef = useRef<any>(null);
   const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastFaceBoxRef = useRef<{ x: number; y: number } | null>(null);
@@ -226,6 +227,16 @@ export default function StudentFlagpolePortal() {
           videoRef.current,
           new faceApi.SsdMobilenetv1Options({ minConfidence: 0.75 })
         );
+
+        if (canvasRef.current && videoRef.current) {
+          const dims = faceApi.matchDimensions(canvasRef.current, videoRef.current, true);
+          const ctx = canvasRef.current.getContext('2d');
+          if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          if (detection) {
+            const resizedDetections = faceApi.resizeResults(detection, dims);
+            faceApi.draw.drawDetections(canvasRef.current, resizedDetections);
+          }
+        }
 
         if (detection) {
           const box = detection.box;
@@ -496,6 +507,8 @@ export default function StudentFlagpolePortal() {
 
   const getFaceStateUI = () => {
     switch (faceState) {
+      case "idle":
+        return { icon: <AlertCircle />, text: "ระบบเตรียมตรวจจับใบหน้า...", color: "bg-slate-100 text-slate-500 border-slate-200" };
       case "loading":
         return { icon: <Loader2 className="animate-spin" />, text: "กำลังเตรียมระบบ...", color: "bg-slate-100 text-slate-600 border-slate-200" };
       case "detecting":
@@ -726,12 +739,18 @@ export default function StudentFlagpolePortal() {
                   <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-4 shadow-xl border border-slate-100 dark:border-zinc-800 flex flex-col">
                     <div className="w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden relative mb-4 shadow-inner border-2 border-slate-100 dark:border-zinc-800 flex items-center justify-center">
                       {!cameraError ? (
-                        <video
-                          ref={videoRef}
-                          autoPlay
-                          playsInline
-                          className="w-full h-full object-cover scale-x-[-1]"
-                        />
+                        <>
+                          <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            className="w-full h-full object-cover scale-x-[-1]"
+                          />
+                          <canvas
+                            ref={canvasRef}
+                            className="absolute inset-0 w-full h-full pointer-events-none scale-x-[-1]"
+                          />
+                        </>
                       ) : (
                         <div className="p-6 text-center relative z-20">
                           <div className="w-16 h-16 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 relative">
