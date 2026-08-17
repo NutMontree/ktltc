@@ -76,6 +76,17 @@ function FlagpoleReportsManagementContent() {
   const [permissions, setPermissions] = useState<any>(null);
   const [isPermsLoading, setIsPermsLoading] = useState(true);
 
+  const [stats, setStats] = useState<{
+    total: number;
+    present: number;
+    late: number;
+    absent: number;
+    byDept?: Record<string, any>;
+  } | null>(null);
+
+  const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [deleteAllCode, setDeleteAllCode] = useState("");
+
   // Zoom Image State
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -106,10 +117,10 @@ function FlagpoleReportsManagementContent() {
         .then((data) => {
           const perms = data || {};
           const role = session?.user?.role?.toLowerCase();
-          
+
           if (
-            role === "super_admin" || 
-            ["super_admin", "admin", "editor", "teacher"].includes(role) || 
+            role === "super_admin" ||
+            ["super_admin", "admin", "editor", "teacher"].includes(role) ||
             perms.manage_flagpole_reports ||
             perms.manage_flagpole_data ||
             perms.manage_flagpole_settings ||
@@ -144,6 +155,9 @@ function FlagpoleReportsManagementContent() {
         if (isLoadMore) setPage(currentPage);
         if (json.classGroups) {
           setAvailableClassGroups(json.classGroups);
+        }
+        if (json.stats && !isLoadMore) {
+          setStats(json.stats);
         }
       } else {
         toast.error(json.message || "ดึงรายงานล้มเหลว");
@@ -231,18 +245,8 @@ function FlagpoleReportsManagementContent() {
   };
 
   const handleDeleteAll = async () => {
-    if (
-      !confirm(
-        "🚨 [คำเตือนวิกฤต] คุณกำลังจะลบประวัติการเช็คชื่อเข้าแถวของนักเรียน 'ทั้งหมด' ในวิทยาลัย! การกระทำนี้ไม่สามารถกู้คืนได้ คุณแน่ใจจริงๆ หรือไม่?",
-      )
-    )
-      return;
-
-    const securityCode = prompt(
-      'กรุณาพิมพ์รหัสยืนยัน "admin1234" เพื่อล้างประวัติเสาธงทั้งหมด:',
-    );
-    if (securityCode !== "admin1234") {
-      return toast.error("รหัสยืนยันไม่ถูกต้อง ยกเลิกคำสั่งล้างข้อมูล");
+    if (deleteAllCode !== "admin1234") {
+      return toast.error("รหัสยืนยันไม่ถูกต้อง");
     }
 
     setActionLoading(true);
@@ -253,6 +257,8 @@ function FlagpoleReportsManagementContent() {
       const json = await res.json();
       if (json.success) {
         toast.success(json.message || "ล้างประวัติการเข้าแถวทั้งหมดเรียบร้อยแล้ว");
+        setIsDeleteAllModalOpen(false);
+        setDeleteAllCode("");
         fetchReports();
       } else {
         toast.error(json.message || "ลบประวัติล้มเหลว");
@@ -278,11 +284,31 @@ function FlagpoleReportsManagementContent() {
         return;
       }
 
-      // Sort by department and then by class group
+      // คำนวณสถิติเพื่อเรียงลำดับตามคนขาดมากไปน้อย
+      const statsByDept: Record<string, any> = {};
+      json.data.forEach((r: any) => {
+        const dept = r.user?.department || "ไม่ระบุแผนก";
+        if (!statsByDept[dept]) {
+          statsByDept[dept] = { absent: 0 };
+        }
+        if (r.status === "Absent") {
+          statsByDept[dept].absent++;
+        }
+      });
+
+      // เรียงลำดับจากแผนกที่มีคนไม่เข้าแถวมากที่สุดไปน้อยที่สุด
       json.data.sort((a: any, b: any) => {
-        const deptA = a.user?.department || "";
-        const deptB = b.user?.department || "";
-        if (deptA !== deptB) return deptA.localeCompare(deptB, 'th');
+        const deptA = a.user?.department || "ไม่ระบุแผนก";
+        const deptB = b.user?.department || "ไม่ระบุแผนก";
+
+        if (deptA !== deptB) {
+          const absentA = statsByDept[deptA]?.absent || 0;
+          const absentB = statsByDept[deptB]?.absent || 0;
+          if (absentA !== absentB) {
+            return absentB - absentA; // มากไปน้อย
+          }
+          return deptA.localeCompare(deptB, 'th');
+        }
         const classA = a.user?.classGroupId || "";
         const classB = b.user?.classGroupId || "";
         return classA.localeCompare(classB, 'th');
@@ -335,11 +361,52 @@ function FlagpoleReportsManagementContent() {
         return;
       }
 
-      // Sort by department and then by class group
+      // คำนวณสถิติแต่ละแผนกก่อน เพื่อนำมาใช้เรียงลำดับ
+      const statsByDept: Record<string, any> = {};
+      json.data.forEach((r: any) => {
+        const dept = r.user?.department || "ไม่ระบุแผนก";
+        if (!statsByDept[dept]) {
+          statsByDept[dept] = {
+            attended: 0,
+            present: 0,
+            late: 0,
+            absent: 0,
+            inSite: 0,
+            outSite: 0
+          };
+        }
+        if (r.status === "Present") {
+          statsByDept[dept].present++;
+          statsByDept[dept].attended++;
+        } else if (r.status === "Late") {
+          statsByDept[dept].late++;
+          statsByDept[dept].attended++;
+        } else if (r.status === "Absent") {
+          statsByDept[dept].absent++;
+        }
+        if (r.status !== "Absent") {
+          const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่" : "นอกพื้นที่") : "");
+          if (inAreaStatus.includes("ในพื้นที่")) {
+            statsByDept[dept].inSite++;
+          } else if (inAreaStatus.includes("นอกพื้นที่") || (r.distance !== undefined && r.distance > 50)) {
+            statsByDept[dept].outSite++;
+          }
+        }
+      });
+
+      // เรียงลำดับจากแผนกที่มีคนไม่เข้าแถวมากที่สุดไปน้อยที่สุด
       json.data.sort((a: any, b: any) => {
-        const deptA = a.user?.department || "";
-        const deptB = b.user?.department || "";
-        if (deptA !== deptB) return deptA.localeCompare(deptB, 'th');
+        const deptA = a.user?.department || "ไม่ระบุแผนก";
+        const deptB = b.user?.department || "ไม่ระบุแผนก";
+
+        if (deptA !== deptB) {
+          const absentA = statsByDept[deptA]?.absent || 0;
+          const absentB = statsByDept[deptB]?.absent || 0;
+          if (absentA !== absentB) {
+            return absentB - absentA; // มากไปน้อย
+          }
+          return deptA.localeCompare(deptB, 'th');
+        }
         const classA = a.user?.classGroupId || "";
         const classB = b.user?.classGroupId || "";
         return classA.localeCompare(classB, 'th');
@@ -353,37 +420,6 @@ function FlagpoleReportsManagementContent() {
       };
 
       if (printWindow) {
-        const statsByDept: Record<string, any> = {};
-        json.data.forEach((r: any) => {
-          const dept = r.user?.department || "ไม่ระบุแผนก";
-          if (!statsByDept[dept]) {
-            statsByDept[dept] = {
-              attended: 0,
-              present: 0,
-              late: 0,
-              absent: 0,
-              inSite: 0,
-              outSite: 0
-            };
-          }
-          if (r.status === "Present") {
-            statsByDept[dept].present++;
-            statsByDept[dept].attended++;
-          } else if (r.status === "Late") {
-            statsByDept[dept].late++;
-            statsByDept[dept].attended++;
-          } else if (r.status === "Absent") {
-            statsByDept[dept].absent++;
-          }
-          if (r.status !== "Absent") {
-            const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่" : "นอกพื้นที่") : "");
-            if (inAreaStatus.includes("ในพื้นที่")) {
-              statsByDept[dept].inSite++;
-            } else if (inAreaStatus.includes("นอกพื้นที่") || (r.distance !== undefined && r.distance > 50)) {
-              statsByDept[dept].outSite++;
-            }
-          }
-        });
 
         printWindow.document.write(`
           <html>
@@ -532,7 +568,14 @@ function FlagpoleReportsManagementContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  ${Object.keys(statsByDept).map(dept => `
+                  ${Object.keys(statsByDept)
+            .sort((deptA, deptB) => {
+              const absentA = statsByDept[deptA].absent;
+              const absentB = statsByDept[deptB].absent;
+              if (absentA !== absentB) return absentB - absentA;
+              return deptA.localeCompare(deptB, 'th');
+            })
+            .map(dept => `
                     <tr>
                       <td style="font-weight: 600;">${dept}</td>
                       <td style="text-align: right; font-weight: 700;">${statsByDept[dept].attended}</td>
@@ -562,15 +605,15 @@ function FlagpoleReportsManagementContent() {
                 </thead>
                 <tbody>
                   ${json.data.map((r: any, idx: number) => {
-          const statusClass = r.status === "Present" ? "status-present" : r.status === "Absent" ? "status-absent" : "status-late";
-          const statusText = r.status === "Present" ? "ตรงเวลา" : r.status === "Absent" ? "ไม่ได้เข้าแถว" : "มาสาย";
-          const dateText = new Date(r.date).toLocaleDateString("th-TH");
-          const timeText = r.time ? new Date(r.time).toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " น." : "-";
+              const statusClass = r.status === "Present" ? "status-present" : r.status === "Absent" ? "status-absent" : "status-late";
+              const statusText = r.status === "Present" ? "ตรงเวลา" : r.status === "Absent" ? "ไม่ได้เข้าแถว" : "มาสาย";
+              const dateText = new Date(r.date).toLocaleDateString("th-TH");
+              const timeText = r.time ? new Date(r.time).toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " น." : "-";
 
-          const distanceText = r.distance !== undefined ? `ห่าง: ${Math.round(r.distance)} เมตร` : "";
-          const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่ (In-Site)" : "นอกพื้นที่") : "ไม่ทราบพิกัด");
+              const distanceText = r.distance !== undefined ? `ห่าง: ${Math.round(r.distance)} เมตร` : "";
+              const inAreaStatus = r.statusTag || (r.distance !== undefined ? (r.distance <= 50 ? "อยู่ในพื้นที่ (In-Site)" : "นอกพื้นที่") : "ไม่ทราบพิกัด");
 
-          const scanDetailsHTML = `
+              const scanDetailsHTML = `
                       <div style="font-size: 11px; line-height: 1.4; text-align: left;">
                         <div style="font-weight: bold; color: #1e293b;">${timeText}</div>
                         ${distanceText ? `<div style="color: #3b82f6;">${distanceText}</div>` : ''}
@@ -580,7 +623,7 @@ function FlagpoleReportsManagementContent() {
                       </div>
                     `;
 
-          return `
+              return `
                       <tr>
                         <td style="text-align: center;">${idx + 1}</td>
                         <td>${r.user?.studentId || "-"}</td>
@@ -596,7 +639,7 @@ function FlagpoleReportsManagementContent() {
                         </td>
                       </tr>
                     `;
-        }).join("")}
+            }).join("")}
                 </tbody>
               </table>
               <script>
@@ -657,6 +700,59 @@ function FlagpoleReportsManagementContent() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-6 font-sans selection:bg-indigo-500/30 overflow-x-hidden text-left">
       <Toaster position="top-right" />
+      
+      {/* Delete All Modal */}
+      <AnimatePresence>
+        {isDeleteAllModalOpen && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-zinc-900 rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl border border-rose-100 dark:border-rose-900/30"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-full flex items-center justify-center mb-4">
+                  <AlertCircle size={32} />
+                </div>
+                <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100 mb-2">คำเตือนวิกฤต</h3>
+                <p className="text-sm text-slate-500 dark:text-zinc-400 font-bold mb-6">
+                  คุณกำลังจะลบประวัติการเช็คชื่อเข้าแถวของนักเรียน <span className="text-rose-500 underline">ทั้งหมด</span> ในวิทยาลัย! การกระทำนี้ไม่สามารถกู้คืนได้ คุณแน่ใจจริงๆ หรือไม่?
+                </p>
+                <div className="w-full mb-6">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest text-left mb-2">รหัสยืนยัน</label>
+                  <input
+                    type="password"
+                    value={deleteAllCode}
+                    onChange={(e) => setDeleteAllCode(e.target.value)}
+                    placeholder="พิมพ์รหัส 'admin1234'"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 rounded-2xl focus:outline-none transition-all font-bold text-center text-slate-800 dark:text-zinc-100"
+                  />
+                </div>
+                <div className="flex w-full gap-3">
+                  <button
+                    onClick={() => {
+                      setIsDeleteAllModalOpen(false);
+                      setDeleteAllCode("");
+                    }}
+                    className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 font-black rounded-xl transition-all active:scale-95 text-sm"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleDeleteAll}
+                    disabled={actionLoading || deleteAllCode !== "admin1234"}
+                    className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl transition-all active:scale-95 disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                  >
+                    {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                    ยืนยันลบข้อมูล
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Section */}
@@ -688,12 +784,12 @@ function FlagpoleReportsManagementContent() {
               <BarChart2 size={16} /> ประเมินผล
             </Link>
 
-            <button
+            {/* <button
               onClick={() => fetchReports()}
               className="flex items-center gap-2 px-5 py-3 bg-slate-50 dark:bg-zinc-800/50 text-slate-800 dark:text-zinc-100 rounded-2xl shadow-sm text-xs font-black hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all active:scale-95 border border-slate-200 dark:border-zinc-700"
             >
               <Clock size={16} className={loading ? "animate-spin" : ""} /> รีเฟรชข้อมูล
-            </button>
+            </button> */}
 
             <button
               onClick={exportToExcel}
@@ -711,9 +807,8 @@ function FlagpoleReportsManagementContent() {
 
             {isSuperAdmin && (
               <button
-                onClick={handleDeleteAll}
-                disabled={actionLoading}
-                className="flex items-center gap-2 px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl shadow-md text-xs font-black transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                onClick={() => setIsDeleteAllModalOpen(true)}
+                className="flex items-center gap-2 px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl shadow-md text-xs font-black transition-all active:scale-95 cursor-pointer"
               >
                 <Trash2 size={16} /> ล้างประวัติทั้งหมด
               </button>
@@ -871,6 +966,73 @@ function FlagpoleReportsManagementContent() {
             </div>
           </div>
         </div>
+
+        {/* Summary Statistics Section */}
+        {stats && (
+          <div className="flex flex-col gap-6 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-slate-100 dark:border-zinc-850 shadow-sm flex flex-col items-center justify-center">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ประวัติทั้งหมด</span>
+                <span className="text-2xl font-black text-slate-800 dark:text-zinc-100">{stats.total} <span className="text-sm font-bold text-slate-400">รายการ</span></span>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-slate-100 dark:border-zinc-850 shadow-sm flex flex-col items-center justify-center">
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">ตรงเวลา</span>
+                <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{stats.present} <span className="text-sm font-bold text-emerald-500/70">รายการ</span></span>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-slate-100 dark:border-zinc-850 shadow-sm flex flex-col items-center justify-center">
+                <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">มาสาย</span>
+                <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{stats.late} <span className="text-sm font-bold text-amber-500/70">รายการ</span></span>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-slate-100 dark:border-zinc-850 shadow-sm flex flex-col items-center justify-center">
+                <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-1">ไม่ได้เข้าแถว</span>
+                <span className="text-2xl font-black text-rose-600 dark:text-rose-400">{stats.absent} <span className="text-sm font-bold text-rose-500/70">รายการ</span></span>
+              </div>
+            </div>
+
+            {stats.byDept && Object.keys(stats.byDept).length > 0 && (
+              <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-zinc-850 overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800">
+                  <h2 className="text-sm font-black text-slate-800 dark:text-zinc-100 uppercase tracking-widest">สถิติการเข้าแถวแยกตามแผนกวิชา</h2>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50/50 dark:bg-zinc-800/40">
+                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800">แผนกวิชา</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">เข้าแถว (คน)</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">ไม่เข้าแถว (คน)</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">ตรงเวลา (คน)</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">มาสาย (คน)</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">อยู่ในสถานที่ (คน)</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-zinc-800 text-right">อยู่นอกสถานที่ (คน)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.keys(stats.byDept)
+                        .sort((deptA, deptB) => {
+                          const absentA = stats.byDept![deptA].absent;
+                          const absentB = stats.byDept![deptB].absent;
+                          if (absentA !== absentB) return absentB - absentA;
+                          return deptA.localeCompare(deptB, 'th');
+                        })
+                        .map((dept, index) => (
+                          <tr key={dept} className="group hover:bg-slate-50 dark:hover:bg-zinc-800/40 transition-colors">
+                            <td className="px-6 py-3 border-b border-slate-50 dark:border-zinc-800/50 font-bold text-slate-800 dark:text-zinc-200 text-xs">{dept}</td>
+                            <td className="px-6 py-3 border-b border-slate-50 dark:border-zinc-800/50 font-black text-slate-800 dark:text-zinc-200 text-right text-xs">{stats.byDept![dept].attended}</td>
+                            <td className="px-6 py-3 border-b border-slate-50 dark:border-zinc-800/50 font-black text-rose-500 text-right text-xs">{stats.byDept![dept].absent}</td>
+                            <td className="px-6 py-3 border-b border-slate-50 dark:border-zinc-800/50 font-black text-emerald-500 text-right text-xs">{stats.byDept![dept].present}</td>
+                            <td className="px-6 py-3 border-b border-slate-50 dark:border-zinc-800/50 font-black text-amber-500 text-right text-xs">{stats.byDept![dept].late}</td>
+                            <td className="px-6 py-3 border-b border-slate-50 dark:border-zinc-800/50 font-black text-emerald-500 text-right text-xs">{stats.byDept![dept].inSite}</td>
+                            <td className="px-6 py-3 border-b border-slate-50 dark:border-zinc-800/50 font-black text-amber-500 text-right text-xs">{stats.byDept![dept].outSite}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Table View of Student Attendances */}
         <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-zinc-850 overflow-hidden">
@@ -1057,10 +1219,10 @@ function FlagpoleReportsManagementContent() {
                         <td className="px-8 py-5 border-b border-slate-50 dark:border-zinc-800/50">
                           <span
                             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-[10px] shadow-xs uppercase tracking-widest ${report.status === "Present"
-                                ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/30"
-                                : report.status === "Absent"
-                                  ? "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-100/50 dark:border-rose-900/30"
-                                  : "bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-100/50 dark:border-amber-900/30"
+                              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/30"
+                              : report.status === "Absent"
+                                ? "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-100/50 dark:border-rose-900/30"
+                                : "bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-100/50 dark:border-amber-900/30"
                               }`}
                           >
                             <span
@@ -1197,10 +1359,10 @@ function FlagpoleReportsManagementContent() {
                         key={s.id}
                         onClick={() => setEditStatus(s.id as any)}
                         className={`flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all cursor-pointer ${editStatus === s.id
-                            ? s.id === "Present"
-                              ? "bg-emerald-50/50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
-                              : "bg-amber-50/50 border-amber-500 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400"
-                            : "border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-400"
+                          ? s.id === "Present"
+                            ? "bg-emerald-50/50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
+                            : "bg-amber-50/50 border-amber-500 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400"
+                          : "border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-400"
                           }`}
                       >
                         <span className="font-black text-sm">{s.label}</span>

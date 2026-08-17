@@ -201,13 +201,54 @@ export async function GET(req: Request) {
 
     const totalCount = finalData.length;
     const paginatedData = finalData.slice(skip, skip + limit);
+    
+    const statsByDept: Record<string, any> = {};
+    finalData.forEach((r: any) => {
+      const dept = r.user?.department || "ไม่ระบุแผนก";
+      if (!statsByDept[dept]) {
+        statsByDept[dept] = {
+          attended: 0,
+          present: 0,
+          late: 0,
+          absent: 0,
+          inSite: 0,
+          outSite: 0
+        };
+      }
+      if (r.status === "Present") {
+        statsByDept[dept].present++;
+        statsByDept[dept].attended++;
+      } else if (r.status === "Late") {
+        statsByDept[dept].late++;
+        statsByDept[dept].attended++;
+      } else if (r.status === "Absent") {
+        statsByDept[dept].absent++;
+      }
+      if (r.status !== "Absent") {
+        const inAreaStatus = r.statusTag || (r.distance !== undefined && r.distance !== null ? (r.distance <= 50 ? "อยู่ในพื้นที่" : "นอกพื้นที่") : "");
+        if (inAreaStatus.includes("ในพื้นที่")) {
+          statsByDept[dept].inSite++;
+        } else if (inAreaStatus.includes("นอกพื้นที่") || (r.distance !== undefined && r.distance !== null && r.distance > 50)) {
+          statsByDept[dept].outSite++;
+        }
+      }
+    });
+
+    const stats = {
+      total: totalCount,
+      present: finalData.filter(r => r.status === 'Present').length,
+      late: finalData.filter(r => r.status === 'Late').length,
+      absent: finalData.filter(r => r.status === 'Absent').length,
+      byDept: statsByDept
+    };
 
     return NextResponse.json({
       success: true,
       data: paginatedData,
       hasMore: skip + paginatedData.length < totalCount,
       total: totalCount,
-      classGroups: classGroups
+      classGroups: classGroups,
+      stats: stats
     });
   } catch (error: any) {
     console.error("Flagpole Attendances GET Error:", error);
