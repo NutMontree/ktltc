@@ -385,7 +385,19 @@ export default function StudentFlagpolePortal() {
   }, [isCameraOpen]);
 
   const submitCheckIn = async () => {
-
+    if (!location) {
+      alert("❌ ไม่พบข้อมูลพิกัด GPS!\n\nกรุณารอให้ระบบค้นหาพิกัด หรือตรวจสอบว่าคุณได้เปิดตำแหน่ง (Location/GPS) ที่มือถือแล้ว");
+      return;
+    }
+    if (faceState !== "ready") {
+      let faceMsg = "กรุณาหันหน้าเข้ากล้องและถือกล้องให้นิ่งๆ";
+      if (faceState === "loading") faceMsg = "ระบบกำลังโหลดโมเดลตรวจจับใบหน้า กรุณารอสักครู่...";
+      if (faceState === "no_face") faceMsg = "ไม่พบใบหน้า! กรุณาหันหน้าเข้ากล้อง";
+      if (faceState === "unstable") faceMsg = "ภาพสั่นเกินไป! กรุณาถือกล้องให้นิ่งๆ 1-2 วินาที";
+      
+      alert(`📸 ใบหน้ายังไม่พร้อมถ่ายรูป!\n\n${faceMsg}`);
+      return;
+    }
 
     setIsProcessing(true);
     setStatusMsg("กำลังอัปเดตพิกัด GPS ปัจจุบัน...");
@@ -823,7 +835,7 @@ export default function StudentFlagpolePortal() {
                         ยกเลิก
                       </button>
                       <button
-                        disabled={isProcessing || !location || faceState !== "ready"}
+                        disabled={isProcessing}
                         onClick={submitCheckIn}
                         className="flex-2 py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5"
                       >
