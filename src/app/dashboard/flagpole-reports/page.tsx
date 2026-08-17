@@ -725,7 +725,7 @@ function FlagpoleReportsManagementContent() {
                     type="password"
                     value={deleteAllCode}
                     onChange={(e) => setDeleteAllCode(e.target.value)}
-                    placeholder="พิมพ์รหัส 'admin1234'"
+                    placeholder="พิมพ์รหัสผ่านเพื่อยืนยัน"
                     className="w-full px-4 py-3 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 rounded-2xl focus:outline-none transition-all font-bold text-center text-slate-800 dark:text-zinc-100"
                   />
                 </div>
