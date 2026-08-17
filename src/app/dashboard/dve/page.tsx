@@ -1422,8 +1422,8 @@ function DVETeacherWorkspace() {
   }, []);
 
   const departments = useMemo(() => {
-    return Array.from(new Set(subjects.map((s) => s.department).filter(Boolean))) as string[];
-  }, [subjects]);
+    return DEPARTMENTS.filter(d => d.startsWith("แผนก") || d.startsWith("การจัดการ"));
+  }, []);
 
   useEffect(() => {
     if (departments.length > 0 && !internshipFilter.department) {
