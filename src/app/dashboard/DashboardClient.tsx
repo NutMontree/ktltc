@@ -34,6 +34,7 @@ import {
   ScanLine,
   ChevronDown,
   ChevronUp,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -295,12 +296,22 @@ export default function DashboardClient({ initialStats, initialPermissions, init
               </motion.div>
 
               {/* ปุ่ม Logout Other Devices */}
-              <motion.div variants={item} className="shrink-0 h-[42px]">
+              <motion.div variants={item} className="shrink-0 h-[42px] flex items-center gap-2">
+                <Link href="/dashboard/manual?format=pdf" target="_blank">
+                  <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors border border-blue-200">
+                    <FileText size={16} /> PDF
+                  </button>
+                </Link>
+                <Link href="/api/manual/word" target="_blank">
+                  <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-colors border border-indigo-200">
+                    <Download size={16} /> Word
+                  </button>
+                </Link>
                 <LogoutOtherDevicesBtn />
               </motion.div>
             </div>
 
-                {/* --- Quick Actions Tabs (Sticky) --- */}
+            {/* --- Quick Actions Tabs (Sticky) --- */}
             <div className="flex flex-col md:flex-row md:items-center justify-start w-full sticky top-16 md:top-20 z-40 pt-2 pb-4 -mx-4 px-4 md:-mx-8 md:px-8 bg-slate-50/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50">
               <motion.div variants={item} className="flex flex-nowrap md:flex-wrap overflow-x-auto hide-scrollbar scrollbar-none gap-3 p-1.5 w-full [&>button]:shrink-0 [-ms-overflow-style:none]">
                 <button

@@ -5025,7 +5025,7 @@ function DVETeacherWorkspace() {
                             type="file" 
                             ref={fileInputRef} 
                             onChange={handleImportExcel} 
-                            accept=".xlsx, .xls" 
+                            accept=".xlsx, .xls, .csv, .ods" 
                             className="hidden" 
                           />
                           
