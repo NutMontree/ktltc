@@ -50,11 +50,12 @@ export async function POST(req: Request) {
       const targetUsers = await db.collection("users").find({ role: { $in: targetRoles } }).project({ _id: 1 }).toArray();
 
       if (targetUsers.length > 0) {
+        const commitMsg = body.head_commit?.message ? `\nรายละเอียด: ${body.head_commit.message}` : "";
         const notifications = targetUsers.map(user => ({
           userId: user._id,
           type: "system_deploy",
           title: "มีการอัปโหลดโค้ดใหม่",
-          message: `ระบบมีการอัปโหลดโค้ดใหม่ขึ้น Server ใน branch production แล้ว (อัปเดตเมื่อ ${new Date().toLocaleString('th-TH')})`,
+          message: `ระบบมีการอัปโหลดโค้ดใหม่ขึ้น Server ใน branch production แล้ว${commitMsg} (อัปเดตเมื่อ ${new Date().toLocaleString('th-TH')})`,
           from: "SYSTEM",
           fromName: "System",
           fromImage: "/images/logo.png",
