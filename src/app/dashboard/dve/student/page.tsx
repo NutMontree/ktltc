@@ -1916,7 +1916,7 @@ export function DVEStudentPortal() {
               initial={{ scale: 0.95, y: 30 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 30 }}
-              className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 w-full h-full flex flex-col shadow-2xl relative"
+              className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 w-full h-full overflow-y-auto shadow-2xl relative"
             >
               {/* Header Banner */}
               <div className="bg-linear-to-r from-emerald-600 via-teal-500 to-cyan-600 text-white p-5 sm:p-8 relative shrink-0 overflow-hidden shadow-md">
@@ -1976,7 +1976,7 @@ export function DVEStudentPortal() {
               </div>
 
               {/* Study Area content */}
-              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 flex-1 overflow-y-auto">
+              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                 {/* ⏱️ TIMER BANNER */}
                 {Number(activeStudyUnit.studyMinutes) > 0 && (
                   <div className="p-4 sm:p-5 rounded-2xl border bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -2341,19 +2341,28 @@ export function DVEStudentPortal() {
                     </div>
                   );
                 })()}
-              </div>
 
-              {/* Close Button / Bottom Bar */}
-              <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end border-t dark:border-zinc-800 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (Number(activeStudyUnit.studyMinutes) > 0 && !isStudyCompleted) {
-                      if (
-                        confirm(
-                          "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",
-                        )
-                      ) {
+                {/* Close Button / Bottom Bar */}
+                <div className="mt-6 pt-4 border-t dark:border-zinc-800 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (Number(activeStudyUnit.studyMinutes) > 0 && !isStudyCompleted) {
+                        if (
+                          confirm(
+                            "คุณต้องการออกจากห้องเรียนใช่หรือไม่? (การนับเวลาเพื่อเช็คชื่อจะหยุดลง)",
+                          )
+                        ) {
+                          if (timerRef.current) {
+                            clearInterval(timerRef.current);
+                            timerRef.current = null;
+                          }
+                          timerActiveRef.current = false;
+                          handleSaveStudyProgress(studySecondsElapsed);
+                          setActiveStudyUnit(null);
+                          setUnitQuizMode(null);
+                        }
+                      } else {
                         if (timerRef.current) {
                           clearInterval(timerRef.current);
                           timerRef.current = null;
@@ -2363,21 +2372,12 @@ export function DVEStudentPortal() {
                         setActiveStudyUnit(null);
                         setUnitQuizMode(null);
                       }
-                    } else {
-                      if (timerRef.current) {
-                        clearInterval(timerRef.current);
-                        timerRef.current = null;
-                      }
-                      timerActiveRef.current = false;
-                      handleSaveStudyProgress(studySecondsElapsed);
-                      setActiveStudyUnit(null);
-                      setUnitQuizMode(null);
-                    }
-                  }}
-                  className="px-5 py-2.5 rounded-xl text-xs font-black bg-zinc-200 hover:bg-zinc-300 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-750 transition-colors cursor-pointer border-0"
-                >
-                  {isStudyCompleted ? "เสร็จสิ้นการเรียนรู้ (ปิดหน้าต่าง)" : "ออกจากห้องเรียน"}
-                </button>
+                    }}
+                    className="px-5 py-2.5 rounded-xl text-xs font-black bg-zinc-200 hover:bg-zinc-300 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-750 transition-colors cursor-pointer border-0"
+                  >
+                    {isStudyCompleted ? "เสร็จสิ้นการเรียนรู้ (ปิดหน้าต่าง)" : "ออกจากห้องเรียน"}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
