@@ -490,17 +490,34 @@ export default function TeacherStudentsPage() {
                     <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" : "flex flex-col gap-3"}>
                       {groupStudents.map((student, idx) => {
                         const isActive = student.studentStatus === "กำลังศึกษา";
+                        const isProfileComplete = 
+                          student.phone && !student.phone.includes("ไม่ระบุ") && student.phone.trim() !== "" &&
+                          student.email && !student.email.includes("ไม่ระบุ") && student.email.trim() !== "" &&
+                          student.image && student.image.trim() !== "" &&
+                          student.studentId && !student.studentId.includes("ไม่ระบุ") && student.studentId.trim() !== "" &&
+                          student.citizenId && !student.citizenId.includes("ไม่ระบุ") && student.citizenId.trim() !== "" &&
+                          student.classGroupId && !student.classGroupId.includes("ไม่ระบุ") && student.classGroupId.trim() !== "" && !/^[\d\s-]+$/.test(student.classGroupId);
+                          
                         return (
                           <motion.div
                             key={student.id}
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.03 }}
-                            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 hover:border-blue-300 dark:hover:border-blue-800 hover:shadow-md transition-all group"
+                            className={`relative overflow-hidden rounded-2xl p-4 transition-all group ${
+                              !isProfileComplete
+                                ? "bg-rose-50/50 dark:bg-rose-950/10 border-2 border-rose-400 dark:border-rose-900 hover:shadow-md hover:shadow-rose-500/10"
+                                : "bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-blue-300 dark:hover:border-blue-800 hover:shadow-md"
+                            }`}
                           >
+                            {!isProfileComplete && (
+                              <div className="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl flex items-center gap-1 shadow-sm z-10">
+                                <AlertCircle className="w-3 h-3" /> ข้อมูลไม่ครบ
+                              </div>
+                            )}
                             <div className="flex items-start gap-3">
                               {/* Avatar */}
-                              <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 dark:border-zinc-700 shrink-0 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
+                              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-slate-200 dark:border-zinc-700 shrink-0 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
                                 {student.image ? (
                                   <img
                                     src={student.image}
@@ -509,6 +526,9 @@ export default function TeacherStudentsPage() {
                                   />
                                 ) : (
                                   <GraduationCap className="w-5 h-5 text-slate-400 dark:text-zinc-500" />
+                                )}
+                                {!isProfileComplete && (
+                                  <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white dark:border-zinc-900" title="ข้อมูลไม่ครบ" />
                                 )}
                               </div>
 
@@ -561,6 +581,10 @@ export default function TeacherStudentsPage() {
                                   )}
 
                                   <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md border flex items-center gap-1 ${isProfileComplete ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50' : 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50'}`}>
+                                      {isProfileComplete ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                                      {isProfileComplete ? 'ข้อมูลครบ' : 'ข้อมูลไม่ครบ'}
+                                    </span>
                                     <span className="text-[9px] font-bold bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-md">
                                       {student.academicLevel}
                                     </span>
