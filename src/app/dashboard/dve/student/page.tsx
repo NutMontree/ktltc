@@ -3160,24 +3160,6 @@ function StudentPortalContent() {
 
   return (
     <div className="max-w-[1600px] mx-auto w-full bg-[#f0f2f5] dark:bg-zinc-950 transition-colors duration-500 pb-20">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        .ant-message {
-          position: fixed !important;
-          top: 50% !important;
-          left: 50% !important;
-          transform: translate(-50%, -50%) !important;
-          width: max-content !important;
-          max-width: 90% !important;
-          z-index: 10100 !important;
-        }
-        .ant-message-notice {
-          text-align: center !important;
-        }
-      `,
-        }}
-      />
       <DVEStudentPortal />
     </div>
   );
