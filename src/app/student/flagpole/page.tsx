@@ -241,40 +241,9 @@ export default function StudentFlagpolePortal() {
         }
 
         if (detection) {
-          const box = detection.box;
-          
-          if (box.width < 50 || box.height < 50) {
-             setFaceState("no_face");
-             stableFramesCountRef.current = 0;
-             lastFaceBoxRef.current = null;
-             return;
-          }
-
-          if (lastFaceBoxRef.current) {
-            const dx = Math.abs(lastFaceBoxRef.current.x - box.x);
-            const dy = Math.abs(lastFaceBoxRef.current.y - box.y);
-            const movement = Math.sqrt(dx * dx + dy * dy);
-
-            if (movement > 20) {
-              setFaceState("unstable");
-              stableFramesCountRef.current = 0;
-            } else {
-              stableFramesCountRef.current += 1;
-              if (stableFramesCountRef.current >= 3) {
-                setFaceState("ready");
-              } else {
-                setFaceState("detecting");
-              }
-            }
-          } else {
-            setFaceState("detecting");
-          }
-          lastFaceBoxRef.current = { x: box.x, y: box.y };
-
+          setFaceState("ready");
         } else {
-          setFaceState("no_face");
-          stableFramesCountRef.current = 0;
-          lastFaceBoxRef.current = null;
+          setFaceState("detecting");
         }
       } catch (e) {
         console.error("Face detection error:", e);
@@ -511,11 +480,9 @@ export default function StudentFlagpolePortal() {
       case "loading":
         return { icon: <Loader2 className="animate-spin" />, text: "กำลังเตรียมระบบ...", color: "bg-slate-100 text-slate-600 border-slate-200" };
       case "detecting":
-        return { icon: <ScanFace className="animate-pulse" />, text: "กำลังจับใบหน้า...", color: "bg-amber-50 text-amber-600 border-amber-200" };
+        return { icon: <ScanFace className="animate-pulse" />, text: "กำลังสแกนใบหน้า...", color: "bg-amber-50 text-amber-600 border-amber-200" };
       case "no_face":
-        return { icon: <AlertCircle />, text: "ไม่พบใบหน้า กรุณาหันหน้าเข้ากล้อง", color: "bg-rose-50 text-rose-600 border-rose-200" };
       case "unstable":
-        return { icon: <AlertCircle />, text: "กรุณาถือกล้องให้นิ่ง!", color: "bg-orange-50 text-orange-600 border-orange-200" };
       case "ready":
         return { icon: <CheckCircle2 />, text: "พร้อมถ่ายรูป", color: "bg-emerald-50 text-emerald-700 border-emerald-200" };
       default:

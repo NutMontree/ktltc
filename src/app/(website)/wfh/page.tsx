@@ -142,45 +142,11 @@ export default function WFHHubPage() {
         }
 
         if (detection) {
-          const box = detection.box;
-          if (box.width < 50 || box.height < 50) {
-             setFaceStatus("no_face");
-             setFaceMsg("กรุณาหันหน้าเข้ากล้อง");
-             stableFramesCountRef.current = 0;
-             lastFaceBoxRef.current = null;
-             return;
-          }
-
-          if (lastFaceBoxRef.current) {
-            const dx = Math.abs(lastFaceBoxRef.current.x - box.x);
-            const dy = Math.abs(lastFaceBoxRef.current.y - box.y);
-            const movement = Math.sqrt(dx * dx + dy * dy);
-
-            if (movement > 20) {
-              setFaceStatus("unstable");
-              setFaceMsg("ภาพสั่นเกินไป");
-              stableFramesCountRef.current = 0;
-            } else {
-              stableFramesCountRef.current += 1;
-              if (stableFramesCountRef.current >= 3) {
-                setFaceStatus("ready");
-                setFaceMsg("พร้อมถ่ายรูป");
-              } else {
-                setFaceStatus("detecting");
-                setFaceMsg("กำลังวิเคราะห์...");
-              }
-            }
-          } else {
-            setFaceStatus("detecting");
-            setFaceMsg("พบใบหน้า...");
-          }
-          lastFaceBoxRef.current = { x: box.x, y: box.y };
-
+          setFaceStatus("ready");
+          setFaceMsg("พร้อมถ่ายรูป");
         } else {
-          setFaceStatus("no_face");
-          setFaceMsg("ไม่พบใบหน้า");
-          stableFramesCountRef.current = 0;
-          lastFaceBoxRef.current = null;
+          setFaceStatus("detecting");
+          setFaceMsg("กำลังสแกนใบหน้า...");
         }
       } catch (e) {
         console.error("Face detection error:", e);
@@ -326,7 +292,6 @@ export default function WFHHubPage() {
         return { icon: <Loader2 className="animate-spin" size={14} />, color: "bg-blue-100 text-blue-700 animate-pulse" };
       case "no_face":
       case "unstable":
-        return { icon: <AlertTriangle size={14} />, color: "bg-rose-100 text-rose-700 animate-pulse" };
       case "ready":
         return { icon: <ShieldCheck size={14} />, color: "bg-emerald-50 text-emerald-700 shadow-emerald-500/50 shadow-lg scale-110 transition-transform" };
       default:
