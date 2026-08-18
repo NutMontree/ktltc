@@ -201,7 +201,7 @@ export default function DVEGradingPage() {
 
   const fetchStudentGrades = async () => {
     try {
-      const res = await fetch(`/api/dve/student-grades?subjectId=${selectedSubjectId}`);
+      const res = await fetch(`/api/dve/student-grades?subjectId=${selectedSubjectId}&_t=${Date.now()}`);
       const data = await res.json();
       if (res.ok && data.success) {
         setStudentGrades(data.grades);

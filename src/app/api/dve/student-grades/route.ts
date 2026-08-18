@@ -36,6 +36,29 @@ function resolveStudentClassGroup(student: any): string {
   return "";
 }
 
+function parseAllowedClassGroups(value: any): string[] {
+  if (Array.isArray(value)) {
+    return Array.from(
+      new Set(
+        value
+          .map((item) => standardizeClassGroupName(String(item || "").trim()))
+          .filter(Boolean),
+      ),
+    );
+  }
+  if (typeof value === "string") {
+    return Array.from(
+      new Set(
+        value
+          .split(",")
+          .map((item) => standardizeClassGroupName(item))
+          .filter(Boolean),
+      ),
+    );
+  }
+  return [];
+}
+
 // Default grading configuration
 const DEFAULT_GRADING_CONFIG = {
   categories: [
@@ -264,6 +287,51 @@ export async function GET(req: Request) {
         studentData.scores[endChapterCat.id] = scaled;
       }
     });
+
+    // 2.5 Fetch all students in the allowed class groups to ensure the list is complete
+    if (subject.allowedClassGroups) {
+      const allowedGroups = parseAllowedClassGroups(subject.allowedClassGroups);
+      console.log(`[DEBUG API] subjectId: ${subjectId}, allowedGroups:`, allowedGroups);
+      
+      if (allowedGroups.length > 0) {
+        const allStudents = await db.collection("users").find({ role: "student" })
+          .project({ _id: 1, name: 1, classGroupId: 1, groupCode: 1, classroomName: 1 })
+          .toArray();
+
+        console.log(`[DEBUG API] allStudents fetched: ${allStudents.length}`);
+        let addedCount = 0;
+
+        allStudents.forEach(student => {
+          const studentGroup = resolveStudentClassGroup(student);
+          if (studentGroup && allowedGroups.includes(studentGroup)) {
+            const studentIdStr = student._id.toString();
+            // Handle both ObjectId and string keys in studentMap
+            let exists = false;
+            for (const key of studentMap.keys()) {
+              if (String(key) === studentIdStr) {
+                exists = true;
+                break;
+              }
+            }
+
+            if (!exists) {
+              addedCount++;
+              studentMap.set(studentIdStr, {
+                _id: new ObjectId(),
+                subjectId,
+                studentId: studentIdStr,
+                studentName: student.name || "ไม่ทราบชื่อ",
+                scores: {},
+                subScores: {},
+                hasGradeRecord: false,
+                updatedAt: new Date().toISOString()
+              });
+            }
+          }
+        });
+        console.log(`[DEBUG API] added missing students: ${addedCount}`);
+      }
+    }
 
     // 3. Get students who have submitted midterm/final quizzes
     const examQuizzes = await db.collection("dve_quizzes").find({ 
