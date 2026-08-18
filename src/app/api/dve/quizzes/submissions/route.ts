@@ -216,7 +216,7 @@ export async function POST(req: Request) {
         score: scoreVal,
         maxScore: maxScoreVal,
         unitId: unitId || "",
-        unitTitle: unitDoc?.title || "",
+        unitTitle: (unitDoc?.title ? unitDoc.title + " - " : "") + quiz.title,
         unitSequence: unitDoc?.sequence !== undefined ? unitDoc.sequence : "",
         status: existingAttendance.status === "Late" ? "Late" : submissionStatus,
         updatedAt: new Date()
@@ -238,7 +238,7 @@ export async function POST(req: Request) {
         date: todayStr,
         classGroupId,
         unitId: unitId || "",
-        unitTitle: unitDoc?.title || "",
+        unitTitle: (unitDoc?.title ? unitDoc.title + " - " : "") + quiz.title,
         unitSequence: unitDoc?.sequence !== undefined ? unitDoc.sequence : "",
         status: submissionStatus,
         assignmentStatus: "Submitted",

@@ -48,8 +48,16 @@ const DEFAULT_GRADING_CONFIG = {
       description: "การประเมินจิตพิสัยและความประพฤติ",
     },
     {
+      id: "class_work",
+      name: "ระหว่างเรียน",
+      points: 20,
+      cannotDeduct: false,
+      required: false,
+      description: "คะแนนเก็บระหว่างเรียน",
+    },
+    {
       id: "midterm_exam",
-      name: "สอบกลางภาค",
+      name: "กลางภาค",
       points: 10,
       cannotDeduct: true,
       required: true,
@@ -57,7 +65,7 @@ const DEFAULT_GRADING_CONFIG = {
     },
     {
       id: "end_of_chapter_exam",
-      name: "สอบท้ายบท",
+      name: "เก็บท้ายบท",
       points: 20,
       cannotDeduct: true,
       required: true,
@@ -66,18 +74,18 @@ const DEFAULT_GRADING_CONFIG = {
     {
       id: "project",
       name: "โปรเจครายวิชา",
-      points: 20,
+      points: 10,
       cannotDeduct: false,
       required: false,
       description: "โปรเจครายวิชา",
     },
     {
-      id: "class_work",
-      name: "งานอื่นๆ (งานในคาบเรียน)",
-      points: 30,
-      cannotDeduct: false,
-      required: false,
-      description: "งานในคาบเรียนและกิจกรรมอื่นๆ",
+      id: "final_exam",
+      name: "ปลายภาค",
+      points: 20,
+      cannotDeduct: true,
+      required: true,
+      description: "การสอบปลายภาค",
     },
   ],
   totalPoints: 100,
@@ -149,15 +157,38 @@ export async function GET(req: Request) {
         ...query,
         score: { $exists: true, $nin: ["", null] }
       })
-      .project({ studentId: 1, studentName: 1, score: 1 })
+      .project({ studentId: 1, studentName: 1, score: 1, maxScore: 1, unitTitle: 1 })
       .toArray();
 
-    // Sum quiz scores per student
-    const autoScoresMap = new Map();
+    // Group scores by inferred category
+    const autoScoresMap = new Map(); // studentId -> { class_work: { s: 0, m: 0 }, midterm: { s: 0, m: 0 }, final: { s: 0, m: 0 }, end_chapter: { s: 0, m: 0 } }
+    
     attendancesWithScores.forEach((a: any) => {
       const s = Number(a.score);
+      const m = Number(a.maxScore) || s || 10; // Fallback max score if missing
+      const title = (a.unitTitle || "").toLowerCase();
+      
+      // Exclude Pre-tests from auto-grading
+      if (title.includes("ก่อนเรียน") || title.includes("pre-test")) {
+        return; 
+      }
+
+      let catType = "class_work";
+      if (title.includes("กลางภาค") || title.includes("midterm")) {
+        catType = "midterm";
+      } else if (title.includes("ปลายภาค") || title.includes("final")) {
+        catType = "final";
+      } else if (title.includes("สอบท้ายบท") || title.includes("หลังเรียน") || title.includes("post-test")) {
+        catType = "end_chapter";
+      }
+
       if (!isNaN(s) && a.studentId) {
-        autoScoresMap.set(a.studentId, (autoScoresMap.get(a.studentId) || 0) + s);
+        if (!autoScoresMap.has(a.studentId)) {
+          autoScoresMap.set(a.studentId, { class_work: { s: 0, m: 0 }, midterm: { s: 0, m: 0 }, final: { s: 0, m: 0 }, end_chapter: { s: 0, m: 0 } });
+        }
+        const studentScores = autoScoresMap.get(a.studentId);
+        studentScores[catType].s += s;
+        studentScores[catType].m += m;
       }
     });
 
@@ -165,43 +196,72 @@ export async function GET(req: Request) {
 
     // Add students from explicit grades
     grades.forEach((g: any) => {
-      if (g.studentId) {
-        studentMap.set(g.studentId, {
-          _id: g._id,
-          subjectId,
-          studentId: g.studentId,
-          studentName: g.studentName || "ไม่ทราบชื่อ",
-          scores: g.scores || {},
-          hasGradeRecord: true,
-          updatedAt: g.updatedAt
-        });
-      }
+      const mapKey = g.studentId || `manual_${g._id.toString()}`;
+      studentMap.set(mapKey, {
+        _id: g._id,
+        subjectId,
+        studentId: g.studentId || null,
+        studentName: g.studentName || "ไม่ทราบชื่อ",
+        scores: g.scores || {},
+        subScores: g.subScores || {}, // BUG FIX: Return subScores
+        sequence: g.sequence,
+        hasGradeRecord: true,
+        updatedAt: g.updatedAt
+      });
     });
 
     // Merge auto scores and add students who ONLY have auto scores
-    attendancesWithScores.forEach((a: any) => {
-      if (a.studentId) {
-        let studentData = studentMap.get(a.studentId);
-        if (!studentData) {
-          studentData = {
-            _id: new ObjectId(),
-            subjectId,
-            studentId: a.studentId,
-            studentName: a.studentName || "ไม่ทราบชื่อ",
-            scores: {},
-            hasGradeRecord: true, // Treat as having a grade so it gets calculated
-            updatedAt: new Date().toISOString()
-          };
-          studentMap.set(a.studentId, studentData);
-        }
+    autoScoresMap.forEach((scoresObj: any, studentId: string) => {
+      let studentData = studentMap.get(studentId);
+      if (!studentData) {
+        const aInfo = attendancesWithScores.find(a => a.studentId === studentId);
+        studentData = {
+          _id: new ObjectId(),
+          subjectId,
+          studentId: studentId,
+          studentName: aInfo?.studentName || "ไม่ทราบชื่อ",
+          scores: {},
+          subScores: {},
+          hasGradeRecord: true, // Treat as having a grade so it gets calculated
+          updatedAt: new Date().toISOString()
+        };
+        studentMap.set(studentId, studentData);
+      }
 
-        // Find the ID for the "งานอื่นๆ" category (usually "class_work")
-        const classWorkCat = config.categories.find((c: any) => c.id === "class_work" || c.name.includes("งานอื่น")) 
-                             || config.categories[config.categories.length - 1];
-        
-        if (classWorkCat) {
-           studentData.scores[classWorkCat.id] = autoScoresMap.get(a.studentId);
-        }
+      // Find categories
+      const classWorkCat = config.categories.find((c: any) => c.id === "class_work" || c.name.includes("งานอื่น")) || config.categories[config.categories.length - 1];
+      const midtermCat = config.categories.find((c: any) => c.name.includes("สอบกลางภาค") || c.id === "midterm_exam");
+      const finalCat = config.categories.find((c: any) => c.name.includes("สอบปลายภาค") || c.id === "final_exam");
+      const endChapterCat = config.categories.find((c: any) => c.name.includes("สอบท้ายบท") || c.name.includes("หลังเรียน") || c.id === "end_of_chapter_exam");
+      
+      // Helper to check if category has manual sub-scores
+      const hasSubScores = (catId: string) => {
+        return studentData.subScores && studentData.subScores[catId] && Object.keys(studentData.subScores[catId]).length > 0;
+      };
+
+      // Calculate scaled scores: Math.round((Earned / Max) * CategoryPoints)
+      // Only apply auto-score if there are NO sub-scores explicitly set by the teacher
+      if (classWorkCat && scoresObj.class_work.m > 0 && !hasSubScores(classWorkCat.id)) {
+        const scaled = Math.round((scoresObj.class_work.s / scoresObj.class_work.m) * classWorkCat.points);
+        studentData.scores[classWorkCat.id] = scaled;
+      }
+      
+      if (midtermCat && scoresObj.midterm.m > 0 && !hasSubScores(midtermCat.id)) {
+        const scaled = Math.round((scoresObj.midterm.s / scoresObj.midterm.m) * midtermCat.points);
+        studentData.scores[`_dynamic_auto_${midtermCat.id}`] = scaled; // Mark it so it can be combined or override
+        studentData.scores[midtermCat.id] = scaled;
+      }
+      
+      if (finalCat && scoresObj.final.m > 0 && !hasSubScores(finalCat.id)) {
+        const scaled = Math.round((scoresObj.final.s / scoresObj.final.m) * finalCat.points);
+        studentData.scores[`_dynamic_auto_${finalCat.id}`] = scaled;
+        studentData.scores[finalCat.id] = scaled;
+      }
+
+      if (endChapterCat && scoresObj.end_chapter.m > 0) {
+        const scaled = Math.round((scoresObj.end_chapter.s / scoresObj.end_chapter.m) * endChapterCat.points);
+        studentData.scores[`_dynamic_auto_${endChapterCat.id}`] = scaled;
+        studentData.scores[endChapterCat.id] = scaled;
       }
     });
 
@@ -277,9 +337,12 @@ export async function GET(req: Request) {
       userMap = new Map(users.map((u: any) => [u._id.toString(), u]));
     }
 
-    const allActiveStudents = Array.from(studentMap.values()).sort((a, b) => 
-      (a.studentName || "").localeCompare(b.studentName || "")
-    );
+    const allActiveStudents = Array.from(studentMap.values()).sort((a, b) => {
+      const seqA = typeof a.sequence === 'number' ? a.sequence : 9999;
+      const seqB = typeof b.sequence === 'number' ? b.sequence : 9999;
+      if (seqA !== seqB) return seqA - seqB;
+      return (a.studentName || "").localeCompare(b.studentName || "");
+    });
 
     // Calculate final grades for each student
     const calculatedGrades = allActiveStudents.map((grade) => {
@@ -289,10 +352,10 @@ export async function GET(req: Request) {
       let isPassed: boolean | null = null;
 
       if (grade.hasGradeRecord) {
-        totalScore = config.categories.reduce((sum: number, cat: any) => {
+        totalScore = Math.round(config.categories.reduce((sum: number, cat: any) => {
           const categoryScore = grade.scores?.[cat.id] || 0;
           return sum + categoryScore;
-        }, 0);
+        }, 0));
 
         finalGrade = "0";
         gradeDescription = "ไม่ผ่าน";
@@ -318,10 +381,12 @@ export async function GET(req: Request) {
         id: grade._id.toString(),
         studentId: grade.studentId,
         studentCode,
+        sequence: grade.sequence,
         studentName: user?.name || grade.studentName,
         classGroupId,
         subjectId: grade.subjectId,
         scores: grade.scores || {},
+        subScores: grade.subScores || {},
         totalScore,
         finalGrade,
         gradeDescription,
@@ -360,7 +425,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { subjectId, studentName, scores } = body;
+    const { subjectId, studentName, scores, subScores } = body;
     let { studentId } = body;
 
     if (!subjectId || !studentName || !scores) {
@@ -392,26 +457,30 @@ export async function POST(req: Request) {
       config = DEFAULT_GRADING_CONFIG;
     }
 
-    // Validate scores against config
-    for (const category of config.categories) {
-      const score = scores[category.id];
-      if (score === undefined || score === null) {
-        if (category.required) {
+    // Validate scores against config (Skip if only updating sequence)
+    if (!body.isSequenceUpdateOnly) {
+      for (const category of config.categories) {
+        const score = scores[category.id];
+        const hasSubCategories = category.subCategories && category.subCategories.length > 0;
+        
+        if (score === undefined || score === null) {
+          if (category.required) {
+            return NextResponse.json(
+              { error: `Missing required score for category: ${category.name}` },
+              { status: 400 }
+            );
+          }
+        } else if (category.cannotDeduct && !hasSubCategories && score < category.points) {
           return NextResponse.json(
-            { error: `Missing required score for category: ${category.name}` },
+            { error: `Cannot deduct points from category: ${category.name}` },
+            { status: 400 }
+          );
+        } else if (score < 0 || score > category.points) {
+          return NextResponse.json(
+            { error: `Invalid score for category ${category.name}: must be between 0 and ${category.points}` },
             { status: 400 }
           );
         }
-      } else if (category.cannotDeduct && score < category.points) {
-        return NextResponse.json(
-          { error: `Cannot deduct points from category: ${category.name}` },
-          { status: 400 }
-        );
-      } else if (score < 0 || score > category.points) {
-        return NextResponse.json(
-          { error: `Invalid score for category ${category.name}: must be between 0 and ${category.points}` },
-          { status: 400 }
-        );
       }
     }
 
@@ -423,15 +492,18 @@ export async function POST(req: Request) {
 
     if (existing) {
       // Update existing grade
+      const updateData: any = {
+        scores,
+        subScores: subScores || {},
+        studentName,
+        updatedAt: new Date(),
+      };
+      if (body.sequence !== undefined) {
+        updateData.sequence = Number(body.sequence);
+      }
       await db.collection("dve_student_grades").updateOne(
         { subjectId, studentId },
-        {
-          $set: {
-            scores,
-            studentName,
-            updatedAt: new Date(),
-          },
-        }
+        { $set: updateData }
       );
 
       return NextResponse.json({
@@ -442,14 +514,19 @@ export async function POST(req: Request) {
     }
 
     // Create new grade record
-    const result = await db.collection("dve_student_grades").insertOne({
+    const insertData: any = {
       subjectId,
       studentId,
       studentName,
       scores,
+      subScores: subScores || {},
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
+    if (body.sequence !== undefined) {
+      insertData.sequence = Number(body.sequence);
+    }
+    const result = await db.collection("dve_student_grades").insertOne(insertData);
 
     return NextResponse.json({
       success: true,
@@ -478,6 +555,7 @@ export async function PUT(req: Request) {
     const {
       id,
       scores,
+      subScores,
       studentName,
       subjectId: bodySubjectId,
       studentId: bodyStudentId,
@@ -540,25 +618,17 @@ export async function PUT(req: Request) {
     // Validate scores against config
     for (const category of config.categories) {
       const score = scores[category.id];
-      if (score === undefined || score === null) {
-        if (category.required) {
+      const hasSubCategories = category.subCategories && category.subCategories.length > 0;
+      
+      if (score !== undefined && score !== null) {
+        if (score < 0 || score > category.points) {
           return NextResponse.json(
-            { error: `Missing required score for category: ${category.name}` },
+            {
+              error: `Invalid score for category ${category.name}: must be between 0 and ${category.points}`,
+            },
             { status: 400 }
           );
         }
-      } else if (category.cannotDeduct && score < category.points) {
-        return NextResponse.json(
-          { error: `Cannot deduct points from category: ${category.name}` },
-          { status: 400 }
-        );
-      } else if (score < 0 || score > category.points) {
-        return NextResponse.json(
-          {
-            error: `Invalid score for category ${category.name}: must be between 0 and ${category.points}`,
-          },
-          { status: 400 }
-        );
       }
     }
 
@@ -569,6 +639,7 @@ export async function PUT(req: Request) {
         {
           $set: {
             scores,
+            subScores: subScores || {},
             ...(studentName && { studentName }),
             updatedAt: new Date(),
           },
@@ -587,6 +658,7 @@ export async function PUT(req: Request) {
         studentId: bodyStudentId,
         studentName: studentName || "ไม่ทราบชื่อ",
         scores,
+        subScores: subScores || {},
         createdAt: new Date(),
         updatedAt: new Date(),
       });

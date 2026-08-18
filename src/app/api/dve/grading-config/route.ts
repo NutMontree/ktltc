@@ -19,8 +19,16 @@ const DEFAULT_GRADING_CONFIG = {
       description: "การประเมินจิตพิสัยและความประพฤติ",
     },
     {
+      id: "class_work",
+      name: "ระหว่างเรียน",
+      points: 20,
+      cannotDeduct: false,
+      required: false,
+      description: "คะแนนเก็บระหว่างเรียน",
+    },
+    {
       id: "midterm_exam",
-      name: "สอบกลางภาค",
+      name: "กลางภาค",
       points: 10,
       cannotDeduct: true,
       required: true,
@@ -28,7 +36,7 @@ const DEFAULT_GRADING_CONFIG = {
     },
     {
       id: "end_of_chapter_exam",
-      name: "สอบท้ายบท",
+      name: "เก็บท้ายบท",
       points: 20,
       cannotDeduct: true,
       required: true,
@@ -37,18 +45,18 @@ const DEFAULT_GRADING_CONFIG = {
     {
       id: "project",
       name: "โปรเจครายวิชา",
-      points: 20,
+      points: 10,
       cannotDeduct: false,
       required: false,
       description: "โปรเจครายวิชา",
     },
     {
-      id: "class_work",
-      name: "งานอื่นๆ (งานในคาบเรียน)",
-      points: 30,
-      cannotDeduct: false,
-      required: false,
-      description: "งานในคาบเรียนและกิจกรรมอื่นๆ",
+      id: "final_exam",
+      name: "ปลายภาค",
+      points: 20,
+      cannotDeduct: true,
+      required: true,
+      description: "การสอบปลายภาค",
     },
   ],
   totalPoints: 100,
@@ -171,7 +179,8 @@ export async function POST(req: Request) {
     }
 
     // Validate that total points equal 100
-    const calculatedTotal = categories.reduce((sum: number, cat: any) => sum + (cat.points || 0), 0);
+    const calculatedTotal = categories.reduce((sum: number, cat: any) => sum + (Number(cat.points) || 0), 0);
+    console.log("[DEBUG grading-config POST] calculatedTotal:", calculatedTotal, "categories:", JSON.stringify(categories));
     if (calculatedTotal !== 100) {
       return NextResponse.json(
         { error: `Total points must equal 100 (current: ${calculatedTotal})` },
@@ -265,7 +274,8 @@ export async function PUT(req: Request) {
     }
 
     // Validate that total points equal 100
-    const calculatedTotal = categories.reduce((sum: number, cat: any) => sum + (cat.points || 0), 0);
+    const calculatedTotal = categories.reduce((sum: number, cat: any) => sum + (Number(cat.points) || 0), 0);
+    console.log("[DEBUG grading-config] calculatedTotal:", calculatedTotal, "categories:", JSON.stringify(categories));
     if (calculatedTotal !== 100) {
       return NextResponse.json(
         { error: `Total points must equal 100 (current: ${calculatedTotal})` },

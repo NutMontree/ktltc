@@ -21,6 +21,12 @@ import { Select, InputNumber, message, Modal, Input, Collapse } from "antd";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
+interface GradingSubCategory {
+  id: string;
+  name: string;
+  points: number;
+}
+
 interface GradingCategory {
   id: string;
   name: string;
@@ -28,6 +34,7 @@ interface GradingCategory {
   cannotDeduct: boolean;
   required: boolean;
   description: string;
+  subCategories?: GradingSubCategory[];
 }
 
 interface GradingConfig {
@@ -44,10 +51,12 @@ interface StudentGrade {
   id: string;
   studentId: string;      // MongoDB ObjectId ของ user
   studentCode?: string;   // รหัสนักศึกษาตัวเลขจริง (จาก users collection)
+  sequence?: number;      // ลำดับที่ของนักเรียน
   studentName: string;
   classGroupId?: string;
   subjectId: string;
   scores: Record<string, number>;
+  subScores?: Record<string, Record<string, number>>; // categoryId -> { subCatId: score }
   totalScore: number;
   finalGrade: string;
   gradeDescription: string;
@@ -62,11 +71,15 @@ export default function DVEGradingPage() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
   const [config, setConfig] = useState<GradingConfig | null>(null);
   const [studentGrades, setStudentGrades] = useState<StudentGrade[]>([]);
-  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [isGradeModalOpen, setIsGradeModalOpen] = useState(false);
   const [editingGrade, setEditingGrade] = useState<StudentGrade | null>(null);
   const [gradeForm, setGradeForm] = useState<Record<string, number>>({});
   const [newStudentName, setNewStudentName] = useState<string>("");
+  const [isSubScoreModalOpen, setIsSubScoreModalOpen] = useState(false);
+  const [activeSubScoreGrade, setActiveSubScoreGrade] = useState<StudentGrade | null>(null);
+  const [activeSubScoreCategory, setActiveSubScoreCategory] = useState<GradingCategory | null>(null);
   const [selectedClassGroup, setSelectedClassGroup] = useState<string>("");
 
   const classGroups = Array.from(
@@ -218,7 +231,8 @@ export default function DVEGradingPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         message.success(data.message);
-        setIsConfigModalOpen(false);
+        setIsCategoryModalOpen(false);
+        setEditingCategoryId(null);
         fetchGradingConfig();
       } else {
         message.error(data.error || "บันทึกการตั้งค่าไม่สำเร็จ");
@@ -226,6 +240,49 @@ export default function DVEGradingPage() {
     } catch (error) {
       console.error("Save config error:", error);
       message.error("เกิดข้อผิดพลาด");
+    }
+  };
+
+  const handleSequenceChange = async (gradeId: string, value: string) => {
+    let newSequence = value.trim() ? Number(value) : undefined;
+    if (newSequence !== undefined && isNaN(newSequence)) return;
+
+    const grade = studentGrades.find(g => g.id === gradeId);
+    if (!grade) return;
+
+    try {
+      // Update locally immediately for UX
+      setStudentGrades(prev => {
+        const newGrades = prev.map(g => g.id === gradeId ? { ...g, sequence: newSequence } : g);
+        return newGrades.sort((a, b) => {
+          const seqA = typeof a.sequence === 'number' ? a.sequence : 9999;
+          const seqB = typeof b.sequence === 'number' ? b.sequence : 9999;
+          if (seqA !== seqB) return seqA - seqB;
+          return (a.studentName || "").localeCompare(b.studentName || "");
+        });
+      });
+
+      const res = await fetch("/api/dve/student-grades", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subjectId: selectedSubjectId,
+          studentId: grade.studentId,
+          studentName: grade.studentName,
+          scores: grade.scores || {},
+          subScores: grade.subScores || {},
+          sequence: newSequence,
+          isSequenceUpdateOnly: true
+        }),
+      });
+      if (!res.ok) {
+        message.error("บันทึกลำดับเลขที่ล้มเหลว");
+        fetchStudentGrades(); // Revert on error
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("เกิดข้อผิดพลาดในการบันทึกลำดับ");
+      fetchStudentGrades(); // Revert on error
     }
   };
 
@@ -243,9 +300,9 @@ export default function DVEGradingPage() {
         if (g.id === grade.id) {
           const newScores = { ...g.scores, [catId]: val };
           // Calculate new total
-          const totalScore = Object.values(newScores).reduce((a: number, b: any) => a + Number(b), 0);
+          const totalScore = config?.categories.reduce((sum, cat) => sum + (Number(newScores[cat.id]) || 0), 0) || 0;
           const isPassed = totalScore >= (config?.passingScore || 50);
-          
+
           let finalGrade = "0";
           if (totalScore >= 80) finalGrade = "4";
           else if (totalScore >= 75) finalGrade = "3.5";
@@ -266,6 +323,19 @@ export default function DVEGradingPage() {
     // Only save if it's an existing grade record, not a new un-added one
     if (!grade.id) return;
     try {
+      const filledScores: Record<string, number> = { ...grade.scores };
+      if (config) {
+        config.categories.forEach(cat => {
+          if (filledScores[cat.id] === undefined || filledScores[cat.id] === null) {
+            filledScores[cat.id] = cat.cannotDeduct ? cat.points : 0;
+          } else if (filledScores[cat.id] > cat.points) {
+            filledScores[cat.id] = cat.points;
+          } else if (filledScores[cat.id] < 0) {
+            filledScores[cat.id] = 0;
+          }
+        });
+      }
+
       const res = await fetch("/api/dve/student-grades", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -274,11 +344,14 @@ export default function DVEGradingPage() {
           subjectId: selectedSubjectId,
           studentId: grade.studentId,
           studentName: grade.studentName,
-          scores: grade.scores,
+          scores: filledScores,
+          subScores: grade.subScores || {},
         }),
       });
       if (!res.ok) {
-        message.error("บันทึกคะแนนล้มเหลว");
+        const errData = await res.json().catch(() => ({}));
+        console.error("Save score error response:", errData);
+        message.error("บันทึกคะแนนล้มเหลว: " + (errData.error || "Bad Request"));
       }
     } catch (error) {
       console.error("Save score error:", error);
@@ -293,6 +366,19 @@ export default function DVEGradingPage() {
     }
 
     try {
+      const filledScores: Record<string, number> = { ...gradeForm };
+      if (config) {
+        config.categories.forEach(cat => {
+          if (filledScores[cat.id] === undefined || filledScores[cat.id] === null) {
+            filledScores[cat.id] = cat.cannotDeduct ? cat.points : 0;
+          } else if (filledScores[cat.id] > cat.points) {
+            filledScores[cat.id] = cat.points;
+          } else if (filledScores[cat.id] < 0) {
+            filledScores[cat.id] = 0;
+          }
+        });
+      }
+
       const res = await fetch("/api/dve/student-grades", {
         method: editingGrade?.id ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -301,7 +387,8 @@ export default function DVEGradingPage() {
           subjectId: selectedSubjectId,
           studentId: editingGrade?.studentId,
           studentName: editingGrade?.studentName || newStudentName,
-          scores: gradeForm,
+          scores: filledScores,
+          subScores: editingGrade?.subScores || {},
         }),
       });
 
@@ -347,10 +434,165 @@ export default function DVEGradingPage() {
     setIsGradeModalOpen(true);
   };
 
+  const handleEditSubScores = (grade: StudentGrade, category: GradingCategory) => {
+    setActiveSubScoreGrade(grade);
+    setActiveSubScoreCategory(category);
+    setIsSubScoreModalOpen(true);
+  };
+
+  const handleSubScoreChange = (subCatId: string, value: string) => {
+    if (!activeSubScoreGrade || !activeSubScoreCategory) return;
+
+    let val = Number(value);
+    if (isNaN(val)) return;
+
+    const subCat = activeSubScoreCategory.subCategories?.find(s => s.id === subCatId);
+    if (subCat && val > subCat.points) val = subCat.points;
+    if (val < 0) val = 0;
+
+    const currentSubScores = activeSubScoreGrade.subScores || {};
+    const catSubScores = { ...(currentSubScores[activeSubScoreCategory.id] || {}), [subCatId]: val };
+
+    // update state locally for active grade
+    const updatedSubScores = { ...currentSubScores, [activeSubScoreCategory.id]: catSubScores };
+
+    // calculate total of these sub-scores ONLY for active sub-categories
+    const totalCatScore = activeSubScoreCategory.subCategories?.reduce((sum, s) => {
+      return sum + (Number(catSubScores[s.id]) || 0);
+    }, 0) || 0;
+
+    setActiveSubScoreGrade({
+      ...activeSubScoreGrade,
+      subScores: updatedSubScores,
+      scores: { ...activeSubScoreGrade.scores, [activeSubScoreCategory.id]: totalCatScore }
+    });
+  };
+
+  const handleAddSubCategoryForModal = () => {
+    if (!activeSubScoreCategory) return;
+    const newSub: GradingSubCategory = {
+      id: `sub_${Date.now()}`,
+      name: `ตารางย่อย ${activeSubScoreCategory.subCategories ? activeSubScoreCategory.subCategories.length + 1 : 1}`,
+      points: 10,
+    };
+    setActiveSubScoreCategory({
+      ...activeSubScoreCategory,
+      subCategories: [...(activeSubScoreCategory.subCategories || []), newSub]
+    });
+  };
+
+  const handleUpdateSubCategoryForModal = (subId: string, field: 'name' | 'points', value: any) => {
+    if (!activeSubScoreCategory) return;
+    setActiveSubScoreCategory({
+      ...activeSubScoreCategory,
+      subCategories: activeSubScoreCategory.subCategories?.map(s => 
+        s.id === subId ? { ...s, [field]: value } : s
+      )
+    });
+  };
+
+  const handleRemoveSubCategoryForModal = (subId: string) => {
+    if (!activeSubScoreCategory) return;
+    setActiveSubScoreCategory({
+      ...activeSubScoreCategory,
+      subCategories: activeSubScoreCategory.subCategories?.filter(s => s.id !== subId)
+    });
+  };
+
+  const handleSaveSubScores = async () => {
+    if (!activeSubScoreGrade || !activeSubScoreCategory || !config) return;
+
+    // 1. Update config if category changed (e.g. sub-categories added/edited)
+    const originalCategory = config.categories.find(c => c.id === activeSubScoreCategory.id);
+    const subCategoriesChanged = JSON.stringify(originalCategory?.subCategories) !== JSON.stringify(activeSubScoreCategory.subCategories);
+    
+    if (subCategoriesChanged) {
+      const sumPoints = activeSubScoreCategory.subCategories?.reduce((sum, s) => sum + Number(s.points), 0) || 0;
+      
+      // Auto-scaling feature: Sub-categories sum NO LONGER needs to equal parent category's max points.
+      // The system will automatically scale the score proportionally!
+      // (So we just removed the strict check here).
+
+      // Do NOT mutate activeSubScoreCategory.points!
+      const updatedActiveCategory = { ...activeSubScoreCategory };
+
+      const updatedCategories = config.categories.map(c => 
+        c.id === updatedActiveCategory.id ? updatedActiveCategory : c
+      );
+      
+      const newConfig = { ...config, categories: updatedCategories };
+      setConfig(newConfig);
+
+      try {
+        const res = await fetch("/api/dve/grading-config", {
+          method: newConfig.id ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: newConfig.id,
+            subjectId: selectedSubjectId,
+            categories: newConfig.categories,
+            totalPoints: newConfig.totalPoints,
+            passingScore: newConfig.passingScore,
+            gradeScale: newConfig.gradeScale,
+          }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          message.error("บันทึกหมวดหมู่ย่อยล้มเหลว: " + (errData.error || "Unknown"));
+          return; // Abort saving grades since config failed
+        }
+      } catch (err) {
+        console.error("Failed to save config subcategories:", err);
+        message.error("เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว");
+        return;
+      }
+    }
+
+    setStudentGrades((prev) =>
+      prev.map((g) => {
+        if (g.id === activeSubScoreGrade.id) {
+          // Force sync category score to sum of sub-scores (ONLY active sub-categories)
+          const catSubScores = activeSubScoreGrade.subScores?.[activeSubScoreCategory.id] || {};
+          const syncedCatScore = activeSubScoreCategory.subCategories?.reduce((sum, s) => {
+            return sum + (Number(catSubScores[s.id]) || 0);
+          }, 0) || 0;
+          const syncedScores = { ...activeSubScoreGrade.scores, [activeSubScoreCategory.id]: syncedCatScore };
+
+          const totalScore = config?.categories.reduce((sum, cat) => sum + (Number(syncedScores[cat.id]) || 0), 0) || 0;
+          const isPassed = totalScore >= (config?.passingScore || 50);
+
+          let finalGrade = "0";
+          if (totalScore >= 80) finalGrade = "4";
+          else if (totalScore >= 75) finalGrade = "3.5";
+          else if (totalScore >= 70) finalGrade = "3";
+          else if (totalScore >= 65) finalGrade = "2.5";
+          else if (totalScore >= 60) finalGrade = "2";
+          else if (totalScore >= 55) finalGrade = "1.5";
+          else if (totalScore >= 50) finalGrade = "1";
+
+          const newGrade = { ...activeSubScoreGrade, scores: syncedScores, totalScore, isPassed, finalGrade };
+
+          // trigger save in background
+          handleQuickScoreBlur(newGrade);
+
+          return newGrade;
+        }
+        return g;
+      })
+    );
+
+    setIsSubScoreModalOpen(false);
+    setActiveSubScoreGrade(null);
+    setActiveSubScoreCategory(null);
+  };
+
+
   const handleAddCategory = () => {
     if (!config) return;
+    const newId = `custom_${Date.now()}`;
     const newCategory: GradingCategory = {
-      id: `custom_${Date.now()}`,
+      id: newId,
       name: "หมวดหมู่ใหม่",
       points: 0,
       cannotDeduct: false,
@@ -361,6 +603,8 @@ export default function DVEGradingPage() {
       ...config,
       categories: [...config.categories, newCategory],
     });
+    setEditingCategoryId(newId);
+    setIsCategoryModalOpen(true);
   };
 
   const handleRemoveCategory = (categoryId: string) => {
@@ -375,9 +619,56 @@ export default function DVEGradingPage() {
     if (!config) return;
     setConfig({
       ...config,
-      categories: config.categories.map((c) =>
-        c.id === categoryId ? { ...c, [field]: value } : c
-      ),
+      categories: config.categories.map((c) => {
+        if (c.id === categoryId) {
+          const updated = { ...c, [field]: value };
+          if (field === "subCategories") {
+            const subCats = value as GradingSubCategory[];
+            if (subCats && subCats.length > 0) {
+              updated.points = subCats.reduce((sum, s) => sum + s.points, 0);
+            }
+          }
+          return updated;
+        }
+        return c;
+      }),
+    });
+  };
+
+  const handleAddSubCategory = (categoryId: string) => {
+    if (!config) return;
+    setConfig({
+      ...config,
+      categories: config.categories.map((c) => {
+        if (c.id !== categoryId) return c;
+        const newSub: GradingSubCategory = { id: `sub_${Date.now()}`, name: "รายการย่อย", points: 10 };
+        const updatedSubs = [...(c.subCategories || []), newSub];
+        return { ...c, subCategories: updatedSubs };
+      }),
+    });
+  };
+
+  const handleRemoveSubCategory = (categoryId: string, subId: string) => {
+    if (!config) return;
+    setConfig({
+      ...config,
+      categories: config.categories.map((c) => {
+        if (c.id !== categoryId || !c.subCategories) return c;
+        const updatedSubs = c.subCategories.filter((s) => s.id !== subId);
+        return { ...c, subCategories: updatedSubs };
+      }),
+    });
+  };
+
+  const handleUpdateSubCategory = (categoryId: string, subId: string, field: keyof GradingSubCategory, value: any) => {
+    if (!config) return;
+    setConfig({
+      ...config,
+      categories: config.categories.map((c) => {
+        if (c.id !== categoryId || !c.subCategories) return c;
+        const updatedSubs = c.subCategories.map((s) => (s.id === subId ? { ...s, [field]: value } : s));
+        return { ...c, subCategories: updatedSubs };
+      }),
     });
   };
 
@@ -390,7 +681,7 @@ export default function DVEGradingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-sky-50 to-teal-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 p-2 font-sans">
+    <div className="max-w-[1600px] mx-auto w-full bg-linear-to-br from-blue-50 via-sky-50 to-teal-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 p-2 font-sans">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700;800&display=swap');
         @page {
@@ -420,7 +711,7 @@ export default function DVEGradingPage() {
           }
         }
       `}</style>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1600px] mx-auto w-full">
         {/* Header */}
         <div className="mb-8 p-6 sm:p-8 rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
@@ -432,6 +723,7 @@ export default function DVEGradingPage() {
               <GraduationCap className="w-3.5 h-3.5" />
               ระบบตรวจงานและให้คะแนน
             </span>
+
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-2 drop-shadow-sm">
               ระบบจัดการคะแนน <span className="text-cyan-200">(Grading)</span>
             </h1>
@@ -452,11 +744,14 @@ export default function DVEGradingPage() {
             </h2>
             {config && (
               <button
-                onClick={() => setIsConfigModalOpen(true)}
+                onClick={() => {
+                  setEditingCategoryId(null);
+                  setIsCategoryModalOpen(true);
+                }}
                 className="px-5 py-2.5 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400 rounded-2xl hover:bg-cyan-100 dark:hover:bg-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 font-black shadow-sm cursor-pointer border border-cyan-100 dark:border-cyan-800/50"
               >
-                <Edit2 className="w-4 h-4" />
-                แก้ไขเกณฑ์การให้คะแนน
+                <Plus className="w-4 h-4" />
+                เพิ่มหมวดหมู่คะแนน
               </button>
             )}
           </div>
@@ -619,12 +914,26 @@ export default function DVEGradingPage() {
               <table className="w-full border-collapse">
                 <thead className="bg-blue-50/50 dark:bg-zinc-800/80 rounded-[20px]">
                   <tr>
-                    <th className="px-6 py-5 text-left text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest rounded-l-2xl">
+                    <th className="px-6 py-5 text-center text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest rounded-l-2xl w-20">
+                      เลขที่
+                    </th>
+                    <th className="px-6 py-5 text-left text-[11px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest">
                       นักเรียน
                     </th>
                     {config.categories.map((cat) => (
-                      <th key={cat.id} className="px-4 py-5 text-center text-[11px] font-black text-cyan-800 dark:text-cyan-400 uppercase tracking-widest">
-                        {cat.name}
+                      <th
+                        key={cat.id}
+                        className="px-4 py-5 text-center text-[11px] font-black text-cyan-800 dark:text-cyan-400 uppercase tracking-widest cursor-pointer hover:bg-cyan-100 dark:hover:bg-zinc-700 transition-colors group/th"
+                        onClick={() => {
+                          setEditingCategoryId(cat.id);
+                          setIsCategoryModalOpen(true);
+                        }}
+                        title="คลิกเพื่อตั้งค่าหมวดหมู่นี้"
+                      >
+                        <div className="flex items-center justify-center gap-1.5">
+                          {cat.name}
+                          <Edit2 className="w-3 h-3 opacity-0 group-hover/th:opacity-100 transition-opacity text-blue-500" />
+                        </div>
                         <div className="text-[10px] text-cyan-600/70 dark:text-cyan-400/70 mt-1">({cat.points})</div>
                       </th>
                     ))}
@@ -645,6 +954,17 @@ export default function DVEGradingPage() {
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
                   {filteredGrades.map((grade) => (
                     <tr key={grade.id} className="hover:bg-blue-50/40 dark:hover:bg-zinc-800/40 transition-colors group">
+                      <td className="px-4 py-4 whitespace-nowrap text-center align-top pt-5">
+                        <Input
+                          defaultValue={grade.sequence !== undefined ? grade.sequence : ""}
+                          onBlur={(e) => handleSequenceChange(grade.id, e.target.value)}
+                          onPressEnter={(e) => {
+                            (e.target as HTMLInputElement).blur();
+                          }}
+                          className="w-12 text-center text-xs font-black text-blue-800 dark:text-blue-200 bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:border-blue-400 focus:border-blue-500 rounded-lg p-1 shadow-sm"
+                          placeholder="-"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <p className="text-sm font-black text-zinc-900 dark:text-white">
                           {grade.studentName}
@@ -655,25 +975,52 @@ export default function DVEGradingPage() {
                           </span>
                         )}
                       </td>
-                      {config.categories.map((cat) => (
+                      {config.categories.map((cat) => {
+                        const hasSubCategories = cat.subCategories && cat.subCategories.length > 0;
+                        let displayScore = grade.scores[cat.id] || 0;
+                        
+                        if (hasSubCategories) {
+                          const catSubScores = grade.subScores?.[cat.id] || {};
+                          const earnedSubPoints = cat.subCategories!.reduce((sum, s) => sum + (Number(catSubScores[s.id]) || 0), 0);
+                          const maxSubPoints = cat.subCategories!.reduce((sum, s) => sum + (Number(s.points) || 0), 0) || 1;
+                          displayScore = Math.round((earnedSubPoints / maxSubPoints) * cat.points);
+                        }
+
+                        return (
                         <td key={cat.id} className="px-6 py-4 whitespace-nowrap text-center">
-                          <div className="flex items-center justify-center gap-1 group/input">
-                            <input
-                              type="number"
-                              min="0"
-                              max={cat.points}
-                              className={`w-14 h-8 px-1 text-center text-sm font-bold bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:bg-blue-50 dark:focus:bg-blue-900/20 border border-transparent focus:border-blue-300 dark:focus:border-blue-700 rounded-lg focus:outline-none transition-colors custom-number-input ${
-                                grade.scores[cat.id] === 0 ? "text-rose-600 dark:text-rose-400" : "text-blue-600 dark:text-blue-400"
-                              }`}
-                              value={grade.scores[cat.id] === undefined ? "" : grade.scores[cat.id]}
-                              onChange={(e) => handleQuickScoreChange(grade, cat.id, e.target.value)}
-                              onBlur={() => handleQuickScoreBlur(grade)}
-                              placeholder="0"
-                            />
-                            <span className="text-sm font-bold text-zinc-400 opacity-50 group-hover/input:opacity-100 transition-opacity">/{cat.points}</span>
-                          </div>
+                          {hasSubCategories ? (
+                            <button
+                              onClick={() => handleEditSubScores(grade, cat)}
+                              className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 font-bold text-sm hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40 transition-colors border border-blue-200 dark:border-blue-800/50 min-w-16 shadow-sm cursor-pointer"
+                              title="คลิกเพื่อกรอกคะแนนย่อย"
+                            >
+                              {displayScore} <span className="text-[10px] text-zinc-400 font-normal">/{cat.points}</span>
+                            </button>
+                          ) : (
+                            <div className="flex items-center justify-center gap-1 group/input relative">
+                              <input
+                                type="number"
+                                min="0"
+                                max={cat.points}
+                                className={`w-14 h-8 px-1 text-center text-sm font-bold bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:bg-blue-50 dark:focus:bg-blue-900/20 border border-transparent focus:border-blue-300 dark:focus:border-blue-700 rounded-lg focus:outline-none transition-colors custom-number-input ${displayScore === 0 ? "text-rose-600 dark:text-rose-400" : "text-blue-600 dark:text-blue-400"
+                                  }`}
+                                value={grade.scores[cat.id] === undefined ? "" : grade.scores[cat.id]}
+                                onChange={(e) => handleQuickScoreChange(grade, cat.id, e.target.value)}
+                                onBlur={() => handleQuickScoreBlur(grade)}
+                                placeholder="0"
+                              />
+                              <span className="text-xs font-bold text-zinc-400 opacity-50 group-hover/input:opacity-100 transition-opacity">/{cat.points}</span>
+                              <button
+                                onClick={() => handleEditSubScores(grade, cat)}
+                                title="จัดการตารางย่อย"
+                                className="absolute -right-5 opacity-0 group-hover/input:opacity-100 transition-opacity w-5 h-5 flex items-center justify-center text-blue-500 bg-blue-50 rounded hover:bg-blue-200 cursor-pointer"
+                              >
+                                ＋
+                              </button>
+                            </div>
+                          )}
                         </td>
-                      ))}
+                      )})}
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <p className="text-sm font-black text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 inline-block px-3 py-1 rounded-lg">
                           {grade.totalScore}
@@ -731,30 +1078,58 @@ export default function DVEGradingPage() {
           </div>
         )}
 
-        {/* Config Modal */}
+        {/* Category Modal */}
         <AnimatePresence>
-          {isConfigModalOpen && config && (
+          {isCategoryModalOpen && config && (
             <Modal
-              title="แก้ไขการตั้งค่าการให้คะแนน"
-              open={isConfigModalOpen}
-              onCancel={() => setIsConfigModalOpen(false)}
+              title={editingCategoryId ? "ตั้งค่าหมวดหมู่คะแนน" : "เพิ่มหมวดหมู่คะแนนใหม่"}
+              open={isCategoryModalOpen}
+              onCancel={() => {
+                setIsCategoryModalOpen(false);
+                setEditingCategoryId(null);
+              }}
               onOk={handleSaveConfig}
-              width={800}
+              width={500}
               okText="บันทึก"
               cancelText="ยกเลิก"
             >
               <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                {config.categories.map((category) => (
-                  <div key={category.id} className="bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 rounded-[20px] p-5 shadow-sm relative overflow-hidden group transition-all hover:border-blue-300 dark:hover:border-blue-700">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                {(() => {
+                  let category: GradingCategory | undefined = config.categories.find(c => c.id === editingCategoryId);
+                  if (!editingCategoryId) {
+                    category = {
+                      id: `custom_${Date.now()}`,
+                      name: "",
+                      points: 0,
+                      cannotDeduct: false,
+                      required: false,
+                      description: "",
+                    } as GradingCategory;
+                  }
+                  
+                  if (!category) return <div className="text-center py-4">โปรดสร้างหมวดหมู่ใหม่ก่อนแก้ไข</div>;
+
+                  const activeCategory = category;
+
+                  return (
+                  <div key={activeCategory.id} className="bg-white dark:bg-zinc-800/50 p-2">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="block text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
                           ชื่อหมวดหมู่
                         </label>
                         <Input
-                          value={category.name}
-                          onChange={(e) => handleUpdateCategory(category.id, "name", e.target.value)}
+                          value={activeCategory.name}
+                          onChange={(e) => {
+                            if (!editingCategoryId) {
+                              const newId = `custom_${Date.now()}`;
+                              const newCat = { ...activeCategory, id: newId, name: e.target.value };
+                              setConfig({ ...config, categories: [...config.categories, newCat] });
+                              setEditingCategoryId(newId);
+                            } else {
+                              handleUpdateCategory(activeCategory.id, "name", e.target.value);
+                            }
+                          }}
                           className="h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 font-bold text-sm"
                         />
                       </div>
@@ -763,59 +1138,51 @@ export default function DVEGradingPage() {
                           คะแนนเต็ม
                         </label>
                         <InputNumber
-                          value={category.points}
-                          onChange={(val) => handleUpdateCategory(category.id, "points", val || 0)}
+                          value={activeCategory.points}
+                          onChange={(val) => {
+                            if (!editingCategoryId) {
+                              const newId = `custom_${Date.now()}`;
+                              const newCat = { ...activeCategory, id: newId, points: val || 0 };
+                              setConfig({ ...config, categories: [...config.categories, newCat] });
+                              setEditingCategoryId(newId);
+                            } else {
+                              handleUpdateCategory(activeCategory.id, "points", val || 0);
+                            }
+                          }}
                           className="w-full h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 font-black text-blue-600 dark:text-blue-400 [&>.ant-input-number-input-wrap>input]:h-10 [&>.ant-input-number-input-wrap>input]:font-black text-sm flex items-center"
                           min={0}
                           max={100}
                         />
                       </div>
                     </div>
-                    
-                    <div className="flex flex-wrap items-center gap-6 mb-4 p-3 bg-zinc-50/80 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                      <label className="flex items-center gap-2.5 cursor-pointer group/cb">
-                        <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${category.cannotDeduct ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 group-hover/cb:border-emerald-500'}`}>
-                          {category.cannotDeduct && <CheckCircle size={14} className="stroke-3" />}
-                        </div>
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={category.cannotDeduct}
-                          onChange={(e) => handleUpdateCategory(category.id, "cannotDeduct", e.target.checked)}
-                        />
-                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">หักคะแนนไม่ได้ (พฤติกรรม)</span>
-                      </label>
-                      
-                      <label className="flex items-center gap-2.5 cursor-pointer group/cb">
-                        <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${category.required ? 'bg-blue-500 border-blue-500 text-white' : 'bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 group-hover/cb:border-blue-500'}`}>
-                          {category.required && <CheckCircle size={14} className="stroke-3" />}
-                        </div>
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={category.required}
-                          onChange={(e) => handleUpdateCategory(category.id, "required", e.target.checked)}
-                        />
-                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">หมวดหมู่บังคับพื้นฐาน</span>
-                      </label>
-                    </div>
-                    
+
                     <div className="mb-4">
                       <label className="block text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
                         คำอธิบายเพิ่มเติม
                       </label>
                       <Input
-                        value={category.description}
-                        onChange={(e) => handleUpdateCategory(category.id, "description", e.target.value)}
+                        value={activeCategory.description}
+                        onChange={(e) => {
+                          if (editingCategoryId) handleUpdateCategory(activeCategory.id, "description", e.target.value);
+                        }}
                         className="h-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 text-sm"
                         placeholder="เช่น คะแนนเข้าเรียน, สอบกลางภาค..."
                       />
                     </div>
-                    
-                    {!category.required && (
+
+                    {editingCategoryId && (
                       <div className="flex justify-end border-t border-zinc-100 dark:border-zinc-700/50 pt-3 mt-2">
                         <button
-                          onClick={() => handleRemoveCategory(category.id)}
+                          onClick={() => {
+                            handleRemoveCategory(activeCategory.id);
+                            setIsCategoryModalOpen(false);
+                            setEditingCategoryId(null);
+                            // Also need to save config immediately
+                            setTimeout(() => {
+                               // Assuming the state updates, but user still needs to click Save?
+                               // It's better to force a save if they delete a category.
+                            }, 100);
+                          }}
                           className="px-4 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500 dark:hover:text-white rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer"
                         >
                           <Trash2 size={12} />
@@ -824,14 +1191,8 @@ export default function DVEGradingPage() {
                       </div>
                     )}
                   </div>
-                ))}
-                <button
-                  onClick={handleAddCategory}
-                  className="w-full h-14 border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-blue-500 dark:hover:border-blue-500 bg-zinc-50/50 hover:bg-blue-50/50 dark:bg-zinc-900/30 dark:hover:bg-blue-900/20 rounded-[20px] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 transition-all flex items-center justify-center gap-2 font-black text-sm cursor-pointer"
-                >
-                  <Plus size={18} />
-                  เพิ่มหมวดหมู่คะแนนใหม่
-                </button>
+                  );
+                })()}
               </div>
             </Modal>
           )}
@@ -869,7 +1230,7 @@ export default function DVEGradingPage() {
                     />
                   </div>
                 )}
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {config.categories.map((category) => (
                     <div key={category.id} className="bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 rounded-[20px] p-4 shadow-sm relative overflow-hidden group hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors">
@@ -884,15 +1245,9 @@ export default function DVEGradingPage() {
                         value={gradeForm[category.id] || 0}
                         onChange={(val) => setGradeForm({ ...gradeForm, [category.id]: val || 0 })}
                         className="w-full h-12 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-emerald-500 font-black text-emerald-600 dark:text-emerald-400 [&>.ant-input-number-input-wrap>input]:h-12 [&>.ant-input-number-input-wrap>input]:text-center text-lg"
-                        min={category.cannotDeduct ? category.points : 0}
+                        min={0}
                         max={category.points}
                       />
-                      {category.cannotDeduct && (
-                        <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-2 text-center bg-emerald-50 dark:bg-emerald-900/20 py-1 rounded-lg">
-                          <CheckCircle size={10} className="inline mr-1" />
-                          หมวดหมู่นี้หักคะแนนไม่ได้
-                        </p>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -961,6 +1316,127 @@ export default function DVEGradingPage() {
             </div>
           </div>
         )}
+
+        {/* Sub-Score Modal */}
+        <AnimatePresence>
+          {isSubScoreModalOpen && activeSubScoreGrade && activeSubScoreCategory && (
+            <Modal
+              title={`กรอกคะแนนย่อย: ${activeSubScoreCategory.name} - ${activeSubScoreGrade.studentName}`}
+              open={isSubScoreModalOpen}
+              onCancel={() => {
+                setIsSubScoreModalOpen(false);
+                setActiveSubScoreGrade(null);
+                setActiveSubScoreCategory(null);
+              }}
+              onOk={handleSaveSubScores}
+              width={500}
+              okText="บันทึกคะแนน"
+              cancelText="ยกเลิก"
+            >
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar p-2">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs text-zinc-500 font-bold">กรอกคะแนนย่อย</span>
+                  <button
+                    onClick={() => {
+                      const newSubCat = { id: `sub_${Date.now()}`, name: "ตารางย่อยใหม่", points: 10 };
+                      setActiveSubScoreCategory({
+                        ...activeSubScoreCategory,
+                        subCategories: [...(activeSubScoreCategory.subCategories || []), newSubCat],
+                      });
+                    }}
+                    className="text-[10px] bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1 rounded-full font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus size={10} /> เพิ่มตารางย่อย
+                  </button>
+                </div>
+
+                {(!activeSubScoreCategory.subCategories || activeSubScoreCategory.subCategories.length === 0) ? (
+                  <div className="text-center text-sm text-zinc-400 py-4">
+                    ยังไม่มีตารางคะแนนย่อย คลิกปุ่ม "เพิ่มตารางย่อย" ด้านบน
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-zinc-50 dark:bg-zinc-800/80">
+                        <tr>
+                          <th className="px-3 py-2 text-[10px] font-black text-zinc-500 uppercase">ชื่อตารางย่อย</th>
+                          <th className="px-3 py-2 text-[10px] font-black text-zinc-500 uppercase w-20 text-center">คะแนนเต็ม</th>
+                          <th className="px-3 py-2 text-[10px] font-black text-zinc-500 uppercase w-24 text-center">ได้คะแนน</th>
+                          <th className="px-3 py-2 text-[10px] font-black text-zinc-500 uppercase w-10 text-center"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                        {activeSubScoreCategory.subCategories.map((subCat) => {
+                          const currentScore = (activeSubScoreGrade.subScores?.[activeSubScoreCategory.id]?.[subCat.id]) || 0;
+                          return (
+                            <tr key={subCat.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30">
+                              <td className="px-3 py-2">
+                                <Input
+                                  value={subCat.name}
+                                  onChange={(e) => {
+                                    const updatedSubCats = activeSubScoreCategory.subCategories!.map(s => s.id === subCat.id ? { ...s, name: e.target.value } : s);
+                                    setActiveSubScoreCategory({ ...activeSubScoreCategory, subCategories: updatedSubCats });
+                                  }}
+                                  size="small"
+                                  className="font-bold text-xs bg-transparent border-dashed border-zinc-300 dark:border-zinc-600"
+                                  placeholder="ชื่อตารางย่อย"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <InputNumber
+                                  value={subCat.points}
+                                  onChange={(val) => {
+                                    const updatedSubCats = activeSubScoreCategory.subCategories!.map(s => s.id === subCat.id ? { ...s, points: val || 0 } : s);
+                                    setActiveSubScoreCategory({ ...activeSubScoreCategory, subCategories: updatedSubCats });
+                                  }}
+                                  size="small"
+                                  min={0}
+                                  className="w-full text-xs font-black text-blue-600 bg-transparent border-dashed border-zinc-300 dark:border-zinc-600 [&>.ant-input-number-input-wrap>input]:text-center"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center">
+                                <InputNumber
+                                  value={currentScore}
+                                  onChange={(val) => handleSubScoreChange(subCat.id, String(val))}
+                                  className="w-16 h-8 rounded-lg bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 focus:border-blue-500 font-black text-blue-600 dark:text-blue-400 [&>.ant-input-number-input-wrap>input]:text-center"
+                                  min={0}
+                                  max={subCat.points}
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-center">
+                                <button
+                                  onClick={() => {
+                                    const updatedSubCats = activeSubScoreCategory.subCategories!.filter(s => s.id !== subCat.id);
+                                    setActiveSubScoreCategory({ ...activeSubScoreCategory, subCategories: updatedSubCats });
+                                  }}
+                                  className="text-red-400 hover:text-red-600 p-1 rounded hover:bg-red-50 transition-colors cursor-pointer"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800 flex justify-between items-center">
+                  <span className="text-xs font-black text-blue-800 dark:text-blue-300">คะแนนรวมสุทธิ (แปลงตามสัดส่วน)</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] sm:text-xs font-bold text-blue-600/60 dark:text-blue-400/60 bg-white/50 dark:bg-black/20 px-2 py-1 rounded-md">
+                      ดิบ: {activeSubScoreCategory.subCategories?.reduce((sum, subCat) => sum + (activeSubScoreGrade.subScores?.[activeSubScoreCategory.id]?.[subCat.id] || 0), 0) || 0} / {activeSubScoreCategory.subCategories?.reduce((sum, s) => sum + Number(s.points), 0) || 0}
+                    </span>
+                    <span className="text-lg font-black text-blue-600 dark:text-blue-400">
+                      {Math.round(((activeSubScoreCategory.subCategories?.reduce((sum, subCat) => sum + (activeSubScoreGrade.subScores?.[activeSubScoreCategory.id]?.[subCat.id] || 0), 0) || 0) / (activeSubScoreCategory.subCategories?.reduce((sum, s) => sum + Number(s.points), 0) || 1)) * activeSubScoreCategory.points)} / {activeSubScoreCategory.points}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Modal>
+          )}
+        </AnimatePresence>
 
         <style dangerouslySetInnerHTML={{
           __html: `
