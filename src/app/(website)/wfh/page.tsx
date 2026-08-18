@@ -17,7 +17,10 @@ import {
   ShieldCheck,
   ShieldX,
   History,
-  ClipboardList
+  ClipboardList,
+  AlertTriangle,
+  X,
+  AlertCircle
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import imageCompression from "browser-image-compression";
@@ -25,13 +28,11 @@ import { uploadFile } from "@/lib/upload";
 
 type FaceStatus =
   | "idle"
-  | "loading_models"
-  | "loading_profile"
-  | "no_profile"
+  | "loading"
   | "detecting"
-  | "matched"
-  | "not_matched"
-  | "error";
+  | "no_face"
+  | "unstable"
+  | "ready";
 
 export default function WFHHubPage() {
   const { data: session } = useSession();
@@ -59,9 +60,13 @@ export default function WFHHubPage() {
   const [faceMsg, setFaceMsg] = useState("");
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const faceApiRef = useRef<any>(null);
-  const profileDescriptorRef = useRef<Float32Array | null>(null);
   const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const stableFramesCountRef = useRef(0);
+  const lastFaceBoxRef = useRef<{ x: number; y: number } | null>(null);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [faceError, setFaceError] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -89,89 +94,98 @@ export default function WFHHubPage() {
   const userName = profileData.name || session?.user?.name || "พนักงาน (คุณ)";
   const userImage = profileData.image || session?.user?.image || null;
 
-  const loadFaceApiAndProfile = async () => {
+  const loadFaceApi = async () => {
     try {
-      setFaceStatus("loading_models");
-      setFaceMsg("กำลังโหลดโมเดลใบหน้า...");
+      setFaceStatus("loading");
+      setFaceMsg("กำลังเตรียมระบบ...");
       
       const faceApi = await import("@vladmandic/face-api");
       faceApiRef.current = faceApi;
       
       const MODEL_URL = "/models";
-      await Promise.all([
-        faceApi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-        faceApi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-        faceApi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-      ]);
+      await faceApi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
       
-      setFaceStatus("loading_profile");
-      setFaceMsg("กำลังโหลดรูปโปรไฟล์...");
-      
-      if (!profileData.image) {
-        setFaceStatus("no_profile");
-        setFaceMsg("ไม่พบรูปโปรไฟล์ — ข้ามการตรวจใบหน้า");
-        return;
-      }
-      
-      const img = document.createElement("img");
-      img.crossOrigin = "anonymous";
-      img.src = profileData.image;
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-      
-      const detection = await faceApi
-        .detectSingleFace(img, new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-        
-      if (!detection) {
-        setFaceMsg("ภาพโปรไฟล์ไม่สมบูรณ์ — ข้ามการตรวจใบหน้า");
-        return;
-      }
-      
-      profileDescriptorRef.current = detection.descriptor;
       setFaceStatus("detecting");
       setFaceMsg("กำลังสแกนใบหน้า...");
-      
       startLiveDetection();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Face API Error:", err);
-      setFaceStatus("error");
-      setFaceMsg("ตรวจใบหน้าขัดข้อง — ข้ามการตรวจ");
+      setFaceError(err.message || "โหลดโมเดลไม่สำเร็จ");
+      setFaceStatus("idle");
     }
   };
 
   const startLiveDetection = () => {
     if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+    stableFramesCountRef.current = 0;
+    lastFaceBoxRef.current = null;
     
     detectionIntervalRef.current = setInterval(async () => {
-      if (!videoRef.current || !faceApiRef.current || !profileDescriptorRef.current) return;
+      if (!videoRef.current || !faceApiRef.current) return;
       if (videoRef.current.readyState < 2) return;
       
       try {
         const faceApi = faceApiRef.current;
-        const detection = await faceApi
-          .detectSingleFace(videoRef.current, new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
-          .withFaceLandmarks()
-          .withFaceDescriptor();
+        const detection = await faceApi.detectSingleFace(
+          videoRef.current,
+          new faceApi.SsdMobilenetv1Options({ minConfidence: 0.75 })
+        );
           
-        if (detection) {
-          const distance = faceApi.euclideanDistance(profileDescriptorRef.current, detection.descriptor);
-          if (distance <= 0.5) {
-            setFaceStatus("matched");
-            setFaceMsg(`✅ ยืนยันตัวตนสำเร็จ (${Math.round((1 - distance) * 100)}%)`);
-          } else {
-            setFaceStatus("not_matched");
-            setFaceMsg("❌ ใบหน้าไม่ตรงกับบัญชี");
+        if (canvasRef.current && videoRef.current) {
+          const dims = faceApi.matchDimensions(canvasRef.current, videoRef.current, true);
+          const ctx = canvasRef.current.getContext('2d');
+          if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          if (detection) {
+            const resizedDetections = faceApi.resizeResults(detection, dims);
+            faceApi.draw.drawDetections(canvasRef.current, resizedDetections);
           }
-        } else {
-          setFaceStatus("detecting");
-          setFaceMsg("กรุณามองกล้อง");
         }
-      } catch {}
-    }, 1500);
+
+        if (detection) {
+          const box = detection.box;
+          if (box.width < 50 || box.height < 50) {
+             setFaceStatus("no_face");
+             setFaceMsg("กรุณาหันหน้าเข้ากล้อง");
+             stableFramesCountRef.current = 0;
+             lastFaceBoxRef.current = null;
+             return;
+          }
+
+          if (lastFaceBoxRef.current) {
+            const dx = Math.abs(lastFaceBoxRef.current.x - box.x);
+            const dy = Math.abs(lastFaceBoxRef.current.y - box.y);
+            const movement = Math.sqrt(dx * dx + dy * dy);
+
+            if (movement > 20) {
+              setFaceStatus("unstable");
+              setFaceMsg("ภาพสั่นเกินไป");
+              stableFramesCountRef.current = 0;
+            } else {
+              stableFramesCountRef.current += 1;
+              if (stableFramesCountRef.current >= 3) {
+                setFaceStatus("ready");
+                setFaceMsg("พร้อมถ่ายรูป");
+              } else {
+                setFaceStatus("detecting");
+                setFaceMsg("กำลังวิเคราะห์...");
+              }
+            }
+          } else {
+            setFaceStatus("detecting");
+            setFaceMsg("พบใบหน้า...");
+          }
+          lastFaceBoxRef.current = { x: box.x, y: box.y };
+
+        } else {
+          setFaceStatus("no_face");
+          setFaceMsg("ไม่พบใบหน้า");
+          stableFramesCountRef.current = 0;
+          lastFaceBoxRef.current = null;
+        }
+      } catch (e) {
+        console.error("Face detection error:", e);
+      }
+    }, 500);
   };
 
   const getLocation = () => {
@@ -211,7 +225,7 @@ export default function WFHHubPage() {
           videoRef.current.srcObject = stream;
           setCameraError("");
           await videoRef.current.play().catch(console.error);
-          loadFaceApiAndProfile();
+          loadFaceApi();
         }
       } catch (err: any) {
         console.error("Camera Error:", err);
@@ -232,9 +246,14 @@ export default function WFHHubPage() {
   };
 
   const submitCheckIn = async () => {
-    if (faceStatus === "not_matched") {
-      alert("ใบหน้าไม่ตรงกับรูปโปรไฟล์บัญชี ไม่สามารถเช็คชื่อแทนกันได้");
+    if (!location) {
+      alert("❌ ไม่พบข้อมูลพิกัด GPS!\n\nกรุณารอให้ระบบค้นหาพิกัด หรือตรวจสอบว่าคุณได้เปิดตำแหน่ง (Location/GPS) ที่มือถือแล้ว");
       return;
+    }
+    
+    // แจ้งเตือนเรื่องใบหน้า (ถ้ามี) แต่ยอมให้เช็คชื่อผ่านได้
+    if (faceStatus !== "ready") {
+      console.warn("Face not ready but proceeding:", faceStatus);
     }
 
     setIsProcessing(true);
@@ -298,15 +317,18 @@ export default function WFHHubPage() {
 
   const faceUI = (() => {
     switch (faceStatus) {
-      case "loading_models":
-      case "loading_profile":
+      case "idle":
+        if (faceError) return { icon: <AlertTriangle size={14} />, color: "bg-rose-50 text-rose-600" };
+        return { icon: <AlertCircle size={14} />, color: "bg-slate-100 text-slate-500" };
+      case "loading":
         return { icon: <Loader2 className="animate-spin" size={14} />, color: "bg-slate-100 text-slate-600" };
       case "detecting":
         return { icon: <Loader2 className="animate-spin" size={14} />, color: "bg-blue-100 text-blue-700 animate-pulse" };
-      case "matched":
-        return { icon: <ShieldCheck size={14} />, color: "bg-emerald-50 text-emerald-700" };
-      case "not_matched":
-        return { icon: <ShieldX size={14} />, color: "bg-rose-50 text-rose-700" };
+      case "no_face":
+      case "unstable":
+        return { icon: <AlertTriangle size={14} />, color: "bg-rose-100 text-rose-700 animate-pulse" };
+      case "ready":
+        return { icon: <ShieldCheck size={14} />, color: "bg-emerald-50 text-emerald-700 shadow-emerald-500/50 shadow-lg scale-110 transition-transform" };
       default:
         return null;
     }
@@ -460,11 +482,20 @@ export default function WFHHubPage() {
               
               <div className="w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden relative mb-4 shadow-inner border-2 border-slate-100 dark:border-zinc-800">
                 {!cameraError ? (
-                  <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover scale-x-[-1]" />
+                  <>
+                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover scale-x-[-1]" />
+                    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none scale-x-[-1]" />
+                  </>
                 ) : (
                   <div className="p-6 text-center text-rose-500 mt-20">
                     <Camera className="w-8 h-8 mx-auto mb-2" />
-                    <p className="text-xs">{cameraError}</p>
+                    <p className="text-xs mb-4">{cameraError}</p>
+                    <button
+                      onClick={() => setShowHelpModal(true)}
+                      className="px-4 py-2 bg-rose-100 text-rose-700 rounded-xl text-xs font-bold"
+                    >
+                      วิธีแก้ปัญหา
+                    </button>
                   </div>
                 )}
                 
@@ -494,7 +525,7 @@ export default function WFHHubPage() {
                   ยกเลิก
                 </button>
                 <button 
-                  disabled={isProcessing || !location || faceStatus === "not_matched"} 
+                  disabled={isProcessing} 
                   onClick={submitCheckIn} 
                   className={`flex-2 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all flex items-center justify-center gap-2 ${actionType === "in" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"} disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
@@ -505,6 +536,60 @@ export default function WFHHubPage() {
           </AnimatePresence>
         )}
       </div>
+
+      {/* Help Modal */}
+      <AnimatePresence>
+        {showHelpModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-zinc-800 max-h-[80vh] overflow-y-auto text-left relative"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <AlertTriangle className="text-amber-500" size={20} />
+                  วิธีแก้ปัญหาเข้ากล้อง/GPS
+                </h3>
+                <button
+                  onClick={() => setShowHelpModal(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="space-y-4 text-sm text-slate-600 dark:text-zinc-400">
+                <div className="p-4 bg-amber-50 dark:bg-amber-500/10 rounded-2xl border border-amber-100 dark:border-amber-900/30">
+                  <p className="font-bold text-amber-800 dark:text-amber-500 mb-2">1. สำหรับ iPhone / iPad (Safari)</p>
+                  <ul className="list-disc pl-4 space-y-1 text-amber-700 dark:text-amber-400/80">
+                    <li>แตะที่สัญลักษณ์ <strong>AA</strong> หรือรูป <strong>แม่กุญแจ</strong> บนแถบ URL ด้านบน หรือด้านล่าง</li>
+                    <li>เลือก <strong>การตั้งค่าเว็บไซต์ (Website Settings)</strong></li>
+                    <li>ตรง <strong>กล้อง (Camera)</strong> และ <strong>ตำแหน่ง (Location)</strong> ให้เปลี่ยนเป็น <strong>อนุญาต (Allow)</strong></li>
+                    <li>กด <strong>เสร็จสิ้น (Done)</strong> แล้วโหลดหน้านี้ใหม่</li>
+                  </ul>
+                </div>
+
+                <div className="p-4 bg-blue-50 dark:bg-blue-500/10 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+                  <p className="font-bold text-blue-800 dark:text-blue-500 mb-2">2. สำหรับ Android (Chrome)</p>
+                  <ul className="list-disc pl-4 space-y-1 text-blue-700 dark:text-blue-400/80">
+                    <li>แตะที่รูป <strong>แม่กุญแจ</strong> หรือ <strong>จุด 3 จุด</strong> มุมขวาบน</li>
+                    <li>เลือก <strong>สิทธิ์ (Permissions)</strong></li>
+                    <li>เปิดสวิตช์ <strong>กล้อง (Camera)</strong> และ <strong>ตำแหน่งที่ตั้ง (Location)</strong></li>
+                    <li>รีเฟรชหน้าเว็บใหม่</li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

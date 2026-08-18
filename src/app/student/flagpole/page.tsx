@@ -62,6 +62,7 @@ export default function StudentFlagpolePortal() {
   );
   const [locationError, setLocationError] = useState("");
   const [faceState, setFaceState] = useState<FaceState>("idle");
+  const [faceError, setFaceError] = useState("");
   const [recordedTime, setRecordedTime] = useState<string>("");
   const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -206,8 +207,9 @@ export default function StudentFlagpolePortal() {
       
       setFaceState("detecting");
       startLiveDetection();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Face API Error:", err);
+      setFaceError(err.message || "โหลดโมเดลไม่สำเร็จ");
       setFaceState("idle");
     }
   };
@@ -400,14 +402,10 @@ export default function StudentFlagpolePortal() {
       alert("❌ ไม่พบข้อมูลพิกัด GPS!\n\nกรุณารอให้ระบบค้นหาพิกัด หรือตรวจสอบว่าคุณได้เปิดตำแหน่ง (Location/GPS) ที่มือถือแล้ว");
       return;
     }
+    
+    // แจ้งเตือนเรื่องใบหน้า (ถ้ามี) แต่ยอมให้เช็คชื่อผ่านได้
     if (faceState !== "ready") {
-      let faceMsg = "กรุณาหันหน้าเข้ากล้องและถือกล้องให้นิ่งๆ";
-      if (faceState === "loading") faceMsg = "ระบบกำลังโหลดโมเดลตรวจจับใบหน้า กรุณารอสักครู่...";
-      if (faceState === "no_face") faceMsg = "ไม่พบใบหน้า! กรุณาหันหน้าเข้ากล้อง";
-      if (faceState === "unstable") faceMsg = "ภาพสั่นเกินไป! กรุณาถือกล้องให้นิ่งๆ 1-2 วินาที";
-      
-      alert(`📸 ใบหน้ายังไม่พร้อมถ่ายรูป!\n\n${faceMsg}`);
-      return;
+      console.warn("Face not ready but proceeding:", faceState);
     }
 
     setIsProcessing(true);
@@ -508,6 +506,7 @@ export default function StudentFlagpolePortal() {
   const getFaceStateUI = () => {
     switch (faceState) {
       case "idle":
+        if (faceError) return { icon: <AlertTriangle />, text: `AI Error: ${faceError}`, color: "bg-rose-50 text-rose-600 border-rose-200" };
         return { icon: <AlertCircle />, text: "ระบบเตรียมตรวจจับใบหน้า...", color: "bg-slate-100 text-slate-500 border-slate-200" };
       case "loading":
         return { icon: <Loader2 className="animate-spin" />, text: "กำลังเตรียมระบบ...", color: "bg-slate-100 text-slate-600 border-slate-200" };

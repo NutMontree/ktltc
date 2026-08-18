@@ -47,6 +47,7 @@ next-env.d.ts
 # public folder and all its contents (per user request)
 /public/*
 !/public/.gitkeep
+!/public/models/
   
 # AI Assistant
 .gemini/
