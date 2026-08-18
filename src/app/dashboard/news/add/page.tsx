@@ -396,71 +396,71 @@ export default function AddNewsPage() {
       const datePath = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
       const mainCategory = categories[0] || "General";
 
-      // 1. อัปโหลดรูปภาพ (พร้อม Progress Bar)
+      // 1. อัปโหลดรูปภาพ (ทีละไฟล์ พร้อม Progress Bar ที่ถูกต้อง)
       const totalToUpload = imageFiles.length + newsletterFiles.length;
       let uploadedCount = 0;
 
-      const generalUploads = await Promise.all(
-        imageFiles.map(async (f) => {
-          uploadedCount++;
-          // ตั้งค่าเริ่มต้นทันทีเพื่อให้ Modal เด้งขึ้นมา
-          setUploadStatus({
-            fileName: f.name,
-            percent: 0,
-            loaded: 0,
-            total: f.size,
-            startTime: Date.now(),
-            currentIndex: uploadedCount,
-            totalCount: totalToUpload,
-          });
-          return await uploadFile(
-            f,
-            `ktltc_news/${mainCategory}/${datePath}`,
-            (percent, loaded, total) => {
-              setUploadStatus({
-                fileName: f.name,
-                percent,
-                loaded,
-                total,
-                startTime: Date.now(),
-                currentIndex: uploadedCount,
-                totalCount: totalToUpload,
-              });
-            },
-          );
-        }),
-      );
+      const generalUploads = [];
+      for (const f of imageFiles) {
+        uploadedCount++;
+        const currentIdx = uploadedCount;
+        setUploadStatus({
+          fileName: f.name,
+          percent: 0,
+          loaded: 0,
+          total: f.size,
+          startTime: Date.now(),
+          currentIndex: currentIdx,
+          totalCount: totalToUpload,
+        });
+        const result = await uploadFile(
+          f,
+          `ktltc_news/${mainCategory}/${datePath}`,
+          (percent, loaded, total) => {
+            setUploadStatus({
+              fileName: f.name,
+              percent,
+              loaded,
+              total,
+              startTime: Date.now(),
+              currentIndex: currentIdx,
+              totalCount: totalToUpload,
+            });
+          },
+        );
+        generalUploads.push(result);
+      }
 
-      const newsletterUploads = await Promise.all(
-        newsletterFiles.map(async (f) => {
-          uploadedCount++;
-          // ตั้งค่าเริ่มต้นทันทีเพื่อให้ Modal เด้งขึ้นมา
-          setUploadStatus({
-            fileName: f.name,
-            percent: 0,
-            loaded: 0,
-            total: f.size,
-            startTime: Date.now(),
-            currentIndex: uploadedCount,
-            totalCount: totalToUpload,
-          });
-          return await uploadFile(
-            f,
-            `ktltc_newsletters/${mainCategory}/${datePath}`,
-            (percent, loaded, total) => {
-              setUploadStatus({
-                fileName: f.name,
-                percent,
-                loaded,
-                total,
-                startTime: Date.now(),
-                currentIndex: uploadedCount,
-                totalCount: totalToUpload,
-              });
-            },
-          );
-        }),
-      );
+      const newsletterUploads = [];
+      for (const f of newsletterFiles) {
+        uploadedCount++;
+        const currentIdx = uploadedCount;
+        setUploadStatus({
+          fileName: f.name,
+          percent: 0,
+          loaded: 0,
+          total: f.size,
+          startTime: Date.now(),
+          currentIndex: currentIdx,
+          totalCount: totalToUpload,
+        });
+        const result = await uploadFile(
+          f,
+          `ktltc_newsletters/${mainCategory}/${datePath}`,
+          (percent, loaded, total) => {
+            setUploadStatus({
+              fileName: f.name,
+              percent,
+              loaded,
+              total,
+              startTime: Date.now(),
+              currentIndex: currentIdx,
+              totalCount: totalToUpload,
+            });
+          },
+        );
+        newsletterUploads.push(result);
+      }
 
       setUploadStatus(null); // เมื่อเสร็จแล้วให้ปิด Modal
 

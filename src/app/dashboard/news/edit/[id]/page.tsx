@@ -374,55 +374,75 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
         allImages.filter((i) => i.isNew).length + allNewsletters.filter((i) => i.isNew).length;
       let uploadedCount = 0;
 
-      const finalImages = await Promise.all(
-        allImages.map(async (item) => {
-          if (item.isNew && item.file) {
-            uploadedCount++;
-            const result = await uploadFile(
-              item.file,
-              `ktltc_news/${mainCategory}/${datePath}`,
-              (percent, loaded, total) => {
-                setUploadStatus({
-                  fileName: item.file!.name,
-                  percent,
-                  loaded,
-                  total,
-                  startTime: Date.now(),
-                  currentIndex: uploadedCount,
-                  totalCount: totalToUpload,
-                });
-              },
-            );
-            return result;
-          }
-          return { secure_url: item.src, thumbnail_url: null };
-        }),
-      );
+      const finalImages = [];
+      for (const item of allImages) {
+        if (item.isNew && item.file) {
+          uploadedCount++;
+          const currentIdx = uploadedCount;
+          setUploadStatus({
+            fileName: item.file.name,
+            percent: 0,
+            loaded: 0,
+            total: item.file.size,
+            startTime: Date.now(),
+            currentIndex: currentIdx,
+            totalCount: totalToUpload,
+          });
+          const result = await uploadFile(
+            item.file,
+            `ktltc_news/${mainCategory}/${datePath}`,
+            (percent, loaded, total) => {
+              setUploadStatus({
+                fileName: item.file!.name,
+                percent,
+                loaded,
+                total,
+                startTime: Date.now(),
+                currentIndex: currentIdx,
+                totalCount: totalToUpload,
+              });
+            },
+          );
+          finalImages.push(result);
+        } else {
+          finalImages.push({ secure_url: item.src, thumbnail_url: null });
+        }
+      }
 
-      const finalNewsletters = await Promise.all(
-        allNewsletters.map(async (item) => {
-          if (item.isNew && item.file) {
-            uploadedCount++;
-            const result = await uploadFile(
-              item.file,
-              `ktltc_newsletters/${mainCategory}/${datePath}`,
-              (percent, loaded, total) => {
-                setUploadStatus({
-                  fileName: item.file!.name,
-                  percent,
-                  loaded,
-                  total,
-                  startTime: Date.now(),
-                  currentIndex: uploadedCount,
-                  totalCount: totalToUpload,
-                });
-              },
-            );
-            return result;
-          }
-          return { secure_url: item.src, thumbnail_url: null };
-        }),
-      );
+      const finalNewsletters = [];
+      for (const item of allNewsletters) {
+        if (item.isNew && item.file) {
+          uploadedCount++;
+          const currentIdx = uploadedCount;
+          setUploadStatus({
+            fileName: item.file.name,
+            percent: 0,
+            loaded: 0,
+            total: item.file.size,
+            startTime: Date.now(),
+            currentIndex: currentIdx,
+            totalCount: totalToUpload,
+          });
+          const result = await uploadFile(
+            item.file,
+            `ktltc_newsletters/${mainCategory}/${datePath}`,
+            (percent, loaded, total) => {
+              setUploadStatus({
+                fileName: item.file!.name,
+                percent,
+                loaded,
+                total,
+                startTime: Date.now(),
+                currentIndex: currentIdx,
+                totalCount: totalToUpload,
+              });
+            },
+          );
+          finalNewsletters.push(result);
+        } else {
+          finalNewsletters.push({ secure_url: item.src, thumbnail_url: null });
+        }
+      }
 
       setUploadStatus(null);
 
