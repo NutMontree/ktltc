@@ -13,6 +13,7 @@ export function StatCard({ label, value, icon: Icon, color, unit, variants, onCl
     emerald: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
     indigo: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
     orange: "text-orange-600 dark:text-orange-400 bg-orange-500/10 border-orange-500/20",
+    rose: "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20",
   };
 
   const glows: any = {
@@ -23,32 +24,38 @@ export function StatCard({ label, value, icon: Icon, color, unit, variants, onCl
     emerald: "group-hover:shadow-emerald-500/20",
     indigo: "group-hover:shadow-indigo-500/20",
     orange: "group-hover:shadow-orange-500/20",
+    rose: "group-hover:shadow-rose-500/20",
   };
+
+  const safeColor = colors[color] || colors.blue;
+  const safeGlow = glows[color] || glows.blue;
+  const bgColorClass = safeColor.split(' ')[2] || 'bg-blue-500/10';
 
   return (
     <motion.div
       variants={variants}
       onClick={onClick}
-      className={`group relative p-6 rounded-[2.5rem] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border-2 border-white/50 dark:border-zinc-800/50 shadow-lg transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-500/30 ${glows[color]} ${onClick ? "cursor-pointer" : ""}`}
+      className={`group relative p-4 rounded-[20px] bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-500/30 ${onClick ? "cursor-pointer" : ""} overflow-hidden`}
     >
-      <div className="flex justify-between items-start mb-5">
-        <div
-          className={`p-3.5 rounded-2xl ${colors[color]} group-hover:scale-110 transition-transform duration-500`}
-        >
-          <Icon size={20} strokeWidth={2.5} />
+      <div className={`absolute top-0 right-0 w-24 h-24 ${bgColorClass} rounded-full blur-2xl -mr-10 -mt-10 transition-transform duration-500 group-hover:scale-150 opacity-50`} />
+      
+      <div className="flex justify-between items-start mb-4 relative z-10">
+        <div className={`p-2.5 rounded-[14px] ${safeColor} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+          <Icon size={18} strokeWidth={2.5} />
         </div>
-        <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+        <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700 mt-1" />
       </div>
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-1">
+      
+      <div className="relative z-10 mt-2">
+        <p className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">
           {label}
         </p>
         <div className="flex items-baseline gap-1.5">
-          <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter">
+          <h3 className="text-[26px] font-black text-zinc-900 dark:text-white tracking-tighter leading-none">
             {value.toLocaleString()}
           </h3>
           {unit && (
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
               {unit}
             </span>
           )}

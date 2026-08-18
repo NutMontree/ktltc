@@ -288,7 +288,7 @@ export default function TelemetryPage() {
           />
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
           <StatCard label="จำนวนรูปภาพ" value={stats?.totalImagesCount || 0} icon={ImageIcon} color="indigo" unit=" ไฟล์" variants={item} />
           <StatCard label="ข่าวสารทั้งหมด" value={stats?.totalNews || 0} icon={Newspaper} color="blue" unit=" ข่าว" variants={item} />
           <StatCard label="แบนเนอร์" value={stats?.totalBanners || 0} icon={ImageIcon} color="pink" unit=" รูป" variants={item} />
