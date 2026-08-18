@@ -322,7 +322,12 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
         acceptedFiles.push(file);
       }
 
-      const compressed = await Promise.all(acceptedFiles.map((f) => compressImage(f)));
+      // บีบอัดทีละไฟล์ (ป้องกัน browser crash เมื่อเลือกไฟล์จำนวนมาก)
+      const compressed: File[] = [];
+      for (const f of acceptedFiles) {
+        const result = await compressImage(f);
+        compressed.push(result);
+      }
 
       const newItems = compressed.map((file) => {
         const previewUrl = URL.createObjectURL(file);

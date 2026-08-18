@@ -356,7 +356,12 @@ export default function AddNewsPage() {
         acceptedFiles.push(file);
       }
 
-      const compressedFiles = await Promise.all(acceptedFiles.map((file) => compressImage(file)));
+      // บีบอัดทีละไฟล์ (ป้องกัน browser crash เมื่อเลือกไฟล์จำนวนมาก)
+      const compressedFiles: File[] = [];
+      for (const file of acceptedFiles) {
+        const compressed = await compressImage(file);
+        compressedFiles.push(compressed);
+      }
       const newPreviews = compressedFiles.map((f) => URL.createObjectURL(f));
 
       if (type === "general") {

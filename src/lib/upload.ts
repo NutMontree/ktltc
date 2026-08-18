@@ -1,12 +1,12 @@
-import imageCompression from "browser-image-compression";
+// imageCompression ถูกย้ายไปทำที่ฝั่ง Page (handleFileChange) แล้ว
 
 /**
  * upload.ts: ไฟล์ตัวช่วยสำหรับจัดการการอัปโหลดไฟล์จากฝั่ง Client
  * 
  * หน้าที่: 
- * 1. บีบอัดรูปภาพก่อนอัปโหลด (ยกเว้น GIF และ SVG) เพื่อประหยัดพื้นที่
- * 2. ส่งไฟล์ไปยัง API /api/upload ของ Server
- * 3. ติดตามสถานะความคืบหน้า (Progress) การอัปโหลด
+ * 1. ส่งไฟล์ไปยัง API /api/upload ของ Server
+ * 2. ติดตามสถานะความคืบหน้า (Progress) การอัปโหลด
+ * หมายเหตุ: การบีบอัดรูปภาพทำที่ฝั่ง Page (handleFileChange) ก่อนเรียกฟังก์ชันนี้
  */
 
 /**
@@ -21,35 +21,12 @@ export const uploadFile = async (
   onProgress?: (percent: number, loaded: number, total: number) => void
 ): Promise<{ secure_url: string | null; thumbnail_url: string | null }> => {
   
-  let fileToUpload = file;
-  const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
-  const isVideo = file.type?.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
-  const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
-  const isCompressibleImage = isImage && !isGif && !file.type?.includes("svg");
-
-  // 1. ขั้นตอนการบีบอัดรูปภาพ (Client-side Compression)
-  // ช่วยให้โหลดเร็วขึ้นและไม่หนัก Server
-  if (isCompressibleImage) {
-    try {
-      const options = {
-        maxSizeMB: 0.8, // ขนาดสูงสุดไม่เกิน 0.8 MB
-        maxWidthOrHeight: 1920, // ความกว้าง/สูงสูงสุด 1920px
-        useWebWorker: true,
-      };
-      fileToUpload = await imageCompression(file, options);
-    } catch (compressionError) {
-      console.error("❌ Image compression error:", compressionError);
-    }
-  }
+  // หมายเหตุ: การบีบอัดรูปภาพทำที่ฝั่ง Page (handleFileChange) แล้ว
+  // ไม่ต้องบีบอัดซ้ำอีกรอบที่นี่
 
   // 2. เตรียมข้อมูลสำหรับส่งไป API
-  // Ensure the compressed file is a File object with the original name to prevent "blob" filename
-  const finalFile = fileToUpload instanceof File && fileToUpload.name !== "blob" 
-    ? fileToUpload 
-    : new File([fileToUpload], file.name, { type: file.type });
-  
   const formData = new FormData();
-  formData.append("file", finalFile);
+  formData.append("file", file);
   formData.append("folder", folder);
 
   // ใช้ XMLHttpRequest แทน fetch เพื่อให้สามารถติดตาม Progress ได้
