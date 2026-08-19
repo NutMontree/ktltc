@@ -9,10 +9,20 @@ import { getPublicDir } from "@/lib/cwd";
 
 async function deletePhysicalFile(fileUrl: string) {
   try {
-    if (!fileUrl || !fileUrl.startsWith("/api/media/")) return;
-    const pathPart = fileUrl.replace("/api/media/", "");
-    const cleanPath = pathPart.split('?')[0]; // Remove query params if any
-    const pathSegments = cleanPath.split("/");
+    if (!fileUrl) return;
+    let pathSegments: string[] = [];
+    
+    if (fileUrl.startsWith("/api/media/")) {
+      const pathPart = fileUrl.replace("/api/media/", "");
+      const cleanPath = pathPart.split('?')[0];
+      pathSegments = cleanPath.split("/");
+    } else if (fileUrl.startsWith("/uploads/")) {
+      const pathPart = fileUrl.replace("/uploads/", "uploads/");
+      const cleanPath = pathPart.split('?')[0];
+      pathSegments = cleanPath.split("/");
+    } else {
+      return;
+    }
     
     const localBase = getPublicDir();
     const filePath = join(localBase, ...pathSegments);

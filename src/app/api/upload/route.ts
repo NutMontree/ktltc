@@ -24,17 +24,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "File too large. Maximum size is 200MB." }, { status: 413 });
     }
 
-    // Allowed MIME types
-    const allowedTypes = [
-      "image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml",
-      "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "video/mp4", "video/webm", "video/ogg", "video/quicktime"
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: "Invalid file type." }, { status: 415 });
-    }
-
+    // All file types are allowed
+    // The chunk upload API handles larger files, this is for files < 200MB
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 

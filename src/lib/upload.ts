@@ -27,9 +27,8 @@ export const uploadFile = async (
   const isImage = file.type?.startsWith("image/") || /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name);
   const isCompressibleImage = isImage && !isGif && !file.type?.includes("svg");
 
-  // 1. บีบอัดรูปภาพ (Safety net สำหรับ caller ที่ไม่ได้บีบอัดเอง)
-  // ถ้าไฟล์เล็กกว่า maxSizeMB อยู่แล้ว lib จะ skip ไม่ทำอะไร — ไม่เสียเวลาซ้ำ
-  if (isCompressibleImage) {
+  // 1. บีบอัดรูปภาพ (ถ้าขนาดไม่ใหญ่จนเกินไป ป้องกันเบราว์เซอร์แฮงค์)
+  if (isCompressibleImage && file.size < 50 * 1024 * 1024) {
     try {
       const options = {
         maxSizeMB: 0.8,
@@ -42,11 +41,15 @@ export const uploadFile = async (
     }
   }
 
-  // 2. เตรียมข้อมูลสำหรับส่งไป API
   const finalFile = fileToUpload instanceof File && fileToUpload.name !== "blob" 
     ? fileToUpload 
     : new File([fileToUpload], file.name, { type: file.type });
   
+  // ใช้ Chunked Upload สำหรับไฟล์ขนาดใหญ่กว่า 5MB
+  if (finalFile.size > 5 * 1024 * 1024) {
+    return uploadFileChunked(finalFile, folder, onProgress);
+  }
+
   const formData = new FormData();
   formData.append("file", finalFile);
   formData.append("folder", folder);
@@ -95,6 +98,63 @@ export const uploadFile = async (
     xhr.send(formData);
   });
 };
+
+/**
+ * ฟังก์ชันรองสำหรับการส่งไฟล์ขนาดใหญ่ด้วยวิธีแบ่งชิ้น (Chunked Upload)
+ */
+async function uploadFileChunked(
+  file: File,
+  folder: string,
+  onProgress?: (percent: number, loaded: number, total: number) => void
+): Promise<{ secure_url: string | null; thumbnail_url: string | null }> {
+  const CHUNK_SIZE = 2 * 1024 * 1024; // 2MB เพื่อเลี่ยงลิมิตของเซิร์ฟเวอร์
+  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+  const fileId = Date.now().toString() + "-" + Math.random().toString(36).substring(7);
+  
+  let totalUploaded = 0;
+  let finalResult = { secure_url: null as string | null, thumbnail_url: null as string | null };
+
+  for (let i = 0; i < totalChunks; i++) {
+    const start = i * CHUNK_SIZE;
+    const end = Math.min(start + CHUNK_SIZE, file.size);
+    const chunk = file.slice(start, end);
+    
+    const formData = new FormData();
+    formData.append("chunk", chunk);
+    formData.append("fileId", fileId);
+    formData.append("fileName", file.name);
+    formData.append("chunkIndex", i.toString());
+    formData.append("totalChunks", totalChunks.toString());
+    formData.append("folder", folder);
+    
+    try {
+      const response = await fetch("/api/upload/chunk", {
+        method: "POST",
+        body: formData,
+      });
+      
+      const data = await response.json();
+      if (!response.ok || data.error) {
+        throw new Error(data.error || "Chunk upload failed");
+      }
+      
+      totalUploaded += chunk.size;
+      if (onProgress) {
+        const percent = Math.round((totalUploaded / file.size) * 100);
+        onProgress(percent, totalUploaded, file.size);
+      }
+      
+      if (data.merged) {
+        finalResult = { secure_url: data.secure_url || data.url, thumbnail_url: data.thumbnail_url || data.url };
+      }
+    } catch (err) {
+      console.error("❌ Chunk Upload Error:", err);
+      return { secure_url: null, thumbnail_url: null };
+    }
+  }
+  
+  return finalResult;
+}
 
 /**
  * Alias สำหรับรองรับโค้ดเก่าที่ยังเรียกชื่อ uploadToCloudinary
