@@ -46,7 +46,7 @@ import { SelectionArea, SelectionEvent } from "@viselect/react";
 
 function DnDFolderWrapper({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
   return (
-    <div data-selectable="true" data-id={id} className={`selectable-item ${className || ''}`}>
+    <div data-selectable="true" data-id={id} className={`selectable-item select-none ${className || ''}`}>
       {children}
     </div>
   );
@@ -54,7 +54,7 @@ function DnDFolderWrapper({ id, children, className }: { id: string, children: R
 
 function DnDFileWrapper({ id, children, className }: { id: string, children: React.ReactNode, className?: string }) {
   return (
-    <div data-selectable="true" data-id={id} className={`selectable-item ${className || ''}`}>
+    <div data-selectable="true" data-id={id} className={`selectable-item select-none ${className || ''}`}>
       {children}
     </div>
   );
@@ -432,13 +432,13 @@ function DriveContent() {
     const {
       store: { changed, stored }
     } = e;
-    
+
     const newSelectedIds = new Set<string>();
     for (const item of stored) {
       const id = item.getAttribute("data-id");
       if (id) newSelectedIds.add(id);
     }
-    
+
     setSelectedIds(newSelectedIds);
     if (newSelectedIds.size > 0) {
       setIsSelectionMode(true);
@@ -762,25 +762,9 @@ function DriveContent() {
   }
 
   return (
-    <SelectionArea
-      className="mx-auto max-w-[1600px] px-2 pt-28 pb-10 lg:pt-32 animate-in fade-in duration-700 min-h-screen"
-      onStart={handleSelectionChange}
-      onMove={handleSelectionChange}
-      selectables=".selectable-item"
-      features={{
-        singleTap: {
-          allow: false,
-        },
-      }}
+    <div
+      className="mx-auto max-w-[1600px] px-2 pt-12 pb-10  animate-in fade-in duration-700 min-h-screen"
     >
-      <style>{`
-        .selection-area {
-          background: rgba(37, 99, 235, 0.1) !important;
-          border: 2px solid rgba(37, 99, 235, 0.4) !important;
-          border-radius: 8px !important;
-          z-index: 999 !important;
-        }
-      `}</style>
       {/* Header Section */}
       <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
         <div>
@@ -860,11 +844,10 @@ function DriveContent() {
                 setIsSelectionMode(true);
               }
             }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-black transition-all shadow-lg border hover:-translate-y-0.5 active:scale-95 ${
-              isSelectionMode
-                ? "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-900/20 dark:border-rose-900/30"
-                : "bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/20 dark:border-indigo-900/30 hover:bg-indigo-100"
-            }`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-black transition-all shadow-lg border hover:-translate-y-0.5 active:scale-95 ${isSelectionMode
+              ? "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-900/20 dark:border-rose-900/30"
+              : "bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/20 dark:border-indigo-900/30 hover:bg-indigo-100"
+              }`}
           >
             {isSelectionMode ? <X size={20} /> : <CheckSquare size={20} />}
             <span className="hidden sm:inline">
@@ -886,11 +869,10 @@ function DriveContent() {
           <button
             key={tab.id}
             onClick={() => setFilterType(tab.id as any)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black transition-all shrink-0 ${
-              filterType === tab.id
-                ? "bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900"
-                : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400"
-            }`}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black transition-all shrink-0 ${filterType === tab.id
+              ? "bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900"
+              : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400"
+              }`}
           >
             {tab.icon}
             {tab.label}
@@ -920,24 +902,24 @@ function DriveContent() {
             </button>
           )}
           <DroppableBreadcrumb id="root" className="shrink-0 flex items-center">
-          <button
-            onClick={() => handleBreadcrumbClick(-1)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all shrink-0 ${breadcrumbs.length === 0 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
-          >
-            <HardDrive size={14} /> <span className="hidden xs:inline">หน้าแรก</span>
-          </button>
+            <button
+              onClick={() => handleBreadcrumbClick(-1)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all shrink-0 ${breadcrumbs.length === 0 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+            >
+              <HardDrive size={14} /> <span className="hidden xs:inline">หน้าแรก</span>
+            </button>
           </DroppableBreadcrumb>
 
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={crumb.id || idx}>
               <span className="text-slate-300 dark:text-zinc-700 text-xs">/</span>
               <DroppableBreadcrumb id={crumb.id || "root"} className="shrink-0 flex items-center">
-              <button
-                onClick={() => handleBreadcrumbClick(idx)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all whitespace-nowrap shrink-0 ${idx === breadcrumbs.length - 1 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
-              >
-                {crumb.name}
-              </button>
+                <button
+                  onClick={() => handleBreadcrumbClick(idx)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-black transition-all whitespace-nowrap shrink-0 ${idx === breadcrumbs.length - 1 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+                >
+                  {crumb.name}
+                </button>
               </DroppableBreadcrumb>
             </React.Fragment>
           ))}
@@ -1009,231 +991,225 @@ function DriveContent() {
         {/* Folders */}
         {folders.map((folder) => (
           <DnDFolderWrapper id={folder._id} key={folder._id} className="flex">
-          <motion.div
-            layout
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={!isSelectionMode ? { y: -8 } : {}}
-            onClick={() => isSelectionMode && toggleSelection(folder._id)}
-            className={`group w-full relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
-              selectedIds.has(folder._id)
+            <motion.div
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={!isSelectionMode ? { y: -8 } : {}}
+              onClick={() => isSelectionMode && toggleSelection(folder._id)}
+              className={`group w-full relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${selectedIds.has(folder._id)
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50 dark:bg-blue-900/10"
                 : "border-slate-100 dark:border-zinc-800 hover:shadow-xl hover:border-blue-100 dark:hover:border-blue-900/30"
-            } ${
-              viewMode === "grid"
-                ? "flex-col rounded-[24px] p-5"
-                : "flex-row items-center rounded-2xl p-3"
-            } ${isSelectionMode ? "cursor-pointer" : ""}`}
-          >
-            {isSelectionMode && (
-              <div className="absolute top-4 left-4 z-10">
-                <div
-                  className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
-                    selectedIds.has(folder._id)
+                } ${viewMode === "grid"
+                  ? "flex-col rounded-[24px] p-5"
+                  : "flex-row items-center rounded-2xl p-3"
+                } ${isSelectionMode ? "cursor-pointer" : ""}`}
+            >
+              {isSelectionMode && (
+                <div className="absolute top-4 left-4 z-10">
+                  <div
+                    className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedIds.has(folder._id)
                       ? "bg-blue-600 border-blue-600 text-white"
                       : "bg-white border-slate-300 dark:bg-zinc-800 dark:border-zinc-700"
-                  }`}
-                >
-                  {selectedIds.has(folder._id) && <Check size={14} strokeWidth={4} />}
-                </div>
-              </div>
-            )}
-            <div
-              className={`flex cursor-pointer items-center gap-5 ${viewMode === "grid" ? "mb-6 flex-1 flex-col text-center" : "flex-1"}`}
-              onClick={() => !isSelectionMode && handleFolderClick(folder)}
-            >
-              <div
-                className={`relative flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 ${viewMode === "grid" ? "h-24 w-24" : "h-12 w-12"}`}
-              >
-                <UiFolder 
-                  color={folder.isCollaborative ? "#f59e0b" : "#3b82f6"} 
-                  size={viewMode === "grid" ? 0.9 : 0.5} 
-                />
-                {folder.isCollaborative && (
-                  <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 p-1.5 rounded-full shadow-lg border border-slate-100 dark:border-zinc-700 z-10">
-                    <Share2 size={12} className="text-amber-500" strokeWidth={3} />
+                      }`}
+                  >
+                    {selectedIds.has(folder._id) && <Check size={14} strokeWidth={4} />}
                   </div>
-                )}
-              </div>
-              <div className="flex flex-col overflow-hidden w-full">
-                <span
-                  className="truncate text-base font-black text-slate-800 dark:text-zinc-100 group-hover:text-blue-600 transition-colors"
-                  title={folder.name}
-                >
-                  {folder.name}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                  {folder.isCollaborative ? "คลังทำงานร่วมกัน" : "แฟ้มส่วนตัว"}
-                </span>
+                </div>
+              )}
+              <div
+                className={`flex cursor-pointer items-center gap-5 ${viewMode === "grid" ? "mb-6 flex-1 flex-col text-center" : "flex-1"}`}
+                onClick={() => !isSelectionMode && handleFolderClick(folder)}
+              >
                 <div
-                  className={`flex items-center gap-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-md border border-amber-100/30 mt-2 w-fit ${viewMode === "grid" ? "mx-auto" : ""}`}
+                  className={`relative flex items-center justify-center shrink-0 transition-transform duration-500 group-hover:scale-110 ${viewMode === "grid" ? "h-24 w-24" : "h-12 w-12"}`}
                 >
-                  <Eye size={12} />
-                  <span>{(folder.views || 0).toLocaleString()} ครั้ง</span>
+                  <UiFolder
+                    color={folder.isCollaborative ? "#f59e0b" : "#3b82f6"}
+                    size={viewMode === "grid" ? 0.9 : 0.5}
+                  />
+                  {folder.isCollaborative && (
+                    <div className="absolute -top-2 -right-2 bg-white dark:bg-zinc-800 p-1.5 rounded-full shadow-lg border border-slate-100 dark:border-zinc-700 z-10">
+                      <Share2 size={12} className="text-amber-500" strokeWidth={3} />
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col overflow-hidden w-full">
+                  <span
+                    className="truncate text-base font-black text-slate-800 dark:text-zinc-100 group-hover:text-blue-600 transition-colors"
+                    title={folder.name}
+                  >
+                    {folder.name}
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                    {folder.isCollaborative ? "คลังทำงานร่วมกัน" : "แฟ้มส่วนตัว"}
+                  </span>
+                  <div
+                    className={`flex items-center gap-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-md border border-amber-100/30 mt-2 w-fit ${viewMode === "grid" ? "mx-auto" : ""}`}
+                  >
+                    <Eye size={12} />
+                    <span>{(folder.views || 0).toLocaleString()} ครั้ง</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className={`flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : ""}`}
-            >
-              <div className="flex items-center gap-1.5 shrink-0 max-w-[40%] sm:max-w-[50%]">
-                <div className="h-5 w-5 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border border-white dark:border-zinc-700 shrink-0">
-                  <User size={10} className="text-slate-400" />
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className={`flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : ""}`}
+              >
+                <div className="flex items-center gap-1.5 shrink-0 max-w-[40%] sm:max-w-[50%]">
+                  <div className="h-5 w-5 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border border-white dark:border-zinc-700 shrink-0">
+                    <User size={10} className="text-slate-400" />
+                  </div>
+                  <span className="truncate">{folder.ownerName}</span>
                 </div>
-                <span className="truncate">{folder.ownerName}</span>
-              </div>
 
-              <div className="flex flex-wrap items-center gap-0.5 sm:gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
-                {isStaff && (isSuperAdmin || folder.ownerId === userId) && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setSelectedItem({
-                          id: folder._id,
-                          name: folder.name,
-                          type: "folder",
-                          isCollaborative: !!folder.isCollaborative,
-                        });
-                        setNewItemName(folder.name);
-                        setIsCollaborative(!!folder.isCollaborative);
-                        setIsRenameModalOpen(true);
-                      }}
-                      className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                      title="การตั้งค่า"
-                    >
-                      <Edit3 size={14} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedItem({ id: folder._id, name: folder.name, type: "folder" });
-                        setIsMoveModalOpen(true);
-                      }}
-                      className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                      title="ย้าย"
-                    >
-                      <Move size={14} />
-                    </button>
-                    <button
-                      onClick={() => deleteItem(folder._id, "folder")}
-                      className="p-1.5 sm:p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                      title="ลบ"
+                <div className="flex flex-wrap items-center gap-0.5 sm:gap-1 ml-auto shrink-0 bg-slate-50 dark:bg-zinc-800/50 p-1 rounded-xl">
+                  {isStaff && (isSuperAdmin || folder.ownerId === userId) && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setSelectedItem({
+                            id: folder._id,
+                            name: folder.name,
+                            type: "folder",
+                            isCollaborative: !!folder.isCollaborative,
+                          });
+                          setNewItemName(folder.name);
+                          setIsCollaborative(!!folder.isCollaborative);
+                          setIsRenameModalOpen(true);
+                        }}
+                        className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                        title="การตั้งค่า"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedItem({ id: folder._id, name: folder.name, type: "folder" });
+                          setIsMoveModalOpen(true);
+                        }}
+                        className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-indigo-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                        title="ย้าย"
+                      >
+                        <Move size={14} />
+                      </button>
+                      <button
+                        onClick={() => deleteItem(folder._id, "folder")}
+                        className="p-1.5 sm:p-2 rounded-lg hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                        title="ลบ"
                       >
                         <Trash2 size={14} />
                       </button>
                     </>
                   )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
           </DnDFolderWrapper>
         ))}
 
         {/* Files */}
         {filteredFiles.map((file) => (
           <DnDFileWrapper id={file._id} key={file._id} className="flex">
-          <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={!isSelectionMode ? { scale: 1.02 } : {}}
-            onClick={() => {
-              if (isSelectionMode) toggleSelection(file._id);
-            }}
-            className={`group w-full relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${
-              selectedIds.has(file._id)
+            <motion.div
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={!isSelectionMode ? { scale: 1.02 } : {}}
+              onClick={() => {
+                if (isSelectionMode) toggleSelection(file._id);
+              }}
+              className={`group w-full relative flex bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm border transition-all ${selectedIds.has(file._id)
                 ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50 dark:bg-blue-900/10"
                 : "border-slate-100 dark:border-zinc-800 hover:shadow-xl hover:border-blue-100 dark:hover:border-blue-900/30"
-            } ${
-              viewMode === "grid"
-                ? "flex-col rounded-[24px] p-3"
-                : "flex-row items-center rounded-xl p-3"
-            } ${isSelectionMode ? "cursor-pointer" : ""}`}
-          >
-            {isSelectionMode && (
-              <div className="absolute top-4 left-4 z-10">
-                <div
-                  className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
-                    selectedIds.has(file._id)
+                } ${viewMode === "grid"
+                  ? "flex-col rounded-[24px] p-3"
+                  : "flex-row items-center rounded-xl p-3"
+                } ${isSelectionMode ? "cursor-pointer" : ""}`}
+            >
+              {isSelectionMode && (
+                <div className="absolute top-4 left-4 z-10">
+                  <div
+                    className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedIds.has(file._id)
                       ? "bg-blue-600 border-blue-600 text-white"
                       : "bg-white border-slate-300 dark:bg-zinc-800 dark:border-zinc-700"
-                  }`}
-                >
-                  {selectedIds.has(file._id) && <Check size={14} strokeWidth={4} />}
-                </div>
-              </div>
-            )}
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                if (isSelectionMode) toggleSelection(file._id);
-                else if (file.type?.startsWith("image/") || file.type?.startsWith("video/"))
-                  setPreviewFile(file);
-                else window.open(file.url, "_blank");
-              }}
-              className={`relative overflow-hidden shrink-0 shadow-inner bg-slate-100 dark:bg-zinc-800 cursor-pointer ${viewMode === "grid" ? "mb-3 aspect-4/3 w-full rounded-xl" : "h-12 w-12 rounded-lg mr-4"}`}
-            >
-              {renderFilePreview(file)}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <div className="p-2 sm:p-3 bg-white text-blue-600 rounded-full shadow-xl transition-transform scale-90 group-hover:scale-100">
-                  <ExternalLink size={16} strokeWidth={3} className="sm:w-5 sm:h-5" />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1 min-w-0 px-2 overflow-hidden">
-              <div className={`flex flex-col ${viewMode === "grid" ? "mb-4" : ""}`}>
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (isSelectionMode) toggleSelection(file._id);
-                    else if (file.type?.startsWith("image/") || file.type?.startsWith("video/"))
-                      setPreviewFile(file);
-                    else window.open(file.url, "_blank");
-                  }}
-                  className="truncate text-xs sm:text-sm font-black text-slate-800 dark:text-zinc-100 hover:text-blue-600 transition-colors cursor-pointer"
-                  title={file.name}
-                >
-                  {file.name}
-                </span>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 py-0.5 bg-slate-100 dark:bg-zinc-800 rounded-md">
-                    {formatSize(file.size)}
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-300 dark:text-zinc-600">•</span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">
-                    {file.type?.split("/")[1] || "file"}
-                  </span>
-                </div>
-              </div>
-
-              <div
-                className={`flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : "hidden sm:flex"}`}
-              >
-                <div className="flex items-center gap-1.5 shrink-0 max-w-[40%] sm:max-w-[50%]">
-                  <div className="h-5 w-5 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 shrink-0">
-                    <User size={10} />
-                  </div>
-                  <span className="truncate">{file.ownerName}</span>
-                </div>
-                <div
-                  className="flex flex-wrap items-center gap-0.5 sm:gap-1 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl shrink-0 ml-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <a
-                    href={file.url}
-                    download={file.name}
-                    className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                    title="ดาวน์โหลด"
+                      }`}
                   >
-                    <Download size={14} />
-                  </a>
-                  {isStaff && (isSuperAdmin || file.ownerId === userId) && (
-                    <>
-                      <button
-                        onClick={() => {
-                          setSelectedItem({ id: file._id, name: file.name, type: "file" });
+                    {selectedIds.has(file._id) && <Check size={14} strokeWidth={4} />}
+                  </div>
+                </div>
+              )}
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isSelectionMode) toggleSelection(file._id);
+                  else if (file.type?.startsWith("image/") || file.type?.startsWith("video/"))
+                    setPreviewFile(file);
+                  else window.open(file.url, "_blank");
+                }}
+                className={`relative overflow-hidden shrink-0 shadow-inner bg-slate-100 dark:bg-zinc-800 cursor-pointer ${viewMode === "grid" ? "mb-3 aspect-4/3 w-full rounded-xl" : "h-12 w-12 rounded-lg mr-4"}`}
+              >
+                {renderFilePreview(file)}
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <div className="p-2 sm:p-3 bg-white text-blue-600 rounded-full shadow-xl transition-transform scale-90 group-hover:scale-100">
+                    <ExternalLink size={16} strokeWidth={3} className="sm:w-5 sm:h-5" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 min-w-0 px-2 overflow-hidden">
+                <div className={`flex flex-col ${viewMode === "grid" ? "mb-4" : ""}`}>
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isSelectionMode) toggleSelection(file._id);
+                      else if (file.type?.startsWith("image/") || file.type?.startsWith("video/"))
+                        setPreviewFile(file);
+                      else window.open(file.url, "_blank");
+                    }}
+                    className="truncate text-xs sm:text-sm font-black text-slate-800 dark:text-zinc-100 hover:text-blue-600 transition-colors cursor-pointer"
+                    title={file.name}
+                  >
+                    {file.name}
+                  </span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 py-0.5 bg-slate-100 dark:bg-zinc-800 rounded-md">
+                      {formatSize(file.size)}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-300 dark:text-zinc-600">•</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      {file.type?.split("/")[1] || "file"}
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  className={`flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 ${viewMode === "grid" ? "justify-between w-full pt-4 border-t border-slate-50 dark:border-zinc-800/50 mt-auto" : "hidden sm:flex"}`}
+                >
+                  <div className="flex items-center gap-1.5 shrink-0 max-w-[40%] sm:max-w-[50%]">
+                    <div className="h-5 w-5 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 shrink-0">
+                      <User size={10} />
+                    </div>
+                    <span className="truncate">{file.ownerName}</span>
+                  </div>
+                  <div
+                    className="flex flex-wrap items-center gap-0.5 sm:gap-1 p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-xl shrink-0 ml-auto"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <a
+                      href={file.url}
+                      download={file.name}
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-white hover:text-blue-600 dark:hover:bg-zinc-700 shadow-sm transition-all"
+                      title="ดาวน์โหลด"
+                    >
+                      <Download size={14} />
+                    </a>
+                    {isStaff && (isSuperAdmin || file.ownerId === userId) && (
+                      <>
+                        <button
+                          onClick={() => {
+                            setSelectedItem({ id: file._id, name: file.name, type: "file" });
                             setNewItemName(file.name);
                             setIsRenameModalOpen(true);
                           }}
@@ -1261,10 +1237,10 @@ function DriveContent() {
                         </button>
                       </>
                     )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
           </DnDFileWrapper>
         ))}
       </div>
@@ -1276,7 +1252,7 @@ function DriveContent() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-4 sm:bottom-10 left-1/2 -translate-x-1/2 z-90 flex flex-col sm:flex-row items-center gap-2 sm:gap-6 bg-slate-900/95 backdrop-blur-xl p-4 sm:px-8 sm:py-5 rounded-3xl sm:rounded-[32px] shadow-2xl border border-white/10 text-white w-[92%] sm:w-auto sm:min-w-max"
+            className="select-none fixed bottom-4 sm:bottom-10 left-1/2 -translate-x-1/2 z-90 flex flex-col sm:flex-row items-center gap-2 sm:gap-6 bg-slate-900/95 backdrop-blur-xl p-4 sm:px-8 sm:py-5 rounded-3xl sm:rounded-[32px] shadow-2xl border border-white/10 text-white w-[92%] sm:w-auto sm:min-w-max"
           >
             <div className="flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-start w-full sm:w-auto border-b sm:border-b-0 sm:border-r border-white/10 pb-2 sm:pb-0 mb-2 sm:mb-0 sm:pr-6 sm:mr-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 sm:mb-0.5">
@@ -1648,20 +1624,20 @@ function DriveContent() {
             {/* Next Button */}
             {filteredFiles.findIndex((f) => f._id === previewFile._id) <
               filteredFiles.length - 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const currentIndex = filteredFiles.findIndex((f) => f._id === previewFile._id);
-                  setPreviewFile(filteredFiles[currentIndex + 1]);
-                }}
-                className="absolute right-2 sm:right-6 z-50 p-3 sm:p-4 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all shadow-xl hover:scale-110"
-              >
-                <ChevronRight size={28} strokeWidth={3} />
-              </button>
-            )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const currentIndex = filteredFiles.findIndex((f) => f._id === previewFile._id);
+                    setPreviewFile(filteredFiles[currentIndex + 1]);
+                  }}
+                  className="absolute right-2 sm:right-6 z-50 p-3 sm:p-4 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all shadow-xl hover:scale-110"
+                >
+                  <ChevronRight size={28} strokeWidth={3} />
+                </button>
+              )}
           </div>
         )}
       </AnimatePresence>
-    </SelectionArea>
+    </div>
   );
 }
