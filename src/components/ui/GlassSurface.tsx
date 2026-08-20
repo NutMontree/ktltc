@@ -102,7 +102,7 @@ const GlassSurface = ({
   ]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !svgSupported) return;
 
     let timeoutId: NodeJS.Timeout;
     const resizeObserver = new ResizeObserver(() => {
@@ -116,7 +116,7 @@ const GlassSurface = ({
       resizeObserver.disconnect();
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [svgSupported]);
 
   useEffect(() => {
     setTimeout(updateDisplacementMap, 0);
@@ -133,7 +133,7 @@ const GlassSurface = ({
 
     const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     const isFirefox = /Firefox/.test(navigator.userAgent);
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isMobile = window.innerWidth < 1024 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (isWebkit || isFirefox || isMobile) {
       return false;
@@ -161,8 +161,9 @@ const GlassSurface = ({
       className={`glass-surface ${svgSupported ? 'glass-surface--svg' : 'glass-surface--fallback'} ${className}`}
       style={containerStyle}
     >
-      <svg className="glass-surface__filter" xmlns="http://www.w3.org/2000/svg">
-        <defs>
+      {svgSupported && (
+        <svg className="glass-surface__filter" xmlns="http://www.w3.org/2000/svg">
+          <defs>
           <filter id={filterId} colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
             <feImage ref={feImageRef} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
 
@@ -211,6 +212,7 @@ const GlassSurface = ({
           </filter>
         </defs>
       </svg>
+      )}
 
       <div className="glass-surface__content">{children}</div>
     </div>
