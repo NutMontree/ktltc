@@ -57,7 +57,7 @@ function TelemetryCard({ label, value, unit, subValue, icon: Icon, color }: any)
           {label}
         </p>
         <div className="flex items-baseline gap-2">
-          <h3 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter">
+          <h3 className="text-3xl md:text-4xl font-black text-zinc-900 dark:text-white tracking-tighter">
             {value}
           </h3>
           <span className="text-xs font-bold text-zinc-500 uppercase">{unit}</span>
@@ -238,8 +238,8 @@ export default function TelemetryPage() {
           <ChevronLeft className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
         </Link>
         <div>
-          <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)</h1>
-          <p className="text-zinc-500 font-medium">ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์</p>
+          <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)</h1>
+          <p className="text-zinc-500 text-sm md:text-base font-medium">ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์</p>
         </div>
       </div>
 
@@ -348,7 +348,7 @@ export default function TelemetryPage() {
               <Folder className="w-32 h-32 text-zinc-50 dark:text-zinc-800/30 -rotate-12 translate-x-4 -translate-y-4" />
             </div>
             <div className="relative z-10 mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-4">
-              <h3 className="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
+              <h3 className="text-lg md:text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
                 <Database className="w-5 h-5 text-blue-500" />
                 รายละเอียดการใช้พื้นที่ (Storage Breakdown)
               </h3>
@@ -411,7 +411,7 @@ export default function TelemetryPage() {
               </div>
 
               <div className="flex justify-between items-start mb-2">
-                <h3 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+                <h3 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
                   ผู้ใช้งานระบบขณะนี้
                 </h3>
                 <div className="flex items-center gap-2 px-3 py-1 bg-red-50 dark:bg-red-500/10 rounded-full border border-red-100 dark:border-red-500/20">

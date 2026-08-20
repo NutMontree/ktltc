@@ -51,7 +51,7 @@ export function StatCard({ label, value, icon: Icon, color, unit, variants, onCl
           {label}
         </p>
         <div className="flex items-baseline gap-1.5">
-          <h3 className="text-[26px] font-black text-zinc-900 dark:text-white tracking-tighter leading-none">
+          <h3 className="text-xl md:text-[26px] font-black text-zinc-900 dark:text-white tracking-tighter leading-none">
             {value.toLocaleString()}
           </h3>
           {unit && (
@@ -124,7 +124,7 @@ export function UsageCard({
 
         <div className="mb-6">
           <div className="flex items-baseline gap-2 mb-2">
-            <h4 className="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter">
+            <h4 className="text-4xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tighter">
               {parseFloat(value).toLocaleString()}
             </h4>
             <span className="text-sm font-black text-zinc-400 uppercase tracking-widest">
