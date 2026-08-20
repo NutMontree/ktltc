@@ -133,8 +133,9 @@ const GlassSurface = ({
 
     const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     const isFirefox = /Firefox/.test(navigator.userAgent);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    if (isWebkit || isFirefox) {
+    if (isWebkit || isFirefox || isMobile) {
       return false;
     }
 
