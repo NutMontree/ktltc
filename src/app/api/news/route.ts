@@ -40,6 +40,7 @@ export async function POST(request: Request) {
       announcementImages,
       links,
       videoEmbeds,
+      documents,
       userName,
       userImage,
       createdAt,
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
       content,
       images: images || [],
       announcementImages: announcementImages || [],
+      documents: documents || [],
       links: links || [],
       videoEmbeds: videoEmbeds || [],
 
@@ -119,6 +121,7 @@ export async function GET(request: Request) {
         categories: 1,
         images: 1,
         announcementImages: 1,
+        documents: 1,
         createdAt: 1,
         author: 1,
       })
