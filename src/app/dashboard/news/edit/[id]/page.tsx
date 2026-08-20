@@ -187,6 +187,9 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
   const [allNewsletters, setAllNewsletters] = useState<
     { id: string; src: string; file?: File; isNew: boolean }[]
   >([]);
+  const [allDocuments, setAllDocuments] = useState<
+    { id: string; name: string; url: string; size: number; file?: File; isNew: boolean }[]
+  >([]);
 
   const [links, setLinks] = useState<{ label: string; url: string }[]>([]);
   const [currentLink, setCurrentLink] = useState({ label: "", url: "" });
@@ -235,6 +238,15 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
           (data.announcementImages || []).map((url: string) => ({
             id: url,
             src: url,
+            isNew: false,
+          })),
+        );
+        setAllDocuments(
+          (data.documents || []).map((doc: any) => ({
+            id: doc.url || doc.id || Math.random().toString(),
+            name: doc.name,
+            url: doc.url,
+            size: doc.size,
             isNew: false,
           })),
         );
@@ -291,11 +303,36 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: "general" | "newsletter",
+    type: "general" | "newsletter" | "document",
   ) => {
     if (e.target.files) {
-      setIsCompressing(true);
       const originalFiles = Array.from(e.target.files);
+
+      if (type === "document") {
+        const acceptedFiles: File[] = [];
+        for (const file of originalFiles) {
+          if (file.size > MAX_VIDEO_SIZE) {
+            alert(`ข้ามไฟล์ '${file.name}' — ขนาดไฟล์เกินกำหนด`);
+            continue;
+          }
+          acceptedFiles.push(file);
+        }
+
+        const newItems = acceptedFiles.map((file) => ({
+          id: URL.createObjectURL(file), // temporary id
+          name: file.name,
+          url: "", // will be set after upload
+          size: file.size,
+          file,
+          isNew: true,
+        }));
+        
+        setAllDocuments((prev) => [...prev, ...newItems]);
+        e.target.value = "";
+        return;
+      }
+
+      setIsCompressing(true);
 
       // Client-side validation: check type and size before compressing/adding
       const acceptedFiles: File[] = [];
@@ -376,7 +413,9 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
 
       // 1. อัปโหลดรูปใหม่ (พร้อมคำนวณ Progress)
       const totalToUpload =
-        allImages.filter((i) => i.isNew).length + allNewsletters.filter((i) => i.isNew).length;
+        allImages.filter((i) => i.isNew).length + 
+        allNewsletters.filter((i) => i.isNew).length +
+        allDocuments.filter((i) => i.isNew).length;
       let uploadedCount = 0;
 
       const finalImages = [];
@@ -449,6 +488,53 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
         }
       }
 
+      const finalDocuments = [];
+      for (const item of allDocuments) {
+        if (item.isNew && item.file) {
+          uploadedCount++;
+          const currentIdx = uploadedCount;
+          setUploadStatus({
+            fileName: item.file.name,
+            percent: 0,
+            loaded: 0,
+            total: item.file.size,
+            startTime: Date.now(),
+            currentIndex: currentIdx,
+            totalCount: totalToUpload,
+          });
+          const result = await uploadFile(
+            item.file,
+            `ktltc_documents/${mainCategory}/${datePath}`,
+            (percent, loaded, total) => {
+              setUploadStatus({
+                fileName: item.file!.name,
+                percent,
+                loaded,
+                total,
+                startTime: Date.now(),
+                currentIndex: currentIdx,
+                totalCount: totalToUpload,
+              });
+            },
+          );
+          if (result.secure_url) {
+            finalDocuments.push({
+              name: item.name,
+              url: result.secure_url,
+              size: item.size,
+              type: item.file.type,
+            });
+          }
+        } else {
+          finalDocuments.push({
+            name: item.name,
+            url: item.url,
+            size: item.size,
+            type: "application/octet-stream", // fallback
+          });
+        }
+      }
+
       setUploadStatus(null);
 
       // DOM-based safe auto-linking for HTML content
@@ -512,6 +598,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
           announcementImages: finalNewsletters
             .map((u) => u.secure_url)
             .filter((url) => url !== null),
+          documents: finalDocuments,
           links,
           videoEmbeds,
           createdAt: publishDate ? new Date(publishDate).toISOString() : undefined,
@@ -844,6 +931,73 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
               </label>
             </div>
           </DndContext>
+        </section>
+
+        {/* Documents Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-extrabold flex items-center gap-2">
+              <FiFileText className="text-emerald-500" /> เอกสารและไฟล์อื่นๆ
+            </h2>
+            <span className="text-[10px] font-bold text-slate-400">
+              {allDocuments.length} ไฟล์
+            </span>
+          </div>
+          
+          {allDocuments.length > 0 && (
+            <div className="flex flex-col gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
+              {allDocuments.map((f) => (
+                <div
+                  key={f.id}
+                  className={`flex items-center justify-between bg-white dark:bg-zinc-800 p-3 rounded-xl border ${f.isNew ? "border-emerald-400 dark:border-emerald-500" : "border-slate-200 dark:border-zinc-700"} shadow-sm`}
+                >
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center shrink-0 text-emerald-500 relative">
+                      <FiFileText size={18} />
+                      {f.isNew && (
+                        <div className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-white dark:border-zinc-800">
+                          NEW
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-700 dark:text-zinc-200 truncate">
+                        {f.name}
+                      </p>
+                      <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                        {f.size ? (f.size / (1024 * 1024)).toFixed(2) + " MB" : "Unknown size"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setAllDocuments((prev) => prev.filter((item) => item.id !== f.id))}
+                    className="w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-colors shrink-0"
+                  >
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <label className="w-full border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50/30 transition-all bg-white dark:bg-zinc-900 group">
+            <input
+              type="file"
+              multiple
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
+              className="hidden"
+              onChange={(e) => handleFileChange(e, "document")}
+            />
+            <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-colors mb-3">
+              <FiPlus size={24} />
+            </div>
+            <p className="text-sm font-bold text-slate-600 dark:text-zinc-300">
+              คลิกเพื่อเพิ่มไฟล์เอกสาร
+            </p>
+            <p className="text-[10px] font-medium text-slate-400 mt-1">
+              รองรับ PDF, Word, Excel, PowerPoint, ZIP
+            </p>
+          </label>
         </section>
 
         {/* Links Section */}
