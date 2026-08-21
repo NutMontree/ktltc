@@ -70,7 +70,8 @@ export async function PATCH(req: Request) {
       'respDeptHead', 'respWorkHead', 'respOther',
       // Student fields
       'citizenId', 'studentId', 'groupCode', 'classroomName',
-      'academicLevel', 'learnerType', 'studentStatus', 'isInternship'
+      'academicLevel', 'learnerType', 'studentStatus', 'isInternship',
+      'age', 'gender'
     ];
 
     fields.forEach(field => {
