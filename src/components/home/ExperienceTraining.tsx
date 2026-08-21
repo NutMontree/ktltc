@@ -11,36 +11,42 @@ interface NewsItem {
   createdAt: string;
 }
 
-const CARD_WIDTH = 360;
-const CARD_HEIGHT = 480;
+const CARD_WIDTH_DESKTOP = 360;
+const CARD_HEIGHT_DESKTOP = 480;
+const CARD_WIDTH_MOBILE = 280;
+const CARD_HEIGHT_MOBILE = 380;
 const GAP = 32;
 
-function Card({ item, index, containerX, containerWidth }: { item: NewsItem, index: number, containerX: any, containerWidth: number }) {
+function Card({ item, index, containerX, containerWidth }: { item: NewsItem; index: number; containerX: any, containerWidth: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  
-  // Calculate the x position of this card relative to the viewport center
-  // The card's base position in the container is index * (CARD_WIDTH + GAP)
-  const basePosition = index * (CARD_WIDTH + GAP);
-  
-  // We use useTransform to map the container's X position to the image's parallax X
-  const x = useTransform(containerX, (currentX: number) => {
-    if (typeof window === 'undefined') return 0;
-    // The screen center
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const cardWidth = isMobile ? CARD_WIDTH_MOBILE : CARD_WIDTH_DESKTOP;
+  const cardHeight = isMobile ? CARD_HEIGHT_MOBILE : CARD_HEIGHT_DESKTOP;
+
+  const x = useTransform(containerX, () => {
+    if (!cardRef.current || containerWidth === 0) return 0;
+    
+    // Get the card's current absolute position relative to the viewport
+    const rect = cardRef.current.getBoundingClientRect();
+    const cardCenter = rect.left + (rect.width / 2);
     const screenCenter = window.innerWidth / 2;
-    // The card's absolute center position on screen
-    const cardCenter = currentX + basePosition + (CARD_WIDTH / 2);
+    
     // Distance from screen center
     const distance = cardCenter - screenCenter;
     
-    // To prevent the image from shifting outside the card, we must limit the x offset.
-    // If scale is 1.4, the image width is 1.4 * 360 = 504px.
-    // Extra width = 504 - 360 = 144px.
-    // Max shift each side = 144 / 2 = 72px.
-    // We map the distance (which is max ~window.innerWidth/2) to max 70px.
-    const maxOffset = 70;
-    const progress = distance / screenCenter; // ranges approx -1 to 1
+    // Max shift each side
+    const maxOffset = isMobile ? 50 : 70;
+    const progress = distance / screenCenter; 
     
-    // Parallax effect: shift the image slightly in the opposite direction
+    // Parallax effect
     return -progress * maxOffset;
   });
 
@@ -51,7 +57,7 @@ function Card({ item, index, containerX, containerWidth }: { item: NewsItem, ind
       <motion.div 
         ref={cardRef}
         className="shrink-0 rounded-2xl overflow-hidden relative group cursor-grab active:cursor-grabbing border border-transparent hover:border-white/20"
-        style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+        style={{ width: cardWidth, height: cardHeight }}
         whileHover={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
       >
@@ -67,12 +73,13 @@ function Card({ item, index, containerX, containerWidth }: { item: NewsItem, ind
           />
         </div>
         
-        {/* Very subtle gradient just for text legibility */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        {/* Gradient for text legibility (Always visible on mobile, visible on hover on desktop) */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 pointer-events-none opacity-100" />
         
-        <div className="absolute bottom-0 left-0 p-6 w-full text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-          <h4 className="text-xl font-bold mb-1 tracking-tight line-clamp-2">{item.title}</h4>
-          <p className="text-white/80 text-xs">
+        {/* Text content (Always visible on mobile, slides up on desktop) */}
+        <div className="absolute bottom-0 left-0 p-5 md:p-6 w-full text-white transform translate-y-0 md:translate-y-4 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-500 pointer-events-none opacity-100">
+          <h4 className="text-lg md:text-xl font-bold mb-1 tracking-tight line-clamp-2 md:line-clamp-3">{item.title}</h4>
+          <p className="text-white/80 text-xs mt-2">
             {new Date(item.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
@@ -88,17 +95,27 @@ export function ExperienceTraining({ newsData = [] }: { newsData?: NewsItem[] })
   const hasDragged = useRef(false);
   const [isClient, setIsClient] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Use a motion value for dragging
   const x = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 300, damping: 30, bounce: 0 });
 
-  const originalWidth = newsData.length * (CARD_WIDTH + GAP);
+  useEffect(() => {
+    setIsClient(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const cardWidth = isMobile ? CARD_WIDTH_MOBILE : CARD_WIDTH_DESKTOP;
+  const originalWidth = newsData.length * (cardWidth + GAP);
   // Create 4 sets of data for infinite illusion
   const loopedData = [...newsData, ...newsData, ...newsData, ...newsData];
 
   useEffect(() => {
-    setIsClient(true);
+    if (!isClient) return;
     // Start at the second set to allow dragging left (backwards) immediately
     if (originalWidth > 0) {
       x.set(-originalWidth);
@@ -196,7 +213,7 @@ export function ExperienceTraining({ newsData = [] }: { newsData?: NewsItem[] })
           style={{ 
             x,
             gap: GAP,
-            paddingLeft: 'max(5vw, calc(50vw - 180px))', 
+            paddingLeft: isMobile ? 'max(16px, 5vw)' : 'max(5vw, calc(50vw - 180px))', 
             // We remove right padding because infinite loop needs continuous gap
           }}
           drag="x"
