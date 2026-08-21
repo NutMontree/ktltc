@@ -42,6 +42,38 @@ import dynamicImport from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CardNav from "@/components/ui/CardNav";
+
+const navItems = [
+  {
+    label: "About",
+    bgColor: "#1B1722",
+    textColor: "#fff",
+    links: [
+      { label: "Company", ariaLabel: "About Company" },
+      { label: "Careers", ariaLabel: "About Careers" }
+    ]
+  },
+  {
+    label: "Projects", 
+    bgColor: "#2F293A",
+    textColor: "#fff",
+    links: [
+      { label: "Featured", ariaLabel: "Featured Projects" },
+      { label: "Case Studies", ariaLabel: "Project Case Studies" }
+    ]
+  },
+  {
+    label: "Contact",
+    bgColor: "#2F293A", 
+    textColor: "#fff",
+    links: [
+      { label: "Email", ariaLabel: "Email us" },
+      { label: "Twitter", ariaLabel: "Twitter" },
+      { label: "LinkedIn", ariaLabel: "LinkedIn" }
+    ]
+  }
+];
 
 // โหลดคอมโพเนนต์แผนที่เฉพาะไคลเอนต์ไซด์ (Client-side only component)
 const MapDashboard = dynamicImport(() => import("@/components/MapDashboard"), {
@@ -358,7 +390,21 @@ export default function StudentFlagpoleDashboard() {
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+      {/* CardNav */}
+      <div className="relative z-50 mb-12 h-[80px]">
+        <CardNav
+          logo="/images/favicon.ico"
+          logoAlt="Company Logo"
+          items={navItems}
+          baseColor="#ffffff"
+          menuColor="#000"
+          buttonBgColor="#4f46e5"
+          buttonTextColor="#fff"
+          ease="power3.out"
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto space-y-12 relative z-10 mt-4">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="space-y-3">

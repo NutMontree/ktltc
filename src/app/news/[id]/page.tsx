@@ -290,7 +290,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
       <main className="pb-16 md:pb-24">
         {/* --- Hero / Header Section --- */}
         <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-4 pb-4 px-4">
-          <div className="max-w-5xl mx-auto w-full space-y-8">
+          <div className="max-w-[1600px] mx-auto w-full space-y-8">
             <BackButton fallbackUrl="/news">
               <div className="p-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                 <IconArrowLeft />
@@ -396,7 +396,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto w-full px-4 md:px-8 mt-10 space-y-12">
+        <div className="max-w-[1600px] mx-auto w-full px-4 md:px-8 mt-10 space-y-12">
           <NewsShareBar title={news.title} url={pageUrl} />
           {/* --- Content Body --- */}
             <article

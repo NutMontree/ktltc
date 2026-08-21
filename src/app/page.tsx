@@ -16,7 +16,7 @@ import dynamic from "next/dynamic";
 import BorderGlow from "@/components/ui/BorderGlow";
 import { Suspense } from "react";
 import SectionSkeleton from "@/components/SectionSkeleton";
-
+import { ExperienceTraining } from "@/components/home/ExperienceTraining";
 const ScrollVelocity = dynamic(() => import("@/components/Scrollvelocity"), { ssr: true });
 
 export const revalidate = 300; // Revalidate every 5 minutes (300 seconds) for better performance
@@ -39,13 +39,19 @@ const getHomeData = unstable_cache(
     try {
       const client = await clientPromise;
       const db = client.db("ktltc_db");
-      const [visibilityData, siteData, postersData, feeds, banners, collegeStats] = await Promise.all([
+      const [visibilityData, siteData, postersData, feeds, banners, collegeStats, experienceNews] = await Promise.all([
         db.collection("home_settings").find().toArray(),
         db.collection("site_settings").find().toArray(),
         db.collection("posters").find({ isActive: true }).sort({ orderIndex: 1, createdAt: -1 }).toArray(),
         db.collection("social_feeds").find({}).sort({ createdAt: -1 }).toArray(),
         db.collection("banners").find({ isActive: true }).toArray(),
         db.collection("college_stats").find({}).sort({ id: 1 }).toArray(),
+        db.collection("news").find({ 
+          $or: [
+            { category: "Internship" },
+            { categories: { $in: ["Internship"] } },
+          ]
+        }).sort({ createdAt: -1 }).limit(10).toArray(),
       ]);
 
       const isShow = visibilityData.reduce((acc: any, item: any) => {
@@ -65,18 +71,19 @@ const getHomeData = unstable_cache(
         feeds: JSON.parse(JSON.stringify(feeds)),
         banners: JSON.parse(JSON.stringify(banners)),
         collegeStats: JSON.parse(JSON.stringify(collegeStats)),
+        experienceNews: JSON.parse(JSON.stringify(experienceNews || [])),
       };
     } catch (error) {
       console.error("Fetch Data Error:", error);
-      return { isShow: {}, settings: {}, activePosters: [], feeds: [], banners: [], collegeStats: [] };
+      return { isShow: {}, settings: {}, activePosters: [], feeds: [], banners: [], collegeStats: [], experienceNews: [] };
     }
   },
-  ["homepage_data_cache"],
+  ["homepage_data_cache_v2"],
   { revalidate: 300 } // Cache for 5 minutes
 );
 
 export default async function Home() {
-  const { isShow, settings, activePosters, feeds, banners, collegeStats } = await getHomeData();
+  const { isShow, settings, activePosters, feeds, banners, collegeStats, experienceNews } = await getHomeData();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -182,7 +189,9 @@ export default async function Home() {
           <div className="py-12">{isShow.announcement !== false && <Suspense fallback={<SectionSkeleton />}><Announcement /></Suspense>}</div>
           <div className="py-12">{isShow.tender !== false && <Suspense fallback={<SectionSkeleton />}><TenderPage /></Suspense>}</div>
           <div className="py-12">{isShow.command !== false && <Suspense fallback={<SectionSkeleton />}><CommandPage /></Suspense>}</div>
-          <div className="py-12">{isShow.internship !== false && <Suspense fallback={<SectionSkeleton />}><InternshipPage /></Suspense>}</div>
+          
+          {isShow.internship !== false && <ExperienceTraining newsData={experienceNews} />}
+          
           <div className="py-12">
             <Suspense fallback={<SectionSkeleton />}>
               <ShowFacebookClient />

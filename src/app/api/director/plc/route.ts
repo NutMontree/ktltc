@@ -1,15 +1,21 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
+  console.log("[PLC API] GET called");
   try {
     const client = await clientPromise;
+    console.log("[PLC API] DB Connected");
     const db = client.db("ktltc_db");
     const records = await db.collection("plc_records").find({}).sort({ createdAt: -1 }).toArray();
+    console.log("[PLC API] Fetched", records.length, "records");
     return NextResponse.json(records);
   } catch (error) {
+    console.error("[PLC API] Error:", error);
     return NextResponse.json({ error: "Failed to fetch PLC records" }, { status: 500 });
   }
 }

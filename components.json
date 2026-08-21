@@ -13,22 +13,9 @@
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
-    "ui": "@/components/ui"
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
   },
-  "iconLibrary": "lucide",
-  "registries": [
-    {
-      "name": "reactbits-starter",
-      "type": "registry:ui",
-      "url": "https://api.reactbits.dev/v1/registry/starter"
-    },
-    {
-      "name": "reactbits-pro",
-      "type": "registry:ui",
-      "url": "https://api.reactbits.dev/v1/registry/pro",
-      "headers": {
-        "Authorization": "Bearer $REACTBITS_LICENSE_KEY"
-      }
-    }
-  ]
+  "iconLibrary": "lucide"
 }
