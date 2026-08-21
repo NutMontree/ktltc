@@ -20,6 +20,7 @@ import NavbarSkeleton from "@/components/NavbarSkeleton";
 import { Suspense } from "react";
 import ClientProviders from "@/providers/ClientProviders";
 import ClientBackgroundEffects from "@/components/ClientBackgroundEffects";
+import { AppleStyleDock } from "@/components/AppleStyleDock";
 
 import { Prompt, Inter, Sarabun, Charm } from 'next/font/google';
 
@@ -153,6 +154,7 @@ export default async function RootLayout({
                 </footer>
               }>
               </Suspense> */}
+              <AppleStyleDock />
               <Footer />
         </ClientProviders>
       </body>
