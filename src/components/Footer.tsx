@@ -108,11 +108,18 @@ export default async function Footer() {
   const getChildren = (parentId: string) => navItems.filter((item) => item.parentId === parentId);
 
   return (
-    <footer className="bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-8 border-t border-slate-800 overflow-hidden">
+    <footer className="relative bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-8 border-t border-slate-800 overflow-hidden">
+      {/* --- Giant Watermark Text (DevStudio Style) --- */}
+      <div className="pointer-events-none absolute bottom-0 left-0 w-full flex justify-center items-end overflow-hidden select-none z-0">
+        <span className="text-[18vw] font-bold leading-none tracking-tighter text-[#111827] whitespace-nowrap -mb-[2vw]">
+          KTLTC
+        </span>
+      </div>
+
       {/* ส่วนประกอบสำหรับนับยอดผู้เข้าชม (ทำงานฝั่ง Client) */}
       <VisitorTracker />
 
-      <div className="max-w-[1600px] mx-auto px-2">
+      <div className="relative z-10 max-w-[1600px] mx-auto px-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-1">
           {/* Column 1: โลโก้และข้อมูลติดต่อ */}
           <div className="lg:col-span-1 space-y-6">
