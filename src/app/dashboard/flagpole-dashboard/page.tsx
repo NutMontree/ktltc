@@ -55,7 +55,7 @@ const navItems = [
     ]
   },
   {
-    label: "Projects", 
+    label: "Projects",
     bgColor: "#2F293A",
     textColor: "#fff",
     links: [
@@ -65,7 +65,7 @@ const navItems = [
   },
   {
     label: "Contact",
-    bgColor: "#2F293A", 
+    bgColor: "#2F293A",
     textColor: "#fff",
     links: [
       { label: "Email", ariaLabel: "Email us" },
@@ -288,7 +288,7 @@ export default function StudentFlagpoleDashboard() {
         const url = `/api/admin/flagpole-dashboard?date=${selectedDate}&range=${trendRange}&statsOnly=true&_t=${Date.now()}`;
         const resStats = await fetch(url);
         const jsonStats = await resStats.json();
-        
+
         if (!resStats.ok || !jsonStats.success) {
           alert(`API Error: ${resStats.status} - ${JSON.stringify(jsonStats)}`);
         }
@@ -389,21 +389,6 @@ export default function StudentFlagpoleDashboard() {
       {/* Background Blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
-
-      {/* CardNav */}
-      <div className="relative z-50 mb-12 h-[80px]">
-        <CardNav
-          logo="/images/favicon.ico"
-          logoAlt="Company Logo"
-          items={navItems}
-          baseColor="#ffffff"
-          menuColor="#000"
-          buttonBgColor="#4f46e5"
-          buttonTextColor="#fff"
-          ease="power3.out"
-        />
-      </div>
-
       <div className="max-w-7xl mx-auto space-y-12 relative z-10 mt-4">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
@@ -536,8 +521,8 @@ export default function StudentFlagpoleDashboard() {
                   <button
                     onClick={() => setMapMode("status")}
                     className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${mapMode === "status"
-                        ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                        : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
+                      ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
                       }`}
                   >
                     สถานะพื้นที่
@@ -545,8 +530,8 @@ export default function StudentFlagpoleDashboard() {
                   <button
                     onClick={() => setMapMode("level")}
                     className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border-none cursor-pointer ${mapMode === "level"
-                        ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                        : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
+                      ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 bg-transparent"
                       }`}
                   >
                     ระดับชั้น (ปวช/ปวส)
@@ -590,8 +575,8 @@ export default function StudentFlagpoleDashboard() {
                       key={r.id}
                       onClick={() => setTrendRange(r.id as any)}
                       className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${trendRange === r.id
-                          ? "bg-white dark:bg-zinc-700 text-emerald-500 shadow-sm"
-                          : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
+                        ? "bg-white dark:bg-zinc-700 text-emerald-500 shadow-sm"
+                        : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
                         }`}
                     >
                       {r.label}
@@ -795,8 +780,8 @@ export default function StudentFlagpoleDashboard() {
                               </p>
                               {/* Zone badge */}
                               <span className={`inline-flex items-center text-[8px] font-black px-1.5 py-0.5 rounded-md border ${isInZone
-                                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30'
-                                  : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30'
+                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30'
+                                : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/30'
                                 }`}>
                                 {isInZone ? '✅ ในพื้นที่' : '⚠️ นอกพื้นที่'}
                               </span>
