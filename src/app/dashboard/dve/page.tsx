@@ -3985,7 +3985,7 @@ function DVETeacherWorkspace() {
                               .map((d) => d.trim())
                               .filter(Boolean)
                             : [];
-                          depts.push("");
+                          depts.unshift("");
                           setSubjectForm((prev) => ({ ...prev, department: depts.join(", ") }));
                         }}
                         className="px-2.5 py-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 border-0 cursor-pointer"
@@ -4056,7 +4056,7 @@ function DVETeacherWorkspace() {
                       </label>
                       <button
                         type="button"
-                        onClick={() => setSubjectAllowedClassGroupRows((prev) => [...prev, ""])}
+                        onClick={() => setSubjectAllowedClassGroupRows((prev) => ["", ...prev])}
                         className="px-2.5 py-1 bg-sky-50 text-sky-600 hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-400 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 border-0 cursor-pointer"
                       >
                         <Plus size={10} /> เพิ่มห้องเรียนที่อนุญาตให้เรียน
