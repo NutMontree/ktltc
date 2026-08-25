@@ -3153,7 +3153,7 @@ export function DVEStudentPortal() {
 
       <AnimatePresence>
         {mediaPreviewUrl && (
-          <div className="fixed inset-0 z-100000 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md">
+          <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
